@@ -20,7 +20,7 @@ function DiceGame() {
     this.initDice = function() {
 	this.dice1.x = 0;
 	this.dice1.y = 120;
-	this.dice1.vx = 10;
+	this.dice1.vx = 25;
 	this.dice1.vy = 5;
 	this.dice1.accX = 1;
 	this.dice1.accY = 1;
@@ -28,7 +28,7 @@ function DiceGame() {
 
 	this.dice2.x = appMgr.width - this.dice2.width;
 	this.dice2.y = 200;
-	this.dice2.vx = -10;
+	this.dice2.vx = -20;
 	this.dice2.vy = 2;
 	this.dice2.accX = 1;
 	this.dice2.accY = 1;
@@ -45,15 +45,15 @@ function DiceGame() {
 	var ctx = appMgr.ctx;
 	ctx.clearRect(0,0,appMgr.width, appMgr.height);
 	ctx.drawImage(game.bg, 0, 0, appMgr.width, appMgr.height);
+	game.dice1.rotationAngle += .3;
 	game.dice1.draw();
+	game.dice2.rotationAngle += .3;
 	game.dice2.draw();
 	game.positionDice([game.dice1, game.dice2]);
 	if (game.physics.collisionDetect(game.dice1, game.dice2)) {
-	    game.physics.bounce(s1,s2);
-	    game.positionDice([game.dice1, game.dice2]);
+	    game.physics.bounce(game.dice1,game.dice2);
 	}
 	var colliders = game.physics.wallCollideAndBounce([game.dice1, game.dice2]);
-	game.positionDice(colliders);
     };
 
     this.positionDice = function(dice) {
@@ -90,20 +90,21 @@ function Sprite(name, numFrames, x, y, rotationAngle) {
     this.rotationAngle = rotationAngle;
 
     this.draw = function() {
-	//	var frameIndex = Math.floor(Math.random() * numFrames);
-	var frameIndex = 1;
+	var frameIndex = Math.floor(Math.random() * numFrames);
 	var sx = Math.floor(frameIndex * this.width);
 	var sy = 0;
 	var sWidth = Math.floor(this.width);
 	var sHeight = this.height;
-	var dx = this.x;
-	var dy = this.y;
 	var dWidth = Math.floor(this.width);
 	var dHeight = this.height;
+	var dx = -dWidth/2;
+	var dy = -dHeight/2;
 
 	this.ctx.save();
-	if (this.rotationAngle) {	
-	    this.ctx.rotate(game.dice1.rotationAngle);
+	if (this.rotationAngle) {
+	    // Move the canvas to the center of the sprite so it rotates on it's axis.
+	    this.ctx.translate(this.x, this.y);
+	    this.ctx.rotate(this.rotationAngle);
 	}
 
 	this.ctx.drawImage(this.img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
