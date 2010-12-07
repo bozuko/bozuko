@@ -22,6 +22,6 @@ function initCanvas() {
 }
 
 function playGame() {
-    // Once the game loads it starts playing automatically
     game = new DiceGame();
+    game.play();
 }

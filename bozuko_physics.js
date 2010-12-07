@@ -31,18 +31,28 @@ function Physics() {
 	}
     };
 
-    this.bounce = function(s1, s2) {
-	var s1vx = (game.diceBounce*s2.mass*(s2.vx-s1.vx)+s1.mass*s1.vx+s2.mass*s2.vx)/(s1.mass + s2.mass);
-	var s2vx = (game.diceBounce*s1.mass*(s1.vx-s2.vx)+s1.mass*s1.vx+s2.mass*s2.vx)/(s1.mass + s2.mass);
-	var s1vy = (game.diceBounce*s2.mass*(s2.vy-s1.vy)+s1.mass*s1.vy+s2.mass*s2.vy)/(s1.mass + s2.mass);
-	var s2vy = (game.diceBounce*s1.mass*(s1.vy-s2.vy)+s1.mass*s1.vy+s2.mass*s2.vy)/(s1.mass + s2.mass);
+    this.move = function(sprites) {
+	var s;
+	for (s in sprites) {
+	    sprites[s].vx *= sprites[s].accX;
+	    sprites[s].vy *= sprites[s].accY;
+	    sprites[s].y += sprites[s].vy;
+	    sprites[s].x += sprites[s].vx;
+	}
+    };
+
+    this.bounce = function(s1, s2, bounciness) {
+	var s1vx = (bounciness*s2.mass*(s2.vx-s1.vx)+s1.mass*s1.vx+s2.mass*s2.vx)/(s1.mass + s2.mass);
+	var s2vx = (bounciness*s1.mass*(s1.vx-s2.vx)+s1.mass*s1.vx+s2.mass*s2.vx)/(s1.mass + s2.mass);
+	var s1vy = (bounciness*s2.mass*(s2.vy-s1.vy)+s1.mass*s1.vy+s2.mass*s2.vy)/(s1.mass + s2.mass);
+	var s2vy = (bounciness*s1.mass*(s1.vy-s2.vy)+s1.mass*s1.vy+s2.mass*s2.vy)/(s1.mass + s2.mass);
 	s1.vx = s1vx;
 	s1.vy = s1vy;
 	s2.vx = s2vx;
 	s2.vy = s2vy;
     };
 
-    this.collisionDetect = function(s1, s2) {
+    this.intersectRect = function(s1, s2) {
 	// collision of s2 with bottom left of s1
 	if (left(s1, s2) && bottom(s1, s2)) {
 	    return true;
@@ -65,22 +75,25 @@ function Physics() {
 	return false;
     };
 
+    // Take into account the sprite's rotation angle to prevent clipping
     this.wallCollideAndBounce = function(sprites) {
 	var s;
 	var colliders = new Array();
+	var sprite = null;
 	for (s in sprites) {
-	    if (sprites[s].vx < 0 && sprites[s].x <= 0) {
-		sprites[s].vx = -sprites[s].vx;
-		colliders.push(sprites[s]);
-	    } else if (sprites[s].vx > 0 && sprites[s].x + sprites[s].width >= appMgr.width) {
-		sprites[s].vx = -sprites[s].vx;
-		colliders.push(sprites[s]);
-	    } else if (sprites[s].vy < 0 && sprites[s].y <= 0) {
-		sprites[s].vy = -sprites[s].vy;
-		colliders.push(sprites[s]);
-	    } else if (sprites[s].vy > 0 && sprites[s].y + sprites[s].height >= appMgr.height) {
-		sprites[s].vy = -sprites[s].vy;
-		colliders.push(sprites[s]);
+	    sprite = sprites[s];
+	    if (sprite.vx < 0 && sprite.x <= 0) {
+		sprite.vx = -sprite.vx;
+		colliders.push(sprite);
+	    } else if (sprite.vx > 0 && sprite.x + sprite.width >= appMgr.width) {
+		sprite.vx = -sprite.vx;
+		colliders.push(sprite);
+	    } else if (sprite.vy < 0 && sprite.y <= 0) {
+		sprite.vy = -sprite.vy;
+		colliders.push(sprite);
+	    } else if (sprite.vy > 0 && sprite.y + sprite.height >= appMgr.height) {
+		sprite.vy = -sprite.vy;
+		colliders.push(sprite);
 	    }
 	}
 	return colliders;
