@@ -1,57 +1,94 @@
-function Physics() {
-    var top = function(s1, s2) {
-	if ((s2.y <= s1.y) && (s2.y + s2.height >= s1.y)) {
-	    return true;
-	} else {
-	    return false;
-	}
+function Point(x,y) {
+    this.x = x;
+    this.y = y;
+}
+
+function Projection(min, max) {
+    this.min = min;
+    this.max = max;
+}
+
+// All sprites are rectangles.
+function Sprite(name, numFrames, x, y) {
+    var that = this;
+    this.type = Sprite;
+    this.ctx = appMgr.ctx;
+    this.numFrames = numFrames;
+    this.x = x;
+    this.y = y;
+    this.rotationAngle = 0;
+    this.img = new Image();
+    this.img.src = name + ".png";
+    this.img.onload = function() {
+	that.width = that.img.width/numFrames;
+	that.height = that.img.height;
+	that.topLeft = new Point(that.x, that.y);
+	that.bottomLeft = new Point(that.x, that.y + that.height);
+	that.topRight = new Point(that.x + that.width, that.y);
+	that.bottomRight = new Point(that.x + that.width, that.y + that.height);
+	that.center = new Point(that.x + that.width/2, that.y + that.height/2);
+	game.imgLoadCt++;
     };
 
-    var bottom = function(s1, s2) {
-	if ((s2.y >= s1.y) && (s2.y <= s1.y + s1.height)) {
-	    return true;
-	} else {
-	    return false;
-	}
+    this.setPoints = function() {
+	this.topLeft.x = this.x;
+	this.topLeft.y = this.y;
+	this.bottomLeft.x = this.x;
+	this.bottomLeft.y = this.y + this.height;
+	this.topRight.x = this.x + this.width;
+	this.topRight.y = this.y;
+	this.bottomRight.x = this.x + this.width;
+	this.bottomRight.y = this.y + this.height;
+	this.center.x = this.x + this.width/2;
+	this.center.y = this.y + this.height/2;
     };
 
-    var right = function(s1, s2) {
-	if ((s2.x >= s1.x) && (s2.x <= s1.x + s1.width)) {
-	    return true;
-	} else {
-	    return false;
-	}
-    };
-
-    var left = function(s1, s2) {
-	if ((s2.x <= s1.x) && (s2.x + s2.width >= s1.x)) {
-	    return true;
-	} else {
-	    return false;
-	}
+    this.rotate = function(angle) {
+	var sin = Math.sin(this.rotationAngle);
+	var cos = Math.cos(this.rotationAngle);
+	this.rotationAngle += angle;
+	this.topLeft.x = cos*this.x;
+	this.topLeft.y = sin*this.y;
+	this.bottomLeft.x = cos*this.x;
+	this.bottomLeft.y = sin*this.y+this.height;
+	this.topRight.x = cos*this.x + this.width;
+	this.topRight.y = sin*this.y;
+	this.bottomRight.x = cos*this.x + this.width;
+	this.bottomRight.y = sin*this.y+this.height;
     };
     
-    var setPoints = function(sprite) {
-	sprite.topLeft.x = sprite.x;
-	alert(sprite.topLeft.x+","+sprite.x);
-	sprite.topLeft.y = sprite.y;
-	sprite.bottomLeft.x = sprite.x;
-	sprite.bottomLeft.y = sprite.y + sprite.height;
-	sprite.topRight.x = sprite.x + sprite.width;
-	sprite.topRight.y = sprite.y;
-	sprite.bottomRight.x = sprite.x + sprite.width;
-	sprite.bottomRight.y = sprite.y + sprite.height;
-    };
+    this.draw = function() {
+	var sx = Math.floor(this.frameIndex * this.width);
+	var sy = 0;
+	var sWidth = Math.floor(this.width);
+	var sHeight = this.height;
+	var dWidth = Math.floor(this.width);
+	var dHeight = this.height;
+	var dx = this.x;
+	var dy = this.y;
 
+	this.ctx.save();
+	if (this.rotationAngle) {
+	    dx = -dWidth/2;
+	    dy = -dHeight/2;
+	    this.ctx.translate(this.x, this.y);
+	    this.ctx.rotate(this.rotationAngle);
+	}
+	this.ctx.drawImage(this.img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+	this.ctx.restore();
+    };    
+    return this;
+}
+
+function Physics() {    
     this.move = function(sprites) {
-	var s;
+	var i;
 	for (i = 0; i < sprites.length; i++) {
-	    alert("i = "+i);
 	    sprites[i].vx *= sprites[i].accX;
 	    sprites[i].vy *= sprites[i].accY;
 	    sprites[i].y += sprites[i].vy;
 	    sprites[i].x += sprites[i].vx;
-	    setPoints(sprites[i]);
+	    sprites[i].setPoints();
 	}
     };
 
@@ -66,35 +103,80 @@ function Physics() {
 	s2.vy = s2vy;
     };
 
-    this.intersectRect = function(s1, s2) {
-	// collision of s2 with bottom left of s1
-	if (left(s1, s2) && bottom(s1, s2)) {
-	    return true;
+    // Project Polygon (sprite) onto axis to determine min/max
+    var projectPoly = function(sprite, axis) {
+	var points = [sprite.topLeft, sprite.bottomLeft, sprite.topRight, sprite.bottomRight];
+	var min, max;
+	var dp, i;
+	min = max = points[0].x * axis.x + points[0].y * axis.y;
+	for (i = 1; i < points.length; i++) {
+	    dp = points[i].x * axis.x + points[i].y * axis.y;
+	    if (dp > max) { 
+		    max = dp;
+		} else if (dp < min) {
+		    min = dp;
+		}
 	}
 	
-	// collision of s2 with bottom right of s1
-	if (right(s1, s2) && bottom(s1, s2)) {
-	    return true;
+	// Correct for center offset
+	dp = sprite.center.x * axis.x + sprite.center.y * axis.y;
+	min += dp;
+	max += dp;
+	return new Projection(min, max);
+    };   
+    
+    var projectionIntersect = function(points, s1, s2) {
+	var i, t;
+	var axis = new Point(0,0);
+	var proj1, proj2;
+	for (i = 0; i < points.length; i++) {
+	    // Figure out the axis to project onto
+	    if (i === 0) {
+		axis.x = points[points.length - 1].y - points[0].y;
+		axis.y = points[0].x - points[points.length - 1].x;
+	    } else {
+		axis.x = points[i - 1].y - points[i].y;
+		axis.y = points[i].x - points[i - 1].x;
+	    }
+	    
+	    // Normalize the axis
+	    t = Math.sqrt(axis.x*axis.x + axis.y*axis.y);
+	    axis.x /= t;
+	    axis.y /= t;
+	    
+	    proj1 = projectPoly(s1, axis);	    
+	    proj2 = projectPoly(s2, axis);
+	    
+	    /* test if lines intersect, if not, return false */
+	    if (proj1.max < proj2.min || proj1.min > proj2.max) {
+		return false; 
+	    }
 	}
+	return true;
+    }; 
 
-	// collision of s2 with top left of s1
-	if (left(s1, s2) && top(s1, s2)) {
+    // Use separating axis theorem with projection.
+    // http://en.wikipedia.org/wiki/Separating_axis_theorem
+    // http://gpwiki.org/index.php/VB:Tutorials:Building_A_Physics_Engine:Basic_Intersection_Detection
+    // http://gpwiki.org/index.php/IntersectionTestInC
+    // http://www.sevenson.com.au/actionscript/sat/
+    this.collision = function(s1, s2) {
+	var s1Points = [s1.topLeft, s1.bottomLeft, s1.topRight, s1.bottomRight];
+	var s2Points = [s2.topLeft, s2.bottomLeft, s2.topRight, s2.bottomRight];
+
+	if (projectionIntersect(s1Points, s1, s2) && projectionIntersect(s2Points, s1, s2)) {
 	    return true;
+	} else {
+	    return false;
 	}
-	
-	// collision of s2 with top right of s1 
-	if (right(s1, s2) && top(s1, s2)) {
-	    return true;
-	}
-	return false;
     };
 
     this.wallCollideAndBounce = function(sprites, canvasWidth, canvasHeight) {
-    	var s;
+    	var i = null;
     	var colliders = new Array();
     	var sprite = null;
-    	for (s in sprites) {
-    	    sprite = sprites[s];
+    	for (i = 0; i < sprites.length; i++) {
+    	    sprite = sprites[i];
     	    if (sprite.vx < 0 && (sprite.topLeft.x <= 0 || sprite.topRight.x <= 0 || 
 				  sprite.bottomLeft.x <= 0 || sprite.bottomRight.x <= 0)) {
     		sprite.vx = -sprite.vx;
