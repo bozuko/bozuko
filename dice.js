@@ -73,15 +73,16 @@ function DiceGame() {
 	} else if (game.state === 'rolling') {
 	    dice1.frameIndex = Math.floor(Math.random() * dice1.numFrames);
 	    dice2.frameIndex = Math.floor(Math.random() * dice2.numFrames);
-	    dice1.rotate(.3);
-	    dice1.draw();
-	    dice2.rotate(.3);
-	    dice2.draw();
 	    game.physics.move([dice1, dice2]);
 	    if (game.physics.intersectRect(dice1, dice2)) {
 		game.physics.bounce(dice1, dice2, game.diceBounce);
 	    }
-	    var colliders = game.physics.wallCollideAndBounce([dice1, dice2]);
+	    var colliders = game.physics.wallCollideAndBounce([dice1, dice2], 
+							      appMgr.width, appMgr.height);
+	    //dice1.rotate(.3);
+	    dice1.draw();
+	    //dice2.rotate(.3);
+	    dice2.draw();
 	} else if (game.state === 'stopped') {
 	    dice1.draw();
 	    dice2.draw();
@@ -98,6 +99,7 @@ function DiceGame() {
 function Point(x,y) {
     this.x = x;
     this.y = y;
+    return this;
 }
 
 function Sprite(name, numFrames, x, y) {
@@ -105,6 +107,9 @@ function Sprite(name, numFrames, x, y) {
     this.type = Sprite;
     this.ctx = appMgr.ctx;
     this.numFrames = numFrames;
+    this.x = x;
+    this.y = y;
+    this.rotationAngle = 0;
     this.img = new Image();
     this.img.src = name + ".png";
     this.img.onload = function() {
@@ -117,27 +122,18 @@ function Sprite(name, numFrames, x, y) {
 	game.imgLoadCt++;
     };
 
-    x ? this.x = x : this.x = 0;
-    y ? this.y = y : this.y = 0;
-    
-    this.rotationAngle = 0;
-    this.topLeft = null;
-    this.bottomLeft = null;
-    this.topRight = null;
-    this.bottomRight = null;
-
     this.rotate = function(angle) {
 	var sin = Math.sin(this.rotationAngle);
 	var cos = Math.cos(this.rotationAngle);
 	this.rotationAngle += angle;
-	this.topLeft.x = cos*this.x;
+	this.topLeft.x = cos*.5*this.x;
 	this.topLeft.y = sin*this.y;
 	this.bottomLeft.x = cos*this.x;
-	this.bottomLeft.y = sin*(this.y+this.height);
-	this.topRight.x = cos*(this.x + this.width);
+	this.bottomLeft.y = sin*this.y+this.height;
+	this.topRight.x = cos*this.x + this.width;
 	this.topRight.y = sin*this.y;
-	this.bottomRight.x = cos*(this.x + this.width);
-	this.bottomRight.y = sin*(this.y+this.height);
+	this.bottomRight.x = cos*this.x + this.width;
+	this.bottomRight.y = sin*this.y+this.height;
     };
     
     this.draw = function() {
