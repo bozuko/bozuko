@@ -7,6 +7,11 @@ var Game = {
 DiceGame.prototype = Game;
 DiceGame.prototype.constructor = DiceGame;
 function DiceGame() {
+    
+    var makeWall = function(x1,y1,x2,y2) {
+	return new Wall(new Polygon([new Vector(x1,y1), new Vector(x2,y2)]));
+    };
+
     this.ctx = appMgr.ctx;
     this.totalImgCt = 3;
     this.imgLoadCt = 0;
@@ -15,12 +20,18 @@ function DiceGame() {
     this.bg.onload = function() {
 	game.imgLoadCt++;
     };
-    this.dice1 = new Sprite("dice-all", 6, Math.floor(appMgr.width/2), Math.floor(appMgr.height/2));
-    this.dice2 = new Sprite("dice-all", 6, Math.floor(appMgr.width/2), appMgr.height-50);
     this.diceBounce = 1;
+    this.wallBounce = .8;
     this.drawTimer = null;
     this.physics = new Physics();
     this.state = 'init';
+    this.dice1 = new Sprite("dice-all", 6, Math.floor(appMgr.width/2), Math.floor(appMgr.height/2));
+    this.dice2 = new Sprite("dice-all", 6, Math.floor(appMgr.width/2), appMgr.height-50);
+    this.walls = [makeWall(0, 0, 0, appMgr.height), //left
+		  makeWall(0, 0, appMgr.width, 0), //top
+		  makeWall(appMgr.width, 0, appMgr.width, appMgr.height), //right
+		  makeWall(0, appMgr.height, appMgr.width, appMgr.height)]; // bottom
+
     
     this.initDice = function() {
 	this.dice1.vx = 0;
@@ -46,7 +57,8 @@ function DiceGame() {
 	var ctx = appMgr.ctx;
 	var dice1 = game.dice1;
 	var dice2 = game.dice2;
-
+	var i;
+	var wall;
 	ctx.clearRect(0, 0, appMgr.width, appMgr.height);
 	ctx.drawImage(game.bg, 0, 0, appMgr.width, appMgr.height);
 
@@ -66,6 +78,15 @@ function DiceGame() {
 	    game.physics.move([dice1, dice2]);
 	    if (game.physics.collide(dice1, dice2)) {
 		game.physics.bounce(dice1, dice2, game.diceBounce);
+	    }
+	    for (i = 0; i < game.walls.length; i++) {
+		wall = game.walls[i];
+		if (game.physics.collide(dice1, wall)) {
+		    game.physics.bounce(dice1, wall, game.wallBounce);
+		}
+		if (game.physics.collide(dice2, wall)) {
+		    game.physics.bounce(dice2, wall, game.wallBounce);
+		}
 	    }
 	    dice1.draw();
 	    dice2.draw();

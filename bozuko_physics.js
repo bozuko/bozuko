@@ -1,4 +1,4 @@
-// A lot of the code in this file is based off Olivier Renault's PollyColly
+// Polygon intersection code is based off Olivier Renault's PollyColly
 // Separated Axis Theorem (SAT) used to test polygon intersection
 
 function Interval(min, max) {
@@ -77,14 +77,14 @@ function Polygon(vertices) {
 	}
     };
 
-    this.plus = function(v) {
+    this.addToVertices = function(v) {
 	var i;
 	for (i = 0; i < this.vertices.length; i++) {
 	    this.vertices[i] = this.vertices[i].plus(v);
 	}
     };
 
-    this.minus = function(v) {
+    this.subtractFromVertices = function(v) {
 	var i;
 	for (i = 0; i < this.vertices.length; i++) {
 	    this.vertices[i] = this.vertices[i].minus(v);
@@ -178,6 +178,15 @@ function CollisionInfo() {
     this.overlapped = false;    
 }
 
+function Wall(poly) {    
+    this.pos = new Vector(poly.vertices[0].x, poly.vertices[0].y);
+    this.polygon = poly;
+    this.vx = 0;
+    this.vy = 0;
+    this.mass = 1000000;
+    this.movable = false;
+}
+
 // All sprites use rectangular polygons the same size as an image frame for now.
 // They are always oriented at a 0 deg angle on initialization.
 //
@@ -188,13 +197,14 @@ function Sprite(name, numFrames, x, y) {
     this.numFrames = numFrames;
     this.img = new Image();
     this.img.src = name + ".png";
-    this.pos = new Vector(x, y); // Upper left corner of rectangle
+    this.pos = new Vector(x, y); // Position is equal to the first vertex of the polygon
     this.vx = 0;
     this.vy = 0;
     this.accX = 1;
     this.accY = 1;
     this.angle = 0;
     this.mass = 1;
+    this.movable = true;
     this.width = 0;
     this.height = 0;
     this.polygon = null;
@@ -202,7 +212,7 @@ function Sprite(name, numFrames, x, y) {
     this.img.onload = function() {
 	that.width = that.img.width/numFrames;
 	that.height = that.img.height;
-	// Order of vertices is important!!!!
+	// Order of vertices is important!!!
 	var vertices = [new Vector(that.pos.x, that.pos.y), 
 			new Vector(that.pos.x + that.width, that.pos.y), 
 			new Vector(that.pos.x + that.width, that.pos.y + that.height),
@@ -235,36 +245,46 @@ function Sprite(name, numFrames, x, y) {
 }
 
 function Physics() {    
-    this.move = function(sprites) {
+    this.move = function(bodies) {
 	var i;
-	for (i = 0; i < sprites.length; i++) {
-	    sprites[i].vx *= sprites[i].accX;
-	    sprites[i].vy *= sprites[i].accY;
-	    sprites[i].pos.x += sprites[i].vx;
-	    sprites[i].pos.y += sprites[i].vy;
-	    sprites[i].polygon.translate(sprites[i].vx, sprites[i].vy);
+	for (i = 0; i < bodies.length; i++) {
+	    bodies[i].vx *= bodies[i].accX;
+	    bodies[i].vy *= bodies[i].accY;
+	    bodies[i].pos.x += bodies[i].vx;
+	    bodies[i].pos.y += bodies[i].vy;
+	    bodies[i].polygon.translate(bodies[i].vx, bodies[i].vy);
 	}
     };
 
-    this.bounce = function(s1, s2, bounciness) {
-	var s1vx = (bounciness*s2.mass*(s2.vx-s1.vx)+s1.mass*s1.vx+s2.mass*s2.vx)/(s1.mass + s2.mass);
-	var s2vx = (bounciness*s1.mass*(s1.vx-s2.vx)+s1.mass*s1.vx+s2.mass*s2.vx)/(s1.mass + s2.mass);
-	var s1vy = (bounciness*s2.mass*(s2.vy-s1.vy)+s1.mass*s1.vy+s2.mass*s2.vy)/(s1.mass + s2.mass);
-	var s2vy = (bounciness*s1.mass*(s1.vy-s2.vy)+s1.mass*s1.vy+s2.mass*s2.vy)/(s1.mass + s2.mass);
-	s1.vx = s1vx;
-	s1.vy = s1vy;
-	s2.vx = s2vx;
-	s2.vy = s2vy;
+    this.bounce = function(b1, b2, bounciness) {
+	var b1vx = (bounciness*b2.mass*(b2.vx-b1.vx)+b1.mass*b1.vx+b2.mass*b2.vx)/(b1.mass + b2.mass);
+	var b1vy = (bounciness*b2.mass*(b2.vy-b1.vy)+b1.mass*b1.vy+b2.mass*b2.vy)/(b1.mass + b2.mass);
+	var b2vx = (bounciness*b1.mass*(b1.vx-b2.vx)+b1.mass*b1.vx+b2.mass*b2.vx)/(b1.mass + b2.mass);
+	var b2vy = (bounciness*b1.mass*(b1.vy-b2.vy)+b1.mass*b1.vy+b2.mass*b2.vy)/(b1.mass + b2.mass);
+	b1.vx = b1vx;
+	b1.vy = b1vy;
+	b2.vx = b2vx;
+	b2.vy = b2vy;
     };
 
-    this.collide = function(s1, s2) {
-	var collisionInfo = s1.polygon.intersect(s2.polygon);
+    this.collide = function(b1, b2) {
+	var collisionInfo = b1.polygon.intersect(b2.polygon);
 	var halfmtd = collisionInfo.mtd.timesScalar(.5);
+	var mtd = collisionInfo.mtd;
 	if (collisionInfo.overlapped === true) {
-	    s1.polygon.plus(halfmtd);
-	    s2.polygon.minus(halfmtd);
-	    s1.pos = s1.pos.plus(halfmtd);
-	    s2.pos = s2.pos.minus(halfmtd);
+	    if (b1.movable && b2.movable) {
+		b1.polygon.addToVertices(halfmtd);
+		b1.pos = b1.pos.plus(halfmtd);
+		b2.polygon.subtractFromVertices(halfmtd);
+		b2.pos = b2.pos.minus(halfmtd);
+	    } else if (b1.movable && !b2.movable) {
+		b1.polygon.addToVertices(mtd);
+		b1.pos = b1.pos.plus(mtd);
+	    } else { 
+		b2.polygon.subtractFromVertices(mtd);
+		b2.pos = b2.pos.minus(mtd);
+	    }
+
 	    return true;
 	}
 	return false;
