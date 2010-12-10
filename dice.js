@@ -15,18 +15,18 @@ function DiceGame() {
     this.bg.onload = function() {
 	game.imgLoadCt++;
     };
-    this.dice1 = new Sprite("dice-all", 6, appMgr.width/2, appMgr.height/2);
-    this.dice2 = new Sprite("dice-all", 6, appMgr.width/2 + 50, appMgr.height-50);
+    this.dice1 = new Sprite("dice-all", 6, Math.floor(appMgr.width/2), Math.floor(appMgr.height/2));
+    this.dice2 = new Sprite("dice-all", 6, Math.floor(appMgr.width/2), appMgr.height-50);
     this.diceBounce = 1;
     this.drawTimer = null;
     this.physics = new Physics();
     this.state = 'init';
     
     this.initDice = function() {
-	this.dice1.vx = 10;
-	this.dice1.vy = 5;
+	this.dice1.vx = 0;
+	this.dice1.vy = 3;
 
-	this.dice2.vx = -2;
+	this.dice2.vx = 0;
 	this.dice2.vy = -20;
     };
 
@@ -67,11 +67,7 @@ function DiceGame() {
 	    if (game.physics.collide(dice1, dice2)) {
 		game.physics.bounce(dice1, dice2, game.diceBounce);
 	    }
-	    //	    var colliders = game.physics.wallCollideAndBounce([dice1, dice2], 
-	    //						      appMgr.width, appMgr.height);
-	    //dice1.rotate(.3);
 	    dice1.draw();
-	    //dice2.rotate(.3);
 	    dice2.draw();
 	} else if (game.state === 'stopped') {
 	    dice1.draw();

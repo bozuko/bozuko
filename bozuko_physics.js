@@ -1,4 +1,5 @@
 // A lot of the code in this file is based off Olivier Renault's PollyColly
+// Separated Axis Theorem (SAT) used to test polygon intersection
 
 function Interval(min, max) {
     this.min = min;
@@ -201,10 +202,11 @@ function Sprite(name, numFrames, x, y) {
     this.img.onload = function() {
 	that.width = that.img.width/numFrames;
 	that.height = that.img.height;
+	// Order of vertices is important!!!!
 	var vertices = [new Vector(that.pos.x, that.pos.y), 
-			new Vector(that.pos.x, that.pos.y + that.height),
 			new Vector(that.pos.x + that.width, that.pos.y), 
-			new Vector(that.pos.x + that.width, that.pos.y + that.height)];
+			new Vector(that.pos.x + that.width, that.pos.y + that.height),
+			new Vector(that.pos.x, that.pos.y + that.height)];
 	that.polygon = new Polygon(vertices);
 	game.imgLoadCt++;
     };
@@ -263,6 +265,8 @@ function Physics() {
 	    s2.polygon.minus(halfmtd);
 	    s1.pos = s1.pos.plus(halfmtd);
 	    s2.pos = s2.pos.minus(halfmtd);
+	    return true;
 	}
+	return false;
     };
 }
