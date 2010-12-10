@@ -22,6 +22,10 @@ function Vector(x, y) {
 	return new Vector(this.x * n, this.y * n);
     };
 
+    this.divScalar = function(n) {
+	return new Vector(this.x / n, this.y / n);
+    };
+
     this.perp = function() {
 	return new Vector(-y, x);
     };
@@ -66,14 +70,6 @@ function Polygon(vertices) {
 	var i; 
 	for (i = 0; i < this.vertices.length; i++) {
 	    this.vertices[i].rotate(angle);
-	}
-    };
-
-    this.translate = function(x, y) {
-	var i; 
-	for (i = 0; i < this.vertices.length; i++) {
-	    this.vertices[i].x += x;
-	    this.vertices[i].y += y;
 	}
     };
 
@@ -167,6 +163,7 @@ function Polygon(vertices) {
 	if (sepLenSquared < info.mtdLenSquared || info.mtdLenSquared < 0) {
 	    info.mtdLenSquared = sepLenSquared;
 	    info.mtd = sep;
+	    info.axis = axis;
 	}
 	return false;		
     };
@@ -175,15 +172,16 @@ function Polygon(vertices) {
 function CollisionInfo() {
     this.mtdLenSquared = 0;
     this.mtd = new Vector(0,0);
-    this.overlapped = false;    
+    this.overlapped = false;
+    this.axis = null;
 }
 
 function Wall(poly) {    
     this.pos = new Vector(poly.vertices[0].x, poly.vertices[0].y);
     this.polygon = poly;
-    this.vx = 0;
-    this.vy = 0;
-    this.mass = 1000000;
+    this.vel = new Vector(0,0);
+    this.acc = new Vector(0,0);
+    this.mass = 100000;
     this.movable = false;
 }
 
@@ -198,10 +196,8 @@ function Sprite(name, numFrames, x, y) {
     this.img = new Image();
     this.img.src = name + ".png";
     this.pos = new Vector(x, y); // Position is equal to the first vertex of the polygon
-    this.vx = 0;
-    this.vy = 0;
-    this.accX = 1;
-    this.accY = 1;
+    this.vel = null;
+    this.acc = new Vector(0, 0);
     this.angle = 0;
     this.mass = 1;
     this.movable = true;
@@ -248,26 +244,24 @@ function Physics() {
     this.move = function(bodies) {
 	var i;
 	for (i = 0; i < bodies.length; i++) {
-	    bodies[i].vx *= bodies[i].accX;
-	    bodies[i].vy *= bodies[i].accY;
-	    bodies[i].pos.x += bodies[i].vx;
-	    bodies[i].pos.y += bodies[i].vy;
-	    bodies[i].polygon.translate(bodies[i].vx, bodies[i].vy);
+	    bodies[i].vel = bodies[i].vel.plus(bodies[i].acc);
+	    bodies[i].pos = bodies[i].pos.plus(bodies[i].vel);
+	    bodies[i].polygon.addToVertices(bodies[i].vel);
 	}
     };
 
-    this.bounce = function(b1, b2, bounciness) {
-	var b1vx = (bounciness*b2.mass*(b2.vx-b1.vx)+b1.mass*b1.vx+b2.mass*b2.vx)/(b1.mass + b2.mass);
-	var b1vy = (bounciness*b2.mass*(b2.vy-b1.vy)+b1.mass*b1.vy+b2.mass*b2.vy)/(b1.mass + b2.mass);
-	var b2vx = (bounciness*b1.mass*(b1.vx-b2.vx)+b1.mass*b1.vx+b2.mass*b2.vx)/(b1.mass + b2.mass);
-	var b2vy = (bounciness*b1.mass*(b1.vy-b2.vy)+b1.mass*b1.vy+b2.mass*b2.vy)/(b1.mass + b2.mass);
-	b1.vx = b1vx;
-	b1.vy = b1vy;
-	b2.vx = b2vx;
-	b2.vy = b2vy;
+    // http://chrishecker.com/images/e/e7/Gdmphys3.pdf
+    this.bounce = function(b1, b2, bounciness, friction, collisionInfo) {
+	var n = collisionInfo.axis;
+	var v = b1.vel.minus(b2.vel); // relative velocity
+	var numer = v.timesScalar(-(1 + bounciness)).dot(n);
+	var denom = n.dot(n)*(1/b1.mass + 1/b2.mass);
+	var j = numer/denom;
+	b1.vel = b1.vel.plus(n.timesScalar(j/b1.mass));
+	b2.vel = b2.vel.plus(n.timesScalar(j/b2.mass));
     };
 
-    this.collide = function(b1, b2) {
+    this.collide = function(b1, b2, bounciness, friction) {
 	var collisionInfo = b1.polygon.intersect(b2.polygon);
 	var halfmtd = collisionInfo.mtd.timesScalar(.5);
 	var mtd = collisionInfo.mtd;
@@ -284,7 +278,8 @@ function Physics() {
 		b2.polygon.subtractFromVertices(mtd);
 		b2.pos = b2.pos.minus(mtd);
 	    }
-
+	    
+	    this.bounce(b1, b2, bounciness, friction, collisionInfo);
 	    return true;
 	}
 	return false;
