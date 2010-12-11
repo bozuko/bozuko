@@ -20,10 +20,8 @@ function DiceGame() {
     this.bg.onload = function() {
 	game.imgLoadCt++;
     };
-    this.diceBounce = 1;
+    this.diceBounce = .4;
     this.wallBounce = 1;
-    this.diceFriction = 0;
-    this.wallFriction = 0;
     this.drawTimer = null;
     this.physics = new Physics();
     this.state = 'init';
@@ -36,7 +34,7 @@ function DiceGame() {
 
     
     this.initDice = function() {
-	this.dice1.vel = new Vector(-5, 20);
+	this.dice1.vel = new Vector(-7, 20);
 	this.dice2.vel = new Vector(5, -20);
     };
 
@@ -58,8 +56,6 @@ function DiceGame() {
 	var dice2 = game.dice2;
 	var i;
 	var wall;
-	var dice1Bounced = false;
-	var dice2Bounced = false;
 
 	ctx.clearRect(0, 0, appMgr.width, appMgr.height);
 	ctx.drawImage(game.bg, 0, 0, appMgr.width, appMgr.height);
@@ -78,19 +74,11 @@ function DiceGame() {
 	    dice1.frameIndex = Math.floor(Math.random() * dice1.numFrames);
 	    dice2.frameIndex = Math.floor(Math.random() * dice2.numFrames);
 	    game.physics.move([dice1, dice2]);
-	    game.physics.collide(dice1, dice2, game.diceBounce, game.diceFriction);
+	    game.physics.collide(dice1, dice2, game.diceBounce);
 	    for (i = 0; i < game.walls.length; i++) {
 		wall = game.walls[i];
-		
-		// Only bounce off one wall at a time. Otherwise dice may get stuck.
-		if (!dice1Bounced && game.physics.collide(dice1, wall, game.wallBounce, 
-							  game.wallFriction)) {
-		    dice1Bounced = true;
-		}
-		if (!dice2Bounced && game.physics.collide(dice2, wall, game.wallBounce,
-							  game.wallFriction)) {
-		    dice2Bounced = true;
-		}
+		game.physics.collide(dice1, wall, game.wallBounce);
+		game.physics.collide(dice2, wall, game.wallBounce);
 	    }
 	    dice1.draw();
 	    dice2.draw();

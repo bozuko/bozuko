@@ -18,11 +18,11 @@ function Vector(x, y) {
 	return new Vector(this.x - v.x, this.y - v.y);
     };
 
-    this.timesScalar = function(n) {
+    this.times = function(n) {
 	return new Vector(this.x * n, this.y * n);
     };
 
-    this.divScalar = function(n) {
+    this.div = function(n) {
 	return new Vector(this.x / n, this.y / n);
     };
 
@@ -157,7 +157,7 @@ function Polygon(vertices) {
 	overlap = (d0 < -d1)? d0 : d1;
 	
 	// the mtd vector for the axis
-	sep = axis.timesScalar(overlap / axis.dot(axis));
+	sep = axis.times(overlap / axis.dot(axis));
 	sepLenSquared = sep.dot(sep);
 
 	if (sepLenSquared < info.mtdLenSquared || info.mtdLenSquared < 0) {
@@ -251,19 +251,19 @@ function Physics() {
     };
 
     // http://chrishecker.com/images/e/e7/Gdmphys3.pdf
-    this.bounce = function(b1, b2, bounciness, friction, collisionInfo) {
+    this.bounce = function(b1, b2, bounciness, collisionInfo) {
 	var n = collisionInfo.axis;
 	var v = b1.vel.minus(b2.vel); // relative velocity
-	var numer = v.timesScalar(-(1 + bounciness)).dot(n);
+	var numer = v.times(-(1 + bounciness)).dot(n);
 	var denom = n.dot(n)*(1/b1.mass + 1/b2.mass);
 	var j = numer/denom;
-	b1.vel = b1.vel.plus(n.timesScalar(j/b1.mass));
-	b2.vel = b2.vel.plus(n.timesScalar(j/b2.mass));
+	b1.vel = b1.vel.plus(n.times(j/b1.mass));
+	b2.vel = b2.vel.minus(n.times(j/b2.mass));
     };
 
-    this.collide = function(b1, b2, bounciness, friction) {
+    this.collide = function(b1, b2, bounciness) {
 	var collisionInfo = b1.polygon.intersect(b2.polygon);
-	var halfmtd = collisionInfo.mtd.timesScalar(.5);
+	var halfmtd = collisionInfo.mtd.times(.5);
 	var mtd = collisionInfo.mtd;
 	if (collisionInfo.overlapped === true) {
 	    if (b1.movable && b2.movable) {
@@ -279,7 +279,7 @@ function Physics() {
 		b2.pos = b2.pos.minus(mtd);
 	    }
 	    
-	    this.bounce(b1, b2, bounciness, friction, collisionInfo);
+	    this.bounce(b1, b2, bounciness, collisionInfo);
 	    return true;
 	}
 	return false;
