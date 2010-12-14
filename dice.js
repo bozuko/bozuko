@@ -20,8 +20,8 @@ function DiceGame() {
     this.bg.onload = function() {
 	game.imgLoadCt++;
     };
-    this.diceBounce = .4;
-    this.wallBounce = 1;
+    this.diceBounce = .8;
+    this.wallBounce = .8;
     this.drawTimer = null;
     this.physics = new Physics();
     this.state = 'init';

@@ -1,9 +1,15 @@
+// Copyright 2010 Andrew J. Stone
+// 
 // Polygon intersection code is based off Olivier Renault's PollyColly
 // Separated Axis Theorem (SAT) used to test polygon intersection
+//
+// Collision Response and rotation inspired by Chris Hecker's "Game Developer" articles (1996-97)
 
-function Interval(min, max) {
+function Interval(min, max, minpoints, maxpoints) {
     this.min = min;
     this.max = max;
+    this.minpoints = minpoints;
+    this.maxpoints = maxpoints;
 }
 
 function Vector(x, y) {
@@ -31,15 +37,15 @@ function Vector(x, y) {
     };
 
     this.length = function() {
-        return Math.sqrt(this.x*this.x + this.y*this.y);
+        return Math.sqrt(this.x * this.x + this.y * this.y);
     };
 
     this.dot = function(v) {
-	return this.x*v.x + this.y*v.y;
+	return this.x * v.x + this.y * v.y;
     };
 
     this.cross = function(v) {
-	return this.x * v.y - this.y *v.x;
+	return this.x * v.y - this.y * v.x;
     };
     
     this.normalize = function() {
@@ -101,7 +107,7 @@ function Polygon(vertices) {
 	    v1 = this.vertices[i];
 	    edge = v1.minus(v0);
 	    axis = edge.perp();
-	    if (this.separatedByAxis(axis, poly, info)) {
+	    if (this.separatedByAxis(axis, edge, poly, info)) {
 		return info;
 	    }
 	}
@@ -112,7 +118,7 @@ function Polygon(vertices) {
 	    v1 = poly.vertices[i];
 	    edge = v1.minus(v0);
 	    axis = edge.perp();
-	    if (this.separatedByAxis(axis, poly, info)) {
+	    if (this.separatedByAxis(axis, edge, poly, info)) {
 		return info;
 	    }
 	}
@@ -120,32 +126,47 @@ function Polygon(vertices) {
 	return info;
     };
 
-    // calculate the largest projection of the polygon on the given axis.
+    // Calculate the smallest and largest projection of the polygon on the given axis.
+    // Also keep track of which points produced those min and max projections.
     this.project = function(axis) {
 	var min, max, i, d;
+	var minpoints, maxpoints;
 	min = max = this.vertices[0].dot(axis);
-	
+	minpoints = [0]; 
+	maxpoints = [0];
+
 	for (i = 1; i < this.vertices.length; i++) {
 	    d = this.vertices[i].dot(axis);
 	    if (d < min) {
+		minpoints = [i];
 		min = d;
 	    } else if (d > max) {
+		maxpoints = [i];
 		max = d;
+	    } else {
+	    	if (d === min) {
+		    minpoints.push(i);
+		}
+		if (d === max) {
+		    maxpoints.push(i);
+		}
 	    }
 	}
-	return new Interval(min, max);
+	return new Interval(min, max, minpoints, maxpoints);
     };
 
-    this.separatedByAxis = function(axis, poly, info) {
+    this.separatedByAxis = function(axis, edge, poly, info) {
 	var d0, d1;
 	var overlap;
+	var minpoints, minpointsPoly;
+	var maxpoints, maxpointsPoly;
 	var axisLenSquared;
 	var sep, sepLenSquared;
 	var proj1 = this.project(axis);
 	var proj2 = poly.project(axis);
 	
 	// calculate the two possible overlap ranges.
-	// either we overlap on the left or right of the polygon.
+	// either we overlap on the left or right of this.polygon.
 	d0 = proj2.max - proj1.min;
 	d1 = proj2.min - proj1.max;
 
@@ -153,8 +174,23 @@ function Polygon(vertices) {
 	    return true;
 	}
 	
-	// find out if we overlap on the 'right' or 'left' of the polygon.
+	// Find out if poly overlaps this.polygon on the 'left'(d0 < -d1) or 'right'(d0 > -d1)
+	// of this.polygon.
 	overlap = (d0 < -d1)? d0 : d1;
+
+	if (d0 < -d1) {
+	    overlap = d0;
+	    minpoints = proj1.minpoints;
+	    minpointsPoly = this;
+	    maxpoints = proj2.maxpoints;
+	    maxpointsPoly = poly;
+	} else {
+	    overlap = d1;
+	    minpoints = proj2.minpoints;
+	    minpointsPoly = poly;
+	    maxpoints = proj1.maxpoints;
+	    maxpointsPoly = this;
+	}
 	
 	// the mtd vector for the axis
 	sep = axis.times(overlap / axis.dot(axis));
@@ -164,6 +200,11 @@ function Polygon(vertices) {
 	    info.mtdLenSquared = sepLenSquared;
 	    info.mtd = sep;
 	    info.axis = axis;
+	    info.edge = edge;
+	    info.minpoints = minpoints;
+	    info.minpointsPoly = minpointsPoly;
+	    info.maxpoints = maxpoints;
+	    info.maxpointsPoly = maxpointsPoly;
 	}
 	return false;		
     };
@@ -174,6 +215,49 @@ function CollisionInfo() {
     this.mtd = new Vector(0,0);
     this.overlapped = false;
     this.axis = null;
+    this.edge = null;
+    this.minpoints = null;
+    this.maxpoints = null;
+    this.minpointsPoly = null;
+    this.maxpointsPoly = null;
+
+    // Note: this.maxpoints contains points from one polygon, and this.minpoints
+    // contains points from another polygon.
+    this.findCollisionPoint = function() {
+	var points;
+	var maxpoints = this.maxpoints;
+	var minpoints = this.minpoints;
+	var p1 = this.minpointsPoly;
+	var p2 = this.maxpointsPoly;
+	var edge = this.edge;
+	var v;
+	var len;
+
+	if ((maxpoints.length === 2) && (minpoints.length === 2)) {
+	    // edge-edge collision
+	    points = [{point: p2.vertices[maxpoints[0]], proj: p2.vertices[maxpoints[0]].dot(edge)}, 
+		      {point: p2.vertices[maxpoints[1]], proj: p2.vertices[maxpoints[1]].dot(edge)},
+		      {point: p1.vertices[minpoints[0]], proj: p1.vertices[minpoints[0]].dot(edge)},
+		      {point: p1.vertices[minpoints[1]], proj: p1.vertices[minpoints[1]].dot(edge)}],
+	    points.sort(function(a, b) {
+			    return a.proj - b.proj;
+			});
+	    // The middle points of the array are the end points of the colliding line segment.
+	    // Take the midpoint of this segment as the collision point.
+	    v = points[1].point.minus(points[2].point).div(2);
+	    return points[1].point.minus(v);
+ 	} else if ((maxpoints.length === 1) && (minpoints.length === 2)) {
+	    // point-edge collision
+	    return p2.vertices[maxpoints[0]];
+	} else if ((maxpoints.length === 2) && (minpoints.length === 1)) {
+	    // point-edge collision   
+	    return p1.vertices[minpoints[0]];
+	} else if ((maxpoints.length === 1) && (minpoints.length === 1)) {
+	    // point-point collision
+	    return p2.vertices[maxpoints[0]];
+	}
+    };
+
 }
 
 function Wall(poly) {    
@@ -195,11 +279,13 @@ function Sprite(name, numFrames, x, y) {
     this.numFrames = numFrames;
     this.img = new Image();
     this.img.src = name + ".png";
-    this.pos = new Vector(x, y); // Position is equal to the first vertex of the polygon
+    this.pos = new Vector(x, y); // Position is equal to the center of mass of the polygon
     this.vel = null;
     this.acc = new Vector(0, 0);
-    this.angle = 0;
     this.mass = 1;
+    this.orientation = 0;
+    this.angVel = 0;
+    this.momentOfInertia = 0;
     this.movable = true;
     this.width = 0;
     this.height = 0;
@@ -208,12 +294,20 @@ function Sprite(name, numFrames, x, y) {
     this.img.onload = function() {
 	that.width = that.img.width/numFrames;
 	that.height = that.img.height;
+	
+	// This moment of inertia only holds for a rectangle with uniform mass rotating around it's center
+	that.momentOfInertia = (1/12) * that.mass * (that.width*that.width + that.height*that.height);
+	
 	// Order of vertices is important!!!
-	var vertices = [new Vector(that.pos.x, that.pos.y), 
-			new Vector(that.pos.x + that.width, that.pos.y), 
-			new Vector(that.pos.x + that.width, that.pos.y + that.height),
-			new Vector(that.pos.x, that.pos.y + that.height)];
+	var vertices = [new Vector(that.pos.x - that.width/2, that.pos.y - that.height/2), 
+			new Vector(that.pos.x + that.width/2, that.pos.y - that.height/2), 
+			new Vector(that.pos.x + that.width/2, that.pos.y + that.height/2),
+			new Vector(that.pos.x - that.width/2, that.pos.y + that.height/2)];
 	that.polygon = new Polygon(vertices);
+
+	// Fixme: test code
+	that.polygon.rotate(that.orientation);
+	
 	game.imgLoadCt++;
     };
     
@@ -224,15 +318,13 @@ function Sprite(name, numFrames, x, y) {
 	var sHeight = this.height;
 	var dWidth = Math.floor(this.width);
 	var dHeight = this.height;
-	var dx = this.pos.x;
-	var dy = this.pos.y;
+	var dx = this.pos.x - this.width/2;
+	var dy = this.pos.y - this.height/2;
 
 	this.ctx.save();
-	if (this.rotationAngle) {
-	    dx = -dWidth/2;
-	    dy = -dHeight/2;
+	if (this.orientation) {
 	    this.ctx.translate(this.x, this.y);
-	    this.ctx.rotate(this.rotationAngle);
+	    this.ctx.rotate(this.orientation);
 	}
 	this.ctx.drawImage(this.img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 	this.ctx.restore();
@@ -241,6 +333,8 @@ function Sprite(name, numFrames, x, y) {
 }
 
 function Physics() {    
+    var that = this;
+
     this.move = function(bodies) {
 	var i;
 	for (i = 0; i < bodies.length; i++) {
@@ -252,6 +346,8 @@ function Physics() {
 
     // http://chrishecker.com/images/e/e7/Gdmphys3.pdf
     this.bounce = function(b1, b2, bounciness, collisionInfo) {
+	var collisionPoint = collisionInfo.findCollisionPoint();
+	alert("collisionPoint = "+collisionPoint.x+","+collisionPoint.y);
 	var n = collisionInfo.axis;
 	var v = b1.vel.minus(b2.vel); // relative velocity
 	var numer = v.times(-(1 + bounciness)).dot(n);
