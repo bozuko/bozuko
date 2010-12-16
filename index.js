@@ -4,7 +4,7 @@ var appMgr = {
     canvas: null,
     ctx: null,
     width: 320,
-    height: 480,
+    height: 440,
     frameTimer: null
 };
 

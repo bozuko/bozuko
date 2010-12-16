@@ -56,26 +56,24 @@ function Vector(x, y) {
 	}
     };
 
-    this.angle = function(v) {
-	var dp = this.dot(v);
-	var cp = this.cross(v);
-	return Math.atan2(cp, dp);
-    };
-
-    this.rotate = function(angle) {
-	var tx = this.x;
-	this.x = this.x * Math.cos(angle) - this.y * Math.sin(angle);
-	this.y = tx * Math.sin(angle) + this.y * Math.cos(angle);
+    this.transform = function(center, vel, angVel) {
+	var v = center.minus(this);
+	var x = v.x;
+	v.x = v.x*Math.cos(angVel) - v.y*Math.sin(angVel);
+	v.y = v.y*Math.cos(angVel) + x*Math.sin(angVel);
+	
+	this.x = center.x + v.x + vel.x;
+	this.y = center.y + v.y + vel.y;
     };
 }
 
 function Polygon(vertices) {
     this.vertices = vertices;   
-    
-    this.rotate = function(angle) {
-	var i; 
+
+    this.transform = function(center, vel, angVel) {
+	var i;
 	for (i = 0; i < this.vertices.length; i++) {
-	    this.vertices[i].rotate(angle);
+	    this.vertices[i].transform(center, vel, angVel);
 	}
     };
 
@@ -267,6 +265,9 @@ function Wall(poly) {
     this.acc = new Vector(0,0);
     this.mass = 100000;
     this.movable = false;
+        
+    var v = poly.vertices[1].minus(poly.vertices[0]);
+    this.momentOfInertia = (1/12) * this.mass * v.dot(v);
 }
 
 // All sprites use rectangular polygons the same size as an image frame for now.
@@ -283,8 +284,9 @@ function Sprite(name, numFrames, x, y) {
     this.vel = null;
     this.acc = new Vector(0, 0);
     this.mass = 1;
-    this.orientation = 0;
+    this.orientation = 0;  // Orientation is an angle counterclockwise from the origin.
     this.angVel = 0;
+    this.rotationalFriction = .05;
     this.momentOfInertia = 0;
     this.movable = true;
     this.width = 0;
@@ -305,9 +307,6 @@ function Sprite(name, numFrames, x, y) {
 			new Vector(that.pos.x - that.width/2, that.pos.y + that.height/2)];
 	that.polygon = new Polygon(vertices);
 
-	// Fixme: test code
-	that.polygon.rotate(that.orientation);
-	
 	game.imgLoadCt++;
     };
     
@@ -323,8 +322,10 @@ function Sprite(name, numFrames, x, y) {
 
 	this.ctx.save();
 	if (this.orientation) {
-	    this.ctx.translate(this.x, this.y);
-	    this.ctx.rotate(this.orientation);
+	    dx = -this.width/2;
+	    dy = -this.height/2;
+	    this.ctx.translate(this.pos.x, this.pos.y);
+	    this.ctx.rotate(-this.orientation);
 	}
 	this.ctx.drawImage(this.img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 	this.ctx.restore();
@@ -335,26 +336,69 @@ function Sprite(name, numFrames, x, y) {
 function Physics() {    
     var that = this;
 
+    // These values are used to stop the objects when they get below certain speeds.
+    var frameCtMax = appMgr.fps;
+    var frameCt = 0;
+    var velocityThreshold = 10;
+    var rotationalThreshold = .1;
+
     this.move = function(bodies) {
-	var i;
+	var i, j;
+	var body, vertex;
+	var vel;
+	var bodyStopped = false;
 	for (i = 0; i < bodies.length; i++) {
-	    bodies[i].vel = bodies[i].vel.plus(bodies[i].acc);
-	    bodies[i].pos = bodies[i].pos.plus(bodies[i].vel);
-	    bodies[i].polygon.addToVertices(bodies[i].vel);
+	    body = bodies[i];
+	    if (body.movable) {
+		body.polygon.transform(body.pos, body.vel, body.angVel);
+		body.pos = body.pos.plus(body.vel);
+	     	body.orientation += body.angVel;
+		body.angVel -= body.rotationalFriction*body.angVel;
+		if (bodyStopped) {
+		    if (Math.abs(body.angVel) < rotationalThreshold) {
+			body.angVel = 0;
+			game.stop();
+		    }
+		} else if (Math.abs(body.vel.x) < velocityThreshold && Math.abs(body.vel.y) < velocityThreshold) { 
+		    frameCt++;
+		    if (frameCt === frameCtMax) {
+			body.vel.x = 0; 
+			body.vel.y = 0;
+			bodyStopped = true;
+			if (Math.abs(body.angVel) < rotationalThreshold) {
+			    body.angVel = 0;
+			    game.stop();
+			}
+		    }
+		} else {
+		    frameCt = 0;
+		}
+	    }
 	}
     };
 
     // http://chrishecker.com/images/e/e7/Gdmphys3.pdf
     this.bounce = function(b1, b2, bounciness, collisionInfo) {
 	var collisionPoint = collisionInfo.findCollisionPoint();
-	alert("collisionPoint = "+collisionPoint.x+","+collisionPoint.y);
 	var n = collisionInfo.axis;
 	var v = b1.vel.minus(b2.vel); // relative velocity
 	var numer = v.times(-(1 + bounciness)).dot(n);
-	var denom = n.dot(n)*(1/b1.mass + 1/b2.mass);
+	var d1 = n.dot(n)*(1/b1.mass + 1/b2.mass);
+	var d2 = collisionPoint.minus(b1.pos).perp().dot(n);
+	var d3 = d2*d2/b1.momentOfInertia;
+	var d4 = collisionPoint.minus(b2.pos).perp().dot(n);
+	var d5 = d4*d4/b2.momentOfInertia;
+	var denom = d1 + d3 + d5;
 	var j = numer/denom;
-	b1.vel = b1.vel.plus(n.times(j/b1.mass));
-	b2.vel = b2.vel.minus(n.times(j/b2.mass));
+	
+	if (b1.movable) {
+	    b1.vel = b1.vel.plus(n.times(j/b1.mass));
+	    b1.angVel = b1.angVel + d2*j/b1.momentOfInertia;
+	}
+	if (b2.movable) {
+	    b2.vel = b2.vel.minus(n.times(j/b2.mass));
+	    b2.angVel = b2.angVel - d4*j/b2.momentOfInertia;
+	}
     };
 
     this.collide = function(b1, b2, bounciness) {
