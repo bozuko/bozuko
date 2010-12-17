@@ -41,9 +41,9 @@ function DiceGame() {
 		  makeWall(0, this.physicalHeight, this.physicalWidth, this.physicalHeight)]; // bottom
     
     this.initDice = function() {
-	this.dice1.vel = new Vector(-1, 1);
+	this.dice1.vel = new Vector(-1.5, 1);
 	this.dice1.angVel = 3;
-	this.dice2.vel = new Vector(1, -.2);
+	this.dice2.vel = new Vector(1, -.8);
 	this.dice2.angVel = -3;
     };
 
@@ -71,7 +71,7 @@ function DiceGame() {
 	    if (game.imgLoadCt === game.totalImgCt) {
 		game.initDice();
 		game.state = 'loaded';
-//		Ext.Msg.alert('Tap to Roll', "Roll 7, 11, or Doubles to win!", Ext.emptyFn);
+		Ext.Msg.alert('Tap to Roll', "Roll 7, 11, or Doubles to win!", Ext.emptyFn);
 	    }
 	} else if (game.state === 'loaded') {
 	    dice1.frameIndex = 0;
@@ -91,18 +91,23 @@ function DiceGame() {
 	    dice1.draw();
 	    dice2.draw();
 	} else if (game.state === 'stopped') {
-	    clearInterval(game.drawTimer);
-	    game.drawTimer = null;
 	    dice1.draw();
 	    dice2.draw();
 	    var sum = game.dice1.frameIndex+1 + game.dice2.frameIndex+1;
-	    if ((game.dice1.frameIndex === game.dice2.frameIndex) ||
-		(sum === 7) || (sum === 11)) {
-		Ext.Msg.alert('Congratulations', "You just won a free beer!", Ext.emptyFn);
-	    } else {
-		Ext.Msg.alert('Sorry', "You Lose. Better Luck Next time.", Ext.emptyFn);
-	    }
 
+	    if (!game.over) {
+		if ((game.dice1.frameIndex === game.dice2.frameIndex) ||
+		    (sum === 7) || (sum === 11)) {
+		    Ext.Msg.alert('Congratulations', "You just won a free beer!", Ext.emptyFn);
+		} else {
+		    Ext.Msg.alert('Sorry', "You Lose. Better Luck Next time.", Ext.emptyFn);
+		}
+	    }
+	    game.over = true;
+	    game.initDice();
+	    game.state = 'loaded';
+	    game.drawTimer = null;
+	    cancelInterval(game.drawTimer);
 	} 
     };
 
