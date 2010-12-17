@@ -49,21 +49,22 @@ function Vector(x, y) {
     };
     
     this.normalize = function() {
-	var l = length();
+	var l = this.length();
 	if (l != 0) {
-	    this.x = this.x / l;
-	    this.y = this.y / l;
+	    return new Vector(this.x / l, this.y / l);
+	} else {
+	    return new Vector(0, 0);
 	}
     };
 
-    this.transform = function(center, vel, angVel) {
+    this.transform = function(center, pos, angle) {
 	var v = center.minus(this);
 	var x = v.x;
-	v.x = v.x*Math.cos(angVel) - v.y*Math.sin(angVel);
-	v.y = v.y*Math.cos(angVel) + x*Math.sin(angVel);
+	v.x = v.x*Math.cos(angle) - v.y*Math.sin(angle);
+	v.y = v.y*Math.cos(angle) + x*Math.sin(angle);
 	
-	this.x = center.x + v.x + vel.x;
-	this.y = center.y + v.y + vel.y;
+	this.x = center.x + v.x + pos.x;
+	this.y = center.y + v.y + pos.y;
     };
 }
 
@@ -255,123 +256,149 @@ function CollisionInfo() {
 	    return p2.vertices[maxpoints[0]];
 	}
     };
-
 }
 
-function Wall(poly) {    
-    this.pos = new Vector(poly.vertices[0].x, poly.vertices[0].y);
-    this.polygon = poly;
-    this.vel = new Vector(0,0);
-    this.acc = new Vector(0,0);
-    this.mass = 100000;
-    this.movable = false;
+var Body = Class.extend({
+    pos: new Vector(0, 0),
+    vel: new Vector(0, 0),
+    acc: new Vector(0, 0),
+    normalForce: 0,
+    mass: 0,
+    orientation: 0,
+    angVel: 0,
+    friction: 0,
+    momentOfInertia: 0,
+    movable: true,
+    polygon: false,
+    
+    init: function() {
+    }
+});
+
+var Wall = Body.extend({
+    init: function(poly) {    
+	this.pos = new Vector(poly.vertices[0].x, poly.vertices[0].y);
+	this.polygon = poly;
+	this.vel = new Vector(0,0);
+	this.mass = 100000;
+	this.movable = false;
         
-    var v = poly.vertices[1].minus(poly.vertices[0]);
-    this.momentOfInertia = (1/12) * this.mass * v.dot(v);
-}
+	var v = poly.vertices[1].minus(poly.vertices[0]);
+	this.momentOfInertia = (1/12) * this.mass * v.dot(v);
+    }   
+});
 
 // All sprites use rectangular polygons the same size as an image frame for now.
 // They are always oriented at a 0 deg angle on initialization.
 //
-function Sprite(name, numFrames, x, y) {
-    var that = this;
-    this.type = Sprite;
-    this.ctx = appMgr.ctx;
-    this.numFrames = numFrames;
-    this.img = new Image();
-    this.img.src = name + ".png";
-    this.pos = new Vector(x, y); // Position is equal to the center of mass of the polygon
-    this.vel = null;
-    this.acc = new Vector(0, 0);
-    this.mass = 1;
-    this.orientation = 0;  // Orientation is an angle counterclockwise from the origin.
-    this.angVel = 0;
-    this.rotationalFriction = .05;
-    this.momentOfInertia = 0;
-    this.movable = true;
-    this.width = 0;
-    this.height = 0;
-    this.polygon = null;
 
-    this.img.onload = function() {
-	that.width = that.img.width/numFrames;
-	that.height = that.img.height;
+var Sprite = Body.extend({
+    init: function(physics, name, numFrames, x, y, mass) {
+	var that = this;
+	this.physics = physics;
+	this.type = Sprite;
+	this.ctx = appMgr.ctx;
+	this.numFrames = numFrames;
+	this.img = new Image();
+	this.img.src = name + ".png";
+	this.width = 0;
+	this.height = 0;
+	this.pos = new Vector(x, y); // Position is equal to the center of mass of the polygon
+	this.mass = mass;	
 	
-	// This moment of inertia only holds for a rectangle with uniform mass rotating around it's center
-	that.momentOfInertia = (1/12) * that.mass * (that.width*that.width + that.height*that.height);
+	if (this.physics.view === 'top-down') {
+	    // This is not a 3d engine. So for top down the normal is always just the weight of the object;
+	    this.normalForce = this.physics.gravity * this.mass;
+	}; 
 	
-	// Order of vertices is important!!!
-	var vertices = [new Vector(that.pos.x - that.width/2, that.pos.y - that.height/2), 
-			new Vector(that.pos.x + that.width/2, that.pos.y - that.height/2), 
-			new Vector(that.pos.x + that.width/2, that.pos.y + that.height/2),
-			new Vector(that.pos.x - that.width/2, that.pos.y + that.height/2)];
-	that.polygon = new Polygon(vertices);
+	this.img.onload = function() {
+	    that.width = that.img.width/numFrames;
+	    that.height = that.img.height;
+	    
+	    // This moment of inertia only holds for a rectangle with uniform mass rotating around it's center
+	    that.momentOfInertia = (1/12) * that.mass * (that.width*that.width + that.height*that.height);
+	    var physicalHalfWidth = that.width/2 / that.physics.pixelsPerMeter;
+	    var physicalHalfHeight = that.height/2 / that.physics.pixelsPerMeter;
 
-	game.imgLoadCt++;
-    };
-    
-    this.draw = function() {
+	    // Order of vertices is important!!!
+	    var vertices = [new Vector(that.pos.x - physicalHalfWidth, that.pos.y - physicalHalfHeight), 
+			    new Vector(that.pos.x + physicalHalfWidth, that.pos.y - physicalHalfHeight), 
+			    new Vector(that.pos.x + physicalHalfWidth, that.pos.y + physicalHalfHeight),
+			    new Vector(that.pos.x - physicalHalfWidth, that.pos.y + physicalHalfHeight)];
+	    that.polygon = new Polygon(vertices);
+	    game.imgLoadCt++;
+	};
+    },
+
+    draw: function() {
+	var pixelX = this.pos.x*this.physics.pixelsPerMeter;
+	var pixelY = this.pos.y*this.physics.pixelsPerMeter;	
 	var sx = Math.floor(this.frameIndex * this.width);
 	var sy = 0;
 	var sWidth = Math.floor(this.width);
 	var sHeight = this.height;
 	var dWidth = Math.floor(this.width);
 	var dHeight = this.height;
-	var dx = this.pos.x - this.width/2;
-	var dy = this.pos.y - this.height/2;
-
+	var dx = pixelX - this.width/2;
+	var dy = pixelY - this.height/2;
+	
 	this.ctx.save();
 	if (this.orientation) {
 	    dx = -this.width/2;
 	    dy = -this.height/2;
-	    this.ctx.translate(this.pos.x, this.pos.y);
+	    this.ctx.translate(pixelX, pixelY);
 	    this.ctx.rotate(-this.orientation);
 	}
 	this.ctx.drawImage(this.img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 	this.ctx.restore();
-    };    
-    return this;
-}
+    }
+});
 
 function Physics() {    
     var that = this;
+    var velocityThreshold = .01; // meters per second
 
-    // These values are used to stop the objects when they get below certain speeds.
-    var frameCtMax = appMgr.fps;
-    var frameCt = 0;
-    var velocityThreshold = 10;
-    var rotationalThreshold = .1;
+    // For top down mode, gravity only affects frictional forces. In this mode friction is always
+    // body.friction * body.mass * this.gravity
+    this.view = 'top-down';
+
+    // Fundamental constants
+    this.gravity = 9.81; // m/s^2
+    this.pixelsPerMeter = 200;
+    
+    var integrate = function(body) {
+	var dPos, dAngle;
+	var uv = body.vel.normalize();
+	var frictionMagnitude = body.normalForce*body.friction;
+	
+	// Find the acceleration due to friction (F = ma)
+	var frictionAcc = uv.times(-frictionMagnitude).div(body.mass);
+
+	// currently only friction and gravity are acting on the body;
+	body.acc = frictionAcc;
+	body.vel = body.vel.plus(body.acc.times(appMgr.spf));
+	
+	dPos = body.vel.times(appMgr.spf);
+	dAngle = body.angVel * appMgr.spf;
+	body.polygon.transform(body.pos, dPos, dAngle);
+	body.pos = body.pos.plus(dPos);
+	body.orientation += dAngle;
+    };
 
     this.move = function(bodies) {
 	var i, j;
 	var body, vertex;
 	var vel;
-	var bodyStopped = false;
 	for (i = 0; i < bodies.length; i++) {
 	    body = bodies[i];
 	    if (body.movable) {
-		body.polygon.transform(body.pos, body.vel, body.angVel);
-		body.pos = body.pos.plus(body.vel);
-	     	body.orientation += body.angVel;
-		body.angVel -= body.rotationalFriction*body.angVel;
-		if (bodyStopped) {
-		    if (Math.abs(body.angVel) < rotationalThreshold) {
-			body.angVel = 0;
-			game.stop();
-		    }
-		} else if (Math.abs(body.vel.x) < velocityThreshold && Math.abs(body.vel.y) < velocityThreshold) { 
-		    frameCt++;
-		    if (frameCt === frameCtMax) {
-			body.vel.x = 0; 
-			body.vel.y = 0;
-			bodyStopped = true;
-			if (Math.abs(body.angVel) < rotationalThreshold) {
-			    body.angVel = 0;
-			    game.stop();
-			}
-		    }
-		} else {
-		    frameCt = 0;
+		integrate(body);
+
+		if (Math.abs(body.vel.x) < velocityThreshold && Math.abs(body.vel.y) < velocityThreshold) { 
+		    body.vel.x = 0; 
+		    body.vel.y = 0;
+		    body.angVel = 0;
+		    game.stop();
 		}
 	    }
 	}

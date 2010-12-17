@@ -21,25 +21,30 @@ function DiceGame() {
 	game.imgLoadCt++;
     };
     this.diceBounce = .8;
-    this.wallBounce = 1;
+    this.wallBounce = .8;
     this.drawTimer = null;
     this.physics = new Physics();
     this.state = 'init';
 
-    this.dice1 = new Sprite("dice-all-new", 6, 100, appMgr.height/2-75);
-    this.dice2 = new Sprite("dice-all-new", 6, 220, appMgr.height/2-75);
-    
-    this.walls = [makeWall(0, 0, 0, appMgr.height), //left
-		  makeWall(0, 0, appMgr.width, 0), //top
-		  makeWall(appMgr.width, 0, appMgr.width, appMgr.height), //right
-		  makeWall(0, appMgr.height, appMgr.width, appMgr.height)]; // bottom
+    this.dice1 = new Sprite(this.physics, "dice-30x30", 6, 100/this.physics.pixelsPerMeter, 
+			    (appMgr.height/2-75)/this.physics.pixelsPerMeter, .03);
+    this.dice1.friction = .02;
+    this.dice2 = new Sprite(this.physics, "dice-30x30", 6, 220/this.physics.pixelsPerMeter, 
+			    (appMgr.height/2-75)/this.physics.pixelsPerMeter, .03);
+    this.dice2.friction = .02;
+    this.physicalWidth = appMgr.width/this.physics.pixelsPerMeter;
+    this.physicalHeight = appMgr.height/this.physics.pixelsPerMeter;
 
+    this.walls = [makeWall(0, 0, 0, this.physicalHeight), //left
+		  makeWall(0, 0, this.physicalWidth, 0), //top
+		  makeWall(this.physicalWidth, 0, this.physicalWidth, this.physicalHeight), //right
+		  makeWall(0, this.physicalHeight, this.physicalWidth, this.physicalHeight)]; // bottom
     
     this.initDice = function() {
-	this.dice1.vel = new Vector(-7, 20);
-	this.dice1.angVel = .3;
-	this.dice2.vel = new Vector(5, -60);
-	this.dice2.angVel = -.3;
+	this.dice1.vel = new Vector(-1, 1);
+	this.dice1.angVel = 3;
+	this.dice2.vel = new Vector(1, -.2);
+	this.dice2.angVel = -3;
     };
 
     this.play = function() {
