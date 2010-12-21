@@ -258,7 +258,7 @@ function CollisionInfo() {
     };
 }
 
-var Body = Class.extend({
+var body = {
     pos: new Vector(0, 0),
     vel: new Vector(0, 0),
     acc: new Vector(0, 0),
@@ -269,121 +269,131 @@ var Body = Class.extend({
     friction: 0,
     momentOfInertia: 0,
     movable: true,
-    polygon: false,
-    
-    init: function() {
-    }
-});
+    polygon: null
+};
 
-var Wall = Body.extend({
-    init: function(poly) {    
-	this.pos = new Vector(poly.vertices[0].x, poly.vertices[0].y);
-	this.polygon = poly;
-	this.vel = new Vector(0,0);
-	this.mass = 100000;
-	this.movable = false;
-        
-	var v = poly.vertices[1].minus(poly.vertices[0]);
-	this.momentOfInertia = (1/12) * this.mass * v.dot(v);
-    }   
-});
+var Wall = function(poly) {
+    this.pos = new Vector(poly.vertices[0].x, poly.vertices[0].y);
+    this.polygon = poly;
+    this.vel = new Vector(0,0);
+    this.mass = 100000;
+    this.movable = false;
+    
+    var v = poly.vertices[1].minus(poly.vertices[0]);
+    this.momentOfInertia = (1/12) * this.mass * v.dot(v);
+};
+Wall.prototype = body;
+Wall.prototype.constructor = Wall;
+
 
 // All sprites use rectangular polygons the same size as an image frame for now.
 // They are always oriented at a 0 deg angle on initialization.
 //
 
-var Sprite = Body.extend({
-    init: function(physics, name, numFrames, x, y, mass) {
-	var that = this;
-	this.physics = physics;
-	this.type = Sprite;
-	this.ctx = appMgr.ctx;
-	this.numFrames = numFrames;
-	this.img = new Image();
-	this.img.src = name + ".png";
-	this.width = 0;
-	this.height = 0;
-	this.pos = new Vector(x, y); // Position is equal to the center of mass of the polygon
-	this.mass = mass;	
+var Sprite = function(world, id, imgsrc, numFrames, x, y, mass) {
+    var that = this;
+    this.world = world;
+    this.numFrames = numFrames;
+    this.frameIndex = 0;
+    this.id = id;
+    this.img = document.createElement("img");
+    // this.img.src = imgsrc;
+    this.img.src = "dice_1.png";
+    this.img.setAttribute('id', id);
+    this.img.setAttribute('style','position: absolute');
+    this.img.style.left = x;
+    this.img.style.top = y;
+    this.world.screen.appendChild(this.img);
+    
+    this.width = 0;
+    this.height = 0;
+    
+    // Position is equal to the center of mass of the polygon.
+    this.pos = new Vector(x/this.world.pixelsPerMeter, y/this.world.pixelsPerMeter); 
+    this.mass = mass;	
+    
+    if (this.world.view === 'top-down') {
+	// This is not a 3d engine. So for top-down the normal force is always just the weight of
+	// the object;
+	this.normalForce = this.world.gravity * this.mass;
+    }; 
+    
+    this.img.onload = function() {
+//	that.width = that.img.width/numFrames;
+	that.width = that.img.width;
+	that.height = that.img.height;
 	
-	if (this.physics.view === 'top-down') {
-	    // This is not a 3d engine. So for top down the normal is always just the weight of the object;
-	    this.normalForce = this.physics.gravity * this.mass;
-	}; 
+	// This moment of inertia only holds for a rectangle with uniform mass rotating around it's center
+	that.momentOfInertia = (1/12) * that.mass * (that.width*that.width + that.height*that.height);
+	var physicalHalfWidth = that.width/2 / that.world.pixelsPerMeter;
+	var physicalHalfHeight = that.height/2 / that.world.pixelsPerMeter;
 	
-	this.img.onload = function() {
-	    that.width = that.img.width/numFrames;
-	    that.height = that.img.height;
-	    
-	    // This moment of inertia only holds for a rectangle with uniform mass rotating around it's center
-	    that.momentOfInertia = (1/12) * that.mass * (that.width*that.width + that.height*that.height);
-	    var physicalHalfWidth = that.width/2 / that.physics.pixelsPerMeter;
-	    var physicalHalfHeight = that.height/2 / that.physics.pixelsPerMeter;
+	// Order of vertices is important!!!
+	var vertices = [new Vector(that.pos.x - physicalHalfWidth, that.pos.y - physicalHalfHeight), 
+			new Vector(that.pos.x + physicalHalfWidth, that.pos.y - physicalHalfHeight), 
+			new Vector(that.pos.x + physicalHalfWidth, that.pos.y + physicalHalfHeight),
+			new Vector(that.pos.x - physicalHalfWidth, that.pos.y + physicalHalfHeight)];
+	that.polygon = new Polygon(vertices);
+        that.el = document.getElementById(that.id);
+        that.el.style.visibity = 'visible';
+	world.spriteLoaded();
+    };
 
-	    // Order of vertices is important!!!
-	    var vertices = [new Vector(that.pos.x - physicalHalfWidth, that.pos.y - physicalHalfHeight), 
-			    new Vector(that.pos.x + physicalHalfWidth, that.pos.y - physicalHalfHeight), 
-			    new Vector(that.pos.x + physicalHalfWidth, that.pos.y + physicalHalfHeight),
-			    new Vector(that.pos.x - physicalHalfWidth, that.pos.y + physicalHalfHeight)];
-	    that.polygon = new Polygon(vertices);
-	    game.imgLoadCt++;
-	};
-    },
-
-    draw: function() {
-	var pixelX = this.pos.x*this.physics.pixelsPerMeter;
-	var pixelY = this.pos.y*this.physics.pixelsPerMeter;	
-	var sx = Math.floor(this.frameIndex * this.width);
-	var sy = 0;
-	var sWidth = Math.floor(this.width);
-	var sHeight = this.height;
-	var dWidth = Math.floor(this.width);
-	var dHeight = this.height;
+    this.draw = function() {
+	var pixelX = this.pos.x*this.world.pixelsPerMeter;
+	var pixelY = this.pos.y*this.world.pixelsPerMeter;	
 	var dx = pixelX - this.width/2;
 	var dy = pixelY - this.height/2;
-	
-	this.ctx.save();
-	if (this.orientation) {
-	    dx = -this.width/2;
-	    dy = -this.height/2;
-	    this.ctx.translate(pixelX, pixelY);
-	    this.ctx.rotate(-this.orientation);
-	}
-	this.ctx.drawImage(this.img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-	this.ctx.restore();
-    }
-});
+	Ext.Element.cssTransform(that.el, 
+				 {translate: [dx, dy, 0],
+				  scale: 1,
+				  rotate: -this.orientation});
+    };
+};
+Sprite.prototype = body;
+Sprite.prototype.constructor = Sprite;
 
-function Physics() {    
+var World = function(o) {
     var that = this;
-    var velocityThreshold = .01; // meters per second
+    var velocityThreshold = .005; // meters per second
+    
+    if (!(this instanceof World)) {
+	this = new World();
+    }
+
+    this.physics = new Physics();
+    this.screen = document.getElementById('screen');
+    this.walls = [];
+    this.bodies = [];
+    this.spriteCt = 0;
+    this.spriteLoadCt = 0;
+    this.stopCt = 0;
 
     // For top down mode, gravity only affects frictional forces. In this mode friction is always
-    // body.friction * body.mass * this.gravity
+    // body.friction * body.mass * world.gravity
     this.view = 'top-down';
-
-    // Fundamental constants
     this.gravity = 9.81; // m/s^2
     this.pixelsPerMeter = 200;
-    
-    var integrate = function(body) {
-	var dPos, dAngle;
-	var uv = body.vel.normalize();
-	var frictionMagnitude = body.normalForce*body.friction;
-	
-	// Find the acceleration due to friction (F = ma)
-	var frictionAcc = uv.times(-frictionMagnitude).div(body.mass);
+    this.width = 320;
+    this.height = 356;
+    this.bounciness = .8;
 
-	// currently only friction and gravity are acting on the body;
-	body.acc = frictionAcc;
-	body.vel = body.vel.plus(body.acc.times(appMgr.spf));
-	
-	dPos = body.vel.times(appMgr.spf);
-	dAngle = body.angVel * appMgr.spf;
-	body.polygon.transform(body.pos, dPos, dAngle);
-	body.pos = body.pos.plus(dPos);
-	body.orientation += dAngle;
+    for (var name in o) {
+	this[name] = o[name];
     };
+
+    this.physicalWidth = this.width/this.pixelsPerMeter;
+    this.physicalHeight = this.height/this.pixelsPerMeter;
+
+
+    this.addWall = function(x1, y1, x2, y2) {
+	this.walls.push(new Wall(new Polygon([new Vector(x1,y1), new Vector(x2,y2)])));
+    };
+
+    this.addWall(0, 0, 0, this.physicalHeight); //left
+    this.addWall(0, 0, this.physicalWidth, 0); //top
+    this.addWall(this.physicalWidth, 0, this.physicalWidth, this.physicalHeight); //right
+    this.addWall(0, this.physicalHeight, this.physicalWidth, this.physicalHeight); // bottom
 
     this.move = function(bodies) {
 	var i, j;
@@ -392,16 +402,79 @@ function Physics() {
 	for (i = 0; i < bodies.length; i++) {
 	    body = bodies[i];
 	    if (body.movable) {
-		integrate(body);
-
+		this.physics.integrate(this, body);		
 		if (Math.abs(body.vel.x) < velocityThreshold && Math.abs(body.vel.y) < velocityThreshold) { 
 		    body.vel.x = 0; 
 		    body.vel.y = 0;
 		    body.angVel = 0;
-		    game.stop();
+		    this.stopCt++;
+		    if (this.stopCt === bodies.length) {
+			that.game.stop();
+		    }
 		}
 	    }
 	}
+    };
+
+    this.spriteLoaded = function() {
+	this.spriteLoadCt++;
+	if (this.spriteLoadCt === this.spriteCt) {
+	    this.game.loaded();
+	}
+    };
+
+    this.addSprite = function(o) {
+	var sprite = new Sprite(this, o.id, o.imgSrc, o.numFrames, o.x, o.y, o.mass);
+	for (var name in o) {
+	    sprite[name] = o[name];
+	};
+	this.bodies.push(sprite);
+	this.spriteCt++;
+	return sprite;
+    };
+
+    this.update = function() {
+	var i;
+	this.move(this.bodies);
+	// FIXME: Generalize this to more than 2 bodies
+	var b0 = this.bodies[0];
+	var b1 = this.bodies[1];
+	this.physics.collide(b0, b1, b0.bounciness);
+	for (i = 0; i < this.walls.length; i++) {
+	    this.physics.collide(b0, this.walls[i], this.bounciness);
+	    this.physics.collide(b1, this.walls[i], this.bounciness);
+	}
+    };
+
+    this.draw = function() {
+	var i;
+	for (i = 0; i < this.bodies.length; i++) {
+	    this.bodies[i].draw();
+	}
+    };
+
+    return this;
+};
+
+function Physics() {    
+    this.integrate = function(world, body) {
+	var dPos, dAngle;
+	var spf = 1/world.game.frameRate;
+	var uv = body.vel.normalize();
+	var frictionMagnitude = body.normalForce*body.friction;
+	
+	// Find the acceleration due to friction (F = ma)
+	var frictionAcc = uv.times(-frictionMagnitude).div(body.mass);
+
+	// currently only friction and gravity are acting on the body;
+	body.acc = frictionAcc;
+	body.vel = body.vel.plus(body.acc.times(spf));
+	
+	dPos = body.vel.times(spf);
+	dAngle = body.angVel * spf;
+	body.polygon.transform(body.pos, dPos, dAngle);
+	body.pos = body.pos.plus(dPos);
+	body.orientation += dAngle;
     };
 
     // http://chrishecker.com/images/e/e7/Gdmphys3.pdf

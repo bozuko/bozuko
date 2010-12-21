@@ -1,117 +1,95 @@
-var Game = {
-    play: function() { 
-	alert('win');
-    }
-};
+function object(o) {
+        function F() {}
+        F.prototype = o;
+        return new F();
+}
 
-DiceGame.prototype = Game;
-DiceGame.prototype.constructor = DiceGame;
 function DiceGame() {
+    var that = this;
+    var ticker = 25; // ms
+    var d1 = {
+	id: "dice1",
+    	imgSrc: 'dice-30x30.png',
+    	numFrames: 6,
+    	x: 100,
+    	y: 150,
+    	mass: .03,
+    	vel: new Vector(-1.7, 1),
+    	angVel: 90,
+    	friction: .03,
+    	bounciness: .8
+    };
     
-    var makeWall = function(x1,y1,x2,y2) {
-	return new Wall(new Polygon([new Vector(x1,y1), new Vector(x2,y2)]));
-    };
+    var d2 = object(d1);
+    d2.id = "dice2";
+    d2.x = 150;
+    d2.y = 150;
+    d2.vel = new Vector(1, -.8);
+    d2.angVel = -90;
 
-    this.ctx = appMgr.ctx;
-    this.totalImgCt = 3;
-    this.imgLoadCt = 0;
-    this.bg = new Image();
-    this.bg.src = "felt.jpg";
-    this.bg.onload = function() {
-	game.imgLoadCt++;
-    };
-    this.diceBounce = .8;
-    this.wallBounce = .8;
     this.drawTimer = null;
-    this.physics = new Physics();
+    this.world = new World({game: this,
+			    view: 'top-down',
+    			    bgImgSrc: 'felt.jpg',
+    			    width: '320',
+    			    height: '356',
+    			    bounciness: .8});
+    this.dice1 = this.world.addSprite(d1);
+    this.dice2 = this.world.addSprite(d2);
     this.state = 'init';
+    this.prevTime = 0;
+    this.secondCounter = 0;
+    this.frameCt = 0;
+    this.frameRate = 1000/ticker;
+    this.gameOver = false;
 
-    this.dice1 = new Sprite(this.physics, "dice-30x30", 6, 100/this.physics.pixelsPerMeter, 
-			    (appMgr.height/2-75)/this.physics.pixelsPerMeter, .03);
-    this.dice1.friction = .02;
-    this.dice2 = new Sprite(this.physics, "dice-30x30", 6, 220/this.physics.pixelsPerMeter, 
-			    (appMgr.height/2-75)/this.physics.pixelsPerMeter, .03);
-    this.dice2.friction = .02;
-    this.physicalWidth = appMgr.width/this.physics.pixelsPerMeter;
-    this.physicalHeight = appMgr.height/this.physics.pixelsPerMeter;
-
-    this.walls = [makeWall(0, 0, 0, this.physicalHeight), //left
-		  makeWall(0, 0, this.physicalWidth, 0), //top
-		  makeWall(this.physicalWidth, 0, this.physicalWidth, this.physicalHeight), //right
-		  makeWall(0, this.physicalHeight, this.physicalWidth, this.physicalHeight)]; // bottom
-    
-    this.initDice = function() {
-	this.dice1.vel = new Vector(-1.5, 1);
-	this.dice1.angVel = 3;
-	this.dice2.vel = new Vector(1, -.8);
-	this.dice2.angVel = -3;
-    };
-
-    this.play = function() {
-	appMgr.canvas.onmousedown = function() {
-	    if (game.state != 'rolling') {
-		game.state = 'rolling';
+    this.loaded = function() {
+	this.world.screen.onmousedown = function() {
+	    if (that.state != 'rolling') {
+		that.state = 'rolling';
 	    }
 	};
-	
-	this.drawTimer = setInterval(this.loop, appMgr.spf*1000);
+	this.state = 'loaded';
+	this.prevTime = (new Date()).getTime();
+	this.drawTimer = setInterval(this.loop, ticker);
     };
 
     this.loop = function() {
-	var ctx = appMgr.ctx;
-	var dice1 = game.dice1;
-	var dice2 = game.dice2;
-	var i;
-	var wall;
+	var date = new Date();
+	var frameLen = date.getTime() - that.prevTime;
+	that.frameCt++;
+	that.prevTime = date;
+	that.secondCounter += frameLen;
 
-	ctx.clearRect(0, 0, appMgr.width, appMgr.height);
-	ctx.drawImage(game.bg, 0, 0, appMgr.width, appMgr.height);
+	if (that.secondCounter > 1000) {
+	    that.frameRate = that.frameCt;
+//	    document.write("<p>framerate = ", that.frameRate);
+//	    document.write("secondCounter = ", that.secondCounter, "</p>");
+	    that.secondCounter = 0;
+	    that.frameCt = 0;
+	} 
 	
-	if (game.state === 'init') {
-	    if (game.imgLoadCt === game.totalImgCt) {
-		game.initDice();
-		game.state = 'loaded';
-		Ext.Msg.alert('Tap to Roll', "Roll 7, 11, or Doubles to win!", Ext.emptyFn);
-	    }
-	} else if (game.state === 'loaded') {
-	    dice1.frameIndex = 0;
-	    dice2.frameIndex = 0;
-	    dice1.draw();
-	    dice2.draw();
-	} else if (game.state === 'rolling') {
-	    dice1.frameIndex = Math.floor(Math.random() * dice1.numFrames);
-	    dice2.frameIndex = Math.floor(Math.random() * dice2.numFrames);
-	    game.physics.move([dice1, dice2]);
-	    game.physics.collide(dice1, dice2, game.diceBounce);
-	    for (i = 0; i < game.walls.length; i++) {
-		wall = game.walls[i];
-		game.physics.collide(dice1, wall, game.wallBounce);
-		game.physics.collide(dice2, wall, game.wallBounce);
-	    }
-	    dice1.draw();
-	    dice2.draw();
-	} else if (game.state === 'stopped') {
-	    dice1.draw();
-	    dice2.draw();
-	    var sum = game.dice1.frameIndex+1 + game.dice2.frameIndex+1;
-
-	    if (!game.over) {
-		if ((game.dice1.frameIndex === game.dice2.frameIndex) ||
+	if (that.state === 'loaded') {
+	    that.world.draw();
+	} else if (that.state === 'rolling') {
+	    that.world.update();
+	    that.world.draw();
+	} else if (that.state === 'stopped') {
+	    var sum = that.dice1.frameIndex+1 + that.dice2.frameIndex+1;
+	    if (!that.gameOver) {
+		if ((that.dice1.frameIndex === that.dice2.frameIndex) ||
 		    (sum === 7) || (sum === 11)) {
 		    Ext.Msg.alert('Congratulations', "You just won a free beer!", Ext.emptyFn);
 		} else {
 		    Ext.Msg.alert('Sorry', "You Lose. Better Luck Next time.", Ext.emptyFn);
 		}
 	    }
-	    game.over = true;
-	    game.initDice();
-	    game.state = 'loaded';
-	    game.drawTimer = null;
-	    cancelInterval(game.drawTimer);
+	    that.gameOver = true;
+	    that.state = 'loaded';
 	} 
     };
 
     this.stop = function() {
-	game.state = 'stopped';
+	this.state = 'stopped';
     };
 }
