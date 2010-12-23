@@ -51,14 +51,13 @@ function DiceGame() {
 	};
 	this.state = 'loaded';
 	this.prevTime = (new Date()).getTime();
-	this.drawTimer = setInterval(this.loop, ticker);
+	setInterval(this.loop, ticker);
     };
 
     this.loop = function() {
 	var date = new Date();
 	var frameLen = date.getTime() - that.prevTime;
 	that.frameCt++;
-	that.prevTime = date;
 	that.secondCounter += frameLen;
 
 	if (that.secondCounter > 1000) {
@@ -71,9 +70,20 @@ function DiceGame() {
 	
 	if (that.state === 'loaded') {
 	    that.world.draw();
+	    that.prevTime = date.getTime();
 	} else if (that.state === 'rolling') {
-	    that.world.update();
-	    that.world.draw();
+	    // Ensure that there wasn't an abnormally long delay between frames
+	    if (frameLen > (ticker + 10)) {
+		frameLen = 0;
+		that.prevTime = date.getTime();
+	    }
+
+	    // Ensure that this callback wasn't a queued one
+	    if (frameLen > 5) {
+		that.world.update(frameLen/1000);
+		that.world.draw();
+		that.prevTime = date.getTime();
+	    }
 	} else if (that.state === 'stopped') {
 	    var sum = that.dice1.frameIndex+1 + that.dice2.frameIndex+1;
 	    if (!that.gameOver) {

@@ -269,7 +269,8 @@ var body = {
     friction: 0,
     momentOfInertia: 0,
     movable: true,
-    polygon: null
+    polygon: null,
+    stopped: false
 };
 
 var Wall = function(poly) {
@@ -335,11 +336,12 @@ var Sprite = function(world, id, imgsrc, numFrames, x, y, mass) {
 			new Vector(that.pos.x - physicalHalfWidth, that.pos.y + physicalHalfHeight)];
 	that.polygon = new Polygon(vertices);
         that.el = document.getElementById(that.id);
-        that.el.style.visibity = 'visible';
+        that.el.style.visibility = 'hidden';
 	world.spriteLoaded();
     };
 
     this.draw = function() {
+	this.el.style.visibility = 'visible';
 	var pixelX = this.pos.x*this.world.pixelsPerMeter;
 	var pixelY = this.pos.y*this.world.pixelsPerMeter;	
 	var dx = pixelX - this.width/2;
@@ -395,21 +397,22 @@ var World = function(o) {
     this.addWall(this.physicalWidth, 0, this.physicalWidth, this.physicalHeight); //right
     this.addWall(0, this.physicalHeight, this.physicalWidth, this.physicalHeight); // bottom
 
-    this.move = function(bodies) {
+    this.move = function(bodies, frameLen) {
 	var i, j;
 	var body, vertex;
 	var vel;
 	for (i = 0; i < bodies.length; i++) {
 	    body = bodies[i];
-	    if (body.movable) {
-		this.physics.integrate(this, body);		
+	    if (body.movable && !body.stopped) {
+		this.physics.integrate(this, body, frameLen);		
 		if (Math.abs(body.vel.x) < velocityThreshold && Math.abs(body.vel.y) < velocityThreshold) { 
 		    body.vel.x = 0; 
 		    body.vel.y = 0;
 		    body.angVel = 0;
+		    body.stopped = true;
 		    this.stopCt++;
 		    if (this.stopCt === bodies.length) {
-			that.game.stop();
+			this.game.stop();
 		    }
 		}
 	    }
@@ -433,9 +436,9 @@ var World = function(o) {
 	return sprite;
     };
 
-    this.update = function() {
+    this.update = function(frameLen) {
 	var i;
-	this.move(this.bodies);
+	this.move(this.bodies, frameLen);
 	// FIXME: Generalize this to more than 2 bodies
 	var b0 = this.bodies[0];
 	var b1 = this.bodies[1];
@@ -457,9 +460,8 @@ var World = function(o) {
 };
 
 function Physics() {    
-    this.integrate = function(world, body) {
+    this.integrate = function(world, body, dt) {
 	var dPos, dAngle;
-	var spf = 1/world.game.frameRate;
 	var uv = body.vel.normalize();
 	var frictionMagnitude = body.normalForce*body.friction;
 	
@@ -468,10 +470,10 @@ function Physics() {
 
 	// currently only friction and gravity are acting on the body;
 	body.acc = frictionAcc;
-	body.vel = body.vel.plus(body.acc.times(spf));
+	body.vel = body.vel.plus(body.acc.times(dt));
 	
-	dPos = body.vel.times(spf);
-	dAngle = body.angVel * spf;
+	dPos = body.vel.times(dt);
+	dAngle = body.angVel * dt;
 	body.polygon.transform(body.pos, dPos, dAngle);
 	body.pos = body.pos.plus(dPos);
 	body.orientation += dAngle;
