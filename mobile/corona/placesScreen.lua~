@@ -1,0 +1,62 @@
+module(..., package.seeall)
+local places = require("places")
+local util = require("util")
+local widget = require("widget")
+
+local isSimulator = "simulator" == system.getInfo("environment")
+
+function new()
+   local places = places.places
+   local group = display.newGroup()
+   local navBar = nil
+   local disclaimer = nil
+   local placesList = nil
+   local menuBar = nil
+
+   local function addPlacesList()
+      local names = {}
+      local k,v
+
+      for k,v in ipairs(places) do
+	 table.insert(names, v.name)
+      end
+      
+      if (placesList) then
+	 group:remove(placesList)
+      end
+      
+      placesList = tableView.newList{
+	 data = names,
+	 top = navBar.height,
+	 bottom = disclaimer.height,
+	 default = "listItemBg.png",
+	 over = "listItemBgOver.png",
+	 onRelease = function(event)
+			local place = places[event.target.id]
+			director:changeScene("checkinScreen","flip", place)
+			return true
+		     end,
+	 callback = function(row) 
+		       local t = display.newText(row, 0, 0, native.systemFont, 16)
+		       t:setTextColor(0, 0, 0)
+		       t.x = math.floor(t.width/2)
+		       t.y = 23
+		       return t
+		    end
+      }
+      group:insert(placesList)
+      navBar:toFront()
+      disclaimer:toFront()
+      menuBar:toFront()
+   end
+
+   navBar = widget.addNavBar()
+   group:insert(navBar)
+   disclaimer = widget.addDisclaimer()
+   group:insert(disclaimer)
+   menuBar = widget.addMenuBar()
+   group:insert(menuBar)
+   addPlacesList()
+
+   return group
+end
