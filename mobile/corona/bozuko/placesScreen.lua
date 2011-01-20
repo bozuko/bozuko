@@ -2,11 +2,12 @@ module(..., package.seeall)
 local places = require("places")
 local util = require("util")
 local widget = require("widget")
+local tableView = require("tableView")
 
 local isSimulator = "simulator" == system.getInfo("environment")
 
 function new()
-   local places = places.places
+   local data = places.data
    local group = display.newGroup()
    local navBar = nil
    local disclaimer = nil
@@ -19,7 +20,7 @@ function new()
       local k,v
       local pl = nil
 
-      for k,v in ipairs(places) do
+      for k,v in ipairs(data) do
 	 table.insert(names, v.name)
       end
 
@@ -30,7 +31,7 @@ function new()
 	 default = "listItemBg.png",
 	 over = "listItemBgOver.png",
 	 onRelease = function(event)
-			local place = places[event.target.id]
+			local place = data[event.target.id]
 			director:changeScene("checkinScreen","flip", place)
 			return true
 		     end,
@@ -60,21 +61,22 @@ function new()
    end
 
    local function refresh(e)
-      if places.stale then
-	 addPlacesList()
-      else
-	 transition.from(placesList, {time = 500, alpha = 0})
-      end 
-
+      native.setActivityIndicator(true)
+      timer.performWithDelay(1, function()
+				   places:loadPlaces()
+				   addPlacesList()
+				   transition.from(placesList, {time = 500, alpha = 0})
+				   native.setActivityIndicator(false)
+				end)
    end
 
-   navBar = widget.addNavBar()
+   navBar = widget.newNavBar()
    group:insert(navBar)
-   loopButton = widget.addLoopButton(refresh)
+   loopButton = widget.newLoopButton(refresh)
    group:insert(loopButton)
-   disclaimer = widget.addDisclaimer()
+   disclaimer = widget.newDisclaimer()
    group:insert(disclaimer)
-   menuBar = widget.addMenuBar()
+   menuBar = widget.newMenuBar()
    group:insert(menuBar)
    addPlacesList()
 
