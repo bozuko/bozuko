@@ -4,44 +4,42 @@ local widget = require("widget")
 
 function new(result)
    local group = display.newGroup()
-   
-   local heads = display.newImage("goldEagleHeads160x160.png")
-   local coinY = widget.screenTop + 40 + heads.height/2
+
+   local coinY = widget.screenTop + 40 + 80
    local coinX = display.contentWidth/2
-  
+   
+   local tails = display.newImage("goldEagleTails160x160.png")
+   tails.isVisible = true
+   tails.x = coinX
+   tails.y = coinY
+   group:insert(tails)
+
+   local heads = display.newImage("goldEagleHeads160x160.png")
    heads.x = coinX
    heads.y = coinY
    group:insert(heads)
 
-   local tails = display.newImage("goldEagleTails160x160.png")
-   tails.isVisible = false
-   group:insert(tails)
 
    local fxTime = 50
    local flipCt = 0
    local faceShowing = "heads"
    local done = false
+   local pick = nil
 
-   local function flip(pick)
+   local function flip()
       local flipToTails = function()
-	 heads.isVisible = false
-	 tails.isVisible = true
-	 tails.x = coinX
-	 tails.xScale=0.001
-	 tails.yScale=0.7
-	 tails.y=coinY
-	 transition.to ( tails, { xScale=0.7, delay=fxTime*2, time=fxTime } )
-	 transition.to ( tails, { xScale=1, delay=fxTime*3, time=fxTime } )
-	 transition.to ( tails, { yScale=1, delay=fxTime*3, time=fxTime, onComplete = flip } )
+	 transition.to(heads, {xScale=0.001, time=fxTime, transition = easing.linear})		     
+    	 tails.xScale = 0.001
+	 transition.to (tails, {xScale=1, delay=fxTime, time=fxTime*2, 
+				transition = easing.linear, onComplete = flip})
 	 faceShowing = "tails"
       end
       
       local flipToHeads = function()
-	 heads.isVisible = true
-	 tails.isVisible = false
-	 transition.to ( heads, { xScale=0.7, time=fxTime } )
-	 transition.to ( heads, { yScale=0.7, time=fxTime } )
-	 transition.to ( heads, { xScale=0.001, delay=fxTime, time=fxTime, onComplete = flip } )
+         transition.to(tails, {xScale=0.001, time=fxTime, transition = easing.linear})		     
+	 heads.xScale = 0.001
+	 transition.to (heads, {xScale=1, delay=fxTime, time=fxTime*2, 
+				transition = easing.linear, onComplete = flip})
 	 faceShowing = "heads"
       end
       
@@ -61,12 +59,22 @@ function new(result)
 	 -- Make sure proper result is showing
 	 if result ~= faceShowing then
 	    if faceShowing == "heads" then
-	       flipToHeads()
-	    else
 	       flipToTails()
+	    else
+	       flipToHeads()
 	    end
 	 end
 	 done = true
+
+	 if result == pick then
+	    print("you won")
+	    group:insert(widget.newWinMsg())
+	    group:insert(widget.newRedemptionButton(nil))
+	 else
+	    print("you lost")
+	    group:insert(widget.newLoseMsg())
+	 end
+	 
       end
  
    end
@@ -74,10 +82,11 @@ function new(result)
    local function onComplete(e)
       if e.action == "clicked" then
 	 if e.index == 1 then
-	    flip("heads")
+	    pick = "heads"
 	 elseif e.index == 2 then
-	    flip("tails")
+	    pick = "tails"
 	 end
+	 flip()
       end
    end
 

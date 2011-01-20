@@ -8,6 +8,7 @@ local disclaimerY = display.contentHeight - disclaimerHeight
 local menuBarHeight = 50
 local menuBarY = disclaimerY - menuBarHeight
 local contentWidth = display.contentWidth
+local redemptionY = menuBarY - 75
 
 widget.screenTop = navBarHeight
 widget.screenBottom = menuBarY
@@ -63,9 +64,6 @@ function newMenuBar(f)
       default = "homeButton.jpg",
       over = "homeButton_over.jpg",
       onRelease = f,
-      text = "places",
-      textColor = {153,153,153},
-      size = 14,
       id = "listButton"
    }
    listButton.x = contentWidth/2
@@ -75,6 +73,34 @@ function newMenuBar(f)
    group:addEventListener("touch", function(e) return true end)
    return group
 end
+
+function newWinMsg()
+   t = display.newText("You Won!", 0, redemptionY - 80, native.systemFont, 18)
+   t.x = contentWidth/2
+   return t
+end
+
+function newLoseMsg()
+   t = display.newText("Better Luck Next Time!", 0, redemptionY - 30, native.systemFont, 18)
+   t.x = contentWidth/2
+   return t
+end
+
+function newRedemptionButton(f)
+   local button = ui.newButton {
+      default = "redemptionButton.png",
+      over = "redemptionButton_over.png",
+      onRelease = f,
+      text = "Redeem Your Prize",
+      textColor = {255,255,255,255},
+      size = 18,
+      id = "redemptionButton"
+   }
+   button.x = contentWidth/2
+   button.y = redemptionY
+   return button
+end
+
 
 function newFacebookLogoutButton()
    local function f()
