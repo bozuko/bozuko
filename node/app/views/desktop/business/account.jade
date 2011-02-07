@@ -1,0 +1,18 @@
+h1= title
+
+h3 Places
+- if( pages.length > 0 )
+  p
+    ul.pages
+      - each page in pages
+        li.page
+          a(href="/business/account/page/"+page.facebook_id+"/create_games")= page.name
+          
+    
+  p
+    a(href="/business/account/add_page") Add a Facebook Page
+  
+- else
+  p You do not have any places configured yet.
+  p
+    a(href="/business/account/add_page") Add a Facebook Page

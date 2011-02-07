@@ -1,0 +1,3 @@
+#!/bin/sh
+
+nohup supervisor -w ./app,./games app.js > ./logs/bozuko.log &
