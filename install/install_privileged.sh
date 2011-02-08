@@ -1,3 +1,7 @@
+# bring the base ubuntu distribution up to date
+apt-get update
+apt-get upgrade
+
 # install essential libraries and build tools
 apt-get install -y build-essential libssl-dev
 
