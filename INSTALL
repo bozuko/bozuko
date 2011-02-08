@@ -1,0 +1,6 @@
+Run the folllowing to install bozuko and it's dependencies.
+
+
+cd install
+sudo ./install_privileged.sh
+./install
