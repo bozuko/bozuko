@@ -15,5 +15,5 @@ npm install connect-auth express jade mongodb mongoose monomi oauth qs socket.io
 cd ~
 MONGO_VER=mongodb-linux-x86_64-1.6.5
 wget http://fastdl.mongodb.org/linux/${MONGO_VER}.tgz
-tar xzf $MONGO_VER
+tar xzf ${MONGO_VER}.tgz
 rm ${MONGO_VER}.tgz
