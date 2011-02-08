@@ -2,7 +2,8 @@
 
 # node volume manager (nvm)
 git clone git://github.com/creationix/nvm.git ~/.nvm
-~/.nvm/install.sh
+chmod 755 ~/.nvm/nvm.sh
+echo '. ~/.nvm/nvm.sh' >> ~/.bashrc
 . ~/.bashrc
 
 # node.js
