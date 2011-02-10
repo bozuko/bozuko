@@ -10,7 +10,6 @@ module.exports = function session(){
         var uid, token;
         var cookie = req.cookies['fbs_'+Bozuko.config.facebook.app.id];
         
-        
         var q = {facebook_id:null};
         
         if( req.header(HEADER.user_id) ){
@@ -30,12 +29,10 @@ module.exports = function session(){
             req.session.user = false;
             if( q.facebook_id ){
                 // check for the user in our database
-                Bozuko.models.User.find(q).first(function(u){
-                    
+                Bozuko.models.User.findOne(q,function(err, u){
                     if( u ){
                         req.session.user = u;
                     }
-                    
                     next();
                 });
             }

@@ -1,5 +1,5 @@
 var http = Bozuko.require('util/http'),
-    merge= require('connect/utils').merge;
+    merge= require('connect/connect/utils').merge;
 
 var facebook = module.exports;
 
@@ -75,8 +75,8 @@ exports.get_accounts = function(user,callback){
             pages.sort(sort_FacebookPageLocation).reverse();
             
             if( ids.length > 0 ){
-                Bozuko.models.Page.find({facebook_id:{$in:ids}}).all(function(bozuko_pages){
-                    bozuko_pages.forEach(function(bozuko_page){
+                Bozuko.models.Page.find({facebook_id:{$in:ids}}, function(bozuko_pages){
+                    if( bozuko_pages != null ) bozuko_pages.forEach(function(bozuko_page){
                         var i = ids.indexOf(bozuko_page.facebook_id);
                         pages[i].has_owner = true;
                         pages[i].is_owner = (bozuko_page.owner_id.id == user._id.id);

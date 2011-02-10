@@ -4,11 +4,11 @@
 var fs          = require('fs'),
     // log4js      = require('log4js')(),
     express     = require('express'),
+    Schema      = require('mongoose').Schema,
+    MemoryStore = require('connect/connect/middleware/session/memory'),
     Monomi      = require('monomi'),
     Controller  = Bozuko.require('controller'),
-    Game        = Bozuko.require('game'),
-    Mongoose    = require('mongoose').Mongoose,
-    MemoryStore = require('connect/middleware/session/memory');
+    Game        = Bozuko.require('game');
 
 exports.run = function(app){
     
@@ -66,10 +66,9 @@ function initModels(){
         var Name = name.charAt(0).toUpperCase()+name.slice(1);
         
         // create the model
-        var config =  require('./models/'+name).config;
+        var schema =  require('./models/'+name);
         
-        config.properties = Object.keys(config.types);
-        Bozuko.db.model( Name, config );
+        Bozuko.db.model( Name, schema );
         //Mongoose.Model.define(Name, config);
         Bozuko.models[Name] = Bozuko.db.model(Name);
     });
@@ -92,7 +91,6 @@ function initGames(app){
         var stat = fs.statSync(dir+'/'+file);
         if( stat.isDirectory() ){
             var name = file.replace(/\..*?$/, '');
-            console.log(name);
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Game.create(Bozuko.dir+'/games/'+file, app);
         }

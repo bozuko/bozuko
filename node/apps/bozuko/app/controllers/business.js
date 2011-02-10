@@ -1,7 +1,7 @@
 var facebook    = Bozuko.require('util/facebook'),
     http        = Bozuko.require('util/http'),
     Page        = Bozuko.require('util/page'),
-    merge       = require('connect/utils').merge,
+    merge       = require('connect/connect/utils').merge,
     qs          = require('querystring'),
     url         = require('url')    
 ;
@@ -16,7 +16,7 @@ exports.routes = {
             Bozuko.require('auth').login(req,res,'business','/business/account',function(user){
                 // need to set a flag that this user let us manage pages
                 user.can_manage_pages = true;
-                user.save();
+                user.save(function(){});
             });
         }
     },
@@ -38,10 +38,9 @@ exports.routes = {
                 title : "your business account"
             };
             
-            console.log(req.session.user._id);
-            
-            Bozuko.models.Page.find({owner_id:req.session.user._id}).all( function(pages){
-                locals.pages = pages;
+            Bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, pages){
+                console.log(pages);
+                locals.pages = pages||[];
                 res.render('business/account', {locals:locals});
             });
         }
@@ -56,19 +55,19 @@ exports.routes = {
             
             facebook.get_accounts(req.session.user, function(facebook_pages){
                 // lets mark off the ones we know the user already owns...
-                Bozuko.models.Page.find({owner_id:req.session.user._id}).all(function(user_pages){
+                Bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, user_pages){
                     var map = {};
-                    user_pages.forEach(function(user_page){
+                    if( user_pages != null ) user_pages.forEach(function(user_page){
                         map[user_page.facebook_id] = user_page;
                     });
-                    facebook_pages.forEach(function(facebook_page){
+                    if( facebook_pages != null ) facebook_pages.forEach(function(facebook_page){
                         if( map[facebook_page.id] ){
                             facebook_page.isOwner = true;
                         }
                     });
                     var locals = {
                         title : "add facebook page",
-                        pages : facebook_pages,
+                        pages : facebook_pages || [],
                         error : req.flash('error')
                     };
                     res.render('business/account/add_page', {locals:locals} );
@@ -78,6 +77,7 @@ exports.routes = {
         },
         
         post : function(req,res){
+            
             
             if( !req.session.user || !req.session.user.can_manage_pages ){
                 req.flash('error', 'You must be logged in to add a page.');
@@ -98,7 +98,7 @@ exports.routes = {
                     res.redirect(req.url);
                     return;
                 }
-                Bozuko.models.Page.find({facebook_id:id}).first(function(page){
+                Bozuko.models.Page.findOne({facebook_id:id}, function(err, page){
                     if( page && page.owner_id != req.session.user._id ){
                         /**
                          * TODO
@@ -111,19 +111,21 @@ exports.routes = {
                         return;
                     }
                     else if( !page ) page = new Bozuko.models.Page();
+                    
                     page.facebook_id = data.id;
                     page.facebook_auth = req.session.user.facebook_auth;
                     page.name = data.name;
+                    page.games = [];
                     page.is_location = data.location && data.location.latitude ? true : false;
                     if( page.is_location ){
-                        page.lat = data.location.latitude;
-                        page.lng = data.location.longitude;
+                        page.lat = parseFloat(data.location.latitude);
+                        page.lng = parseFloat(data.location.longitude);
                     }
                     page.owner_id = req.session.user._id;
-                    page.save();
-                    
-                    // cool, we have them saved now...
-                    res.redirect('/business/account/page/'+page.facebook_id+'/create_games');
+                    page.save(function(err){
+                        // cool, we have them saved now...
+                        res.redirect('/business/account/page/'+page.facebook_id+'/create_games');
+                    });
                     
                 });
             });
@@ -139,7 +141,7 @@ exports.routes = {
             // lets grab all the games we know of
             var games = [];
             var locals = {};
-            Bozuko.models.Page.find({facebook_id:id}).first(function(page){
+            Bozuko.models.Page.findOne({facebook_id:id}, function(err,page){
                 // if we do not have a record, they did not add it correctly
                 if( !page ){
                     req.flash('error', 'You cannot create games for pages you have not yet added');

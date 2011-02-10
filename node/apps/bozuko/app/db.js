@@ -1,7 +1,7 @@
 /**
  * Module Dependencies
  */
-var mongoose = require('mongoose').Mongoose;
+var mongoose = require('mongoose');
 
 /**
  * Global Variables
@@ -16,12 +16,12 @@ function getConnection(){
 exports.conn = function(){
     return getConnection();
 };
-exports.model = function(name, config){
-    if( !config ){
-        return getConnection().model(name);
+exports.model = function(name, schema){
+    if( !schema ){
+        return mongoose.model(name);
     }
     else{
-        mongoose.model(name, config);
-        getConnection().model(name);
+        mongoose.model(name, schema);
+        return getConnection().model(name);
     }
 };
