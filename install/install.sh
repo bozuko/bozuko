@@ -6,8 +6,8 @@ echo '. ~/.nvm/nvm.sh' >> ~/.bashrc
 . ~/.nvm/nvm.sh
 
 # node.js
-nvm install v0.2.6
-nvm use v0.2.6
+nvm install v0.4.0
+nvm use v0.4.0
 
 # node packages
 npm install connect-auth express jade mongodb mongoose monomi oauth qs socket.io supervisor
