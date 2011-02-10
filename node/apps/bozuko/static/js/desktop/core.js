@@ -14,12 +14,14 @@ Ext.onReady(function(){
     }
     
     // check for login status and update the header...
+    /*
     FB.getLoginStatus(function(status){
+        console.log('hello?');
         if( status && status.session ){
             if( status.session.uid != _uid ) refresh();
         }
-    });
-    
+    },true);
+    */
     FB.Event.subscribe('auth.logout', refresh);
     FB.Event.subscribe('auth.login', refresh);
     

@@ -1,8 +1,9 @@
 // HTTP Request Wrapper
-var http = require('http'),
-    url  = require('url'),
-    merge= require('connect/utils').merge,
-    qs   = require('querystring');
+var http    = require('http'),
+    https   = require('https'),
+    url     = require('url'),
+    merge   = require('connect/connect/utils').merge,
+    qs      = require('querystring');
 
 exports.request = function(config){
     
@@ -20,7 +21,7 @@ exports.request = function(config){
     var port = config.port || url_parsed.port || (url_parsed.protocol==='https:' ? 443 : 80);
     var ssl = config.ssl || (url_parsed.protocol === 'https:' ? true : false);
     
-    var client = http.createClient(port,url_parsed.host,ssl);
+    var http_ = ssl ? https : http;
     
     var method = (config.method || "GET").toUpperCase();
     
@@ -40,8 +41,6 @@ exports.request = function(config){
     var headers = {'host':url_parsed.host};
     if( config.headers ) headers = merge(headers, config.headers);
     
-    var request = client.request(method, path, headers);
-    
     var body = null, encoding = null;
     
     if( method == 'POST' && params ){
@@ -49,7 +48,13 @@ exports.request = function(config){
         encoding = config.encoding || 'utf-8';
     }
     
-    request.on('response', function(response){
+    var request = http_.request({
+        host: url_parsed.host,
+        port: port,
+        path: path,
+        headers: headers,
+        method: method
+    }, function(response){
         
         // console.log(response.headers);
         var data = '';
@@ -98,6 +103,5 @@ exports.request = function(config){
         });
     }
     
-    request.end(body, encoding);
-    
+    request.end(body,encoding);
 };

@@ -1,26 +1,17 @@
-exports.config = {
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
+
+var Checkin = new Schema({
     
-    types : {
-        user_facebook_id        :String,
-        user_id                 :String,
-        place_id                :String,
-        place_facebook_id       :String,
-        timestamp               :Date,
-        message                 :String,
-        game_id                 :Number,
-        game_name               :String,
-        game_result             :Object
-    },
-    
-    methods : {
-        save : function(fn){
-            if( this.isNew ){
-                this.timestamp = new Date();
-            }
-            this.__super__(fn);
-        }
-    },
-    
-    indexes : ['facebook_id','user_id','place_id','game_id']
-    
-};
+    user_facebook_id        :{type:String, index: true},
+    user_id                 :{type:String, index: true},
+    place_id                :{type:String, index: true},
+    place_facebook_id       :{type:String},
+    timestamp               :{type:Date, default: Date.now},
+    message                 :{type:String},
+    game_id                 :{type:Number},
+    game_name               :{type:String},
+    game_result             :{type:Array}
+});
+
+module.exports = Checkin;

@@ -63,7 +63,7 @@ exports.login = function(req,res,scope,defaultReturn,success,failure){
                             access_token : token
                         }
                     }, function(user){
-                        Bozuko.models.User.find({facebook_id:user.id}).one(function(u){
+                        Bozuko.models.User.findOne({facebook_id:user.id}, function(err, u){
                             if( !u ){
                                 u = new Bozuko.models.User();
                             }
@@ -75,21 +75,21 @@ exports.login = function(req,res,scope,defaultReturn,success,failure){
                             u.email = user.email;
                             u.facebook_id = user.id;
                             u.facebook_auth = token;
-                            u.save();
-                            
-                            var device = req.session.device;
-                            
-                            req.session.regenerate(function(err){
-                                res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
-                                req.session.userJustLoggedIn = true;
-                                req.session.user = u;
-                                req.session.device = device;
-                                if( success ){
-                                    if( success(u,req,res) === false ){
-                                        return;
+                            u.save(function(){
+                                
+                                var device = req.session.device;
+                                req.session.regenerate(function(err){
+                                    res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
+                                    req.session.userJustLoggedIn = true;
+                                    req.session.user = u;
+                                    req.session.device = device;
+                                    if( success ){
+                                        if( success(u,req,res) === false ){
+                                            return;
+                                        }
                                     }
-                                }
-                                res.redirect(ret || '/');
+                                    res.redirect(ret || '/');
+                                });
                             });
                         });
                     });
