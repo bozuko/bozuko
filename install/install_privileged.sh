@@ -7,7 +7,7 @@ apt-get update
 apt-get upgrade
 
 # install mongodb
-apt-get install mongodb-stable
+apt-get install -y mongodb-stable
 
 # install essential libraries and build tools
 apt-get install -y build-essential libssl-dev
