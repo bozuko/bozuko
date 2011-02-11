@@ -1,10 +1,17 @@
-# Add mongodb packages to apt repository
+# Add mongodb repository
 echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list
 apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+
+# Add nginx repository
+nginx=development
+add-apt-repository ppa:nginx/$nginx
 
 # bring the base ubuntu distribution up to date
 apt-get update
 apt-get upgrade
+
+# install nginx
+apt-get install nginx
 
 # install mongodb
 apt-get install -y mongodb-stable
