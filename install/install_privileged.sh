@@ -9,8 +9,15 @@ apt-get upgrade
 # install mongodb
 apt-get install -y mongodb-stable
 
+# make mongodb restartable if it crashes
+echo "respawn" >> /etc/init/mongodb.conf
+echo "respawn limit 10 5" >> /etc/init/mongodb.conf
+
 # install essential libraries and build tools
 apt-get install -y build-essential libssl-dev
 
 # install useful tools and utilities
 apt-get install -y emacs vim
+
+#install all upstart scripts
+cp upstart/* /etc/init
