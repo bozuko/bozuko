@@ -134,6 +134,14 @@ exports.routes = {
         
     },
     
+    '/business/account/page/:id/delete' : {
+        description : 'Delete a page from a business account',
+        get : function(req,res){
+            var id = req.param('id');
+            Bozuko.models.Page.findOne({_id:id})
+        }
+    },
+    
     '/business/account/page/:id/create_games' : {
         description :'Create games for the page (setup screen)',
         get : function(req,res){
@@ -141,7 +149,7 @@ exports.routes = {
             // lets grab all the games we know of
             var games = [];
             var locals = {};
-            Bozuko.models.Page.findOne({facebook_id:id}, function(err,page){
+            Bozuko.models.Page.findById(id, function(err,page){
                 // if we do not have a record, they did not add it correctly
                 if( !page ){
                     req.flash('error', 'You cannot create games for pages you have not yet added');
@@ -158,7 +166,7 @@ exports.routes = {
                     var game = Bozuko.games[name];
                     games.push(merge(game.config,{_id:name}));
                 });
-                
+                locals.page = page;
                 locals.games = games;
                 locals.title = "Create Games";
                 res.render('business/account/create_games',{locals : locals});
