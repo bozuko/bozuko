@@ -3,25 +3,26 @@ var facebook = Bozuko.require('util/facebook'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
+var GameConfig = new Schema({
+    game                :{type:String}
+});
+
 var Page = module.exports = new Schema({
-    facebook_id        :{type:String, index: true},
-    facebook_auth      :{type:String},
-    games              :{type:Array}, 
-    is_location        :{type:Boolean},
-    name               :{type:String},
-    lat                :{type:Number},
-    lng                :{type:Number},
-    owner_id           :{type:ObjectId, index: true}
+    facebook_id         :{type:String, index: true},
+    facebook_auth       :{type:String},
+    path                :{type:String},
+    games               :[GameConfig], 
+    is_location         :{type:Boolean},
+    name                :{type:String},
+    lat                 :{type:Number},
+    lng                 :{type:Number},
+    owner_id            :{type:ObjectId, index: true}
 });
-    
-    /*
-Page.pre('save', function(next){
-    if( this.isNew ){
-        this.sign_up_date = new Date();
-    }
-    next();
+
+Page.method('getOwner', function(callback){
+    Bozuko.models.User.findById( this.owner_id, callback );
 });
-    */
+
 Page.method('checkin', function(user, game, callback) {
             
     var self = this;
