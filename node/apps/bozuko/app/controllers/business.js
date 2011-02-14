@@ -39,7 +39,6 @@ exports.routes = {
             };
             
             Bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, pages){
-                console.log(pages);
                 locals.pages = pages||[];
                 res.render('business/account', {locals:locals});
             });
@@ -137,8 +136,46 @@ exports.routes = {
     '/business/account/page/:id/delete' : {
         description : 'Delete a page from a business account',
         get : function(req,res){
+            
             var id = req.param('id');
-            Bozuko.models.Page.findOne({_id:id})
+            var locals = {
+                title:'Remove a page',
+                page:null
+            };
+            Bozuko.models.Page.findById(id, function(err, page){
+                if( err ){
+                    // yikes, i don't think we have one by that id...
+                    locals.error= 'The requested page could not be found';
+                    req.render('business/account/remove_page', {locals:locals} );
+                }
+                else{
+                    locals.page = page;
+                }
+                res.render('business/account/remove_page', {locals:locals} );
+            });
+        },
+        
+        post : function(req,res){
+            var id = req.param('id');
+            Bozuko.models.Page.findById(id, function(err, page){
+                if( err ){
+                    // yikes, i don't think we have one by that id...
+                    req.flash('error', 'The requested page could not be found');
+                    res.redirect('/business/account');
+                }
+                else{
+                    page.remove(function(err){
+                        if( err ){
+                            req.flash('error', 'There was an error removing the page');
+                        }
+                        else{
+                            req.flash('info', "The page was removed successfully");
+                        }
+                        res.redirect('/business/account');
+                    });
+                }
+                
+            });
         }
     },
     

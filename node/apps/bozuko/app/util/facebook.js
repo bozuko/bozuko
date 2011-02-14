@@ -5,6 +5,7 @@ var facebook = module.exports;
 
 exports.graph = function(path, options, callback){
     
+    
     if( !/^\//.test(path) ) path = '/'+path;
     
     if( callback === undefined && typeof options == 'function'){
@@ -15,6 +16,7 @@ exports.graph = function(path, options, callback){
         client_id : Bozuko.config.facebook.app.id,
         access_token : Bozuko.config.facebook.app.access_token
     };
+    
     options = options || {};
     if( options.user && options.user.facebook_auth ){
         params.access_token = options.user.facebook_auth;
@@ -25,6 +27,8 @@ exports.graph = function(path, options, callback){
     
     if( options.params ) params = merge(params, options.params);
     var url = 'https://graph.facebook.com'+path;
+    
+    var start = new Date();
     http.request({
         url: url,
         method: options.method || 'get',
@@ -33,6 +37,10 @@ exports.graph = function(path, options, callback){
             /**
              * If we want to debug all facebook requests it can go here..
              */
+            Bozuko.last_facebook_time = (new Date()).getTime() - start.getTime();
+            if( !Bozuko.facebook_requests ) Bozuko.facebook_requests={};
+            if( !Bozuko.facebook_requests[url] ) Bozuko.facebook_requests[url] = [];
+            Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
             
             if (callback instanceof Function) callback.apply(this,arguments);
             else console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");

@@ -7,8 +7,10 @@ h3 Places
       - each page in pages
         li.page
           img(src="https://graph.facebook.com/"+page.facebook_id+"/picture",alt=page.name)
-          a(href="/business/account/page/"+page._id+"/create_games")= page.name
-          a(href="/business/account/page/"+page._id+"/delete") Delete Page
+          h3= page.name
+          .actions
+            a.action.add_games(href="/business/account/page/"+page._id+"/create_games") Manage Games
+            a.action.delete(href="/business/account/page/"+page._id+"/delete") Delete Page
     
   p
     a(href="/business/account/add_page") Add a Facebook Page
