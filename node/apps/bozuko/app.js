@@ -1,6 +1,7 @@
 var net     = require('net'),
     repl    = require('repl');
 
+var multinode = require('/home/bozuko/bozuko/node/lib/multi-node');
 
 /**
  * Module dependencies.
@@ -39,9 +40,14 @@ require('./app/main').run(app);
 module.exports = app;
 
 if (!module.parent) {
-  app.listen(global.Bozuko.config.server.port );
-  console.info("Bozuko server listening on port "+ app.address().port);
+    multinode.listen({   
+      port: global.Bozuko.config.server.port,
+      nodes: 4
+    }, app);
+    //    console.info("Bozuko server listening on port "+ app.address().port);
 }
-net.createServer( function(socket){
-   repl.start("bozuko> ", socket);
-}).listen(8050);
+
+var repl = net.createServer( function(socket){
+    repl.start("bozuko> ", socket);
+});
+multinode.listen({port: 8050, nodes:1}, repl);
