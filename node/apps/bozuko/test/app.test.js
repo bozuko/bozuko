@@ -8,6 +8,10 @@
 var assert = require('assert');
 var app = require('../app');
 
+// Node will not exit the event loop until all external connections are closed!
+// FIXME: This is should really be part of a testsuite teardown function.
+setTimeout(function() {Bozuko.db.conn().disconnect()}, 1000);
+
 module.exports = {
   'GET /': function(beforeExit) {
       assert.response(app, { url: '/' },
@@ -17,7 +21,6 @@ module.exports = {
       });
       
       beforeExit(function() {
-          Bozuko.db.conn().disconnect();
       });
   }
 };
