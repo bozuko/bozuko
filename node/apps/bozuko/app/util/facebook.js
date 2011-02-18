@@ -3,7 +3,7 @@ var http = Bozuko.require('util/http'),
 
 var facebook = module.exports;
 
-var cache = {};
+var cache = Bozuko.facebook_cache = {};
 
 exports.graph = function(path, options, callback){
     
@@ -36,15 +36,14 @@ exports.graph = function(path, options, callback){
     if( !options.scope ) options.scope = this;
     if( options.returnJSON === undefined ) options.returnJSON = true;
     
-    // lets save cache
     /**
-     * Temporary for now
+     * Facebook Caching...
+     * 
      */
     var fakeRequestTime = false;
+    var expire = 1000 * 60 * 10; // 10 minute expiration
     var cacheKey = JSON.stringify({path:path,options:options});
-    if( cache[cacheKey] && cache[cacheKey].arguments ){
-        
-        
+    if( cache[cacheKey] && cache[cacheKey].arguments && now.getTime() - cache[cacheKey].time.getTime() < expire ){
         if( callback instanceof Function ){
             // should we fake the request time?
             console.log("using facebook cache");
