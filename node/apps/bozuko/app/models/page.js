@@ -67,7 +67,7 @@ Page.static('search', function(center, limit, callback){
     var games = [];
     
     for(var id in Bozuko.games){
-        if( id == 'dice') continue;
+        if( id == 'dice' || id =='slots' ) continue;
         var game = Bozuko.games[id];
         game.id = id;
         game.name = game.config.name;
@@ -90,6 +90,7 @@ Page.static('search', function(center, limit, callback){
             // loop through the results and see if we have a place with
             // the facebook id..
             var map = {};
+            
             if( result.data ) result.data.forEach( function(place){
                 // lets create a map for searching...
                 map[place.id] = place;

@@ -30,23 +30,32 @@ exports.graph = function(path, options, callback){
     if( options.params ) params = merge(params, options.params);
     var url = 'https://graph.facebook.com'+path;
     
-    var start = new Date();
+    var now = new Date();
     
     if( !options.method ) options.method = 'get';
-    if( !options.scope ) options.scope = scope;
-    if( options.returnJSON !== undefined ) options.returnJSON = true;
+    if( !options.scope ) options.scope = this;
+    if( options.returnJSON === undefined ) options.returnJSON = true;
     
     // lets save cache
     /**
      * Temporary for now
      */
-    var cacheKey = JSON.stringify({path:path,options:options,callback:callback});
-    if( cache[cacheKey] ){
+    var fakeRequestTime = false;
+    var cacheKey = JSON.stringify({path:path,options:options});
+    if( cache[cacheKey] && cache[cacheKey].arguments ){
+        
+        
         if( callback instanceof Function ){
-            callback.apply(this, cache[cacheKey].arguments );
+            // should we fake the request time?
+            console.log("using facebook cache");
+            setTimeout(function(){
+                callback.apply(options.scope, cache[cacheKey].arguments );
+            }, fakeRequestTime ? cache[cacheKey].duration : 0 );
         }
+        
         return;
     }
+    
     
     http.request({
         url: url,
@@ -63,7 +72,6 @@ exports.graph = function(path, options, callback){
             if( !Bozuko.facebook_requests ) Bozuko.facebook_requests={};
             if( !Bozuko.facebook_requests[url] ) Bozuko.facebook_requests[url] = [];
             Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
-            
             if (callback instanceof Function) callback.apply(this,arguments);
             else console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
         },
