@@ -3,6 +3,8 @@ var http = Bozuko.require('util/http'),
 
 var facebook = module.exports;
 
+var cache = {};
+
 exports.graph = function(path, options, callback){
     
     
@@ -29,15 +31,35 @@ exports.graph = function(path, options, callback){
     var url = 'https://graph.facebook.com'+path;
     
     var start = new Date();
+    
+    if( !options.method ) options.method = 'get';
+    if( !options.scope ) options.scope = scope;
+    if( options.returnJSON !== undefined ) options.returnJSON = true;
+    
+    // lets save cache
+    /**
+     * Temporary for now
+     */
+    var cacheKey = JSON.stringify({path:path,options:options,callback:callback});
+    if( cache[cacheKey] ){
+        if( callback instanceof Function ){
+            callback.apply(this, cache[cacheKey].arguments );
+        }
+        return;
+    }
+    
     http.request({
         url: url,
-        method: options.method || 'get',
+        method: options.method,
         params: params,
         callback : function(){
             /**
              * If we want to debug all facebook requests it can go here..
              */
-            Bozuko.last_facebook_time = (new Date()).getTime() - start.getTime();
+            var then = new Date();
+            cache[cacheKey] = {arguments:arguments, time:then, duration:then.getTime()-now.getTime()};
+            
+            Bozuko.last_facebook_time = then.getTime() - now.getTime();
             if( !Bozuko.facebook_requests ) Bozuko.facebook_requests={};
             if( !Bozuko.facebook_requests[url] ) Bozuko.facebook_requests[url] = [];
             Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
@@ -45,8 +67,8 @@ exports.graph = function(path, options, callback){
             if (callback instanceof Function) callback.apply(this,arguments);
             else console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
         },
-        scope : options.scope || this,
-        returnJSON : options.returnJSON !== undefined ? options.returnJSON : true
+        scope : options.scope,
+        returnJSON : options.returnJSON
     });
 };
 

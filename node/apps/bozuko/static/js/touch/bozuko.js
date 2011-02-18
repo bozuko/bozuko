@@ -81,7 +81,7 @@ Bozuko.App = Ext.extend( Ext.Panel, {
     
     updatePlaces : function(){
         Ext.Ajax.request({
-            url : '/places',
+            url : '/pages',
             params : {
                 'latitude':this.location.latitude,
                 'longitude':this.location.longitude

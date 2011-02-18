@@ -32,24 +32,19 @@ exports.routes = {
         description :"Checkin and return the game result / code",
         
         get : function (req,res){
+            
+            // we should have the user from the session (middleware/session.js)
+            if( !req.session.user ){
+                // this should throw a non-authorized error
+                res.send({success:false});
+            }
+            
             // get the session from the cookie...
             var place_id = req.params.id;
             var lat = req.param('lat');
             var lng = req.param('lng');
             
-            var uid = req.header('BOZUKO_FB_USER_ID');
-            if( !uid ){
-                var cookie = req.cookies['fbs_'+Bozuko.config.facebook.app.id];
-                var session = qs.parse(cookie);
-                var uid = session.uid;
-                var auth = session.access_token;
-            }
-            
-            // we should have the user from the session...
-            if( !req.session.user ){
-                res.send({success:false});
-            }
-            console.log(req.session.user);
+           
             // lets check them in...
             facebook.graph('/'+place_id, function(p){
             //Bozuko.models.Place.find({facebook_id:place_id}).one(function(p){
@@ -63,13 +58,11 @@ exports.routes = {
                     },
                     method:'post'
                 },function(result){
-                    console.log(result);
                     // lets get the game requested
                     var ret = Bozuko.games.dice.run();
                     res.send({success:true, result: ret});
                 });
             
-                //res.send({success:true});
             });
             
         }
