@@ -1,5 +1,5 @@
 var http            = require('http'),
-    merge           = require('connect/connect/utils').merge;
+    merge           = require('connect/lib/connect/utils').merge;
 
 /**
  * register our device dependent renderer

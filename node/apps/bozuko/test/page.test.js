@@ -3,7 +3,6 @@ var assert = require('assert');
 var app = require('../app');
 
 
-
 function teardown() {
     if (app.__pending === 0) {
 	// Node will not exit the event loop until all external connections are closed!
@@ -12,8 +11,7 @@ function teardown() {
     }
 }
 
-module.exports = {
-    
+module.exports = {    
     'GET /pages': function(beforeExit) {
 	assert.response(app, 
 	    {url: '/pages/'},

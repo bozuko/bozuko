@@ -2,7 +2,7 @@
 var http    = require('http'),
     https   = require('https'),
     url     = require('url'),
-    merge   = require('connect/connect/utils').merge,
+    merge   = require('connect/lib/connect/utils').merge,
     qs      = require('querystring');
 
 exports.request = function(config){

@@ -1,7 +1,7 @@
 var facebook    = Bozuko.require('util/facebook'),
     http        = Bozuko.require('util/http'),
     Page        = Bozuko.require('util/page'),
-    merge       = require('connect/connect/utils').merge,
+    merge       = require('connect/lib/connect/utils').merge,
     qs          = require('querystring'),
     url         = require('url')    
 ;

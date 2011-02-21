@@ -1,4 +1,4 @@
-var merge = require('connect/connect/utils').merge;
+var merge = require('connect/lib/connect/utils').merge;
 
 var Page = module.exports = function(title, template, options){
     options = options || {};
