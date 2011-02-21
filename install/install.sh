@@ -44,9 +44,9 @@ rm -rf npm
 NPM_BIN=~/.npmbin
 NPM_LIB=~/.npmlib
 PATH=$NPM_BIN:$PATH
-echo "PATH=$PATH" >> ~/.bashrc
+echo "export PATH=$PATH" >> ~/.bashrc
 NODE_PATH=$NPM_LIB:$NODE_PATH
-echo "NODE_PATH=$NODE_PATH" >> ~/.bashrc
+echo "export NODE_PATH=$NODE_PATH" >> ~/.bashrc
 npm config set root $NPM_LIB
 npm config set binroot $NPM_BIN
 npm config set unsafe-perm true
