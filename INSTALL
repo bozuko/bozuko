@@ -7,7 +7,6 @@ Run the following as root to setup a brand new image
 Create the bozuko user
 --------
 adduser bozuko - use the standard password
-add user bozuko to sudo group in /etc/group
 
 
 Set the hostname

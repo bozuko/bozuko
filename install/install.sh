@@ -23,7 +23,7 @@ chmod +x npm
 
 # node.js
 echo "*** Installing node $NODE_VER"
-if [[ ! -d ~/.nvm ]] ; then
+if [[ ! -d ~/.nvm/$NODE_VER ]] ; then
     nvm install $NODE_VER
     echo "nvm use $NODE_VER" >> ~/.bashrc
 fi
