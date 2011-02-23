@@ -14,13 +14,6 @@ if [[ ! -d ~/.nvm ]] ; then
 fi
 . ~/.nvm/nvm.sh
 
-# Create a fake npm so that nvm doesn't try to install it
-# this is needed to prevent installing with sudo
-echo "*** Installing fake npm"
-PATH=~/bozuko/install:$PATH
-touch npm
-chmod +x npm
-
 # node.js
 echo "*** Installing node $NODE_VER"
 if [[ ! -d ~/.nvm/$NODE_VER ]] ; then
@@ -29,18 +22,7 @@ if [[ ! -d ~/.nvm/$NODE_VER ]] ; then
 fi
 nvm use $NODE_VER
 
-# Remove fake npm
-echo "*** Removing fake npm"
-rm npm
-
 #node package manager (npm)
-echo "*** Installing npm"
-git clone http://github.com/isaacs/npm.git
-cd npm
-git submodule update --init
-npm_config_unsafe_perm=true make install
-cd ..
-rm -rf npm
 NPM_BIN=~/.npmbin
 NPM_LIB=~/.npmlib
 PATH=$NPM_BIN:$PATH
