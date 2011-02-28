@@ -29,7 +29,7 @@ if (!module.parent) {
     nodes: 4
   }, app);
 
-  console.log("Bozuko Server listening on port ",global.bozuko.config.server.port);
+  console.log("Bozuko Server listening on port ",bozuko.config.server.port);
 
   var repl = net.createServer( function(socket){
       repl.start("bozuko> ", socket);

@@ -116,7 +116,7 @@ exports.routes = {
                     perms:bozuko.config.facebook.perms
                 }
             };
-            res.send("Bozuko = window.Bozuko || {}; bozuko.config = "+JSON.stringify(config)+";", {"Content-Type":"text/javascript"} );
+            res.send("Bozuko = window.Bozuko || {}; Bozuko.config = "+JSON.stringify(config)+";", {"Content-Type":"text/javascript"} );
         }
     },
     
