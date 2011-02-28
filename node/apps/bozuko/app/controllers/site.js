@@ -26,7 +26,7 @@ exports.routes = {
     
     '/about' : Page("About Bozuko",'site/about'),
     
-    '/page/*' : {
+    '/p/*' : {
         
         description : "General pages - written in jade - located in views/[device]/pages",
         

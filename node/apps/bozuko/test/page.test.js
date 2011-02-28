@@ -18,7 +18,7 @@ function run(server) {
 		assert.ok('games' in place);
 
 		assert.response(server, 
-//		    {url: '/page/'+place.id},
+		    {url: '/page/'+place.id},
                     {url: '/pages'},
 		    {status: 200, headers: {'Content-Type': 'application/json'}},
 	            function(res) {
