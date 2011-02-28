@@ -40,7 +40,7 @@ npm install connect-auth express expresso jade mongodb mongoose monomi oauth qs 
 # Patch expresso using my fork -- Remove when expresso gets fixed
 echo "*** Patching Expresso"
 git clone git://github.com/andrewjstone/expresso.git
-cp expresso/bin/expresso `which expresso`
+mv expresso/bin/expresso `which expresso`
 rm -rf expresso
 
 # multi-node

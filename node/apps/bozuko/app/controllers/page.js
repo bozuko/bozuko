@@ -14,7 +14,7 @@ exports.routes = {
     
     '/pages' : {
         
-        description : 'Get a list of places generated from facebook',
+        description : 'Get a list of pages generated from facebook',
         
         get : function(req,res){
             var lat = req.param('lat') || '42.645625';
@@ -27,13 +27,13 @@ exports.routes = {
         }
     },
     
-    '/place/:id/game' : {
+    '/page/:id/game' : {
         
         description :"Checkin and return the game result / code",
         
         get : function (req,res){
             // get the session from the cookie...
-            var place_id = req.params.id;
+            var page_id = req.params.id;
             var lat = req.param('lat');
             var lng = req.param('lng');
             
@@ -51,14 +51,14 @@ exports.routes = {
             }
             console.log(req.session.user);
             // lets check them in...
-            facebook.graph('/'+place_id, function(p){
+            facebook.graph('/'+page_id, function(p){
             //Bozuko.models.Place.find({facebook_id:place_id}).one(function(p){
             
                 facebook.graph('/me/checkins',{
                     user:   req.session.user,
                     params:{
                         'message':'Just won a free something playing Bozuko!',
-                        'place':place_id,
+                        'place':page_id,
                         'coordinates':JSON.stringify(p.location)
                     },
                     method:'post'
@@ -75,9 +75,9 @@ exports.routes = {
         }
     },
     
-    '/place/:id' : {
+    '/page/:id' : {
         
-        description :'Return place details',
+        description :'Return page details',
         
         get :function(req,res){
             facebook.graph('/'+req.param('id'), {

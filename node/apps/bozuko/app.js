@@ -47,7 +47,7 @@ if (!module.parent) {
   console.log("Bozuko Server listening on port ",global.Bozuko.config.server.port);
 
   var repl = net.createServer( function(socket){
-    repl.start("bozuko> ", socket);
+      repl.start("bozuko> ", socket);
   });
   multinode.listen({port: 8050, nodes:1}, repl);
 }

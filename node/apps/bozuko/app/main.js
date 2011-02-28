@@ -54,7 +54,7 @@ function initApplication(app){
     app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     app.use(express.compiler({ src: __dirname + '/../static', enable: ['less'] }));
     app.use(app.router);
-    app.use(express.repl('bozuko>', 8050));
+    //    app.use(express.repl('bozuko>', 8050));
     app.use(express.staticProvider({root:__dirname + '/../static',maxAge:(1000*60*60*24)*1}));
     
 }
