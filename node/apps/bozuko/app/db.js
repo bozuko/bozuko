@@ -1,3 +1,5 @@
+var bozuko = require('bozuko');
+
 /**
  * Module Dependencies
  */
@@ -9,7 +11,7 @@ var mongoose = require('mongoose');
 var _db;
 function getConnection(){
     if( !_db){
-        _db = mongoose.connect(Bozuko.config.db.host);
+        _db = mongoose.connect(bozuko.config.db.host);
     }
     return _db;
 }

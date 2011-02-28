@@ -1,7 +1,9 @@
+var bozuko = require('bozuko');
+
 var qs          = require('querystring'),
     URL         = require('url'),
-    facebook    = Bozuko.require('util/facebook'),
-    http        = Bozuko.require('util/http');
+    facebook    = bozuko.require('util/facebook'),
+    http        = bozuko.require('util/http');
 
 exports.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
@@ -9,9 +11,9 @@ exports.login = function(req,res,scope,defaultReturn,success,failure){
     var url = URL.parse(req.url);
    
     var params = {
-        'client_id' : Bozuko.config.facebook.app.id,
-        'scope' : Bozuko.config.facebook.perms[scope],
-        'redirect_uri' : 'http://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname
+        'client_id' : bozuko.config.facebook.app.id,
+        'scope' : bozuko.config.facebook.perms[scope],
+        'redirect_uri' : 'http://'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
     };
     
     if( req.session.device == 'touch'){
@@ -41,7 +43,7 @@ exports.login = function(req,res,scope,defaultReturn,success,failure){
     }
     else{
         
-        params.client_secret = Bozuko.config.facebook.app.secret;
+        params.client_secret = bozuko.config.facebook.app.secret;
         params.code = code;
         
         // we should also have the user information here...
@@ -63,9 +65,9 @@ exports.login = function(req,res,scope,defaultReturn,success,failure){
                             access_token : token
                         }
                     }, function(user){
-                        Bozuko.models.User.findOne({facebook_id:user.id}, function(err, u){
+                        bozuko.models.User.findOne({facebook_id:user.id}, function(err, u){
                             if( !u ){
-                                u = new Bozuko.models.User();
+                                u = new bozuko.models.User();
                             }
                             // update the user's details
                             u.name = user.name;
@@ -79,7 +81,7 @@ exports.login = function(req,res,scope,defaultReturn,success,failure){
                                 
                                 var device = req.session.device;
                                 req.session.regenerate(function(err){
-                                    res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
+                                    res.clearCookie('fbs_'+bozuko.config.facebook.app.id);
                                     req.session.userJustLoggedIn = true;
                                     req.session.user = u;
                                     req.session.device = device;

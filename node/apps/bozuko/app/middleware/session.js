@@ -1,3 +1,5 @@
+var bozuko = require('bozuko');
+
 var qs          = require('querystring');
 
 var HEADER = {
@@ -8,7 +10,7 @@ var HEADER = {
 module.exports = function session(){
     return function session(req, res, next){
         var uid, token;
-        var cookie = req.cookies['fbs_'+Bozuko.config.facebook.app.id];
+        var cookie = req.cookies['fbs_'+bozuko.config.facebook.app.id];
         
         var q = {facebook_id:null};
         
@@ -29,7 +31,7 @@ module.exports = function session(){
             req.session.user = false;
             if( q.facebook_id ){
                 // check for the user in our database
-                Bozuko.models.User.findOne(q,function(err, u){
+                bozuko.models.User.findOne(q,function(err, u){
                     if( u ){
                         req.session.user = u;
                     }

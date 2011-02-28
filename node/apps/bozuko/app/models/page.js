@@ -1,4 +1,6 @@
-var facebook = Bozuko.require('util/facebook'),
+var bozuko = require('bozuko');
+
+var facebook = bozuko.require('util/facebook'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
@@ -20,14 +22,14 @@ var Page = module.exports = new Schema({
 });
 
 Page.method('getOwner', function(callback){
-    Bozuko.models.User.findById( this.owner_id, callback );
+    bozuko.models.User.findById( this.owner_id, callback );
 });
 
 Page.method('checkin', function(user, game, callback) {
             
     var self = this;
     
-    Bozuko.models.Checkin
+    bozuko.models.Checkin
         .findOne({user_id:user.id,place_id:this.id},[],{sort:{'timestamp':-1}}, function(lastCheckin){
             var doCheckin = true;
             
@@ -36,7 +38,7 @@ Page.method('checkin', function(user, game, callback) {
             /*
             if( lastCheckin ){
                 var now = new Date();
-                if( now.getTime() - lastCheckin.timestamp.getTime() < Bozuko.config.checkin.interval ){
+                if( now.getTime() - lastCheckin.timestamp.getTime() < bozuko.config.checkin.interval ){
                     doCheckin = false;
                 }
             }                     
@@ -44,7 +46,7 @@ Page.method('checkin', function(user, game, callback) {
             
             if( doCheckin ){
                 
-                var checkin = new Bozuko.models.Checkin();
+                var checkin = new bozuko.models.Checkin();
                 
                 checkin.place_id = self.id;
                 checkin.place_facebook_id = self.facebook_id;
@@ -62,13 +64,13 @@ Page.method('checkin', function(user, game, callback) {
 Page.static('search', function(center, limit, callback){
             
     // lets give them just the coinflip game for now...
-    // this needs to be generated from Bozuko.games
+    // this needs to be generated from bozuko.games
     // + the 
     var games = [];
     
-    for(var id in Bozuko.games){
+    for(var id in bozuko.games){
         if( id == 'dice' || id =='slots' ) continue;
-        var game = Bozuko.games[id];
+        var game = bozuko.games[id];
         game.id = id;
         game.name = game.config.name;
         game.icon = '/game/'+id+'/images/'+game.config.icon;
@@ -99,7 +101,7 @@ Page.static('search', function(center, limit, callback){
                 callback(new Error('No results'));
             }
             
-            Bozuko.models.Page.find({facebook_id:{$in:Object.keys(map)}}, function(err, bozuko_places){
+            bozuko.models.Page.find({facebook_id:{$in:Object.keys(map)}}, function(err, bozuko_places){
                 
                 result.data.forEach( function(place, index){
                     place.games = index%1==0 ? games : [];

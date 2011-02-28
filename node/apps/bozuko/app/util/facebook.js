@@ -1,9 +1,11 @@
-var http = Bozuko.require('util/http'),
+var bozuko = require('bozuko');
+
+var http = bozuko.require('util/http'),
     merge= require('connect/lib/connect/utils').merge;
 
 var facebook = module.exports;
 
-var cache = Bozuko.facebook_cache = {};
+var cache = bozuko.facebook_cache = {};
 
 exports.graph = function(path, options, callback){
     
@@ -15,8 +17,8 @@ exports.graph = function(path, options, callback){
         options = {};
     }
     var params = {
-        client_id : Bozuko.config.facebook.app.id,
-        access_token : Bozuko.config.facebook.app.access_token
+        client_id : bozuko.config.facebook.app.id,
+        access_token : bozuko.config.facebook.app.access_token
     };
     
     options = options || {};
@@ -67,10 +69,10 @@ exports.graph = function(path, options, callback){
             var then = new Date();
             cache[cacheKey] = {arguments:arguments, time:then, duration:then.getTime()-now.getTime()};
             
-            Bozuko.last_facebook_time = then.getTime() - now.getTime();
-            if( !Bozuko.facebook_requests ) Bozuko.facebook_requests={};
-            if( !Bozuko.facebook_requests[url] ) Bozuko.facebook_requests[url] = [];
-            Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
+            bozuko.last_facebook_time = then.getTime() - now.getTime();
+            if( !bozuko.facebook_requests ) bozuko.facebook_requests={};
+            if( !bozuko.facebook_requests[url] ) bozuko.facebook_requests[url] = [];
+            bozuko.facebook_requests[url].push(bozuko.last_facebook_time);
             if (callback instanceof Function) callback.apply(this,arguments);
             else console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
         },
@@ -112,7 +114,7 @@ exports.get_accounts = function(user,callback){
             pages.sort(sort_FacebookPageLocation).reverse();
             
             if( ids.length > 0 ){
-                Bozuko.models.Page.find({facebook_id:{$in:ids}}, function(bozuko_pages){
+                bozuko.models.Page.find({facebook_id:{$in:ids}}, function(bozuko_pages){
                     if( bozuko_pages != null ) bozuko_pages.forEach(function(bozuko_page){
                         var i = ids.indexOf(bozuko_page.facebook_id);
                         pages[i].has_owner = true;

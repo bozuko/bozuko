@@ -1,5 +1,7 @@
-var facebook    = Bozuko.require('util/facebook'),
-    http        = Bozuko.require('util/http'),
+var bozuko = require('bozuko');
+
+var facebook    = bozuko.require('util/facebook'),
+    http        = bozuko.require('util/http'),
     qs          = require('querystring')
 ;
 
@@ -18,7 +20,7 @@ exports.routes = {
         aliases     :['/login'],
         
         get : function(req,res){
-            Bozuko.require('auth').login(req,res,'user');
+            bozuko.require('auth').login(req,res,'user');
         }
     },
 

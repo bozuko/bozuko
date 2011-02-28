@@ -1,4 +1,6 @@
-var facebook = Bozuko.require('util/facebook'),
+var bozuko = require('bozuko');
+
+var facebook = bozuko.require('util/facebook'),
     qs       = require('querystring');
 
 var requestCount = 0;
@@ -21,7 +23,7 @@ exports.routes = {
             var lng = req.param('lng') || '-71.307864';
             var c = lat+','+lng;
             
-            Bozuko.models.Page.search(c, req.param('limit') || 25, function(pages){
+            bozuko.models.Page.search(c, req.param('limit') || 25, function(pages){
                 res.send(pages);
             });
         }
@@ -47,7 +49,7 @@ exports.routes = {
            
             // lets check them in...
             facebook.graph('/'+place_id, function(p){
-            //Bozuko.models.Place.find({facebook_id:place_id}).one(function(p){
+            //bozuko.models.Place.find({facebook_id:place_id}).one(function(p){
             
                 facebook.graph('/me/checkins',{
                     user:   req.session.user,
@@ -59,7 +61,7 @@ exports.routes = {
                     method:'post'
                 },function(result){
                     // lets get the game requested
-                    var ret = Bozuko.games.dice.run();
+                    var ret = bozuko.games.dice.run();
                     res.send({success:true, result: ret});
                 });
             

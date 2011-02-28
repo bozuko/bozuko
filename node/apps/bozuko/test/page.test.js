@@ -1,11 +1,10 @@
 var print = require('util').debug;
 var assert = require('assert');
-var app = require('../app');
 var btest = require('../btest');
 
-function start() {
-    btest.export_test('GET the first page returned from /pages', exports, function(beforeExit) {
-        assert.response(app, 
+function run(server) {
+    btest.export_test(server, 'GET first page', exports, function(beforeExit) {
+        assert.response(server, 
 	    {url: '/pages'},
 	    {status: 200, headers: {'Content-Type': 'application/json'}},
 	    function(res) {
@@ -18,16 +17,16 @@ function start() {
 		assert.ok('id' in place);
 		assert.ok('games' in place);
 
-		assert.response(app, 
+		assert.response(server, 
 //		    {url: '/page/'+place.id},
                     {url: '/pages'},
 		    {status: 200, headers: {'Content-Type': 'application/json'}},
 	            function(res) {
-			btest.done();
+			btest.done(server);
 		    });
             });  
 	});
 }
 
-btest.setup_server(app, start);
+btest.setup_app(run);
 

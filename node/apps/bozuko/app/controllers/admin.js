@@ -1,6 +1,8 @@
-var facebook    = Bozuko.require('util/facebook'),
-    http        = Bozuko.require('util/http'),
-    Page        = Bozuko.require('util/page'),
+var bozuko = require('bozuko');
+
+var facebook    = bozuko.require('util/facebook'),
+    http        = bozuko.require('util/http'),
+    Page        = bozuko.require('util/page'),
     qs          = require('querystring'),
     url         = require('url'),
     spawn       = require('child_process').spawn,
@@ -18,9 +20,9 @@ exports.routes = {
         
         fn : function(req,res){
             // http://nodejs.org/api.html#_child_processes
-            var sys = require('sys')
+            var sys = require('sys');
             var spawn = require('child_process').spawn;
-            var filename = Bozuko.dir+'/logs/bozuko.log';
+            var filename = bozuko.dir+'/logs/bozuko.log';
             
             var tail = spawn("tail", ["-f", filename]);
             

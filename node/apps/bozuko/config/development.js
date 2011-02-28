@@ -1,3 +1,5 @@
+var port = 6000 + process.getuid();
+
 exports.config = {
     db:{
         host:'mongodb://localhost/bozuko'
@@ -15,6 +17,6 @@ exports.config = {
     },
     server: {
         host: 'bozuko.com',
-        port: 8000
+        port: port
     }
 };

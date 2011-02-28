@@ -12,27 +12,12 @@ var express = require('express');
 var app = express.createServer();
 
 /**
- * Global Bozuko Object initialization
+ * Load common Bozuko stuff
  */
-Bozuko = {};
-Bozuko.app = app;
-Bozuko.dir = __dirname;
-Bozuko.require = function(module){
-    return require(this.dir+'/app/'+module);
-};
+var bozuko = require('bozuko');
 
-Bozuko.config = require('./config/development').config;
-Bozuko.db = Bozuko.require('db');
-
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-});
-
-app.configure('production', function(){
-  app.use(express.errorHandler()); 
-});
-
-require('./app/main').run(app);
+bozuko.app = app;
+bozuko.run('development');
 
 // Only listen on $ node app.js
 module.exports = app;
@@ -40,11 +25,11 @@ module.exports = app;
 if (!module.parent) {
   var multinode = require('/home/bozuko/bozuko/node/lib/multi-node');
   multinode.listen({   
-    port: global.Bozuko.config.server.port,
+    port: bozuko.config.server.port,
     nodes: 4
   }, app);
 
-  console.log("Bozuko Server listening on port ",global.Bozuko.config.server.port);
+  console.log("Bozuko Server listening on port ",global.bozuko.config.server.port);
 
   var repl = net.createServer( function(socket){
       repl.start("bozuko> ", socket);

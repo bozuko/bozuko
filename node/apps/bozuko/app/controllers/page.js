@@ -1,4 +1,6 @@
-var facebook = Bozuko.require('util/facebook'),
+var bozuko = require('bozuko');
+
+var facebook = bozuko.require('util/facebook'),
     qs       = require('querystring');
 
 var requestCount = 0;
@@ -21,7 +23,7 @@ exports.routes = {
             var lng = req.param('lng') || '-71.307864';
             var c = lat+','+lng;
             
-            Bozuko.models.Page.search(c, req.param('limit') || 25, function(pages){
+            bozuko.models.Page.search(c, req.param('limit') || 25, function(pages){
                 res.send(pages);
             });
         }
@@ -39,7 +41,7 @@ exports.routes = {
             
             var uid = req.header('BOZUKO_FB_USER_ID');
             if( !uid ){
-                var cookie = req.cookies['fbs_'+Bozuko.config.facebook.app.id];
+                var cookie = req.cookies['fbs_'+bozuko.config.facebook.app.id];
                 var session = qs.parse(cookie);
                 var uid = session.uid;
                 var auth = session.access_token;
@@ -52,12 +54,12 @@ exports.routes = {
             console.log(req.session.user);
             // lets check them in...
             facebook.graph('/'+page_id, function(p){
-            //Bozuko.models.Place.find({facebook_id:place_id}).one(function(p){
+            //bozuko.models.Place.find({facebook_id:place_id}).one(function(p){
             
                 facebook.graph('/me/checkins',{
                     user:   req.session.user,
                     params:{
-                        'message':'Just won a free something playing Bozuko!',
+                        'message':'Just won a free something playing bozuko!',
                         'place':page_id,
                         'coordinates':JSON.stringify(p.location)
                     },
@@ -65,7 +67,7 @@ exports.routes = {
                 },function(result){
                     console.log(result);
                     // lets get the game requested
-                    var ret = Bozuko.games.dice.run();
+                    var ret = bozuko.games.dice.run();
                     res.send({success:true, result: ret});
                 });
             
