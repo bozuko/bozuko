@@ -19,7 +19,6 @@ function run(server) {
 
 		assert.response(server, 
 		    {url: '/page/'+place.id},
-                    {url: '/pages'},
 		    {status: 200, headers: {'Content-Type': 'application/json'}},
 	            function(res) {
 			btest.done(server);
