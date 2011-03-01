@@ -17,20 +17,20 @@ exports.configure = function(config) {
     if (!app) {
 	throw new Error("bozuko.app not set!");
     }
-   switch(config) {
-       case 'development':
-           exports.config = require('./config/development').config;
-           app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-       case 'production':
-           exports.config = require('./config/production').config;
-           app.use(express.errorHandler()); 
-       case 'test':
-           exports.config = require('./config/test').config;
-           app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-       default:
-           exports.config = require('./config/development').config;
-           app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
-   }
+	switch(config) {
+       
+		case 'production':
+           exports.config = require('./config/production');
+           app.use(express.errorHandler());
+		   
+		case 'test':
+           exports.config = require('./config/test');
+           app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+		   
+		default:
+			exports.config = require('./config/development');
+			app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+	}
 };
 
 exports.run = function(config) {
