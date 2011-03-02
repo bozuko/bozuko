@@ -20,7 +20,7 @@ exports.routes = {
         aliases     :['/login'],
         
         get : function(req,res){
-            bozuko.require('auth').login(req,res,'user');
+            bozuko.require('core/auth').login(req,res,'user');
         }
     },
 

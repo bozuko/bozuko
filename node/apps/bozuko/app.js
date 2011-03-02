@@ -1,4 +1,5 @@
 var net     = require('net'),
+    fs      = require('fs'),
     repl    = require('repl');
 
 /**
@@ -9,6 +10,10 @@ var express = require('express');
 /**
  * Create our main server
  */
+var ssl = {
+  key:fs.readFileSync('ssl/bonobo.bozuko.com.key'),
+  cert:fs.readFileSync('ssl/bonobo.bozuko.com.crt')
+};
 var app = express.createServer();
 
 /**

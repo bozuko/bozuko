@@ -31,7 +31,7 @@ exports.routes = {
         description : "General pages - written in jade - located in views/[device]/pages",
         
         get : function(req, res, next){
-            var path = 'pages/'+URL.parse(req.url).pathname.replace(/\/page\//, '');
+            var path = 'pages/'+URL.parse(req.url).pathname.replace(/\/p\//, '');
             
             res.render(path,{
                 locals:{

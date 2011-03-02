@@ -6,7 +6,7 @@ exports.require = function(module){
     return require(exports.dir+'/app/'+module);
 };
 
-exports.db = exports.require('db');
+exports.db = exports.require('core/db');
 
 
 /**
@@ -40,4 +40,13 @@ exports.run = function(config) {
 	throw new Error("No configuration given!");
     }
     require('./app/main').run(exports.app);
+};
+
+exports.services = {};
+exports.service = function(name){
+	if( !exports.services[name] ){
+		var Service = this.require('core/services/'+(name||'facebook')).Service;
+		exports.services[name] = new Service();
+	}
+	return exports.services[name];
 };
