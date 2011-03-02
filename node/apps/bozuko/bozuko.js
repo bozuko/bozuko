@@ -47,7 +47,7 @@ exports.run = function(config) {
 exports.services = {};
 exports.service = function(name){
 	if( !exports.services[name] ){
-		var Service = this.require('core/services/'+(name||'facebook')).Service;
+		var Service = this.require('core/services/'+(name||'facebook'));
 		exports.services[name] = new Service();
 	}
 	return exports.services[name];

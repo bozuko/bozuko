@@ -1,7 +1,7 @@
 /**
  * Abstract Service Class
  */
-var Service = exports.Service = function(){
+var Service = module.exports = function(){
     
 };
 

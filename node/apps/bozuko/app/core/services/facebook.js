@@ -5,10 +5,10 @@ var bozuko      = require('bozuko'),
     qs          = require('querystring'),
     url         = require('url')    
     facebook    = bozuko.require('util/facebook'),
-    Service     = bozuko.require('core/service').Service
+    Service     = bozuko.require('core/service')
 ;
     
-var FacebookService = exports.Service = function(){
+var FacebookService = module.exports = function(){
     Service.call(this);
 };
 
