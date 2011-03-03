@@ -1,7 +1,7 @@
 var bozuko = require('bozuko');
 
 var http = bozuko.require('util/http'),
-    merge= require('connect/lib/connect/utils').merge;
+    merge= require('connect').utils.merge;
 
 var facebook = module.exports;
 

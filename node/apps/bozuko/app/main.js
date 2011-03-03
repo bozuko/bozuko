@@ -7,10 +7,10 @@ var fs          = require('fs'),
     // log4js      = require('log4js')(),
     express     = require('express'),
     Schema      = require('mongoose').Schema,
-    MemoryStore = require('connect/lib/connect/middleware/session/memory'),
+    MemoryStore = require('connect').middleware.session.MemoryStore,
     Monomi      = require('monomi'),
-    Controller  = bozuko.require('controller'),
-    Game        = bozuko.require('game');
+    Controller  = bozuko.require('core/controller'),
+    Game        = bozuko.require('core/game');
 
 exports.run = function(app){
     
@@ -18,7 +18,7 @@ exports.run = function(app){
     initApplication(app);
     
     // setup our device dependent renderer
-    bozuko.require('view');
+    bozuko.require('core/view');
     
     // setup our models
     initModels();
@@ -80,6 +80,8 @@ function initModels(){
 function initControllers(app){
     bozuko.controllers = {};
     fs.readdirSync(__dirname + '/controllers').forEach( function(file){
+        
+        if( !/js$/.test(file) ) return;
         
         var name = file.replace(/\..*?$/, '');
         var Name = name.charAt(0).toUpperCase()+name.slice(1);

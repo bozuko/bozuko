@@ -61,7 +61,7 @@ Page.method('checkin', function(user, game, callback) {
         });
 });
 
-Page.static('search', function(center, limit, callback){
+Page.static('search', function(latLng, limit, callback){
             
     // lets give them just the coinflip game for now...
     // this needs to be generated from bozuko.games
@@ -72,23 +72,22 @@ Page.static('search', function(center, limit, callback){
         if( id == 'dice' || id =='slots' ) continue;
         var game = bozuko.games[id];
         game.id = id;
+        console.log(game);
         game.name = game.config.name;
         game.icon = '/game/'+id+'/images/'+game.config.icon;
         game.prize = 'Free Buffalo Wings and Potato Skins!';
         games.push(game);
     }
     
-    facebook.graph( '/search',
-        /* Facebook Options */
+    console.log(bozuko.service());
+    
+    bozuko.service().search(
         {
-            params: {
-                type: 'place',
-                center : center,
-                limit : limit
-            }
+            latLng : latLng,
+            limit : limit
         },
         /* Callback */
-        function(result){
+        function(error, result){
             // loop through the results and see if we have a place with
             // the facebook id..
             var map = {};

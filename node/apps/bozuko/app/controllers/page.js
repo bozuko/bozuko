@@ -21,9 +21,7 @@ exports.routes = {
         get : function(req,res){
             var lat = req.param('lat') || '42.645625';
             var lng = req.param('lng') || '-71.307864';
-            var c = lat+','+lng;
-
-            bozuko.models.Page.search(c, req.param('limit') || 25, function(pages){
+            bozuko.models.Page.search({lat:lat,lng:lng}, req.param('limit') || 25, function(pages){
                 res.send(pages);
             });
         }

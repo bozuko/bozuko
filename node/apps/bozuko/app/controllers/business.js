@@ -3,7 +3,7 @@ var bozuko = require('bozuko');
 var facebook    = bozuko.require('util/facebook'),
     http        = bozuko.require('util/http'),
     Page        = bozuko.require('util/page'),
-    merge       = require('connect/lib/connect/utils').merge,
+    merge       = require('connect').utils.merge,
     qs          = require('querystring'),
     url         = require('url')    
 ;
@@ -15,7 +15,7 @@ exports.routes = {
         description :"Business login - sends user to facebook",
         
         get : function(req,res){
-            bozuko.require('auth').login(req,res,'business','/business/account',function(user){
+            bozuko.require('core/auth').login(req,res,'business','/business/account',function(user){
                 // need to set a flag that this user let us manage pages
                 user.can_manage_pages = true;
                 user.save(function(){});

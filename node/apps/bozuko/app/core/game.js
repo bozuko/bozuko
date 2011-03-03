@@ -6,17 +6,17 @@ var Game = module.exports = function(dir){
     this.dir = dir;
     this.name = this.dir.split('/').pop();
     this.config = require(dir).config;
+    //this.options = require(dir+'/options');
 };
 
 /**
- * Class Methods
+ * Abstract Game Class
  */
 Game.prototype = {
     
-    getResult : function(config){
-        //
-        bozuko.require('')
-    },
+    name : null,
+    
+    options : {},
     
     startServer : function(app){
         app.use('/game/'+this.name, express.staticProvider(this.dir+'/resources'));
