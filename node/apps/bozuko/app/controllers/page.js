@@ -61,7 +61,8 @@ exports.routes = {
 
             // we should have the user from the session...
             if( !req.session.user ){
-                res.send({success:false});
+                res.statusCode = 404,
+                res.end();
 		return;
             }
             console.log(req.session.user);

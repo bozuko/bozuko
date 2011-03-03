@@ -4,12 +4,6 @@ var bozuko = require('bozuko');
 
 var fake_id = 'fake-id';
 
-assert.validate = function(object, properties) {
-    properties.forEach(function(prop) {
-	assert.ok(prop in object);
-    });
-};
-
 exports['GET /user/login'] = function(beforeExit) {
     assert.response(bozuko.app,
         {url: '/user/login'},
@@ -25,7 +19,7 @@ exports['GET /user/:id'] = function(beforeExit) {
 	function(res) {
 	    var user = JSON.parse(res.body);
 	    assert.eql(fake_id, user.id);
-	    assert.validate(user, ['name', 'first_name', 'last_name', 'gender', 'email', 'picture',
+	    assert.keys(user, ['name', 'first_name', 'last_name', 'gender', 'email', 'picture',
 	        'facebook_id', 'can_manage_pages']);
 	});
 };
@@ -36,12 +30,12 @@ exports['GET /user/:id/prizes'] = function(beforeExit) {
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var prizes = JSON.parse(res.body);
-	    assert.validate(prizes, ['active', 'redeemed', 'expired']);
+	    assert.keys(prizes, ['active', 'redeemed', 'expired']);
 	    assert.eql(prizes.active[0].state, 'active');
-	    assert.validate(prizes.active[0], ['name', 'place', 'win_time', 'expiration_time']);
+	    assert.keys(prizes.active[0], ['name', 'place', 'win_time', 'expiration_time']);
 	    assert.eql(prizes.redeemed[0].state, 'redeemed');
-	    assert.validate(prizes.redeemed[0], ['name', 'place', 'win_time', 'redemption_time']);
+	    assert.keys(prizes.redeemed[0], ['name', 'place', 'win_time', 'redemption_time']);
 	    assert.eql(prizes.expired[0].state, 'expired');
-	    assert.validate(prizes.expired[0], ['name', 'place', 'win_time', 'expiration_time']);
+	    assert.keys(prizes.expired[0], ['name', 'place', 'win_time', 'expiration_time']);
 	});
 };

@@ -9,44 +9,20 @@ exports['Get page']  = function(beforeExit) {
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var place = JSON.parse(res.body).data[0];
-		assert.ok('name' in place);
-		assert.ok('category' in place);
-		assert.ok('location' in place);
-		assert.ok('latitude' in place.location);
-		assert.ok('longitude' in place.location);
-		assert.ok('id' in place);
-		assert.ok('games' in place);
+            assert.keys(place, ['id', 'name', 'category', 'location', 'games']);
+            assert.keys(place.location, ['latitude', 'longitude']);
 
-		assert.response(bozuko.app,
-		    {url: '/page/'+place.id},
-		    {status: 200, headers: {'Content-Type': 'application/json'}},
-	            function(res) {
-			var page = JSON.parse(res.body);
-			assert.ok('id' in page);
-			assert.ok('name' in page);
-			assert.ok('picture' in page);
-			assert.ok('link' in page);
-			assert.ok('category' in page);
-			// assert.ok('is_community_page' in page); - sometimes this isn't sent
-			assert.ok('location' in page);
-			assert.ok('latitude' in page.location);
-			assert.ok('longitude' in page.location);
-			assert.ok('fan_count' in page);
-			assert.ok('checkins' in page);
-			assert.ok('games' in page);
-			assert.ok('id' in page.games[0]);
-			assert.ok('icon' in page.games[0]);
-			assert.ok('name' in page.games[0]);
-			assert.ok('prize' in page.games[0]);
-		    });
+            assert.response(bozuko.app,
+                {url: '/page/'+place.id},
+	        {status: 200, headers: {'Content-Type': 'application/json'}},
+	        function(res) {
+	            var page = JSON.parse(res.body);
+                    assert.keys(page, ['id', 'name', 'picture', 'link', 'category', 'location',
+                        'fan_count', 'checkins', 'games']);
+		});
 
-	       assert.response(bozuko.app,
+            assert.response(bozuko.app,
 		   {url: '/page/'+place.id+'/game'},
-		   {status: 200, header: {'Content-Type': 'application/json'}},
-		   function(res) {
-		       assert.eql({success: false}, JSON.parse(res.body));
-		   });
+		   {status: 404, header: {'Content-Type': 'application/json'}});
     });
 };
-
-
