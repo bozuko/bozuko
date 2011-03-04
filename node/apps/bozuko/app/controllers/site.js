@@ -44,7 +44,7 @@ exports.routes = {
     '/get_token' : {
         
         get : function(req,res){
-            bozuko.require('auth').login(req,res,'user','/get_token',
+            bozuko.require('core/auth').login(req,res,'user','/get_token',
                 
                 function success(user,req,res){
                     res.redirect('/get_token/token/'+user.facebook_auth+'/user/'+user.facebook_id);

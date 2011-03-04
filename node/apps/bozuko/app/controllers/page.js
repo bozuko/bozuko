@@ -1,7 +1,6 @@
 var bozuko = require('bozuko');
 
-var facebook = bozuko.require('util/facebook'),
-    qs       = require('querystring');
+var qs       = require('querystring');
 
 var requestCount = 0;
 
@@ -15,77 +14,101 @@ var fakeGames = [{
 exports.routes = {
 
     '/pages' : {
+        
+        aliases : ['/places'],
 
         description : 'Get a list of pages generated from facebook',
 
         get : function(req,res){
             var lat = req.param('lat') || '42.645625';
             var lng = req.param('lng') || '-71.307864';
-            bozuko.models.Page.search({lat:lat,lng:lng}, req.param('limit') || 25, function(pages){
+             
+            var options = {
+                latLng : {lat:lat, lng:lng},
+                limit : parseInt(req.param('limit')) || 25,
+                offset : parseInt(req.param('offset')) || 0
+            };
+            bozuko.models.Page.search(options, function(pages){
                 res.send(pages);
             });
         }
     },
 
+
+    /**
+     * TODO
+     *
+     * Return Bozuko page results (models/page) instead of straight up facebook.
+     * This may require two separate urls in order to serve non-bozuko pages
+     * in our list. Or we just add places to our database as we find them
+     * via the 3rd party service... I think that might be too much though.
+     *
+     */
     '/page/:id' : {
 
-	description :'Return page details',
+        description :'Return page details',
 
         get :function(req,res){
-            facebook.graph('/'+req.param('id'), {
-                user: req.session.user
-            },function(place){
+            
+            bozuko.service('facebook').place({
+                place_id:req.param('id')
+            },function(error, place){
                 place.games = fakeGames;
                 res.send(place);
             });
+            
         }
     },
 
+    /**
+     * TODO
+     *
+     * Move this to /contest/:id
+     *
+     * Each page will have a number contests associated with them that
+     * 
+     *
+     */
     '/page/:id/game' : {
+        
+        aliases : ['/place/:id/game'],
 
-	description :"Checkin and return the game result / code",
+        description :"Checkin and return the game result / code",
 
         get : function (req,res){
-            // get the session from the cookie...
-            var page_id = req.params.id;
+            
+            
+            
+            var page_id = req.param('id');
             var lat = req.param('lat');
             var lng = req.param('lng');
-
-            var uid = req.header('BOZUKO_FB_USER_ID');
-            if( !uid ){
-                var cookie = req.cookies['fbs_'+bozuko.config.facebook.app.id];
-                var session = qs.parse(cookie);
-                var uid = session.uid;
-                var auth = session.access_token;
-            }
-
+            
             // we should have the user from the session...
             if( !req.session.user ){
                 res.statusCode = 404,
                 res.end();
-		return;
+                return;
             }
-            console.log(req.session.user);
             // lets check them in...
-            facebook.graph('/'+page_id, function(p){
-            //bozuko.models.Place.find({facebook_id:place_id}).one(function(p){
-
-                facebook.graph('/me/checkins',{
-                    user:   req.session.user,
-                    params:{
-                        'message':'Just won a free something playing bozuko!',
-                        'place':page_id,
-                        'coordinates':JSON.stringify(p.location)
-                    },
-                    method:'post'
-                },function(result){
-                    console.log(result);
+            
+            bozuko.service('facebook').place({place_id: page_id}, function(error, p){
+                
+                bozuko.service('facebook').checkin({
+                    user        :req.session.user,
+                    message     :'Just won a free burrito playing bozuko!',
+                    place_id    :p.id,
+                    actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
+                    link        :'http://bozuko.com',
+                    picture     :'http://bozuko.com/images/bozuko-chest-check.png',
+                    description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
+                    latLng      :{lat:p.location.latitude,lng:p.location.longitude}
+                },function(error, result){
+                    console.log(error);
                     // lets get the game requested
-                    var ret = bozuko.games.dice.run();
-                    res.send({success:true, result: ret});
+                    // var ret = bozuko.games.dice.run();
+                    res.send({success:true, result: 'result'});
                 });
 
-                //res.send({success:true});
             });
 
         }
