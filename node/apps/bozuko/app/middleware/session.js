@@ -13,7 +13,13 @@ module.exports = function session(){
         var cookie = req.cookies['fbs_'+bozuko.config.facebook.app.id];
 
         var q = {facebook_id:null};
-
+        /**
+         * Fix for the logger and possibly session stuff with ssl
+         */
+        if( req.socket.socket ){
+            req.socket.remoteAddress = req.socket.socket.remoteAddress;
+        }
+        
         if( req.header(HEADER.user_id) ){
             // need to run these through unescape because of how
             // they are retrieved in corona
@@ -27,7 +33,7 @@ module.exports = function session(){
             q.facebook_auth = session.access_token;
         }
 
-        if( !req.session.userJustLoggedIn && (req.session.user === undefined || q.facebook_id != req.session.user.facebook_id) ){
+        if( req.session && !req.session.userJustLoggedIn && (req.session.user === undefined || q.facebook_id != req.session.user.facebook_id) ){
             req.session.user = false;
             if( q.facebook_id ){
                 // check for the user in our database
@@ -43,7 +49,7 @@ module.exports = function session(){
             }
 
         }else{
-            req.session.userJustLoggedIn = false;
+            if( req.session ) req.session.userJustLoggedIn = false;
             next();
         }
 

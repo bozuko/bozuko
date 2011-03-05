@@ -7,16 +7,15 @@ var http            = require('http'),
 
 
 var expressRender = http.ServerResponse.prototype.render;
-http.ServerResponse.prototype.render = function(view, options, fn, parent){
+http.ServerResponse.prototype.render = function(view, locals, fn, parent){
     
     var global_locals = {
         user            :this.req.session.user||false
     };
-    var locals = options.locals || {};
-    options.locals = merge(global_locals, locals);
-    var device = options.device || this.req.session.device;    
+    locals = merge(global_locals, locals || {} );
+    var device = locals.device || this.req.session.device;    
     view = device+'/'+view;
-    return expressRender.call( this, view, options, fn, parent );
+    return expressRender.call( this, view, locals, fn, parent );
 };
 
 /*

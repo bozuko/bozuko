@@ -36,7 +36,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var params = {
         'client_id' : bozuko.config.facebook.app.id,
         'scope' : bozuko.config.facebook.perms[scope],
-        'redirect_uri' : 'http://'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
+        'redirect_uri' : 'https://'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
     };
 
     if( req.session.device == 'touch'){

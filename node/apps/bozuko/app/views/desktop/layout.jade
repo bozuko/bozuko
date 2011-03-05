@@ -9,8 +9,8 @@ html
     script(type="text/javascript",src="/site/config")
     
     //- Assign the uid from the last active fb session here.
-    :javascript
-      | var _uid = #{user ? user.facebook_id : -1};
+    script
+      var _uid = #{user ? user.facebook_id : -1};
     
     
     
@@ -59,8 +59,9 @@ html
     #fb-root
     script(src="http://connect.facebook.net/en_US/all.js")
     script(type="text/javascript",src="/js/desktop/core.js")
+    
     - if (locals.scripts)
       - each script in scripts
         script(type="text/javascript",src=script)
+        
     script(src="http://j.maxmind.com/app/geoip.js")
-    
