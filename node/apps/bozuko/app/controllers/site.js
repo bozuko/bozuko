@@ -7,11 +7,11 @@ var ExtJs       = bozuko.require('util/extjs'),
     qs          = require('querystring');
 
 exports.routes = {
-    
+
     '/' : {
-        
+
         description :'Index page',
-        
+
         all : function(req,res){
             var locals = {
                 title: 'Bozuko',
@@ -23,16 +23,16 @@ exports.routes = {
             res.render('site/index.jade', {locals:locals});
         }
     },
-    
+
     '/about' : Page("About Bozuko",'site/about'),
-    
+
     '/p/*' : {
-        
+
         description : "General pages - written in jade - located in views/[device]/pages",
-        
+
         get : function(req, res, next){
             var path = 'pages/'+URL.parse(req.url).pathname.replace(/\/p\//, '');
-            
+
             res.render(path,{
                 locals:{
                     'title' : 'Bozuko'
@@ -40,26 +40,26 @@ exports.routes = {
             });
         }
     },
-    
+
     '/get_token' : {
-        
+
         get : function(req,res){
-            bozuko.require('auth').login(req,res,'user','/get_token',
-                
+            bozuko.require('core/auth').login(req,res,'user','/get_token',
+
                 function success(user,req,res){
                     res.redirect('/get_token/token/'+user.facebook_auth+'/user/'+user.facebook_id);
                     return false;
                 },
-                
+
                 function failure(error, req, res){
                     res.redirect('/get_token/error/'+escape(error));
                     return false;
                 }
-                
+
             );
         }
     },
-    
+
     '/get_token/error/*' : {
         get : function(req, res){
             // we don't need to display anything here.
@@ -67,7 +67,7 @@ exports.routes = {
             res.send('');
         }
     },
-    
+
     '/get_token/token/:token/user/:user' : {
         get : function(req, res){
             // we don't need to display anything here.
@@ -75,13 +75,13 @@ exports.routes = {
             res.send('');
         }
     },
-    
+
     '/graph/*' : (function(){
-        
+
         function graph(req,res){
             var params={};
             var path = req.url.replace(/^\/graph/,'');
-            
+
             if( req.method == 'GET'){
                 var search =  URL.parse(req.url).query;
                 if( search ) params = qs.parse(search);
@@ -89,7 +89,7 @@ exports.routes = {
             else if( req.method == 'POST'){
                 if( req.params ) req.params = params;
             }
-            
+
             facebook.graph(path,{
                 method : req.method,
                 user : req.session.user,
@@ -98,17 +98,17 @@ exports.routes = {
                 res.send(data);
             });
         }
-        
+
         return {
             get : graph,
             post : graph
         };
     })(),
-    
+
     '/site/config' : {
-        
+
         description :"Return the publicly available configuration",
-        
+
         get : function(req,res){
             var config = {
                 facebook:{
@@ -119,9 +119,9 @@ exports.routes = {
             res.send("Bozuko = window.Bozuko || {}; Bozuko.config = "+JSON.stringify(config)+";", {"Content-Type":"text/javascript"} );
         }
     },
-    
+
     'games' : {
-        
+
         get : function(req,res){
             res.send(bozuko.games);
         }

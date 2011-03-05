@@ -3,11 +3,11 @@ var bozuko      = require('bozuko'),
     http        = bozuko.require('util/http'),
     merge       = require('connect').utils.merge,
     qs          = require('querystring'),
-    url         = require('url')    
+    url         = require('url'),
     facebook    = bozuko.require('util/facebook'),
     Service     = bozuko.require('core/service')
 ;
-    
+
 var FacebookService = module.exports = function(){
     Service.call(this);
 };
@@ -26,23 +26,23 @@ var $ = FacebookService.prototype;
  *                                          Takes an argument of the user
  * @param {Function}        failure         A callback function on login failure
  *
- * @returns {null}  
+ * @returns {null}
  */
 $.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
-   
+
     var params = {
         'client_id' : bozuko.config.facebook.app.id,
         'scope' : bozuko.config.facebook.perms[scope],
         'redirect_uri' : 'http://'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
     };
-    
+
     if( req.session.device == 'touch'){
         params.display = 'touch';
     }
-    
+
     if( !code && !error_reason ){
         // we need to send this person to facebook to get the code...
         var ret = req.param('return');
@@ -55,35 +55,35 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
          */
         var ret = req.session.redirect || defaultReturn || '/';
         ret+= (ret.indexOf('?') != -1 ? '&' : '?')+'error_reason='+error_reason;
-        
+
         if( failure ){
             if( failure(error_reason, req, res) === false ){
                 return;
             }
         }
-        
+
         res.redirect(ret);
     }
     else{
-        
+
         params.client_secret = bozuko.config.facebook.app.secret;
         params.code = code;
-        
+
         console.log(code);
-        
+
         // we should also have the user information here...
         var ret = req.session.redirect;
-        
+
         http.request({
             url: 'https://graph.facebook.com/oauth/access_token',
             params: params,
             callback : function facebook_callback(response){
-                
+
                 var result = qs.parse(response);
                 if( result['access_token'] ) {
                     // grab the access token
                     var token = result['access_token'];
-                    
+
                     // lets get the user details now...
                     facebook.graph('/me', {
                         params:{
@@ -103,7 +103,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             u.facebook_id = user.id;
                             u.facebook_auth = token;
                             u.save(function(){
-                                
+
                                 var device = req.session.device;
                                 req.session.regenerate(function(err){
                                     res.clearCookie('fbs_'+bozuko.config.facebook.app.id);
@@ -140,7 +140,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  * Location based search
  *
  * Accepts an options argument in the form of:
- * 
+ *
  *  {
  *      lngLat : {lng: Number, lat: Number},
  *      query : String,
@@ -161,7 +161,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  *
  *      error
  *      data - an array of place Objects
- *      
+ *
  *          TODO - define the return object
  *
  * @param {Object}          options         A search object
@@ -170,13 +170,13 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  * @return {null}
  */
 $.search = function(options, callback){
-    
+
     if( !options || !options.latLng ){
         callback(new Error(
             'FacebookService::search options requires latLng'
         ));
     }
-    
+
     var params = {
         type : 'place'
     };
@@ -185,7 +185,7 @@ $.search = function(options, callback){
         params.fields = options.fields.join(',');
     }
     params.limit = options.limit || 25;
-    
+
     facebook.graph( '/search',
         /* Facebook Options */
         {
@@ -201,8 +201,8 @@ $.search = function(options, callback){
 /**
  * Checkin to the service
  *
- * The options object 
- * 
+ * The options object
+ *
  * The callback will be passed 2 arguments
  *
  *      error
@@ -218,13 +218,13 @@ $.search = function(options, callback){
  * @return {null}
  */
 $.checkin = function(options, callback){
-    
+
     if( !options || !options.place_id || !options.coordinates ){
         callback(new Error(
             'FacebookService::checkin requires place_id and coordinates as options'
         ));
     }
-    
+
     var params = {
         place_id        :options.place_id,
         coordinates     :options.latLng.lat+','+options.latLng.lng
@@ -232,7 +232,7 @@ $.checkin = function(options, callback){
     if( options.message ){
         params.message = options.message;
     }
-    
+
     facebook.graph('/me/checkins',{
         user: user,
         params: params,
@@ -253,11 +253,11 @@ $.checkin = function(options, callback){
  *      description
  *      image
  *      checkins
- * 
+ *
  * The callback will be passed 2 arguments
  *
  *      error
- *      data - The 
+ *      data - The
  *
  * @param {String/Number}   place_id        Id of the place within the service
  * @param {Array}           fields          Fields to be returned

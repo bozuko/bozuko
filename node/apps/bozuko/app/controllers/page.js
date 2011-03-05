@@ -5,10 +5,11 @@ var facebook = bozuko.require('util/facebook'),
 
 var requestCount = 0;
 
-var fakeGames = [{
-    id : 'coinflip',
+var fakeContests = [{
+    id : 'coinflip90132',
+    name: 'coinflip',
     icon : '/images/games/goldEagleHeads60x60.png',
-    name : 'Flip a coin',
+    description : 'Flip a coin',
     prize : 'Free Buffalo Wings and Potato Skins!'
 }];
 
@@ -18,7 +19,7 @@ exports.routes = {
 
         description : 'Get a list of pages generated from facebook',
 
-        get : function(req,res){
+        get : function(req,res) {
             var lat = req.param('lat') || '42.645625';
             var lng = req.param('lng') || '-71.307864';
             bozuko.models.Page.search({lat:lat,lng:lng}, req.param('limit') || 25, function(pages){
@@ -31,21 +32,21 @@ exports.routes = {
 
 	description :'Return page details',
 
-        get :function(req,res){
+        get : function(req,res) {
             facebook.graph('/'+req.param('id'), {
                 user: req.session.user
             },function(place){
-                place.games = fakeGames;
+                place.contests = fakeContests;
                 res.send(place);
             });
         }
     },
 
-    '/page/:id/game' : {
+    '/page/:id/checkin' : {
 
-	description :"Checkin and return the game result / code",
+        description: "Checkin to the place",
 
-        get : function (req,res){
+        post : function(req, res) {
             // get the session from the cookie...
             var page_id = req.params.id;
             var lat = req.param('lat');
@@ -73,21 +74,20 @@ exports.routes = {
                 facebook.graph('/me/checkins',{
                     user:   req.session.user,
                     params:{
-                        'message':'Just won a free something playing bozuko!',
+                        'message':'Just checked in via Bozuko',
                         'place':page_id,
                         'coordinates':JSON.stringify(p.location)
                     },
                     method:'post'
                 },function(result){
                     console.log(result);
-                    // lets get the game requested
-                    var ret = bozuko.games.dice.run();
-                    res.send({success:true, result: ret});
+                    res.end();
                 });
 
                 //res.send({success:true});
             });
 
         }
+
     }
 };

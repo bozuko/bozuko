@@ -8,10 +8,10 @@ var facebook = module.exports;
 var cache = bozuko.facebook_cache = {};
 
 exports.graph = function(path, options, callback){
-    
-    
+
+
     if( !/^\//.test(path) ) path = '/'+path;
-    
+
     if( callback === undefined && typeof options == 'function'){
         callback = options;
         options = {};
@@ -20,7 +20,7 @@ exports.graph = function(path, options, callback){
         client_id : bozuko.config.facebook.app.id,
         access_token : bozuko.config.facebook.app.access_token
     };
-    
+
     options = options || {};
     if( options.user && options.user.facebook_auth ){
         params.access_token = options.user.facebook_auth;
@@ -28,19 +28,19 @@ exports.graph = function(path, options, callback){
     else if( options.req && options.req.session.user && options.req.session.user.facebook_auth ){
         params.access_token = req.session.user.facebook_auth;
     }
-    
+
     if( options.params ) params = merge(params, options.params);
     var url = 'https://graph.facebook.com'+path;
-    
+
     var now = new Date();
-    
+
     if( !options.method ) options.method = 'get';
     if( !options.scope ) options.scope = this;
     if( options.returnJSON === undefined ) options.returnJSON = true;
-    
+
     /**
      * Facebook Caching...
-     * 
+     *
      */
     var fakeRequestTime = false;
     var expire = 1000 * 60 * 10; // 10 minute expiration
@@ -53,11 +53,11 @@ exports.graph = function(path, options, callback){
                 callback.apply(options.scope, cache[cacheKey].arguments );
             }, fakeRequestTime ? cache[cacheKey].duration : 0 );
         }
-        
+
         return;
     }
-    
-    
+
+    var print = require('util').debug;
     http.request({
         url: url,
         method: options.method,
@@ -68,7 +68,7 @@ exports.graph = function(path, options, callback){
              */
             var then = new Date();
             cache[cacheKey] = {arguments:arguments, time:then, duration:then.getTime()-now.getTime()};
-            
+
             bozuko.last_facebook_time = then.getTime() - now.getTime();
             if( !bozuko.facebook_requests ) bozuko.facebook_requests={};
             if( !bozuko.facebook_requests[url] ) bozuko.facebook_requests[url] = [];
@@ -82,7 +82,7 @@ exports.graph = function(path, options, callback){
 };
 
 exports.get_accounts = function(user,callback){
-    
+
     facebook.graph('/me/accounts',
         {
             user: user,
@@ -109,10 +109,10 @@ exports.get_accounts = function(user,callback){
                     ids.push(account.id);
                 }
             });
-            
+
             pages.sort(sort_FacebookPageFanCount);
             pages.sort(sort_FacebookPageLocation).reverse();
-            
+
             if( ids.length > 0 ){
                 bozuko.models.Page.find({facebook_id:{$in:ids}}, function(bozuko_pages){
                     if( bozuko_pages != null ) bozuko_pages.forEach(function(bozuko_page){
