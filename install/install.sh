@@ -6,21 +6,10 @@
 echo "NODE_VER = $NODE_VER"
 
 # node version manager (nvm)
-echo "*** Installing nvm"
-if [[ ! -d ~/.nvm ]] ; then
-    git clone git://github.com/creationix/nvm.git ~/.nvm
-    echo '. ~/.nvm/nvm.sh' >> ~/.bashrc
-fi
-
-. ~/.nvm/nvm.sh && 0
+install_nvm
 
 # node.js
-echo "*** Installing node $NODE_VER"
-if [[ ! -d ~/.nvm/$NODE_VER ]] ; then
-    nvm install $NODE_VER
-    echo "nvm use $NODE_VER" >> ~/.bashrc
-fi
-nvm use $NODE_VER
+install_node
 
 #node package manager (npm)
 PATH=$NPM_BIN:$PATH
@@ -36,11 +25,8 @@ npm config set unsafe-perm true
 echo "*** Installing node packages with npm"
 npm install connect-auth express expresso jade mongodb mongoose monomi oauth qs socket.io supervisor
 
-# Use my custom expresso
-echo "*** Patching Expresso"
-git clone git://github.com/andrewjstone/expresso.git
-mv expresso/bin/expresso `which expresso`
-rm -rf expresso
+# Use our fork of expresso
+patch_expresso
 
 # multi-node
 echo "*** Installing multi-node"

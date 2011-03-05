@@ -57,7 +57,6 @@ exports.graph = function(path, options, callback){
         return;
     }
 
-    var print = require('util').debug;
     http.request({
         url: url,
         method: options.method,
