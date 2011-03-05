@@ -20,7 +20,7 @@ exports.routes = {
             if( req.session.device == 'desktop' ){
                 locals.scripts.push('/js/desktop/pages/index.js');
             }
-            res.render('site/index.jade', {locals:locals});
+            res.render('site/index.jade', locals);
         }
     },
     

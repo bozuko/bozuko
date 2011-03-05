@@ -1,6 +1,6 @@
 var bozuko = require('bozuko'),
     express = require('express'),
-    utils = require('connect/lib/connect/utils'),
+    utils = require('connect').utils,
     fs = require('fs');
     
     

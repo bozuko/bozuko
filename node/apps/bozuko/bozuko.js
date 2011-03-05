@@ -52,3 +52,7 @@ exports.service = function(name){
 	}
 	return exports.services[name];
 };
+
+exports.game = function(name){
+	return this.games[name] || false;
+}

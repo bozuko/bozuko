@@ -7,14 +7,15 @@ var facebook    = bozuko.require('util/facebook'),
 
 exports.routes = {
 
-    '/user/login' : {
+    '/user/login/:service?' : {
 
 	description :"User login - sends user to facebook",
 
-        aliases     :['/login'],
+        aliases     :['/login/:service?'],
 
         get : function(req,res){
-            bozuko.require('core/auth').login(req,res,'user');
+			var service = req.param('service') || 'facebook';
+            bozuko.service(service).login(req,res,'user');
         }
     },
 

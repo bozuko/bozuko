@@ -4,6 +4,8 @@ var http            = require('http'),
 /**
  * register our device dependent renderer
  */
+
+
 var expressRender = http.ServerResponse.prototype.render;
 http.ServerResponse.prototype.render = function(view, options, fn, parent){
     

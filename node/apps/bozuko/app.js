@@ -11,10 +11,11 @@ var express = require('express');
  * Create our main server
  */
 var ssl = {
-  key:fs.readFileSync('ssl/bonobo.bozuko.com.key'),
-  cert:fs.readFileSync('ssl/bonobo.bozuko.com.crt')
+  key:fs.readFileSync('ssl/privatekey.pem'),
+  cert:fs.readFileSync('ssl/certificate.pem')
 };
-var app = express.createServer();
+// console.log(ssl);
+var app = express.createServer(ssl);
 
 /**
  * Load common Bozuko stuff

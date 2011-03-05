@@ -1,7 +1,6 @@
 var bozuko = require('bozuko');
 
-var facebook = bozuko.require('util/facebook'),
-    mongoose = require('mongoose'),
+var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
     
@@ -17,3 +16,15 @@ var Contest = module.exports = new Schema({
     token_cursor            :{type:Number}
 });
 
+/**
+ * Enter a contest
+ *
+ * @param {EntryMethod} 
+ */
+Contest.method('enter', function(method_of_entry){
+    
+    
+    
+    
+    
+});
