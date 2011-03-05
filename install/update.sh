@@ -5,5 +5,6 @@
 
 install_nvm
 install_node
+npm update
 patch_expresso
 
