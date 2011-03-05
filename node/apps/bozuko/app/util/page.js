@@ -7,7 +7,7 @@ var Page = module.exports = function(title, template, options){
     return {
         description : options.description || title,
         get : function(req,res){
-            res.render(template,{locals:locals});
+            res.render(template,locals);
         }
     };
 };
