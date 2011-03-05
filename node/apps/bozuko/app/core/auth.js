@@ -6,6 +6,5 @@ var qs          = require('querystring'),
     http        = bozuko.require('util/http');
 
 exports.login = function(req,res,scope,defaultReturn,success,failure){
-    
     bozuko.service('facebook').login.apply(this, arguments);
 };

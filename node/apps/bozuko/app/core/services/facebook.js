@@ -17,17 +17,17 @@ FacebookService.prototype.__proto__ = Service.prototype;
 var $ = FacebookService.prototype;
 
 /**
- * Login function
- *
- * @param {ServerRequest}   req             The current request
- * @param {ServerResponse}  res             The current response
- * @scope {String}          defaultReturn   The url to forward to after login
- * @param {Function}        success         A callback function on successful login.
- *                                          Takes an argument of the user
- * @param {Function}        failure         A callback function on login failure
- *
- * @returns {null}
- */
+ *  * Login function
+ *  *
+ *  * @param {ServerRequest}   req             The current request
+ *  * @param {ServerResponse}  res             The current response
+ *  * @scope {String}          defaultReturn   The url to forward to after login
+ *  * @param {Function}        success         A callback function on successful login.
+ *  *                                          Takes an argument of the user
+ *  * @param {Function}        failure         A callback function on login failure
+ *  *
+ *  * @returns {null}
+ *  */
 $.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
@@ -51,8 +51,8 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     }
     else if( error_reason ){
         /**
-         * Handle denied access
-         */
+         *          * Handle denied access
+         *          */
         var ret = req.session.redirect || defaultReturn || '/';
         ret+= (ret.indexOf('?') != -1 ? '&' : '?')+'error_reason='+error_reason;
 
@@ -137,54 +137,60 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
 
 
 /**
- * Location based search
- *
- * Accepts an options argument in the form of:
- *
- *  {
- *      lngLat : {lng: Number, lat: Number},
- *      query : String,
- *      fields : Array
- *  }
- *
- * lngLat is required
- * query is a search string
- * fields is an array of requested fields. The following are permitted
- *
- *      name
- *      location
- *      description
- *      image
- *      checkins
- *
- * The callback will be passed 2 arguments
- *
- *      error
- *      data - an array of place Objects
- *
- *          TODO - define the return object
- *
- * @param {Object}          options         A search object
- * @param {Function}        callback        Callback function
- *
- * @return {null}
- */
+ *  * Location based search
+ *  *
+ *  * Accepts an options argument in the form of:
+ *  *
+ *  *  {
+ *  *      latLng : {lng: Number, lat: Number},
+ *  *      query : String,
+ *  *      fields : Array
+ *  *  }
+ *  *
+ *  * either latLng or query is required
+ *  * query is a search string
+ *  * fields is an array of requested fields. The following are permitted
+ *  *
+ *  *      name
+ *  *      location
+ *  *      description
+ *  *      image
+ *  *      checkins
+ *  *
+ *  * The callback will be passed 2 arguments
+ *  *
+ *  *      error
+ *  *      data - an array of place Objects
+ *  *
+ *  *          TODO - define the return object
+ *  *
+ *  * @param {Object}          options         A search object
+ *  * @param {Function}        callback        Callback function
+ *  *
+ *  * @return {null}
+ *  */
 $.search = function(options, callback){
 
-    if( !options || !options.latLng ){
+    if( !options || !(options.latLng || options.query) ){
         callback(new Error(
-            'FacebookService::search options requires latLng'
+            'FacebookService::search options requires latLng or search query'
         ));
+        return;
     }
 
     var params = {
         type : 'place'
     };
-    params.center = options.latLng.lat+','+options.latLng.lng;
+    if( options.latLng ) params.center = options.latLng.lat+','+options.latLng.lng;
+    if( options.query ) params.query = options.query;
     if( options.fields ){
         params.fields = options.fields.join(',');
     }
-    params.limit = options.limit || 25;
+
+    params.offset = options.offset || 0;
+    // this is a weird hack to get around facebooks "interpretation" of limiting...
+    params.limit = (options.limit || 25) + params.offset;
+
 
     facebook.graph( '/search',
         /* Facebook Options */
@@ -199,70 +205,91 @@ $.search = function(options, callback){
 
 
 /**
- * Checkin to the service
- *
- * The options object
- *
- * The callback will be passed 2 arguments
- *
- *      error
- *      data
- *
- *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
- *
- * @param {Page}            place_id        Bozuko Page
- * @param {User}            user            Bozuko User
- * @param {Object}          options         Checkin specific options
- * @param {Function}        callback        Callback Function
- *
- * @return {null}
- */
+ *  * Checkin to the service
+ *  *
+ *  * The options object
+ *  *
+ *  * The callback will be passed 2 arguments
+ *  *
+ *  *      error
+ *  *      data
+ *  *
+ *  *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
+ *  *
+ *  * @param {Page}            place_id        Bozuko Page
+ *  * @param {User}            user            Bozuko User
+ *  * @param {Object}          options         Checkin specific options
+ *  * @param {Function}        callback        Callback Function
+ *  *
+ *  * @return {null}
+ *  */
 $.checkin = function(options, callback){
 
-    if( !options || !options.place_id || !options.coordinates ){
+    if( !options || !options.place_id || !options.latLng || !options.user ){
         callback(new Error(
-            'FacebookService::checkin requires place_id and coordinates as options'
+            'FacebookService::checkin requires place_id, latLng, and user as options'
         ));
+        return;
     }
 
     var params = {
-        place_id        :options.place_id,
-        coordinates     :options.latLng.lat+','+options.latLng.lng
+        place           :options.place_id,
+        coordinates     :JSON.stringify({latitude:options.latLng.lat,longitude: options.latLng.lng})
     };
-    if( options.message ){
-        params.message = options.message;
-    }
+    if( options.message )       params.message      = options.message;
+    if( options.picture )       params.picture      = options.picture;
+    if( options.link )          params.link         = options.link;
+    if( options.description )   params.description  = options.description;
+    if( options.actions )       params.actions      = JSON.stringify(options.actions);
 
     facebook.graph('/me/checkins',{
-        user: user,
+        user: options.user,
         params: params,
         method:'post'
     },function(result){
+        console.log(result);
         callback(null, result);
     });
 };
 
 
 /**
- * Get full info about a place by id
- *
- * fields is an array of requested fields. The following are permitted
- *
- *      name
- *      location
- *      description
- *      image
- *      checkins
- *
- * The callback will be passed 2 arguments
- *
- *      error
- *      data - The
- *
- * @param {String/Number}   place_id        Id of the place within the service
- * @param {Array}           fields          Fields to be returned
- * @param {Function}        callback        Callback Function
- *
- * @return {null}
- */
-$.place = function(place_id, fields, callback){};
+ *  * Get full info about a place by id
+ *  *
+ *  * fields is an array of requested fields. The following are permitted
+ *  *
+ *  *      name
+ *  *      location
+ *  *      description
+ *  *      image
+ *  *      checkins
+ *  *
+ *  * The callback will be passed 2 arguments
+ *  *
+ *  *      error
+ *  *      data - The
+ *  *
+ *  * @param {Object}          options         Options object
+ *  * @param {Function}        callback        Callback Function
+ *  *
+ *  * @return {null}
+ *  */
+$.place = function(options, callback){
+    if( !options || !options.place_id ){
+        callback(new Error(
+            'FacebookService::checkin requires place_id as oneof the arguments'
+        ));
+        return;
+    }
+
+    var params = {};
+    if( options.fields ){
+        params.fields = options.fields.join(',');
+    }
+    facebook.graph('/'+options.place_id, {
+        params: params
+    },function(result){
+        callback(null, result);
+    });
+
+};

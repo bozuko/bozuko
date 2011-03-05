@@ -42,7 +42,7 @@ exports.routes = {
             
             bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, pages){
                 locals.pages = pages||[];
-                res.render('business/account', {locals:locals});
+                res.render('business/account', locals);
             });
         }
     },
@@ -71,7 +71,7 @@ exports.routes = {
                         pages : facebook_pages || [],
                         error : req.flash('error')
                     };
-                    res.render('business/account/add_page', {locals:locals} );
+                    res.render('business/account/add_page', locals );
                 });
             });
             
@@ -153,7 +153,7 @@ exports.routes = {
                 else{
                     locals.page = page;
                 }
-                res.render('business/account/remove_page', {locals:locals} );
+                res.render('business/account/remove_page', locals );
             });
         },
         
@@ -208,7 +208,7 @@ exports.routes = {
                 locals.page = page;
                 locals.games = games;
                 locals.title = "Create Games";
-                res.render('business/account/create_games',{locals : locals});
+                res.render('business/account/create_games',locals);
                 
             });
         }

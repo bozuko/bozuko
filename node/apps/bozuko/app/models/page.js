@@ -61,11 +61,10 @@ Page.method('checkin', function(user, game, callback) {
         });
 });
 
-Page.static('search', function(latLng, limit, callback){
+Page.static('search', function(options, callback){
             
     // lets give them just the coinflip game for now...
     // this needs to be generated from bozuko.games
-    // + the 
     var games = [];
     
     for(var id in bozuko.games){
@@ -79,13 +78,10 @@ Page.static('search', function(latLng, limit, callback){
         games.push(game);
     }
     
-    console.log(bozuko.service());
-    
-    bozuko.service().search(
-        {
-            latLng : latLng,
-            limit : limit
-        },
+    // use a 3rd party service to search geographically
+    // and then match against our db
+    bozuko.service('facebook').search(options,
+                                      
         /* Callback */
         function(error, result){
             // loop through the results and see if we have a place with
@@ -105,6 +101,7 @@ Page.static('search', function(latLng, limit, callback){
                 result.data.forEach( function(place, index){
                     place.games = index%1==0 ? games : [];
                 });
+                
                 callback(result);
             });
             

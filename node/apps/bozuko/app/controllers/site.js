@@ -20,7 +20,7 @@ exports.routes = {
             if( req.session.device == 'desktop' ){
                 locals.scripts.push('/js/desktop/pages/index.js');
             }
-            res.render('site/index.jade', {locals:locals});
+            res.render('site/index.jade', locals);
         }
     },
 
@@ -32,12 +32,7 @@ exports.routes = {
 
         get : function(req, res, next){
             var path = 'pages/'+URL.parse(req.url).pathname.replace(/\/p\//, '');
-
-            res.render(path,{
-                locals:{
-                    'title' : 'Bozuko'
-                }
-            });
+            res.render(path,{'title' : 'Bozuko'});
         }
     },
 

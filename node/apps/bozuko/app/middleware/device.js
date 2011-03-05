@@ -3,7 +3,7 @@ module.exports = function device(){
         if( req.query['device'] ){
             req.session.device = req.query['device'];
         }
-        else if( !req.session.device ){
+        else if( req.session && !req.session.device ){
             req.session.device = req.monomi.browserType;
         }
         next();

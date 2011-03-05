@@ -19,7 +19,14 @@ Game.prototype = {
     options : {},
     
     startServer : function(app){
-        app.use('/game/'+this.name, express.staticProvider(this.dir+'/resources'));
+        app.use('/game/'+this.name, express.static(this.dir+'/resources'));
+    },
+    
+    /**
+     * 
+     */
+    process : function( contest, tokens ){
+        
     }
     
 };

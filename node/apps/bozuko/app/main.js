@@ -11,6 +11,7 @@ var fs          = require('fs'),
     Monomi      = require('monomi'),
     Controller  = bozuko.require('core/controller'),
     Game        = bozuko.require('core/game');
+    
 
 exports.run = function(app){
     
@@ -44,9 +45,9 @@ function initApplication(app){
     app.set('views', __dirname + '/views');
     
     
-    app.use(express.bodyDecoder());
+    app.use(express.bodyParser());
     app.use(express.methodOverride());
-    app.use(express.cookieDecoder());
+    app.use(express.cookieParser());
     app.use(express.session({ store: new MemoryStore({ reapInterval: -1 }), secret: 'chqsmells' }));
     
     app.use(Monomi.detectBrowserType());
@@ -57,7 +58,7 @@ function initApplication(app){
     app.use(express.compiler({ src: __dirname + '/../static', enable: ['less'] }));
     app.use(app.router);
     //    app.use(express.repl('bozuko>', 8050));
-    app.use(express.staticProvider({root:__dirname + '/../static',maxAge:(1000*60*60*24)*1}));
+    app.use(express.static(__dirname + '/../static'));
     
 }
 
