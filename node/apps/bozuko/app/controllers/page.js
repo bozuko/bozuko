@@ -50,19 +50,19 @@ exports.routes = {
         description :'Return page details',
 
         get : function(req,res) {
-            facebook.graph('/'+req.param('id'), {
-                user: req.session.user
-            },function(place){
+
+            bozuko.service('facebook').place({
+                place_id:req.param('id')
+            },function(error, place){
                 place.contests = fakeContests;
                 res.send(place);
             });
-
         }
     },
 
     '/page/:id/checkin' : {
 
-        aliases : ['/place/:id/game'],
+        aliases : ['/place/:id/checkin'],
 
         description: "Checkin to the place",
 
@@ -89,10 +89,7 @@ exports.routes = {
                     description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
                     latLng      :{lat:p.location.latitude,lng:p.location.longitude}
                 },function(error, result){
-                    require('util').debug("result = " + result);
                     console.log(error);
-                    // lets get the game requested
-                    // var ret = bozuko.games.dice.run();
                     res.end();
                 });
 
