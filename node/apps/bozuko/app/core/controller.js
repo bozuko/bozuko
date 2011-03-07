@@ -27,6 +27,7 @@ Controller.prototype = {
             
             paths.forEach( function(path){
                 
+                
                 // clean up the path for sloppy input
                 if( !/^\//.test(path)) path = '/'+path;
                 if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
@@ -44,12 +45,13 @@ Controller.prototype = {
                             // this should be an object now..
                             var methodConfig = config[method];
                             if( !methodConfig.handler && methodConfig.example ){
+                                var example = methodConfig.example;
                                 handler = function(req,res){
-                                    
-                                    if( methodConfig.example instanceof Function ){
-                                        methodConfig.example = methodConfig.example.apply(_this,arguments);
+                                    var ret = example;
+                                    if( example instanceof Function ){
+                                        ret = example.apply(_this,arguments);
                                     }
-                                    res.send(methodConfig.example);
+                                    res.send(ret);
                                 }
                             }
                             else if( methodConfig.handler ){
@@ -58,7 +60,9 @@ Controller.prototype = {
                             
                             // check for docs...
                             if( methodConfig.doc ){
-                                var doc = _this.doc.routes[route] = methodConfig.doc;
+                                if( !_this.doc.routes[route] ) _this.doc.routes[route] = {};
+                                var doc = _this.doc.routes[route];
+                                doc[method] = methodConfig.doc;
                             }
                             
                         }
