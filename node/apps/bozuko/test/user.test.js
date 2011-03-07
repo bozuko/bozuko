@@ -30,6 +30,9 @@ exports['GET /user/:id/prizes'] = function(beforeExit) {
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var prizes = JSON.parse(res.body);
+            prizes.foreach(function(prize) {
+                prize
+            });
 	    assert.keys(prizes, ['active', 'redeemed', 'expired']);
 	    assert.eql(prizes.active[0].state, 'active');
 	    assert.keys(prizes.active[0], ['name', 'place', 'win_time', 'expiration_time']);

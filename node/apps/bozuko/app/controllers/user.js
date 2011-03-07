@@ -22,17 +22,17 @@ exports.routes = {
     '/user/:id' : {
 
 		get : {
-			
+
 			doc: {
 				description: "Get information about the user by their Bozuko ID",
-				
+
 				params: {
 					id: {
 						type: "Number",
 						description: "Passed as part of the url"
 					}
 				},
-				
+
 				returns: {
 					type: "Object",
 					description: "User Object information"
@@ -55,11 +55,11 @@ exports.routes = {
 					can_manage_pages: 'true'
 				};
 			}
-			
+
 			// The real deal code would go into the "handler" function...
 			/*
 			handler : function(req,res){
-				// real code - replaces the example object 
+				// real code - replaces the example object
 			}
 			*/
 		}
@@ -67,37 +67,54 @@ exports.routes = {
 
     '/user/:id/prizes' : {
 
-	description : "Return the user's prizes",
+	get : {
 
-	get : function(req, res) {
-	    active_prize = {
-		state: 'active',
-		name: 'wings',
-		place: 'hookslides',
-		win_time: new Date().toString(),
-		expiration_time: new Date(2012, 'july', 4)
-	    };
-	    redeemed_prize = {
-		state: 'redeemed',
-		name: 'wings',
-		place: 'hookslides',
-		win_time: new Date().toString(),
-		redemption_time: new Date(2011, 'july', 4)
-	    };
-	    expired_prize = {
-		state: 'expired',
-		name: 'wings',
-		place: 'hookslides',
-		win_time: new Date().toString(),
-		expiration_time: new Date(2011, 'Feb', 28)
-	    };
+            doc: {
+                description: "Return a user's prize list",
 
-	    /* Do we want to send just one list and tag each prize with a state? */
-	    res.send({
-		active: [active_prize],
-		redeemed: [redeemed_prize],
-		expired: [expired_prize]
-	    });
+		params: {
+	            id: {
+		        type: "Number",
+			description: "The id of the user"
+		    },
+                    filter: {
+                        type: "String",
+                        values: ['active', 'redeemed', 'expired'],
+                        description: "The type or types to be returned. "
+                            + "Eg. /user/:id/prizes/?filter=active,redeemed"
+                    }
+		},
+
+		returns: {
+		    type: "Object",
+		    description: "User Object information"
+		}
+	    },
+
+            example: function(req, res) {
+	        active_prize = {
+		    state: 'active',
+		    name: 'wings',
+		    place: 'hookslides',
+		    win_time: new Date().toString(),
+		    expiration_time: new Date(2012, 'july', 4)
+	        };
+	        redeemed_prize = {
+		    state: 'redeemed',
+		    name: 'wings',
+		    place: 'hookslides',
+		    win_time: new Date().toString(),
+		    redemption_time: new Date(2011, 'july', 4)
+	        };
+	        expired_prize = {
+		    state: 'expired',
+		    name: 'wings',
+		    place: 'hookslides',
+		    win_time: new Date().toString(),
+		    expiration_time: new Date(2011, 'Feb', 28)
+	        };
+                return [active_prize, redeemed_prize, expired_prize];
+            }
         }
     }
 

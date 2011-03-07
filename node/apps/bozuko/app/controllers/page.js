@@ -18,20 +18,44 @@ exports.routes = {
 
         aliases : ['/places'],
 
-        description : 'Get a list of pages generated from facebook',
+        get : {
 
-        get : function(req,res) {
-            var lat = req.param('lat') || '42.645625';
-            var lng = req.param('lng') || '-71.307864';
+            doc: {
+                description: 'Get a list of pages generated from facebook',
 
-            var options = {
-                latLng : {lat:lat, lng:lng},
-                limit : parseInt(req.param('limit')) || 25,
-                offset : parseInt(req.param('offset')) || 0
-            };
-            bozuko.models.Page.search(options, function(pages){
-                res.send(pages);
-            });
+                params: {
+                    lat: {
+                        type: "Number",
+                        description: 'latitude'
+                    },
+                    lng: {
+                        type: "Number",
+                        description: 'longitude'
+                    },
+                    limit: {
+                        type: "Number",
+                        description: "The search radius of the query in miles"
+                    },
+                    offset: {
+                        type: "Number",
+                        description: "?"
+                    }
+                }
+            },
+
+            handler: function(req,res) {
+                var lat = req.param('lat') || '42.645625';
+                var lng = req.param('lng') || '-71.307864';
+
+                var options = {
+                    latLng : {lat:lat, lng:lng},
+                    limit : parseInt(req.param('limit')) || 25,
+                    offset : parseInt(req.param('offset')) || 0
+                };
+                bozuko.models.Page.search(options, function(pages){
+                    res.send(pages);
+                });
+            }
         }
     },
 
@@ -47,16 +71,32 @@ exports.routes = {
      */
     '/page/:id' : {
 
-        description :'Return page details',
+        get : {
 
-        get : function(req,res) {
+            doc: {
+                description: "Return page details",
 
-            bozuko.service('facebook').place({
-                place_id:req.param('id')
-            },function(error, place){
-                place.contests = fakeContests;
-                res.send(place);
-            });
+                params: {
+                    id: {
+                        type: "Number",
+                        description: "The id of the page"
+                    }
+                },
+
+                returns: {
+                    type: "Object",
+                    description: "Page information"
+                }
+            },
+
+            handler: function(req,res) {
+                bozuko.service('facebook').place({
+                    place_id:req.param('id')
+                },function(error, place){
+                    place.contests = fakeContests;
+                    res.send(place);
+                });
+            }
         }
     },
 
@@ -64,38 +104,51 @@ exports.routes = {
 
         aliases : ['/place/:id/checkin'],
 
-        description: "Checkin to the place",
+        post : {
 
-        post : function(req, res) {
-            var page_id = req.param('id');
-            var lat = req.param('lat');
-            var lng = req.param('lng');
+            doc: {
+                description: "Checkin to the place",
 
-            // we should have the user from the session...
-            if( !req.session.user ){
-                res.statusCode = 404,
-                res.end();
-                return;
-            }
-            // lets check them in...
-            bozuko.service('facebook').place({place_id: page_id}, function(error, p){
-                bozuko.service('facebook').checkin({
-                    user        :req.session.user,
-                    message     :'Just won a free burrito playing bozuko!',
-                    place_id    :p.id,
-                    actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
-                    link        :'http://bozuko.com',
-                    picture     :'http://bozuko.com/images/bozuko-chest-check.png',
-                    description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
-                    latLng      :{lat:p.location.latitude,lng:p.location.longitude}
-                },function(error, result){
-                    console.log(error);
+                params: {
+                    id: {
+                        type: "Number",
+                        description: "The id of the place to checkin to."
+                    }
+                },
+                returns: {
+                    type: "Object",
+                    description: "Token information that allows contest participation"
+                }
+            },
+
+            handler: function(req, res) {
+                var page_id = req.param('id');
+                var lat = req.param('lat');
+                var lng = req.param('lng');
+
+                // we should have the user from the session...
+                if( !req.session.user ){
+                    res.statusCode = 404,
                     res.end();
+                    return;
+                }
+                // lets check them in...
+                bozuko.service('facebook').place({place_id: page_id}, function(error, p){
+                    bozuko.service('facebook').checkin({
+                        user        :req.session.user,
+                        message     :'Just won a free burrito playing bozuko!',
+                        place_id    :p.id,
+                        actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
+                        link        :'http://bozuko.com',
+                        picture     :'http://bozuko.com/images/bozuko-chest-check.png',
+                        description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
+                        latLng      :{lat:p.location.latitude,lng:p.location.longitude}
+                    },function(error, result){
+                        console.log(error);
+                        res.end();
+                    });
                 });
-
-            });
-
+            }
         }
-
     }
-};
+}
