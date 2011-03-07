@@ -35,12 +35,15 @@ exports.run = function(app){
 function initApplication(app){
     
     /**
-     * Setup our Logger
-     *
-    log4js.addAppender(log4js.fileAppender(bozuko.dir+'/logs/bozuko.log'), 'bozuko' );
-    bozuko.logger = log4js.getLogger('bozuko');
-    bozuko.logger = console;
-     */
+    * Fix for the logger and possibly session stuff with ssl
+    */
+    app.use(function(req,res, next){
+        if( req.socket.socket ){
+            req.socket.remoteAddress = req.socket.socket.remoteAddress;
+        }
+        next();
+    });
+    app.use(express.profiler());
     app.set('view engine', 'jade');
     app.set('views', __dirname + '/views');
     

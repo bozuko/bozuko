@@ -18,6 +18,11 @@ var proto = Entry.prototype;{
 proto.name = 'Default';
 
 /**
+ * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
+ */
+proto.description = 'This type of entry needs';
+
+/**
  * Icon to display.
  *
  * TODO - decide if we need multiple types - mobile / admin, etc.

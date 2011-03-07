@@ -15,8 +15,9 @@ exports.db = exports.require('core/db');
 exports.configure = function(config) {
     var app = exports.app;
     if (!app) {
-	throw new Error("bozuko.app not set!");
+		throw new Error("bozuko.app not set!");
     }
+    
     switch(config) {
 
 	case 'production':
@@ -55,4 +56,4 @@ exports.service = function(name){
 
 exports.game = function(name){
 	return this.games[name] || false;
-}
+};

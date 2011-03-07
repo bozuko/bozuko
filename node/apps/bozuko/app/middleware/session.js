@@ -13,12 +13,6 @@ module.exports = function session(){
         var cookie = req.cookies['fbs_'+bozuko.config.facebook.app.id];
 
         var q = {facebook_id:null};
-        /**
-         * Fix for the logger and possibly session stuff with ssl
-         */
-        if( req.socket.socket ){
-            req.socket.remoteAddress = req.socket.socket.remoteAddress;
-        }
         
         if( req.header(HEADER.user_id) ){
             // need to run these through unescape because of how
