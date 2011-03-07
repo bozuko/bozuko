@@ -1,4 +1,4 @@
-var port = 6000 + process.getuid() + 10;
+var port = 6000 + process.getuid();
 
 module.exports = {
     db:{
