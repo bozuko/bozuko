@@ -30,15 +30,15 @@ exports['GET /user/:id/prizes'] = function(beforeExit) {
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var prizes = JSON.parse(res.body);
-            prizes.foreach(function(prize) {
-                prize
+            prizes.forEach(function(prize) {
+                assert.keys(prize, ['state', 'name', 'place', 'win_time']);
+                if (prize.state === 'active') {
+                    assert.keys(prize, ['expiration_time']);
+                } else if (prize.state === 'redeemed') {
+                    assert.keys(prize, ['redemption_time']);
+                } else if (prize.state === 'expired') {
+                    assert.keys(prize, ['expiration_time']);
+                }
             });
-	    assert.keys(prizes, ['active', 'redeemed', 'expired']);
-	    assert.eql(prizes.active[0].state, 'active');
-	    assert.keys(prizes.active[0], ['name', 'place', 'win_time', 'expiration_time']);
-	    assert.eql(prizes.redeemed[0].state, 'redeemed');
-	    assert.keys(prizes.redeemed[0], ['name', 'place', 'win_time', 'redemption_time']);
-	    assert.eql(prizes.expired[0].state, 'expired');
-	    assert.keys(prizes.expired[0], ['name', 'place', 'win_time', 'expiration_time']);
-	});
+        });
 };
