@@ -62,11 +62,12 @@ exports.routes = {
                     id: {
                         type: "Number",
                         description: "The id of the contest"
-                    },
+                    }
+                },
+
                 returns: {
                     type: "Object",
                     description: "Return an object containg the number of tokens earned"
-                }
                 }
             },
 

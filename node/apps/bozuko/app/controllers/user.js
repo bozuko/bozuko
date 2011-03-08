@@ -34,34 +34,37 @@ exports.routes = {
 				},
 
 				returns: {
+                    name: "data",
 					type: "Object",
-					description: "User Object information"
+					description: "User Object information",
+					
+					/**
+					* This can either be an object, or a function that returns an object,
+					* that way, you can use parameters passed to the request in the result
+					*/
+					example : {
+						id: '12341231412312312',
+						name: 'bozukob',
+						first_name: 'bobby',
+						last_name: 'bozuko',
+						gender: 'm',
+						email: 'bozukob@gmail.com',
+						picture: 'http://graph.facebook.com/2323423/picture',
+						facebook_id: 2323423,
+						can_manage_pages: 'true'
+					   
+					}
 				}
-			},
-			/**
-			 * This can either be an object, or a function that returns an object,
-			 * that way, you can use parameters passed to the request in the result
-			 */
-			example : function(req,res){
-				return {
-					id: req.params.id,
-					name: 'bozukob',
-					first_name: 'bobby',
-					last_name: 'bozuko',
-					gender: 'm',
-					email: 'bozukob@gmail.com',
-					picture: 'http://graph.facebook.com/2323423/picture',
-					facebook_id: 2323423,
-					can_manage_pages: 'true'
-				};
+				
 			}
-
+			
 			// The real deal code would go into the "handler" function...
 			/*
 			handler : function(req,res){
 				// real code - replaces the example object
 			}
 			*/
+
 		}
     },
 
@@ -86,7 +89,8 @@ exports.routes = {
 		},
 
 		returns: {
-		    type: "Object",
+            returns: "prizes",
+		    type: "Array",
 		    description: "User Object information"
 		}
 	    },

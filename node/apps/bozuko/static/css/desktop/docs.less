@@ -1,0 +1,131 @@
+@import "static/css/mixins";
+
+body {
+    font-family: Tahoma;
+    font-size: 12px;
+}
+
+.header {
+    .x-panel-body {
+        .background_gradient(#ffffff, #dddddd);
+    }
+    .title {
+        height: 100px;
+        background: url("/images/desktop/docs/logo.png") no-repeat 0 0;
+        position: relative;
+        
+        span {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+        }
+    }
+}
+
+.controllerIcon {
+    background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+
+.routeIcon {
+    background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+
+.methodIcon {
+    background: url("/images/icons/16x16/world.png") no-repeat 0 50% !important;
+}
+
+.controller-page {
+    ul.routes {
+        margin: 0;
+        list-style: none;
+        border-bottom: 1px solid #e3e3e3;
+        li.route {
+            margin: 0;
+            list-style: none;
+            border: 1px solid #e3e3e3;
+            border-bottom: 0;
+            
+            h3.route {
+                margin: 0;
+                padding: 10px;
+                background: #f2f2f2;
+            }
+            
+            .method-block{
+                margin-left: 0;
+                padding: 0 0 10px;
+                border-bottom: 1px solid #e3e3e3;
+                
+                .type {
+                    color: #999;
+                    margin-left: 6px;
+                    font-style: italic;
+                }
+                
+                .name {
+                    font-weight: bold;
+                }
+                
+                ul.params, .return {
+                    margin: 0 10px 10px 0;
+                    border: 1px solid #e8e8e8;
+                    border-bottom-width: 0;
+                    list-style: none;
+                    
+                    li {
+                        
+                    }
+                    
+                    .param-title, .return-title {
+                        padding: 4px 20px;
+                        background: #f3f3f3;
+                    }
+                    
+                    .param-desc, .return-desc {
+                        padding: 4px 20px;
+                        border-bottom: 1px solid #e8e8e8;
+                    }
+                    
+                    .required .param-title{
+                        background-image: url("/images/icons/16x16/bullet_star.png");
+                        background-repeat: no-repeat;
+                        background-position: 2px 50%;
+                    }
+                }
+                
+                .method {
+                    margin-top: 0;
+                    float: left;
+                    width: 60px;
+                    color: #bc3023;
+                    text-transform: uppercase;
+                    padding: 0 10px;
+                }
+                
+                .content {
+                    margin-left: 80px;
+                    
+                    blockquote {
+                        margin: 0;
+                    }
+                    
+                    h5 {
+                        font-size: 12px;
+                        text-transform: uppercase;
+                        color: #999;
+                    }
+                }
+                
+                pre {
+                    border: 1px solid #e8e8e8;
+                    background: #f3f3f3;
+                    padding: 4px 6px;
+                }
+            }
+            
+            
+            
+        }
+        
+    }
+}

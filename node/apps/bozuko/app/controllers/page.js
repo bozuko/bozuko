@@ -34,12 +34,18 @@ exports.routes = {
                     },
                     limit: {
                         type: "Number",
-                        description: "The search radius of the query in miles"
+                        description: "The number of search results to return"
                     },
                     offset: {
                         type: "Number",
-                        description: "?"
+                        description: "The starting result number"
                     }
+                },
+                
+                returns: {
+                    name: "pages",
+                    type: "Array",
+                    description: "Returns an array of objects"
                 }
             },
 
@@ -78,12 +84,14 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the page"
                     }
                 },
 
                 returns: {
+                    name: "data",
                     type: "Object",
                     description: "Page information"
                 }
@@ -116,6 +124,7 @@ exports.routes = {
                     }
                 },
                 returns: {
+                    name: "details",
                     type: "Object",
                     description: "Token information that allows contest participation"
                 }

@@ -21,58 +21,62 @@ Controller.prototype = {
             if( !config.methods ) config.methods = ['get'];
             if( !config.methods.forEach ) config.methods = [config.methods];
             
-            var paths = [route];
-            if( config.alias ) config.aliases = [config.alias];
-            if( config.aliases ) paths = paths.concat(config.aliases);
+            var path = route;
+            if( !config.aliases ) config.aliases = [];
+            if( config.alias ) config.aliases.push(config.alias);
             
-            paths.forEach( function(path){
+            if( !/^\//.test(path)) path = '/'+path;
+            if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
+            
+            ['get','post','put','del','all'].forEach( function(method){
                 
-                
-                // clean up the path for sloppy input
-                if( !/^\//.test(path)) path = '/'+path;
-                if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
-                
-                ['get','post','put','del','all'].forEach( function(method){
-                    
-                    if( config[method] ){
-                        var handler = function(req,res){
-                            res.send("Handler is not configured yet :(");
-                        };
-                        if( config[method] instanceof Function ){
-                            handler = config[method];
-                        }
-                        else{
-                            // this should be an object now..
-                            var methodConfig = config[method];
-                            if( !methodConfig.handler && methodConfig.example ){
-                                var example = methodConfig.example;
-                                handler = function(req,res){
-                                    var ret = example;
-                                    if( example instanceof Function ){
-                                        ret = example.apply(_this,arguments);
-                                    }
-                                    res.send(ret);
+                if( config[method] ){
+                    var handler = function(req,res){
+                        res.send("Handler is not configured yet :(");
+                    };
+                    if( config[method] instanceof Function ){
+                        handler = config[method];
+                    }
+                    else{
+                        // this should be an object now..
+                        var methodConfig = config[method];
+                        if( !methodConfig.handler && methodConfig.doc && methodConfig.doc.returns && methodConfig.doc.returns.example ){
+                            var example = methodConfig.doc.returns.example;
+                            handler = function(req,res){
+                                var ret = example;
+                                if( example instanceof Function ){
+                                    ret = example.apply(_this,arguments);
                                 }
+                                res.send(ret);
                             }
-                            else if( methodConfig.handler ){
-                                handler = methodConfig.handler;
-                            }
-                            
-                            // check for docs...
-                            if( methodConfig.doc ){
-                                if( !_this.doc.routes[route] ) _this.doc.routes[route] = {};
-                                var doc = _this.doc.routes[route];
-                                doc[method] = methodConfig.doc;
-                            }
-                            
                         }
-                        app[method](path, function(){
+                        else if( methodConfig.handler ){
+                            handler = methodConfig.handler;
+                        }
+                        
+                        // check for docs...
+                        if( !_this.doc.routes[route] ) _this.doc.routes[route] = {};
+                        var doc = _this.doc.routes[route];
+                        
+                        doc[method] = methodConfig.doc || {
+                            description: 'No decription yet',
+                            params: [],
+                            returns: {
+                                type: 'undefined'
+                            }
+                        };
+                        
+                    }
+                    app[method](path, function(){
+                        handler.apply(_this,arguments);
+                    });
+                    config.aliases.forEach(function(alias){
+                        app[method](alias, function(){
                             handler.apply(_this,arguments);
                         });
-                    }
-                });
+                    });
+                }
             });
-            
         });
     },
     
