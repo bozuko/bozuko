@@ -23,6 +23,25 @@ body {
   bottom: 10px;
   left: 80px;
 }
+.header .confidential {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  text-shadow: 2px 2px 2px #ffffff;
+}
+.header .confidential .big {
+  text-transform: uppercase;
+  color: #d62929;
+  font-family: impact;
+  font-size: 40px;
+  display: block;
+}
+.header .confidential .smaller {
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+  color: #761616;
+}
 .controllerIcon {
   background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
 }

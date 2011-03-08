@@ -8,11 +8,11 @@ exports.require = function(module){
 
 exports.db = exports.require('core/db');
 
-
 /**
  * exports.app MUST be set by the application prior to calling configure()
  */
 exports.configure = function(config) {
+	this.env = config;
     var app = exports.app;
     if (!app) {
 		throw new Error("bozuko.app not set!");
@@ -20,27 +20,27 @@ exports.configure = function(config) {
     
     switch(config) {
 
-	case 'production':
-	    exports.config = require('./config/production');
-	    app.use(express.errorHandler());
-	    break;
-
-	case 'test':
-	    exports.config = require('./config/test');
-	    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	    break;
-
-	default:
-	    exports.config = require('./config/development');
-	    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	}
+		case 'production':
+			exports.config = require('./config/production');
+			app.use(express.errorHandler());
+			break;
+	
+		case 'test':
+			exports.config = require('./config/test');
+			app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+			break;
+	
+		default:
+			exports.config = require('./config/development');
+			app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+		}
 };
 
 exports.run = function(config) {
     if (config) {
-	exports.configure(config);
+		exports.configure(config);
     } else if (!exports.config){
-	throw new Error("No configuration given!");
+		throw new Error("No configuration given!");
     }
     require('./app/main').run(exports.app);
 };

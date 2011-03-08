@@ -18,5 +18,14 @@ module.exports = {
     server: {
         host: 'bonobo.bozuko.com',
         port: port
+    },
+    
+    /**
+     * These are basic authenticated users...
+     */
+    auth: {
+        'bozuko'        :'cracksmack',
+        'developer'     :'bluebeard',
+        'guest'         :'virgil'
     }
 };

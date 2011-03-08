@@ -11,7 +11,6 @@ var fs          = require('fs'),
     Monomi      = require('monomi'),
     Controller  = bozuko.require('core/controller'),
     Game        = bozuko.require('core/game');
-    
 
 exports.run = function(app){
     
@@ -44,6 +43,15 @@ function initApplication(app){
         next();
     });
     app.use(express.profiler());
+    
+    // setup basic authentication for development
+    if( bozuko.env == 'development'){
+        app.use(express.basicAuth(function(user, pass){
+            return bozuko.config.auth[user] == pass;
+        }));
+    }
+    
+    
     app.set('view engine', 'jade');
     app.set('views', __dirname + '/views');
     

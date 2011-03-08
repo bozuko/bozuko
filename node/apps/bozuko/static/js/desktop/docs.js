@@ -101,7 +101,10 @@ Ext.onReady(function(){
             height: 100,
             border: false,
             region:'north',
-            html:'<h1 class="title"><span>API Documentation</span></h1>'
+            html:[
+                  '<h1 class="title"><span>API Documentation</span></h1>',
+                  '<h2 class="confidential"><span class="big">Confidential</span><span class="smaller">Do not share</span></h2>'
+            ]
         },treePanel,tabPanel]
     });
 });

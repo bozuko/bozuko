@@ -61,7 +61,6 @@ exports.routes = {
                 var methods = controller.doc.routes[route];
                 Object.keys(methods).forEach(function(method){
                     var cfg = methods[method];
-                    console.log(cfg);
                     if( cfg && cfg.returns && cfg.returns.example ){
                         if( cfg.returns.example instanceof Function ){
                             // get the route...
