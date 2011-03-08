@@ -1,0 +1,55 @@
+h2.controller-name= name
+
+- if (controller.doc.description)
+  .controller-description
+    != controller.doc.description
+
+ul.routes
+  - var index = 0;
+  - each methods, route in controller.doc.routes
+    li.route
+      h3.route(id='route-'+name+'-'+index)= route
+      blockquote.method-block
+        
+        - each doc, method in methods
+          
+          h4.method(id='method-'+name+'-'+index+'-'+method)= method
+          
+          .content
+            != doc.description
+            
+            blockquote.params
+            
+              h5 Parameters
+              
+              ul.params
+                - each config, param in doc.params
+                  
+                  li
+                    .param-title
+                      span.param-name.name= param
+                      span.param-type.type= config.type
+                      
+                      
+                    .param-desc= config.description
+                    
+                    
+            
+            - if (doc.returns)
+              blockquote.returns
+                
+                h5 Return
+                
+                .return
+                  .return-title
+                    span.return-name.name= doc.returns.name
+                    span.return-type.type= doc.returns.type
+                  .return-desc!= doc.returns.description
+                
+            - if (doc.example && doc.example)
+              blockquote.example
+                
+                h5 Example
+                
+                pre.example= doc.example
+    - index++;

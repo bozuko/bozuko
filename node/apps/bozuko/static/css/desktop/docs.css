@@ -1,0 +1,107 @@
+body {
+  font-family: Tahoma;
+  font-size: 12px;
+}
+.header .x-panel-body {
+  background-color: #ffffff;
+  background-image: -moz-linear-gradient(top, #ffffff, #dddddd);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #dddddd));
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#dddddd)";
+  /*  IE6 & 7 */
+
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#dddddd)";
+  /*  IE8 */
+
+}
+.header .title {
+  height: 100px;
+  background: url("/images/desktop/docs/logo.png") no-repeat 0 0;
+  position: relative;
+}
+.header .title span {
+  position: absolute;
+  bottom: 10px;
+  left: 80px;
+}
+.controllerIcon {
+  background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+.routeIcon {
+  background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+.methodIcon {
+  background: url("/images/icons/16x16/world.png") no-repeat 0 50% !important;
+}
+.controller-page ul.routes {
+  margin: 0;
+  list-style: none;
+  border-bottom: 1px solid #e3e3e3;
+}
+.controller-page ul.routes li.route {
+  margin: 0;
+  list-style: none;
+  border: 1px solid #e3e3e3;
+  border-bottom: 0;
+}
+.controller-page ul.routes li.route h3.route {
+  margin: 0;
+  padding: 10px;
+  background: #f2f2f2;
+}
+.controller-page ul.routes li.route .method-block {
+  margin-left: 0;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #e3e3e3;
+}
+.controller-page ul.routes li.route .method-block .type {
+  color: #999;
+  margin-left: 6px;
+  font-style: italic;
+}
+.controller-page ul.routes li.route .method-block .name {
+  font-weight: bold;
+}
+.controller-page ul.routes li.route .method-block ul.params, .controller-page ul.routes li.route .method-block .return {
+  margin: 0 10px 10px 0;
+  border: 1px solid #e8e8e8;
+  border-bottom-width: 0;
+  list-style: none;
+}
+.controller-page ul.routes li.route .method-block ul.params .param-title,
+.controller-page ul.routes li.route .method-block .return .param-title,
+.controller-page ul.routes li.route .method-block ul.params .return-title,
+.controller-page ul.routes li.route .method-block .return .return-title {
+  padding: 4px 20px;
+  background: #f3f3f3;
+}
+.controller-page ul.routes li.route .method-block ul.params .param-desc,
+.controller-page ul.routes li.route .method-block .return .param-desc,
+.controller-page ul.routes li.route .method-block ul.params .return-desc,
+.controller-page ul.routes li.route .method-block .return .return-desc {
+  padding: 4px 20px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.controller-page ul.routes li.route .method-block .method {
+  margin-top: 0;
+  float: left;
+  width: 60px;
+  color: #bc3023;
+  text-transform: uppercase;
+  padding: 0 10px;
+}
+.controller-page ul.routes li.route .method-block .content {
+  margin-left: 80px;
+}
+.controller-page ul.routes li.route .method-block .content blockquote {
+  margin: 0;
+}
+.controller-page ul.routes li.route .method-block .content h5 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #999;
+}
+.controller-page ul.routes li.route .method-block pre {
+  border: 1px solid #e8e8e8;
+  background: #f3f3f3;
+  padding: 4px 6px;
+}
