@@ -7,6 +7,8 @@ exports.routes = {
         description : 'Get information about a contest',
         
         get : function(req,res){
+            
+            
             res.send({success:true});
         }
         

@@ -40,6 +40,12 @@ exports.routes = {
                         type: "Number",
                         description: "?"
                     }
+                },
+                
+                returns: {
+                    name: "pages",
+                    type: "Array",
+                    description: "Returns an array of objects"
                 }
             },
 
@@ -84,6 +90,7 @@ exports.routes = {
                 },
 
                 returns: {
+                    name: "data",
                     type: "Object",
                     description: "Page information"
                 }
@@ -116,6 +123,7 @@ exports.routes = {
                     }
                 },
                 returns: {
+                    name: "details",
                     type: "Object",
                     description: "Token information that allows contest participation"
                 }
