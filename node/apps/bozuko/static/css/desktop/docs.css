@@ -42,6 +42,10 @@ body {
   list-style: none;
   border: 1px solid #e3e3e3;
   border-bottom: 0;
+  margin-bottom: 10px;
+}
+.controller-page ul.routes li.route blockquote {
+  margin: 0;
 }
 .controller-page ul.routes li.route h3.route {
   margin: 0;
@@ -50,7 +54,7 @@ body {
 }
 .controller-page ul.routes li.route .method-block {
   margin-left: 0;
-  padding: 0 0 10px;
+  padding: 10px 0;
   border-bottom: 1px solid #e3e3e3;
 }
 .controller-page ul.routes li.route .method-block .type {
@@ -58,7 +62,7 @@ body {
   margin-left: 6px;
   font-style: italic;
 }
-.controller-page ul.routes li.route .method-block .name {
+.controller-page ul.routes li.route .method-block .name, .controller-page ul.routes li.route .method-block .label {
   font-weight: bold;
 }
 .controller-page ul.routes li.route .method-block ul.params, .controller-page ul.routes li.route .method-block .return {
@@ -70,21 +74,34 @@ body {
 .controller-page ul.routes li.route .method-block ul.params .param-title,
 .controller-page ul.routes li.route .method-block .return .param-title,
 .controller-page ul.routes li.route .method-block ul.params .return-title,
-.controller-page ul.routes li.route .method-block .return .return-title {
+.controller-page ul.routes li.route .method-block .return .return-title,
+.controller-page ul.routes li.route .method-block ul.params .param-values,
+.controller-page ul.routes li.route .method-block .return .param-values {
   padding: 4px 20px;
   background: #f3f3f3;
+}
+.controller-page ul.routes li.route .method-block ul.params .param-values, .controller-page ul.routes li.route .method-block .return .param-values {
+  background: #fff;
+  margin-top: 5px;
+  border-bottom: 1px solid #f3f3f3;
 }
 .controller-page ul.routes li.route .method-block ul.params .param-desc,
 .controller-page ul.routes li.route .method-block .return .param-desc,
 .controller-page ul.routes li.route .method-block ul.params .return-desc,
 .controller-page ul.routes li.route .method-block .return .return-desc {
   padding: 4px 20px;
-  border-bottom: 1px solid #e8e8e8;
+  border-top: 1px solid #e8e8e8;
 }
 .controller-page ul.routes li.route .method-block ul.params .required .param-title, .controller-page ul.routes li.route .method-block .return .required .param-title {
   background-image: url("/images/icons/16x16/bullet_star.png");
   background-repeat: no-repeat;
   background-position: 2px 50%;
+}
+.controller-page ul.routes li.route .method-block ul.params .label, .controller-page ul.routes li.route .method-block .return .label {
+  color: #999;
+}
+.controller-page ul.routes li.route .method-block ul.params .param-values, .controller-page ul.routes li.route .method-block .return .param-values {
+  color: #666;
 }
 .controller-page ul.routes li.route .method-block .method {
   margin-top: 0;

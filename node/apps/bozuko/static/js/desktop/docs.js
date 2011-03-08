@@ -8,7 +8,7 @@ Ext.onReady(function(){
         collapsible: false,
         split: true,
         animate: true,
-        margins: '4 0 0 0',
+        margins: '4 0 0 4',
         title: 'API Objects',
         rootVisible: false,
         loader: new Ext.tree.TreeLoader({
@@ -78,7 +78,7 @@ Ext.onReady(function(){
     
     var tabPanel = new Ext.TabPanel({
         region : 'center',
-        margins : '4 0 0 0',
+        margins : '4 4 0 0',
         activeTab : 0,
         defaults: {
             cls: 'controller-page',
@@ -99,6 +99,7 @@ Ext.onReady(function(){
         items :[{
             cls:'header',
             height: 100,
+            border: false,
             region:'north',
             html:'<h1 class="title"><span>API Documentation</span></h1>'
         },treePanel,tabPanel]

@@ -63,8 +63,15 @@ exports.routes = {
                     var cfg = methods[method];
                     console.log(cfg);
                     if( cfg && cfg.returns && cfg.returns.example ){
-                        console.log(cfg.returns.example);
-                        cfg.example = JSON.stringify(cfg.returns.example, null, '\t');
+                        if( cfg.returns.example instanceof Function ){
+                            // get the route...
+                            var fakeReq = {params:{}};
+                            var obj = cfg.returns.example.apply(this, [fakeReq,null]);
+                            cfg.example = JSON.stringify(obj,null,'\t');
+                        }
+                        else{
+                            cfg.example = JSON.stringify(cfg.returns.example, null, '\t');
+                        }
                     }
                 });
             });

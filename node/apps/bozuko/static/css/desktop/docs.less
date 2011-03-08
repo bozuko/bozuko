@@ -44,6 +44,11 @@ body {
             list-style: none;
             border: 1px solid #e3e3e3;
             border-bottom: 0;
+            margin-bottom: 10px;
+            
+            blockquote {
+                margin: 0;
+            }
             
             h3.route {
                 margin: 0;
@@ -53,7 +58,7 @@ body {
             
             .method-block{
                 margin-left: 0;
-                padding: 0 0 10px;
+                padding: 10px 0;
                 border-bottom: 1px solid #e3e3e3;
                 
                 .type {
@@ -62,7 +67,7 @@ body {
                     font-style: italic;
                 }
                 
-                .name {
+                .name, .label {
                     font-weight: bold;
                 }
                 
@@ -76,14 +81,20 @@ body {
                         
                     }
                     
-                    .param-title, .return-title {
+                    .param-title, .return-title, .param-values {
                         padding: 4px 20px;
                         background: #f3f3f3;
                     }
                     
+                    .param-values{
+                        background: #fff;
+                        margin-top: 5px;
+                        border-bottom: 1px solid #f3f3f3;
+                    }
+                    
                     .param-desc, .return-desc {
                         padding: 4px 20px;
-                        border-bottom: 1px solid #e8e8e8;
+                        border-top: 1px solid #e8e8e8;
                     }
                     
                     .required .param-title{
@@ -91,6 +102,15 @@ body {
                         background-repeat: no-repeat;
                         background-position: 2px 50%;
                     }
+                    
+                    .label {
+                        color: #999;
+                    }
+                    
+                    .param-values {
+                        color: #666;
+                    }
+                    
                 }
                 
                 .method {

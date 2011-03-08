@@ -12,6 +12,10 @@ var fakeContests = [{
     prize : 'Free Buffalo Wings and Potato Skins!'
 }];
 
+exports.doc = {
+    description : ""
+};
+
 exports.routes = {
 
     '/pages' : {
@@ -119,14 +123,29 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the place to checkin to."
+                    },
+                    lat: {
+                        required: true,
+                        type: "Number",
+                        description: "User latitude"
+                    },
+                    lng: {
+                        required: true,
+                        type: "Number",
+                        description: "User longitude"
+                    },
+                    message : {
+                        type: "String",
+                        description: "The user message to post with the checkin."
                     }
                 },
                 returns: {
-                    name: "details",
+                    name: "info",
                     type: "Object",
-                    description: "Token information that allows contest participation"
+                    description: "Checkin information"
                 }
             },
 

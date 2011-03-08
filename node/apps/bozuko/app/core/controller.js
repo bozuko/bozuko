@@ -14,7 +14,6 @@ Controller.prototype = {
         var _this = this;
         var app = this.app;
         
-        
         Object.keys(routes).forEach(function(route){
             
             var config = routes[route];

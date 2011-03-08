@@ -30,9 +30,12 @@ ul.routes
                       span.param-name.name= param
                       span.param-type.type= config.type
                       
-                      
                     .param-desc= config.description
                     
+                    - if (config.values)
+                      .param-values
+                        span.label Accepted Values:
+                        span.param-values= config.values.join(', ')
                     
             
             - if (doc.returns)
