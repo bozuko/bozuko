@@ -32,7 +32,7 @@ Ext.onReady(function(){
                 var callback = function(controller){
                     switch( type ){
                         case 'controller':
-                            // don't do nothing
+                            controller.body.scrollTo('top',0,true);
                             break;
                         case 'route':
                         case 'method':

@@ -34,11 +34,11 @@ exports.routes = {
                     },
                     limit: {
                         type: "Number",
-                        description: "The search radius of the query in miles"
+                        description: "The number of search results to return"
                     },
                     offset: {
                         type: "Number",
-                        description: "?"
+                        description: "The starting result number"
                     }
                 },
                 
@@ -84,6 +84,7 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the page"
                     }
