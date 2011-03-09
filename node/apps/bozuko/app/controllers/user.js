@@ -82,7 +82,7 @@ exports.routes = {
 
 		    example: function(req, res) {
                         var links = {
-                            place: '/page/4040432',
+                            page: '/page/4040432',
                             contest: '/contest/30345053'
                         };
 
@@ -92,7 +92,7 @@ exports.routes = {
 			    name: 'wings',
 			    place: 'hookslides',
 			    win_time: new Date().toString(),
-			    expiration_time: new Date(2012, 'july', 4),
+			    expiration_time: new Date(2012, 7, 4).toString(),
                             links: links
 			};
 
@@ -102,7 +102,7 @@ exports.routes = {
 			    name: 'wings',
 			    place: 'hookslides',
 			    win_time: new Date().toString(),
-			    redemption_time: new Date(2011, 'july', 4),
+			    redemption_time: new Date(2011, 7, 4).toString(),
                             links: links
 			};
 
@@ -112,10 +112,153 @@ exports.routes = {
 			    name: 'wings',
 			    place: 'hookslides',
 			    win_time: new Date().toString(),
-			    expiration_time: new Date(2011, 'Feb', 28),
+			    expiration_time: new Date(2011, 2, 28).toString(),
                             links: links
 			};
 			return [active_prize, redeemed_prize, expired_prize];
+		    }
+		}
+	    }
+        }
+    },
+
+    '/user/:user_id/prize/:prize_id' : {
+
+	get : {
+
+            doc: {
+                description: "Return a specific prize",
+
+                params: {
+		    user_id: {
+			type: "Number",
+			description: "The id of the user"
+                    },
+                    prize_id: {
+                        type: "Number",
+                        description: "The id of the prize"
+                    }
+		},
+
+                returns: {
+		    name: "prize",
+		    type: "Object",
+		    description: "User Object information",
+
+		    example: function(req, res) {
+                        var links = {
+                            page: '/page/4040432',
+                            contest: '/contest/30345053',
+                            user: '/user/12341234123412'
+                        };
+
+			var prize = {
+			    id: '121413123131',
+			    state: 'active',
+			    name: 'wings',
+			    place: 'hookslides',
+			    win_time: new Date(),
+			    expiration_time: new Date(4, 7, 2012),
+                            links: links
+			};
+
+                        return prize;
+		    }
+		}
+	    }
+        }
+    },
+
+ '/user/:user_id/prize/:prize_id/redemption' : {
+
+     get : {
+
+         doc: {
+             description: "Check the redemption status for a given prize",
+
+                params: {
+		    user_id: {
+			type: "Number",
+			description: "The id of the user"
+                    },
+                    prize_id: {
+                        type: "Number",
+                        description: "The id of the prize"
+                    }
+		},
+
+                returns: {
+		    name: "redemption_status",
+		    type: "Object",
+		    description: "Information about current prize redemption status",
+
+		    example: function(req, res) {
+                        var links = {
+                            page: '/page/4040432',
+                            contest: '/contest/30345053',
+                            user: '/user/12341234123412',
+                            prize: '/user/12341234123412/prize/121413123131'
+                        };
+                        // Don't return an image unless the prize has already been redeemed
+                        // or is being redeemed with post. Not sure if this really matters or not.
+			var prize = {
+                            id: 121413123131,
+			    state: 'active',
+                            redemption_time: '',
+                            expiration_time: new Date(2012, 7, 4).toString(),
+			    name: 'wings',
+			    place: 'hookslides',
+                            img: '',
+                            links: links
+			};
+
+                        return prize;
+		    }
+		}
+	    }
+        },
+
+	post : {
+
+            doc: {
+                description: "Redeem a prize",
+
+                params: {
+		    user_id: {
+			type: "Number",
+			description: "The id of the user"
+                    },
+                    prize_id: {
+                        type: "Number",
+                        description: "The id of the prize"
+                    }
+		},
+
+                returns: {
+		    name: "redemption_object",
+		    type: "Object",
+		    description: "Information used to create the redemption screen",
+
+		    example: function(req, res) {
+                        var links = {
+                            page: '/page/4040432',
+                            contest: '/contest/30345053',
+                            user: '/user/12341234123412',
+                            prize: '/user/12341234123412/prize/121413123131'
+                        };
+
+			var prize = {
+                            id: 121413123131,
+			    state: 'redeemed',
+                            redemption_time: new Date().toString(),
+                            expiration_time: new Date(2012, 7, 4).toString(),
+			    name: 'wings',
+			    place: 'hookslides',
+                            img: '/page/4040432/daily/img',
+                            links: links
+			};
+
+                        return prize;
 		    }
 		}
 	    }
