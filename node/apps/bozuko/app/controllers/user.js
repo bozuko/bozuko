@@ -81,13 +81,19 @@ exports.routes = {
 		    description: "User Object information",
 
 		    example: function(req, res) {
+                        var links = {
+                            place: '/page/4040432',
+                            contest: '/contest/30345053'
+                        };
+
 			var active_prize = {
 			    id: '121413123131',
 			    state: 'active',
 			    name: 'wings',
 			    place: 'hookslides',
 			    win_time: new Date().toString(),
-			    expiration_time: new Date(2012, 'july', 4)
+			    expiration_time: new Date(2012, 'july', 4),
+                            links: links
 			};
 
 			var redeemed_prize = {
@@ -96,7 +102,8 @@ exports.routes = {
 			    name: 'wings',
 			    place: 'hookslides',
 			    win_time: new Date().toString(),
-			    redemption_time: new Date(2011, 'july', 4)
+			    redemption_time: new Date(2011, 'july', 4),
+                            links: links
 			};
 
                         var expired_prize = {
@@ -105,7 +112,8 @@ exports.routes = {
 			    name: 'wings',
 			    place: 'hookslides',
 			    win_time: new Date().toString(),
-			    expiration_time: new Date(2011, 'Feb', 28)
+			    expiration_time: new Date(2011, 'Feb', 28),
+                            links: links
 			};
 			return [active_prize, redeemed_prize, expired_prize];
 		    }
