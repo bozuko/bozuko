@@ -1,5 +1,7 @@
-var bozuko  = require('bozuko'),
-    util    = require('util');
+var bozuko      = require('bozuko'),
+    fs          = require('fs'),
+    markdown    = require('markdown-js'),
+    util        = require('util');
 
 exports.routes = {
 
@@ -46,7 +48,14 @@ exports.routes = {
                 tree.push(node);
             });
             
-            res.render('docs/index', {layout:'docs/layout',tree:tree,title:"bozuko docs",bozuko:bozuko});
+            // grab the welcome html
+            
+            if( !this.welcomeHTML ){
+                this.welcomeHTML = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/welcome.md').toString() );
+                console.log(this.welcomeHTML);
+            }
+            
+            res.render('docs/index', {layout:'docs/layout',tree:tree,title:"bozuko docs",bozuko:bozuko, welcome: this.welcomeHTML});
         }
     },
     
@@ -66,10 +75,10 @@ exports.routes = {
                             // get the route...
                             var fakeReq = {params:{}};
                             var obj = cfg.returns.example.apply(this, [fakeReq,null]);
-                            cfg.example = JSON.stringify(obj,null,'\t');
+                            cfg.example = JSON.stringify(obj,null,'    ');
                         }
                         else{
-                            cfg.example = JSON.stringify(cfg.returns.example, null, '\t');
+                            cfg.example = JSON.stringify(cfg.returns.example, null, '    ');
                         }
                     }
                 });
