@@ -4,7 +4,7 @@ var qs       = require('querystring');
 
 var requestCount = 0;
 
-var fakeContests = [{
+var fakeGames = [{
     id : 'coinflip90132',
     name: 'coinflip',
     icon : '/images/games/goldEagleHeads60x60.png',
@@ -45,7 +45,7 @@ exports.routes = {
                         description: "The starting result number"
                     }
                 },
-                
+
                 returns: {
                     name: "pages",
                     type: "Array",
@@ -97,86 +97,50 @@ exports.routes = {
                 returns: {
                     name: "data",
                     type: "Object",
-                    description: "Page information"
+                    description: "Page information",
+
+                    example: {
+                        id: 123456,
+                        name: 'Hookslide Kelly\'s',
+                        picture: 'http://graph.facebook.com/picture/35235235',
+                        link: 'http://facebook.com/pages/Hookslides/3525252323',
+                        category: 'Local business',
+                        website: 'www.hookslidekellys.com',
+                        location: {
+                            street: '19 Merrimack Street',
+                            city: 'Lowell',
+                            state: 'MA',
+                            country: 'United States',
+                            zip: '01852',
+                            latitude: 42.3,
+                            longitude: -71.105,
+                        },
+                        phone: '978-654-4225',
+                        fan_count: 1000,
+                        checkins: 80000,
+                        games: fakeGames,
+                        links: {
+                            contest: '/contest/4553453',
+                            checkin: '/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id=123456'
+                        }
+                    }
                 }
             },
 
             handler: function(req,res) {
+                page_id = req.param('id');
                 bozuko.service('facebook').place({
-                    place_id:req.param('id')
+                    place_id: page_id
                 },function(error, place){
-                    place.contests = fakeContests;
+                    place.games = fakeGames;
+                    place.links = {
+                        contest: '/contest/4553453',
+                        checkin: "/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id="+
+                            page_id
+                    };
                     res.send(place);
                 });
             }
         }
-    },
-
-    '/page/:id/checkin' : {
-
-        aliases : ['/place/:id/checkin'],
-
-        post : {
-
-            doc: {
-                description: "Checkin to the place",
-
-                params: {
-                    id: {
-                        required: true,
-                        type: "Number",
-                        description: "The id of the place to checkin to."
-                    },
-                    lat: {
-                        required: true,
-                        type: "Number",
-                        description: "User latitude"
-                    },
-                    lng: {
-                        required: true,
-                        type: "Number",
-                        description: "User longitude"
-                    },
-                    message : {
-                        type: "String",
-                        description: "The user message to post with the checkin."
-                    }
-                },
-                returns: {
-                    name: "info",
-                    type: "Object",
-                    description: "Checkin information"
-                }
-            },
-
-            handler: function(req, res) {
-                var page_id = req.param('id');
-                var lat = req.param('lat');
-                var lng = req.param('lng');
-
-                // we should have the user from the session...
-                if( !req.session.user ){
-                    res.statusCode = 404,
-                    res.end();
-                    return;
-                }
-                // lets check them in...
-                bozuko.service('facebook').place({place_id: page_id}, function(error, p){
-                    bozuko.service('facebook').checkin({
-                        user        :req.session.user,
-                        message     :'Just won a free burrito playing bozuko!',
-                        place_id    :p.id,
-                        actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
-                        link        :'http://bozuko.com',
-                        picture     :'http://bozuko.com/images/bozuko-chest-check.png',
-                        description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
-                        latLng      :{lat:p.location.latitude,lng:p.location.longitude}
-                    },function(error, result){
-                        console.log(error);
-                        res.end();
-                    });
-                });
-            }
-        }
     }
-}
+};

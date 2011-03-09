@@ -46,7 +46,10 @@ exports.routes = {
                             win_config: [{
                                 result: [0, 7, 12, 9, 4, 13, 5, 2, 1, 3, 4],
                                 prize: 'free appetizer'
-                            }]}]
+                            }]}],
+                        links: {
+                            page: '/page/4040432'
+                        }
                     }
                 }
             }
@@ -63,6 +66,20 @@ exports.routes = {
                     id: {
                         type: "Number",
                         description: "The id of the contest"
+                    },
+                    lat: {
+                        required: true,
+                        type: "Number",
+                        description: "User latitude"
+                    },
+                    lng: {
+                        required: true,
+                        type: "Number",
+                        description: "User longitude"
+                    },
+                    message : {
+                        type: "String",
+                        description: "The user message to post with the checkin."
                     }
                 },
 
@@ -76,6 +93,39 @@ exports.routes = {
                         tokens: 3
                     }
                 }
+            },
+
+            handler: function(req, res) {
+                var page_id = req.param('page_id');
+                var lat = req.param('lat');
+                var lng = req.param('lng');
+
+                // we should have the user from the session...
+                if( !req.session.user ){
+                    res.statusCode = 404,
+                    res.end();
+                    return;
+                }
+                // lets check them in...
+                bozuko.service('facebook').place({place_id: page_id}, function(error, p){
+                    bozuko.service('facebook').checkin({
+                        user        :req.session.user,
+                        message     :'Just won a free burrito playing bozuko!',
+                        place_id    :p.id,
+                        actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
+                        link        :'http://bozuko.com',
+                        picture     :'http://bozuko.com/images/bozuko-chest-check.png',
+                        description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
+                        latLng      :{lat:p.location.latitude,lng:p.location.longitude}
+                    },function(error, result){
+                        console.log(error);
+                        res.send({
+                            id: page_id,
+                            tokens: 3
+                        });
+                        res.end();
+                    });
+                });
             }
         }
     },
