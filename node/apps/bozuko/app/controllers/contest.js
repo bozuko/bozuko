@@ -19,7 +19,7 @@ exports.routes = {
                     name: "contest_info",
                     type: "Object",
                     description: "Contest Information",
-                    
+
                     example: {
                         id: 4553453,
                         initial_odds: "1:5",
@@ -70,7 +70,34 @@ exports.routes = {
                     name: "checkin_result",
                     type: "Object",
                     description: "Return an object containg the number of tokens earned",
-                    
+
+                    example: {
+                        id: 4553453,
+                        tokens: 3
+                    }
+                }
+            }
+        }
+    },
+
+    '/contest/:id/entry/facebook/like': {
+
+        post: {
+            doc: {
+                description: "Enter a contest and receive tokens via a facebook like",
+
+                params: {
+                    id: {
+                        type: "Number",
+                        description: "The id of the contest"
+                    }
+                },
+
+                returns: {
+                    name: "like_result",
+                    type: "Object",
+                    description: "Return an object containg the number of tokens earned",
+
                     example: {
                         id: 4553453,
                         tokens: 3
