@@ -1,11 +1,9 @@
 var bozuko = require('bozuko');
 
-var qs       = require('querystring');
-
 var requestCount = 0;
 
 var fakeGames = [{
-    id : 'coinflip90132',
+    id : '90132',
     name: 'coinflip',
     icon : '/images/games/goldEagleHeads60x60.png',
     description : 'Flip a coin',
@@ -49,7 +47,7 @@ exports.routes = {
                 returns: {
                     name: "pages",
                     type: "Array",
-                    description: "Returns an array of objects"
+                    description: "Returns an array of pages."
                 }
             },
 
@@ -135,8 +133,7 @@ exports.routes = {
                     place.games = fakeGames;
                     place.links = {
                         contest: '/contest/4553453',
-                        checkin: "/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id="+
-                            page_id
+                        checkin: "/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id="+page_id
                     };
                     res.send(place);
                 });

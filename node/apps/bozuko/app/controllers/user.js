@@ -55,6 +55,45 @@ exports.routes = {
 	}
     },
 
+    '/user/:id/favorites' : {
+
+        get : {
+            doc: {
+                description: "Return a user's favorite pages",
+
+                params: {
+                    id: {
+                        type: "Number",
+                        description: "The id of the user"
+                    }
+                },
+
+                returns: {
+                    name: "favorites",
+                    type: "Array",
+                    description: "The user's favorite pages. The format is an array of objects as returned by /page/:id"
+                }
+            }
+        },
+
+        put: {
+            doc: {
+                description: "Add a page to a user's favorites",
+
+                params: {
+                    id: {
+                        type: "Number",
+                        description: "The id of the user"
+                    },
+                    page_id: {
+                        type: "Number",
+                        description: "The id of the page being added"
+                    }
+                }
+            }
+        }
+    },
+
     '/user/:id/prizes' : {
 
 	get : {
