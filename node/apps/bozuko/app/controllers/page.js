@@ -121,7 +121,7 @@ exports.routes = {
                         games: fakeGames,
                         links: {
                             contest: '/contest/4553453',
-                            checkin: '/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id=123456'
+                            checkins: '/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id=123456'
                         }
                     }
                 }

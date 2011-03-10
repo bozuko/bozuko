@@ -12,21 +12,24 @@ var bozuko_headers = {
     'BOZUKO_FB_ACCESS_TOKEN' : user.token
 };
 
-var checkin_and_play = function(place_id, contest_id) {
+var checkin_and_play = function(checkin_url, contest_url) {
+    print(checkin_url);
     assert.response(bozuko.app, {
-        url: '/page/'+place_id+'/checkin',
+        url: checkin_url,
         method: 'POST',
         headers: bozuko_headers},
 	{status: 200},
         function(res) {
             assert.response(bozuko.app,
-                {url: '/contest/'+contest_id},
+                {url: contest_url},
                 {status: 200, header: {'Content-Type': 'application/json'}});
         });
 };
 
-exports['Get page']  = function(beforeExit) {
+// Go through the app by following links
+exports['play'] = function(beforeExit) {
 
+    // GET /pages
     assert.response(bozuko.app,
 	{url: '/pages/?lat=42.375&lng=-71.106&limit=5'},
 	{status: 200, headers: {'Content-Type': 'application/json'}},
@@ -35,15 +38,17 @@ exports['Get page']  = function(beforeExit) {
             assert.keys(place, ['id', 'name', 'category', 'location', 'games']);
             assert.keys(place.location, ['latitude', 'longitude']);
 
+            // GET the first page
             assert.response(bozuko.app,
-                {url: '/page/'+place.id},
+                {url: place.links.page},
 	        {status: 200, headers: {'Content-Type': 'application/json'}},
 	        function(res) {
 	            var page = JSON.parse(res.body);
                     assert.keys(page, ['id', 'name', 'picture', 'link', 'category', 'location',
-                        'fan_count', 'checkins', 'contests']);
-                    assert.keys(page.contests[0], ['id', 'name', 'icon', 'description', 'prize']);
-                    checkin_and_play(place.id, page.contests[0].id);
+                        'fan_count', 'checkins', 'games']);
+                    assert.keys(page.games[0], ['id', 'name', 'icon', 'description', 'prize']);
+
+                    checkin_and_play(page.links.checkins, page.links.contest);
 		});
     });
 };
