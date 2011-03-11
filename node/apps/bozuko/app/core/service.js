@@ -5,7 +5,7 @@ var Service = module.exports = function(){
     
 };
 
-var proto = Service.prototype;
+var $ = Service.prototype;
 
 /**
  * Login function
@@ -19,7 +19,7 @@ var proto = Service.prototype;
  *
  * @returns {null}  
  */
-proto.login = function(req,res,scope,defaultReturn,success,failure){};
+$.login = function(req,res,scope,defaultReturn,success,failure){};
 
 /**
  * Location based search
@@ -54,7 +54,7 @@ proto.login = function(req,res,scope,defaultReturn,success,failure){};
  *
  * @return {null}
  */
-proto.search = function(options, callback){};
+$.search = function(options, callback){};
 
 
 /**
@@ -74,7 +74,7 @@ proto.search = function(options, callback){};
  *
  * @return {null}
  */
-proto.checkin = function(place_id, user, callback){};
+$.checkin = function(place_id, user, callback){};
 
 
 /**
@@ -99,4 +99,19 @@ proto.checkin = function(place_id, user, callback){};
  *
  * @return {null}
  */
-proto.place = function(place_id, fields, callback){};
+$.place = function(place_id, fields, callback){};
+
+/**
+ * Get any places that this user is an administrator for
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      pages
+ *
+ * @param {User}            user            The user
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.get_user_pages = function(user, callback){};

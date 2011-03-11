@@ -10,7 +10,7 @@ html
     
     //- Assign the uid from the last active fb session here.
     script
-      var _uid = #{user ? user.facebook_id : -1};
+      var _uid = #{user ? user.service('facebook').id : -1};
     
     
     
@@ -24,7 +24,7 @@ html
           
           - if( user )
             .profile
-              img(src="https://graph.facebook.com/"+user.facebook_id+"/picture?type=square",alt=user.name)
+              img(src="https://graph.facebook.com/"+user.service('facebook').id+"/picture?type=square",alt=user.name)
               | Logged in as
               a(href=user.can_manage_pages?"/business/account":"/user/account")= user.name
             

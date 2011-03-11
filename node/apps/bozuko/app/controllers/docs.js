@@ -51,7 +51,7 @@ exports.routes = {
             // grab the welcome html
             
             if( !this.welcomeHTML ){
-                this.welcomeHTML = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/welcome.md').toString() );
+                this.welcomeHTML = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
                 console.log(this.welcomeHTML);
             }
             

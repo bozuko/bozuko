@@ -73,15 +73,28 @@ body {
             }
             
             h3.route {
+                position: relative;
                 margin: 0;
                 padding: 10px;
                 background: #f2f2f2;
+                z-index:3;
             }
             
-            .method-block{
+            .methods-block{
+                
                 margin-left: 0;
                 padding: 10px 0;
                 border-bottom: 1px solid #e3e3e3;
+                
+                .method-separator {
+                    clear: both;
+                    height: 1px;
+                    line-height: 1px;
+                    font-size: 1px;
+                    overflow: hidden;
+                    background: #e3e3e3;
+                    margin: 10px 0;
+                }
                 
                 .type {
                     color: #999;

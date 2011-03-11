@@ -33,10 +33,12 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
 
+    var protocol = (req.app.key?'https:':'http:');
+
     var params = {
         'client_id' : bozuko.config.facebook.app.id,
         'scope' : bozuko.config.facebook.perms[scope],
-        'redirect_uri' : 'https://'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
+        'redirect_uri' : protocol+'//'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
     };
 
     if( req.session.device == 'touch'){
@@ -69,8 +71,6 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
         params.client_secret = bozuko.config.facebook.app.secret;
         params.code = code;
 
-        console.log(code);
-
         // we should also have the user information here...
         var ret = req.session.redirect;
 
@@ -90,7 +90,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             access_token : token
                         }
                     }, function(user){
-                        bozuko.models.User.findOne({facebook_id:user.id}, function(err, u){
+                        bozuko.models.User.findOne({'services.name':'facebook','services.id':user.id}, function(err, u){
                             if( !u ){
                                 u = new bozuko.models.User();
                             }
@@ -102,6 +102,10 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             u.email = user.email;
                             u.facebook_id = user.id;
                             u.facebook_auth = token;
+                            
+                            u.service('facebook', user.id, token, user);
+                            
+                            
                             u.save(function(){
 
                                 var device = req.session.device;
@@ -293,3 +297,81 @@ $.place = function(options, callback){
     });
 
 };
+
+/**
+ * Get any places that this user is an administrator for
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      pages
+ *
+ * @param {User}            user            The user
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.get_user_pages = function(user, callback){
+
+    facebook.graph('/me/accounts',
+        {
+            user: user,
+            params:{
+                fields: 'id,name,fan_count,location,category'
+            }
+        },
+        function(accounts){
+            var pages = [];
+            var ids = [];
+            if( accounts && accounts.data ) accounts.data.forEach(function(account){
+                delete account.access_token;
+                if( account.location && account.location.latitude ){
+                    account.is_place = true;
+                }
+                else{
+                    account.is_place = false;
+                }
+                // ignore any accounts that do not have a name...
+                if( account.name ){
+                    account.has_owner = false;
+                    account.is_owner = false;
+                    pages.push(account);
+                    ids.push(account.id);
+                }
+            });
+
+            pages.sort(sort_FacebookPageFanCount);
+            pages.sort(sort_FacebookPageLocation).reverse();
+
+            if( ids.length > 0 ){
+                bozuko.models.Page.find({'services.name':'facebook','services.id':{$in:ids}}, function(err, bozuko_pages){
+                    if( bozuko_pages != null ) bozuko_pages.forEach(function(bozuko_page){
+                        var i = ids.indexOf(bozuko_page.service('facebook').id);
+                        pages[i].has_owner = true;
+                        pages[i].is_owner = (bozuko_page.owner_id.id == user._id.id);
+                    });
+                    callback(null, pages);
+                });
+            }
+            else{
+                callback(null, pages);
+            }
+        }
+    );
+};
+
+
+/**
+ * Utility Functions
+ */
+
+function sort_FacebookPageLocation(a,b){
+    var a_has_location = a.location && a.location.latitude;
+    var b_has_location = b.location && b.location.latitude;
+    if( a_has_location && !b_has_location ) return 1;
+    if( b_has_location && !a_has_location ) return -1;
+    return 0;
+}
+function sort_FacebookPageFanCount(a,b){
+    return (a.fan_count||0) - (b.fan_count||0);
+}

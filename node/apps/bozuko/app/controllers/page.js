@@ -111,7 +111,7 @@ exports.routes = {
                             country: 'United States',
                             zip: '01852',
                             latitude: 42.3,
-                            longitude: -71.105,
+                            longitude: -71.105
                         },
                         phone: '978-654-4225',
                         fan_count: 1000,

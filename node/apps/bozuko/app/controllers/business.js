@@ -54,25 +54,14 @@ exports.routes = {
         
         get : function(req,res){
             
-            facebook.get_accounts(req.session.user, function(facebook_pages){
-                // lets mark off the ones we know the user already owns...
-                bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, user_pages){
-                    var map = {};
-                    if( user_pages != null ) user_pages.forEach(function(user_page){
-                        map[user_page.facebook_id] = user_page;
-                    });
-                    if( facebook_pages != null ) facebook_pages.forEach(function(facebook_page){
-                        if( map[facebook_page.id] ){
-                            facebook_page.isOwner = true;
-                        }
-                    });
-                    var locals = {
-                        title : "add facebook page",
-                        pages : facebook_pages || [],
-                        error : req.flash('error')
-                    };
-                    res.render('business/account/add_page', locals );
-                });
+            bozuko.service('facebook').get_user_pages(req.session.user, function(err, facebook_pages){
+                var locals = {
+                    title : "add facebook page",
+                    pages : facebook_pages || [],
+                    error : req.flash('error')
+                };
+                res.render('business/account/add_page', locals );
+                
             });
             
         },
@@ -99,7 +88,7 @@ exports.routes = {
                     res.redirect(req.url);
                     return;
                 }
-                bozuko.models.Page.findOne({facebook_id:id}, function(err, page){
+                bozuko.models.Page.findOne({'services.name':'facebook','services.id':id}, function(err, page){
                     if( page && page.owner_id != req.session.user._id ){
                         /**
                          * TODO
@@ -113,10 +102,11 @@ exports.routes = {
                     }
                     else if( !page ) page = new bozuko.models.Page();
                     
-                    page.facebook_id = data.id;
-                    page.facebook_auth = req.session.user.facebook_auth;
+                    page.service('facebook', data.id, req.session.user.service('facebook').auth, data);
+                    
                     page.name = data.name;
                     page.games = [];
+                    
                     page.is_location = data.location && data.location.latitude ? true : false;
                     if( page.is_location ){
                         page.lat = parseFloat(data.location.latitude);
@@ -125,7 +115,7 @@ exports.routes = {
                     page.owner_id = req.session.user._id;
                     page.save(function(err){
                         // cool, we have them saved now...
-                        res.redirect('/business/account/page/'+page.facebook_id+'/create_games');
+                        res.redirect('/business/account/page/'+page.id+'/create_games');
                     });
                     
                 });
@@ -219,7 +209,7 @@ exports.routes = {
         description :"Return an array of the pages that the user can manage",
         
         get: function(req,res){
-            facebook.get_accounts(req.session.user, function(pages){
+            bozuko.service('facebook').get_user_pages(req.session.user, function(err, pages){
                 res.send(pages);
             });
         }
@@ -230,7 +220,7 @@ exports.routes = {
         description :"Return the details of a page",
         
         get : function(req,res){
-            facebook.graph('/'+req.param('id'),
+            bozuko.service('facebook').place(req.param('id'),
                 {
                     user: req.session.user
                 },

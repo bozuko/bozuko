@@ -6,7 +6,7 @@ h3 Places
     ul.pages
       - each page in pages
         li.page
-          img(src="https://graph.facebook.com/"+page.facebook_id+"/picture",alt=page.name)
+          img(src="https://graph.facebook.com/"+page.service('facebook').id+"/picture",alt=page.name)
           h3= page.name
           .actions
             a.action.add_games(href="/business/account/page/"+page._id+"/create_games") Manage Games

@@ -22,11 +22,11 @@ exports.graph = function(path, options, callback){
     };
 
     options = options || {};
-    if( options.user && options.user.facebook_auth ){
-        params.access_token = options.user.facebook_auth;
+    if( options.user && options.user.service('facebook') ){
+        params.access_token = options.user.service('facebook').auth;
     }
-    else if( options.req && options.req.session.user && options.req.session.user.facebook_auth ){
-        params.access_token = req.session.user.facebook_auth;
+    else if( options.req && options.req.session.user && options.req.session.user.service('facebook') ){
+        params.access_token = req.session.user.service('facebook').auth;
     }
 
     if( options.params ) params = merge(params, options.params);
@@ -42,10 +42,11 @@ exports.graph = function(path, options, callback){
      * Facebook Caching...
      *
      */
+    var useCache = false;
     var fakeRequestTime = false;
     var expire = 1000 * 60 * 10; // 10 minute expiration
     var cacheKey = JSON.stringify({path:path,options:options});
-    if( cache[cacheKey] && cache[cacheKey].arguments && now.getTime() - cache[cacheKey].time.getTime() < expire ){
+    if( useCache && cache[cacheKey] && cache[cacheKey].arguments && now.getTime() - cache[cacheKey].time.getTime() < expire ){
         if( callback instanceof Function ){
             // should we fake the request time?
             console.log("using facebook cache");
@@ -66,7 +67,7 @@ exports.graph = function(path, options, callback){
              * If we want to debug all facebook requests it can go here..
              */
             var then = new Date();
-            cache[cacheKey] = {arguments:arguments, time:then, duration:then.getTime()-now.getTime()};
+            if(useCache) cache[cacheKey] = {arguments:arguments, time:then, duration:then.getTime()-now.getTime()};
 
             bozuko.last_facebook_time = then.getTime() - now.getTime();
             if( !bozuko.facebook_requests ) bozuko.facebook_requests={};

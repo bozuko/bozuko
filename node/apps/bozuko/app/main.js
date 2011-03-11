@@ -42,7 +42,8 @@ function initApplication(app){
         }
         next();
     });
-    app.use(express.profiler());
+    // app.use(express.profiler());
+    
     
     // setup basic authentication for development
     if( bozuko.env == 'development'){

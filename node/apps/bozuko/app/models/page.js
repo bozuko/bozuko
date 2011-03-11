@@ -5,20 +5,44 @@ var facebook = bozuko.require('util/facebook'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
-var GameConfig = new Schema({
-    game                :{type:String}
+var Service = new Schema({
+    name                :{type:String},
+    id                  :{type:Number},
+    auth                :{type:String},
+    data                :{}
 });
 
 var Page = module.exports = new Schema({
-    facebook_id         :{type:String, index: true},
-    facebook_auth       :{type:String},
+    services            :[Service],
     path                :{type:String},
-    games               :[GameConfig],
     is_location         :{type:Boolean},
     name                :{type:String},
     lat                 :{type:Number},
     lng                 :{type:Number},
     owner_id            :{type:ObjectId, index: true}
+});
+
+Page.index({'services.name':1,'services.id':1});
+
+Page.method('service', function(name){
+    var service = false;
+    for(var i=0; i<this.services.length && !service; i++){
+        if( name == this.services[i].name ) service = this.services[i];
+    }
+    if( !arguments[1] ) return service;
+    var add = false;
+    
+    if( !service ){
+        add = true;
+        service = {name:name};
+    }
+    service.id = arguments[1];
+    if( arguments[2] ) service.auth = arguments[2];
+    if( arguments[3] ) service.data = arguments[3];
+    if( add ){
+        serivce = this.services[this.services.length] = service;
+    }
+    return service;
 });
 
 Page.method('getOwner', function(callback){
@@ -49,11 +73,12 @@ Page.method('checkin', function(user, game, callback) {
                 var checkin = new bozuko.models.Checkin();
 
                 checkin.place_id = self.id;
-                checkin.place_facebook_id = self.facebook_id;
 
+                checkin.place_facebook_id = self.service('facebook').id;
+                
                 checkin.user_id = user.id;
-                checkin.user_facebook_id = user.facebook_id;
-
+                checkin.user_facebook_id = user.self.service('facebook').id;
+                
                 checkin.game_id = game.id;
 
                 // still need to contact facebook.
@@ -71,7 +96,6 @@ Page.static('search', function(options, callback){
         if( id == 'dice' || id =='slots' ) continue;
         var game = bozuko.games[id];
         game.id = id;
-        console.log(game);
         game.name = game.config.name;
         game.icon = '/game/'+id+'/images/'+game.config.icon;
         game.prize = 'Free Buffalo Wings and Potato Skins!';
@@ -95,9 +119,9 @@ Page.static('search', function(options, callback){
             else{
                 callback(new Error('No results'));
             }
-
-            bozuko.models.Page.find({facebook_id:{$in:Object.keys(map)}}, function(err, bozuko_places){
-
+            
+            bozuko.models.Page.find({'services.name':'facebook','services.id':{$in:Object.keys(map)}}, function(err, bozuko_places){
+                
                 result.data.forEach( function(place, index){
                     place.games = index%1==0 ? games : [];
                     // TODO: put the real links in here

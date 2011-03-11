@@ -69,10 +69,41 @@ Ext.onReady(function(){
         controllers[name].getUpdater().update({
             url: '/docs/page/'+name,
             callback: function(){
+                // initScrolling.defer(10,this,[controllers[name]]);
                 callback.defer(10,this,[controllers[name]]);
             }
         });
         return controllers[name];
+    }
+    
+    function initScrolling(controller){
+        // check for routes...
+        var routeBlocks = Ext.select('ul.routes>li.route', controller.body.dom);
+        routeBlocks.each(function(block){
+            // get the heading
+            var h3 = Ext.get(Ext.DomQuery.selectNode('h3.route', block.dom));
+            var h3_h = h3.getHeight();
+            var h3_y = h3.getTop();
+            var block_h = block.getHeight();
+            var block_y = block.getY();
+            var controller_y = controller.body.getY();
+            
+            var zero = block_y - controller_y;
+            var start = zero + h3_h;
+            var end = zero + block_h - h3_y;
+            
+            controller.body.on('scroll', function(){
+                var scroll_top = controller.body.getScroll().top;
+                console.log(scroll_top, start, end);
+                if( scroll_top > start && scroll_top < end ){
+                    console.log(scroll_top-zero);
+                    h3.setTop(scroll_top-zero);
+                }
+                else{
+                    h3.setTop(0);
+                }
+            });
+        });
     }
     
     
