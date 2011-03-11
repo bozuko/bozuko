@@ -10,6 +10,7 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the contest"
                     }
@@ -44,11 +45,54 @@ exports.routes = {
                             }]}, {
                             name: 'scratch ticket',
                             win_config: [{
-                                result: [0, 7, 12, 9, 4, 13, 5, 2, 1, 3, 4],
+                                result: '3 matches',
                                 prize: 'free appetizer'
                             }]}],
                         links: {
-                            page: '/page/4040432'
+                            page: '/page/4040432',
+                            result: '/contest/4553453/result'
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * Play a game here. The result is pulled off the generic result list generated for the contest
+     * and the index from the result is used to generate the config returned to the client.
+     */
+    '/contest/:id/result' : {
+        post: {
+            doc: {
+                description: "Retrieve a result for the given contest." +
+                    "The user must have tokens credited to their account in order for this to work",
+
+                params: {
+                    id: {
+                        required: true,
+                        type: "Number",
+                        description: "The id of the contest"
+                    },
+                    game: {
+                        required: true,
+                        type: "String",
+                        description: "The name of the game"
+                    }
+                },
+                returns: {
+                    name: "play_result",
+                    type: "Object",
+                    description: "Return the results of playing a game",
+
+                    example: {
+                        win: true,
+                        game: 'slots',
+                        result: ['seven','seven', 'seven'],
+                        prize: 'buffalo wings',
+                        links: {
+                            page: '/page/4040432',
+                            contest: '/contest/4553453'
                         }
                     }
                 }
@@ -64,6 +108,7 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the contest"
                     },
@@ -122,7 +167,6 @@ exports.routes = {
                         if (error) {
                             res.statusCode = 400;
                             res.send(error);
-                            res.end();
                         } else {
                             result.tokens = 3;
                             res.send(result);
@@ -141,6 +185,7 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the contest"
                     }

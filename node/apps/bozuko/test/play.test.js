@@ -12,7 +12,7 @@ var bozuko_headers = {
     'BOZUKO_FB_ACCESS_TOKEN' : user.token
 };
 
-var checkin_and_play = function(checkin_url, contest_url) {
+var checkin_and_play = function(checkin_url, result_url) {
 
     // Checkin
     assert.response(bozuko.app, {
@@ -24,10 +24,14 @@ var checkin_and_play = function(checkin_url, contest_url) {
             var result = JSON.parse(res.body);
             assert.eql(result.tokens, 3);
 
-            // Play the game and check the result
+            // Play the slots game and check the result
             assert.response(bozuko.app,
-                {url: contest_url},
-                {status: 200, header: {'Content-Type': 'application/json'}});
+                {url: result_url + "/?game=slots", method: 'POST'},
+                {status: 200, header: {'Content-Type': 'application/json'}},
+                function(res) {
+                    var result = JSON.parse(res.body);
+                    assert.keys(result, ['win', 'game', 'result', 'prize', 'links']);
+                });
         });
 };
 
@@ -53,7 +57,7 @@ exports['play'] = function(beforeExit) {
                         'fan_count', 'checkins', 'games']);
                     assert.keys(page.games[0], ['id', 'name', 'icon', 'description', 'prize']);
 
-                    checkin_and_play(page.links.checkins, page.links.contest);
+                    checkin_and_play(page.links.checkins, page.links.result);
 		});
     });
 };

@@ -27,6 +27,7 @@ exports.routes = {
 
 		params: {
 		    id: {
+                        required: true,
 			type: "Number",
 			description: "Passed as part of the url"
 		    }
@@ -47,7 +48,10 @@ exports.routes = {
 			    email: 'bozukob@gmail.com',
 			    picture: 'http://graph.facebook.com/2323423/picture',
 			    facebook_id: 2323423,
-			    can_manage_pages: 'true'
+			    can_manage_pages: 'true',
+                            links: {
+                                prizes: '/user/12341231412312312/prizes/'
+                            }
 			};
 		    }
 		}
@@ -63,6 +67,7 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the user"
                     }
@@ -82,12 +87,33 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the user"
                     },
                     page_id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the page being added"
+                    }
+                }
+            }
+        },
+
+        del: {
+            doc: {
+                description: "Remove a page from a user's favorites",
+
+                params: {
+                    id: {
+                        required: true,
+                        type: "Number",
+                        description: "The id of the user"
+                    },
+                    page_id: {
+                        required: true,
+                        type: "Number",
+                        description: "The id of the page being removed"
                     }
                 }
             }
@@ -103,6 +129,7 @@ exports.routes = {
 
                 params: {
 		    id: {
+                        required: true,
 			type: "Number",
 			description: "The id of the user"
 		    },
