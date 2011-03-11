@@ -13,13 +13,18 @@ var bozuko_headers = {
 };
 
 var checkin_and_play = function(checkin_url, contest_url) {
-    print(checkin_url);
+
+    // Checkin
     assert.response(bozuko.app, {
         url: checkin_url,
         method: 'POST',
         headers: bozuko_headers},
-	{status: 200},
+	{status: 200, headers: {'Content-Type': 'application/json'}},
         function(res) {
+            var result = JSON.parse(res.body);
+            assert.eql(result.tokens, 3);
+
+            // Play the game and check the result
             assert.response(bozuko.app,
                 {url: contest_url},
                 {status: 200, header: {'Content-Type': 'application/json'}});

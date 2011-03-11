@@ -118,12 +118,15 @@ exports.routes = {
                         description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
                         latLng      :{lat:p.location.latitude,lng:p.location.longitude}
                     },function(error, result){
-                        console.log(error);
-                        res.send({
-                            id: page_id,
-                            tokens: 3
-                        });
-                        res.end();
+                        // TODO: set the status code based on error
+                        if (error) {
+                            res.statusCode = 400;
+                            res.send(error);
+                            res.end();
+                        } else {
+                            result.tokens = 3;
+                            res.send(result);
+                        }
                     });
                 });
             }
