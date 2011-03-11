@@ -27,8 +27,8 @@ exports.routes = {
 
                 params: {
                     id: {
-                type: "Number",
-                description: "Passed as part of the url"
+                        type: "Number",
+                    description: "Passed as part of the url"
                     }
                 },
 
@@ -62,6 +62,7 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the user"
                     }
@@ -81,12 +82,33 @@ exports.routes = {
 
                 params: {
                     id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the user"
                     },
                     page_id: {
+                        required: true,
                         type: "Number",
                         description: "The id of the page being added"
+                    }
+                }
+            }
+        },
+
+        del: {
+            doc: {
+                description: "Remove a page from a user's favorites",
+
+                params: {
+                    id: {
+                        required: true,
+                        type: "Number",
+                        description: "The id of the user"
+                    },
+                    page_id: {
+                        required: true,
+                        type: "Number",
+                        description: "The id of the page being removed"
                     }
                 }
             }
@@ -112,7 +134,6 @@ exports.routes = {
                             + "Eg. /user/:id/prizes/?filter=active,redeemed"
                     }
                 },
-
                 returns: {
                     name: "prizes",
                     type: "Array",

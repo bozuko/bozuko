@@ -27,10 +27,12 @@ exports.routes = {
 
                 params: {
                     lat: {
+                        required: true,
                         type: "Number",
                         description: 'latitude'
                     },
                     lng: {
+                        required: true,
                         type: "Number",
                         description: 'longitude'
                     },
@@ -119,7 +121,8 @@ exports.routes = {
                         games: fakeGames,
                         links: {
                             contest: '/contest/4553453',
-                            checkins: '/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id=123456'
+                            checkins: '/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id=123456',
+                            result: '/contest/4553453/result'
                         }
                     }
                 }
@@ -133,7 +136,8 @@ exports.routes = {
                     place.games = fakeGames;
                     place.links = {
                         contest: '/contest/4553453',
-                        checkins: "/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id="+page_id
+                        checkins: "/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id="+page_id,
+                        result: '/contest/4553453/result'
                     };
                     res.send(place);
                 });
