@@ -10,6 +10,76 @@ var fakeGames = [{
     prize : 'Free Buffalo Wings and Potato Skins!'
 }];
 
+var Page =
+{
+    id : "Number",
+    name : "String",
+    picture : "String",
+    facebook_page : "String",
+    category : "String",
+    website : "String",
+    location : {
+        street : "String",
+        city : "String",
+        state : "String",
+        country : "String",
+        zip : "String",
+        latitude : "String",
+        longitude : "String"
+    },
+    phone : "String",
+    fan_count : "String",
+    checkins : "Number",
+    games : [{
+        id : "Number",
+        name : "String",
+        icon : "String",
+        description : "String",
+        prize : "String"
+    }],
+    links : {
+        contest : "String",
+        checkin : "String",
+        game_result : "String"
+    }
+};
+
+exports.object_types = {
+    page: Page
+};
+
+exports.links = {
+    pages: {
+        methods: ['GET'],
+        params: {
+            lat: {
+                required: true,
+                type: "Number",
+                description: 'latitude'
+            },
+            lng: {
+                required: true,
+                type: "Number",
+                description: 'longitude'
+            },
+            limit: {
+                type: "Number",
+                description: "The number of search results to return"
+            },
+            offset: {
+                type: "Number",
+                description: "The starting result number"
+            }
+        },
+        returns: ["page"]
+    },
+
+    page: {
+        methods: ['GET'],
+        returns: "page"
+    }
+};
+
 exports.doc = {
     description : ""
 };
