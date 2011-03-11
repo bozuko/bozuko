@@ -17,17 +17,17 @@ FacebookService.prototype.__proto__ = Service.prototype;
 var $ = FacebookService.prototype;
 
 /**
- *  * Login function
- *  *
- *  * @param {ServerRequest}   req             The current request
- *  * @param {ServerResponse}  res             The current response
- *  * @scope {String}          defaultReturn   The url to forward to after login
- *  * @param {Function}        success         A callback function on successful login.
- *  *                                          Takes an argument of the user
- *  * @param {Function}        failure         A callback function on login failure
- *  *
- *  * @returns {null}
- *  */
+ * Login function
+ *
+ * @param {ServerRequest}   req             The current request
+ * @param {ServerResponse}  res             The current response
+ * @scope {String}          defaultReturn   The url to forward to after login
+ * @param {Function}        success         A callback function on successful login.
+ *                                          Takes an argument of the user
+ * @param {Function}        failure         A callback function on login failure
+ *
+ * @returns {null}
+ */
 $.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
@@ -141,38 +141,38 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
 
 
 /**
- *  * Location based search
- *  *
- *  * Accepts an options argument in the form of:
- *  *
- *  *  {
- *  *      latLng : {lng: Number, lat: Number},
- *  *      query : String,
- *  *      fields : Array
- *  *  }
- *  *
- *  * either latLng or query is required
- *  * query is a search string
- *  * fields is an array of requested fields. The following are permitted
- *  *
- *  *      name
- *  *      location
- *  *      description
- *  *      image
- *  *      checkins
- *  *
- *  * The callback will be passed 2 arguments
- *  *
- *  *      error
- *  *      data - an array of place Objects
- *  *
- *  *          TODO - define the return object
- *  *
- *  * @param {Object}          options         A search object
- *  * @param {Function}        callback        Callback function
- *  *
- *  * @return {null}
- *  */
+ * Location based search
+ *
+ * Accepts an options argument in the form of:
+ *
+ *  {
+ *      latLng : {lng: Number, lat: Number},
+ *      query : String,
+ *      fields : Array
+ *  }
+ *
+ * either latLng or query is required
+ * query is a search string
+ * fields is an array of requested fields. The following are permitted
+ *
+ *      name
+ *      location
+ *      description
+ *      image
+ *      checkins
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data - an array of place Objects
+ *
+ *          TODO - define the return object
+ *
+ * @param {Object}          options         A search object
+ * @param {Function}        callback        Callback function
+ *
+ * @return {null}
+ */
 $.search = function(options, callback){
 
     if( !options || !(options.latLng || options.query) ){
@@ -209,24 +209,24 @@ $.search = function(options, callback){
 
 
 /**
- *  * Checkin to the service
- *  *
- *  * The options object
- *  *
- *  * The callback will be passed 2 arguments
- *  *
- *  *      error
- *  *      data
- *  *
- *  *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
- *  *
- *  * @param {Page}            place_id        Bozuko Page
- *  * @param {User}            user            Bozuko User
- *  * @param {Object}          options         Checkin specific options
- *  * @param {Function}        callback        Callback Function
- *  *
- *  * @return {null}
- *  */
+ * Checkin to the service
+ *
+ * The options object
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
+ *
+ * @param {Page}            place_id        Bozuko Page
+ * @param {User}            user            Bozuko User
+ * @param {Object}          options         Checkin specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
 $.checkin = function(options, callback){
 
     if( !options || !options.place_id || !options.latLng || !options.user ){
@@ -258,26 +258,26 @@ $.checkin = function(options, callback){
 
 
 /**
- *  * Get full info about a place by id
- *  *
- *  * fields is an array of requested fields. The following are permitted
- *  *
- *  *      name
- *  *      location
- *  *      description
- *  *      image
- *  *      checkins
- *  *
- *  * The callback will be passed 2 arguments
- *  *
- *  *      error
- *  *      data - The
- *  *
- *  * @param {Object}          options         Options object
- *  * @param {Function}        callback        Callback Function
- *  *
- *  * @return {null}
- *  */
+ * Get full info about a place by id
+ *
+ * fields is an array of requested fields. The following are permitted
+ *
+ *      name
+ *      location
+ *      description
+ *      image
+ *      checkins
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data - The
+ *
+ * @param {Object}          options         Options object
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
 $.place = function(options, callback){
     if( !options || !options.place_id ){
         callback(new Error(
