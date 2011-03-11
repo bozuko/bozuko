@@ -25,10 +25,10 @@ Ext.onReady(function(){
         
         listeners : {
             click : function(node, tree){
+                Ext.History.add(node.id);
                 var parts = node.id.split('-');
                 var type = parts.shift();
                 var name = parts.shift();
-                
                 var callback = function(controller){
                     switch( type ){
                         case 'controller':
@@ -48,6 +48,33 @@ Ext.onReady(function(){
             }
         }
     });
+    
+    function onHistoryChange(token){
+        var parts = token.split('-');
+        var type = parts.shift();
+        var name = parts.shift();
+        
+        var node = treePanel.getNodeById( token );
+        
+        var callback = function(controller){
+            switch( type ){
+                case 'controller':
+                    controller.body.scrollTo('top',0,true);
+                    break;
+                case 'route':
+                case 'method':
+                    // scroll to route
+                    var offset = Ext.get(node.id).getOffsetsTo(controller.body);
+                    controller.body.scrollTo('top',offset[1]+controller.body.getScroll().top,true);
+                    break;
+            }
+        }
+        
+        var controller = openController(name, callback);
+        
+    }
+    Ext.History.on('change' ,onHistoryChange);
+    
     
     var controllers = {};
     function openController(name, callback){
@@ -137,5 +164,9 @@ Ext.onReady(function(){
                   '<h2 class="confidential"><span class="big">Confidential</span><span class="smaller">Do not share</span></h2>'
             ]
         },treePanel,tabPanel]
+    });
+    
+    Ext.History.init(function(){
+        onHistoryChange(Ext.History.getToken());
     });
 });

@@ -2,7 +2,7 @@ var bozuko = require('bozuko'),
     facebook = bozuko.require('util/facebook'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    Service = bozuko.require('models/embedded/service'),
+    Service = require('./embedded/service'),
     ObjectId = Schema.ObjectId;
 
 var Page = module.exports = new Schema({

@@ -10,7 +10,7 @@ var Entry = method.exports = function(){
     
 };
 
-var proto = Entry.prototype;{
+var proto = Entry.prototype;
 
 /**
  * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
@@ -36,6 +36,11 @@ proto.icon = 'Default';
  *
  * @param {Function} callback The callback function
  */
-proto.process = function( callback ){
-    
+proto.process = function( callback ){};
+
+/**
+ * Static factory methods
+ */
+Entry.factory = function(name){
+    return bozuko.require('./'+name);
 };
