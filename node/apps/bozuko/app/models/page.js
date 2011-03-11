@@ -1,16 +1,9 @@
-var bozuko = require('bozuko');
-
-var facebook = bozuko.require('util/facebook'),
+var bozuko = require('bozuko'),
+    facebook = bozuko.require('util/facebook'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
+    Service = bozuko.require('models/embedded/service'),
     ObjectId = Schema.ObjectId;
-
-var Service = new Schema({
-    name                :{type:String},
-    id                  :{type:Number},
-    auth                :{type:String},
-    data                :{}
-});
 
 var Page = module.exports = new Schema({
     services            :[Service],
@@ -22,28 +15,7 @@ var Page = module.exports = new Schema({
     owner_id            :{type:ObjectId, index: true}
 });
 
-Page.index({'services.name':1,'services.id':1});
-
-Page.method('service', function(name){
-    var service = false;
-    for(var i=0; i<this.services.length && !service; i++){
-        if( name == this.services[i].name ) service = this.services[i];
-    }
-    if( !arguments[1] ) return service;
-    var add = false;
-    
-    if( !service ){
-        add = true;
-        service = {name:name};
-    }
-    service.id = arguments[1];
-    if( arguments[2] ) service.auth = arguments[2];
-    if( arguments[3] ) service.data = arguments[3];
-    if( add ){
-        serivce = this.services[this.services.length] = service;
-    }
-    return service;
-});
+Service.initSchema(Page);
 
 Page.method('getOwner', function(callback){
     bozuko.models.User.findById( this.owner_id, callback );

@@ -77,6 +77,9 @@ function initApplication(app){
 function initModels(){
     bozuko.models = {};
     fs.readdirSync(__dirname + '/models').forEach(function(file){
+        
+        if( !/\.js$/.test(file) ) return;
+        
         // get the name
         var name = file.replace(/\..*?$/, '');
         var Name = name.charAt(0).toUpperCase()+name.slice(1);

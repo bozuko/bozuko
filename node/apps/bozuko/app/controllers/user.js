@@ -24,11 +24,10 @@ exports.routes = {
         get : {
             doc: {
                 description: "Get information about the user by their Bozuko ID",
-
                 params: {
                     id: {
                         type: "Number",
-                    description: "Passed as part of the url"
+                        description: "Passed as part of the url"
                     }
                 },
 

@@ -50,7 +50,9 @@ module.exports = function session(){
             if( q['services.id'] ){
                 // check for the user in our database
                 bozuko.models.User.findOne(q, function(err, u){
+                    console.log(u);
                     if( u ){
+                        console.log(u);
                         req.session.user = u;
                     }
                     return next();

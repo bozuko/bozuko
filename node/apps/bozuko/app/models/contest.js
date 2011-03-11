@@ -1,17 +1,16 @@
-var bozuko = require('bozuko');
-
-var mongoose = require('mongoose'),
+var bozuko = require('bozuko'),
+    mongoose = require('mongoose'),
     Schema = mongoose.Schema,
+    ContestConfig = bozuko.require('models/embedded/game/config'),
     ObjectId = Schema.ObjectId;
 
-var GameConfig = new Schema({
-    name                    :{type:String},
-    // game configs are arbitrary
-    config                  :{}
+var ContestConfig = new Schema({
+    
 });
+
 var Contest = module.exports = new Schema({
     page                    :{type:ObjectId, index :true},
-    games                   :[GameConfig],
+    games                   :[ContestConfig],
     start                   :{type:Date},
     end                     :{type:Date},
     total_entries           :{type:Number},

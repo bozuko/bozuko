@@ -188,6 +188,15 @@ exports.routes = {
                         required: true,
                         type: "Number",
                         description: "The id of the contest"
+                    },
+                    lat: {
+                        type: "Number",
+                        description: "Latitude"
+                    },
+                    
+                    lng : {
+                        type: "Number",
+                        description: "Longitude"
                     }
                 },
 
@@ -201,6 +210,24 @@ exports.routes = {
                         tokens: 3
                     }
                 }
+            },
+            /**
+             * Pseudo code for entering a contest
+             */
+            pseudo : function(){
+                bozuko.models.Contest.findById(req.params.id, function(err, contest){
+                    
+                    // do we have a contest?
+                    if( !contest ){
+                        res.send({
+                            error: "Invalid Contest"
+                        });
+                    }
+                    
+                    var result = contest.enter(req.session.user, 'facebook/like');
+                    res.send(result);
+                    
+                });
             }
         }
     }
