@@ -121,7 +121,7 @@ exports.routes = {
                         games: fakeGames,
                         links: {
                             contest: '/contest/4553453',
-                            checkins: '/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id=123456',
+                            checkin: '/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id=123456',
                             result: '/contest/4553453/result'
                         }
                     }
@@ -136,7 +136,7 @@ exports.routes = {
                     place.games = fakeGames;
                     place.links = {
                         contest: '/contest/4553453',
-                        checkins: "/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id="+page_id,
+                        checkin: "/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id="+page_id,
                         result: '/contest/4553453/result'
                     };
                     res.send(place);

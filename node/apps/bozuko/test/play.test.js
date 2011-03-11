@@ -57,7 +57,7 @@ exports['play'] = function(beforeExit) {
                         'fan_count', 'checkins', 'games']);
                     assert.keys(page.games[0], ['id', 'name', 'icon', 'description', 'prize']);
 
-                    checkin_and_play(page.links.checkins, page.links.result);
+                    checkin_and_play(page.links.checkin, page.links.result);
 		});
     });
 };
