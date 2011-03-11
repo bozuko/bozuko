@@ -89,8 +89,12 @@ exports.routes = {
                         win: true,
                         game: 'slots',
                         result: ['seven','seven', 'seven'],
-                        prize: 'buffalo wings',
+                        prize: {
+                            id: '8091823',
+                            description: 'Free Order of Buffalo Wings'
+                        },
                         links: {
+                            prize: '/prize/8091823',
                             page: '/page/4040432',
                             contest: '/contest/4553453'
                         }
@@ -224,7 +228,9 @@ exports.routes = {
                         });
                     }
                     
-                    var result = contest.enter(req.session.user, 'facebook/like');
+                    var entryMethod = Entry.factory('facebook/like');
+                    
+                    var result = contest.enter(req.session.user, entryMethod);
                     res.send(result);
                     
                 });

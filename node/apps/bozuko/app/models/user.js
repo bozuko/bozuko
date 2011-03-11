@@ -2,7 +2,7 @@ var bozuko = require('bozuko'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
-    Service = bozuko.require('models/embedded/service')
+    Service = require('./embedded/service')
     ;
 
 var User = module.exports = new Schema({

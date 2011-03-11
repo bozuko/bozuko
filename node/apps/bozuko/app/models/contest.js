@@ -1,7 +1,7 @@
 var bozuko = require('bozuko'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    ContestConfig = bozuko.require('models/embedded/game/config'),
+    ContestConfig = require('./embedded/game/config'),
     ObjectId = Schema.ObjectId;
 
 var ContestConfig = new Schema({
@@ -25,5 +25,7 @@ var Contest = module.exports = new Schema({
  * @param {EntryMethod} 
  */
 Contest.method('enter', function(user, entryMethod){
+    
+    // get the current 
     
 });
