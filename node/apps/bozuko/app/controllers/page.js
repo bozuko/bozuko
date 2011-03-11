@@ -50,33 +50,37 @@ exports.object_types = {
 
 exports.links = {
     pages: {
-        methods: ['GET'],
-        params: {
-            lat: {
-                required: true,
-                type: "Number",
-                description: 'latitude'
+        get: {
+            params: {
+                lat: {
+                    required: true,
+                    type: "Number",
+                    description: 'latitude'
+                },
+                lng: {
+                    required: true,
+                    type: "Number",
+                    description: 'longitude'
+                },
+                limit: {
+                    type: "Number",
+                    description: "The number of search results to return"
+                },
+                offset: {
+                    type: "Number",
+                    description: "The starting result number"
+                }
             },
-            lng: {
-                required: true,
-                type: "Number",
-                description: 'longitude'
-            },
-            limit: {
-                type: "Number",
-                description: "The number of search results to return"
-            },
-            offset: {
-                type: "Number",
-                description: "The starting result number"
-            }
-        },
-        returns: ["page"]
+
+            returns: ["page"]
+
+        }
     },
 
     page: {
-        methods: ['GET'],
-        returns: "page"
+        get: {
+            returns: "page"
+        }
     }
 };
 
