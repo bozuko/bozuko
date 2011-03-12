@@ -10,8 +10,9 @@ exports.object_types = {
         win_time: "Date",
         redemption_time: "Date",
         expiration_time: "Date",
-        img: "String",
-        security_img: "String",
+        business_img: "String",
+        user_img: "String",
+        background_img: "String",
         links: {
             page: string,
             contest: string,
