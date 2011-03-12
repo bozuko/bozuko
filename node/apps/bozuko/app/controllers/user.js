@@ -10,6 +10,8 @@ exports.object_types = {
         email: "String",
         img: "String",
         links: {
+            facebook_login: "String",
+            facebook_logout: "String",
             favorites: "String"
         }
     },
@@ -65,6 +67,12 @@ exports.links = {
                     description: "The unique id of the phone"
                 }
             }
+        }
+    },
+
+    facebook_logout: {
+        get: {
+            description: "Logout of facebook"
         }
     }
 };

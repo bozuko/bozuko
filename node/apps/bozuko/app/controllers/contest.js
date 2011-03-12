@@ -7,8 +7,8 @@ var contest = {
     end_time: "String",
     tokens_per_play: "Number",
     entry_methods: {
-        facebook_checkin: "Number",
-        faecebook_like: "Number"
+        facebook_checkin: "Number", // Tokens
+        faecebook_like: "Number" // Tokens
     },
     games: [{
         name: "String",
@@ -18,6 +18,9 @@ var contest = {
         }]
     }],
     links: {
+        facebook_login: "String",
+        facebook_checkin: "String",
+        facebook_like: "String",
         page: "String",
         contest_result: "String"
     }
@@ -32,6 +35,9 @@ var contest_result = {
         description: "String"
     },
     links: {
+        facebook_login: "String",
+        facebook_checkin: "String",
+        facebook_like: "String",
         prize: "String",
         prize_redemption: "String",
         page: "String",
@@ -45,6 +51,7 @@ var facebook_checkin_result = {
     timestamp: "Date",
     duration: "Number",
     links: {
+        facebook_like: "String",
         contest_result: "String"
     }
 };
@@ -92,7 +99,7 @@ exports.links = {
         }
     },
 
-    facebook_checkin_result: {
+    facebook_checkin: {
         post: {
             description: "Checkin to facebook and receive tokens",
             params: {
@@ -120,7 +127,7 @@ exports.links = {
         }
     },
 
-    facebook_like_result: {
+    facebook_like: {
         post: {
             description: "Like a facebook page and receive tokens",
             params: {
