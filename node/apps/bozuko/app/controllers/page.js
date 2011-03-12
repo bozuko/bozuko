@@ -2,49 +2,56 @@ var bozuko = require('bozuko');
 
 var requestCount = 0;
 
-var fakeGames = [{
-    id : '90132',
-    name: 'coinflip',
-    icon : '/images/games/goldEagleHeads60x60.png',
-    description : 'Flip a coin',
-    prize : 'Free Buffalo Wings and Potato Skins!'
-}];
-
-var Page = {
-    id : "Number",
-    name : "String",
-    picture : "String",
-    facebook_page : "String",
-    category : "String",
-    website : "String",
-    location : {
-        street : "String",
-        city : "String",
-        state : "String",
-        country : "String",
-        zip : "String",
-        latitude : "String",
-        longitude : "String"
-    },
-    phone : "String",
-    fan_count : "String",
-    checkins : "Number",
-    games : [{
-        id : "Number",
-        name : "String",
-        icon : "String",
-        description : "String",
-        prize : "String"
-    }],
-    links : {
-        contest : "String",
-        checkin : "String",
-        game_result : "String"
-    }
-};
-
 exports.object_types = {
-    page: Page
+    page: {
+        id: "Number",
+        name: "String",
+        picture: "String",
+        facebook_page: "String",
+        category: "String",
+        website: "String",
+        location: {
+            street: "String",
+            city: "String",
+            state: "String",
+            country: "String",
+            zip: "String",
+            latitude: "String",
+            longitude: "String"
+        },
+        phone: "String",
+        fan_count: "String",
+        checkins: "Number",
+        info: "String",
+        games: [{
+            id: "Number",
+            name: "String",
+            icon: "String",
+            description: "String",
+            prize: "String"
+        }],
+        links: {
+            contest: "String",
+            facebook_login: "String",
+            facebook_checkin: "String",
+            contest_result: "String",
+            share: "String",
+            feedback: "String"
+        }
+    },
+
+    share_form: {
+        facebook_friends: ["String"],
+        email_contacts: ["String"],
+        message: "String",
+        links: {
+            facebook_login: "String"
+        }
+    },
+
+    feedback_form: {
+        message: "String"
+    }
 };
 
 exports.links = {
@@ -82,20 +89,40 @@ exports.links = {
         get: {
             returns: "page"
         }
+    },
+
+    share: {
+        description: "Share this page with a friend",
+        put: {
+            body: {
+                required: true,
+                type: "share_form"
+            }
+        }
+    },
+
+    feedback: {
+        description: "Send feedback to Bozuko and the Page owner",
+        put: {
+            body: {
+                required: true,
+                type: "feedback_form"
+            }
+        }
     }
 };
 
 exports.doc = {
-    description : ""
+    description: ""
 };
 
 exports.routes = {
 
-    '/pages' : {
+    '/pages': {
 
-        aliases : ['/places'],
+        aliases: ['/places'],
 
-        get : {
+        get: {
 
             doc: {
                 description: 'Get a list of pages generated from facebook',
@@ -133,9 +160,9 @@ exports.routes = {
                 var lng = req.param('lng') || '-71.307864';
 
                 var options = {
-                    latLng : {lat:lat, lng:lng},
-                    limit : parseInt(req.param('limit')) || 25,
-                    offset : parseInt(req.param('offset')) || 0
+                    latLng: {lat:lat, lng:lng},
+                    limit: parseInt(req.param('limit')) || 25,
+                    offset: parseInt(req.param('offset')) || 0
                 };
                 bozuko.models.Page.search(options, function(pages){
                     res.send(pages);
@@ -154,9 +181,9 @@ exports.routes = {
      * via the 3rd party service... I think that might be too much though.
      *
      */
-    '/page/:id' : {
+    '/page/:id': {
 
-        get : {
+        get: {
 
             doc: {
                 description: "Return page details",
