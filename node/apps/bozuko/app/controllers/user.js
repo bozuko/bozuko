@@ -1,10 +1,5 @@
 var bozuko = require('bozuko');
 
-var facebook    = bozuko.require('util/facebook'),
-    http        = bozuko.require('util/http'),
-    qs          = require('querystring')
-;
-
 exports.object_types = {
     user: {
         id: "Number",

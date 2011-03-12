@@ -83,6 +83,7 @@ exports.links = {
                 game: {
                     required: true,
                     type: "String",
+                    values: ['slots', 'scratch', 'bozuko'],
                     description: "The name of the game"
                 }
             },
