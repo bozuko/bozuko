@@ -55,6 +55,22 @@ exports.links = {
                 }
             }
         }
+    },
+
+    facebook_login: {
+        get: {
+            description: "Login to facebook",
+            params: {
+                phone_type: {
+                    type: "String",
+                    description: "The type of phone"
+                },
+                phone_id: {
+                    type: "String",
+                    description: "The unique id of the phone"
+                }
+            }
+        }
     }
 };
 
