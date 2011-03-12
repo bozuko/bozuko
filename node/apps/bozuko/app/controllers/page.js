@@ -10,8 +10,7 @@ var fakeGames = [{
     prize : 'Free Buffalo Wings and Potato Skins!'
 }];
 
-var Page =
-{
+var Page = {
     id : "Number",
     name : "String",
     picture : "String",

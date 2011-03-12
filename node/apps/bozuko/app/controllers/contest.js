@@ -1,60 +1,153 @@
 var bozuko = require('bozuko');
 
+var contest = {
+    id: "Number",
+    initial_odds: "String",
+    start_time: "String",
+    end_time: "String",
+    tokens_per_play: "Number",
+    entry_methods: {
+        facebook_checkin: "Number",
+        faecebook_like: "Number"
+    },
+    games: [{
+        name: "String",
+        win_config: [{
+            result: "String || Object || Array depending upon game name",
+            prize: "String"
+        }]
+    }],
+    links: {
+        page: "String",
+        contest_result: "String"
+    }
+};
+
+var contest_result = {
+    win: "Boolean",
+    game: "String",
+    result: "String || Object || Array depending upon game name",
+    prize: {
+        id: "Number",
+        description: "String"
+    },
+    links: {
+        prize: "String",
+        prize_redemption: "String",
+        page: "String",
+        contest: "String"
+    }
+};
+
+var facebook_checkin_result = {
+    id: "Number",
+    tokens: "Number",
+    timestamp: "Date",
+    duration: "Number",
+    links: {
+        contest_result: "String"
+    }
+};
+
+var facebook_like_result = {
+    id: "Number",
+    tokens: "Number",
+    timestamp: "Date",
+    duration: "Number",
+    links: {
+        contest_result: "String"
+    }
+};
+
+exports.object_types = {
+    contest: Contest,
+    contest_result: contest_result,
+    facebook_checkin_result: facebook_checkin_result,
+    facebook_like_result: facebook_like_result
+};
+
+exports.links = {
+    contest: {
+        get: {
+            description: "Returns contest information",
+            returns: "contest"
+        }
+    },
+
+    contest_result: {
+        post: {
+            description: "Retrieve a result for the given contest." +
+                "The user must have tokens credited to their account in order for this to work",
+
+            params: {
+                game: {
+                    required: true,
+                    type: "String",
+                    description: "The name of the game"
+                }
+            },
+            returns: "contest_result"
+
+        }
+    },
+
+    facebook_checkin_result: {
+        post: {
+            description: "Checkin to facebook and receive tokens",
+            params: {
+                lat: {
+                    required: true,
+                    type: "Number",
+                    description: "User latitude"
+                },
+                lng: {
+                    required: true,
+                    type: "Number",
+                    description: "User longitude"
+                },
+                message : {
+                    type: "String",
+                    description: "The user message to post with the checkin."
+                }
+            },
+            returns: "facebook_checkin_result"
+        },
+
+        get: {
+            description: "Retrieve information about the last facebook checkin for the user",
+            returns: "facebook_checkin_result"
+        }
+    },
+
+    facebook_like_result: {
+        post: {
+            description: "Like a facebook page and receive tokens",
+            params: {
+                lat: {
+                    type: "Number",
+                    description: "Latitude"
+                },
+                lng : {
+                    type: "Number",
+                    description: "Longitude"
+                }
+            },
+            returns: "facebook_like_result"
+        },
+
+        get: {
+            description: "Retrieve information about the last facebook like for the user.",
+            returns: "facebook_checkin_result"
+        }
+    }
+};
+
 exports.routes = {
 
     '/contest/:id': {
 
         get: {
-            doc: {
-                description: "Get information about a contest",
 
-                params: {
-                    id: {
-                        required: true,
-                        type: "Number",
-                        description: "The id of the contest"
-                    }
-                },
-
-                returns: {
-                    name: "contest_info",
-                    type: "Object",
-                    description: "Contest Information",
-
-                    example: {
-                        id: 4553453,
-                        initial_odds: "1:5",
-                        start_time: new Date().toString(),
-                        end_time: new Date(2012, 'july', 4).toString(),
-                        tokens_per_play: 1,
-                        // Maybe use URLs in the entry_config instead
-                        entry_config: {
-                            facebook : {
-                                checkin: 3,
-                                like: 1
-                            }
-                        },
-                        games: [{
-                            name: 'slots',
-                            win_config: [{
-                                result: ['gun', 'gun', 'gun'],
-                                prize: 'buffalo wings'
-                            },{
-                            result: ['seven', 'seven', 'seven'],
-                            prize: 'free entree'
-                            }]}, {
-                            name: 'scratch ticket',
-                            win_config: [{
-                                result: '3 matches',
-                                prize: 'free appetizer'
-                            }]}],
-                        links: {
-                            page: '/page/4040432',
-                            result: '/contest/4553453/result'
-                        }
-                    }
-                }
-            }
         }
     },
 
@@ -64,85 +157,12 @@ exports.routes = {
      */
     '/contest/:id/result' : {
         post: {
-            doc: {
-                description: "Retrieve a result for the given contest." +
-                    "The user must have tokens credited to their account in order for this to work",
-
-                params: {
-                    id: {
-                        required: true,
-                        type: "Number",
-                        description: "The id of the contest"
-                    },
-                    game: {
-                        required: true,
-                        type: "String",
-                        description: "The name of the game"
-                    }
-                },
-                returns: {
-                    name: "play_result",
-                    type: "Object",
-                    description: "Return the results of playing a game",
-
-                    example: {
-                        win: true,
-                        game: 'slots',
-                        result: ['seven','seven', 'seven'],
-                        prize: {
-                            id: '8091823',
-                            description: 'Free Order of Buffalo Wings'
-                        },
-                        links: {
-                            prize: '/prize/8091823',
-                            page: '/page/4040432',
-                            contest: '/contest/4553453'
-                        }
-                    }
-                }
-            }
         }
     },
 
     '/contest/:id/entry/facebook/checkin': {
 
         post: {
-            doc: {
-                description: "Enter a contest and receive tokens via a facebook checkin",
-
-                params: {
-                    id: {
-                        required: true,
-                        type: "Number",
-                        description: "The id of the contest"
-                    },
-                    lat: {
-                        required: true,
-                        type: "Number",
-                        description: "User latitude"
-                    },
-                    lng: {
-                        required: true,
-                        type: "Number",
-                        description: "User longitude"
-                    },
-                    message : {
-                        type: "String",
-                        description: "The user message to post with the checkin."
-                    }
-                },
-
-                returns: {
-                    name: "checkin_result",
-                    type: "Object",
-                    description: "Return an object containg the number of tokens earned",
-
-                    example: {
-                        id: 4553453,
-                        tokens: 3
-                    }
-                }
-            },
 
             handler: function(req, res) {
                 var page_id = req.param('page_id');
@@ -184,55 +204,24 @@ exports.routes = {
     '/contest/:id/entry/facebook/like': {
 
         post: {
-            doc: {
-                description: "Enter a contest and receive tokens via a facebook like",
-
-                params: {
-                    id: {
-                        required: true,
-                        type: "Number",
-                        description: "The id of the contest"
-                    },
-                    lat: {
-                        type: "Number",
-                        description: "Latitude"
-                    },
-                    
-                    lng : {
-                        type: "Number",
-                        description: "Longitude"
-                    }
-                },
-
-                returns: {
-                    name: "like_result",
-                    type: "Object",
-                    description: "Return an object containg the number of tokens earned",
-
-                    example: {
-                        id: 4553453,
-                        tokens: 3
-                    }
-                }
-            },
             /**
              * Pseudo code for entering a contest
              */
             pseudo : function(){
                 bozuko.models.Contest.findById(req.params.id, function(err, contest){
-                    
+
                     // do we have a contest?
                     if( !contest ){
                         res.send({
                             error: "Invalid Contest"
                         });
                     }
-                    
+
                     var entryMethod = Entry.factory('facebook/like');
-                    
+
                     var result = contest.enter(req.session.user, entryMethod);
                     res.send(result);
-                    
+
                 });
             }
         }
