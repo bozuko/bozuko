@@ -50,6 +50,7 @@ exports.object_types = {
 exports.links = {
     pages: {
         get: {
+            description: "Return a list of pages",
             params: {
                 lat: {
                     required: true,
@@ -77,6 +78,7 @@ exports.links = {
     },
 
     page: {
+        description: "Return a specific page",
         get: {
             returns: "page"
         }
