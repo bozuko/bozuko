@@ -173,9 +173,21 @@ body {
 }
 .api .x-panel-body .section h5 {
   margin: 0;
-  padding: 10px;
-  background: #d8d8d8;
+  padding: 5px 10px;
+  background-color: #f3f3f3;
+  background-image: -moz-linear-gradient(top, #f3f3f3, #dddddd);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f3f3f3), color-stop(1, #dddddd));
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f3f3f3, endColorstr=#dddddd)";
+  /*  IE6 & 7 */
+
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f3f3f3, endColorstr=#dddddd)";
+  /*  IE8 */
+
+  font-size: 20px;
+  font-weight: normal;
+  font-family: Impact;
   color: #333;
+  text-shadow: 2px 2px 1px #ffffff;
 }
 .api .x-panel-body .section h6 {
   font-size: 13px;
@@ -206,6 +218,9 @@ body {
 }
 .api .x-panel-body .section .description {
   padding: 0 10px 0 20px;
+}
+.api .x-panel-body .section .description p {
+  margin: 4px 0;
 }
 .api .x-panel-body .section .label {
   margin-right: 10px;

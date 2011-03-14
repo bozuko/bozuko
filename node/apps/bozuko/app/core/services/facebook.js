@@ -183,7 +183,7 @@ $.search = function(options, callback){
     }
 
     var params = {
-        type : 'place'
+        type : options.latLng ? 'place' : 'page'
     };
     if( options.latLng ) params.center = options.latLng.lat+','+options.latLng.lng;
     if( options.query ) params.query = options.query;

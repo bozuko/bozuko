@@ -78,12 +78,16 @@ exports.links = {
                 lat: {
                     required: true,
                     type: "Number",
-                    description: 'latitude'
+                    description: 'Center Latitude'
                 },
                 lng: {
                     required: true,
                     type: "Number",
-                    description: 'longitude'
+                    description: 'Center Longitude'
+                },
+                query: {
+                    type:"String",
+                    description: "A string to search for"
                 },
                 limit: {
                     type: "Number",
