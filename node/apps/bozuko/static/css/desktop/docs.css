@@ -215,6 +215,11 @@ body {
   color: #999;
   font-style: normal;
 }
+.api .x-panel-body .section .required .title {
+  background-image: url("/images/icons/16x16/bullet_star.png");
+  background-repeat: no-repeat;
+  background-position: 2px 50%;
+}
 .api .x-panel-body .section .returns {
   padding-bottom: 10px;
 }
@@ -229,7 +234,7 @@ body {
   color: #bc3023;
   font-size: 24px;
   font-family: "Impact";
-  font-weight: normal;
+  font-weight: 100;
   margin-top: 0;
 }
 .api .x-panel-body h3.objectIcon, .api .x-panel-body h3.linkIcon {
@@ -266,6 +271,6 @@ body {
 .api .x-panel-body a:hover {
   color: #641a13;
 }
-.api .x-panel-body p {
+.api .x-panel-body p, .api .x-panel-body ol {
   line-height: 1.5em!important;
 }
