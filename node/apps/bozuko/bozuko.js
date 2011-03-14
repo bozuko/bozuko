@@ -58,19 +58,21 @@ exports.game = function(name){
 	return this.games[name] || false;
 };
 
-var objects = {};
-exports.object = function(key,definition){
-	if( !definition ) return objects[key];
-	objects[key] = this.require('core/object').create(definition);
+exports.transfer = function(key, data){
+	if( !data ) return this._transferObjects[key];
+	try{
+		return this._transferObjects[key].sanitize(data);
+	}catch(e){
+		throw new Error("Transfer Object ["+key+"] does not exist");
+	}
 };
-exports.objects = function(){
-	return objects;
+exports.transfers = function(){
+	return this._transferObjects;
 };
 
-var links = {};
-exports.link = function(key,definition){
-	
+exports.link = function(key){
+	return this._links[key];
 };
 exports.links = function(){
-	return links;
-}
+	return this._links;
+};

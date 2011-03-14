@@ -16,9 +16,9 @@ exports.transfer_objects = {
             user_img: "String",
             background_img: "String",
             links: {
-                page: string,
-                contest: string,
-                user: string
+                page: "String",
+                contest: "String",
+                user: "String"
             }
         }
     }

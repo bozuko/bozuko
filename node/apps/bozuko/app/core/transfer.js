@@ -4,13 +4,33 @@ var bozuko = require('bozuko')
 /**
  * Abstract Bozuko Transfer Object
  */
-var TransferObject = module.exports = function(config){
+var TransferObject = module.exports = function(name, config){
+    this.name = name;
     this.doc = config.doc;
     this.def = config.def;
+    this.title = config.title;
     this.links = {};
+    
+    // run through the links and associate with this controller
+    if( this.def.links ){
+        var self = this;
+        Object.keys(this.def.links).forEach(function(key){
+            
+            if( bozuko.link(key) ){
+                bozuko.link(key).associateTransferObject(self);
+            }
+            else{
+                console.log('Undocumented Link ['+key+']');
+            }
+        });
+    }
 };
 
 var $ = TransferObject.prototype;
+
+$.getTitle = function(){
+    return this.title || this.name;
+};
 
 $.sanitize = function(data, current){
     // make this conform to our def
@@ -26,7 +46,10 @@ $.sanitize = function(data, current){
         });
     }
     else if( current instanceof Object ){
-        Object.keys(current).forEach(function(key){
+        if( !(data instanceof Object) ){
+            data = {};
+        }
+        else Object.keys(current).forEach(function(key){
              if( data[key] ){
                 // Cast the value to the proper type.
                 var v = ret[key] = data[key];
@@ -63,6 +86,6 @@ $.addLink = function(link){
     this.links[link.name] = link;
 };
 
-TransferObject.create = function(def, doc){
-    return new TransferObject(def, doc);
+TransferObject.create = function(name, config){
+    return new TransferObject(name, config);
 };

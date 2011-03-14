@@ -26,7 +26,7 @@ exports.run = function(app){
     initModels();
     
     // setup out transfer objects
-    initTransferobjects();
+    initTransferObjects();
     
     // setup the controllers
     initControllers(app);
@@ -99,27 +99,31 @@ function initModels(){
 }
 
 function initTransferObjects(){
-    bozuko.transferObjects = {};
-    bozuko.links = {};
+    bozuko._transferObjects = {};
+    bozuko._links = {};
+    var controllers = [];;
     fs.readdirSync(__dirname + '/controllers').forEach( function(file){
         
         if( !/js$/.test(file) ) return;
         
         var name = file.replace(/\..*?$/, '');
         // first check for object_types and links
-        var controller = bozuko.require('controllers/'+name);
-        
+        controllers.push(bozuko.require('controllers/'+name));
+    });
+    // collect all the links first so they can be associated in the Transfer Objects
+    controllers.forEach(function(controller){
         if( controller.links ){
             Object.keys(controller.links).forEach(function(key){
                 var config = controller.links[key];
-                bozuko.links[key] = Link.create(config);
+                bozuko._links[key] = Link.create(key, config);
             });
         }
-        
+    });
+    controllers.forEach(function(controller){
         if(controller.transfer_objects){
             Object.keys(controller.transfer_objects).forEach(function(key){
                 var config = controller.transfer_objects[key];
-                bozuko.transferObjects[key] = TransferObject.create(config);
+                bozuko._transferObjects[key] = TransferObject.create(key, config);
             });
         }
     });

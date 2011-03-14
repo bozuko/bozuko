@@ -1,29 +1,36 @@
 var bozuko = require('bozuko'),
-    Return = bozuko.require('return')
+    TransferObject = bozuko.require('core/transfer')
     ;
 
 var HttpMethod = function(method, config, link){
     this.method = method;
-    this.def = config.def;
     this.doc = config.doc;
+    this.params = config.params;
+    this.returns = config.returns;
     this.link = link;
 };
 
 /**
- * Abstract Bozuko Returnable Object
+ * Abstract Bozuko Link Object
  */
-var Link = module.exports = function(config){
-    // loop through the methods...
-    var self = this;
+var Link = module.exports = function(name, config){
+    this.name = name;
     this.transferObjects = [];
     this.methods = {};
-    Object.keys(config).forEach(function(name){
-        self.addMethod(new HttpMethod(name, config, this));
+    this.title = config.title;
+    
+    var self = this;
+    
+    Object.keys(config).forEach(function(method){
+        self.addMethod(new HttpMethod(method, config[method], this));
     });
-    this.objects = [];
 };
 
 var $ = Link.prototype;
+
+$.getTitle = function(){
+    return this.title || this.name;
+};
 
 $.addMethod = function(httpMethod){
     this.methods[httpMethod.method] = httpMethod;
@@ -33,6 +40,6 @@ $.associateTransferObject = function(transferObject){
     this.transferObjects.push(transferObject);
 };
 
-Link.create = function(config){
-    return new Link(config);
+Link.create = function(name, config){
+    return new Link(name, config);
 };

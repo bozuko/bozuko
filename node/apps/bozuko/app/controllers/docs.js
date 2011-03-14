@@ -1,5 +1,6 @@
 var bozuko      = require('bozuko'),
     fs          = require('fs'),
+    URL         = require('url'),
     markdown    = require('markdown-js'),
     util        = require('util');
 
@@ -84,6 +85,73 @@ exports.routes = {
             });
             
             res.render('docs/page',options)
+        }
+    },
+    
+    '/api' : {
+        
+        description : 'Mobile Developer API Docs',
+        
+        get : function(req,res){
+            
+            var tree = [];
+            var transfers = {
+                iconCls     :'objectIcon',
+                text        :'Transfer Objects',
+                id          :'/objects',
+                children    :[]
+            };
+            var links = {
+                iconCls     :'linkIcon',
+                text        :'Links',
+                id          :'/links',
+                children    :[]
+            };
+            Object.keys(bozuko.links()).sort().forEach(function(key){
+                links.children.push({
+                    iconCls     :'linkIcon',
+                    text        :key,
+                    id          :'/links/'+key,
+                    leaf        :true
+                });
+            });
+            Object.keys(bozuko.transfers()).sort().forEach(function(key){
+                var transfer = bozuko.transfer(key);
+                transfers.children.push({
+                    iconCls     :'objectIcon',
+                    text        :transfer.title || key,
+                    id          :'/objects/'+key,
+                    leaf        :true
+                });
+            });
+            tree.push(transfers, links);
+            
+            // grab the welcome html
+            
+            if( !this.welcomeHTML ){
+                this.welcomeHTML = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
+            }
+            
+            res.render('docs/api', {layout:'docs/layout',tree:tree,title:"Bozuko API Documentation",bozuko:bozuko, welcome: this.welcomeHTML});
+        }
+    },
+    
+    '/api/*' : {
+        description : 'Mobile Developer API Doc Page',
+        
+        get : function(req,res){
+            var parts = URL.parse(req.url).pathname.replace(/\/api\//,'').split('/');
+            if( parts.length == 1 ){
+                res.render('docs/api/'+parts[0], {layout: false,bozuko:bozuko});
+            }
+            else{
+                console.log(parts[0].replace(/s$/,''));
+                res.render('docs/api/'+(parts[0].replace(/s$/,'')), {
+                    layout: false,
+                    bozuko:bozuko,
+                    key: parts[1]
+                });
+            }
         }
     }
 };

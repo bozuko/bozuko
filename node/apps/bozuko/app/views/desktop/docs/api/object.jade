@@ -1,0 +1,15 @@
+- var transfer = bozuko.transfer(key)
+
+h3.objectIcon= transfer.getTitle()
+
+p.description!= transfer.doc
+
+pre.code!= JSON.stringify(transfer.def,null,'  ');
+
+- if( transfer.def.links )
+  h4 Referenced Links
+  .section.links
+    ul.links
+    - each type, key in transfer.def.links
+      li
+        a(href="#/links/"+key)= key

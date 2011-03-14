@@ -45,6 +45,12 @@ body {
 .controllerIcon {
   background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
 }
+.objectIcon, .objectsIcon {
+  background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+.linkIcon, .linksIcon {
+  background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
 .routeIcon {
   background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
 }
@@ -157,4 +163,94 @@ body {
   border: 1px solid #e8e8e8;
   background: #f3f3f3;
   padding: 4px 6px;
+}
+.api .x-panel-body .section {
+  margin: 10px 0;
+}
+.api .x-panel-body .section h5 {
+  margin: 0;
+  padding: 10px;
+  background: #d8d8d8;
+  color: #333;
+}
+.api .x-panel-body .section h6 {
+  font-size: 13px;
+  margin: 0;
+  padding: 10px;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+.api .x-panel-body .section .method {
+  border: 1px solid #ccc;
+  margin: 10px 0;
+}
+.api .x-panel-body .section .padded {
+  padding: 0 10px;
+}
+.api .x-panel-body .section .params, .api .x-panel-body .section .param {
+  list-style: none;
+  margin: 0;
+}
+.api .x-panel-body .section ul.params {
+  margin: 0 10px 10px;
+  border: 1px solid #e8e8e8;
+}
+.api .x-panel-body .section .title {
+  padding: 8px 10px 8px 20px;
+  background: #f3f3f3;
+}
+.api .x-panel-body .section .description {
+  padding: 0 10px 0 20px;
+}
+.api .x-panel-body .section .label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+.api .x-panel-body .section .type {
+  color: #999;
+  font-style: normal;
+}
+.api .x-panel-body .section .returns {
+  padding-bottom: 10px;
+}
+.api .x-panel-body .section .returns a {
+  font-weight: bold;
+}
+.api .x-panel-body .internalLink {
+  padding-left: 20px;
+  line-height: 16px;
+}
+.api .x-panel-body h3 {
+  color: #bc3023;
+  font-size: 18px;
+  margin-top: 0;
+  padding-left: 20px;
+}
+.api .x-panel-body h4 {
+  font-size: 16px;
+  color: #666;
+}
+.api .x-panel-body h5 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #999;
+}
+.api .x-panel-body pre {
+  background: #f3f3f3;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.api .x-panel-body .references ul, .api .x-panel-body .references li {
+  list-style: none;
+}
+.api .x-panel-body .references li {
+  margin-bottom: 4px;
+}
+.api .x-panel-body a:link, .api .x-panel-body a:visited, .api .x-panel-body a:active {
+  text-decoration: none;
+  color: #bc3023;
+}
+.api .x-panel-body a:hover {
+  color: #8d231b;
 }
