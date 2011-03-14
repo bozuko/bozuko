@@ -48,6 +48,14 @@ body {
     background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
 }
 
+.objectIcon, .objectsIcon {
+    background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+
+.linkIcon, .linksIcon {
+    background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+
 .routeIcon {
     background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
 }
@@ -55,6 +63,8 @@ body {
 .methodIcon {
     background: url("/images/icons/16x16/world.png") no-repeat 0 50% !important;
 }
+
+
 
 .controller-page {
     ul.routes {
@@ -183,5 +193,115 @@ body {
             
         }
         
+    }
+}
+.api .x-panel-body{
+    
+    .section {
+        margin: 10px 0;
+        
+        h5 {
+            margin: 0;
+            padding: 10px;
+            background: #d8d8d8;
+            color: #333;
+        }
+        
+        h6 {
+            font-size: 13px;
+            margin: 0;
+            padding: 10px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+        
+        .method {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        
+        .padded {
+            padding: 0 10px;
+        }
+        
+        .params, .param {
+            list-style: none;
+            margin: 0;
+        }
+        
+        ul.params {
+            margin: 0 10px 10px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .title{
+            padding: 8px 10px 8px 20px;
+            background: #f3f3f3;
+        }
+        .description {
+            padding: 0 10px 0 20px;
+        }
+        
+        .label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .type {
+            color: #999;
+            font-style: normal;
+        }
+        .returns {
+            padding-bottom: 10px;
+            a {
+                font-weight: bold;
+            }
+        }
+    }
+    
+    .internalLink {
+        padding-left: 20px;
+        line-height: 16px;
+    }
+    
+    h3 {
+        color: #bc3023;
+        font-size: 18px;
+        margin-top: 0;
+        padding-left: 20px;
+    }
+    
+    h4 {
+        font-size: 16px;
+        color: #666;
+    }
+    
+    h5 {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #999;
+    }
+    
+    pre {
+        background: #f3f3f3;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+    
+    .references ul, .references li {
+        list-style: none;
+    }
+    
+    .references li {
+        margin-bottom: 4px;
+    }
+    
+    a:link, a:visited, a:active {
+        text-decoration: none;
+        color: #bc3023;
+    }
+    a:hover{
+        color: #8d231b;
     }
 }

@@ -1,0 +1,62 @@
+- var link = bozuko.link(key)
+
+h3.linkIcon= link.getTitle()
+
+h4 Methods
+
+.section
+
+  - each method, name in link.methods
+    
+    .method
+      h5.method-name= name.toUpperCase()
+      
+      - if( method.doc )
+        .description.padded
+          p= method.doc
+        
+      - if( method.params )
+      
+        .params
+        
+          h6 Parameters
+          
+          ul.params
+          
+            - each doc, param in method.params
+              
+              li.param
+                
+                .title
+                  span.label= param
+                  span.type= doc.type
+                  
+                .description
+                  p= doc.description
+      
+      - if( method.returns )
+        .returns
+        
+          h6 Returns
+          
+          div.padded
+            -if( method.returns instanceof Array )
+              | [
+              a.objectIcon.internalLink(href="#/objects/"+method.returns) #{method.returns}
+              | ]
+              span.type Array
+            -else
+              a.objectIcon.internalLink(href="#/objects/"+method.returns)= method.returns
+
+- if( link.transferObjects.length > 0 )
+
+  h4 Referenced By
+
+  .section.references
+    
+    
+    ul
+    - each transfer in link.transferObjects
+      
+      li
+        a.objectIcon.internalLink(href="#/objects/"+transfer.name)= transfer.getTitle()

@@ -42,3 +42,5 @@ exports.links = {
         }
     }
 };
+
+exports.routes = {};

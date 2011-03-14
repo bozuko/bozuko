@@ -128,6 +128,8 @@ exports.links = {
     }
 };
 
+var fakeGames = [];
+
 exports.routes = {
 
     '/pages': {
