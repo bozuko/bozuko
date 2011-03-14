@@ -1,20 +1,23 @@
 exports.object_types = {
     bozuko: {
-        privacy_policy: "String",
-        how_to_play: "String",
-        rules: "String",
-        about: "String",
-        creating_contest: "String",
-        terms: {
-            text: "String",
-            accepted: "Boolean",
-            timestamp: "Date"
-        },
-        links: {
-            user: "String",
-            bozuko_accept_terms: "String",
-            contest: "String",
-            contest_result: "String"
+        doc: "Bozuko Meta Object",
+        def:{
+            privacy_policy: "String",
+            how_to_play: "String",
+            rules: "String",
+            about: "String",
+            creating_contest: "String",
+            terms: {
+                text: "String",
+                accepted: "Boolean",
+                timestamp: "Date"
+            },
+            links: {
+                user: "String",
+                bozuko_accept_terms: "String",
+                contest: "String",
+                contest_result: "String"
+            }
         }
     }
 };
@@ -22,13 +25,13 @@ exports.object_types = {
 exports.links = {
     bozuko: {
         get: {
-            description: "Retrieve information about bozuko",
+            doc: "Retrieve information about bozuko",
             returns: "bozuko"
         }
     },
     bozuko_accept_terms: {
         put: {
-            description: "Accept the Bozuko terms of use",
+            doc: "Accept the Bozuko terms of use",
             params: {
                 accept: {
                     required: true,

@@ -57,3 +57,20 @@ exports.service = function(name){
 exports.game = function(name){
 	return this.games[name] || false;
 };
+
+var objects = {};
+exports.object = function(key,definition){
+	if( !definition ) return objects[key];
+	objects[key] = this.require('core/object').create(definition);
+};
+exports.objects = function(){
+	return objects;
+};
+
+var links = {};
+exports.link = function(key,definition){
+	
+};
+exports.links = function(){
+	return links;
+}

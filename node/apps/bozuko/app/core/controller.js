@@ -1,3 +1,4 @@
+var bozuko = require('bozuko');
 
 function Controller(app,name){
     this.app = app;

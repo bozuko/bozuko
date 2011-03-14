@@ -1,73 +1,85 @@
 var bozuko = require('bozuko');
 
 var contest = {
-    id: "Number",
-    initial_odds: "String",
-    start_time: "String",
-    end_time: "String",
-    tokens_per_play: "Number",
-    entry_methods: {
-        facebook_checkin: "Number", // Tokens
-        faecebook_like: "Number" // Tokens
-    },
-    games: [{
-        name: "String",
-        win_config: [{
-            result: "String || Object || Array depending upon game name",
-            prize: "String"
-        }]
-    }],
-    links: {
-        facebook_login: "String",
-        facebook_checkin: "String",
-        facebook_like: "String",
-        page: "String",
-        contest_result: "String"
+    doc: "Bozuko Contest Object",
+    def: {
+        id: "Number",
+        initial_odds: "String",
+        start_time: "String",
+        end_time: "String",
+        tokens_per_play: "Number",
+        entry_methods: {
+            facebook_checkin: "Number", // Tokens
+            faecebook_like: "Number" // Tokens
+        },
+        games: [{
+            name: "String",
+            win_config: [{
+                result: "String || Object || Array depending upon game name",
+                prize: "String"
+            }]
+        }],
+        links: {
+            facebook_login: "String",
+            facebook_checkin: "String",
+            facebook_like: "String",
+            page: "String",
+            contest_result: "String"
+        }
     }
 };
 
 var contest_result = {
-    win: "Boolean",
-    game: "String",
-    result: "String || Object || Array depending upon game name",
-    prize: {
-        id: "Number",
-        description: "String"
-    },
-    links: {
-        facebook_login: "String",
-        facebook_checkin: "String",
-        facebook_like: "String",
-        prize: "String",
-        prize_redemption: "String",
-        page: "String",
-        contest: "String"
+    doc: "Bozuko Contest Result",
+    def:{
+        win: "Boolean",
+        game: "String",
+        result: "String || Object || Array depending upon game name",
+        prize: {
+            id: "Number",
+            description: "String"
+        },
+        links: {
+            facebook_login: "String",
+            facebook_checkin: "String",
+            facebook_like: "String",
+            prize: "String",
+            prize_redemption: "String",
+            page: "String",
+            contest: "String"
+        }
     }
 };
 
 var facebook_checkin_result = {
-    id: "Number",
-    tokens: "Number",
-    timestamp: "Date",
-    duration: "Number",
-    links: {
-        facebook_like: "String",
-        contest_result: "String"
+    doc: "Result from a Facebook Checkin",
+    def:{
+        id: "Number",
+        tokens: "Number",
+        timestamp: "Date",
+        duration: "Number",
+        links: {
+            facebook_like: "String",
+            contest_result: "String"
+        }
     }
 };
 
 var facebook_like_result = {
-    id: "Number",
-    tokens: "Number",
-    timestamp: "Date",
-    duration: "Number",
-    links: {
-        contest_result: "String"
+    doc: "Result of a Facebook Like",
+    def:{
+        id: "Number",
+        tokens: "Number",
+        timestamp: "Date",
+        duration: "Number",
+        links: {
+            contest_result: "String"
+        }
     }
 };
 
-exports.object_types = {
-    contest: Contest,
+exports.transfer_objects = {
+    contest: contest,
     contest_result: contest_result,
     facebook_checkin_result: facebook_checkin_result,
     facebook_like_result: facebook_like_result
@@ -76,14 +88,14 @@ exports.object_types = {
 exports.links = {
     contest: {
         get: {
-            description: "Returns contest information",
+            doc: "Returns contest information",
             returns: "contest"
         }
     },
 
     contest_result: {
         post: {
-            description: "Retrieve a result for the given contest." +
+            doc: "Retrieve a result for the given contest." +
                 "The user must have tokens credited to their account in order for this to work",
 
             params: {
@@ -101,7 +113,7 @@ exports.links = {
 
     facebook_checkin: {
         post: {
-            description: "Checkin to facebook and receive tokens",
+            doc: "Checkin to facebook and receive tokens",
             params: {
                 lat: {
                     required: true,
@@ -122,14 +134,14 @@ exports.links = {
         },
 
         get: {
-            description: "Retrieve information about the last facebook checkin for the user",
+            doc: "Retrieve information about the last facebook checkin for the user",
             returns: "facebook_checkin_result"
         }
     },
 
     facebook_like: {
         post: {
-            description: "Like a facebook page and receive tokens",
+            doc: "Like a facebook page and receive tokens",
             params: {
                 lat: {
                     type: "Number",
@@ -144,7 +156,7 @@ exports.links = {
         },
 
         get: {
-            description: "Retrieve information about the last facebook like for the user.",
+            doc: "Retrieve information about the last facebook like for the user.",
             returns: "facebook_checkin_result"
         }
     }

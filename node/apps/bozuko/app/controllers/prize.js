@@ -1,22 +1,25 @@
 var bozuko = require('bozuko');
 var http = bozuko.require('util/http');
 
-exports.object_types = {
+exports.transfer_objects = {
     prize: {
-        id: "Number",
-        state: "String",
-        name: "String",
-        place: "String",
-        win_time: "Date",
-        redemption_time: "Date",
-        expiration_time: "Date",
-        business_img: "String",
-        user_img: "String",
-        background_img: "String",
-        links: {
-            page: string,
-            contest: string,
-            user: string
+        doc: "Bozuko Prize Object",
+        def: {
+            id: "Number",
+            state: "String",
+            name: "String",
+            place: "String",
+            win_time: "Date",
+            redemption_time: "Date",
+            expiration_time: "Date",
+            business_img: "String",
+            user_img: "String",
+            background_img: "String",
+            links: {
+                page: string,
+                contest: string,
+                user: string
+            }
         }
     }
 };
@@ -24,7 +27,7 @@ exports.object_types = {
 exports.links = {
     prizes: {
         get: {
-            description:  "Return a list of prizes",
+            doc:  "Return a list of prizes",
             params: {
                 context: {
                     type: "String",
@@ -43,14 +46,14 @@ exports.links = {
 
     prize: {
         get: {
-            description: "Get a specific prize",
+            doc: "Get a specific prize",
             returns: "prize"
         }
     },
 
     redemption: {
         post: {
-            description: "Redeem a prize"
+            doc: "Redeem a prize"
         }
     }
 };

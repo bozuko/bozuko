@@ -1,39 +1,47 @@
 var bozuko = require('bozuko');
 
-exports.object_types = {
+exports.transfer_objects= {
     user: {
-        id: "Number",
-        name: "String",
-        first_name: "String",
-        last_name: "String",
-        gender: "String",
-        email: "String",
-        img: "String",
-        links: {
-            facebook_login: "String",
-            facebook_logout: "String",
-            favorites: "String"
+        
+        doc: "Bozuko User Object",
+        
+        def:{
+            id: "Number",
+            name: "String",
+            first_name: "String",
+            last_name: "String",
+            gender: "String",
+            email: "String",
+            img: "String",
+            links: {
+                facebook_login: "String",
+                facebook_logout: "String",
+                favorites: "String"
+            }
         }
     },
 
-    favorites: ["page"]
+    favorites: {
+        doc: "Bozuko User Favorites",
+        def: ["page"]
+    }
 };
 
 exports.links = {
     user: {
         get: {
-            description: "Get Information about the user",
+            doc: "Get Information about the user",
             returns: "user"
         }
     },
 
     favorites: {
         get: {
-            description: "Get the current user's favorite pages",
+            doc: "Get the current user's favorite pages",
             returns: ["page"]
         },
         put: {
-            description: "Add a page to a user's favorites",
+            doc: "Add a page to a user's favorites",
             params: {
                 page_id: {
                     required: true,
@@ -43,7 +51,7 @@ exports.links = {
             }
         },
         del: {
-            description: "Remove a page from a user's favorites",
+            doc: "Remove a page from a user's favorites",
             params: {
                 page_id: {
                     required: true,
@@ -56,7 +64,7 @@ exports.links = {
 
     facebook_login: {
         get: {
-            description: "Login to facebook",
+            doc: "Login to facebook",
             params: {
                 phone_type: {
                     type: "String",
@@ -72,7 +80,7 @@ exports.links = {
 
     facebook_logout: {
         get: {
-            description: "Logout of facebook"
+            doc: "Logout of facebook"
         }
     }
 };

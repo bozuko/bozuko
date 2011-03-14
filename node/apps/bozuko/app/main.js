@@ -3,14 +3,16 @@ var bozuko = require('bozuko');
 /**
  * Module dependencies.
  */
-var fs          = require('fs'),
+var fs              = require('fs'),
     // log4js      = require('log4js')(),
-    express     = require('express'),
-    Schema      = require('mongoose').Schema,
-    MemoryStore = require('connect').middleware.session.MemoryStore,
-    Monomi      = require('monomi'),
-    Controller  = bozuko.require('core/controller'),
-    Game        = bozuko.require('core/game');
+    express         = require('express'),
+    Schema          = require('mongoose').Schema,
+    MemoryStore     = require('connect').middleware.session.MemoryStore,
+    Monomi          = require('monomi'),
+    Controller      = bozuko.require('core/controller'),
+    TransferObject  = bozuko.require('core/transfer'),
+    Link            = bozuko.require('core/link'),
+    Game            = bozuko.require('core/game');
 
 exports.run = function(app){
     
@@ -22,6 +24,9 @@ exports.run = function(app){
     
     // setup our models
     initModels();
+    
+    // setup out transfer objects
+    initTransferobjects();
     
     // setup the controllers
     initControllers(app);
@@ -90,6 +95,33 @@ function initModels(){
         bozuko.db.model( Name, schema );
         //Mongoose.Model.define(Name, config);
         bozuko.models[Name] = bozuko.db.model(Name);
+    });
+}
+
+function initTransferObjects(){
+    bozuko.transferObjects = {};
+    bozuko.links = {};
+    fs.readdirSync(__dirname + '/controllers').forEach( function(file){
+        
+        if( !/js$/.test(file) ) return;
+        
+        var name = file.replace(/\..*?$/, '');
+        // first check for object_types and links
+        var controller = bozuko.require('controllers/'+name);
+        
+        if( controller.links ){
+            Object.keys(controller.links).forEach(function(key){
+                var config = controller.links[key];
+                bozuko.links[key] = Link.create(config);
+            });
+        }
+        
+        if(controller.transfer_objects){
+            Object.keys(controller.transfer_objects).forEach(function(key){
+                var config = controller.transfer_objects[key];
+                bozuko.transferObjects[key] = TransferObject.create(config);
+            });
+        }
     });
 }
 
