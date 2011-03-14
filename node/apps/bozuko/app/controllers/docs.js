@@ -88,7 +88,7 @@ exports.routes = {
         }
     },
     
-    '/api' : {
+    '/docs/api' : {
         
         description : 'Mobile Developer API Docs',
         
@@ -136,13 +136,18 @@ exports.routes = {
         }
     },
     
-    '/api/*' : {
+    '/docs/api/*' : {
         description : 'Mobile Developer API Doc Page',
         
         get : function(req,res){
-            var parts = URL.parse(req.url).pathname.replace(/\/api\//,'').split('/');
+            var parts = URL.parse(req.url).pathname.replace(/\/docs\/api\//,'').split('/');
             if( parts.length == 1 ){
-                res.render('docs/api/'+parts[0], {layout: false,bozuko:bozuko});
+                if( !this.html ) this.html = {};
+                if( !this.html[parts[0]]){
+                    this.html[parts[0]] = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/'+parts[0]+'.md', 'utf-8'));
+                }
+                var html = this.html[parts[0]];
+                res.render('docs/api/'+parts[0], {layout: false,bozuko:bozuko, html: html});
             }
             else{
                 console.log(parts[0].replace(/s$/,''));

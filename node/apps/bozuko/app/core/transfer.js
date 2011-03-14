@@ -10,6 +10,7 @@ var TransferObject = module.exports = function(name, config){
     this.def = config.def;
     this.title = config.title;
     this.links = {};
+    this.returned = [];
     
     // run through the links and associate with this controller
     if( this.def.links ){
@@ -23,6 +24,7 @@ var TransferObject = module.exports = function(name, config){
                 console.log('Undocumented Link ['+key+']');
             }
         });
+        
     }
 };
 
@@ -31,6 +33,11 @@ var $ = TransferObject.prototype;
 $.getTitle = function(){
     return this.title || this.name;
 };
+
+$.returnedBy = function(link){
+    if( link && !~this.returned.indexOf(link) ) this.returned.push(link);
+    return this.returned;
+}
 
 $.sanitize = function(data, current){
     // make this conform to our def

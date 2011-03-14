@@ -56,7 +56,7 @@ Ext.onReady(function(){
         });
         tabPanel.setActiveTab(pages[id]);
         pages[id].getUpdater().update({
-            url: '/api'+id
+            url: '/docs/api'+id
         });
         return pages[id];
     }

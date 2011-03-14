@@ -164,6 +164,10 @@ body {
   background: #f3f3f3;
   padding: 4px 6px;
 }
+.api .x-panel-body {
+  line-height: 1.5em;
+  font: 13.34px helvetica, arial, freesans, clean, sans-serif;
+}
 .api .x-panel-body .section {
   margin: 10px 0;
 }
@@ -223,8 +227,12 @@ body {
 }
 .api .x-panel-body h3 {
   color: #bc3023;
-  font-size: 18px;
+  font-size: 24px;
+  font-family: "Impact";
+  font-weight: normal;
   margin-top: 0;
+}
+.api .x-panel-body h3.objectIcon, .api .x-panel-body h3.linkIcon {
   padding-left: 20px;
 }
 .api .x-panel-body h4 {
@@ -237,6 +245,7 @@ body {
   color: #999;
 }
 .api .x-panel-body pre {
+  font-family: "Consolas", "Courier New";
   background: #f3f3f3;
   padding: 10px;
   border: 1px solid #ccc;
@@ -247,10 +256,16 @@ body {
 .api .x-panel-body .references li {
   margin-bottom: 4px;
 }
+.api .x-panel-body .links ul {
+  margin-left: 0;
+}
 .api .x-panel-body a:link, .api .x-panel-body a:visited, .api .x-panel-body a:active {
   text-decoration: none;
   color: #bc3023;
 }
 .api .x-panel-body a:hover {
-  color: #8d231b;
+  color: #641a13;
+}
+.api .x-panel-body p {
+  line-height: 1.5em!important;
 }

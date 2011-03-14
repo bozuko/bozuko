@@ -127,6 +127,22 @@ function initTransferObjects(){
             });
         }
     });
+    
+    // okay, one last time through the links to associate
+    // the return objects
+    
+    Object.keys(bozuko.links()).forEach(function(key){
+        var link = bozuko.link(key);
+        Object.keys(link.methods).forEach(function(name){
+            var method = link.methods[name];
+            var r = method.returns;
+            if( r instanceof Array ){
+                r = r[0];
+            }
+            var t = bozuko.transfer(r);
+            if( t ) t.returnedBy(link);
+        });
+    });
 }
 
 function initControllers(app){
