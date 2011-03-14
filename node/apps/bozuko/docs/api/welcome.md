@@ -43,8 +43,16 @@ In order to follow the principle of HATEOAS there needs to be a way to follow li
         }
     }
 
-The above shows a *Page* transfer object. An array of these objects is returned when an HTTP GET is sent to the entry point URI of the server: **/pages**. This entry point is documented in the **pages** link.  Note that their exists a *links* property in the *Page* transfer object.  Most transfer objects contain a *links* object that provides the URLs needed to navigate the application. After retrieving the initial pages list via the application entry point at */pages*, the application can be navigated by following named links. These names are guaranteed not to change and also guaranteed to return the transfer objects documented in the links tab.
-No URL will ever need to be constructed, and should not be as they may change in the future.
+The above shows a *Page* transfer object. Note that their exists a *links* property in this transfer object that allows navigation of the application. The names of these links are guaranteed not to change and also guaranteed to return the transfer objects documented in the links tab. No URL will ever need to be constructed, and should not be as they may change in the future. The application is driven by following links as shown in the example steps below.
+
+1. Retrieve the entry point object via an HTTP GET to the application entry point at */api*. 
+2. Send an HTTP GET to the pages link returned in the entry point object utilizing the parameters described in the *pages* link documentation. You do this by appending those parameters as query parameters to the URL in the *pages* link.
+3. Display the pages to the user that were returned from the *pages* in an array of *page* transfer objects.
+4. When the user clicks on a page the info from that page transfer object is displayed. 
+5. The user is already logged into facebook so decides to checkin by following the facebook_checkin link.
+6. A *facebook_checkin_result* transfer object is returned with a number of tokens. 
+7. The tokens are credited to the game display, be it the slots or scratch ticket.
+8. The *contest_result* link is then followed when the user plays the game and the result of the game is returned in a contest_result object.
 
 
-Their are benefits to this type of system. The client never has to know the URIs of the service except for the entry point. This decouples the URIs from the client interface and eliminates the need for versioning in the URIs. Since the microformat is predefined and guaranteed only to be extended once in production, the system can grow to encompass new transfer objects as well as new properties in existing transfer objects. Thus the only coupling or contract between the client and server is the entry point URI, the transfer objects returned and the standard links.
+There are benefits to this type of system. The client never has to know the URIs of the service except for the entry point. This decouples the URIs from the client interface and eliminates the need for versioning in the URIs. Since the microformat is predefined and guaranteed only to be extended once in production, the system can grow to encompass new transfer objects as well as new properties in existing transfer objects. Thus the only coupling or contract between the client and server is the entry point URI, the transfer objects returned and the standard links.
