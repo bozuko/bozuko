@@ -9,6 +9,17 @@ exports.transfer_objects = {
                 bozuko : "String"
             }
         }
+    },
+
+    error: {
+        doc: "The generic error object",
+
+        def: {
+            name: "String",
+            msg: "String",
+            links: {
+            }
+        }
     }
 };
 

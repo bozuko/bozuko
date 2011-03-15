@@ -2,7 +2,7 @@ var print = require('util').debug;
 var assert = require('assert');
 var bozuko = require('bozuko');
 
-var fake_id = '534535344353';
+var uid = "4d79b17bc87bdfae73000003"; // Bobby Bozuko
 
 exports['GET /user/login'] = function(beforeExit) {
     assert.response(bozuko.app,
@@ -12,19 +12,19 @@ exports['GET /user/login'] = function(beforeExit) {
 
 exports['GET /user/:id'] = function(beforeExit) {
     assert.response(bozuko.app,
-	{url: '/user/'+fake_id},
+	{url: '/user/'+uid},
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var user = JSON.parse(res.body);
-	    assert.eql(fake_id, user.id);
-	    assert.keys(user, ['name', 'first_name', 'last_name', 'gender', 'email', 'picture',
-	        'facebook_id', 'can_manage_pages']);
+	    assert.eql(uid, user.id);
+	    assert.keys(user, ['name', 'first_name', 'last_name', 'gender', 'email', 'img']);
+            assert.keys(user.links, ['facebook_login', 'facebook_logout', 'favorites']);
 	});
 };
 
-exports['GET /user/:id/prizes'] = function(beforeExit) {
+/*exports['GET /user/:id/prizes'] = function(beforeExit) {
     assert.response(bozuko.app,
-	{url: '/user/'+fake_id+'/prizes'},
+	{url: '/user/'+uid+'/prizes'},
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var prizes = JSON.parse(res.body);
@@ -39,4 +39,5 @@ exports['GET /user/:id/prizes'] = function(beforeExit) {
                 }
             });
         });
-};
+};*/
+

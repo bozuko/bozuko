@@ -2,11 +2,11 @@ var bozuko = require('bozuko');
 
 exports.transfer_objects= {
     user: {
-        
+
         doc: "Bozuko User Object",
-        
+
         def:{
-            id: "Number",
+            id: "String",
             name: "String",
             first_name: "String",
             last_name: "String",
@@ -102,6 +102,32 @@ exports.routes = {
     '/user/:id' : {
 
         get : {
+            handler: function(req, res) {
+                res.setHeader('content-type', 'application/json');
+                bozuko.models.User.findById(req.param('id'), function(err, user) {
+                    if (err) {
+                        var error = bozuko.transfer('error', {
+                            name: "user find",
+                            msg: JSON.stringify(err)
+                        });
+                        res.statusCode = 400;
+                        res.send(error);
+                    }
+                    if (user) {
+                        user.id = user._id;
+                        user.img = "https://graph.facebook.com/"+user.id+"/picture";
+                        user.links = {
+                            facebook_login: "/user/login/facebook",
+                            facebook_logout: "/user/logout/facebook",
+                            favorites: "/user/"+user.id+"/favorites"
+                        };
+                        res.send(bozuko.transfer('user', user));
+                    } else {
+                        res.statusCode = 404;
+                        res.end();
+                    }
+                });
+            }
         }
     },
 
