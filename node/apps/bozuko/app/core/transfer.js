@@ -40,29 +40,34 @@ $.returnedBy = function(link){
 }
 
 $.sanitize = function(data, current){
+    
     // make this conform to our def
     var self = this, ret = {};
     if( !current ) current = this.def;
     
     if( current instanceof Array ){
+        ret = [];
         if( !(data instanceof Array) ){
-            ret = [];
+            data = [];
         }
         data.forEach(function(v,k){
-            data[k] = self.sanitize(v,current[0]);
+            ret[k] = self.sanitize(v,current[0]);
         });
     }
-    else if( current instanceof Object ){
-        if( !(data instanceof Object) ){
+    else{
+        if( !(data instanceof Object || typeof data == 'object') ){
             data = {};
         }
-        else Object.keys(current).forEach(function(key){
-             if( data[key] ){
+        Object.keys(current).forEach(function(key){
+            if( data[key] ){
                 // Cast the value to the proper type.
-                var v = ret[key] = data[key];
+                var v = data[key];
                 var c = current[key];
-                if( c instanceof String ){
+                
+                // no clue why c instanceof String does not work
+                if( c instanceof String || typeof c == 'string' ){
                     // check type
+                    
                     switch(c.toLowerCase()){
                         
                         case 'string':
@@ -78,9 +83,11 @@ $.sanitize = function(data, current){
                         case 'number':
                             v = parseFloat(v);
                             break;
+                        
                     }
+                    ret[key] = v;
                 }
-                else if(c instanceof Object){
+                else if(c instanceof Object || typeof c == 'object'){
                     ret[key] = self.sanitize(v,c);
                 }
             }
