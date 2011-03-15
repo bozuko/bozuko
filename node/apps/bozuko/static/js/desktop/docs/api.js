@@ -47,9 +47,10 @@ Ext.onReady(function(){
         }
         pages[id] = tabPanel.add({
             title: name,
+            autoDestroy: true,
             iconCls: parts[0]+'Icon',
             listeners: {
-                close : function(){
+                removed : function(){
                     delete pages[id];
                 }
             }

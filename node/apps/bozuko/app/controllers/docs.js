@@ -12,6 +12,9 @@ exports.routes = {
         
         get : function(req,res){
             
+            // for now, lets just redirect to the api docs...
+            if( 1 ) return res.redirect('/docs/api');
+            
             //ignore
             var ignore = ['Site','Admin','Business','Docs'];
             
