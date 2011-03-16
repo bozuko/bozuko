@@ -33,6 +33,15 @@ exports['GET /user/:id'] = function(beforeExit) {
 	});
 };
 
+
+
+exports['GET /user/:id/favorites'] = function(beforeExit) {
+    assert.response(bozuko.app,
+        {url: '/user/'+uid+'/favorites', headers: bozuko_headers},
+        {status: 200});
+};
+
+
 /*exports['GET /user/:id/prizes'] = function(beforeExit) {
     assert.response(bozuko.app,
 	{url: '/user/'+uid+'/prizes'},
