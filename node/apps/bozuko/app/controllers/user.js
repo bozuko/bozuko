@@ -125,9 +125,31 @@ exports.routes = {
     '/user/:id/favorites' : {
 
         get : {
+            handler: function(req, res) {
+                if (req.session.user) {
+                    var user = req.session.user;
+                    bozuko.models.Page.find({'_id': {$in: user.favorites}}, function(err, pages) {
+                        if (err) {
+                            console.log("ERROR - favorites: err = "+err);
+                            res.statusCode = 404;
+                            res.end();
+                        } else {
+                            if (pages) {
+                                res.send(pages);
+                            } else {
+                                console.log("ERROR - favorites: pages not found");
+                                res.statusCode = 404;
+                                res.end();
+                            }
+                        }
+                    });
+                }
+            }
         },
 
         put: {
+            handler: function(req, res) {
+            }
         },
 
         del: {
