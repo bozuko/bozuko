@@ -9,7 +9,6 @@ exports['GET /user/login'] = function(beforeExit) {
         {url: '/user/login'},
         {status: 302, headers: {'Content-Type': 'text/html'}});
 };
-console.log(bozuko_headers);
 // user the custom headers hack for now so we don't have to log in programmatically
 exports['GET /user/:id'] = function(beforeExit) {
     assert.response(bozuko.app,
