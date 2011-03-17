@@ -16,9 +16,7 @@ var ssl = {
 };
 
 
-//var app = express.createServer(ssl);
-// no ssl for tests... this should be an environment var
-var app = express.createServer();
+var app = express.createServer(ssl);
 /**
  * Load common Bozuko stuff
  */
