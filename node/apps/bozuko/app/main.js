@@ -1,4 +1,4 @@
-var bozuko = require('bozuko');
+var bozuko = Bozuko = require('bozuko');
 
 /**
  * Module dependencies.
@@ -94,6 +94,7 @@ function initModels(){
         
         bozuko.db.model( Name, schema );
         //Mongoose.Model.define(Name, config);
+        console.log(Name);
         bozuko.models[Name] = bozuko.db.model(Name);
     });
 }

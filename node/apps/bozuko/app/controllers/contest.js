@@ -177,24 +177,45 @@ exports.routes = {
      */
     '/contest/:id/result' : {
         post: {
+            
+            handler : function(){
+                
+            }
+            
         }
     },
 
     '/contest/:id/entry/facebook/checkin': {
 
         post: {
+            
+            access: 'user',
 
             handler: function(req, res) {
-                var page_id = req.param('page_id');
+                
                 var lat = req.param('lat');
                 var lng = req.param('lng');
+                var msg = req.param('message');
+                
+                bozuko.models.Contest.findById(req.params.id, function(err, contest){
 
-                // we should have the user from the session...
-                if( !req.session.user ){
-                    res.statusCode = 404,
-                    res.end();
-                    return;
-                }
+                    // do we have a contest?
+                    if( !contest ){
+                        return res.send( bozuko.transfer('error',{
+                            name: 'nocontest',
+                            msg: 'The contest requested ['+req.params.id+'] is not valid'
+                        }), 404);
+                    }
+                    
+                    return contest.enter( bozuko.entry('facebook/checkin', user, {
+                        latLng: {lat:lat, lng:lng},
+                        message: msg
+                    }), function(error, entry){
+                        
+                    });
+
+                });
+                
                 // lets check them in...
                 bozuko.service('facebook').place({place_id: page_id}, function(error, p){
                     bozuko.service('facebook').checkin({
@@ -224,6 +245,7 @@ exports.routes = {
     '/contest/:id/entry/facebook/like': {
 
         post: {
+            
             /**
              * Pseudo code for entering a contest
              */
@@ -237,7 +259,7 @@ exports.routes = {
                         });
                     }
 
-                    var entryMethod = Entry.factory('facebook/like');
+                    var entryMethod = Entry.create('facebook/like');
 
                     var result = contest.enter(req.session.user, entryMethod);
                     res.send(result);

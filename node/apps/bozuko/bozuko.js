@@ -76,3 +76,8 @@ exports.link = function(key){
 exports.links = function(){
 	return this._links;
 };
+
+exports.entry = function(key, user, options){
+	var Entry = this.require('core/contest/entry/'+key);
+	return new Entry(key, user, options);
+};

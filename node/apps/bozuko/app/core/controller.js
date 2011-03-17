@@ -54,6 +54,26 @@ Controller.prototype = {
                             handler = methodConfig.handler;
                         }
                         
+                        if( methodConfig.access ){
+                            var _handler = handler;
+                            switch( methodConfig.access ){
+                                case 'user':
+                                    handler = function(req,res){
+                                        if( !req.session.user ){
+                                            return res.send( bozuko.transfer('error',{
+                                                name: 'noauth',
+                                                msg: 'This action requires a user session',
+                                                links: {
+                                                    'facebook_login' : '/user/login'
+                                                }
+                                            }), 401);
+                                        }
+                                        return _handler(req,res);
+                                    };
+                                    break;
+                            }
+                        }
+                        
                         // check for docs...
                         if( !_this.doc.routes[route] ) _this.doc.routes[route] = {};
                         var doc = _this.doc.routes[route];

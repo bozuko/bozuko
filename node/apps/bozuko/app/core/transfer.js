@@ -64,7 +64,6 @@ $.sanitize = function(data, current){
                 var v = data[key];
                 var c = current[key];
                 
-                // no clue why c instanceof String does not work
                 if( c instanceof String || typeof c == 'string' ){
                     // check type
                     
@@ -86,6 +85,9 @@ $.sanitize = function(data, current){
                         
                     }
                     ret[key] = v;
+                }
+                else if(c instanceof Number ){
+                    v = parseFloat(v);
                 }
                 else if(c instanceof Object || typeof c == 'object'){
                     ret[key] = self.sanitize(v,c);

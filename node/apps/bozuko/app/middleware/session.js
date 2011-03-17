@@ -29,8 +29,10 @@ module.exports = function session(){
             // need to run these through unescape because of how
             // they are retrieved in corona
             q['services.name']  = 'facebook';
-            q['services.id']    = unescape(req.header(HEADER.user_id));
-            q['services.auth']  = unescape(req.header(HEADER.access_token));
+            q['services.id']    = (req.header(HEADER.user_id));
+            q['services.auth']  = (req.header(HEADER.access_token));
+            
+            console.log(q);
         }
 
         else if( cookie ){
@@ -50,9 +52,7 @@ module.exports = function session(){
             if( q['services.id'] ){
                 // check for the user in our database
                 bozuko.models.User.findOne(q, function(err, u){
-                    console.log(u);
                     if( u ){
-                        console.log(u);
                         req.session.user = u;
                     }
                     return next();

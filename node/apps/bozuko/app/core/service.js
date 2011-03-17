@@ -91,7 +91,7 @@ $.checkin = function(place_id, user, callback){};
  * The callback will be passed 2 arguments
  *
  *      error
- *      data - The 
+ *      data - The service data for the place
  *
  * @param {String/Number}   place_id        Id of the place within the service
  * @param {Array}           fields          Fields to be returned

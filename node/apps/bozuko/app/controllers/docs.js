@@ -14,7 +14,6 @@ exports.routes = {
             
             // for now, lets just redirect to the api docs...
             if( 1 ) return res.redirect('/docs/api');
-            
             //ignore
             var ignore = ['Site','Admin','Business','Docs'];
             
@@ -58,7 +57,7 @@ exports.routes = {
                 this.welcomeHTML = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
             }
             
-            res.render('docs/index', {layout:'docs/layout',tree:tree,title:"bozuko docs",bozuko:bozuko, welcome: this.welcomeHTML});
+            return res.render('docs/index', {layout:'docs/layout',tree:tree,title:"bozuko docs",bozuko:bozuko, welcome: this.welcomeHTML});
         }
     },
     
@@ -153,7 +152,6 @@ exports.routes = {
                 res.render('docs/api/'+parts[0], {layout: false,bozuko:bozuko, html: html});
             }
             else{
-                console.log(parts[0].replace(/s$/,''));
                 res.render('docs/api/'+(parts[0].replace(/s$/,'')), {
                     layout: false,
                     bozuko:bozuko,

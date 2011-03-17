@@ -251,7 +251,6 @@ $.checkin = function(options, callback){
         params: params,
         method:'post'
     },function(result){
-        console.log(result);
         callback(null, result);
     });
 };

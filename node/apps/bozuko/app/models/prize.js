@@ -6,5 +6,11 @@ var mongoose = require('mongoose'),
     
 var Prize = module.exports = new Schema({
     page                    :{type:ObjectId, index :true},
-    contest                 :{type:ObjectId}
+    contest                 :{type:ObjectId},
+    value                   :{type:Number},
+    name                    :{type:String},
+    description             :{type:String},
+    total                   :{type:Number},
+    claimed                 :{type:Number},
+    winners                 :[ObjectId]
 });
