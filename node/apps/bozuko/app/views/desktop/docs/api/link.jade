@@ -5,9 +5,8 @@ h3.linkIcon= link.getTitle()
 h4 Methods
 
 .section
-
+  
   - each method, name in link.methods
-    
     .method
       h5.method-name= name.toUpperCase()
       
@@ -16,7 +15,6 @@ h4 Methods
           p= method.doc
         
       - if( method.params )
-      
         .params
         
           h6 Parameters
@@ -24,7 +22,6 @@ h4 Methods
           ul.params
           
             - each doc, param in method.params
-              
               li.param(class=doc.required?"required":"")
                 
                 .title
@@ -49,7 +46,6 @@ h4 Methods
               a.objectIcon.internalLink(href="#/objects/"+method.returns)= method.returns
 
 - if( link.transferObjects.length > 0 )
-
   h4 Referenced By
 
   .section.references
@@ -57,6 +53,5 @@ h4 Methods
     
     ul
     - each transfer in link.transferObjects
-      
       li
         a.objectIcon.internalLink(href="#/objects/"+transfer.name)= transfer.getTitle()
