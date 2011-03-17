@@ -4,9 +4,9 @@ var requestCount = 0;
 
 exports.transfer_objects = {
     page: {
-        
+
         doc: "A Bozuko Page",
-        
+
         def: {
             id: "Number",
             name: "String",
@@ -46,9 +46,9 @@ exports.transfer_objects = {
     },
 
     share_form: {
-        
+
         doc : "The form to share a Bozuko Page with someone via email or facebook",
-        
+
         def: {
             facebook_friends: ["String"],
             email_contacts: ["String"],
@@ -60,9 +60,9 @@ exports.transfer_objects = {
     },
 
     feedback_form: {
-        
+
         doc: "Feedback form",
-        
+
         def: {
             message: "String"
         }
@@ -73,7 +73,7 @@ exports.links = {
     pages: {
         get: {
             doc: "Return a list of pages",
-            
+
             params: {
                 lat: {
                     required: true,
@@ -142,37 +142,6 @@ exports.routes = {
 
         get: {
 
-            doc: {
-                description: 'Get a list of pages generated from facebook',
-
-                params: {
-                    lat: {
-                        required: true,
-                        type: "Number",
-                        description: 'latitude'
-                    },
-                    lng: {
-                        required: true,
-                        type: "Number",
-                        description: 'longitude'
-                    },
-                    limit: {
-                        type: "Number",
-                        description: "The number of search results to return"
-                    },
-                    offset: {
-                        type: "Number",
-                        description: "The starting result number"
-                    }
-                },
-
-                returns: {
-                    name: "pages",
-                    type: "Array",
-                    description: "Returns an array of pages."
-                }
-            },
-
             handler: function(req,res) {
                 var lat = req.param('lat') || '42.645625';
                 var lng = req.param('lng') || '-71.307864';
@@ -202,52 +171,6 @@ exports.routes = {
     '/page/:id': {
 
         get: {
-
-            doc: {
-                description: "Return page details",
-
-                params: {
-                    id: {
-                        required: true,
-                        type: "Number",
-                        description: "The id of the page"
-                    }
-                },
-
-                returns: {
-                    name: "data",
-                    type: "Object",
-                    description: "Page information",
-
-                    example: {
-                        id: 123456,
-                        name: 'Hookslide Kelly\'s',
-                        picture: 'http://graph.facebook.com/picture/35235235',
-                        link: 'http://facebook.com/pages/Hookslides/3525252323',
-                        category: 'Local business',
-                        website: 'www.hookslidekellys.com',
-                        location: {
-                            street: '19 Merrimack Street',
-                            city: 'Lowell',
-                            state: 'MA',
-                            country: 'United States',
-                            zip: '01852',
-                            latitude: 42.3,
-                            longitude: -71.105
-                        },
-                        phone: '978-654-4225',
-                        fan_count: 1000,
-                        checkins: 80000,
-                        games: fakeGames,
-                        links: {
-                            contest: '/contest/4553453',
-                            checkin: '/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id=123456',
-                            result: '/contest/4553453/result'
-                        }
-                    }
-                }
-            },
-
             handler: function(req,res) {
                 page_id = req.param('id');
                 bozuko.service('facebook').place({
@@ -260,6 +183,69 @@ exports.routes = {
                         result: '/contest/4553453/result'
                     };
                     res.send(place);
+                });
+            }
+        }
+    },
+
+    '/page/facebook/:id': {
+
+        put: {
+            handler: function(req, res) {
+                id = req.param('id');
+                if(!req.session.user || !req.session.user.can_manage_pages ) {
+                    res.statusCode = 401;
+                    res.end();
+                    return;
+                }
+
+                facebook.graph('/'+id, {user: req.session.user}, function(data) {
+                    if (!data) {
+                        res.statusCode = 404;
+                        res.end();
+                        return;
+                    }
+                    bozuko.models.Page.findOne({'services.name':'facebook','services.id':id}, function(err, page){
+                        if (err) {
+                            res.StatusCode = 500;
+                            console.log("page findOne error: "+JSON.stringify(err));
+                            var error = bozuko.transfer('error', {
+                                name: "page findOne",
+                                msg: "DB error on page findOne"
+                            });
+                            res.send(error);
+                        }
+
+                        if (page && page.owner_id != req.session.user._id) {
+                            res.statusCode = 401;
+                            res.end();
+                            return;
+                        }
+                        if (!page) page = new bozuko.models.Page();
+                        page.service('facebook', data.id, req.session.user.service('facebook').auth, data);
+
+                        page.name = data.name;
+                        page.games = [];
+
+                        page.is_location = data.location && data.location.latitude ? true : false;
+                        if( page.is_location ){
+                            page.lat = parseFloat(data.location.latitude);
+                            page.lng = parseFloat(data.location.longitude);
+                        }
+                        page.owner_id = req.session.user._id;
+                        page.save(function(err){
+                            if (err) {
+                                res.StatusCode = 500;
+                                console.log("page save error: "+JSON.stringify(err));
+                                var error = bozuko.transfer('error', {
+                                    name: "page save",
+                                    msg: "DB error on page save"
+                                });
+                                res.send(error);
+                            }
+                            res.end();
+                        });
+                    });
                 });
             }
         }
