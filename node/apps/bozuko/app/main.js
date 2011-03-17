@@ -57,10 +57,8 @@ function initApplication(app){
         }));
     }
     
-    
     app.set('view engine', 'jade');
     app.set('views', __dirname + '/views');
-    
     
     app.use(express.bodyParser());
     app.use(express.methodOverride());
@@ -94,7 +92,6 @@ function initModels(){
         
         bozuko.db.model( Name, schema );
         //Mongoose.Model.define(Name, config);
-        console.log(Name);
         bozuko.models[Name] = bozuko.db.model(Name);
     });
 }

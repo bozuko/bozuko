@@ -7,7 +7,7 @@ var bozuko  = require('bozuko'),
  *
  */
 var FacebookCheckin = module.exports = function(key, user, options){
-    var options = options || {};
+    options = options || {};
     Entry.prototype.constructor.call(this,key,user);
     // set the valid options
     if( !options.latLng ) throw new Error('LatLng is required to checkin with facebook');
@@ -42,15 +42,16 @@ proto.icon = '';
  * @param {Function} Callback Function
  */
 proto.validate = function( callback ){
-    Entry.prototype.validate.call( function(error){
+    var self = this;
+    Entry.prototype.validate.call( this, function(error){
         if( error ){
             callback( error );
         }
         else{
             // anything else we need to do, for facebook reasons?
             // we should make sure that the contest has a facebook service
-            bozuko.models.Page.findById(this.contest.page_id, function(error, page){
-                if( error || !page) return callback( new Error("Invalid Page ["+this.contest.page_id+"]") );
+            bozuko.models.Page.findById(self.contest.page_id, function(error, page){
+                if( error || !page) return callback( new Error("Invalid Page ["+self.contest.page_id+"]") );
                 
                 if( !page.service('facebook') ){
                     callback( new Error("Page does not have a Facebook Account") );
@@ -72,36 +73,45 @@ proto.process = function( callback ){
     
     // lets process this...
     var self = this;
-    Entry.prototype.process.call(this, function(error){
+    Entry.prototype.process.call(this, function(error, entry){
         
         if( error ){
             return callback( error );
         }
         
-        return bozuko.service('facebook').checkin({
-            user        :self.user,
-            message     :self.message,
-            place_id    :self.service('facebook').id,
-            // actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
-            link        :'http://bozuko.com',
-            picture     :'http://bozuko.com/images/bozuko-chest-check.png',
-            description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
-            latLng      :{
-                lat:self.latLng.lat,
-                lng:self.latLng.lng
-            }
-        },
-        
-        function(error, result){
-            // TODO: set the status code based on error
-            if (error) {
-                callback(error);
-            } else {
-                self.data = result;
-                self.save(function(error){
-                    callback(self);
-                });
-            }
+        return bozuko.models.Page.findById( self.contest.page_id, function(error, page){
+            bozuko.service('facebook').checkin({
+                test        :true,
+                user        :self.user,
+                message     :self.message,
+                place_id    :page.service('facebook').id,
+                // actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
+                link        :'http://bozuko.com',
+                picture     :'http://bozuko.com/images/bozuko-chest-check.png',
+                /**
+                 * TODO
+                 *
+                 * change the description to reflect the place / prize, etc
+                 * 
+                 */
+                description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
+                latLng      :{
+                    lat:self.latLng.lat,
+                    lng:self.latLng.lng
+                }
+            },
+            
+            function(error, result){
+                // TODO: set the status code based on error
+                if (error) {
+                    callback(error);
+                } else {
+                    entry.data = result;
+                    entry.save(function(error){
+                        callback(null, entry);
+                    });
+                }
+            });
         });
     });
 };

@@ -197,7 +197,13 @@ exports.routes = {
                 var lng = req.param('lng');
                 var msg = req.param('message');
                 
-                bozuko.models.Contest.findById(req.params.id, function(err, contest){
+                if( !lat || !lng ){
+                    return res.send({
+                        "message":"No Latitude / Longitude"
+                    }, 200);
+                }
+                
+                return bozuko.models.Contest.findById(req.params.id, function(err, contest){
 
                     // do we have a contest?
                     if( !contest ){
@@ -206,37 +212,18 @@ exports.routes = {
                             msg: 'The contest requested ['+req.params.id+'] is not valid'
                         }), 404);
                     }
-                    
-                    return contest.enter( bozuko.entry('facebook/checkin', user, {
+                    return contest.enter( bozuko.entry('facebook/checkin', req.session.user, {
                         latLng: {lat:lat, lng:lng},
                         message: msg
                     }), function(error, entry){
-                        
+                        if( error ){
+                            // these errors should be sant
+                            res.send(bozuko.sanitize('error',error));
+                        }
+                        var ret = bozuko.sanitize('facebook_checkin_result', entry);
+                        res.send(ret);
                     });
 
-                });
-                
-                // lets check them in...
-                bozuko.service('facebook').place({place_id: page_id}, function(error, p){
-                    bozuko.service('facebook').checkin({
-                        user        :req.session.user,
-                        message     :'Just won a free burrito playing bozuko!',
-                        place_id    :p.id,
-                        actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
-                        link        :'http://bozuko.com',
-                        picture     :'http://bozuko.com/images/bozuko-chest-check.png',
-                        description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
-                        latLng      :{lat:p.location.latitude,lng:p.location.longitude}
-                    },function(error, result){
-                        // TODO: set the status code based on error
-                        if (error) {
-                            res.statusCode = 400;
-                            res.send(error);
-                        } else {
-                            result.tokens = 3;
-                            res.send(result);
-                        }
-                    });
                 });
             }
         }
@@ -262,7 +249,7 @@ exports.routes = {
                     var entryMethod = Entry.create('facebook/like');
 
                     var result = contest.enter(req.session.user, entryMethod);
-                    res.send(result);
+                    res.send(bozuko.transfer('facebook_checkin_result', result));
 
                 });
             }

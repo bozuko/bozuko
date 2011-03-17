@@ -32,7 +32,7 @@ Contest.method('enter', function(entry, callback){
     // get the entry_config
     var cfg = null;
     for(var i=0; i<this.entry_config.length && cfg === null; i++){
-        if( this.entry_config[i].key == entryMethod.key ){
+        if( this.entry_config[i].type == entry.type ){
             cfg = this.entry_config[i];
         }
     }
@@ -45,7 +45,7 @@ Contest.method('enter', function(entry, callback){
         }
         else entry.process( function(error, Entry){
             // this will return an Entry object on success.
-            callback();
+            callback(error, Entry);
         });
     });
     

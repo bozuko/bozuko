@@ -185,6 +185,7 @@ $.search = function(options, callback){
     var params = {
         type : options.latLng ? 'place' : 'page'
     };
+    
     if( options.latLng ) params.center = options.latLng.lat+','+options.latLng.lng;
     if( options.query ) params.query = options.query;
     if( options.fields ){
@@ -230,10 +231,9 @@ $.search = function(options, callback){
 $.checkin = function(options, callback){
 
     if( !options || !options.place_id || !options.latLng || !options.user ){
-        callback(new Error(
+        return callback(new Error(
             'FacebookService::checkin requires place_id, latLng, and user as options'
         ));
-        return;
     }
 
     var params = {
@@ -245,8 +245,12 @@ $.checkin = function(options, callback){
     if( options.link )          params.link         = options.link;
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
-
-    facebook.graph('/me/checkins',{
+    
+    if( options.test ){
+        return callback(null, {result:123123123});
+    }
+    
+    return facebook.graph('/me/checkins',{
         user: options.user,
         params: params,
         method:'post'

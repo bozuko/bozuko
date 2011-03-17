@@ -66,6 +66,11 @@ exports.transfer = function(key, data){
 		throw new Error("Transfer Object ["+key+"] does not exist");
 	}
 };
+
+exports.sanitize = function(key, data){
+	if( !data ) return false;
+	return this.transfer(key, data);
+}
 exports.transfers = function(){
 	return this._transferObjects;
 };

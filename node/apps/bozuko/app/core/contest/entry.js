@@ -7,8 +7,8 @@ var bozuko = require('bozuko');
  * 
  * @param {String} key The key for this entry
  */
-var Entry = module.exports = function(key, user){
-    this.key = key;
+var Entry = module.exports = function(type, user){
+    this.type = type;
     this.user = user;
 };
 
@@ -71,13 +71,13 @@ proto.process = function( callback ){
     // this actually needs another check to make sure that the contest
     // has not changed since we grabbed it.
     bozuko.models.Contest.update(
-        {_id:this.contest.id, token_cursor:this.contest.token_cursor},
+        {_id:this.contest._id, token_cursor:this.contest.token_cursor},
         {token_cursor: this.contest.token_cursor + this.getTokenCount()},
         function(error, object){
             if( error ){
                 // this could be if the token_cursor changed...
                 // so the best thing we can do is update the object...
-                bozuko.models.Contest.findById( this.contest.id, function(error, contest){
+                bozuko.models.Contest.findById( self.contest.id, function(error, contest){
                     if( error ){
                         // we can't do anything here...
                         return callback( error );
@@ -107,7 +107,7 @@ proto.process = function( callback ){
                     contest_id: self.contest.id,
                     user_id: self.user.id,
                     timestamp: new Date(),
-                    type: self.key,
+                    type: self.type,
                     tokens: self.getTokenCount()
                 });
                 
@@ -140,8 +140,8 @@ proto.ensureTokens = function(){
  *
  * @param {Callback} The Contest
  */
-proto.validate = function( contest ){
-    
+proto.validate = function( callback ){
+    var self = this;
     // check for contest
     if( !this.contest ) return callback( new Error("No Contest Specified"));
     
@@ -160,8 +160,8 @@ proto.validate = function( contest ){
         last.setTime( now.getTime() - duration );
         
         return bozuko.models.Entry.find({
-            user_id:this.user.id,
-            contest_id: this.contest.id,
+            user_id:self.user.id,
+            contest_id: self.contest.id,
             timestamp:{'gt':last}
         }, function(error, entry){
             if( entry ){

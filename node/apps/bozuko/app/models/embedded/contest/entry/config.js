@@ -4,7 +4,7 @@ var bozuko = require('bozuko'),
     ObjectId = Schema.ObjectId;
     
 var EntryConfig = module.exports = new Schema({
-    name            :{type:String, index: true},
+    type            :{type:String},
     duration        :{type:Number},
     tokens          :{type:Number},
     options         :{}

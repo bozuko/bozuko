@@ -21,7 +21,7 @@ var TransferObject = module.exports = function(name, config){
                 bozuko.link(key).associateTransferObject(self);
             }
             else{
-                console.log('Undocumented Link ['+key+']');
+                console.warn('Undocumented Link ['+key+']');
             }
         });
         

@@ -14,9 +14,11 @@ var ssl = {
   key:fs.readFileSync('ssl/privatekey.pem'),
   cert:fs.readFileSync('ssl/certificate.pem')
 };
-// console.log(ssl);
-var app = express.createServer(ssl);
 
+
+//var app = express.createServer(ssl);
+// no ssl for tests... this should be an environment var
+var app = express.createServer();
 /**
  * Load common Bozuko stuff
  */

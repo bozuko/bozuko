@@ -31,8 +31,6 @@ module.exports = function session(){
             q['services.name']  = 'facebook';
             q['services.id']    = (req.header(HEADER.user_id));
             q['services.auth']  = (req.header(HEADER.access_token));
-            
-            console.log(q);
         }
 
         else if( cookie ){
