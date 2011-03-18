@@ -6,15 +6,15 @@ var bozuko_headers = assert.headers;
 
 // user the custom headers hack for now so we don't have to log in programmatically
 exports['POST /contest/:id/entry/facebook/checkin'] = function(beforeExit) {
-	
+
     var params = JSON.stringify({
         lat: 42.646261785714,
         lng: -71.303897114286,
         message: "testing"
     });
-	
+
 	bozuko_headers['content-type'] = 'application/json';
-	
+
 	assert.response(bozuko.app,
 		{
 			url: '/contest/'+assert.contest_id+'/entry/facebook/checkin',
@@ -32,7 +32,6 @@ exports['POST /contest/:id/entry/facebook/checkin'] = function(beforeExit) {
 		}
 	);
 };
-
 // user the custom headers hack for now so we don't have to log in programmatically
 exports['POST /contest/:id/entry/facebook/checkin No User'] = function(beforeExit) {
 	

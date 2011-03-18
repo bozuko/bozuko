@@ -1,6 +1,6 @@
 var bozuko = require('bozuko')
     ;
-    
+
 /**
  * Abstract Bozuko Transfer Object
  */
@@ -11,12 +11,12 @@ var TransferObject = module.exports = function(name, config){
     this.title = config.title;
     this.links = {};
     this.returned = [];
-    
+
     // run through the links and associate with this controller
     if( this.def.links ){
         var self = this;
         Object.keys(this.def.links).forEach(function(key){
-            
+
             if( bozuko.link(key) ){
                 bozuko.link(key).associateTransferObject(self);
             }
@@ -24,7 +24,7 @@ var TransferObject = module.exports = function(name, config){
                 console.warn('Undocumented Link ['+key+']');
             }
         });
-        
+
     }
 };
 
@@ -37,14 +37,14 @@ $.getTitle = function(){
 $.returnedBy = function(link){
     if( link && !~this.returned.indexOf(link) ) this.returned.push(link);
     return this.returned;
-}
+};
 
 $.sanitize = function(data, current){
-    
+
     // make this conform to our def
     var self = this, ret = {};
     if( !current ) current = this.def;
-    
+
     if( current instanceof Array ){
         ret = [];
         if( !(data instanceof Array) ){
@@ -63,26 +63,26 @@ $.sanitize = function(data, current){
                 // Cast the value to the proper type.
                 var v = data[key];
                 var c = current[key];
-                
+
                 if( c instanceof String || typeof c == 'string' ){
                     // check type
-                    
+
                     switch(c.toLowerCase()){
-                        
+
                         case 'string':
                             v = ''+v;
                             break;
-                        
+
                         case 'int':
                         case 'integer':
                             v = parseInt(v);
                             break;
-                        
+
                         case 'float':
                         case 'number':
                             v = parseFloat(v);
                             break;
-                        
+
                     }
                     ret[key] = v;
                 }
@@ -91,6 +91,40 @@ $.sanitize = function(data, current){
                 }
                 else if(c instanceof Object || typeof c == 'object'){
                     ret[key] = self.sanitize(v,c);
+                }
+            }
+        });
+    }
+    return ret;
+};
+
+// This only validates that properties that exist in data are of the right type.
+// We should have some way to validate whether all required properties exist.
+$.validate = function(data, current) {
+
+    var self = this, ret = true;
+    if( !current ) current = this.def;
+
+    if( current instanceof Array ){
+        if( !(data instanceof Array) ){
+            return false;
+        }
+        data.forEach(function(v,k){
+            if (!self.validate(v,current[0])) {
+                ret = false;
+            }
+        });
+    }
+    else{
+        if( !(data instanceof Object || typeof data == 'object') ){
+            return false;
+        }
+        Object.keys(current).forEach(function(key){
+            if( data[key] ){
+                var v = data[key];
+                var c = current[key];
+                if ( typeof c != typeof v ) {
+                    ret = false;
                 }
             }
         });
