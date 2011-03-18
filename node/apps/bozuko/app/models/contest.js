@@ -50,7 +50,7 @@ Contest.method('enter', function(entry, callback){
     });
 });
 
-Contest.path('games', function(){
+Contest.virtual('games', function(){
     this.games = [];
     this.game_config.forEach(function(config){
         // create an instance of the game
