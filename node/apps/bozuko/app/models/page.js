@@ -21,6 +21,15 @@ Page.method('getOwner', function(callback){
     bozuko.models.User.findById( this.owner_id, callback );
 });
 
+Page.method('getContests', function(callback){
+    bozuko.models.Contest.find({page_id:this.id}, function(error, contests){
+        if( error ){
+            throw error;
+        }
+        return contests;
+    });
+});
+
 Page.method('checkin', function(user, game, callback) {
 
     var self = this;
