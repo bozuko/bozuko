@@ -48,6 +48,22 @@ Contest.method('enter', function(entry, callback){
             callback(error, Entry);
         });
     });
+});
+
+Contest.path('games', function(){
+    this.games = [];
+    this.game_config.forEach(function(config){
+        // create an instance of the game
+        /**
+         * TODO - finish the game instances
+         */
+    });
     
-    
+    // for now, we are just going to return fake games
+    return [{
+        name : 'slots',
+        config: {},
+        description: 'Description from the game config',
+        icon : ''
+    }];
 });
