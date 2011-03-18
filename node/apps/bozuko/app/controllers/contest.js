@@ -176,9 +176,14 @@ exports.routes = {
      * and the index from the result is used to generate the config returned to the client.
      */
     '/contest/:id/result' : {
+        
+        access : 'user',
+        
         post: {
             
             handler : function(){
+                
+                bozuko.models.Contest.findById(req.params.id)
                 
             }
             
@@ -205,25 +210,30 @@ exports.routes = {
                 
                 return bozuko.models.Contest.findById(req.params.id, function(err, contest){
 
-                    // do we have a contest?
+                    // Ensure contest exists
                     if( !contest ){
                         return res.send( bozuko.transfer('error',{
                             name: 'nocontest',
                             msg: 'The contest requested ['+req.params.id+'] is not valid'
                         }), 404);
                     }
-                    return contest.enter( bozuko.entry('facebook/checkin', req.session.user, {
-                        latLng: {lat:lat, lng:lng},
-                        message: msg
-                    }), function(error, entry){
-                        if( error ){
-                            // these errors should be sant
-                            res.send(bozuko.sanitize('error',error));
+                    
+                    return contest.enter(
+                        
+                        bozuko.entry('facebook/checkin', req.session.user, {
+                            latLng: {lat:lat, lng:lng},
+                            message: msg
+                        }),
+                        
+                        function(error, entry){
+                            if( error ){
+                                // these errors should be sant
+                                res.send(bozuko.sanitize('error',error));
+                            }
+                            var ret = bozuko.sanitize('facebook_checkin_result', entry);
+                            res.send(ret);
                         }
-                        var ret = bozuko.sanitize('facebook_checkin_result', entry);
-                        res.send(ret);
-                    });
-
+                    );
                 });
             }
         }
