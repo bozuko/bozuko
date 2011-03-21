@@ -1,0 +1,74 @@
+@import "public/stylesheets/vars";
+@import "public/stylesheets/mixins";
+
+.place {
+    
+    .place-info {
+        padding: 10px;
+    }
+    
+    .profile-pic {
+        float: right;
+        margin: 0 0 10px 10px;
+    }
+    h2 {
+        font-size: 120%; font-weight: bold;
+    }
+    .address {
+        clear: both;
+        font-size: 80%;
+        color: #666;
+    }
+    .games {
+        margin-top: 1em;
+        
+        h2 {
+            background: #ccc;
+            font-size: 100%;
+            padding: 4px 0;
+            text-align: center;
+            text-shadow: 1px 1px 0 #ffffff;
+        }
+        
+        .game {
+            border-bottom: 1px solid #ccc;
+            padding : 10px;
+            .background_gradient(#ffffff, #dddddd);
+            
+            .game-icon {
+                max-width: 70px;
+                float: left;
+                margin: 0 10px 0 0;
+            }
+            
+            .game-body {
+                margin-left: 76px;
+                
+                .name {
+                    font-weight: bold;
+                    margin-bottom: .5em;
+                }
+                
+                .prize-label {
+                    margin-bottom: .2em;
+                }
+                
+                .prize {
+                    padding: 4px;
+                    background: #fff;
+                    .border_radius( 10px );
+                    margin-bottom: 1em;
+                }
+            }
+            
+        }
+        
+    }
+    .no-games {
+        padding: 10px;
+        
+        p {
+            margin-bottom: 10px;
+        }
+    }
+}

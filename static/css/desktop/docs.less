@@ -1,0 +1,340 @@
+@import "static/css/mixins";
+
+body {
+    font-family: Tahoma;
+    font-size: 12px;
+}
+
+.header {
+    .x-panel-body {
+        .background_gradient(#ffffff, #dddddd);
+    }
+    .title {
+        height: 100px;
+        background: url("/images/desktop/docs/logo.png") no-repeat 0 0;
+        position: relative;
+        
+        span {
+            position: absolute;
+            bottom: 10px;
+            left: 80px;
+        }
+    }
+    .confidential {
+        position: absolute;
+        top: 20px;
+        right: 10px;
+        text-shadow:2px 2px 2px #ffffff;
+        
+        .big {
+            text-transform: uppercase;
+            color: #d62929;
+            font-family: impact;
+            font-size: 40px;
+            display: block;
+            
+        }
+        
+        .smaller {
+            display: block;
+            text-align: center;
+            text-transform: uppercase;
+            color: #761616;
+        }
+    }
+}
+
+.controllerIcon {
+    background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+
+.objectIcon, .objectsIcon {
+    background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+
+.linkIcon, .linksIcon {
+    background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+
+.routeIcon {
+    background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+
+.methodIcon {
+    background: url("/images/icons/16x16/world.png") no-repeat 0 50% !important;
+}
+
+
+
+.controller-page {
+    ul.routes {
+        margin: 0;
+        list-style: none;
+        border-bottom: 1px solid #e3e3e3;
+        li.route {
+            margin: 0;
+            list-style: none;
+            border: 1px solid #e3e3e3;
+            border-bottom: 0;
+            margin-bottom: 10px;
+            
+            blockquote {
+                margin: 0;
+            }
+            
+            h3.route {
+                position: relative;
+                margin: 0;
+                padding: 10px;
+                background: #f2f2f2;
+                z-index:3;
+            }
+            
+            .methods-block{
+                
+                margin-left: 0;
+                padding: 10px 0;
+                border-bottom: 1px solid #e3e3e3;
+                
+                .method-separator {
+                    clear: both;
+                    height: 1px;
+                    line-height: 1px;
+                    font-size: 1px;
+                    overflow: hidden;
+                    background: #e3e3e3;
+                    margin: 10px 0;
+                }
+                
+                .type {
+                    color: #999;
+                    margin-left: 6px;
+                    font-style: italic;
+                }
+                
+                .name, .label {
+                    font-weight: bold;
+                }
+                
+                ul.params, .return {
+                    margin: 0 10px 10px 0;
+                    border: 1px solid #e8e8e8;
+                    border-bottom-width: 0;
+                    list-style: none;
+                    
+                    li {
+                        
+                    }
+                    
+                    .param-title, .return-title, .param-values {
+                        padding: 4px 20px;
+                        background: #f3f3f3;
+                    }
+                    
+                    .param-values{
+                        background: #fff;
+                        margin-top: 5px;
+                        border-top: 1px solid #f3f3f3;
+                    }
+                    
+                    .param-desc, .return-desc {
+                        padding: 4px 20px;
+                        border-bottom: 1px solid #e8e8e8;
+                    }
+                    
+                    .required .param-title{
+                        background-image: url("/images/icons/16x16/bullet_star.png");
+                        background-repeat: no-repeat;
+                        background-position: 2px 50%;
+                    }
+                    
+                    .label {
+                        color: #999;
+                    }
+                    
+                    .param-values {
+                        padding-left: 6px;
+                        color: #666;
+                    }
+                    
+                }
+                
+                .method {
+                    margin-top: 0;
+                    float: left;
+                    width: 60px;
+                    color: #bc3023;
+                    text-transform: uppercase;
+                    padding: 0 10px;
+                }
+                
+                .content {
+                    margin-left: 80px;
+                    
+                    blockquote {
+                        margin: 0;
+                    }
+                    
+                    h5 {
+                        font-size: 12px;
+                        text-transform: uppercase;
+                        color: #999;
+                    }
+                }
+                
+                pre {
+                    border: 1px solid #e8e8e8;
+                    background: #f3f3f3;
+                    padding: 4px 6px;
+                }
+            }
+            
+            
+            
+        }
+        
+    }
+}
+.api .x-panel-body{
+    
+    .section {
+        margin: 10px 0;
+        
+        h5 {
+            margin: 0;
+            padding: 5px 10px;
+            .background_gradient(#f3f3f3, #dddddd);
+            font-size: 20px;
+            font-weight: normal;
+            font-family: Impact;
+            color: #333;
+            text-shadow: 2px 2px 1px #ffffff;
+        }
+        
+        h6 {
+            font-size: 13px;
+            margin: 0;
+            padding: 10px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+        
+        .method {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        
+        .padded {
+            padding: 0 10px;
+        }
+        
+        .params, .param {
+            list-style: none;
+            margin: 0;
+        }
+        
+        ul.params {
+            margin: 0 10px 10px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .title{
+            padding: 8px 10px 8px 20px;
+            background: #f3f3f3;
+        }
+        .description {
+            padding: 0 10px 0 20px;
+            
+            p {
+                margin: 4px 0;
+            }
+        }
+        
+        .label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .type {
+            color: #999;
+            font-style: normal;
+        }
+        
+        .required .title{
+            background-image: url("/images/icons/16x16/bullet_star.png");
+            background-repeat: no-repeat;
+            background-position: 2px 50%;
+        }
+        
+        .returns {
+            padding-bottom: 10px;
+            a {
+                font-weight: bold;
+            }
+        }
+    }
+    
+    .internalLink {
+        padding-left: 20px;
+        line-height: 16px;
+    }
+    
+    h3 {
+        color: #bc3023;
+        font-size: 24px;
+        font-family: "Impact";
+        font-weight: 100;
+        margin-top: 0;
+        
+    }
+    h3.objectIcon, h3.linkIcon {
+        padding-left: 20px;
+    }
+    
+    h4 {
+        font-size: 16px;
+        color: #666;
+    }
+    
+    h5 {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #999;
+    }
+    
+    pre {
+        font-family: "Consolas", "Courier New";
+        background: #f3f3f3;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+    
+    .references ul, .references li {
+        list-style: none;
+    }
+    
+    .references li {
+        margin-bottom: 4px;
+    }
+    
+    .links ul {
+        margin-left: 0;
+    }
+    
+    a:link, a:visited, a:active {
+        text-decoration: none;
+        color: #bc3023;
+    }
+    a:hover{
+        color: #641a13;
+    }
+    
+    line-height: 1.5em;
+    font: 13.34px helvetica,arial,freesans,clean,sans-serif;
+    
+    p, ol{
+        line-height: 1.5em!important;
+    }
+    
+}
