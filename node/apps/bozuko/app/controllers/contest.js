@@ -56,7 +56,7 @@ var facebook_checkin_result = {
     def:{
         id: "Number",
         tokens: "Number",
-        timestamp: "Date",
+        timestamp: "String",
         duration: "Number",
         links: {
             facebook_like: "String",
@@ -176,38 +176,39 @@ exports.routes = {
      * and the index from the result is used to generate the config returned to the client.
      */
     '/contest/:id/result' : {
-        
+
         access : 'user',
-        
+
         post: {
-            
+
             handler : function(){
-                
-                bozuko.models.Contest.findById(req.params.id)
-                
+
+                bozuko.models.Contest.findById(req.params.id);
+
             }
-            
+
         }
     },
 
     '/contest/:id/entry/facebook/checkin': {
 
         post: {
-            
+
             access: 'user',
 
             handler: function(req, res) {
-                
+
                 var lat = req.param('lat');
                 var lng = req.param('lng');
                 var msg = req.param('message');
-                
+                var id = req.param('id');
+
                 if( !lat || !lng ){
                     return res.send({
                         "message":"No Latitude / Longitude"
                     }, 200);
                 }
-                
+
                 return bozuko.models.Contest.findById(req.params.id, function(err, contest){
 
                     // Ensure contest exists
@@ -217,20 +218,30 @@ exports.routes = {
                             msg: 'The contest requested ['+req.params.id+'] is not valid'
                         }), 404);
                     }
-                    
+
                     return contest.enter(
-                        
+
                         bozuko.entry('facebook/checkin', req.session.user, {
                             latLng: {lat:lat, lng:lng},
                             message: msg
                         }),
-                        
+
                         function(error, entry){
                             if( error ){
                                 // these errors should be sant
                                 res.send(bozuko.sanitize('error',error));
+                                return;
                             }
-                            var ret = bozuko.sanitize('facebook_checkin_result', entry);
+                            var fb_checkin_res = {
+                                id: entry._id,
+                                timestamp: entry.timestamp,
+                                tokens: entry.tokens,
+                                links: {
+                                    facebook_like: "/contest/"+id+"/entry/facebook/like",
+                                    contest_result: "/contest/"+id+"/result"
+                                }
+                            };
+                            var ret = bozuko.sanitize('facebook_checkin_result', fb_checkin_res);
                             res.send(ret);
                         }
                     );
@@ -242,7 +253,7 @@ exports.routes = {
     '/contest/:id/entry/facebook/like': {
 
         post: {
-            
+
             /**
              * Pseudo code for entering a contest
              */

@@ -1,4 +1,5 @@
-var bozuko = require('bozuko');
+var bozuko = require('bozuko'),
+    async = require('async');
 
 var requestCount = 0;
 
@@ -8,7 +9,7 @@ exports.transfer_objects = {
         doc: "A Bozuko Page",
 
         def: {
-            id: "Number",
+            id: "String",
             name: "String",
             picture: "String",
             facebook_page: "String",
@@ -20,11 +21,11 @@ exports.transfer_objects = {
                 state: "String",
                 country: "String",
                 zip: "String",
-                latitude: "String",
-                longitude: "String"
+                latitude: "Number",
+                longitude: "Number"
             },
             phone: "String",
-            fan_count: "String",
+            fan_count: "Number",
             checkins: "Number",
             info: "String",
             games: [{
@@ -151,101 +152,108 @@ exports.routes = {
                     limit: parseInt(req.param('limit')) || 25,
                     offset: parseInt(req.param('offset')) || 0
                 };
+
+
                 bozuko.models.Page.search(options, function(pages){
-                    res.send(pages);
+                   async.map(pages.bozuko_pages, function(p, callback) {
+                        p.getContests(function(contests) {
+                            // Return everything with a facebook format for now
+                            var page = p.service('facebook').data;
+                            var page_path = "/page/"+p._id;
+
+                            // Just use first contest for now
+                            if (contests.length > 0) {
+                                page.games = contests[0].games;
+                                var contest_id = contests[0]._id;
+                                page.links = {
+                                    contest: "/contest/"+contest_id,
+                                    facebook_checkin: "/contest/"+contest_id+"/entry/facebook/checkin",
+                                    facebook_like:  "/contest/"+contest_id+"/entry/facebook/like",
+                                    facebook_login: "/facebook/login",
+                                    contest_result: "/contests/"+contest_id+"/result",
+                                    share: page_path+"/share",
+                                    feedback: page_path+"/feedback"
+                                };
+                            } else {
+                                page.links = {
+                                    facebook_checkin: page_path+"/facebook/checkin",
+                                    facebook_like: page_path+"/facebook/like",
+                                    facebook_login: "/facebook/login",
+                                    share: page_path+"/share",
+                                    feedback: page_path+"/feedback"
+                                };
+                            }
+                            callback(null, page);
+                        });
+                    },
+                    function(err, results) {
+                        if (!err) {
+                            pages.facebook_pages.forEach(function(page) {
+                                page.links = {
+                                    facebook_checkin: "/facebook/"+page.id+"/checkin",
+                                    facebook_like: "/facebook/"+page.id+"/like",
+                                    facebook_login: "/facebook/login"
+                                };
+                            });
+                            res.send(results.concat(pages.facebook_pages));
+                        } else {
+                            res.statusCode(500);
+                            res.end();
+                        }
+                    });
                 });
             }
         }
     },
 
 
-    /**
-     * TODO
-     *
-     * Return Bozuko page results (models/page) instead of straight up facebook.
-     * This may require two separate urls in order to serve non-bozuko pages
-     * in our list. Or we just add places to our database as we find them
-     * via the 3rd party service... I think that might be too much though.
-     *
-     */
     '/page/:id': {
 
         get: {
             handler: function(req,res) {
                 page_id = req.param('id');
-                bozuko.service('facebook').place({
-                    place_id: page_id
-                },function(error, place){
-                    place.games = fakeGames;
-                    place.links = {
-                        contest: '/contest/4553453',
-                        checkin: "/contest/4553453/entry/facebook/checkin?lat=42.3&lng=-71.105&page_id="+page_id,
-                        result: '/contest/4553453/result'
-                    };
-                    res.send(place);
-                });
-            }
-        }
-    },
-
-    '/page/facebook/:id': {
-
-        put: {
-            handler: function(req, res) {
-                id = req.param('id');
-                if(!req.session.user || !req.session.user.can_manage_pages ) {
-                    res.statusCode = 401;
-                    res.end();
-                    return;
-                }
-
-                facebook.graph('/'+id, {user: req.session.user}, function(data) {
-                    if (!data) {
-                        res.statusCode = 404;
+                bozuko.models.Page.findOne({_id: page_id}, function(err, p) {
+                    if (err) {
+                        res.statusCode = 500;
                         res.end();
                         return;
                     }
-                    bozuko.models.Page.findOne({'services.name':'facebook','services.id':id}, function(err, page){
-                        if (err) {
-                            res.StatusCode = 500;
-                            console.log("page findOne error: "+JSON.stringify(err));
-                            var error = bozuko.transfer('error', {
-                                name: "page findOne",
-                                msg: "DB error on page findOne"
-                            });
-                            res.send(error);
-                        }
 
-                        if (page && page.owner_id != req.session.user._id) {
-                            res.statusCode = 401;
-                            res.end();
-                            return;
-                        }
-                        if (!page) page = new bozuko.models.Page();
-                        page.service('facebook', data.id, req.session.user.service('facebook').auth, data);
+                    if (!p) {
+                        res.statusCode = 404;
+                        res.end();
+                        return;
+                    };
 
-                        page.name = data.name;
-                        page.games = [];
+                    var page = p.service('facebook').data;
+                    p.getContests(function(contests) {
+                        // Return everything with a facebook format for now
+                        var page_path = "/page/"+p._id;
 
-                        page.is_location = data.location && data.location.latitude ? true : false;
-                        if( page.is_location ){
-                            page.lat = parseFloat(data.location.latitude);
-                            page.lng = parseFloat(data.location.longitude);
+                        // Just use first contest for now
+                        if (contests.length > 0) {
+                            page.games = contests[0].games;
+                            var contest_id = contests[0]._id;
+                            page.links = {
+                                contest: "/contest/"+contest_id,
+                                facebook_checkin: "/contest/"+contest_id+"/entry/facebook/checkin",
+                                facebook_like:  "/contest/"+contest_id+"/entry/facebook/like",
+                                facebook_login: "/facebook/login",
+                                contest_result: "/contests/"+contest_id+"/result",
+                                share: page_path+"/share",
+                                feedback: page_path+"/feedback"
+                            };
+                        } else {
+                            page.links = {
+                                facebook_checkin: page_path+"/facebook/checkin",
+                                facebook_like: page_path+"/facebook/like",
+                                facebook_login: "/facebook/login",
+                                share: page_path+"/share",
+                                feedback: page_path+"/feedback"
+                            };
                         }
-                        page.owner_id = req.session.user._id;
-                        page.save(function(err){
-                            if (err) {
-                                res.StatusCode = 500;
-                                console.log("page save error: "+JSON.stringify(err));
-                                var error = bozuko.transfer('error', {
-                                    name: "page save",
-                                    msg: "DB error on page save"
-                                });
-                                res.send(error);
-                            }
-                            res.end();
-                        });
                     });
+                    res.send(page);
                 });
             }
         }

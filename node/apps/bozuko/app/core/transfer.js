@@ -123,7 +123,14 @@ $.validate = function(data, current) {
             if( data[key] ){
                 var v = data[key];
                 var c = current[key];
-                if ( typeof c != typeof v ) {
+                if (typeof c != 'string') {
+                    if (!self.validate(v, c)) {
+                        ret = false;
+                    }
+                } else if (c.toLowerCase() != typeof v ) {
+                    console.log("failed key = "+key);
+                    console.log("typeof c = "+typeof c);
+                    console.log("typeof v = "+typeof v);
                     ret = false;
                 }
             }
