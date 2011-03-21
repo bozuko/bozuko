@@ -1,0 +1,291 @@
+body {
+  font-family: Tahoma;
+  font-size: 12px;
+}
+.header .x-panel-body {
+  background-color: #ffffff;
+  background-image: -moz-linear-gradient(top, #ffffff, #dddddd);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #dddddd));
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#dddddd)";
+  /*  IE6 & 7 */
+
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#dddddd)";
+  /*  IE8 */
+
+}
+.header .title {
+  height: 100px;
+  background: url("/images/desktop/docs/logo.png") no-repeat 0 0;
+  position: relative;
+}
+.header .title span {
+  position: absolute;
+  bottom: 10px;
+  left: 80px;
+}
+.header .confidential {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  text-shadow: 2px 2px 2px #ffffff;
+}
+.header .confidential .big {
+  text-transform: uppercase;
+  color: #d62929;
+  font-family: impact;
+  font-size: 40px;
+  display: block;
+}
+.header .confidential .smaller {
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+  color: #761616;
+}
+.controllerIcon {
+  background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+.objectIcon, .objectsIcon {
+  background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+.linkIcon, .linksIcon {
+  background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+.routeIcon {
+  background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+.methodIcon {
+  background: url("/images/icons/16x16/world.png") no-repeat 0 50% !important;
+}
+.controller-page ul.routes {
+  margin: 0;
+  list-style: none;
+  border-bottom: 1px solid #e3e3e3;
+}
+.controller-page ul.routes li.route {
+  margin: 0;
+  list-style: none;
+  border: 1px solid #e3e3e3;
+  border-bottom: 0;
+  margin-bottom: 10px;
+}
+.controller-page ul.routes li.route blockquote {
+  margin: 0;
+}
+.controller-page ul.routes li.route h3.route {
+  position: relative;
+  margin: 0;
+  padding: 10px;
+  background: #f2f2f2;
+  z-index: 3;
+}
+.controller-page ul.routes li.route .methods-block {
+  margin-left: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid #e3e3e3;
+}
+.controller-page ul.routes li.route .methods-block .method-separator {
+  clear: both;
+  height: 1px;
+  line-height: 1px;
+  font-size: 1px;
+  overflow: hidden;
+  background: #e3e3e3;
+  margin: 10px 0;
+}
+.controller-page ul.routes li.route .methods-block .type {
+  color: #999;
+  margin-left: 6px;
+  font-style: italic;
+}
+.controller-page ul.routes li.route .methods-block .name, .controller-page ul.routes li.route .methods-block .label {
+  font-weight: bold;
+}
+.controller-page ul.routes li.route .methods-block ul.params, .controller-page ul.routes li.route .methods-block .return {
+  margin: 0 10px 10px 0;
+  border: 1px solid #e8e8e8;
+  border-bottom-width: 0;
+  list-style: none;
+}
+.controller-page ul.routes li.route .methods-block ul.params .param-title,
+.controller-page ul.routes li.route .methods-block .return .param-title,
+.controller-page ul.routes li.route .methods-block ul.params .return-title,
+.controller-page ul.routes li.route .methods-block .return .return-title,
+.controller-page ul.routes li.route .methods-block ul.params .param-values,
+.controller-page ul.routes li.route .methods-block .return .param-values {
+  padding: 4px 20px;
+  background: #f3f3f3;
+}
+.controller-page ul.routes li.route .methods-block ul.params .param-values, .controller-page ul.routes li.route .methods-block .return .param-values {
+  background: #fff;
+  margin-top: 5px;
+  border-top: 1px solid #f3f3f3;
+}
+.controller-page ul.routes li.route .methods-block ul.params .param-desc,
+.controller-page ul.routes li.route .methods-block .return .param-desc,
+.controller-page ul.routes li.route .methods-block ul.params .return-desc,
+.controller-page ul.routes li.route .methods-block .return .return-desc {
+  padding: 4px 20px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.controller-page ul.routes li.route .methods-block ul.params .required .param-title, .controller-page ul.routes li.route .methods-block .return .required .param-title {
+  background-image: url("/images/icons/16x16/bullet_star.png");
+  background-repeat: no-repeat;
+  background-position: 2px 50%;
+}
+.controller-page ul.routes li.route .methods-block ul.params .label, .controller-page ul.routes li.route .methods-block .return .label {
+  color: #999;
+}
+.controller-page ul.routes li.route .methods-block ul.params .param-values, .controller-page ul.routes li.route .methods-block .return .param-values {
+  padding-left: 6px;
+  color: #666;
+}
+.controller-page ul.routes li.route .methods-block .method {
+  margin-top: 0;
+  float: left;
+  width: 60px;
+  color: #bc3023;
+  text-transform: uppercase;
+  padding: 0 10px;
+}
+.controller-page ul.routes li.route .methods-block .content {
+  margin-left: 80px;
+}
+.controller-page ul.routes li.route .methods-block .content blockquote {
+  margin: 0;
+}
+.controller-page ul.routes li.route .methods-block .content h5 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #999;
+}
+.controller-page ul.routes li.route .methods-block pre {
+  border: 1px solid #e8e8e8;
+  background: #f3f3f3;
+  padding: 4px 6px;
+}
+.api .x-panel-body {
+  line-height: 1.5em;
+  font: 13.34px helvetica, arial, freesans, clean, sans-serif;
+}
+.api .x-panel-body .section {
+  margin: 10px 0;
+}
+.api .x-panel-body .section h5 {
+  margin: 0;
+  padding: 5px 10px;
+  background-color: #f3f3f3;
+  background-image: -moz-linear-gradient(top, #f3f3f3, #dddddd);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f3f3f3), color-stop(1, #dddddd));
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f3f3f3, endColorstr=#dddddd)";
+  /*  IE6 & 7 */
+
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f3f3f3, endColorstr=#dddddd)";
+  /*  IE8 */
+
+  font-size: 20px;
+  font-weight: normal;
+  font-family: Impact;
+  color: #333;
+  text-shadow: 2px 2px 1px #ffffff;
+}
+.api .x-panel-body .section h6 {
+  font-size: 13px;
+  margin: 0;
+  padding: 10px;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+.api .x-panel-body .section .method {
+  border: 1px solid #ccc;
+  margin: 10px 0;
+}
+.api .x-panel-body .section .padded {
+  padding: 0 10px;
+}
+.api .x-panel-body .section .params, .api .x-panel-body .section .param {
+  list-style: none;
+  margin: 0;
+}
+.api .x-panel-body .section ul.params {
+  margin: 0 10px 10px;
+  border: 1px solid #e8e8e8;
+}
+.api .x-panel-body .section .title {
+  padding: 8px 10px 8px 20px;
+  background: #f3f3f3;
+}
+.api .x-panel-body .section .description {
+  padding: 0 10px 0 20px;
+}
+.api .x-panel-body .section .description p {
+  margin: 4px 0;
+}
+.api .x-panel-body .section .label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+.api .x-panel-body .section .type {
+  color: #999;
+  font-style: normal;
+}
+.api .x-panel-body .section .required .title {
+  background-image: url("/images/icons/16x16/bullet_star.png");
+  background-repeat: no-repeat;
+  background-position: 2px 50%;
+}
+.api .x-panel-body .section .returns {
+  padding-bottom: 10px;
+}
+.api .x-panel-body .section .returns a {
+  font-weight: bold;
+}
+.api .x-panel-body .internalLink {
+  padding-left: 20px;
+  line-height: 16px;
+}
+.api .x-panel-body h3 {
+  color: #bc3023;
+  font-size: 24px;
+  font-family: "Impact";
+  font-weight: 100;
+  margin-top: 0;
+}
+.api .x-panel-body h3.objectIcon, .api .x-panel-body h3.linkIcon {
+  padding-left: 20px;
+}
+.api .x-panel-body h4 {
+  font-size: 16px;
+  color: #666;
+}
+.api .x-panel-body h5 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #999;
+}
+.api .x-panel-body pre {
+  font-family: "Consolas", "Courier New";
+  background: #f3f3f3;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.api .x-panel-body .references ul, .api .x-panel-body .references li {
+  list-style: none;
+}
+.api .x-panel-body .references li {
+  margin-bottom: 4px;
+}
+.api .x-panel-body .links ul {
+  margin-left: 0;
+}
+.api .x-panel-body a:link, .api .x-panel-body a:visited, .api .x-panel-body a:active {
+  text-decoration: none;
+  color: #bc3023;
+}
+.api .x-panel-body a:hover {
+  color: #641a13;
+}
+.api .x-panel-body p, .api .x-panel-body ol {
+  line-height: 1.5em!important;
+}

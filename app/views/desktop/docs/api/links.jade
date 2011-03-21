@@ -1,0 +1,6 @@
+!= html
+
+ul(style="margin: 0")
+  - each link, key in bozuko.links()
+    li.linkIcon(style="padding-left:20px;margin:4px 0; list-style: none;")
+      a(href="#/links/"+key) #{key}
