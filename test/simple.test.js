@@ -62,7 +62,7 @@ var facebook_checkin = function(link, callback) {
         ok,
         function(res) {
             var facebook_checkin_result = JSON.parse(res.body);
-            assert.ok(bozuko.validate('facebook_checkin_result', facebook_checkin_result));
+            assert.ok(bozuko.validate('facebook_result', facebook_checkin_result));
             callback(null, facebook_checkin_result.links.contest_result);
         });
 };
