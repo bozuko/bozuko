@@ -1,7 +1,7 @@
 var bozuko = require('bozuko');
 
-var facebook_checkin_result = {
-    doc: "Result from a Facebook Checkin",
+var facebook_result = {
+    doc: "Result from a Facebook Operation",
     def:{
         id: "Number",
         tokens: "Number",
@@ -14,18 +14,6 @@ var facebook_checkin_result = {
     }
 };
 
-var facebook_like_result = {
-    doc: "Result of a Facebook Like",
-    def:{
-        id: "Number",
-        tokens: "Number",
-        timestamp: "Date",
-        duration: "Number",
-        links: {
-            contest_result: "String"
-        }
-    }
-};
 
 exports.transfer_objects = {
     facebook_checkin_result: facebook_checkin_result,
@@ -113,6 +101,44 @@ var checkin = function(res, user_id, fb_id, lat, lng, msg) {
     );
 };
 
+var run = function(req, res, op, params, callback) {
+    var id = req.session.user._id;
+    bozuko.models.Page.findOne(
+        {'services.name': 'facebook', 'services.id': id},
+        function(err, page) {
+            if (page) {
+                page.getContests(function(contests) {
+                    if (contests.length === 0) {
+                        return callback();
+                    }
+                    contests.foreach(function(contest) {
+                        contest.enter(
+                            bozuko.entry('facebook/'+op, req.session.user, params),
+                            function(error, entry){
+                                if( error ){
+                                    return res.send(bozuko.sanitize('error',error));
+                                }
+                                var fb_res = {
+                                    id: entry._id,
+                                    timestamp: entry.timestamp,
+                                    tokens: entry.tokens,
+                                    links: {
+                                        facebook_like: "/facebook/"+id+"/"+op
+                                    }
+                                };
+                                var ret = bozuko.sanitize('facebook_result', fb_res);
+                                res.send(ret);
+                            }
+                        );
+                    });
+                });
+            } else {
+                callback();
+            }
+
+        });
+};
+
 exports.routes = {
 
     '/facebook/:id/checkin': {
@@ -134,42 +160,13 @@ exports.routes = {
                     return;
                 }
 
-                bozuko.models.Page.findOne({'services.name': 'facebook', 'services.id': id}, function(err, page) {
-                    if (page) {
-                        bozuko.models.Contest.findById(req.params.id, function(err, contest){
+                var params = {
+                    latLng: {lat:lat, lng:lng},
+                    message: msg
+                };
 
-                            if( !contest ){
-                                checkin(res, req.session.user._id, id, lat, lng, msg);
-                                return;
-                            }
+                run(req, res, 'checkin', params, function() { checkin(res, req.session.user._id, id, lat, lng, msg); });
 
-                            contest.enter(
-                                bozuko.entry('facebook/checkin', req.session.user, {
-                                    latLng: {lat:lat, lng:lng},
-                                    message: msg
-                                }),
-                                function(error, entry){
-                                    if( error ){
-                                        res.send(bozuko.sanitize('error',error));
-                                        return;
-                                    }
-                                    var fb_checkin_res = {
-                                        id: entry._id,
-                                        timestamp: entry.timestamp,
-                                        tokens: entry.tokens,
-                                        links: {
-                                            facebook_like: "/facebook/"+id+"like"
-                                        }
-                                    };
-                                    var ret = bozuko.sanitize('facebook_checkin_result', fb_checkin_res);
-                                    res.send(ret);
-                                }
-                            );
-                        });
-                    } else {
-                        checkin(res, req.session.user._id, id, lat, lng, msg);
-                    }
-                });
             }
         }
     },
@@ -178,25 +175,10 @@ exports.routes = {
 
         post: {
 
-            /**
-             * Pseudo code for entering a contest
-             */
-            pseudo : function(){
-                bozuko.models.Contest.findById(req.params.id, function(err, contest){
+            access: 'user',
 
-                    // do we have a contest?
-                    if( !contest ){
-                        res.send({
-                            error: "Invalid Contest"
-                        });
-                    }
-
-                    var entryMethod = Entry.create('facebook/like');
-
-                    var result = contest.enter(req.session.user, entryMethod);
-                    res.send(bozuko.transfer('facebook_checkin_result', result));
-
-                });
+            handler : function(req, res){
+                run(req, res, 'like', {}, function() { like(); });
             }
         }
     }
