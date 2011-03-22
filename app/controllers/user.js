@@ -99,7 +99,7 @@ exports.routes = {
         }
     },
 
-    '/user/:id' : {
+    '/user' : {
 
         get : {
             handler: function(req, res) {
@@ -110,6 +110,7 @@ exports.routes = {
                     user.img = "https://graph.facebook.com/"+user.id+"/picture";
                     user.links = {
                         facebook_login: "/user/login/facebook",
+
                         facebook_logout: "/user/logout/facebook",
                         favorites: "/user/"+user.id+"/favorites"
                     };
@@ -122,7 +123,7 @@ exports.routes = {
         }
     },
 
-    '/user/:id/favorites' : {
+    '/user/favorites' : {
 
         get : {
             handler: function(req, res) {
@@ -156,7 +157,7 @@ exports.routes = {
         }
     },
 
-    '/user/:id/prizes' : {
+    '/user/prizes' : {
 
         get : {
         }

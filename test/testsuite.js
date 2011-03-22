@@ -15,6 +15,8 @@ assert.keys = function(object, properties) {
     });
 };
 
+assert.page_id = "181069118581729";
+
 var auth = assert.headers.BOZUKO_FB_ACCESS_TOKEN;
 
 exports.setup = function(fn) {
