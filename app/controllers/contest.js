@@ -116,10 +116,15 @@ exports.routes = {
             handler : function(req,res){
                 bozuko.models.Contest.findById(req.params.id, function(error, contest){
                     if( error ){
-                        return res.send( bozuko.transfer('error', error), 404 );
+                        return error.send(res);
                     }
+                    if( !contest ){
+                        return bozuko.error('contest/unknown', req.params.id).send(res);
+                    }
+                    // lets let the contest handle finding entries, etc
                     return contest.play(req.session.user, function(error, result){
-                        
+                        if( error ) return error.send(res);
+                        return res.send( bozuko.transfer('contest_result', result) );
                     });
                 });
             }

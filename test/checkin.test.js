@@ -20,18 +20,18 @@ exports['POST /facebook/:id/checkin'] = function(beforeExit) {
     assert.response(bozuko.app,
         {
             url: '/facebook/'+id+'/checkin',
-	    headers: bozuko_headers,
-	    method: 'POST',
-	    data: params
-	},
-	{
-            status: 200,
-	    headers: {'Content-Type': 'application/json'}
-	},
-	function(res) {
-            var result = JSON.parse(res.body);
-		console.log(result);
-	}
+			headers: bozuko_headers,
+			method: 'POST',
+			data: params
+		},
+		{
+			status: 200,
+			headers: {'Content-Type': 'application/json'}
+		},
+		function(res) {
+				var result = JSON.parse(res.body);
+			console.log(result);
+		}
     );
 };
 // user the custom headers hack for now so we don't have to log in programmatically
@@ -63,6 +63,31 @@ exports['POST /facebook/:id/checkin No User'] = function(beforeExit) {
 
 // user the custom headers hack for now so we don't have to log in programmatically
 exports['POST /facebook/:id/checkin No Latitude Longitude'] = function(beforeExit) {
+
+    var params = JSON.stringify({
+        message: "testing"
+    });
+
+    assert.response(bozuko.app,
+        {
+	    url: '/facebook/'+id+'/checkin',
+	    headers: bozuko_headers,
+	    method: 'POST',
+	    data: params
+	},
+	{
+	    status:500,
+	    headers: {'Content-Type': 'application/json'}
+	},
+	function(res) {
+	    var result = JSON.parse(res.body);
+	    console.log(result);
+	}
+    );
+};
+
+// user the custom headers hack for now so we don't have to log in programmatically
+exports['POST /contest/:id/checkin No Latitude Longitude'] = function(beforeExit) {
 
     var params = JSON.stringify({
         message: "testing"

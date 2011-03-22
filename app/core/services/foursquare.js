@@ -35,7 +35,7 @@ function api(path, options, callback){
     
     var _callback = function(response){
         if( !response || response.meta.code != 200 ){
-            return callback(response.meta);
+            return callback( bozuko.error('foursquare/api', response.meta) );
         }
         return callback( null, response.response );
     };
@@ -123,7 +123,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                         function(error, result){
                             if( !error ){
                                 if( failure ){
-                                    if( failure('Authentication Failed', req, res) === false ){
+                                    if( failure(error, req, res) === false ){
                                         return null;
                                     }
                                 }
@@ -218,9 +218,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  */
 $.search = function(options, callback){
     if( !options || !options.latLng ){
-        return callback( new Error(
-            "FoursquareService::search options requires latLng"
-        ));
+        return callback( bozuko.error('foursquare/search_no_lat_lng') );
     }
     var params = {
         ll : options.latLng.lat+','+options.latLng.lng,

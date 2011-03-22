@@ -98,13 +98,12 @@ var checkin = function(res, user_id, fb_id, lat, lng, msg) {
             lng:lng
         }},
         function(error, result){
+            
             if (error) {
-                res.statusCode = 500;
-                res.end();
-                return;
+                return error.send(res);
             }
             // TODO: send a real facebook_checkin_result and save this in the db
-            res.send({
+            return res.send({
                 links: {
                     facebook_like: '/facebook/'+fb_id+"/like"
                 }
@@ -129,22 +128,29 @@ exports.routes = {
                 if( !lat || !lng ){
                     return bozuko.error('facebook/no_lat_lng').send(res);
                 }
-
-                return bozuko.models.Page.findOne({'services.name': 'facebook', 'services.id': id}, function(err, page) {
-                    if (page) {
-                        bozuko.models.Contest.findById(req.params.id, function(err, contest){
-
-                            if( !contest ){
-                                checkin(res, req.session.user._id, id, lat, lng, msg);
-                                return;
+                
+                // return bozuko.models.Page.findOne({'services.name':'facebook', 'services.sid':id}, function(err, page) {
+                return bozuko.models.Page.findByService('facebook', id, function(err, page) {
+                    if( err ) return err.send( res );
+                    else if (page) {
+                        return bozuko.models.Contest.findOne({page_id: page.id}, function(err, contest){
+                            
+                            if( err ){
+                                return err.send(res);
                             }
 
-                            contest.enter(
+                            if( !contest ){
+                                return checkin(res, req.session.user._id, id, lat, lng, msg);
+                                
+                            }
+                            
+                            return contest.enter(
                                 bozuko.entry('facebook/checkin', req.session.user, {
                                     latLng: {lat:lat, lng:lng},
                                     message: msg
                                 }),
                                 function(error, entry){
+                                    
                                     if( error ){
                                         error.send(res);
                                         return;
@@ -154,6 +160,7 @@ exports.routes = {
                                         timestamp: entry.timestamp,
                                         tokens: entry.tokens,
                                         links: {
+                                            contest_result: "/contest/"+contest.id+"/result",
                                             facebook_like: "/facebook/"+id+"/like"
                                         }
                                     };
@@ -163,7 +170,7 @@ exports.routes = {
                             );
                         });
                     } else {
-                        checkin(res, req.session.user._id, id, lat, lng, msg);
+                       return checkin(res, req.session.user._id, id, lat, lng, msg);
                     }
                 });
             }
