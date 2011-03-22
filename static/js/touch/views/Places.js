@@ -7,8 +7,7 @@ Bozuko.view.Places = Ext.extend( Ext.List, {
                 type : 'ajax',
                 url : '/pages',
                 reader : {
-                    type: 'json',
-                    root: 'data'
+                    type: 'json'
                 }
             }
         });

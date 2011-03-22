@@ -1,8 +1,28 @@
-// meh, don't know if we need this - just use vanilla Error
+var bozuko          = require('bozuko'),
+    MongooseError   = require('Mongoose').Error;
 
-var BozukoError = function(message, data, file, line){
+var BozukoError = module.exports = function(name,message,data){
+    Error.call(this);
+    Error.captureStackTrace(this, arguments.callee);
+    this.name = 'default';
     this.data = data;
-    Error.call(this, message, file, line);
+    if( message instanceof Function)
+        this.generateMesesage();
+    else
+        this.message = message;
 };
 
-BozukoError.prototype.__proto__ = Error.prototype;
+var proto = BozukoError.prototype.__proto__ = Error.prototype;
+
+proto.toTransfer = function(){
+    return bozuko.transfer('error', this);
+};
+
+proto.generateMessage = function(fn){
+    this.message = fn.apply(this);
+}
+
+MongooseError.prototype.toTransfer = function(){
+    this.name = 'mongoose';
+    return proto.toTransfer.apply(this);
+}

@@ -71,6 +71,7 @@ Page.static('search', function(options, callback){
     // use a 3rd party service to search geographically
     // and then match against our db
     var service = options.service || bozuko.config.defaultService;
+    
     bozuko.service(service).search(options, function(error, results){
         var map = {};
         if( results ) results.forEach( function(place){
