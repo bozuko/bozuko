@@ -25,7 +25,7 @@ proto.generateMessage = function(fn){
     this.message = fn.apply(this);
 };
 
-proto.send = function(res){
+MongooseError.protype.send = proto.send = function(res){
     return res.send( this.toTransfer(), this.code );
 };
 
