@@ -17,7 +17,7 @@ var proto = BozukoError.prototype.__proto__ = Error.prototype;
 Error.prototype.code = 500;
 Error.prototype.name = 'default';
 
-MongooseError.prototype.name='mongoose';
+MongooseError.prototype.name='database';
 
 Error.prototype.toTransfer = function(){
     return bozuko.transfer('error', this);
