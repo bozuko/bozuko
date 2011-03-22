@@ -24,7 +24,7 @@ html
           
           - if( user )
             .profile
-              img(src="https://graph.facebook.com/"+user.service('facebook').id+"/picture?type=square",alt=user.name)
+              img(src="https://graph.facebook.com/"+user.service('facebook').sid+"/picture?type=square",alt=user.name)
               | Logged in as
               a(href=user.can_manage_pages?"/business/account":"/user/account")= user.name
             

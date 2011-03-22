@@ -90,7 +90,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             access_token : token
                         }
                     }, function(user){
-                        bozuko.models.User.findOne({'services.name':'facebook','services.id':user.id}, function(err, u){
+                        bozuko.models.User.findOne({'services.name':'facebook','services.sid':user.id}, function(err, u){
                             if( !u ){
                                 u = new bozuko.models.User();
                             }
@@ -105,21 +105,28 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             
                             u.service('facebook', user.id, token, user);
                             
-                            
                             u.save(function(){
-
-                                var device = req.session.device;
-                                req.session.regenerate(function(err){
-                                    res.clearCookie('fbs_'+bozuko.config.facebook.app.id);
-                                    req.session.userJustLoggedIn = true;
-                                    req.session.user = u;
-                                    req.session.device = device;
-                                    if( success ){
-                                        if( success(u,req,res) === false ){
-                                            return;
+                                
+                                // okay, definitely a little weird mr. mongoose...
+                                // after a save, we need to do a get user or embedded docs
+                                // get messed up... yokay
+                                
+                                bozuko.models.User.findById(u.id, function(error, u){
+                                    var device = req.session.device;
+                                    req.session.regenerate(function(err){
+                                        res.clearCookie('fbs_'+bozuko.config.facebook.app.id);
+                                        req.session.userJustLoggedIn = true;
+                                        req.session.user = u;
+                                        req.session.device = device;
+                                        
+                                        if( success ){
+                                            if( success(u,req,res) === false ){
+                                                console.log('after success services.length', u.services.length);
+                                                return;
+                                            }
                                         }
-                                    }
-                                    res.redirect(ret || '/');
+                                        res.redirect(ret || '/');
+                                    });
                                 });
                             });
                         });
@@ -203,7 +210,7 @@ $.search = function(options, callback){
             params: params
         },
         function facebook_search(results){
-            callback(null, results);
+            callback(null, results.data);
         }
     );
 };
@@ -259,6 +266,48 @@ $.checkin = function(options, callback){
     });
 };
 
+/**
+ * Like a page
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
+ *
+ * @param {Page}            place_id        Bozuko Page
+ * @param {User}            user            Bozuko User
+ * @param {Object}          options         Checkin specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.like = function(options, callback){
+
+    if( !options || !options.object_id || !options.user ){
+        return callback(new Error(
+            'FacebookService::checkin requires place_id and user as options'
+        ));
+    }
+
+    if( options.message )       params.message      = options.message;
+    if( options.picture )       params.picture      = options.picture;
+    if( options.link )          params.link         = options.link;
+    if( options.description )   params.description  = options.description;
+    if( options.actions )       params.actions      = JSON.stringify(options.actions);
+    
+    if( options.test ){
+        return callback(null, {result:123123123});
+    }
+    
+    return facebook.graph('/'+options.object_id+'/likes',{
+        user: options.user,
+        method:'post'
+    },function(result){
+        callback(null, result);
+    });
+};
 
 /**
  * Get full info about a place by id
@@ -347,9 +396,9 @@ $.get_user_pages = function(user, callback){
             pages.sort(sort_FacebookPageLocation).reverse();
 
             if( ids.length > 0 ){
-                bozuko.models.Page.find({'services.name':'facebook','services.id':{$in:ids}}, function(err, bozuko_pages){
+                bozuko.models.Page.find({'services.name':'facebook','services.sid':{$in:ids}}, function(err, bozuko_pages){
                     if( bozuko_pages != null ) bozuko_pages.forEach(function(bozuko_page){
-                        var i = ids.indexOf(bozuko_page.service('facebook').id);
+                        var i = ids.indexOf(bozuko_page.service('facebook').sid);
                         pages[i].has_owner = true;
                         pages[i].is_owner = (bozuko_page.owner_id.id == user._id.id);
                     });

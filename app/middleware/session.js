@@ -16,7 +16,7 @@ module.exports = function session(){
 
         var ignoreExtensions = ['ico','png','jpe?g','gif','css'];
         var re = new RegExp('('+ignoreExtensions.join('|')+')$', 'i');
-        if( re.test(path) ){
+        if( !req.session || re.test(path) ){
             return next();
         }
 
@@ -24,46 +24,46 @@ module.exports = function session(){
         var cookie = req.cookies['fbs_'+bozuko.config.facebook.app.id];
 
         var q = {};
+        
+        var newSession = req.session.userJustLoggedIn;
+        req.session.userJustLoggedIn = false
 
         if( req.header(HEADER.user_id) ){
             // need to run these through unescape because of how
             // they are retrieved in corona
             q['services.name']  = 'facebook';
-            q['services.id']    = (req.header(HEADER.user_id));
+            q['services.sid']    = (req.header(HEADER.user_id));
             q['services.auth']  = (req.header(HEADER.access_token));
         }
 
         else if( cookie ){
             var session = qs.parse(cookie);
             q['services.name']  = 'facebook';
-            q['services.id']    = unescape(session.uid);
+            q['services.sid']    = unescape(session.uid);
             q['services.auth']  = unescape(session.access_token);
         }
-
-        if( req.session.user ){
-            // need to populate this bad boy
-            req.session.user = new bozuko.models.User(req.session.user);
+        
+        if( q['services.sid'] && !newSession ){
+            req.session.user = false;
+            // check for the user in our database
+            return bozuko.models.User.findOne(q, function(err, u){
+                if( u ){
+                    req.session.user = u;
+                }
+                return next();
+            });
         }
 
-        if( !req.session.userJustLoggedIn && (!req.session.user || (req.session.user.service('facebook') && q['services.id'] != req.session.user.service('facebook').id)) ){
-            req.session.user = false;
-            if( q['services.id'] ){
-                // check for the user in our database
-                bozuko.models.User.findOne(q, function(err, u){
-                    if( u ){
-                        req.session.user = u;
-                    }
-                    return next();
-                });
-            }
-            else{
-                return next();
-            }
-
-        }else{
-            if( req.session ) req.session.userJustLoggedIn = false;
+        else if( req.session.user ){
+            // we should really grab this from the db... i think this is what is screwing up our user...
+            return bozuko.models.User.findById(req.session.user._id, function(error, user){
+                req.session.user = user;
+                next();
+            });
+        }
+        
+        else {
             return next();
         }
-
     }
 };

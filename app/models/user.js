@@ -2,7 +2,7 @@ var bozuko = require('bozuko'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
-    Service = require('./embedded/service')
+    Services = require('./embedded/service')
     ;
 
 var User = module.exports = new Schema({
@@ -12,9 +12,17 @@ var User = module.exports = new Schema({
     gender              :{type:String},
     email               :{type:String, index: true},
     sign_up_date        :{type:Date, default: Date.now},
-    services            :[Service],
     favorites           :[ObjectId],
     can_manage_pages    :{type:Boolean} 
 });
 
-Service.initSchema(User);
+Services.initSchema(User);
+
+// also, lets check what the hell services looks like prior to saving..
+User.pre('save', function(next){
+    console.log('before save', this.services.length);
+    next();
+});
+User.post('save', function(){
+    console.log('after save', this.services.length);
+});

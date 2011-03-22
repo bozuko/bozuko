@@ -9,6 +9,7 @@ var bozuko = require('bozuko'),
 
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
+    game                    :{type:String},
     game_config             :[GameConfig],
     entry_config            :[EntryConfig],
     // plays                   :[Play],

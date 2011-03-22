@@ -72,7 +72,7 @@ var add_pages = function(callback) {
         { "services" : [
         {
             "name" : "facebook",
-            "id" : "181069118581729",
+            "sid" 	: "181069118581729",
             "auth" : "166078836756369|242533771ff71c4e019a9350-557924168|KsXKYtlwW3IQuduNQQofNZ-A8Vw",
             "data" : {
                 "id" : "181069118581729",
@@ -111,7 +111,7 @@ var add_pages = function(callback) {
             page.is_location = true;
             page.lat = data.lat;
             page.lng = data.lng;
-            page.service('facebook', data.services[0].id, data.services[0].auth, data.services[0].data);
+            page.service('facebook', data.services[0].sid, data.services[0].auth, data.services[0].data);
             page.save(function(){callback(null,'');});
         } else {
             throw("Error looking up Bobby Bozuko: err = "+err);
@@ -141,7 +141,7 @@ var add_contests = function(callback) {
 	data.page_id = ''+page._id;
 	var contest = new Bozuko.models.Contest(data);
 	contest.entry_config.push({
-            type: 'facebook/checkin',
+        type: 'facebook/checkin',
 	    tokens: 3
 	});
 	contest.save(function(error){

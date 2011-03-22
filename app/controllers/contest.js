@@ -4,6 +4,9 @@ var contest = {
     doc: "Bozuko Contest Object",
     def: {
         id: "Number",
+        user_tokens: "Number",
+        token_message: "String",
+        can_play: "Boolean",
         initial_odds: "String",
         start_time: "String",
         end_time: "String",
@@ -165,6 +168,13 @@ exports.links = {
 exports.routes = {
 
     '/contest/:id': {
+        
+        /**
+         * TODO -
+         *
+         * 
+         * 
+         */
 
         get: {
 
@@ -181,9 +191,16 @@ exports.routes = {
 
         post: {
 
-            handler : function(){
+            handler : function(req,res){
 
-                bozuko.models.Contest.findById(req.params.id);
+                bozuko.models.Contest.findById(req.params.id, function(error, contest){
+                    if( error ){
+                        return res.send( bozuko.transfer('error', error), 404 );
+                    }
+                    return contest.play(req.session.user, function(error, result){
+                        
+                    });
+                });
 
             }
 
