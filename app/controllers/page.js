@@ -133,7 +133,29 @@ exports.links = {
     }
 };
 
-var fakeGames = [];
+var fill_page = function(p, callback) {
+    p.getContests(function(contests) {
+        // Return everything with a facebook format for now
+        var page = p.service('facebook').data;
+        var page_path = "/page/"+p._id;
+        page.links = {};
+
+        // Just use first contest for now
+        if (contests.length > 0) {
+            page.games = contests[0].games;
+            var contest_id = contests[0]._id;
+            page.links.contest = "/contest/"+contest_id;
+            page.links.contest_result = "/contests/"+contest_id+"/result";
+        }
+        page.links.facebook_checkin = "/facebook/"+page.id+"/checkin";
+        page.links.facebook_like = "/facebook/"+page.id+"/like";
+        page.links.facebook_login = "/facebook/login";
+        page.links.share = page_path+"/share";
+        page.links.feedback = page_path+"/feedback";
+        callback(null, page);
+    });
+
+};
 
 exports.routes = {
 
@@ -156,36 +178,8 @@ exports.routes = {
 
                 bozuko.models.Page.search(options, function(pages){
                    async.map(pages.bozuko_pages, function(p, callback) {
-                        p.getContests(function(contests) {
-                            // Return everything with a facebook format for now
-                            var page = p.service('facebook').data;
-                            var page_path = "/page/"+p._id;
-
-                            // Just use first contest for now
-                            if (contests.length > 0) {
-                                page.games = contests[0].games;
-                                var contest_id = contests[0]._id;
-                                page.links = {
-                                    contest: "/contest/"+contest_id,
-                                    facebook_checkin: "/contest/"+contest_id+"/entry/facebook/checkin",
-                                    facebook_like:  "/contest/"+contest_id+"/entry/facebook/like",
-                                    facebook_login: "/facebook/login",
-                                    contest_result: "/contests/"+contest_id+"/result",
-                                    share: page_path+"/share",
-                                    feedback: page_path+"/feedback"
-                                };
-                            } else {
-                                page.links = {
-                                    facebook_checkin: page_path+"/facebook/checkin",
-                                    facebook_like: page_path+"/facebook/like",
-                                    facebook_login: "/facebook/login",
-                                    share: page_path+"/share",
-                                    feedback: page_path+"/feedback"
-                                };
-                            }
-                            callback(null, page);
-                        });
-                    },
+                       fill_page(p, callback);
+                   },
                     function(err, results) {
                         if (!err) {
                             pages.facebook_pages.forEach(function(page) {
@@ -211,7 +205,7 @@ exports.routes = {
 
         get: {
             handler: function(req,res) {
-                page_id = req.param('id');
+                var page_id = req.param('id');
                 bozuko.models.Page.findOne({_id: page_id}, function(err, p) {
                     if (err) {
                         res.statusCode = 500;
@@ -224,36 +218,7 @@ exports.routes = {
                         res.end();
                         return;
                     };
-
-                    var page = p.service('facebook').data;
-                    p.getContests(function(contests) {
-                        // Return everything with a facebook format for now
-                        var page_path = "/page/"+p._id;
-
-                        // Just use first contest for now
-                        if (contests.length > 0) {
-                            page.games = contests[0].games;
-                            var contest_id = contests[0]._id;
-                            page.links = {
-                                contest: "/contest/"+contest_id,
-                                facebook_checkin: "/contest/"+contest_id+"/entry/facebook/checkin",
-                                facebook_like:  "/contest/"+contest_id+"/entry/facebook/like",
-                                facebook_login: "/facebook/login",
-                                contest_result: "/contests/"+contest_id+"/result",
-                                share: page_path+"/share",
-                                feedback: page_path+"/feedback"
-                            };
-                        } else {
-                            page.links = {
-                                facebook_checkin: page_path+"/facebook/checkin",
-                                facebook_like: page_path+"/facebook/like",
-                                facebook_login: "/facebook/login",
-                                share: page_path+"/share",
-                                feedback: page_path+"/feedback"
-                            };
-                        }
-                    });
-                    res.send(page);
+                    fill_page(p, function(err, page) { res.send(page); });
                 });
             }
         }
