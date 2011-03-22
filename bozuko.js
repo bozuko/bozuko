@@ -93,3 +93,18 @@ exports.entry = function(key, user, options){
     var Entry = this.require('core/contest/entry/'+key);
     return new Entry(key, user, options);
 };
+
+exports.error = function(name, data){
+	
+	var path = name.split('/');
+	var err = path.pop();
+	var BozukoError = this.require('core/error');
+	
+	try{
+		var message = this.require('core/errors/'+path.join('/'))[name];
+		return new BozukoError(key,name,data);
+	}catch(e){
+		return new BozukoError();
+	}
+	
+}

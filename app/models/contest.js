@@ -51,6 +51,19 @@ Contest.method('enter', function(entry, callback){
     });
 });
 
+Contest.method('play', function(user, callback){
+    // first, lets find the entries for this contest
+    bozuko.models.Entry.findOne(
+        {user_id:user.id, contest_id:this.id, tokens: {$gt:0}},
+        function(error, entry){
+            if( error || !entry ){
+                callback( new Error() );
+            }
+        
+        }
+    );
+});
+
 Contest.virtual('games', function(){
     this.games = [];
     this.game_config.forEach(function(config){

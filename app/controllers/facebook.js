@@ -158,7 +158,7 @@ exports.routes = {
                                         timestamp: entry.timestamp,
                                         tokens: entry.tokens,
                                         links: {
-                                            facebook_like: "/facebook/"+id+"like"
+                                            facebook_like: "/facebook/"+id+"/like"
                                         }
                                     };
                                     var ret = bozuko.sanitize('facebook_checkin_result', fb_checkin_res);
