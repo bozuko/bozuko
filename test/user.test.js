@@ -9,24 +9,22 @@ exports['GET /user/login'] = function(beforeExit) {
         {url: '/user/login'},
         {status: 302, headers: {'Content-Type': 'text/html'}});
 };
+
 // user the custom headers hack for now so we don't have to log in programmatically
-exports['GET /user/:id'] = function(beforeExit) {
+exports['GET /user'] = function(beforeExit) {
     assert.response(bozuko.app,
-	{url: '/user/'+uid, headers: bozuko_headers},
+	{url: '/user', headers: bozuko_headers},
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var user = JSON.parse(res.body);
-            print("user.id = "+user.id);
-	    // assert.eql(uid, user.id);
 	    assert.keys(user, ['name', 'first_name', 'last_name', 'gender', 'email', 'img']);
             assert.keys(user.links, ['facebook_login', 'facebook_logout', 'favorites']);
 	});
 };
 
-
-exports['GET /user/:id/favorites'] = function(beforeExit) {
+exports['GET /user/favorites'] = function(beforeExit) {
     assert.response(bozuko.app,
-        {url: '/user/'+uid+'/favorites', headers: bozuko_headers},
+        {url: '/user/favorites', headers: bozuko_headers},
         {status: 200});
 };
 
