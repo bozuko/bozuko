@@ -127,14 +127,10 @@ exports.routes = {
                 var msg = req.param('message') || '';
 
                 if( !lat || !lng ){
-                    res.send({
-                        name: "missing parameters",
-                        msg: "No Latitude / Longitude"
-                    }, 400);
-                    return;
+                    return bozuko.error('facebook/no_lat_lng').send(res);
                 }
 
-                bozuko.models.Page.findOne({'services.name': 'facebook', 'services.id': id}, function(err, page) {
+                return bozuko.models.Page.findOne({'services.name': 'facebook', 'services.id': id}, function(err, page) {
                     if (page) {
                         bozuko.models.Contest.findById(req.params.id, function(err, contest){
 
@@ -150,7 +146,7 @@ exports.routes = {
                                 }),
                                 function(error, entry){
                                     if( error ){
-                                        res.send(bozuko.sanitize('error',error));
+                                        error.send(res);
                                         return;
                                     }
                                     var fb_checkin_res = {
