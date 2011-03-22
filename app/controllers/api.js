@@ -20,7 +20,7 @@ exports.transfer_objects = {
 
         def: {
             name: "String",
-            msg: "String",
+            message: "String",
             links: {
             }
         }
