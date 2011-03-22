@@ -21,13 +21,13 @@ function api(path, options, callback){
     options = options || {};
     options.params = options.params || {};
     if( !/^\//.test(path) ) path='/'+path;
-    if( options.user ){
+    if( options.user && !options.params.oauth_token ){
         var service = options.user.service('foursquare');
         if( service ){
-            params.oauth_token = service.auth;
+            options.params.oauth_token = service.auth;
         }
     }
-    else if( !options.params.oauth_token ){
+    if( !options.params.oauth_token ){
         params.client_id = bozuko.config.foursquare.app.id;
         params.client_secret = bozuko.config.foursquare.app.secret;
     }
