@@ -36,5 +36,9 @@ Service.initSchema = function(schema){
         return service;
     });
     
+    schema.static('findByService', function(name, id, callback){
+        this.findOne({'services.name':name,'services.sid':id}, callback);
+    });
+    
     schema.index({'services.name':1,'services.sid':1});
 };

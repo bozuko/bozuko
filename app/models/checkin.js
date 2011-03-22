@@ -1,17 +1,14 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
 
-var Checkin = new Schema({
-    
-    user_facebook_id        :{type:String, index: true},
-    user_id                 :{type:String, index: true},
-    place_id                :{type:String, index: true},
-    place_facebook_id       :{type:String},
+var Checkin = module.exports = new Schema({
+    user_id                 :{type:ObjectId},
+    page_id                 :{type:ObjectId},
     timestamp               :{type:Date, default: Date.now},
+    lat                     :{type:Number},
+    lng                     :{type:Number},
     message                 :{type:String},
-    game_id                 :{type:Number},
-    game_name               :{type:String},
-    game_result             :{type:Array}
+    service                 :{type:String},
+    play_id                 :{type:ObjectId}
 });
-
-module.exports = Checkin;

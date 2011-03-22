@@ -10,7 +10,7 @@ var bozuko = require('bozuko'),
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
     game                    :{type:String},
-    game_config             :[GameConfig],
+    game_config             :{},
     entry_config            :[EntryConfig],
     // plays                   :[Play],
     start                   :{type:Date},
@@ -45,21 +45,36 @@ Contest.method('enter', function(entry, callback){
             callback(error);
         }
         else entry.process( function(error, Entry){
-            // this will return an Entry object on success.
+            // this will return an Entry model object on success.
             callback(error, Entry);
         });
     });
 });
 
 Contest.method('play', function(user, callback){
+    var self = this;
     // first, lets find the entries for this contest
     bozuko.models.Entry.findOne(
         {user_id:user.id, contest_id:this.id, tokens: {$gt:0}},
         function(error, entry){
-            if( error || !entry ){
-                callback( new Error() );
+            if( error ){
+                return callback( error );
             }
-        
+            else if( !entry ){
+                return callback( bozuko.error("contest/no_tokens") );
+            }
+            // okay, we have an entry that is valid for this game
+            // let's play a token
+            console.log('play cursor before increment', JSON.stringify(self.play_cursor));
+            self.play_cursor++;
+            return self.save(function(error, result){
+                // now lets get the actual game result
+                console.log('play cursor after increment', JSON.stringify(self.play_cursor));
+                console.log(result);
+                console.log(JSON.stringify(self));
+                // bozuko.game( this.game, this.game_config ).play( this, result );
+                callback( null, {} );
+            });
         }
     );
 });
