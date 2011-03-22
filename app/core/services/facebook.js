@@ -102,15 +102,15 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             u.email = user.email;
                             u.facebook_id = user.id;
                             u.facebook_auth = token;
-                            
+
                             u.service('facebook', user.id, token, user);
-                            
+
                             u.save(function(){
-                                
+
                                 // okay, definitely a little weird mr. mongoose...
                                 // after a save, we need to do a get user or embedded docs
                                 // get messed up... yokay
-                                
+
                                 bozuko.models.User.findById(u.id, function(error, u){
                                     var device = req.session.device;
                                     req.session.regenerate(function(err){
@@ -118,7 +118,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                         req.session.userJustLoggedIn = true;
                                         req.session.user = u;
                                         req.session.device = device;
-                                        
+
                                         if( success ){
                                             if( success(u,req,res) === false ){
                                                 console.log('after success services.length', u.services.length);
@@ -183,16 +183,13 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
 $.search = function(options, callback){
 
     if( !options || !(options.latLng || options.query) ){
-        callback(new Error(
-            'FacebookService::search options requires latLng or search query'
-        ));
-        return;
+        return callback(bozuko.error('facebook/no_lat_lng_query'));
     }
 
     var params = {
         type : options.latLng ? 'place' : 'page'
     };
-    
+
     if( options.latLng ) params.center = options.latLng.lat+','+options.latLng.lng;
     if( options.query ) params.query = options.query;
     if( options.fields ){
@@ -240,9 +237,7 @@ $.search = function(options, callback){
 $.checkin = function(options, callback){
 
     if( !options || !options.place_id || !options.latLng || !options.user ){
-        return callback(new Error(
-            'FacebookService::checkin requires place_id, latLng, and user as options'
-        ));
+        return callback(bozuko.error('facebook/no_lat_lng_user_place'));
     }
 
     var params = {
@@ -254,11 +249,11 @@ $.checkin = function(options, callback){
     if( options.link )          params.link         = options.link;
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
-    
+
     if( options.test ){
         return callback(null, {result:123123123});
     }
-    
+
     return facebook.graph('/me/checkins',{
         user: options.user,
         params: params,
@@ -288,21 +283,20 @@ $.checkin = function(options, callback){
 $.like = function(options, callback){
 
     if( !options || !options.object_id || !options.user ){
-        return callback(new Error(
-            'FacebookService::checkin requires place_id and user as options'
-        ));
+        return callback(bozuko.error('facebook/no_page_id_user'));
     }
+    var params = {};
 
     if( options.message )       params.message      = options.message;
     if( options.picture )       params.picture      = options.picture;
     if( options.link )          params.link         = options.link;
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
-    
+
     if( options.test ){
         return callback(null, {result:123123123});
     }
-    
+
     return facebook.graph('/'+options.object_id+'/likes',{
         user: options.user,
         method:'post'
@@ -334,10 +328,7 @@ $.like = function(options, callback){
  */
 $.place = function(options, callback){
     if( !options || !options.place_id ){
-        callback(new Error(
-            'FacebookService::checkin requires place_id as oneof the arguments'
-        ));
-        return;
+        return callback(bozuko.error('facebook/no_page_id'));
     }
 
     var params = {};

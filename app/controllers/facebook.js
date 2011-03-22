@@ -16,8 +16,7 @@ var facebook_result = {
 
 
 exports.transfer_objects = {
-    facebook_checkin_result: facebook_checkin_result,
-    facebook_like_result: facebook_like_result
+    facebook_result: facebook_result
 };
 
 exports.links = {
@@ -52,22 +51,12 @@ exports.links = {
     facebook_like: {
         post: {
             doc: "Like a facebook page and receive tokens",
-            params: {
-                lat: {
-                    type: "Number",
-                    description: "Latitude"
-                },
-                lng : {
-                    type: "Number",
-                    description: "Longitude"
-                }
-            },
-            returns: "facebook_like_result"
+            returns: "facebook_result"
         },
 
         get: {
             doc: "Retrieve information about the last facebook like for the user.",
-            returns: "facebook_checkin_result"
+            returns: "facebook_result"
         }
     }
 };
@@ -87,11 +76,9 @@ var checkin = function(res, user_id, fb_id, lat, lng, msg) {
         }},
         function(error, result){
             if (error) {
-                res.statusCode = 500;
-                res.end();
-                return;
+                return error.send(res);
             }
-            // TODO: send a real facebook_checkin_result and save this in the db
+            // TODO: send a real facebook_result
             res.send({
                 links: {
                     facebook_like: '/facebook/'+fb_id+"/like"
@@ -101,11 +88,35 @@ var checkin = function(res, user_id, fb_id, lat, lng, msg) {
     );
 };
 
+var like = function(req, res) {
+    bozuko.service('facebook').like({
+        test: true,
+        user: req.session.user._id,
+        link        :'http://bozuko.com',
+        picture     :'http://bozuko.com/images/bozuko-chest-check.png',
+        description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
+        object_id   : req.param('id')
+    },
+    function(err, result) {
+        if (err) {
+            return err.send(res);
+        }
+        // TODO: send a real result
+        res.send({
+            links: {
+            }
+        });
+    });
+};
+
 var run = function(req, res, op, params, callback) {
     var id = req.session.user._id;
     bozuko.models.Page.findOne(
         {'services.name': 'facebook', 'services.id': id},
         function(err, page) {
+            if (err) {
+                return bozuko.error('facebook/db_error').send(res);
+            }
             if (page) {
                 page.getContests(function(contests) {
                     if (contests.length === 0) {
@@ -116,7 +127,7 @@ var run = function(req, res, op, params, callback) {
                             bozuko.entry('facebook/'+op, req.session.user, params),
                             function(error, entry){
                                 if( error ){
-                                    return res.send(bozuko.sanitize('error',error));
+                                    return error.send(res);
                                 }
                                 var fb_res = {
                                     id: entry._id,
@@ -173,7 +184,7 @@ exports.routes = {
             access: 'user',
 
             handler : function(req, res){
-                run(req, res, 'like', {}, function() { like(); });
+                run(req, res, 'like', {}, function() { like(req, res); });
             }
         }
     }
