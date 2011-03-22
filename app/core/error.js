@@ -12,7 +12,8 @@ var BozukoError = module.exports = function(name,message,data,code){
         this.message = message;
 };
 
-var proto = BozukoError.prototype.__proto__ = Error.prototype;
+BozukoError.prototype.__proto__ = Error.prototype;
+var proto = BozukoError.prototype;
 
 Error.prototype.code = 500;
 Error.prototype.name = 'default';
