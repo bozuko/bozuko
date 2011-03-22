@@ -10,7 +10,7 @@ var FacebookCheckin = module.exports = function(key, user, options){
     options = options || {};
     Entry.prototype.constructor.call(this,key,user);
     // set the valid options
-    if( !options.latLng ) throw new Error('LatLng is required to checkin with facebook');
+    if( !options.latLng ) throw bozuko.error('entry/facebook/no_lat_lng');
     this.latLng = options.latLng;
     this.message = options.message || "";
 };
@@ -51,10 +51,10 @@ proto.validate = function( callback ){
             // anything else we need to do, for facebook reasons?
             // we should make sure that the contest has a facebook service
             bozuko.models.Page.findById(self.contest.page_id, function(error, page){
-                if( error || !page) return callback( new Error("Invalid Page ["+self.contest.page_id+"]") );
+                if( error || !page) return callback( bozuko.error('entry/facebook/invalid_page',self.contest.page_id) );
                 
                 if( !page.service('facebook') ){
-                    callback( new Error("Page does not have a Facebook Account") );
+                    callback( bozuko.error('entry/facebook/no_facebook_account', page.id) );
                 }
                 return callback( null );
             });

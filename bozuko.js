@@ -6,6 +6,8 @@ exports.require = function(module){
     return require(exports.dir+'/app/'+module);
 };
 
+this.require('core/error');
+
 exports.db = exports.require('core/db');
 
 /**
@@ -15,7 +17,7 @@ exports.configure = function(config) {
     this.env = config;
     var app = exports.app;
     if (!app) {
-	throw new Error("bozuko.app not set!");
+		throw new Error("bozuko.app not set!");
     }
 
     switch(config) {
@@ -93,3 +95,23 @@ exports.entry = function(key, user, options){
     var Entry = this.require('core/contest/entry/'+key);
     return new Entry(key, user, options);
 };
+
+exports.error = function(name, data){
+	
+	var path = name.split('/');
+	var err = path.pop();
+	var BozukoError = this.require('core/error');
+	
+	try{
+		var message = this.require('core/errors/'+path.join('/'))[err];
+		var code = null;
+		if( typeof message != 'string' && message.code ){
+			code = message.code;
+			message = message.message;
+		}
+		return new BozukoError(name,message,data,code);
+	}catch(e){
+		return new BozukoError();
+	}
+	
+}

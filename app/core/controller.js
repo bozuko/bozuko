@@ -60,13 +60,7 @@ Controller.prototype = {
                                 case 'user':
                                     handler = function(req,res){
                                         if( !req.session.user ){
-                                            return res.send( bozuko.transfer('error',{
-                                                name: 'noauth',
-                                                msg: 'This action requires a user session',
-                                                links: {
-                                                    'facebook_login' : '/user/login'
-                                                }
-                                            }), 401);
+                                            return bozuko.error('bozuko/auth').send(res);
                                         }
                                         return _handler(req,res);
                                     };
