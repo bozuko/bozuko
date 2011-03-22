@@ -100,6 +100,7 @@ exports.routes = {
         get: {
 
         }
+        
     },
 
     /**
@@ -113,7 +114,6 @@ exports.routes = {
         post: {
 
             handler : function(req,res){
-
                 bozuko.models.Contest.findById(req.params.id, function(error, contest){
                     if( error ){
                         return res.send( bozuko.transfer('error', error), 404 );
@@ -122,9 +122,7 @@ exports.routes = {
                         
                     });
                 });
-
             }
-
         }
     }
 

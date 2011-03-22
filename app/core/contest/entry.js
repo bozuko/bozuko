@@ -88,11 +88,11 @@ proto.process = function( callback ){
                         /**
                          * TODO - add multiple attempts
                          */
-                        return callback( new Error("Token Cursor Update Fail") );
+                        return callback( bozuko.error('entry/token_update_fail') );
                     }
                     self.contest = contest;
                     if( !self.ensureTokens() ){
-                        return callback( new Error("Not enough tokens to distribute for this contest") );
+                        return callback( bozuko.error('entry/not_enough_tokens') );
                     }
                     // try again...
                     return self.process( callback );
@@ -143,14 +143,14 @@ proto.ensureTokens = function(){
 proto.validate = function( callback ){
     var self = this;
     // check for contest
-    if( !this.contest ) return callback( new Error("No Contest Specified"));
+    if( !this.contest ) return callback( bozuko.error('entry/no_contest') );
     
     // check for user
-    if( !this.user ) return callback( new Error("No User Specified") );
+    if( !this.user ) return callback( bozuko.error('entry/no_user') );
     
     // check that there is enough tokens left
     if( this.ensureTokens() === false ){
-        return callback( new Error("Not enough tokens to distribute for this contest") );
+        return callback( bozuko.error('entry/not_enough_tokens') );
     }
     
     // check for duration
@@ -166,9 +166,10 @@ proto.validate = function( callback ){
         }, function(error, entry){
             if( entry ){
                 // ruh, ro.
-                callback( new Error(
-                    "Keep Waiting"
-                ));
+                var now = new Date();
+                var next = new Date();
+                next.setTime(entry.timestamp.getTime()+self.config.duration);
+                callback( bozuko.error('entry/too_soon', next) );
             }
             else{
                 callback( null );

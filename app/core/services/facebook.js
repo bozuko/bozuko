@@ -210,6 +210,8 @@ $.search = function(options, callback){
             params: params
         },
         function facebook_search(results){
+            // these need to be mapped to
+            // generic bozuko objects
             callback(null, results.data);
         }
     );

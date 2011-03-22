@@ -153,11 +153,7 @@ exports.routes = {
                 var msg = req.param('message') || '';
 
                 if( !lat || !lng ){
-                    res.send({
-                        name: "missing parameters",
-                        msg: "No Latitude / Longitude"
-                    }, 400);
-                    return;
+                    return bozuko.error('facebook/no_lat_lng').send(res);
                 }
 
                 var params = {
@@ -166,7 +162,6 @@ exports.routes = {
                 };
 
                 run(req, res, 'checkin', params, function() { checkin(res, req.session.user._id, id, lat, lng, msg); });
-
             }
         }
     },
