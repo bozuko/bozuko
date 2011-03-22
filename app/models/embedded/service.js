@@ -5,12 +5,16 @@ var bozuko = require('bozuko'),
 
 var Service = module.exports = new Schema({
     name                :{type:String},
-    id                  :{type:String},
+    sid                 :{type:String},
     auth                :{type:String},
     data                :{}
 });
 
 Service.initSchema = function(schema){
+    
+    schema.add({
+        'services': [Service]
+    });
     
     schema.method('service', function(name){
         var service = false;
@@ -23,14 +27,14 @@ Service.initSchema = function(schema){
             add = true;
             service = {name:name};
         }
-        service.id = arguments[1];
+        service.sid = arguments[1];
         if( arguments[2] ) service.auth = arguments[2];
         if( arguments[3] ) service.data = arguments[3];
         if( add ){
-            serivce = this.services[this.services.length] = service;
+            serivce = this.services.push(service);
         }
         return service;
     });
     
-    schema.index({'services.name':1,'services.id':1});
+    schema.index({'services.name':1,'services.sid':1});
 };

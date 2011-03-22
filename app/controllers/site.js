@@ -14,10 +14,7 @@ exports.routes = {
 
         all : function(req,res){
             var i = 0;
-            
             var u = req.session.user;
-            if( u ) console.log(u.service);
-            
             var locals = {
                 title: 'Bozuko',
                 scripts:[]

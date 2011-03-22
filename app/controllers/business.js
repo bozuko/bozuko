@@ -88,7 +88,7 @@ exports.routes = {
                     res.redirect(req.url);
                     return;
                 }
-                bozuko.models.Page.findOne({'services.name':'facebook','services.id':id}, function(err, page){
+                bozuko.models.Page.findOne({'services.name':'facebook','services.sid':id}, function(err, page){
                     if( page && page.owner_id != req.session.user._id ){
                         /**
                          * TODO

@@ -6,7 +6,6 @@ var bozuko = require('bozuko'),
     ObjectId = Schema.ObjectId;
 
 var Page = module.exports = new Schema({
-    services            :[Service],
     path                :{type:String},
     is_location         :{type:Boolean},
     name                :{type:String},
@@ -55,10 +54,10 @@ Page.method('checkin', function(user, game, callback) {
 
                 checkin.place_id = self.id;
 
-                checkin.place_facebook_id = self.service('facebook').id;
+                checkin.place_facebook_id = self.service('facebook').sid;
 
                 checkin.user_id = user.id;
-                checkin.user_facebook_id = user.self.service('facebook').id;
+                checkin.user_facebook_id = user.self.service('facebook').sid;
 
                 checkin.game_id = game.id;
 
@@ -71,26 +70,25 @@ Page.static('search', function(options, callback){
 
     // use a 3rd party service to search geographically
     // and then match against our db
-    bozuko.service('facebook').search(options, function(error, result){
+    var service = options.service || bozuko.config.defaultService;
+    bozuko.service(service).search(options, function(error, results){
         var map = {};
-        if( result.data ) result.data.forEach( function(place){
+        if( results ) results.forEach( function(place){
             // lets create a map for searching...
             map[place.id] = place;
         });
         else{
             callback(new Error('No results'));
         }
-
-        bozuko.models.Page.find({'services.name':'facebook','services.id':{$in:Object.keys(map)}}, function(err, bozuko_pages){
+        bozuko.models.Page.find({'services.name':service,'services.sid':{$in:Object.keys(map)}}, function(err, bozuko_pages){
             bozuko_pages.forEach(function(page){
-                delete map[page.service('facebook').id];
+                delete map[page.service(service).sid];
             });
             var fb_pages = [];
             for (var i in map) {
                 fb_pages.push(map[i]);
             }
-
-            callback({bozuko_pages: bozuko_pages, facebook_pages: fb_pages});
+            callback(null, {bozuko_pages: bozuko_pages, facebook_pages: fb_pages});
         });
 
     });

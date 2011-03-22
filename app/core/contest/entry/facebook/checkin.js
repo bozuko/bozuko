@@ -84,7 +84,7 @@ proto.process = function( callback ){
                 test        :true,
                 user        :self.user,
                 message     :self.message,
-                place_id    :page.service('facebook').id,
+                place_id    :page.service('facebook').sid,
                 // actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
                 link        :'http://bozuko.com',
                 picture     :'http://bozuko.com/images/bozuko-chest-check.png',

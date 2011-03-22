@@ -1,0 +1,340 @@
+var bozuko      = require('bozuko'),
+    URL         = require('url'),
+    http        = bozuko.require('util/http'),
+    merge       = require('connect').utils.merge,
+    qs          = require('querystring'),
+    url         = require('url'),
+    Service     = bozuko.require('core/service')
+;
+
+var FoursquareService = module.exports = function(){
+    Service.call(this);
+};
+
+FoursquareService.prototype.__proto__ = Service.prototype;
+
+var $ = FoursquareService.prototype;
+
+function api(path, options, callback){
+    // lets get the user details now...
+    var params = {};
+    options = options || {};
+    options.params = options.params || {};
+    if( !/^\//.test(path) ) path='/'+path;
+    if( options.user ){
+        var service = options.user.service('foursquare');
+        if( service ){
+            params.oauth_token = service.auth;
+        }
+    }
+    else if( !options.params.oauth_token ){
+        params.client_id = bozuko.config.foursquare.app.id;
+        params.client_secret = bozuko.config.foursquare.app.secret;
+    }
+    merge(params, options.params || {});
+    
+    var _callback = function(response){
+        if( !response || response.meta.code != 200 ){
+            return callback(response.meta);
+        }
+        return callback( null, response.response );
+    };
+    
+    http.request({
+        url: 'https://api.foursquare.com/v2'+path,
+        params: params,
+        method:options.method||'GET',
+        returnJSON: true,
+        callback: _callback
+    });
+}
+
+/**
+ * Login function
+ *
+ * @param {ServerRequest}   req             The current request
+ * @param {ServerResponse}  res             The current response
+ * @scope {String}          defaultReturn   The url to forward to after login
+ * @param {Function}        success         A callback function on successful login.
+ *                                          Takes an argument of the user
+ * @param {Function}        failure         A callback function on login failure
+ *
+ * @returns {null}
+ */
+$.login = function(req,res,scope,defaultReturn,success,failure){
+    var code = req.param('code');
+    var error_reason = req.param('error_reason');
+    var url = URL.parse(req.url);
+
+    var protocol = (req.app.key?'https:':'http:');
+
+    var params = {
+        'client_id' : bozuko.config.foursquare.app.id,
+        'response_type' : 'code',
+        'redirect_uri' : protocol+'//'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
+    };
+
+    if( req.session.device == 'touch'){
+        params.display = 'touch';
+    }
+
+    if( !code && !error_reason ){
+        // we need to send this person to facebook to get the code...
+        var ret = req.param('return');
+        req.session.redirect = ret;
+        res.redirect('https://foursquare.com/oauth2/authenticate?'+qs.stringify(params));
+    }
+    else if( error_reason ){
+        /**
+         * Handle denied access
+         */
+        var ret = req.session.redirect || defaultReturn || '/';
+        ret+= (ret.indexOf('?') != -1 ? '&' : '?')+'error_reason='+error_reason;
+
+        if( failure ){
+            if( failure(error_reason, req, res) === false ){
+                return;
+            }
+        }
+
+        res.redirect(ret);
+    }
+    else{
+        delete params['response_type'];
+        params.client_secret = bozuko.config.foursquare.app.secret;
+        params.code = code;
+        params.grant_type = 'authorization_code';
+
+        // we should also have the user information here...
+        var ret = req.session.redirect;
+
+        http.request({
+            url: 'https://foursquare.com/oauth2/access_token',
+            params: params,
+            returnJSON: true,
+            callback : function foursquare_callback(result){
+                
+                if( result['access_token'] ) {
+                    // grab the access token
+                    var token = result['access_token'];
+                    // lets get the user details now...
+                    api('/users/self',
+                        {params:{oauth_token : token}},
+                        function(error, result){
+                            if( !error ){
+                                if( failure ){
+                                    if( failure('Authentication Failed', req, res) === false ){
+                                        return null;
+                                    }
+                                }
+                                return res.send("<html><h1>Foursquare authentication failed :( </h1></html>");
+                            }
+                            var user = result.user;
+                            return bozuko.models.User.findOne(
+                                {
+                                    $or:[
+                                         {email:user.contact.email},
+                                         {'services.name':'foursquare','services.sid':user.id}
+                                    ]
+                                },
+                                function(err, u){
+                                    if( !u ){
+                                        u = new bozuko.models.User();
+                                        // update the user's details
+                                        u.name = user.firstName+' '+user.lastName;
+                                        u.first_name = user.firstName;
+                                        u.last_name = user.lastName;
+                                        u.gender = user.gender;
+                                        u.email = user.contact.email;
+                                    }
+                                    u.service('foursquare', user.id, token, user);
+                                    u.save(function(){
+                                        var device = req.session.device;
+                                        req.session.regenerate(function(err){
+                                            // res.clearCookie('fbs_'+bozuko.config.facebook.app.id);
+                                            req.session.userJustLoggedIn = true;
+                                            req.session.user = u;
+                                            req.session.device = device;
+                                            if( success ){
+                                                if( success(u,req,res) === false ){
+                                                    return;
+                                                }
+                                            }
+                                            res.redirect(ret || '/');
+                                        });
+                                    });
+                                }
+                            );
+                        }
+                    );
+                }
+                else {
+                    if( failure ){
+                        if( failure('Authentication Failed', req, res) === false ){
+                            return;
+                        }
+                    }
+                    res.send("<html><h1>Foursquare authentication failed :( </h1></html>");
+                }
+            },
+            scope : this
+        });
+    }
+};
+
+
+/**
+ * Location based search
+ *
+ * Accepts an options argument in the form of:
+ *
+ *  {
+ *      latLng : {lng: Number, lat: Number},
+ *      query : String,
+ *      fields : Array
+ *  }
+ *
+ * either latLng or query is required
+ * query is a search string
+ * fields is an array of requested fields. The following are permitted
+ *
+ *      name
+ *      location
+ *      description
+ *      image
+ *      checkins
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data - an array of place Objects
+ *
+ *          TODO - define the return object
+ *
+ * @param {Object}          options         A search object
+ * @param {Function}        callback        Callback function
+ *
+ * @return {null}
+ */
+$.search = function(options, callback){
+    if( !options || !options.latLng ){
+        return callback( new Error(
+            "FoursquareService::search options requires latLng"
+        ));
+    }
+    var params = {
+        ll : options.latLng.lat+','+options.latLng.lng,
+        intent: 'checkin',
+        limit: options.limit || 25
+    };
+    if( options.query ){
+        params.query = query;
+    }
+    return api('/venues/search', {params:params}, function(error,  response){
+        if( error ){
+            return callback(error);
+        }
+        /**
+         * TODO
+         *
+         * We need to convert all of these objects to transferrable objects
+         */
+        var places = [];
+        response.groups.forEach(function(group){
+            group.items.forEach( function(item){
+                places.push(item);
+            });
+        });
+        return callback( null, places );
+    });
+};
+
+
+/**
+ * Checkin to the service
+ *
+ * The options object
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
+ *
+ * @param {Page}            place_id        Bozuko Page
+ * @param {User}            user            Bozuko User
+ * @param {Object}          options         Checkin specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.checkin = function(options, callback){
+
+    
+};
+
+/**
+ * Like a page
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
+ *
+ * @param {Page}            place_id        Bozuko Page
+ * @param {User}            user            Bozuko User
+ * @param {Object}          options         Checkin specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.like = function(options, callback){
+
+    
+};
+
+/**
+ * Get full info about a place by id
+ *
+ * fields is an array of requested fields. The following are permitted
+ *
+ *      name
+ *      location
+ *      description
+ *      image
+ *      checkins
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data - The
+ *
+ * @param {Object}          options         Options object
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.place = function(options, callback){
+    
+};
+
+/**
+ * Get any places that this user is an administrator for
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      pages
+ *
+ * @param {User}            user            The user
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.get_user_pages = function(user, callback){
+
+    
+};

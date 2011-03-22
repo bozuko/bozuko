@@ -153,9 +153,11 @@ exports.routes = {
                     offset: parseInt(req.param('offset')) || 0
                 };
 
-
-                bozuko.models.Page.search(options, function(pages){
-                   async.map(pages.bozuko_pages, function(p, callback) {
+                bozuko.models.Page.search(options, function(error, pages){
+                    if( error ){
+                        return res.send( bozuko.transfer('error',{name:error.message}), 404);
+                    }
+                    async.map(pages.bozuko_pages, function(p, callback) {
                         p.getContests(function(contests) {
                             // Return everything with a facebook format for now
                             var page = p.service('facebook').data;
