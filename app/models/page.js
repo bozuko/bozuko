@@ -6,15 +6,28 @@ var bozuko = require('bozuko'),
     ObjectId = Schema.ObjectId;
 
 var Page = module.exports = new Schema({
+    // path is for creating a tree structure
     path                :{type:String},
     is_location         :{type:Boolean},
     name                :{type:String},
+    location            :{
+        street              :String,
+        city                :String,
+        state               :String,
+        zip                 :String,
+        country             :String
+    },
+    position            :{
+        latitude            :Number,
+        longitude           :Number
+    },
     lat                 :{type:Number},
     lng                 :{type:Number},
     owner_id            :{type:ObjectId, index: true}
 });
 
 Service.initSchema(Page);
+Page.index('position', '2d');
 
 Page.method('getOwner', function(callback){
     bozuko.models.User.findById( this.owner_id, callback );
@@ -22,13 +35,26 @@ Page.method('getOwner', function(callback){
 
 Page.method('getContests', function(callback){
     bozuko.models.Contest.find({page_id:this.id}, function(error, contests){
-        if( error ){
-            throw error;
-        }
-        callback(contests);
+        callback(error, contests);
     });
 });
 
+Page.method('getActiveContests', function(callback){
+    var now = new Date();
+    bozuko.models.Contest.find({
+        page_id:this.id,
+        start: {$lt: now},
+        end: {$gt: now},
+        $where: "this.token_cursor < this.total_entries;"
+    }, function(error, contests){
+        callback(error, contests);
+    });
+});
+
+
+/**
+ * Not sure about this right now...
+ */
 Page.method('checkin', function(user, game, callback) {
 
     var self = this;
@@ -36,34 +62,31 @@ Page.method('checkin', function(user, game, callback) {
     bozuko.models.Checkin
         .findOne({user_id:user.id,place_id:this.id},[],{sort:{'timestamp':-1}}, function(lastCheckin){
             var doCheckin = true;
-
-            // first we need to check for the last checkin and make sure
-            // that its not too close to the last one.
-            /*
-            if( lastCheckin ){
-                var now = new Date();
-                if( now.getTime() - lastCheckin.timestamp.getTime() < bozuko.config.checkin.interval ){
-                    doCheckin = false;
-                }
-            }
-            */
-
             if( doCheckin ){
-
                 var checkin = new bozuko.models.Checkin();
-
                 checkin.place_id = self.id;
-
                 checkin.place_facebook_id = self.service('facebook').sid;
-
                 checkin.user_id = user.id;
                 checkin.user_facebook_id = user.self.service('facebook').sid;
-
                 checkin.game_id = game.id;
-
                 // still need to contact facebook.
             }
         });
+});
+
+Page.static('createFromServiceObject', function(place, callback){
+    var page = new bozuko.models.Page();
+    page.name = place.name;
+    page.location = place.location;
+    page.position = {
+        lat: place.location.lat,
+        lng: place.location.lng
+    },
+    page.is_location = true;
+    page.save( function(error){
+        if( error ) return callback( error );
+        return bozuko.models.Page.findById(page.id, callback);
+    });
 });
 
 Page.static('search', function(options, callback){

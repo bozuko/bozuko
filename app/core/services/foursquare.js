@@ -228,6 +228,9 @@ $.search = function(options, callback){
     if( options.query ){
         params.query = query;
     }
+    
+    var self = this;
+    
     return api('/venues/search', {params:params}, function(error,  response){
         if( error ){
             return callback(error);
@@ -243,7 +246,7 @@ $.search = function(options, callback){
                 places.push(item);
             });
         });
-        return callback( null, places );
+        return callback( null, self.sanitizePlaces(places) );
     });
 };
 
@@ -335,4 +338,61 @@ $.place = function(options, callback){
 $.get_user_pages = function(user, callback){
 
     
+};
+
+
+/**
+ * Private santiziatin method
+ *
+ * MUST BE IMPLEMENTED IN IMPLEMENTATION
+ *
+ * This should return data in the following format
+ * The data field can hold any extranneous information.
+ * 
+ *  {
+ *      id: Number,
+ *      name: String,
+ *      category: String,
+ *      location: {
+ *          street: String,
+ *          city: String,
+ *          state: String,
+ *          country: String
+ *          zip: String,
+ *          lat: Number,
+ *          lng: Number
+ *      },
+ *      image: String,
+ *      data: Object
+ *  }
+ * 
+ * @param {Object}          place           The place to sanitize
+ *
+ * @return {Object}         place           The sanitized object / objects
+ */
+$._sanitizePlace = function(place){
+    if( !place ) return null;
+    if( !place.location ) place.location = {};
+    var data = {
+        service: 'foursquare',
+        id: place.id,
+        name: place.name,
+        image: place,
+        location: {
+            address: place.location.street || '',
+            city: place.location.city || '',
+            state: place.location.state || '',
+            country: place.location.country || 'United States',
+            zip: place.location.zip || '',
+            lat: place.location.latitude || 0,
+            lng: place.location.longitude || 0
+        },
+        data: place
+    };
+    if( place.categories && place.categories.length ){
+        var cat = place.categories[0];
+        data.category = cat.name;
+        data.image = cat.icon.replace(/\.png$/, '_64.png');
+    }
+    return data;
 };

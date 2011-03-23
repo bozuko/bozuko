@@ -102,15 +102,15 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             u.email = user.email;
                             u.facebook_id = user.id;
                             u.facebook_auth = token;
-                            
+
                             u.service('facebook', user.id, token, user);
-                            
+
                             u.save(function(){
-                                
+
                                 // okay, definitely a little weird mr. mongoose...
                                 // after a save, we need to do a get user or embedded docs
                                 // get messed up... yokay
-                                
+
                                 bozuko.models.User.findById(u.id, function(error, u){
                                     var device = req.session.device;
                                     req.session.regenerate(function(err){
@@ -118,10 +118,9 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                         req.session.userJustLoggedIn = true;
                                         req.session.user = u;
                                         req.session.device = device;
-                                        
+
                                         if( success ){
                                             if( success(u,req,res) === false ){
-                                                console.log('after success services.length', u.services.length);
                                                 return;
                                             }
                                         }
@@ -181,18 +180,15 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  * @return {null}
  */
 $.search = function(options, callback){
-
+    var self = this;
     if( !options || !(options.latLng || options.query) ){
-        callback(new Error(
-            'FacebookService::search options requires latLng or search query'
-        ));
-        return;
+        return callback(bozuko.error('facebook/no_lat_lng_query'));
     }
 
     var params = {
         type : options.latLng ? 'place' : 'page'
     };
-    
+
     if( options.latLng ) params.center = options.latLng.lat+','+options.latLng.lng;
     if( options.query ) params.query = options.query;
     if( options.fields ){
@@ -212,7 +208,7 @@ $.search = function(options, callback){
         function facebook_search(results){
             // these need to be mapped to
             // generic bozuko objects
-            callback(null, results.data);
+            callback(null, self.sanitizePlaces(results.data));
         }
     );
 };
@@ -240,9 +236,7 @@ $.search = function(options, callback){
 $.checkin = function(options, callback){
 
     if( !options || !options.place_id || !options.latLng || !options.user ){
-        return callback(new Error(
-            'FacebookService::checkin requires place_id, latLng, and user as options'
-        ));
+        return callback(bozuko.error('facebook/no_lat_lng_user_place'));
     }
 
     var params = {
@@ -254,11 +248,11 @@ $.checkin = function(options, callback){
     if( options.link )          params.link         = options.link;
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
-    
+
     if( options.test ){
         return callback(null, {result:123123123});
     }
-    
+
     return facebook.graph('/me/checkins',{
         user: options.user,
         params: params,
@@ -288,21 +282,20 @@ $.checkin = function(options, callback){
 $.like = function(options, callback){
 
     if( !options || !options.object_id || !options.user ){
-        return callback(new Error(
-            'FacebookService::checkin requires place_id and user as options'
-        ));
+        return callback(bozuko.error('facebook/no_page_id_user'));
     }
+    var params = {};
 
     if( options.message )       params.message      = options.message;
     if( options.picture )       params.picture      = options.picture;
     if( options.link )          params.link         = options.link;
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
-    
+
     if( options.test ){
         return callback(null, {result:123123123});
     }
-    
+
     return facebook.graph('/'+options.object_id+'/likes',{
         user: options.user,
         method:'post'
@@ -333,11 +326,9 @@ $.like = function(options, callback){
  * @return {null}
  */
 $.place = function(options, callback){
+    var self = this;
     if( !options || !options.place_id ){
-        callback(new Error(
-            'FacebookService::checkin requires place_id as oneof the arguments'
-        ));
-        return;
+        return callback(bozuko.error('facebook/no_page_id'));
     }
 
     var params = {};
@@ -347,7 +338,7 @@ $.place = function(options, callback){
     facebook.graph('/'+options.place_id, {
         params: params
     },function(result){
-        callback(null, result);
+        callback(null, self.sanitizePlace(result) );
     });
 
 };
@@ -414,6 +405,83 @@ $.get_user_pages = function(user, callback){
     );
 };
 
+/**
+ * Private santiziatin method
+ *
+ * MUST BE IMPLEMENTED IN IMPLEMENTATION
+ *
+ * This should return data in the following format
+ * The data field can hold any extranneous information.
+ * 
+ *  {
+ *      id: Number,
+ *      name: String,
+ *      location: {
+ *          street: String,
+ *          city: String,
+ *          state: String,
+ *          country: String
+ *          zip: String,
+ *          lat: Number,
+ *          lng: Number
+ *      },
+ *      image: String,
+ *      data: Object
+ *  }
+ * 
+ * @param {Object}          place           The place to sanitize
+ *
+ * @return {Object}         place           The sanitized object / objects
+ */
+$._sanitizePlace = function(place){
+    if( !place ) return null;
+    if( !place.location ) place.location = {};
+    return {
+        service: 'facebook',
+        id: place.id,
+        name: place.name,
+        image: 'http://graph.facebook.com/'+place.id+'/picture?type=large',
+        location: {
+            street: place.location.street || '',
+            city: place.location.city || '',
+            state: place.location.state || '',
+            country: place.location.country || 'United States',
+            zip: place.location.zip || '',
+            lat: place.location.latitude || 0,
+            lng: place.location.longitude || 0
+        },
+        data: place
+    };
+};
+
+
+
+/**
+ * Private santiziation method for users
+ *
+ * MUST BE IMPLEMENTED IN IMPLEMENTATION
+ *
+ * This should return data in the following format
+ * The data field can hold any extranneous information.
+ * 
+ *  {
+ *      id: Number,
+ *      name: String,
+ *      firstName: String,
+ *      lastName: String,
+ *      email: String,
+ *      phone: String,
+ *      image: String,
+ *      data: Object
+ *  }
+ * 
+ * @param {Object}          place           The place to sanitize
+ *
+ * @return {Object}         place           The sanitized object / objects
+ */
+$._sanitizeUser = function(user){
+    
+};
 
 /**
  * Utility Functions

@@ -78,6 +78,26 @@ $.checkin = function(place_id, user, callback){};
 
 
 /**
+ * Like a page
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
+ *
+ * @param {Page}            place_id        Id of the place within the service
+ * @param {User}            user            Bozuko User
+ * @param {Object}          options         Checkin specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.like = function(options, callback){}
+
+
+/**
  * Get full info about a place by id
  *
  * fields is an array of requested fields. The following are permitted
@@ -115,3 +135,50 @@ $.place = function(place_id, fields, callback){};
  * @return {null}
  */
 $.get_user_pages = function(user, callback){};
+
+
+/**
+ * Private santiziatin method
+ *
+ * MUST BE IMPLEMENTED IN IMPLEMENTATION
+ *
+ * This should return data in the following format
+ * The data field can hold any extranneous information.
+ * 
+ *  {
+ *      service: String,
+ *      id: Number,
+ *      name: String,
+ *      location: {
+ *          address: String,
+ *          city: String,
+ *          state: String,
+ *          postal_code: String,
+ *          lat: Number,
+ *          lng: Number
+ *      },
+ *      image: String,
+ *      data: Object
+ *  }
+ * 
+ * @param {Object}          place           The place to sanitize
+ *
+ * @return {Object}         place           The sanitized object / objects
+ */
+$._sanitizePlace = function(place){};
+
+/**
+ * Sanitize a place
+ *
+ * @param {Mixed}           places/place    The array of places or place to sanitize
+ *
+ * @return {Mixed}          places/place    The sanitized object / objects
+ */
+$.sanitizePlace = $.sanitizePlaces = function(place){
+    if( !Array.isArray(place) ) return this._sanitizePlace(place);
+    var ret = [];
+    var self = this;
+    place.forEach(function(item){ ret.push( self._sanitizePlace(item)); } );
+    return ret;
+};
+

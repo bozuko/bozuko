@@ -5,12 +5,13 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
     
 var Prize = module.exports = new Schema({
-    page                    :{type:ObjectId, index :true},
+    contest_id              :{type:ObjectId},
+    page_id                 :{type:ObjectId},
+    user_id                 :{type:ObjectId, index: true},
+    play_id                 :{type:ObjectId},
     contest                 :{type:ObjectId},
     value                   :{type:Number},
     name                    :{type:String},
-    description             :{type:String},
-    total                   :{type:Number},
-    claimed                 :{type:Number},
-    winners                 :[ObjectId]
+    expires                 :{type:Date},
+    description             :{type:String}
 });
