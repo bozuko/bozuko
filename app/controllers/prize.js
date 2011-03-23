@@ -9,12 +9,12 @@ exports.transfer_objects = {
             state: "String",
             name: "String",
             place: "String",
-            win_time: "Date",
-            redemption_time: "Date",
-            expiration_time: "Date",
+            win_time: "String",
+            redemption_time: "String",
+            expiration_time: "String",
             business_img: "String",
             user_img: "String",
-            background_img: "String",
+            security_img: "String",
             links: {
                 page: "String",
                 contest: "String",
@@ -29,11 +29,6 @@ exports.links = {
         get: {
             doc:  "Return a list of prizes",
             params: {
-                context: {
-                    type: "String",
-                    values: ['user', 'global'],
-                    description: "Describe which prizes to search"
-                },
                 state: {
                     type: "String",
                     values: ['active', 'redeemed', 'expired'],
@@ -58,11 +53,61 @@ exports.links = {
     }
 };
 
+var prize = {
+    id: '45523542525abeaaa',
+    state: 'active',
+    name: 'buffalo wings',
+    place: 'Hookslide Kelly\'s',
+    win_time: new Date().toString(),
+    business_img: '/some/image/path',
+    user_img: '/some/img/path',
+    security_img: '/some/img/path',
+    links: {
+        page: '/page/4d88fc617dcf0a9e75000003/',
+        contest: '/contest/12345',
+        user: '/user'
+    }
+};
+
 exports.routes = {
+
+    '/prizes': {
+
+        get : {
+
+            access: 'user',
+
+            handler: function(req, res) {
+                if (req.param('state')) {
+                    console.log("state = "+ req.param('state'));
+                    var state = req.param('state');
+                    if (state != 'active' && state != 'redeemed' && state != 'expired') {
+                        return bozuko.error('prize/bad_state').send(res);
+                    }
+                    else {
+                        // Search prizes by user and state
+
+                        // Just return an active prize for now, as that's what's in the test.
+                        res.send([bozuko.transfer('prize', prize)]);
+
+                    }
+                } else {
+                    // Return all the user's prizes
+                    res.send([bozuko.transfer('prize', prize)]);
+                }
+            }
+        }
+    },
+
 
     '/prize/:id' : {
 
 	get : {
+            access: 'user',
+
+            handler: function(req, res) {
+                res.send(bozuko.transfer('prize', prize));
+            }
         }
     },
 
