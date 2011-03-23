@@ -97,11 +97,11 @@ exports.entry = function(key, user, options){
 };
 
 exports.error = function(name, data){
-	
+
 	var path = name.split('/');
 	var err = path.pop();
 	var BozukoError = this.require('core/error');
-	
+
 	try{
 		var message = this.require('core/errors/'+path.join('/'))[err];
 		var code = null;
@@ -113,5 +113,4 @@ exports.error = function(name, data){
 	}catch(e){
 		return new BozukoError();
 	}
-	
-}
+};
