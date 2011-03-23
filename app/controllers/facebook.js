@@ -131,61 +131,43 @@ exports.routes = {
                     if( err ){
                         return err.send( res );
                     }
+                    var do_checkin = function(page){
+                        page.checkin(
+                            req.session.user,
+                            {
+                                service: 'facebook', // if this is omitted, try to checkin everywhere
+                                latLng: {lat:lat,lng:lng},
+                                message: msg
+                            },
+                            function(error, checkin_result){
+                                if( error ){
+                                    error.send(res);
+                                }
+                                else{
+                                    res.send(
+                                        bozuko.transfer(
+                                            'facebook_checkin_result',
+                                            checkin_result
+                                        )
+                                    );
+                                }
+                            }
+                        );
+                    };
                     
                     // if there is no page for this place yet, lets create one
                     if( !page ){
-                        
-                        bozuko.service('facebook').place(id, function(error, place){
-                            
+                        return bozuko.service('facebook').place(id, function(error, place){
                             if( !place ){
                                 bozuko.error('facebook/bad_place_id');
                             }
-                            
                             bozuko.models.Page.createFromServiceObject( place, function(error, page){
-                                
+                                if( error ) error.send(res);
+                                do_checkin(page);
                             });
-                            
                         });
                     }
-                    
-                    else if (page) {
-                        return page.getActiveContests(function(err, contests){
-                            
-                            if( err ){
-                                return err.send(res);
-                            }
-
-                            return res.send ({
-                                
-                            });
-                            
-                            /*return contest.enter(
-                                bozuko.entry('facebook/checkin', req.session.user, {
-                                    latLng: {lat:lat, lng:lng},
-                                    message: msg
-                                }),
-                                function(error, entry){
-                                    
-                                    if( error ){
-                                        error.send(res);
-                                        return;
-                                    }
-                                    var fb_checkin_res = {
-                                        id: entry._id,
-                                        timestamp: entry.timestamp,
-                                        tokens: entry.tokens,
-                                        links: {
-                                            contest_result: "/contest/"+contest.id+"/result",
-                                            facebook_like: "/facebook/"+id+"/like"
-                                        }
-                                    };
-                                    var ret = bozuko.sanitize('facebook_checkin_result', fb_checkin_res);
-                                    res.send(ret);
-                                }
-                            );
-                            */
-                        });
-                    }
+                    return do_checkin(page);
                 });
             }
         }

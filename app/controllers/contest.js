@@ -1,86 +1,95 @@
 var bozuko = require('bozuko');
 
-var contest = {
-    doc: "Bozuko Contest Object",
+var game_prize = {
+    doc: "A prize that can be won in a game",
     def: {
-        id: "Number",
+        name: "String",
+        description: "String",
+        total: "Number",
+        available:"Number"
+    }
+};
+
+var game_result = {
+    doc: "Bozuko Game Result",
+    def:{
+        win: "Boolean",
+        result: "Mixed",
+        redemption_type: "String",
+        prize: "prize",
+        links: {
+            facebook_login: "String",
+            facebook_checkin: "String",
+            facebook_like: "String",
+            prize: "prize",
+            page: "String",
+            game: "String"
+        }
+    }
+};
+
+var game = {
+        
+    doc: "A Game Object",
+    
+    def:{
+        type: "String",
+        name: "String",
+        icon: "String",
+        description: "String",
         user_tokens: "Number",
         token_message: "String",
+        config: "Object",
         can_play: "Boolean",
-        initial_odds: "String",
         start_time: "String",
         end_time: "String",
         tokens_per_play: "Number",
-        entry_methods: {
-            facebook_checkin: "Number", // Tokens
-            faecebook_like: "Number" // Tokens
-        },
-        games: [{
-            name: "String",
-            win_config: [{
-                result: "String || Object || Array depending upon game name",
-                prize: "String"
-            }]
-        }],
+        entry_methods:['entry'],
+        prizes:['prize'],
+        rules: "String",
         links: {
             facebook_login: "String",
-            facebook_checkin: "String",
-            facebook_like: "String",
-            page: "String",
-            contest_result: "String"
+            page: "String"
         }
     }
 };
 
-var contest_result = {
-    doc: "Bozuko Contest Result",
-    def:{
-        win: "Boolean",
-        game: "String",
-        result: "String || Object || Array depending upon game name",
-        prize: {
-            id: "Number",
-            description: "String"
-        },
-        links: {
-            facebook_login: "String",
-            facebook_checkin: "String",
-            facebook_like: "String",
-            prize: "String",
-            prize_redemption: "String",
-            page: "String",
-            contest: "String"
-        }
+var entry_method = {
+    
+    doc: "An entry method ",
+    
+    def: {
+        available: "Boolean",
+        reason: "String",
+        type: "String",
+        tokens: "Number",
+        icon: "String",
+        description: "String",
+        link: "String"
     }
 };
+
 
 exports.transfer_objects = {
-    contest: contest,
-    contest_result: contest_result
+    game: game,
+    game_result: game_result,
+    entry_method: entry_method,
+    game_prize: game_prize
 };
 
 exports.links = {
-    contest: {
+    game: {
         get: {
-            doc: "Returns contest information",
-            returns: "contest"
+            doc: "Returns game information",
+            returns: "game"
         }
     },
 
-    contest_result: {
+    game_result: {
         post: {
-            doc: "Retrieve a result for the given contest." +
+            doc: "Retrieve a result for the given game." +
                 "The user must have tokens credited to their account in order for this to work",
-
-            params: {
-                game: {
-                    required: true,
-                    type: "String",
-                    values: ['slots', 'scratch', 'bozuko'],
-                    description: "The name of the game"
-                }
-            },
-            returns: "contest_result"
+            returns: "game_result"
 
         }
     }

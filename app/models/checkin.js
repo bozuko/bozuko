@@ -9,6 +9,5 @@ var Checkin = module.exports = new Schema({
     lat                     :{type:Number},
     lng                     :{type:Number},
     message                 :{type:String},
-    service                 :{type:String},
-    play_id                 :{type:ObjectId}
+    service                 :{type:String}
 });
