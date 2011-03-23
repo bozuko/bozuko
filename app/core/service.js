@@ -157,6 +157,7 @@ $.get_user_pages = function(user, callback){};
  *          lat: Number,
  *          lng: Number
  *      },
+ *      checkins: Number,
  *      image: String,
  *      data: Object
  *  }

@@ -191,6 +191,12 @@ $.search = function(options, callback){
 
     if( options.latLng ) params.center = options.latLng.lat+','+options.latLng.lng;
     if( options.query ) params.query = options.query;
+    if( !options.fields ) {
+        options.fields = ['name','category','checkins','location'];
+    }
+    else if( !~options.fields.indexOf('checkins') ){
+        options.fields.push('checkins');
+    }
     if( options.fields ){
         params.fields = options.fields.join(',');
     }
@@ -439,6 +445,7 @@ $._sanitizePlace = function(place){
     return {
         service: 'facebook',
         id: place.id,
+        checkins: place.checkins||0,
         name: place.name,
         image: 'http://graph.facebook.com/'+place.id+'/picture?type=large',
         location: {
