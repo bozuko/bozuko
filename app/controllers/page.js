@@ -4,6 +4,7 @@ var bozuko = require('bozuko'),
 var requestCount = 0;
 
 exports.transfer_objects = {
+    
     page: {
 
         doc: "A Bozuko Page",
@@ -28,18 +29,11 @@ exports.transfer_objects = {
             fan_count: "Number",
             checkins: "Number",
             info: "String",
-            games: [{
-                id: "Number",
-                name: "String",
-                icon: "String",
-                description: "String",
-                prize: "String"
-            }],
+            // see the definition in the contest controller
+            games: ["game"],
             links: {
-                contest: "String",
                 facebook_login: "String",
                 facebook_checkin: "String",
-                contest_result: "String",
                 share: "String",
                 feedback: "String"
             }
@@ -161,44 +155,37 @@ exports.routes = {
 
     '/pages': {
 
-        aliases: ['/places'],
+        aliases: ['/pages/:service?', '/places/:service?', '/places'],
 
         get: {
 
             handler: function(req,res) {
                 var lat = req.param('lat') || '42.645625';
                 var lng = req.param('lng') || '-71.307864';
+                var service = req.param('service');
 
                 var options = {
                     latLng: {lat:lat, lng:lng},
                     limit: parseInt(req.param('limit')) || 25,
                     offset: parseInt(req.param('offset')) || 0
                 };
+                
+                if( service ) options.service = service;
 
-                bozuko.models.Page.search(options, function(error, pages){
-                    
-                    if( error ){
-                        res.send( bozuko.transfer('error',{message:error.message}), 400);
-                    }
-                    async.map(pages.bozuko_pages, function(p, callback) {
-                       fill_page(p, callback);
-                    },
-                    function(err, results) {
-                        if (!err) {
-                            pages.facebook_pages.forEach(function(page) {
-                                page.links = {
-                                    facebook_checkin: "/facebook/"+page.id+"/checkin",
-                                    facebook_like: "/facebook/"+page.id+"/like",
-                                    facebook_login: "/facebook/login"
-                                };
-                            });
-                            res.send(results.concat(pages.facebook_pages));
-                        } else {
-                            res.statusCode(500);
-                            res.end();
+                bozuko.models.Page.search(options,
+                    function(error, results){
+                        if( error ){
+                            error.send(res);
                         }
-                    });
-                });
+                        
+                        var ret=[];
+                        results.pages.forEach(function(p){
+                            p.links = {};
+                            
+                            ret.push(p);
+                        });
+                    }
+                );
             }
         }
     },

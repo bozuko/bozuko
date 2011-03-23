@@ -8,7 +8,8 @@ exports.transfer_objects = {
             id: "Number",
             state: "String",
             name: "String",
-            place: "String",
+			description: "String",
+            page: "String",
             win_time: "String",
             redemption_time: "String",
             expiration_time: "String",
@@ -16,6 +17,7 @@ exports.transfer_objects = {
             user_img: "String",
             security_img: "String",
             links: {
+				redeem: "String",
                 page: "String",
                 contest: "String",
                 user: "String"
@@ -88,12 +90,12 @@ exports.routes = {
                         // Search prizes by user and state
 
                         // Just return an active prize for now, as that's what's in the test.
-                        res.send([bozuko.transfer('prize', prize)]);
+                        return res.send([bozuko.transfer('prize', prize)]);
 
                     }
                 } else {
                     // Return all the user's prizes
-                    res.send([bozuko.transfer('prize', prize)]);
+                    return res.send([bozuko.transfer('prize', prize)]);
                 }
             }
         }
@@ -102,18 +104,19 @@ exports.routes = {
 
     '/prize/:id' : {
 
-	get : {
-            access: 'user',
-
-            handler: function(req, res) {
-                res.send(bozuko.transfer('prize', prize));
-            }
-        }
-    },
+		get : {
+				access: 'user',
+	
+				handler: function(req, res) {
+					res.send(bozuko.transfer('prize', prize));
+				}
+			}
+		},
 
     '/prize/:id/redemption' : {
 
-	post : {
-        }
-    }
+		post : {
+			
+		}
+	}
 };

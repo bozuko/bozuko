@@ -37,7 +37,9 @@ Service.initSchema = function(schema){
     });
     
     schema.static('findByService', function(name, id, callback){
-        this.findOne({'services.name':name,'services.sid':id}, callback);
+        // what is id
+        var fn = typeof id == 'string' || id instanceof Schema.ObjectId ? 'findOne' : 'find';
+        this[fn]({'services.name':name,'services.sid':id}, callback);
     });
     
     schema.index({'services.name':1,'services.sid':1});

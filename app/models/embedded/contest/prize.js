@@ -8,6 +8,7 @@ var Prize = module.exports = new Schema({
     value                   :{type:Number},
     name                    :{type:String},
     description             :{type:String},
+    image                   :{type:String},
     total                   :{type:Number},
     claimed                 :{type:Number}
 });

@@ -11,6 +11,7 @@ var FacebookCheckin = module.exports = function(key, user, options){
     Entry.prototype.constructor.call(this,key,user);
     // set the valid options
     if( !options.latLng ) throw bozuko.error('entry/facebook/no_lat_lng');
+    this.checkin = options.checkin;
     this.latLng = options.latLng;
     this.message = options.message || "";
 };
@@ -78,6 +79,12 @@ proto.process = function( callback ){
         if( error ){
             return callback( error );
         }
+        
+        // okay - IF this user checked into this place
+        // for another contest, we do not need to check them in again
+        /**
+         * TODO add the check here...
+         */
         
         return bozuko.models.Page.findById( self.contest.page_id, function(error, page){
             bozuko.service('facebook').checkin({
