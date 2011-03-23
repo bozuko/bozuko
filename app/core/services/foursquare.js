@@ -377,7 +377,7 @@ $._sanitizePlace = function(place){
         service: 'foursquare',
         id: place.id,
         name: place.name,
-        image: place,
+        checkins: place.stats.checkinsCount,
         location: {
             address: place.location.street || '',
             city: place.location.city || '',
