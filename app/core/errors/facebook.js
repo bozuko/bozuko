@@ -26,5 +26,5 @@ module.exports = {
         code: 404,
         message: "The place you requested does not exist"
     }
-    
+
 };

@@ -2,7 +2,8 @@ var port = 8000 + process.getuid();
 
 module.exports = {
     db:{
-        host:'mongodb://localhost/bozuko_test'+port
+//        host:'mongodb://localhost/bozuko_test'+port
+        host:'mongodb://localhost/bozuko_dev'
     },
     facebook: {
         app:{
