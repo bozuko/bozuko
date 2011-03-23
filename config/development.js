@@ -30,7 +30,7 @@ module.exports = {
         port: port
     },
     
-    defaultService:'foursquare',
+    defaultService:'facebook',
     
     /**
      * These are basic authenticated users...

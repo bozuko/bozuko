@@ -1,7 +1,7 @@
 var bozuko = require('bozuko');
 
-var facebook_checkin_result = {
-    doc: "Result from a Facebook Checkin",
+var facebook_result = {
+    doc: "Result from a Facebook Operation",
     def:{
         id: "Number",
         tokens: "Number",
@@ -14,22 +14,9 @@ var facebook_checkin_result = {
     }
 };
 
-var facebook_like_result = {
-    doc: "Result of a Facebook Like",
-    def:{
-        id: "Number",
-        tokens: "Number",
-        timestamp: "Date",
-        duration: "Number",
-        links: {
-            contest_result: "String"
-        }
-    }
-};
 
 exports.transfer_objects = {
-    facebook_checkin_result: facebook_checkin_result,
-    facebook_like_result: facebook_like_result
+    facebook_result: facebook_result
 };
 
 exports.links = {
@@ -52,7 +39,7 @@ exports.links = {
                     description: "The user message to post with the checkin."
                 }
             },
-            returns: "facebook_checkin_result"
+            returns: ["facebook_checkin_result"]
         },
 
         get: {
@@ -64,22 +51,12 @@ exports.links = {
     facebook_like: {
         post: {
             doc: "Like a facebook page and receive tokens",
-            params: {
-                lat: {
-                    type: "Number",
-                    description: "Latitude"
-                },
-                lng : {
-                    type: "Number",
-                    description: "Longitude"
-                }
-            },
-            returns: "facebook_like_result"
+            returns: "facebook_result"
         },
 
         get: {
             doc: "Retrieve information about the last facebook like for the user.",
-            returns: "facebook_checkin_result"
+            returns: "facebook_result"
         }
     }
 };
@@ -112,6 +89,27 @@ var checkin = function(res, user_id, fb_id, lat, lng, msg) {
     );
 };
 
+var like = function(req, res) {
+    bozuko.service('facebook').like({
+        test: true,
+        user: req.session.user._id,
+        link        :'http://bozuko.com',
+        picture     :'http://bozuko.com/images/bozuko-chest-check.png',
+        description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
+        object_id   : req.param('id')
+    },
+    function(err, result) {
+        if (err) {
+            return err.send(res);
+        }
+        // TODO: send a real result
+        res.send({
+            links: {
+            }
+        });
+    });
+};
+
 exports.routes = {
 
     '/facebook/:id/checkin': {
@@ -128,23 +126,40 @@ exports.routes = {
                 if( !lat || !lng ){
                     return bozuko.error('facebook/no_lat_lng').send(res);
                 }
-                
-                // return bozuko.models.Page.findOne({'services.name':'facebook', 'services.sid':id}, function(err, page) {
                 return bozuko.models.Page.findByService('facebook', id, function(err, page) {
-                    if( err ) return err.send( res );
+                    
+                    if( err ){
+                        return err.send( res );
+                    }
+                    
+                    // if there is no page for this place yet, lets create one
+                    if( !page ){
+                        
+                        bozuko.service('facebook').place(id, function(error, place){
+                            
+                            if( !place ){
+                                bozuko.error('facebook/bad_place_id');
+                            }
+                            
+                            bozuko.models.Page.createFromServiceObject( place, function(error, page){
+                                
+                            });
+                            
+                        });
+                    }
+                    
                     else if (page) {
-                        return bozuko.models.Contest.findOne({page_id: page.id}, function(err, contest){
+                        return page.getActiveContests(function(err, contests){
                             
                             if( err ){
                                 return err.send(res);
                             }
 
-                            if( !contest ){
-                                return checkin(res, req.session.user._id, id, lat, lng, msg);
+                            return res.send ({
                                 
-                            }
+                            });
                             
-                            return contest.enter(
+                            /*return contest.enter(
                                 bozuko.entry('facebook/checkin', req.session.user, {
                                     latLng: {lat:lat, lng:lng},
                                     message: msg
@@ -168,9 +183,8 @@ exports.routes = {
                                     res.send(ret);
                                 }
                             );
+                            */
                         });
-                    } else {
-                       return checkin(res, req.session.user._id, id, lat, lng, msg);
                     }
                 });
             }
@@ -181,25 +195,10 @@ exports.routes = {
 
         post: {
 
-            /**
-             * Pseudo code for entering a contest
-             */
-            pseudo : function(){
-                bozuko.models.Contest.findById(req.params.id, function(err, contest){
+            access: 'user',
 
-                    // do we have a contest?
-                    if( !contest ){
-                        res.send({
-                            error: "Invalid Contest"
-                        });
-                    }
-
-                    var entryMethod = Entry.create('facebook/like');
-
-                    var result = contest.enter(req.session.user, entryMethod);
-                    res.send(bozuko.transfer('facebook_checkin_result', result));
-
-                });
+            handler : function(req, res){
+                run(req, res, 'like', {}, function() { like(req, res); });
             }
         }
     }

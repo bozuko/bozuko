@@ -1,8 +1,10 @@
 var bozuko = require('bozuko'),
     mongoose = require('mongoose'),
+    // Engine = bozuko.require('core/contest/engine'),
     Schema = mongoose.Schema,
     GameConfig = require('./embedded/contest/game/config'),
     EntryConfig = require('./embedded/contest/entry/config'),
+    Prize = require('./embedded/contest/prize'),
     // ContestPlay = require('./embedded/contest/play'),
     ObjectId = Schema.ObjectId
 ;
@@ -12,7 +14,7 @@ var Contest = module.exports = new Schema({
     game                    :{type:String},
     game_config             :{},
     entry_config            :[EntryConfig],
-    // plays                   :[Play],
+    //prizes                  :[Prize],
     start                   :{type:Date},
     end                     :{type:Date},
     total_entries           :{type:Number},
@@ -20,6 +22,16 @@ var Contest = module.exports = new Schema({
     play_cursor             :{type:Number},
     token_cursor            :{type:Number},
     winners                 :[ObjectId]
+});
+
+/**
+ * Create the results array
+ *
+ * @param {User}
+ * @param {EntryMethod} 
+ */
+Contest.method('generateResults', function(){
+    
 });
 
 /**
@@ -51,6 +63,31 @@ Contest.method('enter', function(entry, callback){
     });
 });
 
+Contest.method('incrementPlayCursor', function(callback, tries){
+    tries = tries || 0;
+    var self = this;
+    bozuko.models.Contest.update(
+        {_id:self._id, play_cursor:self.play_cursor},
+        {play_cursor: self.play_cursor + 1},
+        function(error, object){
+            if( error ){
+                
+                // how many times have we tried to do this?
+                if( tries > 10 ){
+                    return callback( bozuko.error('contest/error_incrementing_play_cursor', self) );
+                }
+                
+                return bozuko.models.Contest.findById( self._id, function(error, contest){
+                    if( error ) return callback( error );
+                    return contest.incrementPlayCursor(callback, tries+1);
+                });
+            }
+            self.play_cursor++;
+            return callback( null, self.play_cursor );
+        }
+    );
+});
+
 Contest.method('play', function(user, callback){
     var self = this;
     // first, lets find the entries for this contest
@@ -64,16 +101,11 @@ Contest.method('play', function(user, callback){
                 return callback( bozuko.error("contest/no_tokens") );
             }
             // okay, we have an entry that is valid for this game
-            // let's play a token
-            console.log('play cursor before increment', JSON.stringify(self.play_cursor));
-            self.play_cursor++;
-            return self.save(function(error, result){
-                // now lets get the actual game result
-                console.log('play cursor after increment', JSON.stringify(self.play_cursor));
-                console.log(result);
-                console.log(JSON.stringify(self));
-                // bozuko.game( this.game, this.game_config ).play( this, result );
-                callback( null, {} );
+            // let's play a token, however, we need to do it asynchronosly
+            return self.incrementPlayCursor( function(error, index){
+                // now lets process the result
+                var result = self.results[index];
+                // bozuko.game( self.game, self.game_config ).process( result );
             });
         }
     );

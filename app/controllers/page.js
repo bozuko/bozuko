@@ -176,6 +176,7 @@ exports.routes = {
                 };
 
                 bozuko.models.Page.search(options, function(error, pages){
+                    
                     if( error ){
                         res.send( bozuko.transfer('error',{message:error.message}), 400);
                     }
