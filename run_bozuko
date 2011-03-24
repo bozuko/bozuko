@@ -1,2 +1,7 @@
 #!/bin/sh
+
+if [[ ! -d logs ]] ; then 
+    mkdir -p logs
+fi
+
 nohup supervisor -w ./app,./games -p app.js > ./logs/bozuko.log &
