@@ -27,8 +27,8 @@ Statistic.static('search', function(options, callback){
         console.log("options.city = "+options.city);
         bozuko.models.Statistic.find({'service': service, 'city': options.city}, fn);
     } else if (options.latLng) {
-        bozuko.models.Statistic.find({'service': service,'lat':options.latlng.lat,
-            'lng':options.latlng.lng}, fn);
+        bozuko.models.Statistic.find({'service': service,'lat':options.latLng.lat,
+            'lng':options.latLng.lng}, fn);
     } else {
         bozuko.models.Statistic.find({}, fn);
     }
