@@ -35,7 +35,9 @@ exports.run = function(app){
     initGames(app);
 
     // setup stats collection
-    initStats();
+    if( bozuko.env === 'stats'){
+        initStats();
+    }
 
 };
 
