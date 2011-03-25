@@ -33,12 +33,6 @@ exports.run = function(app){
 
     // setup the games
     initGames(app);
-
-    // setup stats collection
-    if( bozuko.env === 'stats'){
-        initStats();
-    }
-
 };
 
 function initApplication(app){
@@ -171,27 +165,4 @@ function initGames(app){
             bozuko.games[name] = Game.create(bozuko.dir+'/games/'+file, app);
         }
     });
-}
-
-function initStats() {
-    var stats = bozuko.require('util/stats');
-    var ms_per_hr = 1000*60*60;
-    var ms_per_day = ms_per_hr*24;
-    var now = new Date();
-    var hours = 24 - now.getHours();
-
-    // If the server crashes stats will be accurate to within 1 hour
-    setTimeout(function() {
-        stats.collect_all(logErr);
-        setInterval(function() {
-            stats.collect_all(logErr);
-        }, ms_per_day);
-    }, hours*ms_per_hr);
-    console.log("initstats");
-}
-
-function logErr(err, val) {
-    if (err) {
-        console.log(JSON.stringify(err));
-    }
 }
