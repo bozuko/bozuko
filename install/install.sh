@@ -30,7 +30,7 @@ patch_expresso
 
 # multi-node
 echo "*** Installing multi-node"
-git clone https://github.com/kriszyp/multi-node.git multi-node
+git clone git://github.com/andrewjstone/multi-node.git
 cd multi-node
 npm install
 cd ..

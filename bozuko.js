@@ -13,38 +13,40 @@ exports.db = exports.require('core/db');
 /**
  * exports.app MUST be set by the application prior to calling configure()
  */
-exports.configure = function(config) {
-    this.env = config;
+exports.configure = function() {
+    this.env = process.env.NODE_ENV;
     var app = exports.app;
     if (!app) {
-		throw new Error("bozuko.app not set!");
+	throw new Error("bozuko.app not set!");
     }
 
-    switch(config) {
+    app.configure('development', function() {
+        exports.config = require('./config/development');
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    });
 
-		case 'production':
-			exports.config = require('./config/production');
-			app.use(express.errorHandler());
-			break;
+    app.configure('production', function() {
+        exports.config = require('./config/production');
+	app.use(express.errorHandler());
+    });
 
-		case 'test':
-			exports.config = require('./config/test');
-			app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-			break;
+    app.configure('test', function() {
+	exports.config = require('./config/test');
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    });
 
-		default:
-			exports.config = require('./config/development');
-			app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-		}
+    app.configure('stats', function() {
+	exports.config = require('./config/stats');
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+    });
 };
 
-exports.run = function(config) {
-    if (config) {
-		exports.configure(config);
-    } else if (!exports.config){
-		throw new Error("No configuration given!");
+exports.run = function() {
+    if (!process.env.NODE_PATH) {
+	throw new Error("No configuration given! Please set NODE_PATH environment variable.");
     }
-    require('./app/main').run(exports.app);
+    this.configure();
+    require('./app/main').run(this.app);
 };
 
 exports.services = {};
