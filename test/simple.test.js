@@ -35,7 +35,7 @@ var get_root = function(link, callback) {
 
 var get_pages = function(link, callback) {
     assert.response(bozuko.app,
-        {url: link+'/?lat=42.646261785714&lng=-71.303897114286&limit=5&query=owl'},
+        {url: link+'/?lat=42.646261785714&lng=-71.303897114286&query=owl&limit=1'},
         ok,
         function(res) {
             var page = JSON.parse(res.body)[0];

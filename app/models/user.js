@@ -17,12 +17,3 @@ var User = module.exports = new Schema({
 });
 
 Services.initSchema(User);
-
-// also, lets check what the hell services looks like prior to saving..
-User.pre('save', function(next){
-    console.log('before save', this.services.length);
-    next();
-});
-User.post('save', function(){
-    console.log('after save', this.services.length);
-});

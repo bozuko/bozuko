@@ -9,6 +9,7 @@ var ExtJs       = bozuko.require('util/extjs'),
 exports.routes = {
 
     '/' : {
+        
 
         description :'Index page',
 

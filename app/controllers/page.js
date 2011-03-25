@@ -12,7 +12,7 @@ exports.transfer_objects = {
         def: {
             id: "String",
             name: "String",
-            picture: "String",
+            image: "String",
             facebook_page: "String",
             category: "String",
             website: "String",
@@ -148,8 +148,22 @@ var fill_page = function(p, callback) {
         page.links.feedback = page_path+"/feedback";
         callback(null, page);
     });
-
 };
+
+function get_page_links(page, fid){
+    var links = {
+        facebook_page       :'http://facebook.com/'+fid,
+        facebook_login      :'/user/login/facebook',
+        facebook_checkin    :'/facebook/'+fid+'/checkin',
+        facebook_like       :'/facebook/'+fid+'/like'
+    };
+    if( page ){
+        links.page          ='/page/'+p.id,
+        links.share         ='/page/'+p.id+'/share';
+        links.feedback      ='/page/'+p.id+'/feedback';
+    }
+    return links;
+}
 
 exports.routes = {
 
@@ -163,6 +177,7 @@ exports.routes = {
                 var lat = req.param('lat') || '42.645625';
                 var lng = req.param('lng') || '-71.307864';
                 var service = req.param('service');
+                var query = req.param('q');
 
                 var options = {
                     latLng: {lat:lat, lng:lng},
@@ -170,8 +185,9 @@ exports.routes = {
                     offset: parseInt(req.param('offset')) || 0
                 };
                 
+                if( query ) options.query = query;
                 if( service ) options.service = service;
-
+                
                 bozuko.models.Page.search(options,
                     function(error, results){
                         if( error ){
@@ -179,11 +195,29 @@ exports.routes = {
                         }
                         
                         var ret=[];
-                        results.pages.forEach(function(p){
-                            p.links = {};
-                            
+                        if( results.pages ) results.pages.forEach(function(p){
+                            var page = bozuko.sanitize('page', p);
+                            page.links = get_page_links(page, p.service('facebook').sid);
+                            console.log(page.links);
+                            if( p.contests ){
+                                p.contests.forEach(function(contest){
+                                    // build games
+                                });
+                            }
                             ret.push(p);
                         });
+                        
+                        if( results.service_results ) results.service_results.forEach(function(r){
+                            var fid = r.id;
+                            delete r.id;
+                            var result = bozuko.sanitize('page', r);
+                            if( r.service == 'facebook' ){
+                                result.links = get_page_links(null, fid);
+                            }
+                            ret.push(result);
+                        });
+                        // console.log(ret);
+                        res.send(ret);
                     }
                 );
             }

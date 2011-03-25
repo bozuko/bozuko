@@ -35,7 +35,7 @@ exports.run = function(app){
     initGames(app);
 
     // setup stats collection
-    initStats();
+    //initStats();
 
 };
 
@@ -67,7 +67,7 @@ function initApplication(app){
     app.use(express.methodOverride());
     app.use(express.cookieParser());
     app.use(express.session({ store: new MemoryStore({ reapInterval: -1 }), secret: 'chqsmells' }));
-
+    
     app.use(Monomi.detectBrowserType());
     app.use(bozuko.require('middleware/device')());
     app.use(bozuko.require('middleware/session')());
@@ -160,13 +160,14 @@ function initControllers(app){
 
 function initGames(app){
     bozuko.games = {};
-    var dir = bozuko.dir + '/games';
+    var dir = __dirname + '/games';
     fs.readdirSync(dir).forEach( function(file){
         var stat = fs.statSync(dir+'/'+file);
         if( stat.isDirectory() ){
             var name = file.replace(/\..*?$/, '');
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
-            bozuko.games[name] = Game.create(bozuko.dir+'/games/'+file, app);
+            bozuko.games[name] = bozuko.require('/games/'+file);
+            app.use('/game/'+name, express.static(bozuko.dir+'/games/'+name+'/resources'));
         }
     });
 }

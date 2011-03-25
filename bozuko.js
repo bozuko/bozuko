@@ -56,8 +56,8 @@ exports.service = function(name){
 	return exports.services[name];
 };
 
-exports.game = function(name){
-	return this.games[name] || false;
+exports.game = function(name, config){
+	return new this.games[name](config);
 };
 
 exports.transfer = function(key, data){
@@ -103,7 +103,7 @@ exports.error = function(name, data){
 	var BozukoError = this.require('core/error');
 
 	try{
-		var message = this.require('core/errors/'+path.join('/'))[err];
+		var message = this.require('errors/'+path.join('/'))[err];
 		var code = null;
 		if( typeof message != 'string' && message.code ){
 			code = message.code;
@@ -113,4 +113,8 @@ exports.error = function(name, data){
 	}catch(e){
 		return new BozukoError();
 	}
+};
+
+exports.t = function(){
+	return this.require('core/lang').translate.apply(this, arguments);
 };
