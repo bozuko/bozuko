@@ -23,7 +23,7 @@ var app = express.createServer(ssl);
 var bozuko = require('bozuko');
 
 bozuko.app = app;
-bozuko.run('development');
+bozuko.run();
 
 // Only listen on $ node app.js
 module.exports = app;
@@ -41,11 +41,37 @@ if (!module.parent) {
     console.log("Bozuko Server listening on port ",bozuko.config.server.port);
 
     if (nodes.isMaster) {
+        // setup stats collection
+        if( bozuko.env === 'stats'){
+            initStats();
+        }
         var replServer = net.createServer(function(socket){
             repl.start("bozuko> ", socket);
         }).listen(bozuko.config.server.port+10);
 
         console.log("Bozuko REPL listening on port ",bozuko.config.server.port+10);
-        console.log("awesome");
+    }
+}
+
+function initStats() {
+    var stats = bozuko.require('util/stats');
+    var ms_per_hr = 1000*60*60;
+    var ms_per_day = ms_per_hr*24;
+    var now = new Date();
+    var hours = 24 - now.getHours();
+
+    // If the server crashes stats will be accurate to within 1 hour
+    setTimeout(function() {
+        stats.collect_all(logErr);
+        setInterval(function() {
+            stats.collect_all(logErr);
+        }, ms_per_day);
+    }, hours*ms_per_hr);
+    console.log("initstats");
+}
+
+function logErr(err, val) {
+    if (err) {
+        console.log(JSON.stringify(err));
     }
 }
