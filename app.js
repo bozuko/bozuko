@@ -1,6 +1,7 @@
 var net     = require('net'),
     fs      = require('fs'),
-    repl    = require('repl');
+    repl    = require('repl'),
+    multinode = require('multi-node');
 
 /**
  * Module dependencies.
@@ -22,7 +23,7 @@ var app = express.createServer(ssl);
 var bozuko = require('bozuko');
 
 bozuko.app = app;
-bozuko.run('development');
+bozuko.run();
 
 // Only listen on $ node app.js
 module.exports = app;
@@ -32,18 +33,45 @@ module.exports = app;
 // like another router or with the 'connect' command, then let them
 // start listening.
 if (!module.parent) {
-    var multinode = require('/home/bozuko/bozuko/node/lib/multi-node');
-    multinode.listen({
+    var nodes = multinode.listen({
         port: bozuko.config.server.port,
         nodes: 4
     }, app);
-  
+
     console.log("Bozuko Server listening on port ",bozuko.config.server.port);
-  
-    var replServer = net.createServer( function(socket){
-        repl.start("bozuko> ", socket);
-    });
-    multinode.listen({port: bozuko.config.server.port+10, nodes:1}, replServer);
-    
-    console.log("Bozuko REPL listening on port ",bozuko.config.server.port+10);
+
+    if (nodes.isMaster) {
+        // setup stats collection
+        if( bozuko.env === 'stats'){
+            initStats();
+        }
+        var replServer = net.createServer(function(socket){
+            repl.start("bozuko> ", socket);
+        }).listen(bozuko.config.server.port+10);
+
+        console.log("Bozuko REPL listening on port ",bozuko.config.server.port+10);
+    }
+}
+
+function initStats() {
+    var stats = bozuko.require('util/stats');
+    var ms_per_hr = 1000*60*60;
+    var ms_per_day = ms_per_hr*24;
+    var now = new Date();
+    var hours = 24 - now.getHours();
+
+    // If the server crashes stats will be accurate to within 1 hour
+    setTimeout(function() {
+        stats.collect_all(logErr);
+        setInterval(function() {
+            stats.collect_all(logErr);
+        }, ms_per_day);
+    }, hours*ms_per_hr);
+    console.log("initstats");
+}
+
+function logErr(err, val) {
+    if (err) {
+        console.log(JSON.stringify(err));
+    }
 }
