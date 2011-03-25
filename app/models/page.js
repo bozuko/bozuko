@@ -1,4 +1,5 @@
 var bozuko = require('bozuko'),
+    _ = bozuko.t;
     facebook = bozuko.require('util/facebook'),
     mongoose = require('mongoose'),
     Schema = mongoose.Schema,
@@ -8,6 +9,7 @@ var bozuko = require('bozuko'),
 var Page = module.exports = new Schema({
     // path is for creating a tree structure
     path                :{type:String},
+    description         :{type:String},
     is_location         :{type:Boolean},
     name                :{type:String},
     image               :{type:String},
@@ -64,11 +66,17 @@ Page.method('checkin', function(user, options, callback) {
         if( error ) return callback(error);
         
         options.user = user;
+        options.link = 'http://bozuko.com';
+        options.picture = 'http://bozuko.com/images/bozuko-chest-check.png';
         
         // okay, lets try to give them entries on all open contests
         if( contests.length === 0 ){
             // lets set a generic checkin message
-            options.description = "";
+            options.name = _t('en', 'checkin/general_checkin_name');
+            options.description = _t(
+                user.lang,
+                'checkin/general_checkin_desc'
+            );
         }
         else{
             var contest = contests[0];
@@ -86,16 +94,27 @@ Page.method('checkin', function(user, options, callback) {
                     }
                 }
             }
-            
-            // okay lets set the message
-            
+            var game = contest.getGame();
+            options.name = _t('en', 'checkin/general_checkin_name', self.name);
+            options.description = _t(
+                user.lang,
+                'checkin/contest_checkin_desc',
+                user.name,
+                self.name,
+                game.name,
+                contest.getBestPrize().name
+            );
         }
+        // okay, we have "everything we need to make a checkin, lets
+        // do so with our checkin model
+        
         var current = 0;
         return contests.forEach( function(contest){
             
             // try to enter the contest
             
         });
+        return callback( null, bozuko.transfer('facebook_result'), {tokens: 2, timestamp: new Date(), duration: 24*60*60*1000} );
     
     /*return contest.enter(
         bozuko.entry('facebook/checkin', req.session.user, {

@@ -135,6 +135,7 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
+                                test: true,
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 latLng: {lat:lat,lng:lng},
                                 message: msg
@@ -158,12 +159,13 @@ exports.routes = {
                     // if there is no page for this place yet, lets create one
                     if( !page ){
                         return bozuko.service('facebook').place(id, function(error, place){
+                            if( error ) return error.send(res);
                             if( !place ){
-                                bozuko.error('facebook/bad_place_id');
+                                return bozuko.error('facebook/bad_place_id').send(res);
                             }
-                            bozuko.models.Page.createFromServiceObject( place, function(error, page){
-                                if( error ) error.send(res);
-                                do_checkin(page);
+                            return bozuko.models.Page.createFromServiceObject( place, function(error, page){
+                                if( error ) return error.send(res);
+                                return do_checkin(page);
                             });
                         });
                     }

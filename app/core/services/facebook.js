@@ -190,7 +190,7 @@ $.search = function(options, callback){
     };
 
     if( options.latLng ) params.center = options.latLng.lat+','+options.latLng.lng;
-    if( options.query ) params.query = options.query;
+    if( options.query ) params.q = options.query;
     if( !options.fields ) {
         options.fields = ['name','category','checkins','location'];
     }
@@ -204,8 +204,7 @@ $.search = function(options, callback){
     params.offset = options.offset || 0;
     // this is a weird hack to get around facebooks "interpretation" of limiting...
     params.limit = (options.limit || 25) + params.offset;
-
-
+    
     facebook.graph( '/search',
         /* Facebook Options */
         {

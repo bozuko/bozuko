@@ -2,7 +2,6 @@ var bozuko = require('bozuko'),
     mongoose = require('mongoose'),
     // Engine = bozuko.require('core/contest/engine'),
     Schema = mongoose.Schema,
-    GameConfig = require('./embedded/contest/game/config'),
     EntryConfig = require('./embedded/contest/entry/config'),
     Prize = require('./embedded/contest/prize'),
     // ContestPlay = require('./embedded/contest/play'),
@@ -14,7 +13,7 @@ var Contest = module.exports = new Schema({
     game                    :{type:String},
     game_config             :{},
     entry_config            :[EntryConfig],
-    //prizes                  :[Prize],
+    prizes                  :[Prize],
     start                   :{type:Date},
     end                     :{type:Date},
     total_entries           :{type:Number},
@@ -109,6 +108,20 @@ Contest.method('play', function(user, callback){
             });
         }
     );
+});
+
+Contest.method('getGame', function(){
+    console.log(this.game, this.game_config);
+    return bozuko.game( this.game, this.game_config );
+});
+
+Contest.method('getBestPrize', function(){
+    if( this.prizes.length ) return null;
+    var prizes = this.prizes;
+    prizes.sort( function(a, b){
+        return a - b;
+    });
+    return prizes[0];
 });
 
 Contest.virtual('games', function(){

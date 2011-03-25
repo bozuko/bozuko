@@ -130,10 +130,12 @@ var add_contests = function(callback) {
 
     var data = {
         start                   :start,
-	end                     :end,
-	total_entries           :1000,
-	play_cursor             :0,
-	token_cursor            :0
+		game					:'slots',
+		game_config				:{},
+		end                     :end,
+		total_entries           :1000,
+		play_cursor             :0,
+		token_cursor            :0
     };
 
     Bozuko.models.Page.findOne({name:/owl/i}, function(error, page){

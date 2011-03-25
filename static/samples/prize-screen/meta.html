@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Prize Screen - Meta</title>
+        <link rel="stylesheet" type="text/css" href="/css/sample.css" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+        <script type="text/javascript">
+        jQuery(function($){
+            var countdown = $('#screen .countdown');
+            var count = 30;
+            var updateCount = function(){
+                countdown.html(count--);
+                if( count < 0 ) clearInterval( countdownInterval );
+            };
+            var countdownInterval = setInterval(updateCount, 1000);
+            updateCount();
+            var img = $('.custom-image img');
+            var animateImg = function(dir){
+                img.animate({
+                    width: dir ? 150 : 200,
+                    marginTop: dir ? 25 : 0
+                },{
+                    duration: 1000,
+                    complete: function(){
+                        animateImg(!dir);
+                    }
+                });
+            };
+            img.css({width: 200});
+            animateImg(true);
+        });
+        
+        </script>
+    </head>
+    <body>
+        <div id="screen" class="prize-screen prize-screen-meta">
+            <div class="countdown"></div>
+            <div class="prize-name">T-Shirt</div>
+            <div class="custom-image">
+                <img src="/images/clover.png" />
+            </div>
+            <div class="close">CLOSE</div>
+        </div>
+    </body>
+</html>

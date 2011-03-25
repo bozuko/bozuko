@@ -81,11 +81,11 @@ Controller.prototype = {
                         };
                         
                     }
-                    app[method](path, function(){
+                    app[method](path, function(req){
                         handler.apply(_this,arguments);
                     });
                     config.aliases.forEach(function(alias){
-                        app[method](alias, function(){
+                        app[method](alias, function(req){
                             handler.apply(_this,arguments);
                         });
                     });
