@@ -56,8 +56,7 @@ exports.request = function(config){
         headers: headers,
         method: method
     }, function(response){
-        
-        // console.log(response.headers);
+        // console.log('HTTP '+method+' '+url_parsed.host+', '+path);
         var data = '';
         response.setEncoding('utf8');
         response.on('data', function(chunk){
@@ -85,6 +84,8 @@ exports.request = function(config){
         });
     });
     
+    
+    
     /**
      * Not entirely sure what the upgrade event is.
      */
@@ -105,4 +106,5 @@ exports.request = function(config){
     }
     
     request.end(body,encoding);
+    
 };
