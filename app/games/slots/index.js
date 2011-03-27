@@ -1,12 +1,12 @@
-var bozuko = require('bozuko'),
-    express = require('express'),
-    Game = bozuko.require('core/game'),
+var express = require('express'),
+    Game = Bozuko.require('core/game'),
     fs = require('fs');
     
     
 var Slots = module.exports = function(){
-    Game.prototype.apply(this,arguments);
-    this.icons = this.config.icons || this.default_icons.splice();
+    Game.prototype.constructor.apply(this,arguments);
+    this.config = this.config || {};
+    this.icons = this.config.icons || this.default_icons.slice();
 };
 
 Slots.prototype.__proto__ = Game;

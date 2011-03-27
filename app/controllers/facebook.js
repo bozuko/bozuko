@@ -1,22 +1,32 @@
-var bozuko = require('bozuko');
 
 var facebook_result = {
     doc: "Result from a Facebook Operation",
     def:{
-        id: "Number",
+        page_id : "String",
+        page_name: "String",
         tokens: "Number",
         timestamp: "String",
         duration: "Number",
+        games: ['game'],
         links: {
-            facebook_like: "String",
-            contest_result: "String"
+            facebook_like: "String"
         }
     }
 };
 
-
 exports.transfer_objects = {
-    facebook_result: facebook_result
+    facebook_result: {
+        doc: "Result from a Facebook Operation",
+        def:{
+            id: "Number",
+            tokens: "Number",
+            timestamp: "String",
+            duration: "Number",
+            links: {
+                facebook_like: "String"
+            }
+        }
+    }
 };
 
 exports.links = {
@@ -61,40 +71,12 @@ exports.links = {
     }
 };
 
-var checkin = function(res, user_id, fb_id, lat, lng, msg) {
-    bozuko.service('facebook').checkin({
-        test: true,
-        user: user_id,
-        message: msg,
-        place_id: fb_id,
-        link        :'http://bozuko.com',
-        picture     :'http://bozuko.com/images/bozuko-chest-check.png',
-        description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
-        latLng: {
-            lat: lat,
-            lng:lng
-        }},
-        function(error, result){
-            
-            if (error) {
-                return error.send(res);
-            }
-            // TODO: send a real facebook_checkin_result and save this in the db
-            return res.send({
-                links: {
-                    facebook_like: '/facebook/'+fb_id+"/like"
-                }
-            });
-        }
-    );
-};
-
 var like = function(req, res) {
-    bozuko.service('facebook').like({
+    Bozuko.service('facebook').like({
         test: true,
         user: req.session.user._id,
-        link        :'http://bozuko.com',
-        picture     :'http://bozuko.com/images/bozuko-chest-check.png',
+        link        :'http://Bozuko.com',
+        picture     :'http://Bozuko.com/images/Bozuko.chest-check.png',
         description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
         object_id   : req.param('id')
     },
@@ -103,7 +85,7 @@ var like = function(req, res) {
             return err.send(res);
         }
         // TODO: send a real result
-        res.send({
+        return res.send({
             links: {
             }
         });
@@ -124,9 +106,9 @@ exports.routes = {
                 var msg = req.param('message') || '';
 
                 if( !lat || !lng ){
-                    return bozuko.error('facebook/no_lat_lng').send(res);
+                    return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
-                return bozuko.models.Page.findByService('facebook', id, function(err, page) {
+                return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
                     
                     if( err ){
                         return err.send( res );
@@ -140,17 +122,44 @@ exports.routes = {
                                 latLng: {lat:lat,lng:lng},
                                 message: msg
                             },
-                            function(error, checkin_result){
+                            function(error, result){
                                 if( error ){
                                     error.send(res);
                                 }
                                 else{
-                                    res.send(
-                                        bozuko.transfer(
-                                            'facebook_checkin_result',
-                                            checkin_result
-                                        )
-                                    );
+                                    var checkin = result.checkin;
+                                    var entries = result.entries;
+                                    
+                                    checkin.getPage(function(error, page){
+                                        if( error ) return error.send(res);
+                                        
+                                        return page.getUserTokens(req.session.user, function(error, tokens, games){
+                                            if( error ) return error;
+                                            
+                                            // we need the games too, so we can provide links to each
+                                            
+                                            
+                                            var ret = {
+                                                page_id: page.id,
+                                                page_name: page.name,
+                                                tokens: tokens,
+                                                timestamp: checkin.timestamp,
+                                                duration: Bozuko.config.checkin.duration.page,
+                                                games: games,
+                                                links: {
+                                                    facebook_like: '/facebook/'+page.service('facebook').sid+'/like'
+                                                }
+                                            };
+                                            
+                                            return res.send(
+                                                Bozuko.transfer(
+                                                    'facebook_result',
+                                                    ret
+                                                )
+                                            );
+                                        });
+                                        
+                                    });
                                 }
                             }
                         );
@@ -158,12 +167,12 @@ exports.routes = {
                     
                     // if there is no page for this place yet, lets create one
                     if( !page ){
-                        return bozuko.service('facebook').place(id, function(error, place){
+                        return Bozuko.service('facebook').place(id, function(error, place){
                             if( error ) return error.send(res);
                             if( !place ){
-                                return bozuko.error('facebook/bad_place_id').send(res);
+                                return Bozuko.error('facebook/bad_place_id').send(res);
                             }
-                            return bozuko.models.Page.createFromServiceObject( place, function(error, page){
+                            return Bozuko.models.Page.createFromServiceObject( place, function(error, page){
                                 if( error ) return error.send(res);
                                 return do_checkin(page);
                             });

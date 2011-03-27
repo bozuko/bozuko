@@ -1,11 +1,10 @@
-var bozuko      = require('bozuko'),
-    URL         = require('url'),
-    http        = bozuko.require('util/http'),
+var URL         = require('url'),
+    http        = Bozuko.require('util/http'),
     merge       = require('connect').utils.merge,
     qs          = require('querystring'),
     url         = require('url'),
-    facebook    = bozuko.require('util/facebook'),
-    Service     = bozuko.require('core/service')
+    facebook    = Bozuko.require('util/facebook'),
+    Service     = Bozuko.require('core/service')
 ;
 
 var FacebookService = module.exports = function(){
@@ -36,9 +35,9 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var protocol = (req.app.key?'https:':'http:');
 
     var params = {
-        'client_id' : bozuko.config.facebook.app.id,
-        'scope' : bozuko.config.facebook.perms[scope],
-        'redirect_uri' : protocol+'//'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
+        'client_id' : Bozuko.config.facebook.app.id,
+        'scope' : Bozuko.config.facebook.perms[scope],
+        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname
     };
 
     if( req.session.device == 'touch'){
@@ -68,7 +67,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     }
     else{
 
-        params.client_secret = bozuko.config.facebook.app.secret;
+        params.client_secret = Bozuko.config.facebook.app.secret;
         params.code = code;
 
         // we should also have the user information here...
@@ -90,9 +89,9 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             access_token : token
                         }
                     }, function(user){
-                        bozuko.models.User.findOne({'services.name':'facebook','services.sid':user.id}, function(err, u){
+                        Bozuko.models.User.findOne({'services.name':'facebook','services.sid':user.id}, function(err, u){
                             if( !u ){
-                                u = new bozuko.models.User();
+                                u = new Bozuko.models.User();
                             }
                             // update the user's details
                             u.name = user.name;
@@ -111,10 +110,10 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                 // after a save, we need to do a get user or embedded docs
                                 // get messed up... yokay
 
-                                bozuko.models.User.findById(u.id, function(error, u){
+                                Bozuko.models.User.findById(u.id, function(error, u){
                                     var device = req.session.device;
                                     req.session.regenerate(function(err){
-                                        res.clearCookie('fbs_'+bozuko.config.facebook.app.id);
+                                        res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
                                         req.session.userJustLoggedIn = true;
                                         req.session.user = u;
                                         req.session.device = device;
@@ -182,7 +181,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
 $.search = function(options, callback){
     var self = this;
     if( !options || !(options.latLng || options.query) ){
-        return callback(bozuko.error('facebook/no_lat_lng_query'));
+        return callback(Bozuko.error('facebook/no_lat_lng_query'));
     }
 
     var params = {
@@ -212,7 +211,7 @@ $.search = function(options, callback){
         },
         function facebook_search(results){
             // these need to be mapped to
-            // generic bozuko objects
+            // generic Bozuko.objects
             callback(null, self.sanitizePlaces(results.data));
         }
     );
@@ -239,11 +238,11 @@ $.search = function(options, callback){
  * @return {null}
  */
 $.checkin = function(options, callback){
-
+    
     if( !options || !options.place_id || !options.latLng || !options.user ){
-        return callback(bozuko.error('facebook/no_lat_lng_user_place'));
+        return callback(Bozuko.error('facebook/no_lat_lng_user_place'));
     }
-
+    
     var params = {
         place           :options.place_id,
         coordinates     :JSON.stringify({latitude:options.latLng.lat,longitude: options.latLng.lng})
@@ -255,7 +254,7 @@ $.checkin = function(options, callback){
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
 
     if( options.test ){
-        return callback(null, {result:123123123});
+        return callback(null, {id:134574646614657});
     }
 
     return facebook.graph('/me/checkins',{
@@ -263,9 +262,77 @@ $.checkin = function(options, callback){
         params: params,
         method:'post'
     },function(result){
+        // check the result..
+        if( result.error ){
+            callback( Bozuko.error('facebook/api', result.error) );
+        }
         callback(null, result);
     });
 };
+
+
+/**
+ * Get a user's details
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
+ *
+ * @param {Page}            place_id        Bozuko Page
+ * @param {User}            user            Bozuko User
+ * @param {Object}          options         Checkin specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.user = function(options, callback){
+    
+    if( !options || !(options.user_id || options.user_id)  ){
+        return callback(Bozuko.error('facebook/no_user'));
+    }
+    
+    var uid = options.user_id || options.user.service('facebook').sid;
+    
+    var params ={};
+    if( options.fields )        params.fields       = options.fields;
+    
+    
+    return facebook.graph('/'+uid,{
+        user: options.user,
+        params: params
+    },function(result){
+        if( result.error ){
+            callback( Bozuko.error('facebook/api', result.error) );
+        }
+        callback(null, result);
+    });
+};
+
+/**
+ * Get a user's favorites
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ *          TODO - figure out what to pass for data, maybe the id of the checkin in the service
+ *
+ * @param {Page}            place_id        Bozuko Page
+ * @param {User}            user            Bozuko User
+ * @param {Object}          options         Checkin specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @return {null}
+ */
+$.user_favorites = function(options, callback){
+    options.fields = 'likes';
+    return this.user(options, callback);
+};
+
 
 /**
  * Like a page
@@ -287,7 +354,7 @@ $.checkin = function(options, callback){
 $.like = function(options, callback){
 
     if( !options || !options.object_id || !options.user ){
-        return callback(bozuko.error('facebook/no_page_id_user'));
+        return callback(Bozuko.error('facebook/no_page_id_user'));
     }
     var params = {};
 
@@ -305,7 +372,10 @@ $.like = function(options, callback){
         user: options.user,
         method:'post'
     },function(result){
-        callback(null, result);
+        if( result.error ){
+            return callback( Bozuko.error('facebook/api', result.error) );
+        }
+        return callback(null, result);
     });
 };
 
@@ -333,7 +403,7 @@ $.like = function(options, callback){
 $.place = function(options, callback){
     var self = this;
     if( !options || !options.place_id ){
-        return callback(bozuko.error('facebook/no_page_id'));
+        return callback(Bozuko.error('facebook/no_page_id'));
     }
 
     var params = {};
@@ -343,7 +413,10 @@ $.place = function(options, callback){
     facebook.graph('/'+options.place_id, {
         params: params
     },function(result){
-        callback(null, self.sanitizePlace(result) );
+        if( result.error ){
+            return callback( Bozuko.error('facebook/api', result.error) );
+        }
+        return callback(null, self.sanitizePlace(result) );
     });
 
 };
@@ -394,8 +467,8 @@ $.get_user_pages = function(user, callback){
             pages.sort(sort_FacebookPageLocation).reverse();
 
             if( ids.length > 0 ){
-                bozuko.models.Page.find({'services.name':'facebook','services.sid':{$in:ids}}, function(err, bozuko_pages){
-                    if( bozuko_pages != null ) bozuko_pages.forEach(function(bozuko_page){
+                Bozuko.models.Page.find({'services.name':'facebook','services.sid':{$in:ids}}, function(err, bozuko_pages){
+                    if( bozuko_pages != null ) Bozuko.pages.forEach(function(bozuko_page){
                         var i = ids.indexOf(bozuko_page.service('facebook').sid);
                         pages[i].has_owner = true;
                         pages[i].is_owner = (bozuko_page.owner_id.id == user._id.id);

@@ -1,8 +1,6 @@
-var bozuko = require('bozuko');
-
-var facebook    = bozuko.require('util/facebook'),
-    http        = bozuko.require('util/http'),
-    Page        = bozuko.require('util/page'),
+var facebook    = Bozuko.require('util/facebook'),
+    http        = Bozuko.require('util/http'),
+    Page        = Bozuko.require('util/page'),
     merge       = require('connect').utils.merge,
     qs          = require('querystring'),
     url         = require('url')    
@@ -15,7 +13,7 @@ exports.routes = {
         description :"Business login - sends user to facebook",
         
         get : function(req,res){
-            bozuko.require('core/auth').login(req,res,'business','/business/account',function(user){
+            Bozuko.require('core/auth').login(req,res,'business','/business/account',function(user){
                 // need to set a flag that this user let us manage pages
                 user.can_manage_pages = true;
                 user.save(function(){});
@@ -40,7 +38,7 @@ exports.routes = {
                 title : "your business account"
             };
             
-            bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, pages){
+            Bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, pages){
                 locals.pages = pages||[];
                 res.render('business/account', locals);
             });
@@ -54,7 +52,7 @@ exports.routes = {
         
         get : function(req,res){
             
-            bozuko.service('facebook').get_user_pages(req.session.user, function(err, facebook_pages){
+            Bozuko.service('facebook').get_user_pages(req.session.user, function(err, facebook_pages){
                 var locals = {
                     title : "add facebook page",
                     pages : facebook_pages || [],
@@ -88,7 +86,7 @@ exports.routes = {
                     res.redirect(req.url);
                     return;
                 }
-                bozuko.models.Page.findOne({'services.name':'facebook','services.sid':id}, function(err, page){
+                Bozuko.models.Page.findOne({'services.name':'facebook','services.sid':id}, function(err, page){
                     if( page && page.owner_id != req.session.user._id ){
                         /**
                          * TODO
@@ -100,7 +98,7 @@ exports.routes = {
                         res.redirect(req.url);
                         return;
                     }
-                    else if( !page ) page = new bozuko.models.Page();
+                    else if( !page ) page = new Bozuko.models.Page();
                     
                     page.service('facebook', data.id, req.session.user.service('facebook').auth, data);
                     
@@ -134,7 +132,7 @@ exports.routes = {
                 title:'Remove a page',
                 page:null
             };
-            bozuko.models.Page.findById(id, function(err, page){
+            Bozuko.models.Page.findById(id, function(err, page){
                 if( err ){
                     // yikes, i don't think we have one by that id...
                     locals.error= 'The requested page could not be found';
@@ -149,7 +147,7 @@ exports.routes = {
         
         post : function(req,res){
             var id = req.param('id');
-            bozuko.models.Page.findById(id, function(err, page){
+            Bozuko.models.Page.findById(id, function(err, page){
                 if( err ){
                     // yikes, i don't think we have one by that id...
                     req.flash('error', 'The requested page could not be found');
@@ -178,7 +176,7 @@ exports.routes = {
             // lets grab all the games we know of
             var games = [];
             var locals = {};
-            bozuko.models.Page.findById(id, function(err,page){
+            Bozuko.models.Page.findById(id, function(err,page){
                 // if we do not have a record, they did not add it correctly
                 if( !page ){
                     req.flash('error', 'You cannot create games for pages you have not yet added');
@@ -191,8 +189,8 @@ exports.routes = {
                  */
                 
                 // okay... lets see what games they have
-                Object.keys(bozuko.games).forEach( function(name){
-                    var game = bozuko.games[name];
+                Object.keys(Bozuko.games).forEach( function(name){
+                    var game = Bozuko.games[name];
                     games.push(merge(game.config,{_id:name}));
                 });
                 locals.page = page;
@@ -209,7 +207,7 @@ exports.routes = {
         description :"Return an array of the pages that the user can manage",
         
         get: function(req,res){
-            bozuko.service('facebook').get_user_pages(req.session.user, function(err, pages){
+            Bozuko.service('facebook').get_user_pages(req.session.user, function(err, pages){
                 res.send(pages);
             });
         }
@@ -220,7 +218,7 @@ exports.routes = {
         description :"Return the details of a page",
         
         get : function(req,res){
-            bozuko.service('facebook').place(req.param('id'),
+            Bozuko.service('facebook').place(req.param('id'),
                 {
                     user: req.session.user
                 },
@@ -231,5 +229,5 @@ exports.routes = {
         }
     },
     
-    '/business' : Page('bozuko for business', 'business/index')
+    '/business' : Page('Bozuko for business', 'business/index')
 };

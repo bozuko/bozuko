@@ -14,7 +14,7 @@ exports.object_types = {
             },
             links: {
                 user: "String",
-                bozuko_accept_terms: "String",
+                accept_terms: "String",
                 contest: "String",
                 contest_result: "String"
             }
@@ -25,7 +25,7 @@ exports.object_types = {
 exports.links = {
     bozuko: {
         get: {
-            doc: "Retrieve information about bozuko",
+            doc: "Retrieve information about Bozuko",
             returns: "bozuko"
         }
     },

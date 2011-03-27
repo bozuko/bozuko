@@ -1,5 +1,4 @@
-var bozuko = require('bozuko');
-var http = bozuko.require('util/http');
+var http = Bozuko.require('util/http');
 
 exports.transfer_objects = {
     prize: {
@@ -84,18 +83,18 @@ exports.routes = {
                     console.log("state = "+ req.param('state'));
                     var state = req.param('state');
                     if (state != 'active' && state != 'redeemed' && state != 'expired') {
-                        return bozuko.error('prize/bad_state').send(res);
+                        return Bozuko.error('prize/bad_state').send(res);
                     }
                     else {
                         // Search prizes by user and state
 
                         // Just return an active prize for now, as that's what's in the test.
-                        return res.send([bozuko.transfer('prize', prize)]);
+                        return res.send([Bozuko.transfer('prize', prize)]);
 
                     }
                 } else {
                     // Return all the user's prizes
-                    return res.send([bozuko.transfer('prize', prize)]);
+                    return res.send([Bozuko.transfer('prize', prize)]);
                 }
             }
         }
@@ -108,7 +107,7 @@ exports.routes = {
 				access: 'user',
 	
 				handler: function(req, res) {
-					res.send(bozuko.transfer('prize', prize));
+					res.send(Bozuko.transfer('prize', prize));
 				}
 			}
 		},

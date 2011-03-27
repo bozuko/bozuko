@@ -1,5 +1,4 @@
-var bozuko = require('bozuko'),
-    TransferObject = bozuko.require('core/transfer')
+var TransferObject = Bozuko.require('core/transfer')
     ;
 
 var HttpMethod = function(method, config, link){

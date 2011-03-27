@@ -1,5 +1,3 @@
-var bozuko = require('bozuko');
-
 /**
  * Abstract class for method of entry
  *
@@ -70,14 +68,14 @@ proto.process = function( callback ){
     // first, update this contests token cursor
     // this actually needs another check to make sure that the contest
     // has not changed since we grabbed it.
-    bozuko.models.Contest.update(
+    Bozuko.models.Contest.update(
         {_id:this.contest._id, token_cursor:this.contest.token_cursor},
         {token_cursor: this.contest.token_cursor + this.getTokenCount()},
         function(error, object){
             if( error ){
                 // this could be if the token_cursor changed...
                 // so the best thing we can do is update the object...
-                bozuko.models.Contest.findById( self.contest.id, function(error, contest){
+                Bozuko.models.Contest.findById( self.contest.id, function(error, contest){
                     if( error ){
                         // we can't do anything here...
                         return callback( error );
@@ -88,11 +86,11 @@ proto.process = function( callback ){
                         /**
                          * TODO - add multiple attempts
                          */
-                        return callback( bozuko.error('entry/token_update_fail') );
+                        return callback( Bozuko.error('entry/token_update_fail') );
                     }
                     self.contest = contest;
                     if( !self.ensureTokens() ){
-                        return callback( bozuko.error('entry/not_enough_tokens') );
+                        return callback( Bozuko.error('entry/not_enough_tokens') );
                     }
                     // try again...
                     return self.process( callback );
@@ -103,12 +101,13 @@ proto.process = function( callback ){
                 self.contest.token_cursor += self.getTokenCount();
                 
                 // create a Bozuko Entry model
-                var Entry = new bozuko.models.Entry({
+                var Entry = new Bozuko.models.Entry({
                     contest_id: self.contest.id,
                     user_id: self.user.id,
                     timestamp: new Date(),
                     type: self.type,
-                    tokens: self.getTokenCount()
+                    tokens: self.getTokenCount(),
+                    intial_tokens: self.getTokenCount()
                 });
                 
                 Entry.save( function(error){
@@ -143,14 +142,14 @@ proto.ensureTokens = function(){
 proto.validate = function( callback ){
     var self = this;
     // check for contest
-    if( !this.contest ) return callback( bozuko.error('entry/no_contest') );
+    if( !this.contest ) return callback( Bozuko.error('entry/no_contest') );
     
     // check for user
-    if( !this.user ) return callback( bozuko.error('entry/no_user') );
+    if( !this.user ) return callback( Bozuko.error('entry/no_user') );
     
     // check that there is enough tokens left
     if( this.ensureTokens() === false ){
-        return callback( bozuko.error('entry/not_enough_tokens') );
+        return callback( Bozuko.error('entry/not_enough_tokens') );
     }
     
     // check for duration
@@ -159,7 +158,7 @@ proto.validate = function( callback ){
         var last = new Date();
         last.setTime( now.getTime() - duration );
         
-        return bozuko.models.Entry.find({
+        return Bozuko.models.Entry.find({
             user_id:self.user.id,
             contest_id: self.contest.id,
             timestamp:{'gt':last}
@@ -169,7 +168,7 @@ proto.validate = function( callback ){
                 var now = new Date();
                 var next = new Date();
                 next.setTime(entry.timestamp.getTime()+self.config.duration);
-                callback( bozuko.error('entry/too_soon', next) );
+                callback( Bozuko.error('entry/too_soon', next) );
             }
             else{
                 callback( null );

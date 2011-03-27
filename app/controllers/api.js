@@ -1,5 +1,3 @@
-var bozuko = require('bozuko');
-
 exports.transfer_objects = {
     entry_point: {
         doc: "The entry point object of the application",
@@ -51,7 +49,7 @@ exports.routes = {
                 } else {
                     links.facebook_login = "/user/login/facebook";
                 }
-                res.send(bozuko.transfer('entry_point', {links: links}));
+                res.send(Bozuko.transfer('entry_point', {links: links}));
             }
         }
     }

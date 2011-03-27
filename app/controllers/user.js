@@ -1,5 +1,3 @@
-var bozuko = require('bozuko');
-
 exports.transfer_objects= {
     user: {
 
@@ -95,7 +93,7 @@ exports.routes = {
 
         get : function(req,res){
             service = req.param('service') || 'facebook';
-            bozuko.service(service).login(req,res,'user');
+            Bozuko.service(service).login(req,res,'user');
         }
     },
 
@@ -114,7 +112,7 @@ exports.routes = {
                         facebook_logout: "/user/logout/facebook",
                         favorites: "/user/"+user.id+"/favorites"
                     };
-                    res.send(bozuko.transfer('user', user));
+                    res.send(Bozuko.transfer('user', user));
                 } else {
                     res.statusCode = 404;
                     res.end();
@@ -129,7 +127,7 @@ exports.routes = {
             handler: function(req, res) {
                 if (req.session.user) {
                     var user = req.session.user;
-                    bozuko.models.Page.find({'_id': {$in: user.favorites}}, function(err, pages) {
+                    Bozuko.models.Page.find({'_id': {$in: user.favorites}}, function(err, pages) {
                         if (err) {
                             console.log("ERROR - favorites: err = "+err);
                             res.statusCode = 404;

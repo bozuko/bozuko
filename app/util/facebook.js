@@ -1,11 +1,9 @@
-var bozuko = require('bozuko');
-
-var http = bozuko.require('util/http'),
+var http = Bozuko.require('util/http'),
     merge= require('connect').utils.merge;
 
 var facebook = module.exports;
 
-var cache = bozuko.facebook_cache = {};
+var cache = Bozuko.facebook_cache = {};
 
 exports.graph = function(path, options, callback){
 
@@ -17,8 +15,8 @@ exports.graph = function(path, options, callback){
         options = {};
     }
     var params = {
-        client_id : bozuko.config.facebook.app.id,
-        access_token : bozuko.config.facebook.app.access_token
+        client_id : Bozuko.config.facebook.app.id,
+        access_token : Bozuko.config.facebook.app.access_token
     };
 
     options = options || {};
@@ -69,10 +67,10 @@ exports.graph = function(path, options, callback){
             var then = new Date();
             if(useCache) cache[cacheKey] = {arguments:arguments, time:then, duration:then.getTime()-now.getTime()};
 
-            bozuko.last_facebook_time = then.getTime() - now.getTime();
-            if( !bozuko.facebook_requests ) bozuko.facebook_requests={};
-            if( !bozuko.facebook_requests[url] ) bozuko.facebook_requests[url] = [];
-            bozuko.facebook_requests[url].push(bozuko.last_facebook_time);
+            Bozuko.last_facebook_time = then.getTime() - now.getTime();
+            if( !Bozuko.facebook_requests ) Bozuko.facebook_requests={};
+            if( !Bozuko.facebook_requests[url] ) Bozuko.facebook_requests[url] = [];
+            Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
             if (callback instanceof Function) callback.apply(this,arguments);
             else console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
         },

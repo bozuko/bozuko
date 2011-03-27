@@ -1,5 +1,3 @@
-var bozuko = require('bozuko');
-
 module.exports = {
     
     invalid_page : function(){
@@ -10,6 +8,8 @@ module.exports = {
         return "This page ["+this.data+"] does not have a facebook account associated with it";
     },
     
-    no_lat_lng : "Latitude and Longitude are required to checkin"
+    no_lat_lng : "Latitude and Longitude are required to checkin",
+    
+    no_checkin : "Checkin object must be an option"
     
 };

@@ -1,4 +1,3 @@
-var bozuko = require('bozuko');
 
 module.exports = {
     bad_state: {

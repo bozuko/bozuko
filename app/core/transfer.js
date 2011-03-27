@@ -1,6 +1,3 @@
-var bozuko = require('bozuko')
-    ;
-
 /**
  * Abstract Bozuko Transfer Object
  */
@@ -17,8 +14,8 @@ var TransferObject = module.exports = function(name, config){
         var self = this;
         Object.keys(this.def.links).forEach(function(key){
 
-            if( bozuko.link(key) ){
-                bozuko.link(key).associateTransferObject(self);
+            if( Bozuko.link(key) ){
+                Bozuko.link(key).associateTransferObject(self);
             }
             else{
                 console.warn('Undocumented Link ['+key+']');
@@ -44,6 +41,11 @@ $.sanitize = function(data, current){
     // make this conform to our def
     var self = this, ret = {};
     if( !current ) current = this.def;
+    
+    if( typeof current == 'string' ){
+        // this _should be_ another transfer object
+        current = Bozuko.transfer(current);
+    }
 
     if( current instanceof Array ){
         ret = [];

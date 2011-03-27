@@ -1,6 +1,5 @@
-var bozuko = require('bozuko'),
-    mongoose = require('mongoose'),
-    // Engine = bozuko.require('core/contest/engine'),
+var mongoose = require('mongoose'),
+    // Engine = Bozuko.require('core/contest/engine'),
     Schema = mongoose.Schema,
     EntryConfig = require('./embedded/contest/entry/config'),
     Prize = require('./embedded/contest/prize'),
@@ -42,15 +41,17 @@ Contest.method('generateResults', function(){
 Contest.method('enter', function(entry, callback){
     
     // get the entry_config
-    var cfg = null;
-    for(var i=0; i<this.entry_config.length && cfg === null; i++){
+    var cfg = null, found=false;
+    for(var i=0; i<this.entry_config.length && found == false; i++){
         if( this.entry_config[i].type == entry.type ){
             cfg = this.entry_config[i];
+            found = true;
         }
     }
+    if( !found ) return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
     entry.setContest(this);
     entry.configure(cfg);
-    entry.validate( function(error){
+    return entry.validate( function(error){
         if( error ){
             // yikes
             callback(error);
@@ -65,7 +66,7 @@ Contest.method('enter', function(entry, callback){
 Contest.method('incrementPlayCursor', function(callback, tries){
     tries = tries || 0;
     var self = this;
-    bozuko.models.Contest.update(
+    Bozuko.models.Contest.update(
         {_id:self._id, play_cursor:self.play_cursor},
         {play_cursor: self.play_cursor + 1},
         function(error, object){
@@ -73,10 +74,10 @@ Contest.method('incrementPlayCursor', function(callback, tries){
                 
                 // how many times have we tried to do this?
                 if( tries > 10 ){
-                    return callback( bozuko.error('contest/error_incrementing_play_cursor', self) );
+                    return callback( Bozuko.error('contest/error_incrementing_play_cursor', self) );
                 }
                 
-                return bozuko.models.Contest.findById( self._id, function(error, contest){
+                return Bozuko.models.Contest.findById( self._id, function(error, contest){
                     if( error ) return callback( error );
                     return contest.incrementPlayCursor(callback, tries+1);
                 });
@@ -90,54 +91,51 @@ Contest.method('incrementPlayCursor', function(callback, tries){
 Contest.method('play', function(user, callback){
     var self = this;
     // first, lets find the entries for this contest
-    bozuko.models.Entry.findOne(
+    Bozuko.models.Entry.findOne(
         {user_id:user.id, contest_id:this.id, tokens: {$gt:0}},
         function(error, entry){
             if( error ){
                 return callback( error );
             }
             else if( !entry ){
-                return callback( bozuko.error("contest/no_tokens") );
+                return callback( Bozuko.error("contest/no_tokens") );
             }
             // okay, we have an entry that is valid for this game
             // let's play a token, however, we need to do it asynchronosly
             return self.incrementPlayCursor( function(error, index){
+                
+                if( error ) return callback( error );
+                
                 // now lets process the result
                 var result = self.results[index];
-                // bozuko.game( self.game, self.game_config ).process( result );
+                entry.tokens--;
+                
+                return entry.save( function(error){
+                    if( error ) return callback( error );
+                    
+                    var game_result = Bozuko.game( self.game, self.game_config ).process( result.index );
+                    var prize = result.prize;
+                    
+                    return callback(null, {
+                        entry: entry,
+                        game_result: game_result,
+                        prize: prize
+                    });
+                });
             });
         }
     );
 });
 
 Contest.method('getGame', function(){
-    console.log(this.game, this.game_config);
-    return bozuko.game( this.game, this.game_config );
+    return Bozuko.game( this.game, this.game_config );
 });
 
 Contest.method('getBestPrize', function(){
-    if( this.prizes.length ) return null;
+    if( this.prizes.length == 0 ) return null;
     var prizes = this.prizes;
     prizes.sort( function(a, b){
         return a - b;
     });
     return prizes[0];
-});
-
-Contest.virtual('games', function(){
-    this.games = [];
-    this.game_config.forEach(function(config){
-        // create an instance of the game
-        /**
-         * TODO - finish the game instances
-         */
-    });
-    
-    // for now, we are just going to return fake games
-    return [{
-        name : 'slots',
-        config: {},
-        description: 'Description from the game config',
-        icon : ''
-    }];
 });

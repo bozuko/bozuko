@@ -1,4 +1,4 @@
-var bozuko = Bozuko = require('bozuko');
+Bozuko = require('bozuko');
 
 /**
  * Module dependencies.
@@ -9,10 +9,10 @@ var fs              = require('fs'),
     Schema          = require('mongoose').Schema,
     MemoryStore     = require('connect').middleware.session.MemoryStore,
     Monomi          = require('monomi'),
-    Controller      = bozuko.require('core/controller'),
-    TransferObject  = bozuko.require('core/transfer'),
-    Link            = bozuko.require('core/link'),
-    Game            = bozuko.require('core/game');
+    Controller      = Bozuko.require('core/controller'),
+    TransferObject  = Bozuko.require('core/transfer'),
+    Link            = Bozuko.require('core/link'),
+    Game            = Bozuko.require('core/game');
 
 exports.run = function(app){
 
@@ -20,7 +20,7 @@ exports.run = function(app){
     initApplication(app);
 
     // setup our device dependent renderer
-    bozuko.require('core/view');
+    Bozuko.require('core/view');
 
     // setup our models
     initModels();
@@ -51,9 +51,9 @@ function initApplication(app){
 
 
     // setup basic authentication for development
-    if( bozuko.env == 'development'){
+    if( Bozuko.env == 'development'){
         app.use(express.basicAuth(function(user, pass){
-            return bozuko.config.auth[user] == pass;
+            return Bozuko.config.auth[user] == pass;
         }));
     }
 
@@ -66,19 +66,19 @@ function initApplication(app){
     app.use(express.session({ store: new MemoryStore({ reapInterval: -1 }), secret: 'chqsmells' }));
     
     app.use(Monomi.detectBrowserType());
-    app.use(bozuko.require('middleware/device')());
-    app.use(bozuko.require('middleware/session')());
+    app.use(Bozuko.require('middleware/device')());
+    app.use(Bozuko.require('middleware/session')());
 
     app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     app.use(express.compiler({ src: __dirname + '/../static', enable: ['less'] }));
     app.use(app.router);
-    //    app.use(express.repl('bozuko>', 8050));
+    //    app.use(express.repl('Bozuko.', 8050));
     app.use(express.static(__dirname + '/../static'));
 
 }
 
 function initModels(){
-    bozuko.models = {};
+    Bozuko.models = {};
     fs.readdirSync(__dirname + '/models').forEach(function(file){
 
         if( !/\.js$/.test(file) ) return;
@@ -90,15 +90,15 @@ function initModels(){
         // create the model
         var schema =  require('./models/'+name);
 
-        bozuko.db.model( Name, schema );
+        Bozuko.db.model( Name, schema );
         //Mongoose.Model.define(Name, config);
-        bozuko.models[Name] = bozuko.db.model(Name);
+        Bozuko.models[Name] = Bozuko.db.model(Name);
     });
 }
 
 function initTransferObjects(){
-    bozuko._transferObjects = {};
-    bozuko._links = {};
+    Bozuko._transferObjects = {};
+    Bozuko._links = {};
     var controllers = [];;
     fs.readdirSync(__dirname + '/controllers').forEach( function(file){
 
@@ -106,14 +106,14 @@ function initTransferObjects(){
 
         var name = file.replace(/\..*?$/, '');
         // first check for object_types and links
-        controllers.push(bozuko.require('controllers/'+name));
+        controllers.push(Bozuko.require('controllers/'+name));
     });
     // collect all the links first so they can be associated in the Transfer Objects
     controllers.forEach(function(controller){
         if( controller.links ){
             Object.keys(controller.links).forEach(function(key){
                 var config = controller.links[key];
-                bozuko._links[key] = Link.create(key, config);
+                Bozuko._links[key] = Link.create(key, config);
             });
         }
     });
@@ -121,7 +121,7 @@ function initTransferObjects(){
         if(controller.transfer_objects){
             Object.keys(controller.transfer_objects).forEach(function(key){
                 var config = controller.transfer_objects[key];
-                bozuko._transferObjects[key] = TransferObject.create(key, config);
+                Bozuko._transferObjects[key] = TransferObject.create(key, config);
             });
         }
     });
@@ -129,42 +129,42 @@ function initTransferObjects(){
     // okay, one last time through the links to associate
     // the return objects
 
-    Object.keys(bozuko.links()).forEach(function(key){
-        var link = bozuko.link(key);
+    Object.keys(Bozuko.links()).forEach(function(key){
+        var link = Bozuko.link(key);
         Object.keys(link.methods).forEach(function(name){
             var method = link.methods[name];
             var r = method.returns;
             if( r instanceof Array ){
                 r = r[0];
             }
-            var t = bozuko.transfer(r);
+            var t = Bozuko.transfer(r);
             if( t ) t.returnedBy(link);
         });
     });
 }
 
 function initControllers(app){
-    bozuko.controllers = {};
+    Bozuko.controllers = {};
     fs.readdirSync(__dirname + '/controllers').forEach( function(file){
 
         if( !/js$/.test(file) ) return;
 
         var name = file.replace(/\..*?$/, '');
         var Name = name.charAt(0).toUpperCase()+name.slice(1);
-        bozuko.controllers[Name] = Controller.create(app,name,bozuko.require('controllers/'+name).routes);
+        Bozuko.controllers[Name] = Controller.create(app,name,Bozuko.require('controllers/'+name).routes);
     });
 }
 
 function initGames(app){
-    bozuko.games = {};
+    Bozuko.games = {};
     var dir = __dirname + '/games';
     fs.readdirSync(dir).forEach( function(file){
         var stat = fs.statSync(dir+'/'+file);
         if( stat.isDirectory() ){
             var name = file.replace(/\..*?$/, '');
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
-            bozuko.games[name] = bozuko.require('/games/'+file);
-            app.use('/game/'+name, express.static(bozuko.dir+'/games/'+name+'/resources'));
+            Bozuko.games[name] = Bozuko.require('/games/'+file);
+            app.use('/game/'+name, express.static(Bozuko.dir+'/games/'+name+'/resources'));
         }
     });
 }

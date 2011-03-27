@@ -1,6 +1,5 @@
 var print = require('util').debug;
 var assert = require('assert');
-var bozuko = require('bozuko');
 var qs = require('querystring');
 var bozuko_headers = assert.headers;
 
@@ -17,7 +16,7 @@ exports['POST /facebook/:id/checkin'] = function(beforeExit) {
 
     bozuko_headers['content-type'] = 'application/json';
 
-    assert.response(bozuko.app,
+    assert.response(Bozuko.app,
         {
             url: '/facebook/'+id+'/checkin',
 			headers: bozuko_headers,
@@ -43,7 +42,7 @@ exports['POST /facebook/:id/checkin No User'] = function(beforeExit) {
         message: "testing"
     });
 
-    assert.response(bozuko.app,
+    assert.response(Bozuko.app,
         {
 	    url: '/facebook/'+id+'/checkin',
 	    headers: {'content-type':'application/json'},
@@ -68,7 +67,7 @@ exports['POST /facebook/:id/checkin No Latitude Longitude'] = function(beforeExi
         message: "testing"
     });
 
-    assert.response(bozuko.app,
+    assert.response(Bozuko.app,
         {
 	    url: '/facebook/'+id+'/checkin',
 	    headers: bozuko_headers,
@@ -93,20 +92,18 @@ exports['POST /contest/:id/checkin No Latitude Longitude'] = function(beforeExit
         message: "testing"
     });
 
-    assert.response(bozuko.app,
-        {
-	    url: '/facebook/'+id+'/checkin',
-	    headers: bozuko_headers,
-	    method: 'POST',
-	    data: params
+    assert.response(Bozuko.app,{
+		url: '/facebook/'+id+'/checkin',
+		headers: bozuko_headers,
+		method: 'POST',
+		data: params
 	},
 	{
-	    status:500,
-	    headers: {'Content-Type': 'application/json'}
+		status:500,
+		headers: {'Content-Type': 'application/json'}
 	},
 	function(res) {
-	    var result = JSON.parse(res.body);
-	    console.log(result);
-	}
-    );
+		var result = JSON.parse(res.body);
+		console.log(result);
+	});
 };

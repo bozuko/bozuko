@@ -1,5 +1,4 @@
-var bozuko      = require('bozuko'),
-    fs          = require('fs'),
+var fs          = require('fs'),
     URL         = require('url'),
     markdown    = require('markdown-js'),
     util        = require('util');
@@ -18,7 +17,7 @@ exports.routes = {
             var ignore = ['Site','Admin','Business','Docs'];
             
             var tree = [];
-            Object.keys(bozuko.controllers).forEach( function(Name){
+            Object.keys(Bozuko.controllers).forEach( function(Name){
                 if( ~ignore.indexOf(Name) ) return;
                 var node = {
                     iconCls     :'controllerIcon',
@@ -26,7 +25,7 @@ exports.routes = {
                     id          :'controller-'+Name,
                     children    :[]
                 };
-                var Controller = bozuko.controllers[Name];
+                var Controller = Bozuko.controllers[Name];
                 var routes = Controller.doc.routes;
                 Object.keys(routes).forEach( function(route, index){
                     var Route = {
@@ -54,10 +53,16 @@ exports.routes = {
             // grab the welcome html
             
             if( !this.welcomeHTML ){
-                this.welcomeHTML = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
+                this.welcomeHTML = markdown.parse( fs.readFileSync(Bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
             }
             
-            return res.render('docs/index', {layout:'docs/layout',tree:tree,title:"bozuko docs",bozuko:bozuko, welcome: this.welcomeHTML});
+            return res.render('docs/index', {
+                layout:'docs/layout',
+                tree:tree,
+                title:"Bozuko docs",
+                bozuko:Bozuko,
+                welcome: this.welcomeHTML
+            });
         }
     },
     
@@ -65,7 +70,7 @@ exports.routes = {
         
         get : function(req,res){
             var name = req.params.name;
-            var controller = bozuko.controllers[name];
+            var controller = Bozuko.controllers[name];
             var options = {layout:false,controller:controller,name:name};
             
             Object.keys(controller.doc.routes).forEach(function(route,index){
@@ -109,7 +114,7 @@ exports.routes = {
                 id          :'/links',
                 children    :[]
             };
-            Object.keys(bozuko.links()).sort().forEach(function(key){
+            Object.keys(Bozuko.links()).sort().forEach(function(key){
                 links.children.push({
                     iconCls     :'linkIcon',
                     text        :key,
@@ -117,8 +122,8 @@ exports.routes = {
                     leaf        :true
                 });
             });
-            Object.keys(bozuko.transfers()).sort().forEach(function(key){
-                var transfer = bozuko.transfer(key);
+            Object.keys(Bozuko.transfers()).sort().forEach(function(key){
+                var transfer = Bozuko.transfer(key);
                 transfers.children.push({
                     iconCls     :'objectIcon',
                     text        :transfer.title || key,
@@ -131,10 +136,16 @@ exports.routes = {
             // grab the welcome html
             
             if( !this.welcomeHTML ){
-                this.welcomeHTML = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
+                this.welcomeHTML = markdown.parse( fs.readFileSync(Bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
             }
             
-            res.render('docs/api', {layout:'docs/layout',tree:tree,title:"Bozuko API Documentation",bozuko:bozuko, welcome: this.welcomeHTML});
+            res.render('docs/api', {
+                layout:'docs/layout',
+                tree:tree,
+                title:"Bozuko API Documentation",
+                bozuko: Bozuko,
+                welcome: this.welcomeHTML
+            });
         }
     },
     
@@ -146,15 +157,15 @@ exports.routes = {
             if( parts.length == 1 ){
                 if( !this.html ) this.html = {};
                 if( !this.html[parts[0]]){
-                    this.html[parts[0]] = markdown.parse( fs.readFileSync(bozuko.dir+'/docs/api/'+parts[0]+'.md', 'utf-8'));
+                    this.html[parts[0]] = markdown.parse( fs.readFileSync(Bozuko.dir+'/docs/api/'+parts[0]+'.md', 'utf-8'));
                 }
                 var html = this.html[parts[0]];
-                res.render('docs/api/'+parts[0], {layout: false,bozuko:bozuko, html: html});
+                res.render('docs/api/'+parts[0], {layout: false, bozuko:Bozuko, html: html});
             }
             else{
                 res.render('docs/api/'+(parts[0].replace(/s$/,'')), {
                     layout: false,
-                    bozuko:bozuko,
+                    bozuko: Bozuko,
                     key: parts[1]
                 });
             }

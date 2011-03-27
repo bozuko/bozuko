@@ -36,7 +36,7 @@ Bozuko.view.Place = Ext.extend( Ext.Panel, {
             '<div class="no-games">',
                 '<p>Bummer... this place is not currently registered with Bozuko... ',
                 'You should let them know about it!</p>',
-                '<div class="send-bozuko-request-button"></div>',
+                '<div class="send-Bozuko.request-button"></div>',
             '</div>',
         '</tpl>'
     ],
@@ -65,10 +65,10 @@ Bozuko.view.Place = Ext.extend( Ext.Panel, {
             }, this);
         }
         else{
-            this.bozukoRequestButton = new Ext.Button({
+            this.Bozuko.equestButton = new Ext.Button({
                 ui : 'decline',
                 text : 'Request Bozuko Here',
-                renderTo : this.el.down('.send-bozuko-request-button')
+                renderTo : this.el.down('.send-Bozuko.request-button')
             });
         }
     },
