@@ -21,14 +21,22 @@ Statistic.pre('save', function(next){
         sid: this.sid
     }, function(error, stat){
         if( stat ){
+            // first of all, lets see if this was already collected toda
+            var now = self.get('timestamp');
+            var old = stat.get('timestamp');
+            if( old.getDay() == now.getDay() && old.getFullYear() == now.getFullYear() && old.getMonth() == now.getMonth() ){
+                return next( new Error('Statistic for ['+stat.name+'] ('+stat.service+','+stat.sid+') has already been collected') );
+            }
             try{
-                self.daily_checkins = self.total_checkins - stat.total_checkins;
+                self.set('daily_checkins', self.get('total_checkins') - stat.get('total_checkins'));
             }catch(e){
-                self.daily_checkins = 0;
+                self.set('daily_checkins', 0);
             }
         }
-        if( self.service+''=='foursquare' ) console.log("why won't you save you bastard");
-        next();
+        else{
+            self.set('daily_checkins', 0);
+        }
+        return next();
     }).sort({timestamp: -1});
 });
 
