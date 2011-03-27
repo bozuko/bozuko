@@ -48,6 +48,7 @@ exports.request = function(config){
         encoding = config.encoding || 'utf-8';
     }
     
+    
     var request = http_.request({
         host: url_parsed.host,
         port: port,

@@ -11,7 +11,7 @@ var Statistic = module.exports = new Schema({
     lng              :{type: Number},
     total_checkins   :{type: Number},
     daily_checkins   :{type: Number},
-    timestamp        :{type: Date}
+    timestamp        :{type: Date, default: Date.now}
 });
 
 Statistic.pre('save', function(next){
@@ -27,6 +27,7 @@ Statistic.pre('save', function(next){
                 self.daily_checkins = 0;
             }
         }
+        if( self.service+''=='foursquare' ) console.log("why won't you save you bastard");
         next();
     }).sort({timestamp: -1});
 });
