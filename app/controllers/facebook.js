@@ -4,7 +4,6 @@ var facebook_result = {
     def:{
         page_id : "String",
         page_name: "String",
-        tokens: "Number",
         timestamp: "String",
         duration: "Number",
         games: ['game'],
@@ -133,12 +132,10 @@ exports.routes = {
                                     checkin.getPage(function(error, page){
                                         if( error ) return error.send(res);
                                         
-                                        return page.getUserTokens(req.session.user, function(error, tokens, games){
+                                        return page.getUserTokens(req.session.user, function(error, games){
                                             if( error ) return error;
                                             
                                             // we need the games too, so we can provide links to each
-                                            
-                                            
                                             var ret = {
                                                 page_id: page.id,
                                                 page_name: page.name,

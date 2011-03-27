@@ -57,7 +57,10 @@ Page.method('getUserTokens', function(user, callback){
         if( error ) return callback(error);
         
         var ids = [];
+        var games = [];
+        var contestMap = {};
         contests.forEach( function(contest){
+            contestMap[contest._id+''] = contest;
             ids.push( contest._id );
         });
         
@@ -69,9 +72,18 @@ Page.method('getUserTokens', function(user, callback){
             if( error ) return callback( error );
             var total = 0;
             entries.forEach( function(entry){
-                total+= entry.tokens;
+                var key = ''+entry.contest_id;
+                if( !games[key] ){
+                    games[key] = {};
+                }
+                
+                var contest = contests[contestMap[entry.contest_id]];
+                var game = contest.getGame();
+                if( game.tokens )  game.tokens = 0;
+                game.tokens+= entry.tokens;
+                games.push(game);
             });
-            return callback( null, total, entries );
+            return callback( null, games );
         });
     });
 });
