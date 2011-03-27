@@ -33,7 +33,7 @@ exports.routes = {
                             'daily_checkins',
                             'timestamp'
                         ];
-                        res.header('content-type','text/plain');
+                        res.header('content-type','text/csv');
                         stats.forEach(function(stat){
                             if( !stat.get('daily_checkins') ) stat.set('daily_checkins', 0);
                             var line = [];
