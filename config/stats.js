@@ -26,7 +26,7 @@ module.exports = {
     },
 
     server: {
-        host: 'bonobo.Bozuko.com',
+        host: 'bonobo.bozuko.com',
         port: port
     },
 

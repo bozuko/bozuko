@@ -318,7 +318,26 @@ $.like = function(options, callback){
  * @return {null}
  */
 $.place = function(options, callback){
+    if( !options || !options.place_id ){
+        return callback( Bozuko.error('foursquare/no_venue_id') );
+    }
     
+    var params = {};
+    var self = this;
+    
+    return api('/venues/'+options.place_id, {params:params}, function(error,  response){
+        
+        if( error ){
+            return callback(error);
+        }
+        /**
+         * TODO
+         *
+         * We need to convert all of these objects to transferrable objects
+         */
+        var places = [];
+        return callback( null, self.sanitizePlace(response.venue) );
+    });
 };
 
 /**
