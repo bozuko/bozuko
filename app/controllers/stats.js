@@ -41,7 +41,7 @@ exports.routes = {
                                 line.push( '"'+(stat.get(field)+''.replace(/"/g,'\"'))+'"');
                             });
                             res.write(line.join(',')+'\n');
-                        });
+                        }).sort({timestamp:1});
                         return res.end();
                     }
                     else{
