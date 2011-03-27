@@ -3,7 +3,7 @@ var port = 5100;
 module.exports = {
 
     db:{
-        host:'mongodb://localhost/Bozuko.stats'
+        host:'mongodb://localhost/bozuko_stats'
     },
 
     facebook: {
@@ -36,6 +36,6 @@ module.exports = {
      * These are basic authenticated users...
      */
     auth: {
-        'Bozuko.        :'cracksmack'
+        'Bozuko'        :'cracksmack'
     }
 };

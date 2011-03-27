@@ -2,7 +2,7 @@ var port = 8000 + process.getuid();
 
 module.exports = {
     db:{
-        host:'mongodb://localhost/Bozuko.test'+port
+        host:'mongodb://localhost/bozuko_test'+port
     },
     facebook: {
         app:{
@@ -43,7 +43,7 @@ module.exports = {
      * These are basic authenticated users...
      */
     auth: {
-        'Bozuko.        :'cracksmack',
+        'Bozuko'        :'cracksmack',
         'developer'     :'bluebeard',
         'guest'         :'virgil'
     }

@@ -6,7 +6,7 @@ if (process.env.USER === 'docs') port = 7002;
 module.exports = {
 
     db:{
-        host:'mongodb://localhost/Bozuko.dev'
+        host:'mongodb://localhost/bozuko_dev'+port
     },
 
     facebook: {
@@ -38,7 +38,7 @@ module.exports = {
     },
 
     server: {
-        host: 'bonobo.Bozuko.com',
+        host: 'bonobo.bozuko.com',
         port: port
     },
 
