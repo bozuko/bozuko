@@ -53,7 +53,7 @@ exports.routes = {
                                 var v;
                                 if( field == 'link' ){
                                     if( stat.get('service') == 'facebook') {
-                                        v = 'http://facebook.com/'+stat.get('sid');
+                                        v = 'http://facebook.com/page/'+stat.get('sid');
                                     }
                                     else{
                                         v = 'https://'+Bozuko.config.server.host
