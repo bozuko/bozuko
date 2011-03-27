@@ -11,7 +11,22 @@ exports.routes = {
             handler: function(req, res) {
                 var options = {};
                 
-                var format = (req.param('format') || 'json').replace(/^\./,'');
+                var format = (req.param('format') || 'html').replace(/^\./,'');
+                
+                if( format == 'html'){
+                    
+                    return res.render('stats',{
+                        title:"Checkin Statistics"/*,
+                        scripts:[
+                            'http://dev.sencha.com/deploy/ext-4.0-pr5/ext-core-sandbox.js',
+                            'http://dev.sencha.com/deploy/ext-4.0-pr5/ext-all-sandbox.js',
+                            '/js/desktop/stats.js'
+                        ],
+                        styles:[
+                            'http://dev.sencha.com/deploy/ext-4.0-pr5/resources/css/ext-sandbox.css',
+                        ]*/
+                    });
+                }
 
                 if (req.param('city')) options.city = req.param('city');
                 if (req.param('lat') && req.param('lng')) {
@@ -30,7 +45,7 @@ exports.routes = {
                 }
                 options.sort = sort;
 
-                Bozuko.models.Statistic.search(options, function(error, stats) {
+                return Bozuko.models.Statistic.search(options, function(error, stats) {
                     
                     if( format == 'csv' ){
                         var fields = [
@@ -86,7 +101,7 @@ exports.routes = {
                         return error.send(res);
                     }
                     if( service == 'foursquare'){
-                        return res.redirect( place.data.shortUrl );
+                        return res.redirect(place.data.shortUrl);
                     }
                     else{
                         return res.redirect(place.data.link);
