@@ -52,13 +52,10 @@ exports.routes = {
                             fields.forEach(function(field){
                                 var v;
                                 if( field == 'link' ){
-                                    if( stat.get('service') == 'facebook') {
-                                        v = 'http://facebook.com/page/'+stat.get('sid');
-                                    }
-                                    else{
-                                        v = 'https://'+Bozuko.config.server.host
-                                            +':'+Bozuko.config.server.port+'/stats/4sq/redirect/'+stat.get('sid')
-                                    }
+                                    v = 'https://'+Bozuko.config.server.host
+                                        +':'+Bozuko.config.server.port+'/stats/redirect/'
+                                        +stat.get('service')+'/'+stat.get('sid')
+                                    
                                 }
                                 else{
                                     v = stat.get(field);
@@ -79,15 +76,21 @@ exports.routes = {
         }
     },
     
-    'stats/4sq/redirect/:id': {
+    'stats/redirect/:service/:id': {
         get : {
             handler : function(req,res){
-                Bozuko.service('foursquare').place({place_id:req.param('id')}, function(error, place){
+                var service = req.param('service');
+                Bozuko.service(service).place({place_id:req.param('id')}, function(error, place){
                     if( error ){
                         console.log(error);
                         return error.send(res);
                     }
-                    return res.redirect( place.data.shortUrl );
+                    if( service == 'foursquare'){
+                        return res.redirect( place.data.shortUrl );
+                    }
+                    else{
+                        return res.redirect(place.data.link);
+                    }
                 });
             }
         }
