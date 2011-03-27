@@ -1,5 +1,4 @@
-var bozuko = require('bozuko'),
-    async = require('async');
+var async = require('async');
 
 var requestCount = 0;
 
@@ -158,9 +157,9 @@ function get_page_links(page, fid){
         facebook_like       :'/facebook/'+fid+'/like'
     };
     if( page ){
-        links.page          ='/page/'+p.id,
-        links.share         ='/page/'+p.id+'/share';
-        links.feedback      ='/page/'+p.id+'/feedback';
+        links.page          ='/page/'+page.id,
+        links.share         ='/page/'+page.id+'/share';
+        links.feedback      ='/page/'+page.id+'/feedback';
     }
     return links;
 }
@@ -188,7 +187,7 @@ exports.routes = {
                 if( query ) options.query = query;
                 if( service ) options.service = service;
                 
-                bozuko.models.Page.search(options,
+                Bozuko.models.Page.search(options,
                     function(error, results){
                         if( error ){
                             error.send(res);
@@ -196,27 +195,30 @@ exports.routes = {
                         
                         var ret=[];
                         if( results.pages ) results.pages.forEach(function(p){
-                            var page = bozuko.sanitize('page', p);
+                            var page = Bozuko.sanitize('page', p);
                             page.links = get_page_links(page, p.service('facebook').sid);
-                            console.log(page.links);
                             if( p.contests ){
                                 p.contests.forEach(function(contest){
                                     // build games
                                 });
                             }
-                            ret.push(p);
+                            ret.push(page);
                         });
                         
                         if( results.service_results ) results.service_results.forEach(function(r){
                             var fid = r.id;
                             delete r.id;
-                            var result = bozuko.sanitize('page', r);
+                            var result = Bozuko.sanitize('page', r);
                             if( r.service == 'facebook' ){
                                 result.links = get_page_links(null, fid);
                             }
-                            ret.push(result);
+                            ret.push(Bozuko.sanitize('page',result));
                         });
-                        // console.log(ret);
+                        
+                        ret.forEach( function(p){
+                            p = Bozuko.transfer('page', p);
+                        });
+                        
                         res.send(ret);
                     }
                 );
@@ -230,7 +232,7 @@ exports.routes = {
         get: {
             handler: function(req,res) {
                 var page_id = req.param('id');
-                bozuko.models.Page.findOne({_id: page_id}, function(err, p) {
+                Bozuko.models.Page.findOne({_id: page_id}, function(err, p) {
                     if (err) {
                         res.statusCode = 500;
                         res.end();

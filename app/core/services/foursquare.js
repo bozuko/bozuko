@@ -1,10 +1,9 @@
-var bozuko      = require('bozuko'),
-    URL         = require('url'),
-    http        = bozuko.require('util/http'),
+var URL         = require('url'),
+    http        = Bozuko.require('util/http'),
     merge       = require('connect').utils.merge,
     qs          = require('querystring'),
     url         = require('url'),
-    Service     = bozuko.require('core/service')
+    Service     = Bozuko.require('core/service')
 ;
 
 var FoursquareService = module.exports = function(){
@@ -28,14 +27,14 @@ function api(path, options, callback){
         }
     }
     if( !options.params.oauth_token ){
-        params.client_id = bozuko.config.foursquare.app.id;
-        params.client_secret = bozuko.config.foursquare.app.secret;
+        params.client_id = Bozuko.config.foursquare.app.id;
+        params.client_secret = Bozuko.config.foursquare.app.secret;
     }
     merge(params, options.params || {});
     
     var _callback = function(response){
         if( !response || response.meta.code != 200 ){
-            return callback( bozuko.error('foursquare/api', response.meta) );
+            return callback( Bozuko.error('foursquare/api', response.meta) );
         }
         return callback( null, response.response );
     };
@@ -69,9 +68,9 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var protocol = (req.app.key?'https:':'http:');
 
     var params = {
-        'client_id' : bozuko.config.foursquare.app.id,
+        'client_id' : Bozuko.config.foursquare.app.id,
         'response_type' : 'code',
-        'redirect_uri' : protocol+'//'+bozuko.config.server.host+':'+bozuko.config.server.port+url.pathname
+        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname
     };
 
     if( req.session.device == 'touch'){
@@ -101,7 +100,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     }
     else{
         delete params['response_type'];
-        params.client_secret = bozuko.config.foursquare.app.secret;
+        params.client_secret = Bozuko.config.foursquare.app.secret;
         params.code = code;
         params.grant_type = 'authorization_code';
 
@@ -130,7 +129,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                 return res.send("<html><h1>Foursquare authentication failed :( </h1></html>");
                             }
                             var user = result.user;
-                            return bozuko.models.User.findOne(
+                            return Bozuko.models.User.findOne(
                                 {
                                     $or:[
                                          {email:user.contact.email},
@@ -139,7 +138,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                 },
                                 function(err, u){
                                     if( !u ){
-                                        u = new bozuko.models.User();
+                                        u = new Bozuko.models.User();
                                         // update the user's details
                                         u.name = user.firstName+' '+user.lastName;
                                         u.first_name = user.firstName;
@@ -151,7 +150,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                     u.save(function(){
                                         var device = req.session.device;
                                         req.session.regenerate(function(err){
-                                            // res.clearCookie('fbs_'+bozuko.config.facebook.app.id);
+                                            // res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
                                             req.session.userJustLoggedIn = true;
                                             req.session.user = u;
                                             req.session.device = device;
@@ -218,7 +217,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  */
 $.search = function(options, callback){
     if( !options || !options.latLng ){
-        return callback( bozuko.error('foursquare/search_no_lat_lng') );
+        return callback( Bozuko.error('foursquare/search_no_lat_lng') );
     }
     var params = {
         ll : options.latLng.lat+','+options.latLng.lng,
@@ -383,9 +382,9 @@ $._sanitizePlace = function(place){
             city: place.location.city || '',
             state: place.location.state || '',
             country: place.location.country || 'United States',
-            zip: place.location.zip || '',
-            lat: place.location.latitude || 0,
-            lng: place.location.longitude || 0
+            zip: place.location.postalCode || '',
+            lat: place.location.lat || 0,
+            lng: place.location.lng || 0
         },
         data: place
     };

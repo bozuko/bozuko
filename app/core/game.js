@@ -1,5 +1,4 @@
-var bozuko = require('bozuko'),
-    express = require('express'),
+var express = require('express'),
     fs = require('fs');
 
 var Game = module.exports = function(config){

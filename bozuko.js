@@ -3,12 +3,19 @@ var express = require('express');
 exports.dir = __dirname;
 
 exports.require = function(module){
-    return require(exports.dir+'/app/'+module);
+	try{
+		return require(exports.dir+'/app/'+module);
+	}catch(e){
+		console.log('Module not found ('+module+')');
+		throw(e);
+	}
 };
 
 this.require('core/error');
 
 exports.db = exports.require('core/db');
+
+var self = this;
 
 /**
  * exports.app MUST be set by the application prior to calling configure()
@@ -17,7 +24,7 @@ exports.configure = function() {
     this.env = process.env.NODE_ENV;
     var app = exports.app;
     if (!app) {
-	throw new Error("bozuko.app not set!");
+		throw new Error("Bozuko.app not set!");
     }
 
     app.configure('development', function() {
@@ -118,5 +125,5 @@ exports.error = function(name, data){
 };
 
 exports.t = function(){
-	return this.require('core/lang').translate.apply(this, arguments);
+	return self.require('core/lang').translate.apply(this, arguments);
 };

@@ -1,5 +1,4 @@
-var bozuko          = require('bozuko'),
-    MongooseError   = require('mongoose').Error;
+var MongooseError   = require('mongoose').Error;
 
 var BozukoError = module.exports = function(name,message,data,code){
     Error.call(this);
@@ -21,7 +20,7 @@ Error.prototype.name = 'default';
 MongooseError.prototype.name='database';
 
 Error.prototype.toTransfer = function(){
-    return bozuko.transfer('error', this);
+    return Bozuko.transfer('error', this);
 };
 
 proto.generateMessage = function(fn){

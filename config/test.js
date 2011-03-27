@@ -2,7 +2,7 @@ var port = 8000 + process.getuid();
 
 module.exports = {
     db:{
-        host:'mongodb://localhost/bozuko_test'+port
+        host:'mongodb://localhost/Bozuko.test'+port
     },
     facebook: {
         app:{
@@ -15,8 +15,36 @@ module.exports = {
             business:"email,publish_checkins,publish_stream,offline_access,manage_pages"
         }
     },
+
+    foursquare: {
+        app:{
+            id:'E43N3RJPOS2ULW0KTUSICZRFXB21VJWH55WEXTGMJPOQLL2K',
+            secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
+        }
+    },
+    
+    checkin: {
+        duration: {
+            // 15 minutes between any checkins per user
+            user: 1000 * 60 * 15,
+            // 4 hours between checkins at the same place
+            page: 1000 * 60 * 60 * 4
+        }
+    },
+
     server: {
-        host: 'bozuko.com',
+        host: 'bonobo.Bozuko.com',
         port: port
+    },
+
+    defaultService:'facebook',
+
+    /**
+     * These are basic authenticated users...
+     */
+    auth: {
+        'Bozuko.        :'cracksmack',
+        'developer'     :'bluebeard',
+        'guest'         :'virgil'
     }
 };

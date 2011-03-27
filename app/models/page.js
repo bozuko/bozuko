@@ -1,7 +1,7 @@
-var bozuko = require('bozuko'),
-    _ = bozuko.t;
-    facebook = bozuko.require('util/facebook'),
+var _t = Bozuko.t;
+    facebook = Bozuko.require('util/facebook'),
     mongoose = require('mongoose'),
+    merge = require('connect').utils.merge,
     Schema = mongoose.Schema,
     Service = require('./embedded/service'),
     ObjectId = Schema.ObjectId;
@@ -30,127 +30,191 @@ Service.initSchema(Page);
 Page.index('location', '2d');
 
 Page.method('getOwner', function(callback){
-    bozuko.models.User.findById( this.owner_id, callback );
+    Bozuko.models.User.findById( this.owner_id, callback );
 });
 
 Page.method('getContests', function(callback){
-    bozuko.models.Contest.find({page_id:this.id}, callback);
+    Bozuko.models.Contest.find({page_id:this.id}, callback);
 });
 
 Page.method('getActiveContests', function(callback){
     var now = new Date();
-    bozuko.models.Contest.find({
+    var params = {
         page_id:this.id,
         start: {$lt: now},
         end: {$gt: now},
         $where: "this.token_cursor < this.total_entries;"
-    }, callback);
+    };
+    if( arguments.length == 2 ){
+        callback = arguments[1];
+        
+    }
+    Bozuko.models.Contest.find(params, callback);
+});
+
+Page.method('getUserTokens', function(user, callback){
+    this.getActiveContests( function(error, contests){
+        if( error ) return callback(error);
+        
+        var ids = [];
+        contests.forEach( function(contest){
+            ids.push( contest._id );
+        });
+        
+        return Bozuko.models.Entry.find({
+            tokens: {$gt: 0},
+            user_id: user._id,
+            contest_id: {$in: ids}
+        }, function(error, entries){
+            if( error ) return callback( error );
+            var total = 0;
+            entries.forEach( function(entry){
+                total+= entry.tokens;
+            });
+            return callback( null, total, entries );
+        });
+    });
+});
+
+Page.method('canUserCheckin', function(user, callback){
+    
+    var self = this;
+    var now = new Date();
+    
+    var page_last_allowed_checkin = new Date();
+    var user_last_allowed_checkin = new Date();
+    
+    page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
+    user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
+    
+    Bozuko.models.Checkin.findOne(
+        {
+            $or: [{
+                user_id: user._id,
+                page_id: self._id,
+                timestamp: {$gt: page_last_allowed_checkin}
+            },{
+                user_id: user._id,
+                timestamp: {$gt: user_last_allowed_checkin}
+            }]
+            
+        },
+        function(error, checkin){
+            // lets look at the last checkin
+            if( error ) return callback( error );
+            
+            if( checkin ){
+                if( checkin.page_id == self._id ){
+                    return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_page') );
+                }
+                return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_user') );
+            }
+            return callback( null, true );
+        }
+    );
 });
 
 Page.method('checkin', function(user, options, callback) {
     var self = this;
     
-    // first, we should find out if they are within the bounds of
-    // another checkin...
-    /**
-     * TODO
-     *
-     * We need to decide how these checkins will be handled on a per service
-     * basis, per location, per user.
-     * 
-     * bozuko.models.Checkin.findOne({$or:{page_id:this.id, timestamp:{$gt:duration}},)
-     * 
-     */
-    
-    this.getActiveContests(function(error, contests){
-        if( error ) return callback(error);
+    this.canUserCheckin( user, function(error, canCheckin, checkin, checkinError){
+            
+        // lets look at the last checkin
+        if( error ) return callback( error );
         
-        options.user = user;
-        options.link = 'http://bozuko.com';
-        options.picture = 'http://bozuko.com/images/bozuko-chest-check.png';
-        
-        // okay, lets try to give them entries on all open contests
-        if( contests.length === 0 ){
-            // lets set a generic checkin message
-            options.name = _t('en', 'checkin/general_checkin_name');
-            options.description = _t(
-                user.lang,
-                'checkin/general_checkin_desc'
-            );
+        if( checkin && checkinError ){
+            return callback( checkinError );
         }
-        else{
-            var contest = contests[0];
-            if( options.contest ){
-                if( options.contest.id ){
-                    options.contest = options.contest.id;
-                }
-                // customize message for this specific contest
-                var found = false;
-                for(var i=0; i<contests.length && found==false; i++){
-                    
-                    if( contests[i].id == options.contest ){
-                        found = true;
-                        contest = contests[i];
+        
+        return self.getActiveContests(function(error, contests){
+            if( error ) return callback(error);
+            
+            options.user = user;
+            options.link = 'http://Bozuko.com';
+            options.picture = 'http://Bozuko.com/images/Bozuko.chest-check.png';
+            
+            // okay, lets try to give them entries on all open contests
+            if( contests.length === 0 ){
+                // lets set a generic checkin message
+                // options.name = _t(user.lang, 'checkin/general_checkin_name');
+                options.description = _t(
+                    user.lang,
+                    'checkin/general_checkin_desc'
+                );
+            }
+            else{
+                var contest = contests[0];
+                if( options.contest ){
+                    if( options.contest.id ){
+                        options.contest = options.contest.id;
+                    }
+                    // customize message for this specific contest
+                    var found = false;
+                    for(var i=0; i<contests.length && found==false; i++){
+                        
+                        if( contests[i].id == options.contest ){
+                            found = true;
+                            contest = contests[i];
+                        }
                     }
                 }
+                var game = contest.getGame();
+               // options.name = _t(user.lang, 'checkin/general_checkin_name', self.name);
+                options.description = _t(
+                    user.lang,
+                    'checkin/contest_checkin_desc',
+                    user.name,
+                    self.name,
+                    game.name,
+                    contest.getBestPrize().name
+                );
             }
-            var game = contest.getGame();
-            options.name = _t('en', 'checkin/general_checkin_name', self.name);
-            options.description = _t(
-                user.lang,
-                'checkin/contest_checkin_desc',
-                user.name,
-                self.name,
-                game.name,
-                contest.getBestPrize().name
-            );
-        }
-        // okay, we have "everything we need to make a checkin, lets
-        // do so with our checkin model
-        
-        var current = 0;
-        return contests.forEach( function(contest){
             
-            // try to enter the contest
+            // okay, we have everything we need to make a checkin, lets
+            // do so with our checkin model
+            
+            options.page = self;
+            options.user = user;
+            
+            return Bozuko.models.Checkin.process(options, function(error, checkin){
+                if( error ) return error;
+                
+                if( contests.length == 0 ){
+                    return callback( null, {checkin:checkin, entries:[]} );
+                }
+                var current = 0, entries = [];
+                return contests.forEach( function(contest){
+                    // try to enter the contest
+                    var entry = Bozuko.entry(options.service+'/checkin', user, {
+                        checkin: checkin
+                    });
+                    contest.enter( entry, function(error, entry){
+                        if( error ){
+                            return callback( error );
+                        }
+                        entries.push(entry);
+                        if( ++current == contests.length ){
+                            return callback( null, {checkin:checkin, entries:entries});
+                        }
+                        console.log(current);
+                        return true;
+                    });
+                });
+            });
             
         });
-        return callback( null, bozuko.transfer('facebook_result'), {tokens: 2, timestamp: new Date(), duration: 24*60*60*1000} );
-    
-    /*return contest.enter(
-        bozuko.entry('facebook/checkin', req.session.user, {
-            latLng: {lat:lat, lng:lng},
-            message: msg
-        }),
-        function(error, entry){
-            
-            if( error ){
-                error.send(res);
-                return;
-            }
-            var fb_checkin_res = {
-                id: entry._id,
-                timestamp: entry.timestamp,
-                tokens: entry.tokens,
-                links: {
-                    contest_result: "/contest/"+contest.id+"/result",
-                    facebook_like: "/facebook/"+id+"/like"
-                }
-            };
-            var ret = bozuko.sanitize('facebook_checkin_result', fb_checkin_res);
-            res.send(ret);
-        }*/
     });
 });
 
 Page.static('createFromServiceObject', function(place, callback){
     var id = place.id;
     delete place.id;
-    var page = new bozuko.models.Page(place);
+    var page = new Bozuko.models.Page(place);
     page.is_location = true;
     page.service( place.service, place.id, null, place.data);
     page.save( function(error){
         if( error ) return callback( error );
-        return bozuko.models.Page.findById(page.id, callback);
+        return Bozuko.models.Page.findById(page.id, callback);
     });
 });
 
@@ -158,9 +222,9 @@ Page.static('search', function(options, callback){
 
     // use a 3rd party service to search geographically
     // and then match against our db
-    var service = options.service || bozuko.config.defaultService;
+    var service = options.service || Bozuko.config.defaultService;
 
-    bozuko.service(service).search(options, function(error, results){
+    Bozuko.service(service).search(options, function(error, results){
         var map = {};
         if( results ) results.forEach( function(place, index){
             // lets create a map for searching...
@@ -169,7 +233,7 @@ Page.static('search', function(options, callback){
         else{
             callback( null, [] );
         }
-        bozuko.models.Page.findByService(service, {$in:Object.keys(map)}, function(error, pages){
+        Bozuko.models.Page.findByService(service, {$in:Object.keys(map)}, function(error, pages){
             if( error ) return callback( error );
             
             var page_map = {};
@@ -180,7 +244,7 @@ Page.static('search', function(options, callback){
             
             var now = new Date();
             
-            return bozuko.models.Contest.find(
+            return Bozuko.models.Contest.find(
                 {
                     page_id: {$in: Object.keys(page_map)},
                     start: {$lt: now},
@@ -203,9 +267,6 @@ Page.static('search', function(options, callback){
                     return callback(null, {pages: pages, service_results: results});
                 }
             );
-            
-            
         });
-
     });
 });

@@ -1,5 +1,3 @@
-var bozuko = require('bozuko');
-
 module.exports = {
     
     token_update_fail   :"There was an error updating the amount of tokens for the entry",

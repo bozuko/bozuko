@@ -1,18 +1,17 @@
 var print = require('util').debug;
 var assert = require('assert');
-var bozuko = require('bozuko');
 var uid = assert.uid;
 var bozuko_headers = assert.headers;
 
 exports['GET /user/login'] = function(beforeExit) {
-    assert.response(bozuko.app,
+    assert.response(Bozuko.app,
         {url: '/user/login'},
         {status: 302, headers: {'Content-Type': 'text/html'}});
 };
 
 // user the custom headers hack for now so we don't have to log in programmatically
 exports['GET /user'] = function(beforeExit) {
-    assert.response(bozuko.app,
+    assert.response(Bozuko.app,
 	{url: '/user', headers: bozuko_headers},
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
@@ -23,14 +22,14 @@ exports['GET /user'] = function(beforeExit) {
 };
 
 exports['GET /user/favorites'] = function(beforeExit) {
-    assert.response(bozuko.app,
-        {url: '/user/favorites', headers: bozuko_headers},
+    assert.response(Bozuko.app,
+        {url: '/user/favorites', headers: bozuko_headers },
         {status: 200});
 };
 
 
 /*exports['GET /user/:id/prizes'] = function(beforeExit) {
-    assert.response(bozuko.app,
+    assert.response(Bozuko.app,
 	{url: '/user/'+uid+'/prizes'},
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {

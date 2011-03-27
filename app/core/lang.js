@@ -1,15 +1,14 @@
 var sprintf = require('sprintf').sprintf,
-    vsprintf = require('sprintf').vsprintf,
-    bozuko = require('bozuko')
+    vsprintf = require('sprintf').vsprintf
     ;
     
 
 exports.translate = function(){
     var args = Array.prototype.slice.call(arguments);
     if( args.length < 2 ){
-        throw bozuko.error('bozuko/lang_not_enough_args');
+        throw Bozuko.error('Bozuko.lang_not_enough_args');
     }
-    var lang = args.shift();
+    var lang = args.shift() || 'en';
     var full_path = args.shift();
     var parts = full_path.split('/');
     var key = parts.pop();
@@ -17,14 +16,14 @@ exports.translate = function(){
     var mod=null;
     try{
         try{
-            mod = bozuko.require('lang/'+lang+'/'+path);
+            mod = Bozuko.require('lang/'+lang+'/'+path);
         }
         catch(e){
-            mod = bozuko.require('lang/en/'+path);
+            mod = Bozuko.require('lang/en/'+path);
         }
     }
     catch(e){
-        throw bozuko.error('bozuko/lang_bad_path', full_path);
+        throw Bozuko.error('Bozuko.lang_bad_path', full_path);
     }
     try{
         if( !mod[key] ) throw "Untranslated";

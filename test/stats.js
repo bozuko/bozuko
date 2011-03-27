@@ -1,5 +1,4 @@
-var bozuko = require('bozuko');
-var stats = bozuko.require('util/stats');
+var stats = Bozuko.require('util/stats');
 var assert = require('assert');
 
 exports['stats collect'] = function() {

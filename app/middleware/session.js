@@ -1,6 +1,4 @@
-var bozuko  = require('bozuko'),
-    parse   = require('url').parse
-    ;
+var parse   = require('url').parse;
 
 var qs          = require('querystring');
 
@@ -21,7 +19,7 @@ module.exports = function session(){
         }
 
         var uid, token;
-        var cookie = req.cookies['fbs_'+bozuko.config.facebook.app.id];
+        var cookie = req.cookies['fbs_'+Bozuko.config.facebook.app.id];
 
         var q = {};
         
@@ -46,7 +44,7 @@ module.exports = function session(){
         if( q['services.sid'] && !newSession ){
             req.session.user = false;
             // check for the user in our database
-            return bozuko.models.User.findOne(q, function(err, u){
+            return Bozuko.models.User.findOne(q, function(err, u){
                 if( u ){
                     req.session.user = u;
                 }
@@ -56,7 +54,7 @@ module.exports = function session(){
 
         else if( req.session.user ){
             // we should really grab this from the db... i think this is what is screwing up our user...
-            return bozuko.models.User.findById(req.session.user._id, function(error, user){
+            return Bozuko.models.User.findById(req.session.user._id, function(error, user){
                 req.session.user = user;
                 next();
             });

@@ -1,6 +1,6 @@
 module.exports = {
     db:{
-        host:'mongodb://localhost/bozuko'
+        host:'mongodb://localhost/Bozuko.
     },
     facebook: {
         app:{
@@ -14,7 +14,7 @@ module.exports = {
         }
     },
     server: {
-        host: 'bozuko.com',
+        host: 'Bozuko.com',
         port: 8000
     }
 };

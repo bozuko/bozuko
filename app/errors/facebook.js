@@ -1,10 +1,17 @@
-var bozuko = require('bozuko');
-
 module.exports = {
-
+    
+    api: {
+        code:500,
+        message: function(){ return this.data.type+"\n\n"+this.data; }
+    },
+    
     no_lat_lng : {
         code: 400,
         message: "Latitude and Longitude are required to checkin"
+    },
+    no_user : {
+        code: 400,
+        message: "User is required"
     },
     no_lat_lng_user_place: {
         code: 400,

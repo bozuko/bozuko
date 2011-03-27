@@ -1,5 +1,3 @@
-var bozuko = require('bozuko');
-
 var game_prize = {
     doc: "A prize that can be won in a game",
     def: {
@@ -123,17 +121,17 @@ exports.routes = {
         post: {
 
             handler : function(req,res){
-                bozuko.models.Contest.findById(req.params.id, function(error, contest){
+                Bozuko.models.Contest.findById(req.params.id, function(error, contest){
                     if( error ){
                         return error.send(res);
                     }
                     if( !contest ){
-                        return bozuko.error('contest/unknown', req.params.id).send(res);
+                        return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
                     // lets let the contest handle finding entries, etc
                     return contest.play(req.session.user, function(error, result){
                         if( error ) return error.send(res);
-                        return res.send( bozuko.transfer('contest_result', result) );
+                        return res.send( Bozuko.transfer('contest_result', result) );
                     });
                 });
             }

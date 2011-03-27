@@ -1,4 +1,3 @@
-var bozuko = require('bozuko');
 
 function Controller(app,name){
     this.app = app;
@@ -60,7 +59,7 @@ Controller.prototype = {
                                 case 'user':
                                     handler = function(req,res){
                                         if( !req.session.user ){
-                                            return bozuko.error('bozuko/auth').send(res);
+                                            return Bozuko.error('Bozuko.auth').send(res);
                                         }
                                         return _handler(req,res);
                                     };

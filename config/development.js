@@ -6,7 +6,7 @@ if (process.env.USER === 'docs') port = 7002;
 module.exports = {
 
     db:{
-        host:'mongodb://localhost/bozuko_dev'
+        host:'mongodb://localhost/Bozuko.dev'
     },
 
     facebook: {
@@ -27,9 +27,18 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
+    
+    checkin: {
+        duration: {
+            // 15 minutes between any checkins per user
+            user: 1000 * 60 * 15,
+            // 4 hours between checkins at the same place
+            page: 1000 * 60 * 60 * 4
+        }
+    },
 
     server: {
-        host: 'bonobo.bozuko.com',
+        host: 'bonobo.Bozuko.com',
         port: port
     },
 

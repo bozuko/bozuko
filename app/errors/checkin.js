@@ -1,5 +1,3 @@
-var bozuko = require('bozuko');
-
 module.exports = {
 
     no_user : {

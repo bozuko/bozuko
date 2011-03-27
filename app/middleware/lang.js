@@ -1,5 +1,3 @@
-require('bozuko');
-
 module.exports = function lang(){
     
     return function lang(req, res, next){

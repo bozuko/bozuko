@@ -1,8 +1,6 @@
-var bozuko = require('bozuko');
-
-var ExtJs       = bozuko.require('util/extjs'),
-    facebook    = bozuko.require('util/facebook'),
-    Page        = bozuko.require('util/page'),
+var ExtJs       = Bozuko.require('util/extjs'),
+    facebook    = Bozuko.require('util/facebook'),
+    Page        = Bozuko.require('util/page'),
     URL         = require('url'),
     qs          = require('querystring');
 
@@ -42,7 +40,7 @@ exports.routes = {
     '/get_token' : {
 
         get : function(req,res){
-            bozuko.require('core/auth').login(req,res,'user','/get_token',
+            Bozuko.require('core/auth').login(req,res,'user','/get_token',
 
                 function success(user,req,res){
                     res.redirect('/get_token/token/'+user.facebook_auth+'/user/'+user.facebook_id);
@@ -110,8 +108,8 @@ exports.routes = {
         get : function(req,res){
             var config = {
                 facebook:{
-                    appId: bozuko.config.facebook.app.id,
-                    perms:bozuko.config.facebook.perms
+                    appId: Bozuko.config.facebook.app.id,
+                    perms:Bozuko.config.facebook.perms
                 }
             };
             res.send("Bozuko = window.Bozuko || {}; Bozuko.config = "+JSON.stringify(config)+";", {"Content-Type":"text/javascript"} );
@@ -121,7 +119,7 @@ exports.routes = {
     'games' : {
 
         get : function(req,res){
-            res.send(bozuko.games);
+            res.send(Bozuko.games);
         }
     }
 };

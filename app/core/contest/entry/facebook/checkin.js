@@ -1,6 +1,4 @@
-var bozuko  = require('bozuko'),
-    Entry   = bozuko.require('core/contest/entry')
-    ;
+var Entry = Bozuko.require('core/contest/entry');
 
 /**
  * Facebook Checkin
@@ -10,10 +8,8 @@ var FacebookCheckin = module.exports = function(key, user, options){
     options = options || {};
     Entry.prototype.constructor.call(this,key,user);
     // set the valid options
-    if( !options.latLng ) throw bozuko.error('entry/facebook/no_lat_lng');
+    if( !options.checkin ) throw Bozuko.error('entry/facebook/no_checkin');
     this.checkin = options.checkin;
-    this.latLng = options.latLng;
-    this.message = options.message || "";
 };
 
 FacebookCheckin.prototype.__proto__ = Entry.prototype;
@@ -46,20 +42,18 @@ proto.validate = function( callback ){
     var self = this;
     Entry.prototype.validate.call( this, function(error){
         if( error ){
-            callback( error );
+            return callback( error );
         }
-        else{
-            // anything else we need to do, for facebook reasons?
-            // we should make sure that the contest has a facebook service
-            bozuko.models.Page.findById(self.contest.page_id, function(error, page){
-                if( error || !page) return callback( bozuko.error('entry/facebook/invalid_page',self.contest.page_id) );
-                
-                if( !page.service('facebook') ){
-                    callback( bozuko.error('entry/facebook/no_facebook_account', page.id) );
-                }
-                return callback( null );
-            });
+        if( self.checkin.page_id+'' != self.contest.page_id+'' ){
+            return callback( Bozuko.error('entry/facebook/invalid_checkin') );
         }
+        /**
+         * TODO
+         * 
+         * we should also check to make sure that
+         * its not too soon between checkins per contest
+         */
+        return callback( null );
     });
 };
 
@@ -79,46 +73,9 @@ proto.process = function( callback ){
         if( error ){
             return callback( error );
         }
-        
-        // okay - IF this user checked into this place
-        // for another contest, we do not need to check them in again
-        /**
-         * TODO add the check here...
-         */
-        
-        return bozuko.models.Page.findById( self.contest.page_id, function(error, page){
-            bozuko.service('facebook').checkin({
-                test        :true,
-                user        :self.user,
-                message     :self.message,
-                place_id    :page.service('facebook').sid,
-                // actions     :{name:'View on Bozuko', link:'http://bozuko.com'},
-                link        :'http://bozuko.com',
-                picture     :'http://bozuko.com/images/bozuko-chest-check.png',
-                /**
-                 * TODO
-                 *
-                 * change the description to reflect the place / prize, etc
-                 * 
-                 */
-                description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
-                latLng      :{
-                    lat:self.latLng.lat,
-                    lng:self.latLng.lng
-                }
-            },
-            
-            function(error, result){
-                // TODO: set the status code based on error
-                if (error) {
-                    callback(error);
-                } else {
-                    entry.data = result;
-                    entry.save(function(error){
-                        callback(null, entry);
-                    });
-                }
-            });
+        entry.action_id = self.checkin.id;
+        return entry.save(function(error){
+            return error || Bozuko.models.Entry.findById(entry.id,callback);
         });
     });
 };

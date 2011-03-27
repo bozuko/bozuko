@@ -1,5 +1,4 @@
-var bozuko = require('bozuko'),
-    async = require('async');
+var async = require('async');
 
 var locations = {
     "MA - Faneuil Hall":[42.360133,-71.055767],
@@ -70,15 +69,16 @@ var locations = {
 };
 
 var collect = exports.collect = function(service, city, latLng, callback) {
-    bozuko.service(service).search({latLng: latLng, limit: 50}, function(err, results) {
+    Bozuko.service(service).search({latLng: latLng, limit: 50}, function(err, results) {
         if (err) {
             console.log(service+" search error: latLng = "+JSON.stringify(latLng)+", error = "+err);
             return callback(err);
         }
+        console.log(service+' got '+results.length+' results for '+city);
         if (results) {
-            async.forEach(results,
+            return async.forEach(results,
                 function(page, cb) {
-                    var s = new bozuko.models.Statistic();
+                    var s = new Bozuko.models.Statistic();
                     s.service = service;
                     s.name = page.name;
                     s.city = city;
@@ -88,9 +88,11 @@ var collect = exports.collect = function(service, city, latLng, callback) {
                     s.total_checkins = page.checkins;
                     s.timestamp = new Date();
                     s.save(function(err) {
-                        if (err) return cb(err);
+                        if (err){
+                            return cb(err);
+                        }
+                        return cb();
                     });
-                    cb();
                 },
                 function(err) {
                     if (err) return callback(err);
@@ -98,22 +100,27 @@ var collect = exports.collect = function(service, city, latLng, callback) {
                 }
             );
         } else {
-            return callback(bozuko.error('stats/collect_no_results'));
+            return callback(Bozuko.error('stats/collect_no_results'));
         }
     });
 };
 
 exports.collect_all = function(callback) {
-    async.forEach(Object.keys(locations), function(city, callback) {
+    var i = 0;
+    var total = Object.keys(locations).length * 2;
+    Object.keys(locations).forEach(function(city, callback) {
         var latLng = {
             lat: locations[city][0],
             lng: locations[city][1]
         };
-        //      async.series([collect('facebook', latLng, callback), collect('foursquare', latLng, callback)]);
-        collect('facebook', city, latLng, callback);
-    },
-    function(err) {
-        if (err) return callback(err);
-        return callback(null, 'ok');
+        ['facebook','foursquare'].forEach(function(service){
+            setTimeout(function(){
+                collect(service, city, latLng, function(error, callback){
+                    if( error ) console.log(error);
+                    i++;
+                    if( i == total ) callback(null, 'ok');
+                });
+            }, i*100);
+        });
     });
 };

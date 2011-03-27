@@ -1,5 +1,4 @@
-var bozuko = require('bozuko'),
-    async = require('async');
+var async = require('async');
 
 exports.routes = {
 
@@ -18,9 +17,9 @@ exports.routes = {
                 }
                 if (req.param('service')) options.service = req.param('service');
 
-                bozuko.models.Statistic.search(options, function(error, stats) {
+                Bozuko.models.Statistic.search(options, function(error, stats) {
                     if (error) return error.send(res);
-                    res.send(stats);
+                    return res.send(stats);
                 });
             }
         }
