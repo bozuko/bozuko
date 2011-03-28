@@ -16,7 +16,8 @@ var Contest = module.exports = new Schema({
     start                   :{type:Date},
     end                     :{type:Date},
     total_entries           :{type:Number},
-    results                 :{type:Array},
+    total_plays             :{type:Number},
+    results                 :{},
     play_cursor             :{type:Number},
     token_cursor            :{type:Number},
     winners                 :[ObjectId]
@@ -25,11 +26,17 @@ var Contest = module.exports = new Schema({
 /**
  * Create the results array
  *
- * @param {User}
- * @param {EntryMethod} 
  */
-Contest.method('generateResults', function(){
-    
+Contest.method('generateResults', function(callback){
+    Bozuko.require('core/contest/engine').generateResults(this);
+    var self = this;
+    this.save(function(error){
+        if( error ){
+            console.log(error.message);
+            return callback(error);
+        }
+        return Bozuko.models.Contest.findById(self.id, callback);
+    });
 });
 
 /**
@@ -83,7 +90,11 @@ Contest.method('incrementPlayCursor', function(callback, tries){
                 });
             }
             self.play_cursor++;
-            return callback( null, self.play_cursor );
+            return self.save(function(error){
+                if( error ) return error;
+                return callback( null, self.play_cursor );
+            });
+            
         }
     );
 });
@@ -113,8 +124,8 @@ Contest.method('play', function(user, callback){
                 return entry.save( function(error){
                     if( error ) return callback( error );
                     
-                    var game_result = Bozuko.game( self.game, self.game_config ).process( result.index );
-                    var prize = result.prize;
+                    var game_result = Bozuko.game( self.game, self.game_config ).process( result ? result.index : false );
+                    var prize = result ? result.prize : false;
                     
                     return callback(null, {
                         entry: entry,
@@ -128,14 +139,14 @@ Contest.method('play', function(user, callback){
 });
 
 Contest.method('getGame', function(){
-    return Bozuko.game( this.game, this.game_config );
+    return Bozuko.game( this.game, this.game_config, this );
 });
 
 Contest.method('getBestPrize', function(){
     if( this.prizes.length == 0 ) return null;
     var prizes = this.prizes;
     prizes.sort( function(a, b){
-        return a - b;
+        return a.value - b.value;
     });
     return prizes[0];
 });

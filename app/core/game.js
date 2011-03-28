@@ -1,8 +1,9 @@
 var express = require('express'),
     fs = require('fs');
 
-var Game = module.exports = function(config){
+var Game = module.exports = function(config, contest){
     this.config = config;
+    this.contest = contest;
 };
 
 /**

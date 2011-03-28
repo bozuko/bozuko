@@ -4,12 +4,12 @@ var express = require('express'),
     
     
 var Slots = module.exports = function(){
-    Game.prototype.constructor.apply(this,arguments);
+    Game.apply(this,arguments);
     this.config = this.config || {};
     this.icons = this.config.icons || this.default_icons.slice();
 };
 
-Slots.prototype.__proto__ = Game;
+Slots.prototype.__proto__ = Game.prototype;
 var proto = Slots.prototype;
 
 proto.name = "Slots";
@@ -19,7 +19,7 @@ proto.default_icons = ['seven','bar','bell','banana','monkey','cherries'];
 proto.process = function(outcome){
     
     var ret = [];
-    if( !outcome ){
+    if( outcome === false ){
         // need random icons
         var icons = this.icons.slice();
         for(var i =0; i<3; i++){

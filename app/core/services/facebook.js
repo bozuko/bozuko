@@ -8,7 +8,7 @@ var URL         = require('url'),
 ;
 
 var FacebookService = module.exports = function(){
-    Service.call(this);
+    Service.apply(this,arguments);
 };
 
 FacebookService.prototype.__proto__ = Service.prototype;
