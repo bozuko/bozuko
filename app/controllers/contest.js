@@ -10,13 +10,13 @@ var game_prize = {
 
 var game_result = {
     doc: "Bozuko Game Result",
+    
     def:{
         win: "Boolean",
         result: "Mixed",
         redemption_type: "String",
         prize: "prize",
         links: {
-            facebook_login: "String",
             facebook_checkin: "String",
             facebook_like: "String",
             prize: "prize",
@@ -30,6 +30,15 @@ var game = {
         
     doc: "A Game Object",
     
+    create : function(game){
+        game.config = game.contest.game_config;
+        var obj = this.merge(game, game.contest);
+        obj.links = {
+            contest_result: '/contest/'+game.contest._id+'/result'
+        };
+        return obj;
+    },
+    
     def:{
         type: "String",
         name: "String",
@@ -41,7 +50,6 @@ var game = {
         can_play: "Boolean",
         start_time: "String",
         end_time: "String",
-        tokens_per_play: "Number",
         entry_methods:['entry'],
         prizes:['prize'],
         rules: "String",
@@ -130,8 +138,14 @@ exports.routes = {
                     }
                     // lets let the contest handle finding entries, etc
                     return contest.play(req.session.user, function(error, result){
-                        if( error ) return error.send(res);
-                        return res.send( Bozuko.transfer('contest_result', result) );
+                        if( error ){
+                            return error.send(res);
+                        }
+                        var ret = {
+                            win: result.prize ? true: false,
+                            result: result.game_result
+                        };
+                        return res.send(ret);
                     });
                 });
             }

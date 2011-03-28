@@ -9,13 +9,13 @@ var bad = {status: 500, headers: {'Content-Type': 'application/json'}};
 
 // Step through the app by following links
 exports['play a game'] = function(beforeExit) {
-    async.reduce([get_root, get_pages, facebook_checkin, facebook_checkin2],
+    async.reduce([get_root, get_pages, facebook_checkin2,play,play,play,playError],
         '/api',
         function(link, f, callback) {
             f(link, callback);
         },
-        function(err, result){
-            console.log("last URI = "+result);
+        function(err, link){
+            console.log('finished');
         });
 };
 
@@ -80,11 +80,12 @@ var facebook_checkin2 = function(link, callback) {
         method: 'POST',
         headers: bozuko_headers,
         data: params},
-        bad,
+        ok,
         function(res) {
             var facebook_checkin_result = JSON.parse(res.body);
+            //console.log( facebook_checkin_result );
             assert.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
-            callback(null, facebook_checkin_result.links.contest_result);
+            callback(null, facebook_checkin_result.games[0].links.contest_result);
         });
 };
 
@@ -99,7 +100,26 @@ var play = function(link, callback) {
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            // assert.ok(Bozuko.validate('contest_result', result));
             console.log(result);
-        });
+            callback(null, link);
+        }
+    );
+};
+
+
+// Play the slots game and check the result
+var playError = function(link, callback) {
+    assert.response(Bozuko.app,
+        {
+            url: link,
+            method: 'POST',
+            headers: bozuko_headers
+        },
+        bad,
+        function(res) {
+            var result = JSON.parse(res.body);
+            console.log(result);
+            callback(null, link);
+        }
+    );
 };

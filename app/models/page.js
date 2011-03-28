@@ -58,6 +58,7 @@ Page.method('getUserTokens', function(user, callback){
         
         var ids = [];
         var games = [];
+        var gamesMap= {};
         var contestMap = {};
         contests.forEach( function(contest){
             contestMap[contest._id+''] = contest;
@@ -73,15 +74,16 @@ Page.method('getUserTokens', function(user, callback){
             var total = 0;
             entries.forEach( function(entry){
                 var key = ''+entry.contest_id;
-                if( !games[key] ){
-                    games[key] = {};
+                var game = gamesMap[key];
+                if( !game ){
+                    
+                    var contest = contestMap[''+entry.contest_id];
+                    var game = contest.getGame();
+                    gamesMap[key] = game;
+                    games.push(game);
                 }
-                
-                var contest = contests[contestMap[entry.contest_id]];
-                var game = contest.getGame();
-                if( game.tokens )  game.tokens = 0;
-                game.tokens+= entry.tokens;
-                games.push(game);
+                if( !game.tokens )  game.tokens = 0;
+                game.tokens+= entry.get('tokens');
             });
             return callback( null, games );
         });

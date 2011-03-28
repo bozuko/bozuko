@@ -133,7 +133,7 @@ var add_contests = function(callback) {
 		game					:'slots',
 		game_config				:{},
 		end                     :end,
-		total_entries           :1000,
+		total_entries           :6,
 		play_cursor             :0,
 		token_cursor            :0
     };
@@ -149,13 +149,17 @@ var add_contests = function(callback) {
 			tokens: 3
 		});
 		contest.prizes.push({
-			name: 'T-Shirt',
+			name: 'T-Shirt',	
 			value: '20',
 			description: "Awesome Owl Watch T-Shirt",
 			total: 10
 		});
 		contest.save(function(error){
-			callback(null,'');
+			Bozuko.models.Contest.findById(contest.id,function(error, contest){
+				contest.generateResults( function(error){
+					callback(null);
+				});
+			});
 		});
     });
 };

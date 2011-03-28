@@ -135,11 +135,13 @@ exports.routes = {
                                         return page.getUserTokens(req.session.user, function(error, games){
                                             if( error ) return error;
                                             
-                                            // we need the games too, so we can provide links to each
+                                            games.forEach(function(game, i){
+                                                games[i] = Bozuko.transfer('game').create(game);
+                                            });
+                                            
                                             var ret = {
                                                 page_id: page.id,
                                                 page_name: page.name,
-                                                tokens: tokens,
                                                 timestamp: checkin.timestamp,
                                                 duration: Bozuko.config.checkin.duration.page,
                                                 games: games,
@@ -148,12 +150,7 @@ exports.routes = {
                                                 }
                                             };
                                             
-                                            return res.send(
-                                                Bozuko.transfer(
-                                                    'facebook_result',
-                                                    ret
-                                                )
-                                            );
+                                            return res.send(ret);
                                         });
                                         
                                     });

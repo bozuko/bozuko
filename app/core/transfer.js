@@ -5,6 +5,7 @@ var TransferObject = module.exports = function(name, config){
     this.name = name;
     this.doc = config.doc;
     this.def = config.def;
+    this._create = config.create;
     this.title = config.title;
     this.links = {};
     this.returned = [];
@@ -21,7 +22,6 @@ var TransferObject = module.exports = function(name, config){
                 console.warn('Undocumented Link ['+key+']');
             }
         });
-
     }
 };
 
@@ -31,9 +31,22 @@ $.getTitle = function(){
     return this.title || this.name;
 };
 
+$.create = function(data){
+    return this._create ? this._create(data) : this.sanitize(data);
+};
+
 $.returnedBy = function(link){
     if( link && !~this.returned.indexOf(link) ) this.returned.push(link);
     return this.returned;
+};
+
+$.merge = function(a,b){
+    a = this.sanitize(a);
+    b = this.sanitize(b);
+    Object.keys(b).forEach(function(prop){
+        a[prop] = b[prop];
+    });
+    return a;
 };
 
 $.sanitize = function(data, current){

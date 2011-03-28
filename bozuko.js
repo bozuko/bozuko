@@ -65,8 +65,8 @@ exports.service = function(name){
 	return exports.services[name];
 };
 
-exports.game = function(name, config){
-	return new this.games[name](config);
+exports.game = function(name, config, contest){
+	return new this.games[name](config, contest);
 };
 
 exports.transfer = function(key, data){
