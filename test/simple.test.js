@@ -70,7 +70,7 @@ var facebook_checkin2 = function(link, callback) {
     var params = JSON.stringify({
         lat: 42.646261785714,
         lng: -71.303897114286,
-        message: "Bobby B in da house again bitches"
+        message: "Bobby B kicking in checkin2!"
     });
 
     bozuko_headers['content-type'] = 'application/json';
@@ -83,7 +83,7 @@ var facebook_checkin2 = function(link, callback) {
         ok,
         function(res) {
             var facebook_checkin_result = JSON.parse(res.body);
-            //console.log( facebook_checkin_result );
+            console.log( facebook_checkin_result );
             assert.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
             callback(null, facebook_checkin_result.games[0].links.contest_result);
         });
@@ -100,6 +100,7 @@ var play = function(link, callback) {
         ok,
         function(res) {
             var result = JSON.parse(res.body);
+            console.log("*** User Just Played ***");
             console.log(result);
             callback(null, link);
         }
@@ -118,6 +119,7 @@ var playError = function(link, callback) {
         bad,
         function(res) {
             var result = JSON.parse(res.body);
+            console.log("*** User Just Played (not enough tokens) ***");
             console.log(result);
             callback(null, link);
         }
