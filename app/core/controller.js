@@ -59,7 +59,7 @@ Controller.prototype = {
                                 case 'user':
                                     handler = function(req,res){
                                         if( !req.session.user ){
-                                            return Bozuko.error('Bozuko.auth').send(res);
+                                            return Bozuko.error('bozuko/auth').send(res);
                                         }
                                         return _handler(req,res);
                                     };

@@ -247,6 +247,7 @@ $.checkin = function(options, callback){
         place           :options.place_id,
         coordinates     :JSON.stringify({latitude:options.latLng.lat,longitude: options.latLng.lng})
     };
+    if( options.name )          params.name         = options.name;
     if( options.message )       params.message      = options.message;
     if( options.picture )       params.picture      = options.picture;
     if( options.link )          params.link         = options.link;
@@ -299,6 +300,7 @@ $.user = function(options, callback){
     var params ={};
     if( options.fields )        params.fields       = options.fields;
     
+    var self = this;
     
     return facebook.graph('/'+uid,{
         user: options.user,
@@ -307,7 +309,7 @@ $.user = function(options, callback){
         if( result.error ){
             callback( Bozuko.error('facebook/api', result.error) );
         }
-        callback(null, result);
+        callback(null, self.sanitizeUser(result));
     });
 };
 
@@ -559,7 +561,17 @@ $._sanitizePlace = function(place){
  * @return {Object}         place           The sanitized object / objects
  */
 $._sanitizeUser = function(user){
-    
+    if( !user ) return null;
+    return {
+        service: 'facebook',
+        id: user.id,
+        name: user.name,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        image: 'http://graph.facebook.com/'+user.id+'/picture?type=large',
+        email: user.email,
+        data: user
+    };
 };
 
 /**

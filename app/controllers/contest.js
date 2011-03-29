@@ -18,8 +18,7 @@ var game_result = {
             prize: result.prize
         };
         // also need to get game tokens
-        
-        
+        return ret;
     },
     
     def:{
@@ -50,6 +49,7 @@ var game = {
             contest_result: '/contest/'+game.contest._id+'/result',
             page: '/page/'+game.contest.page_id
         };
+        console.log(obj);
         return obj;
     },
     
@@ -137,7 +137,7 @@ exports.routes = {
      * and the index from the result is used to generate the config returned to the client.
      */
     '/contest/:id/result' : {
-
+        
         access : 'user',
 
         post: {
@@ -153,6 +153,7 @@ exports.routes = {
                     // lets let the contest handle finding entries, etc
                     return contest.play(req.session.user, function(error, result){
                         if( error ){
+                            console.log('error', error);
                             return error.send(res);
                         }
                         return res.send(

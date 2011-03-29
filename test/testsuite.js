@@ -3,9 +3,22 @@ var bozuko = require('../bozuko');
 var assert = require('assert');
 var async = require('async');
 
+var users = {
+	a: {
+		'id': '100001848849081',
+		'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
+	},
+	b: {
+		'id': '100001863668743',
+		'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
+	}
+};
+
+var user = users.b;
+
 assert.headers = {
-    'BOZUKO_FB_USER_ID': '100001863668743',
-    'BOZUKO_FB_ACCESS_TOKEN' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
+    'BOZUKO_FB_USER_ID': user.id,
+    'BOZUKO_FB_ACCESS_TOKEN' : user.auth
 };
 
 assert.keys = function(object, properties) {
@@ -16,7 +29,7 @@ assert.keys = function(object, properties) {
 
 assert.page_id = "181069118581729";
 
-var auth = assert.headers.BOZUKO_FB_ACCESS_TOKEN;
+var auth = user.auth;
 
 exports.setup = function(fn) {
     bozuko.app = express.createServer();
@@ -47,34 +60,27 @@ var emptyCollection = function(name) {
 };
 
 var add_users = function(callback) {
-    var u = new Bozuko.models.User();
-    u.name = "Bobby Bozuko",
-    u.first_name = "Bobby",
-    u.last_name = "Bozuko",
-    u.gender = "male",
-    u.email = "Bozuko.@gmail.com",
-    u.service('facebook',
-        "100001863668743",
-        auth, {
-            "id" : "100001863668743",
-            "name" : "Bobby Bozuko",
-            "first_name" : "Bobby",
-            "last_name" : "Bozuko",
-            "link" : "http://www.facebook.com/profile.php?id=100001863668743",
-            "gender" : "male",
-            "email" : "Bozuko.@gmail.com",
-            "timezone" : -5,
-            "locale" : "en_US",
-            "updated_time" : "2010-11-16T00:21:50+0000"
-        });
-    u.save(function(){callback(null,'');});
+	Bozuko.service('facebook').user({user_id:user.id}, function(error, user){
+		if( error ){
+			console.log(error);
+			return callback(error);
+		}
+		return Bozuko.models.User.createFromServiceObject(user, function(error, user){
+			if( error ) return callback( error );
+			user.service('facebook').auth = auth;
+			return user.save( function(error){
+				if( error ) return callback( error );
+				console.log(user);
+				return callback( null, user);
+			});
+		});
+	});
 };
 
 var add_pages = function(callback) {
 	var auth = "166078836756369|242533771ff71c4e019a9350-557924168|KsXKYtlwW3IQuduNQQofNZ-A8Vw";
 	Bozuko.service('facebook').place({place_id:'181069118581729'}, function(error, place){
 		if( error ){
-			console.log('error', error.message);
 			return callback(error);
 		}
 		return Bozuko.models.Page.createFromServiceObject(place, function(error, page){
@@ -86,7 +92,7 @@ var add_pages = function(callback) {
 				return callback(new Error("WTF!!!"));
 			}
 			page.service('facebook').auth = auth;
-			return Bozuko.models.User.findOne({name: "Bobby Bozuko"}, function(err, user) {
+			return Bozuko.models.User.findOne({name: /bozuko/i}, function(err, user) {
 				if (user) {
 					assert.uid = ''+user._id;
 					page.owner_id = user._id;
@@ -111,7 +117,7 @@ var add_contests = function(callback) {
 		game					:'slots',
 		game_config				:{},
 		end                     :end,
-		total_entries           :12,
+		total_entries           :1000,
 		play_cursor             :-1,
 		token_cursor            :-1
     };
@@ -127,7 +133,7 @@ var add_contests = function(callback) {
 			tokens: 3
 		});
 		contest.prizes.push({
-			name: 'T-Shirt',	
+			name: 'Owl Watch T-Shirt',	
 			value: '20',
 			description: "Awesome Owl Watch T-Shirt",
 			details: "Only available in Large or Extra-large",
@@ -135,7 +141,7 @@ var add_contests = function(callback) {
 			total: 2
 		});
 		contest.prizes.push({
-			name: 'Mug',	
+			name: 'Owl Watch Mug',	
 			value: '10',
 			description: "Sweet travel Mug",
 			details: "Not good for drinking out of.",
