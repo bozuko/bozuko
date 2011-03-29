@@ -37,7 +37,7 @@ Statistic.pre('save', function(next){
             self.set('daily_checkins', 0);
         }
         return next();
-    }).sort(options.sort || {timestamp: -1});
+    }).sort({timestamp:-1});
 });
 
 Statistic.static('search', function(options, callback){

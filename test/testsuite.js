@@ -21,6 +21,7 @@ var auth = assert.headers.BOZUKO_FB_ACCESS_TOKEN;
 exports.setup = function(fn) {
     bozuko.app = express.createServer();
     bozuko.run('test');
+	console.log(Bozuko.config.server.port);
     async.series([
 		emptyCollection('User'),
 		emptyCollection('Page'),
@@ -70,55 +71,32 @@ var add_users = function(callback) {
 };
 
 var add_pages = function(callback) {
-    var data =
-        { "services" : [
-        {
-            "name" : "facebook",
-            "sid" 	: "181069118581729",
-            "auth" : "166078836756369|242533771ff71c4e019a9350-557924168|KsXKYtlwW3IQuduNQQofNZ-A8Vw",
-            "data" : {
-                "id" : "181069118581729",
-                "name" : "Owl Watch Lowell",
-                "picture" : "http://profile.ak.fbcdn.net/hprofile-ak-snc4/174638_181069118581729_1906773_s.jpg",
-                "link" : "http://www.facebook.com/pages/Owl-Watch-Lowell/181069118581729",
-                "category" : "Local business",
-                "website" : "http://www.owlwatch.com",
-                "location" : {
-                    "street" : "100 Massmills Dr #129",
-                    "city" : "Lowell",
-                    "state" : "MA",
-                    "country" : "United States",
-                    "zip" : "01852",
-                    "latitude" : 42.646261785714,
-                    "longitude" : -71.303897114286
-                },
-                "parking" : {
-                    "street" : 1
-                },
-                "phone" : "978 452 2224",
-                "fan_count" : 1,
-                "can_post" : true,
-                "checkins" : 1
-            }
-        }
-], "name" : "Owl Watch Lowell", "is_location" : true, "lat" : 42.646261785714, "lng" : -71.303897114286};
-
-    var page = new Bozuko.models.Page();
-    Bozuko.models.User.findOne({name: "Bobby Bozuko"}, function(err, user) {
-        if (user) {
-	    assert.uid = ''+user._id;
-            page.owner_id = user._id;
-            page.name = data.name;
-            page.games = [],
-            page.is_location = true;
-            page.lat = data.lat;
-            page.lng = data.lng;
-            page.service('facebook', data.services[0].sid, data.services[0].auth, data.services[0].data);
-            page.save(function(){callback(null,'');});
-        } else {
-            throw("Error looking up Bobby Bozuko: err = "+err);
-        }
-    });
+	var auth = "166078836756369|242533771ff71c4e019a9350-557924168|KsXKYtlwW3IQuduNQQofNZ-A8Vw";
+	Bozuko.service('facebook').place({place_id:'181069118581729'}, function(error, place){
+		if( error ){
+			console.log('error', error.message);
+			return callback(error);
+		}
+		return Bozuko.models.Page.createFromServiceObject(place, function(error, page){
+			if( error ){
+				return callback(error);
+			}
+			
+			if( !page ){
+				return callback(new Error("WTF!!!"));
+			}
+			page.service('facebook').auth = auth;
+			return Bozuko.models.User.findOne({name: "Bobby Bozuko"}, function(err, user) {
+				if (user) {
+					assert.uid = ''+user._id;
+					page.owner_id = user._id;
+					page.save(function(){callback(null,'');});
+				} else {
+					throw("Error looking up Bobby Bozuko: err = "+err);
+				}
+			});
+		});
+	});
 };
 
 
@@ -133,9 +111,9 @@ var add_contests = function(callback) {
 		game					:'slots',
 		game_config				:{},
 		end                     :end,
-		total_entries           :6,
-		play_cursor             :0,
-		token_cursor            :0
+		total_entries           :12,
+		play_cursor             :-1,
+		token_cursor            :-1
     };
 
     Bozuko.models.Page.findOne({name:/owl/i}, function(error, page){
@@ -152,6 +130,16 @@ var add_contests = function(callback) {
 			name: 'T-Shirt',	
 			value: '20',
 			description: "Awesome Owl Watch T-Shirt",
+			details: "Only available in Large or Extra-large",
+			instructions: "Show this screen to an employee",
+			total: 2
+		});
+		contest.prizes.push({
+			name: 'Mug',	
+			value: '10',
+			description: "Sweet travel Mug",
+			details: "Not good for drinking out of.",
+			instructions: "Show this screen to an employee",
 			total: 10
 		});
 		contest.save(function(error){
