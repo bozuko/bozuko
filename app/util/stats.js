@@ -74,9 +74,12 @@ var collect = exports.collect = function(service, city, latLng, callback) {
             console.log(service+" search error: latLng = "+JSON.stringify(latLng)+", error = "+err);
             return callback(err);
         }
-        
+
         if (results) {
-            var stats = [];
+            var counters = {
+                stats: 0,
+                errors: 0
+            };
             console.log(service+' got '+results.length+' results for '+city);
             return async.forEach(results,
                 function(page, cb) {
@@ -91,16 +94,17 @@ var collect = exports.collect = function(service, city, latLng, callback) {
                     s.timestamp = new Date();
                     s.save(function(err) {
                         if (err){
+                            counters.errors++;
                             console.log(err);
-                            return cb();
+                        } else {
+                            counters.stats++;
                         }
                         return cb();
                     });
-                    stats.push(s);
                 },
                 function(err) {
                     if (err) return callback(err);
-                    return callback(null, stats);
+                    return callback(null, counters);
                 }
             );
         } else {
@@ -110,12 +114,9 @@ var collect = exports.collect = function(service, city, latLng, callback) {
 };
 
 exports.collect_all = function(callback) {
-    var i = 0;
-    var total = Object.keys(locations).length * 2;
-    var cur = 0;
     var fns = [];
-    var errors = [];
-    var stats = [];
+    var errors = 0;
+    var stats = 0;
     Object.keys(locations).forEach(function(city) {
         var latLng = {
             lat: locations[city][0],
@@ -123,20 +124,21 @@ exports.collect_all = function(callback) {
         };
         ['facebook','foursquare'].forEach(function(service){
             fns.push(function(callback){
-                collect(service, city, latLng, function(error, statistic){
-                    if( error ) errors.push(error);
-                    else stats.push(statistic);
+                collect(service, city, latLng, function(error, counters){
                     if( error ){
-                        callback(null, 'error');
+                        errors += 1;
+                        return callback(null, 'error');
                     }
-                    callback(null, 'ok');
+                    errors += counters.errors;
+                    stats += counters.stats;
+                    return callback(null, 'ok');
                 });
             });
         });
     });
-    
+
     async.series(fns, function(err, results){
-        console.log('Collect All ran - found '+errors.length+' errors, '+stats.length+' collections');
+        console.log('Collect All ran - found '+errors+' errors, '+stats+' places');
     });
-    
+
 };

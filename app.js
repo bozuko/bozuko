@@ -42,7 +42,7 @@ if (!module.parent) {
 
     if (nodes.isMaster) {
         // setup stats collection
-        if( Bozuko.env === 'stats'){
+        if(Bozuko.env === 'stats' || Bozuko.env === 'test'){
             initStats();
         }
         var replServer = net.createServer(function(socket){
@@ -57,21 +57,19 @@ function initStats() {
     var stats = Bozuko.require('util/stats');
     var ms_per_hr = 1000*60*60;
     var ms_per_day = ms_per_hr*24;
-    var now = new Date();
-    var hours = 24 - now.getHours();
 
-    // If the server crashes stats will be accurate to within 1 hour
-    setTimeout(function() {
+    // Do an initial collection. Mongoose middleware will prevent duplication of records
+    // for the same day if a crash occurs.
+    stats.collect_all(logErr);
+
+    setInterval(function() {
         stats.collect_all(logErr);
-        setInterval(function() {
-            stats.collect_all(logErr);
-        }, ms_per_day);
-    }, hours*ms_per_hr);
-    console.log("initstats");
+    }, ms_per_day);
+    console.log('initStats');
 }
 
 function logErr(err, val) {
     if (err) {
-        console.log(JSON.stringify(err));
+        console.log(err);
     }
 }

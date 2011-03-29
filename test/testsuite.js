@@ -19,8 +19,9 @@ assert.page_id = "181069118581729";
 var auth = assert.headers.BOZUKO_FB_ACCESS_TOKEN;
 
 exports.setup = function(fn) {
+    process.env.NODE_ENV='test';
     bozuko.app = express.createServer();
-    bozuko.run('test');
+    bozuko.run();
 	console.log(Bozuko.config.server.port);
     async.series([
 		emptyCollection('User'),
@@ -81,7 +82,7 @@ var add_pages = function(callback) {
 			if( error ){
 				return callback(error);
 			}
-			
+
 			if( !page ){
 				return callback(new Error("WTF!!!"));
 			}
@@ -127,7 +128,7 @@ var add_contests = function(callback) {
 			tokens: 3
 		});
 		contest.prizes.push({
-			name: 'T-Shirt',	
+			name: 'T-Shirt',
 			value: '20',
 			description: "Awesome Owl Watch T-Shirt",
 			details: "Only available in Large or Extra-large",
@@ -135,7 +136,7 @@ var add_contests = function(callback) {
 			total: 2
 		});
 		contest.prizes.push({
-			name: 'Mug',	
+			name: 'Mug',
 			value: '10',
 			description: "Sweet travel Mug",
 			details: "Not good for drinking out of.",

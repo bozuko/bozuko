@@ -17,19 +17,27 @@ var Statistic = module.exports = new Schema({
 Statistic.pre('save', function(next){
     var self = this;
     Bozuko.models.Statistic.findOne({
-        service: this.service,
-        sid: this.sid
+        service: self.service,
+        sid: self.sid
     }, function(error, stat){
+        if (error) {
+            console.log("statistics.pre error = "+error);
+            return next(error);
+        }
         if( stat ){
             // first of all, lets see if this was already collected toda
             var now = self.get('timestamp');
+            console.log("now = "+now);
             var old = stat.get('timestamp');
+            console.log("old = "+old);
             if( old.getDay() == now.getDay() && old.getFullYear() == now.getFullYear() && old.getMonth() == now.getMonth() ){
                 return next( new Error('Statistic for ['+stat.name+'] ('+stat.service+','+stat.sid+') has already been collected') );
             }
             try{
                 self.set('daily_checkins', self.get('total_checkins') - stat.get('total_checkins'));
+                console.log("daily checkins = "+self.daily_checkins);
             }catch(e){
+                print("daily checkins set to 0");
                 self.set('daily_checkins', 0);
             }
         }
