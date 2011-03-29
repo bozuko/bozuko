@@ -24,7 +24,7 @@ exports.configure = function() {
     this.env = process.env.NODE_ENV;
     var app = exports.app;
     if (!app) {
-		throw new Error("Bozuko.app not set!");
+	throw new Error("Bozuko.app not set!");
     }
 
     app.configure('development', function() {
@@ -49,8 +49,8 @@ exports.configure = function() {
 };
 
 exports.run = function() {
-    if (!process.env.NODE_PATH) {
-	throw new Error("No configuration given! Please set NODE_PATH environment variable.");
+    if (!process.env.NODE_ENV) {
+	throw new Error("No configuration given! Please set NODE_ENV environment variable.");
     }
     this.configure();
     require('./app/main').run(this.app);
@@ -59,8 +59,8 @@ exports.run = function() {
 exports.services = {};
 exports.service = function(name){
 	if( !exports.services[name] ){
-		var Service = this.require('core/services/'+(name||'facebook'));
-		exports.services[name] = new Service();
+            var Service = this.require('core/services/'+(name||'facebook'));
+	    exports.services[name] = new Service();
 	}
 	return exports.services[name];
 };
