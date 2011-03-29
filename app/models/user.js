@@ -16,3 +16,23 @@ var User = module.exports = new Schema({
 });
 
 Services.initSchema(User);
+
+User.static('createFromServiceObject', function(user, callback){
+    var id = user.id;
+    var service = user.service;
+    var data = user.data;
+    delete user.data;
+    delete user.id;
+    delete user.service;
+    var u = new Bozuko.models.User();
+    Object.keys(user).forEach(function(prop){
+        u.set(prop, user[prop]);
+    });
+    u.service( service, id, null, data);
+    u.save( function(error){
+        if( error ){
+            return callback( error );
+        }
+        return Bozuko.models.User.findById(u.id, callback);
+    });
+});

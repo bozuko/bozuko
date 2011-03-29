@@ -248,5 +248,18 @@ exports.routes = {
                 });
             }
         }
+    },
+    
+    'page/:id/image': {
+        
+        get : {
+            handler : function(req,res){
+                Bozuko.models.Page.findById(req.param('id'), function(error, page) {
+                    if( error ) return error.send(res);
+                    return res.redirect( page.image );
+                });
+            }
+        }
+        
     }
 };

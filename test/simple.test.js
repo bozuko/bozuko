@@ -83,7 +83,6 @@ var facebook_checkin2 = function(link, callback) {
         ok,
         function(res) {
             var facebook_checkin_result = JSON.parse(res.body);
-            console.log( facebook_checkin_result );
             assert.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
             callback(null, facebook_checkin_result.games[0].links.contest_result);
         });

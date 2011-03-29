@@ -170,6 +170,7 @@ Contest.method('play', function(user, callback){
                                         if( error ) return callback( error );
                                         return callback(null, {
                                             entry: entry,
+                                            play: play,
                                             game_result: game_result,
                                             prize: prize
                                         });

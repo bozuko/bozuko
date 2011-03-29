@@ -183,3 +183,20 @@ $.sanitizePlace = $.sanitizePlaces = function(place){
     return ret;
 };
 
+$._sanitizeUser = function(user){};
+
+/**
+ * Sanitize a place
+ *
+ * @param {Mixed}           places/place    The array of places or place to sanitize
+ *
+ * @return {Mixed}          places/place    The sanitized object / objects
+ */
+$.sanitizeUser = $.sanitizeUser = function(user){
+    if( !Array.isArray(user) ) return this._sanitizeUser(user);
+    var ret = [];
+    var self = this;
+    user.forEach(function(item){ ret.push( self._sanitizeUser(item)); } );
+    return ret;
+};
+

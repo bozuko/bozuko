@@ -98,7 +98,7 @@ exports.routes = {
             access: 'user',
 
             handler: function(req, res) {
-
+                
                 var id = req.param('id');
                 var lat = req.param('lat');
                 var lng = req.param('lng');
@@ -109,6 +109,7 @@ exports.routes = {
                 }
                 
                 return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
+                    
                     if( err ){
                         return err.send( res );
                     }
@@ -116,45 +117,46 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
-                                test: true,
+                                // test: true,
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 latLng: {lat:lat,lng:lng},
                                 message: msg
                             },
                             function(error, result){
                                 if( error ){
-                                    error.send(res);
+                                    return error.send(res);
                                 }
-                                else{
-                                    var checkin = result.checkin;
-                                    var entries = result.entries;
+                                
+                                var checkin = result.checkin;
+                                var entries = result.entries;
+                                
+                                return checkin.getPage(function(error, page){
                                     
-                                    checkin.getPage(function(error, page){
+                                    if( error ) return error.send(res);
+                                    
+                                    return page.getUserGames(req.session.user, function(error, games){
                                         if( error ) return error.send(res);
                                         
-                                        return page.getUserGames(req.session.user, function(error, games){
-                                            if( error ) return error;
-                                            
-                                            games.forEach(function(game, i){
-                                                games[i] = Bozuko.transfer('game').create(game);
-                                            });
-                                            
-                                            var ret = {
-                                                page_id: page.id,
-                                                page_name: page.name,
-                                                timestamp: checkin.timestamp,
-                                                duration: Bozuko.config.checkin.duration.page,
-                                                games: games,
-                                                links: {
-                                                    facebook_like: '/facebook/'+page.service('facebook').sid+'/like'
-                                                }
-                                            };
-                                            
-                                            return res.send(ret);
+                                        games.forEach(function(game, i){
+                                            games[i] = Bozuko.transfer('game').create(game);
                                         });
                                         
+                                        var ret = {
+                                            page_id: page.id,
+                                            page_name: page.name,
+                                            timestamp: checkin.timestamp,
+                                            duration: Bozuko.config.checkin.duration.page,
+                                            games: games,
+                                            links: {
+                                                facebook_like: '/facebook/'+page.service('facebook').sid+'/like'
+                                            }
+                                        };
+                                        
+                                        return res.send(ret);
                                     });
-                                }
+                                    
+                                });
+                                
                             }
                         );
                     };

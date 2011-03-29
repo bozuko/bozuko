@@ -145,13 +145,13 @@ Page.method('checkin', function(user, options, callback) {
             
             options.user = user;
             options.link = 'http://bozuko.com';
-            // options.picture = 'http://bozuko.com/images/bozuko-chest-check.png';
-            options.picture = self.image;
+            //options.picture = 'http://bozuko.com/images/bozuko-chest-check.png';
+            options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
             
             // okay, lets try to give them entries on all open contests
             if( contests.length === 0 ){
                 // lets set a generic checkin message
-                // options.name = _t(user.lang, 'checkin/general_checkin_name');
+                options.name = _t(user.lang, 'checkin/general_checkin_name');
                 options.description = _t(
                     user.lang,
                     'checkin/general_checkin_desc'
@@ -174,14 +174,14 @@ Page.method('checkin', function(user, options, callback) {
                     }
                 }
                 var game = contest.getGame();
-               // options.name = _t(user.lang, 'checkin/general_checkin_name', self.name);
+                options.name = _t(user.lang, 'checkin/general_checkin_name', self.name);
                 options.description = _t(
                     user.lang,
                     'checkin/contest_checkin_desc',
                     user.name,
                     self.name,
-                    game.name,
-                    contest.getBestPrize().name
+                    contest.getBestPrize().name,
+                    game.name
                 );
             }
             
