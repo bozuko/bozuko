@@ -8,7 +8,7 @@ module.exports = {
         var prizes = contest.prizes;
         // sort the prizes by value
         prizes.sort( function(a, b){
-            return a.value - b.value;
+            return b.value - a.value;
         });
         
         var max=0;
