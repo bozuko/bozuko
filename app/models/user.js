@@ -31,7 +31,7 @@ User.pre('save', function(next) {
 
 function create_token(user, salt, next) {
     var token = hmac.update(user.name+salt).digest('hex');
-    Bozuko.models.user.findOne({token: token}, function(err, u) {
+    Bozuko.models.User.findOne({token: token}, function(err, u) {
         if (err) return next(err);
         if (!u) {
             user.token = token;
