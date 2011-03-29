@@ -11,17 +11,28 @@ var game_prize = {
 var game_result = {
     doc: "Bozuko Game Result",
     
+    create : function(result){
+        var ret = {
+            win: result.prize ? true: false,
+            result: result.game_result,
+            prize: result.prize
+        };
+        // also need to get game tokens
+        
+        
+    },
+    
     def:{
         win: "Boolean",
         result: "Mixed",
         redemption_type: "String",
         prize: "prize",
+        game: "String",
+        user_tokens: "Number",
         links: {
             facebook_checkin: "String",
             facebook_like: "String",
-            prize: "prize",
-            page: "String",
-            game: "String"
+            page: "String"
         }
     }
 };
@@ -32,9 +43,12 @@ var game = {
     
     create : function(game){
         game.config = game.contest.game_config;
+        game.user_tokens = game.tokens;
+        game.can_play = game.tokens > 0;
         var obj = this.merge(game, game.contest);
         obj.links = {
-            contest_result: '/contest/'+game.contest._id+'/result'
+            contest_result: '/contest/'+game.contest._id+'/result',
+            page: '/page/'+game.contest.page_id
         };
         return obj;
     },
@@ -141,11 +155,9 @@ exports.routes = {
                         if( error ){
                             return error.send(res);
                         }
-                        var ret = {
-                            win: result.prize ? true: false,
-                            result: result.game_result
-                        };
-                        return res.send(ret);
+                        return res.send(
+                            Bozuko.transfer('game_result').create(result)
+                        );
                     });
                 });
             }

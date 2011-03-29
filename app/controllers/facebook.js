@@ -107,8 +107,8 @@ exports.routes = {
                 if( !lat || !lng ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
+                
                 return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
-                    
                     if( err ){
                         return err.send( res );
                     }
@@ -132,7 +132,7 @@ exports.routes = {
                                     checkin.getPage(function(error, page){
                                         if( error ) return error.send(res);
                                         
-                                        return page.getUserTokens(req.session.user, function(error, games){
+                                        return page.getUserGames(req.session.user, function(error, games){
                                             if( error ) return error;
                                             
                                             games.forEach(function(game, i){

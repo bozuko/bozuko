@@ -52,7 +52,7 @@ Page.method('getActiveContests', function(callback){
     Bozuko.models.Contest.find(params, callback);
 });
 
-Page.method('getUserTokens', function(user, callback){
+Page.method('getUserGames', function(user, callback){
     this.getActiveContests( function(error, contests){
         if( error ) return callback(error);
         
@@ -144,8 +144,9 @@ Page.method('checkin', function(user, options, callback) {
             if( error ) return callback(error);
             
             options.user = user;
-            options.link = 'http://Bozuko.com';
-            options.picture = 'http://Bozuko.com/images/Bozuko.chest-check.png';
+            options.link = 'http://bozuko.com';
+            // options.picture = 'http://bozuko.com/images/bozuko-chest-check.png';
+            options.picture = self.image;
             
             // okay, lets try to give them entries on all open contests
             if( contests.length === 0 ){
@@ -222,12 +223,20 @@ Page.method('checkin', function(user, options, callback) {
 
 Page.static('createFromServiceObject', function(place, callback){
     var id = place.id;
+    var service = place.service;
     delete place.id;
-    var page = new Bozuko.models.Page(place);
+    delete place.sid;
+    delete place.service;
+    var page = new Bozuko.models.Page();
+    Object.keys(place).forEach(function(prop){
+        page.set(prop, place[prop]);
+    });
     page.is_location = true;
-    page.service( place.service, place.id, null, place.data);
+    page.service( service, id, null, place.data);
     page.save( function(error){
-        if( error ) return callback( error );
+        if( error ){
+            return callback( error );
+        }
         return Bozuko.models.Page.findById(page.id, callback);
     });
 });
@@ -247,7 +256,7 @@ Page.static('search', function(options, callback){
         else{
             callback( null, [] );
         }
-        Bozuko.models.Page.findByService(service, {$in:Object.keys(map)}, function(error, pages){
+        Bozuko.models.Page.findByService(service, Object.keys(map), function(error, pages){
             if( error ) return callback( error );
             
             var page_map = {};

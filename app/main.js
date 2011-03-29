@@ -89,6 +89,10 @@ function initModels(){
 
         // create the model
         var schema =  require('./models/'+name);
+        // add the name
+        schema.static('getBozukoModel', function(){
+            return Bozuko.models[Name];
+        });
 
         Bozuko.db.model( Name, schema );
         //Mongoose.Model.define(Name, config);

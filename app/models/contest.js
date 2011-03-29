@@ -32,7 +32,6 @@ Contest.method('generateResults', function(callback){
     var self = this;
     this.save(function(error){
         if( error ){
-            console.log(error.message);
             return callback(error);
         }
         return Bozuko.models.Contest.findById(self.id, callback);
@@ -124,13 +123,74 @@ Contest.method('play', function(user, callback){
                 return entry.save( function(error){
                     if( error ) return callback( error );
                     
-                    var game_result = Bozuko.game( self.game, self.game_config ).process( result ? result.index : false );
+                    var game_result = Bozuko.game( self ).process( result ? result.index : false );
                     var prize = result ? result.prize : false;
                     
-                    return callback(null, {
-                        entry: entry,
-                        game_result: game_result,
-                        prize: prize
+                    // record the "Play" in our db, win or lose
+                    var play = new Bozuko.models.Play();
+                    play.set('user_id', user._id);
+                    play.set('page_id', self.page_id);
+                    play.set('contest_id', self._id);
+                    play.set('entry_id', entry._id);
+                    play.set('timestamp', new Date());
+                    play.set('game', self.game);
+                    play.set('win', prize ? true : false);
+                    
+                    if( prize ){
+                        
+                        // get the actual prize
+                        var prize_object = null;
+                        for( var i=0; i<self.prizes.length && prize_object == null; i++){
+                            if( self.prizes[i]._id+'' == prize ){
+                                prize_object = self.prizes[i];
+                            }
+                        }
+                        
+                        // lets add the prize for this user
+                        var user_prize = new Bozuko.models.Prize();
+                        
+                        user_prize.user_id = user._id;
+                        user_prize.page_id = self.page_id;
+                        user_prize.contest_id = self._id;
+                        user_prize.value = prize_object.value;
+                        user_prize.name = prize_object.name;
+                        user_prize.image = prize_object.image;
+                        user_prize.description = prize_object.description;
+                        user_prize.instructions = prize_object.instructions;
+                        user_prize.redeemed = false;
+                        
+                        return user_prize.save( function(error){
+                            if( error ) return callback( error );
+                            return Bozuko.models.Prize.findById(user_prize._id, function(error, prize){
+                                play.set('prize_id', prize._id);
+                                play.set('prize_name', prize.get('name'));
+                                play.save( function(error){
+                                    if( error ) return callback( error );
+                                    return Bozuko.models.Play.findById(play._id, function(error){
+                                        if( error ) return callback( error );
+                                        return callback(null, {
+                                            entry: entry,
+                                            game_result: game_result,
+                                            prize: prize
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                        
+                    }
+                    
+                    return play.save(function(error){
+                        if( error ) return callback(error);
+                        return Bozuko.models.Play.findById(play._id, function(error){
+                            if( error ) return callback( error );
+                            return callback(null, {
+                                entry: entry,
+                                play: play,
+                                game_result: game_result,
+                                prize: false
+                            });    
+                        });
                     });
                 });
             });
@@ -139,7 +199,7 @@ Contest.method('play', function(user, callback){
 });
 
 Contest.method('getGame', function(){
-    return Bozuko.game( this.game, this.game_config, this );
+    return Bozuko.game( this );
 });
 
 Contest.method('getBestPrize', function(){
