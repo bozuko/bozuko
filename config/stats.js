@@ -32,6 +32,8 @@ module.exports = {
 
     defaultService:'facebook',
 
+    key: '7ndfde983xg&*4dp11Lcdcrn111+@adf',
+
     /**
      * These are basic authenticated users...
      */
