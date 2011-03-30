@@ -112,18 +112,18 @@ exports.error = function(name, data){
 	var BozukoError = this.require('core/error');
 
 	try{
-		var message = this.require('errors/'+path.join('/'))[err];
-		var code = null;
-		if( typeof message != 'string' && message.code ){
-			code = message.code;
-			message = message.message;
-		}
-		return new BozukoError(name,message,data,code);
+            var message = this.require('errors/'+path.join('/'))[err];
+	    var code = null;
+	    if( typeof message != 'string' && message.code ){
+		code = message.code;
+	        message = message.message;
+	    }
+	    return new BozukoError(name,message,data,code);
 	}catch(e){
-		return new BozukoError();
+            return new BozukoError();
 	}
 };
 
 exports.t = function(){
-	return self.require('core/lang').translate.apply(this, arguments);
+    return self.require('core/lang').translate.apply(this, arguments);
 };
