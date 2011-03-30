@@ -107,7 +107,7 @@ exports.routes = {
                 if( !lat || !lng ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
-                
+
                 return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
                     if( err ){
                         return err.send( res );
@@ -128,17 +128,17 @@ exports.routes = {
                                 else{
                                     var checkin = result.checkin;
                                     var entries = result.entries;
-                                    
+
                                     checkin.getPage(function(error, page){
                                         if( error ) return error.send(res);
-                                        
+
                                         return page.getUserGames(req.session.user, function(error, games){
                                             if( error ) return error;
-                                            
+
                                             games.forEach(function(game, i){
                                                 games[i] = Bozuko.transfer('game').create(game);
                                             });
-                                            
+
                                             var ret = {
                                                 page_id: page.id,
                                                 page_name: page.name,
@@ -149,16 +149,16 @@ exports.routes = {
                                                     facebook_like: '/facebook/'+page.service('facebook').sid+'/like'
                                                 }
                                             };
-                                            
+
                                             return res.send(ret);
                                         });
-                                        
+
                                     });
                                 }
                             }
                         );
                     };
-                    
+
                     // if there is no page for this place yet, lets create one
                     if( !page ){
                         return Bozuko.service('facebook').place(id, function(error, place){

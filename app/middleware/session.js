@@ -1,11 +1,5 @@
 var parse   = require('url').parse;
-
 var qs          = require('querystring');
-
-var HEADER = {
-    user_id        : 'BOZUKO_FB_USER_ID',
-    access_token   : 'BOZUKO_FB_ACCESS_TOKEN'
-};
 
 module.exports = function session(){
     return function session(req, res, next){
@@ -18,30 +12,23 @@ module.exports = function session(){
             return next();
         }
 
-        var uid, token;
         var cookie = req.cookies['fbs_'+Bozuko.config.facebook.app.id];
 
         var q = {};
-        
-        var newSession = req.session.userJustLoggedIn;
-        req.session.userJustLoggedIn = false
 
-        if( req.header(HEADER.user_id) ){
-            // need to run these through unescape because of how
-            // they are retrieved in corona
-            q['services.name']  = 'facebook';
-            q['services.sid']    = (req.header(HEADER.user_id));
-            q['services.auth']  = (req.header(HEADER.access_token));
-        }
-
-        else if( cookie ){
+        if (req.param('token')) {
+            q.token = req.param('token');
+        } else if( cookie ) {
             var session = qs.parse(cookie);
             q['services.name']  = 'facebook';
             q['services.sid']    = unescape(session.uid);
             q['services.auth']  = unescape(session.access_token);
         }
-        
-        if( q['services.sid'] && !newSession ){
+
+        var newSession = req.session.userJustLoggedIn;
+        req.session.userJustLoggedIn = false;
+
+        if( (q.token || q['services.sid']) && !newSession ){
             req.session.user = false;
             // check for the user in our database
             return Bozuko.models.User.findOne(q, function(err, u){
@@ -59,9 +46,9 @@ module.exports = function session(){
                 next();
             });
         }
-        
+
         else {
             return next();
         }
-    }
+    };
 };
