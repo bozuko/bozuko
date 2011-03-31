@@ -2,8 +2,8 @@ var print = require('util').debug;
 var assert = require('assert');
 var async = require('async');
 
-var bozuko_headers = assert.headers;
-
+var token = assert.token;
+var headers = {'content-type': 'application/json'};
 var ok = {status: 200, headers: {'Content-Type': 'application/json'}};
 var bad = {status: 500, headers: {'Content-Type': 'application/json'}};
 
@@ -51,12 +51,10 @@ var facebook_checkin = function(link, callback) {
         message: "Bobby B in da house"
     });
 
-    bozuko_headers['content-type'] = 'application/json';
-
     assert.response(Bozuko.app,
-        {url: link,
+        {url: link+"/?token="+token,
         method: 'POST',
-        headers: bozuko_headers,
+        headers: headers,
         data: params},
         ok,
         function(res) {
@@ -73,12 +71,10 @@ var facebook_checkin2 = function(link, callback) {
         message: "Bobby B kicking in checkin2!"
     });
 
-    bozuko_headers['content-type'] = 'application/json';
-
     assert.response(Bozuko.app,
-        {url: link,
+        {url: link+"/?token="+token,
         method: 'POST',
-        headers: bozuko_headers,
+        headers: headers,
         data: params},
         ok,
         function(res) {
@@ -92,9 +88,9 @@ var facebook_checkin2 = function(link, callback) {
 var play = function(link, callback) {
     assert.response(Bozuko.app,
         {
-            url: link,
+            url: link+"/?token="+token,
             method: 'POST',
-            headers: bozuko_headers
+            headers: headers
         },
         ok,
         function(res) {
@@ -111,9 +107,9 @@ var play = function(link, callback) {
 var playError = function(link, callback) {
     assert.response(Bozuko.app,
         {
-            url: link,
+            url: link+"/?token="+token,
             method: 'POST',
-            headers: bozuko_headers
+            headers: headers
         },
         bad,
         function(res) {

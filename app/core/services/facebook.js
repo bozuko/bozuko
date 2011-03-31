@@ -71,7 +71,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
         params.code = code;
 
         // we should also have the user information here...
-        var ret = req.session.redirect;
+        var ret = req.session.redirect || defaultReturn;
 
         http.request({
             url: 'https://graph.facebook.com/oauth/access_token',
@@ -123,7 +123,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                                 return;
                                             }
                                         }
-                                        res.redirect(ret || '/');
+                                        res.redirect(ret || '/user');
                                     });
                                 });
                             });
@@ -203,7 +203,7 @@ $.search = function(options, callback){
     params.offset = options.offset || 0;
     // this is a weird hack to get around facebooks "interpretation" of limiting...
     params.limit = (options.limit || 25) + params.offset;
-    
+
     facebook.graph( '/search',
         /* Facebook Options */
         {
@@ -238,11 +238,11 @@ $.search = function(options, callback){
  * @return {null}
  */
 $.checkin = function(options, callback){
-    
+
     if( !options || !options.place_id || !options.latLng || !options.user ){
         return callback(Bozuko.error('facebook/no_lat_lng_user_place'));
     }
-    
+
     var params = {
         place           :options.place_id,
         coordinates     :JSON.stringify({latitude:options.latLng.lat,longitude: options.latLng.lng})
@@ -290,18 +290,17 @@ $.checkin = function(options, callback){
  * @return {null}
  */
 $.user = function(options, callback){
-    
+
     if( !options || !(options.user_id || options.user_id)  ){
         return callback(Bozuko.error('facebook/no_user'));
     }
-    
+
     var uid = options.user_id || options.user.service('facebook').sid;
-    
+
     var params ={};
     if( options.fields )        params.fields       = options.fields;
     
     var self = this;
-    
     return facebook.graph('/'+uid,{
         user: options.user,
         params: params
@@ -492,7 +491,7 @@ $.get_user_pages = function(user, callback){
  *
  * This should return data in the following format
  * The data field can hold any extranneous information.
- * 
+ *
  *  {
  *      id: Number,
  *      name: String,
@@ -508,7 +507,7 @@ $.get_user_pages = function(user, callback){
  *      image: String,
  *      data: Object
  *  }
- * 
+ *
  * @param {Object}          place           The place to sanitize
  *
  * @return {Object}         place           The sanitized object / objects
@@ -544,7 +543,7 @@ $._sanitizePlace = function(place){
  *
  * This should return data in the following format
  * The data field can hold any extranneous information.
- * 
+ *
  *  {
  *      id: Number,
  *      name: String,
@@ -555,12 +554,13 @@ $._sanitizePlace = function(place){
  *      image: String,
  *      data: Object
  *  }
- * 
+ *
  * @param {Object}          place           The place to sanitize
  *
  * @return {Object}         place           The sanitized object / objects
  */
 $._sanitizeUser = function(user){
+
     if( !user ) return null;
     return {
         service: 'facebook',

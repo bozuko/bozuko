@@ -1,10 +1,13 @@
 var assert = require('assert');
+
 var uid = assert.uid;
-var bozuko_headers = assert.headers;
+var token = assert.token;
+var headers = {'content-type': 'application/json'};
+var tokstr = "/?token="+token;
 
 exports['GET /prizes'] = function() {
     assert.response(Bozuko.app,
-	{url: '/prizes', headers: bozuko_headers},
+	{url: '/prizes'+tokstr, headers: headers},
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var prizes = JSON.parse(res.body);
@@ -14,7 +17,7 @@ exports['GET /prizes'] = function() {
 
 exports['GET /prizes - active state'] = function() {
     assert.response(Bozuko.app,
-        {url: '/prizes?state=active', headers: bozuko_headers},
+        {url: '/prizes'+tokstr+'&state=active', headers: headers},
         {status: 200, headers: {'Content-Type': 'application/json'}},
         function(res) {
             var prizes = JSON.parse(res.body);
@@ -24,13 +27,13 @@ exports['GET /prizes - active state'] = function() {
 
 exports['GET /prizes - bad state'] = function() {
     assert.response(Bozuko.app,
-        {url: '/prizes?state=aaaactive', headers: bozuko_headers},
+        {url: '/prizes'+tokstr+'&state=aaaactive'},
         {status: 400, headers: {'Content-Type': 'application/json'}});
 };
 
 exports['GET /prize/:id'] = function() {
     assert.response(Bozuko.app,
-        {url: '/prize/354353453453', headers: bozuko_headers},
+        {url: '/prize/354353453453'+tokstr},
         {status: 200, headers: {'Content-Type': 'application/json'}},
         function(res) {
             assert.ok(Bozuko.validate('prize', JSON.parse(res.body)));

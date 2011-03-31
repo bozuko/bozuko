@@ -5,6 +5,7 @@ exports.transfer_objects= {
 
         def:{
             id: "String",
+            token: "String",
             name: "String",
             first_name: "String",
             last_name: "String",
@@ -93,7 +94,7 @@ exports.routes = {
 
         get : function(req,res){
             service = req.param('service') || 'facebook';
-            Bozuko.service(service).login(req,res,'user' );
+            Bozuko.service(service).login(req,res,'user','/user');
         }
     },
 

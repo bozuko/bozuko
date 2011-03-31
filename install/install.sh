@@ -23,7 +23,7 @@ npm config set unsafe-perm true
 
 # node packages
 echo "*** Installing node packages with npm"
-npm install connect-auth express expresso jade mongodb mongoose monomi oauth qs socket.io supervisor markdown-js async
+npm install connect-auth express expresso jade mongodb mongoose monomi oauth qs socket.io supervisor markdown-js async sprintf
 
 # Use our fork of expresso
 patch_expresso
