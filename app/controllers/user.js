@@ -101,23 +101,20 @@ exports.routes = {
     '/user' : {
 
         get : {
+
+            access: 'user',
+
             handler: function(req, res) {
                 res.setHeader('content-type', 'application/json');
-                if (req.session.user) {
-                    var user = req.session.user;
-                    user.id = user._id;
-                    user.img = "https://graph.facebook.com/"+user.id+"/picture";
-                    user.links = {
-                        facebook_login: "/user/login/facebook",
-
-                        facebook_logout: "/user/logout/facebook",
-                        favorites: "/user/"+user.id+"/favorites"
-                    };
-                    res.send(Bozuko.transfer('user', user));
-                } else {
-                    res.statusCode = 404;
-                    res.end();
-                }
+                var user = req.session.user;
+                user.id = user._id;
+                user.img = "https://graph.facebook.com/"+user.id+"/picture";
+                user.links = {
+                    facebook_login: "/user/login/facebook",
+                    facebook_logout: "/user/logout/facebook",
+                    favorites: "/user/"+user.id+"/favorites"
+                };
+                res.send(Bozuko.transfer('user', user));
             }
         }
     },
@@ -125,25 +122,23 @@ exports.routes = {
     '/user/favorites' : {
 
         get : {
+            access: 'user',
+
             handler: function(req, res) {
-                if (req.session.user) {
-                    var user = req.session.user;
-                    Bozuko.models.Page.find({'_id': {$in: user.favorites}}, function(err, pages) {
-                        if (err) {
-                            console.log("ERROR - favorites: err = "+err);
+                var user = req.session.user;
+                Bozuko.models.Page.find({'_id': {$in: user.favorites}}, function(err, pages) {
+                    if (err) {
+                        console.log("ERROR - favorites: err = "+err);
+                        err.send(res);
+                    } else {
+                        if (pages.length > 0) {
+                            res.send(pages);
+                        } else {
                             res.statusCode = 404;
                             res.end();
-                        } else {
-                            if (pages) {
-                                res.send(pages);
-                            } else {
-                                console.log("ERROR - favorites: pages not found");
-                                res.statusCode = 404;
-                                res.end();
-                            }
                         }
-                    });
-                }
+                    }
+                });
             }
         },
 

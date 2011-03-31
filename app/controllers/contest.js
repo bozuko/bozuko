@@ -10,7 +10,7 @@ var game_prize = {
 
 var game_result = {
     doc: "Bozuko Game Result",
-    
+
     create : function(result){
         var ret = {
             win: result.prize ? true: false,
@@ -20,7 +20,7 @@ var game_result = {
         // also need to get game tokens
         return ret;
     },
-    
+
     def:{
         win: "Boolean",
         result: "Mixed",
@@ -37,9 +37,9 @@ var game_result = {
 };
 
 var game = {
-        
+
     doc: "A Game Object",
-    
+
     create : function(game){
         game.config = game.contest.game_config;
         game.user_tokens = game.tokens;
@@ -52,7 +52,7 @@ var game = {
         console.log(obj);
         return obj;
     },
-    
+
     def:{
         type: "String",
         name: "String",
@@ -75,9 +75,9 @@ var game = {
 };
 
 var entry_method = {
-    
+
     doc: "An entry method ",
-    
+
     def: {
         available: "Boolean",
         reason: "String",
@@ -118,18 +118,18 @@ exports.links = {
 exports.routes = {
 
     '/contest/:id': {
-        
+
         /**
          * TODO -
          *
-         * 
-         * 
+         *
+         *
          */
 
         get: {
 
         }
-        
+
     },
 
     /**
@@ -137,7 +137,7 @@ exports.routes = {
      * and the index from the result is used to generate the config returned to the client.
      */
     '/contest/:id/result' : {
-        
+
         access : 'user',
 
         post: {
@@ -165,5 +165,4 @@ exports.routes = {
             }
         }
     }
-
 };

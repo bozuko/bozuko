@@ -10,22 +10,20 @@ exports['GET /user/login'] = function(beforeExit) {
         {status: 302, headers: {'Content-Type': 'text/html'}});
 };
 
-// user the custom headers hack for now so we don't have to log in programmatically
 exports['GET /user'] = function(beforeExit) {
     assert.response(Bozuko.app,
 	{url: '/user'+tokstr},
 	{status: 200, headers: {'Content-Type': 'application/json'}},
 	function(res) {
 	    var user = JSON.parse(res.body);
-	    assert.keys(user, ['name', 'first_name', 'last_name', 'gender', 'email', 'img']);
-            assert.keys(user.links, ['facebook_login', 'facebook_logout', 'favorites']);
+            assert.ok(Bozuko.validate('user', user));
 	});
 };
 
 exports['GET /user/favorites'] = function(beforeExit) {
     assert.response(Bozuko.app,
         {url: '/user/favorites'+tokstr},
-        {status: 200});
+        {status: 404});
 };
 
 

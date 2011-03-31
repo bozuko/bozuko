@@ -10,11 +10,11 @@ exports.routes = {
 
             handler: function(req, res) {
                 var options = {};
-                
+
                 var format = (req.param('format') || 'html').replace(/^\./,'');
-                
+
                 if( format == 'html'){
-                    
+
                     return res.render('stats',{
                         title:"Checkin Statistics"/*,
                         scripts:[
@@ -33,9 +33,9 @@ exports.routes = {
                     options.latLng = {lat: req.param('lat'), lng: req.param('lng')};
                 }
                 if (req.param('service')) options.service = req.param('service');
-                
+
                 var sort = {timestamp: -1};
-                
+
                 if( req.param('sort') ){
                     switch(req.param('sort')){
                         case 'service':
@@ -46,7 +46,7 @@ exports.routes = {
                 options.sort = sort;
 
                 return Bozuko.models.Statistic.search(options, function(error, stats) {
-                    
+
                     if( format == 'csv' ){
                         var fields = [
                             'service',
@@ -69,8 +69,7 @@ exports.routes = {
                                 if( field == 'link' ){
                                     v = 'https://'+Bozuko.config.server.host
                                         +':'+Bozuko.config.server.port+'/stats/redirect/'
-                                        +stat.get('service')+'/'+stat.get('sid')
-                                    
+                                        +stat.get('service')+'/'+stat.get('sid');
                                 }
                                 else{
                                     v = stat.get(field);
@@ -90,7 +89,7 @@ exports.routes = {
             }
         }
     },
-    
+
     'stats/redirect/:service/:id': {
         get : {
             handler : function(req,res){
