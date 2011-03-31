@@ -9,6 +9,8 @@ var Entry = module.exports = new Schema({
     type                    :{type:String},
     action_id               :{type:ObjectId},
     timestamp               :{type:Date, default: Date.now},
+    token_expiration        :{type:Date},
+    entry_expiration        :{type:Date},
     latitude                :{type:Number},
     longitude               :{type:Number},
     tokens                  :{type:Number},

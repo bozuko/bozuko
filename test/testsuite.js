@@ -117,7 +117,7 @@ var add_contests = function(callback) {
 		game					:'slots',
 		game_config				:{},
 		end                     :end,
-		total_entries           :1000,
+		total_entries           :30,
 		play_cursor             :-1,
 		token_cursor            :-1
     };
@@ -133,7 +133,7 @@ var add_contests = function(callback) {
 			tokens: 3
 		});
 		contest.prizes.push({
-			name: 'Owl Watch T-Shirt',	
+			name: 'Wicked cool T-Shirt',	
 			value: '20',
 			description: "Awesome Owl Watch T-Shirt",
 			details: "Only available in Large or Extra-large",

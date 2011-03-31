@@ -152,6 +152,7 @@ exports.routes = {
                     }
                     // lets let the contest handle finding entries, etc
                     return contest.play(req.session.user, function(error, result){
+                        console.log(result);
                         if( error ){
                             console.log('error', error);
                             return error.send(res);
