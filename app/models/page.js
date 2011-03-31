@@ -267,6 +267,7 @@ Page.static('search', function(options, callback){
             
             var now = new Date();
             
+            // reduce mongo calls by finding all active contests for all pages
             return Bozuko.models.Contest.find(
                 {
                     page_id: {$in: Object.keys(page_map)},
@@ -278,16 +279,56 @@ Page.static('search', function(options, callback){
                 
                     if( error ) return callback(error);
                     
+                    var contestMap = {};
+                    
                     // attach active contests to pages
                     contests.forEach(function(contest){
+                        contestMap[contest._id+''] = contest;
                         var page = page_map[contest.page_id+''];
                         if( !page.contests ){
                             page.contests = [];
                         }
                         page.contests.push(contest);
                     });
-                
-                    return callback(null, {pages: pages, service_results: results});
+                    
+                    
+                    /**
+                     * TODO
+                     *
+                     * Use the "expiration" property for entry model to
+                     * expire the tokens between entries
+                     *
+                     * or
+                     *
+                     * Upon new entry, delete the tokens off any existing
+                     * entries
+                     */
+                    // find active entries for this user in each contest
+                    return Bozuko.models.Entry.find({
+                        contest_id: {$in: Object.keys(contestMap)},
+                        tokens: {$gt: 0}
+                    }, function(error, entries){
+                        if( error ) return callback(error);
+                        
+                        if( entries ) entries.forEach( function(entry){
+                            // find the contest
+                            var contest = contests[contestMap[entry.contest_id+'']];
+                            if( !contest.tokens ) contest.tokens = 0;
+                            contest.tokens+= entry.tokens;
+                            
+                            // also need to figure out which methods of entry are available
+                            // we will need to use the contest entry configuration
+                            // for this.
+                            /**
+                             * Pseudo code
+                             *
+                             * contest.getValidEntryMethods( fn(){} );
+                             * 
+                             */
+                        });
+                        
+                        return callback(null, {pages: pages, service_results: results});
+                    });
                 }
             );
         });

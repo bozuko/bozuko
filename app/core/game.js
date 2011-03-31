@@ -13,6 +13,8 @@ Game.prototype = {
     
     name : null,
     
+    theme: 'default',
+    
     process : function( outcome ){
         
     }

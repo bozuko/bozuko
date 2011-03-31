@@ -117,7 +117,7 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
-                                // test: true,
+                                test: true,
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 latLng: {lat:lat,lng:lng},
                                 message: msg

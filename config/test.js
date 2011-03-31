@@ -22,7 +22,7 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
-    
+
     checkin: {
         duration: {
             // 15 minutes between any checkins per user
@@ -38,6 +38,8 @@ module.exports = {
     },
 
     defaultService:'facebook',
+
+    key: '7ndfde983xg&*4dp11Lcdcrn111+@adf',
 
     /**
      * These are basic authenticated users...

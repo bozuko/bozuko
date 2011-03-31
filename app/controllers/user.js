@@ -93,7 +93,7 @@ exports.routes = {
 
         get : function(req,res){
             service = req.param('service') || 'facebook';
-            Bozuko.service(service).login(req,res,'user');
+            Bozuko.service(service).login(req,res,'user' );
         }
     },
 

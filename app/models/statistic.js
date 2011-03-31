@@ -49,7 +49,6 @@ Statistic.static('search', function(options, callback){
     };
 
     if (options.city) {
-        console.log("options.city = "+options.city);
         Bozuko.models.Statistic.find({'service': service, 'city': options.city}, fn);
     } else if (options.latLng) {
         Bozuko.models.Statistic.find({'service': service,'lat':options.latLng.lat,
