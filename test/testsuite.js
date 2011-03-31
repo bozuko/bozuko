@@ -43,6 +43,8 @@ exports.setup = function(fn) {
 		emptyCollection('Contest'),
 		emptyCollection('Entry'),
 		emptyCollection('Checkin'),
+		emptyCollection('Play'),
+		emptyCollection('Prize'),
 		add_users,
 		add_pages,
 		add_contests
