@@ -47,7 +47,7 @@ Page.method('getActiveContests', function(callback){
     };
     if( arguments.length == 2 ){
         callback = arguments[1];
-        
+
     }
     Bozuko.models.Contest.find(params, callback);
 });
@@ -55,7 +55,7 @@ Page.method('getActiveContests', function(callback){
 Page.method('getUserGames', function(user, callback){
     this.getActiveContests( function(error, contests){
         if( error ) return callback(error);
-        
+
         var ids = [];
         var games = [];
         var gamesMap= {};
@@ -64,7 +64,7 @@ Page.method('getUserGames', function(user, callback){
             contestMap[contest._id+''] = contest;
             ids.push( contest._id );
         });
-        
+
         return Bozuko.models.Entry.find({
             tokens: {$gt: 0},
             user_id: user._id,
@@ -76,7 +76,7 @@ Page.method('getUserGames', function(user, callback){
                 var key = ''+entry.contest_id;
                 var game = gamesMap[key];
                 if( !game ){
-                    
+
                     var contest = contestMap[''+entry.contest_id];
                     var game = contest.getGame();
                     gamesMap[key] = game;
@@ -91,16 +91,16 @@ Page.method('getUserGames', function(user, callback){
 });
 
 Page.method('canUserCheckin', function(user, callback){
-    
+
     var self = this;
     var now = new Date();
-    
+
     var page_last_allowed_checkin = new Date();
     var user_last_allowed_checkin = new Date();
-    
+
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
-    
+
     Bozuko.models.Checkin.findOne(
         {
             $or: [{
@@ -111,12 +111,12 @@ Page.method('canUserCheckin', function(user, callback){
                 user_id: user._id,
                 timestamp: {$gt: user_last_allowed_checkin}
             }]
-            
+
         },
         function(error, checkin){
             // lets look at the last checkin
             if( error ) return callback( error );
-            
+
             if( checkin ){
                 if( checkin.page_id == self._id ){
                     return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_page') );
@@ -130,24 +130,24 @@ Page.method('canUserCheckin', function(user, callback){
 
 Page.method('checkin', function(user, options, callback) {
     var self = this;
-    
+
     this.canUserCheckin( user, function(error, canCheckin, checkin, checkinError){
-            
+
         // lets look at the last checkin
         if( error ) return callback( error );
-        
+
         if( checkin && checkinError ){
             return callback( checkinError );
         }
-        
+
         return self.getActiveContests(function(error, contests){
             if( error ) return callback(error);
-            
+
             options.user = user;
             options.link = 'http://bozuko.com';
             //options.picture = 'http://bozuko.com/images/bozuko-chest-check.png';
             options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
-            
+
             // okay, lets try to give them entries on all open contests
             if( contests.length === 0 ){
                 // lets set a generic checkin message
@@ -166,7 +166,7 @@ Page.method('checkin', function(user, options, callback) {
                     // customize message for this specific contest
                     var found = false;
                     for(var i=0; i<contests.length && found==false; i++){
-                        
+
                         if( contests[i].id == options.contest ){
                             found = true;
                             contest = contests[i];
@@ -184,16 +184,16 @@ Page.method('checkin', function(user, options, callback) {
                     game.name
                 );
             }
-            
+
             // okay, we have everything we need to make a checkin, lets
             // do so with our checkin model
-            
+
             options.page = self;
             options.user = user;
-            
+
             return Bozuko.models.Checkin.process(options, function(error, checkin){
                 if( error ) return error;
-                
+
                 if( contests.length == 0 ){
                     return callback( null, {checkin:checkin, entries:[]} );
                 }
@@ -216,7 +216,7 @@ Page.method('checkin', function(user, options, callback) {
                     });
                 });
             });
-            
+
         });
     });
 });
@@ -258,15 +258,15 @@ Page.static('search', function(options, callback){
         }
         Bozuko.models.Page.findByService(service, Object.keys(map), function(error, pages){
             if( error ) return callback( error );
-            
+
             var page_map = {};
             pages.forEach(function(page){
                 page_map[page.id+''] = page;
                 results.splice( results.indexOf(map[page.service(service).id]), 1 );
             });
-            
+
             var now = new Date();
-            
+
             // reduce mongo calls by finding all active contests for all pages
             return Bozuko.models.Contest.find(
                 {
@@ -276,11 +276,11 @@ Page.static('search', function(options, callback){
                     $where: "this.token_cursor < this.total_entries;"
                 },
                 function( error, contests ){
-                
+
                     if( error ) return callback(error);
-                    
+
                     var contestMap = {};
-                    
+
                     // attach active contests to pages
                     contests.forEach(function(contest){
                         contestMap[contest._id+''] = contest;
@@ -290,8 +290,8 @@ Page.static('search', function(options, callback){
                         }
                         page.contests.push(contest);
                     });
-                    
-                    
+
+
                     /**
                      * TODO
                      *
@@ -309,13 +309,13 @@ Page.static('search', function(options, callback){
                         tokens: {$gt: 0}
                     }, function(error, entries){
                         if( error ) return callback(error);
-                        
+
                         if( entries ) entries.forEach( function(entry){
                             // find the contest
-                            var contest = contests[contestMap[entry.contest_id+'']];
+                            var contest = contestMap[entry.contest_id+''];
                             if( !contest.tokens ) contest.tokens = 0;
                             contest.tokens+= entry.tokens;
-                            
+
                             // also need to figure out which methods of entry are available
                             // we will need to use the contest entry configuration
                             // for this.
@@ -323,10 +323,10 @@ Page.static('search', function(options, callback){
                              * Pseudo code
                              *
                              * contest.getValidEntryMethods( fn(){} );
-                             * 
+                             *
                              */
                         });
-                        
+
                         return callback(null, {pages: pages, service_results: results});
                     });
                 }
