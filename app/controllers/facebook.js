@@ -107,7 +107,7 @@ exports.routes = {
                 if( !lat || !lng ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
-                
+
                 return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
                     
                     if( err ){
@@ -154,13 +154,11 @@ exports.routes = {
                                         
                                         return res.send(ret);
                                     });
-                                    
-                                });
-                                
+                                });                                
                             }
                         );
                     };
-                    
+
                     // if there is no page for this place yet, lets create one
                     if( !page ){
                         return Bozuko.service('facebook').place(id, function(error, place){

@@ -8,27 +8,27 @@ function Controller(app,name){
 }
 
 Controller.prototype = {
-    
+
     route : function(routes){
-        
+
         var _this = this;
         var app = this.app;
-        
+
         Object.keys(routes).forEach(function(route){
-            
+
             var config = routes[route];
             if( !config.methods ) config.methods = ['get'];
             if( !config.methods.forEach ) config.methods = [config.methods];
-            
+
             var path = route;
             if( !config.aliases ) config.aliases = [];
             if( config.alias ) config.aliases.push(config.alias);
-            
+
             if( !/^\//.test(path)) path = '/'+path;
             if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
-            
+
             ['get','post','put','del','all'].forEach( function(method){
-                
+
                 if( config[method] ){
                     var handler = function(req,res){
                         res.send("Handler is not configured yet :(");
@@ -47,12 +47,12 @@ Controller.prototype = {
                                     ret = example.apply(_this,arguments);
                                 }
                                 res.send(ret);
-                            }
+                            };
                         }
                         else if( methodConfig.handler ){
                             handler = methodConfig.handler;
                         }
-                        
+
                         if( methodConfig.access ){
                             var _handler = handler;
                             switch( methodConfig.access ){
@@ -66,11 +66,11 @@ Controller.prototype = {
                                     break;
                             }
                         }
-                        
+
                         // check for docs...
                         if( !_this.doc.routes[route] ) _this.doc.routes[route] = {};
                         var doc = _this.doc.routes[route];
-                        
+
                         doc[method] = methodConfig.doc || {
                             description: 'No decription yet',
                             params: [],
@@ -78,7 +78,7 @@ Controller.prototype = {
                                 type: 'undefined'
                             }
                         };
-                        
+
                     }
                     app[method](path, function(req){
                         handler.apply(_this,arguments);
@@ -92,11 +92,11 @@ Controller.prototype = {
             });
         });
     },
-    
+
     forward : function(path){
-        
+
     }
-    
+
 };
 
 function createController(app,name,routes){

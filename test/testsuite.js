@@ -20,6 +20,7 @@ assert.headers = {
     'BOZUKO_FB_USER_ID': user.id,
     'BOZUKO_FB_ACCESS_TOKEN' : user.auth
 };
+assert.token = "43a9d844542c6570a1b267e2c88a9f11d00556d51e4768c5b33364d78c4324ac17e5eee3f37a9ccea374fda76dfb44ec714ea533567e12cdadefbc0b44ea1e7e";
 
 assert.keys = function(object, properties) {
     properties.forEach(function(prop) {
@@ -32,9 +33,10 @@ assert.page_id = "181069118581729";
 var auth = user.auth;
 
 exports.setup = function(fn) {
+    process.env.NODE_ENV='test';
     bozuko.app = express.createServer();
-    bozuko.run('test');
-	console.log(Bozuko.config.server.port);
+    bozuko.run();
+    console.log(Bozuko.config.server.port);
     async.series([
 		emptyCollection('User'),
 		emptyCollection('Page'),
@@ -87,7 +89,7 @@ var add_pages = function(callback) {
 			if( error ){
 				return callback(error);
 			}
-			
+
 			if( !page ){
 				return callback(new Error("WTF!!!"));
 			}

@@ -31,14 +31,14 @@ function api(path, options, callback){
         params.client_secret = Bozuko.config.foursquare.app.secret;
     }
     merge(params, options.params || {});
-    
+
     var _callback = function(response){
         if( !response || response.meta.code != 200 ){
             return callback( Bozuko.error('foursquare/api', response.meta) );
         }
         return callback( null, response.response );
     };
-    
+
     http.request({
         url: 'https://api.foursquare.com/v2'+path,
         params: params,
@@ -105,14 +105,14 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
         params.grant_type = 'authorization_code';
 
         // we should also have the user information here...
-        var ret = req.session.redirect;
+        var ret = req.session.redirect || defaultReturn;
 
         http.request({
             url: 'https://foursquare.com/oauth2/access_token',
             params: params,
             returnJSON: true,
             callback : function foursquare_callback(result){
-                
+
                 if( result['access_token'] ) {
                     // grab the access token
                     var token = result['access_token'];
@@ -159,7 +159,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                                     return;
                                                 }
                                             }
-                                            res.redirect(ret || '/');
+                                            res.redirect(ret || '/user');
                                         });
                                     });
                                 }
@@ -227,9 +227,9 @@ $.search = function(options, callback){
     if( options.query ){
         params.query = query;
     }
-    
+
     var self = this;
-    
+
     return api('/venues/search', {params:params}, function(error,  response){
         if( error ){
             return callback(error);
@@ -271,7 +271,7 @@ $.search = function(options, callback){
  */
 $.checkin = function(options, callback){
 
-    
+
 };
 
 /**
@@ -293,7 +293,7 @@ $.checkin = function(options, callback){
  */
 $.like = function(options, callback){
 
-    
+
 };
 
 /**
@@ -321,12 +321,12 @@ $.place = function(options, callback){
     if( !options || !options.place_id ){
         return callback( Bozuko.error('foursquare/no_venue_id') );
     }
-    
+
     var params = {};
     var self = this;
-    
+
     return api('/venues/'+options.place_id, {params:params}, function(error,  response){
-        
+
         if( error ){
             return callback(error);
         }
@@ -355,7 +355,7 @@ $.place = function(options, callback){
  */
 $.get_user_pages = function(user, callback){
 
-    
+
 };
 
 
@@ -366,7 +366,7 @@ $.get_user_pages = function(user, callback){
  *
  * This should return data in the following format
  * The data field can hold any extranneous information.
- * 
+ *
  *  {
  *      id: Number,
  *      name: String,
@@ -383,7 +383,7 @@ $.get_user_pages = function(user, callback){
  *      image: String,
  *      data: Object
  *  }
- * 
+ *
  * @param {Object}          place           The place to sanitize
  *
  * @return {Object}         place           The sanitized object / objects
