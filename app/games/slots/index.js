@@ -1,8 +1,8 @@
 var express = require('express'),
     Game = Bozuko.require('core/game'),
     fs = require('fs');
-    
-    
+
+
 var Slots = module.exports = function(){
     Game.apply(this,arguments);
     this.config = this.config || {};
@@ -17,7 +17,7 @@ proto.name = "Slots";
 proto.default_icons = ['seven','bar','bell','banana','monkey','cherries'];
 
 proto.process = function(outcome){
-    
+
     var ret = [];
     if( outcome === false ){
         // need random icons
@@ -26,12 +26,12 @@ proto.process = function(outcome){
             ret.push( icons.splice( parseInt(Math.random()*icons.length), 1)[0] );
         }
     }
-    
+
     else {
         var icon = this.icons[outcome];
         ret = [icon,icon,icon];
     }
-    
+
     return ret;
-    
+
 };
