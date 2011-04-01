@@ -1,7 +1,4 @@
-var express = require('express'),
-    Game = Bozuko.require('core/game'),
-    fs = require('fs');
-
+var Game = Bozuko.require('core/game');
 
 var Slots = module.exports = function(){
     Game.apply(this,arguments);

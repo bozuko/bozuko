@@ -1,5 +1,4 @@
 var assert = require('assert');
-Bozuko = require('../../../bozuko.js');
 
 // Mock contest
 var contest = {
