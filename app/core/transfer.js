@@ -57,10 +57,10 @@ $.sanitize = function(data, current){
     
     if( typeof current == 'string' ){
         // this _should be_ another transfer object
-        current = Bozuko.transfer(current);
+        ret = Bozuko.transfer(current).create(data);
     }
 
-    if( current instanceof Array ){
+    else if( current instanceof Array ){
         ret = [];
         if( !(data instanceof Array) ){
             data = [];
