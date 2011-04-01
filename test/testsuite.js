@@ -74,7 +74,6 @@ var add_users = function(callback) {
 			user.service('facebook').auth = auth;
 			return user.save( function(error){
 				if( error ) return callback( error );
-				console.log(user);
 				return callback( null, user);
 			});
 		});
@@ -121,9 +120,7 @@ var add_contests = function(callback) {
 		game					:'slots',
 		game_config				:{},
 		end                     :end,
-		total_entries           :30,
-		play_cursor             :-1,
-		token_cursor            :-1
+		total_entries           :30
     };
 
     Bozuko.models.Page.findOne({name:/owl/i}, function(error, page){
