@@ -127,7 +127,7 @@ exports.links = {
 };
 
 var fill_page = function(p, callback) {
-    p.getContests(function(contests) {
+    p.getContests(function(error, contests) {
         // Return everything with a facebook format for now
         var page = p.service('facebook').data;
         var page_path = "/page/"+p._id;
@@ -198,8 +198,10 @@ exports.routes = {
                             var page = Bozuko.sanitize('page', p);
                             page.links = get_page_links(page, p.service('facebook').sid);
                             if( p.contests ){
+                                p.games = [];
                                 p.contests.forEach(function(contest){
                                     // build games
+                                    p.games.push(Bozuko.game(contest));
                                 });
                             }
                             ret.push(page);
@@ -218,8 +220,9 @@ exports.routes = {
                         ret.forEach( function(p){
                             p = Bozuko.transfer('page', p);
                         });
-                        
-                        res.send(ret);
+                        var pages = Bozuko.transfer('page').sanitize(ret,['page']);
+                        console.log(pages);
+                        res.send(pages);
                     }
                 );
             }

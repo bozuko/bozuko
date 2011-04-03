@@ -13,9 +13,11 @@ var Page = module.exports = new Schema({
     is_location         :{type:Boolean},
     name                :{type:String},
     image               :{type:String},
-    location            :{
-        lat                 :Number,
+    coords              :{
         lng                 :Number,
+        lat                 :Number
+    },
+    location            :{
         street              :String,
         city                :String,
         state               :String,
@@ -27,7 +29,7 @@ var Page = module.exports = new Schema({
 
 Service.initSchema(Page);
 
-Page.index('location', '2d');
+Page.index('coords', '2d');
 
 Page.method('getOwner', function(callback){
     Bozuko.models.User.findById( this.owner_id, callback );
@@ -222,17 +224,16 @@ Page.method('checkin', function(user, options, callback) {
 });
 
 Page.static('createFromServiceObject', function(place, callback){
-    var id = place.id;
-    var service = place.service;
-    delete place.id;
-    delete place.sid;
-    delete place.service;
+    var ignore = ['id','service','lat','lng','data'];
+    
     var page = new Bozuko.models.Page();
     Object.keys(place).forEach(function(prop){
-        page.set(prop, place[prop]);
+        if( !~ignore.indexOf(prop) ) page.set(prop, place[prop]);
     });
-    page.is_location = true;
-    page.service( service, id, null, place.data);
+    
+    page.set('is_location', true);
+    page.set('coords',{lng: place.location.lng, lat:place.location.lat});
+    page.service( place.service, place.id, null, place.data);
     page.save( function(error){
         if( error ){
             return callback( error );
@@ -258,11 +259,10 @@ Page.static('search', function(options, callback){
         }
         Bozuko.models.Page.findByService(service, Object.keys(map), function(error, pages){
             if( error ) return callback( error );
-
             var page_map = {};
             pages.forEach(function(page){
                 page_map[page.id+''] = page;
-                results.splice( results.indexOf(map[page.service(service).id]), 1 );
+                results.splice( results.indexOf(map[page.service(service).sid]), 1 );
             });
 
             var now = new Date();

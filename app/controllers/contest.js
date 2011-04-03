@@ -84,9 +84,12 @@ var entry_method = {
         reason: "String",
         type: "String",
         tokens: "Number",
+        button_text: "String",
         icon: "String",
         description: "String",
-        link: "String"
+        links:{
+            entry_method: "String"
+        }
     }
 };
 

@@ -47,9 +47,10 @@ exports.links = {
         }
     },
 
-    redemption: {
+    redeem: {
         post: {
-            doc: "Redeem a prize"
+            doc: "Redeem a prize",
+			returns: "prize"
         }
     }
 };
