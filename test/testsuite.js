@@ -5,12 +5,12 @@ var async = require('async');
 
 var users = {
     a: {
-	'id': '100001848849081',
-	'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
+		'id': '100001848849081',
+		'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
     },
     b: {
-	'id': '100001863668743',
-	'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
+		'id': '100001863668743',
+		'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
     }
 };
 
@@ -120,37 +120,37 @@ var add_contests = function(callback) {
     };
 
     Bozuko.models.Page.findOne({name:/owl/i}, function(error, page){
-	if( error || !page ){
-	    throw("No page for hookslides");
-	}
-	data.page_id = ''+page._id;
-	var contest = new Bozuko.models.Contest(data);
-	contest.entry_config.push({
-	    type: 'facebook/checkin',
-	    tokens: 3
-	});
-	contest.prizes.push({
-	    name: 'Wicked cool T-Shirt',
-	    value: '20',
-	    description: "Awesome Owl Watch T-Shirt",
-	    details: "Only available in Large or Extra-large",
-	    instructions: "Show this screen to an employee",
-	    total: 2
-	});
-	contest.prizes.push({
-	    name: 'Owl Watch Mug',
-	    value: '10',
-	    description: "Sweet travel Mug",
-	    details: "Not good for drinking out of.",
-	    instructions: "Show this screen to an employee",
-	    total: 10
-	});
-	contest.save(function(error){
-	    Bozuko.models.Contest.findById(contest.id,function(error, contest){
-		contest.generateResults( function(error){
-		    callback(null);
-		});
-	    });
-	});
+        if( error || !page ){
+            throw("No page for Owl Watch");
+        }
+        data.page_id = ''+page._id;
+        var contest = new Bozuko.models.Contest(data);
+        contest.entry_config.push({
+            type: 'facebook/checkin',
+            tokens: 3
+        });
+        contest.prizes.push({
+            name: 'Wicked cool T-Shirt',
+            value: '20',
+            description: "Awesome Owl Watch T-Shirt",
+            details: "Only available in Large or Extra-large",
+            instructions: "Show this screen to an employee",
+            total: 2
+        });
+        contest.prizes.push({
+            name: 'Owl Watch Mug',
+            value: '10',
+            description: "Sweet travel Mug",
+            details: "Not good for drinking out of.",
+            instructions: "Show this screen to an employee",
+            total: 10
+        });
+        contest.save(function(error){
+            Bozuko.models.Contest.findById(contest.id,function(error, contest){
+                contest.generateResults( function(error){
+                    callback(null);
+                });
+            });
+        });
     });
 };

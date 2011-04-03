@@ -164,7 +164,7 @@ function initGames(app){
     var dir = __dirname + '/games';
     fs.readdirSync(dir).forEach( function(file){
         var stat = fs.statSync(dir+'/'+file);
-        if( stat.isDirectory() ){
+        if( stat.isDirectory() && file!='test'){
             var name = file.replace(/\..*?$/, '');
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Bozuko.require('/games/'+file);

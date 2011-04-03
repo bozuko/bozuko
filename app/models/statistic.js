@@ -16,36 +16,35 @@ var Statistic = module.exports = new Schema({
 
 Statistic.pre('save', function(next){
     var self = this;
-    Bozuko.models.Statistic.findOne({
+    Bozuko.models.Statistic.find({
         service: self.service,
         sid: self.sid
-    }, function(error, stat){
+    }, function(error, stats){
+        
         if (error) {
             console.log("statistics.pre error = "+error);
             return next(error);
         }
+        var stat = stats.length ? stats[0] : null;
         if( stat ){
             // first of all, lets see if this was already collected toda
             var now = self.get('timestamp');
-            console.log("now = "+now);
             var old = stat.get('timestamp');
-            console.log("old = "+old);
             if( old.getDay() == now.getDay() && old.getFullYear() == now.getFullYear() && old.getMonth() == now.getMonth() ){
                 return next( new Error('Statistic for ['+stat.name+'] ('+stat.service+','+stat.sid+') has already been collected') );
             }
             try{
-                self.set('daily_checkins', self.get('total_checkins') - stat.get('total_checkins'));
-                console.log("daily checkins = "+self.daily_checkins);
+                self.daily_checkins =  Math.max(0, self.total_checkins - stat.total_checkins);
             }catch(e){
                 print("daily checkins set to 0");
-                self.set('daily_checkins', 0);
+                self.daily_checkins =  0;
             }
         }
         else{
-            self.set('daily_checkins', 0);
+            self.daily_checkins = 0;
         }
         return next();
-    }).sort({timestamp:-1});
+    }).sort({timestamp:-1}).limit(1);
 });
 
 Statistic.static('search', function(options, callback){
