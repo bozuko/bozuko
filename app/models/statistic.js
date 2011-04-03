@@ -30,6 +30,10 @@ Statistic.pre('save', function(next){
             // first of all, lets see if this was already collected toda
             var now = self.get('timestamp');
             var old = stat.get('timestamp');
+            
+            console.log('now', now);
+            console.log('old', old);
+            
             if( old.getDay() == now.getDay() && old.getFullYear() == now.getFullYear() && old.getMonth() == now.getMonth() ){
                 return next( new Error('Statistic for ['+stat.name+'] ('+stat.service+','+stat.sid+') has already been collected') );
             }
