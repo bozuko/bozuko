@@ -19,7 +19,7 @@ Statistic.pre('save', function(next){
     Bozuko.models.Statistic.find({
         service: self.service,
         sid: self.sid
-    }, function(error, stats){
+    }).sort({timestamp:-1}).limit(1).run(function(error, stats){
         
         if (error) {
             console.log("statistics.pre error = "+error);
@@ -48,7 +48,7 @@ Statistic.pre('save', function(next){
             self.daily_checkins = 0;
         }
         return next();
-    }).sort({timestamp:-1}).limit(1);
+    });
 });
 
 Statistic.static('search', function(options, callback){
