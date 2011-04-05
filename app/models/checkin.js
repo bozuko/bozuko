@@ -7,8 +7,8 @@ var Checkin = module.exports = new Schema({
     page_id                 :{type:ObjectId},
     timestamp               :{type:Date, default: Date.now},
     coords                  :{
-        lng                 :Number,
-        lat                 :Number
+        lat                 :Number,
+        lng                 :Number
     },
     description             :{type:String},
     message                 :{type:String},

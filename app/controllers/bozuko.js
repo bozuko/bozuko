@@ -1,22 +1,13 @@
-exports.object_types = {
+exports.transfer_objects= {
     bozuko: {
         doc: "Bozuko Meta Object",
         def:{
-            privacy_policy: "String",
-            how_to_play: "String",
-            rules: "String",
-            about: "String",
-            creating_contest: "String",
-            terms: {
-                text: "String",
-                accepted: "Boolean",
-                timestamp: "Date"
-            },
             links: {
-                user: "String",
-                accept_terms: "String",
-                contest: "String",
-                contest_result: "String"
+                privacy_policy: "String",
+                how_to_play: "String",
+                rules: "String",
+                about: "String",
+                creating_contest: "String"
             }
         }
     }

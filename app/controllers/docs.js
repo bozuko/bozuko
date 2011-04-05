@@ -1,7 +1,8 @@
 var fs          = require('fs'),
     URL         = require('url'),
     markdown    = require('markdown-js'),
-    util        = require('util');
+    util        = require('util'),
+    docify      = Bozuko.require('util/docs').docify;
 
 exports.routes = {
 
@@ -166,6 +167,7 @@ exports.routes = {
                 res.render('docs/api/'+(parts[0].replace(/s$/,'')), {
                     layout: false,
                     bozuko: Bozuko,
+                    docify: docify,
                     key: parts[1]
                 });
             }
