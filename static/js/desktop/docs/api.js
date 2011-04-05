@@ -57,7 +57,24 @@ Ext.onReady(function(){
         });
         tabPanel.setActiveTab(pages[id]);
         pages[id].getUpdater().update({
-            url: '/docs/api'+id
+            url: '/docs/api'+id,
+            callback : function(el){
+                if( parts[0] != 'objects') return;
+                // lets look at the code and see if we need to make
+                // links in the "json" object
+                var code = el.down('.code');
+                if( !code ) return;
+                code.select('.expander').each(function(expander){
+                    var trigger = expander.down('.trigger');
+                    var content = expander.down('.content');
+                    content.setVisibilityMode( Ext.Element.DISPLAY );
+                    content.setVisible(false);
+                    trigger.on('click', function(e){
+                        e.stopEvent();
+                        content.toggle();
+                    });
+                });
+            }
         });
         return pages[id];
     }
@@ -66,6 +83,7 @@ Ext.onReady(function(){
         region : 'center',
         margins : '4 4 0 0',
         activeTab : 0,
+        enableTabScroll: true,
         plugins: new Ext.ux.TabCloseMenu(),
         defaults: {
             cls: 'controller-page',

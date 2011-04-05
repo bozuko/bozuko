@@ -9,21 +9,24 @@ exports.transfer_objects = {
         doc: "A Bozuko Page",
 
         def: {
-            id: "String",
             name: "String",
             image: "String",
             facebook_page: "String",
             category: "String",
             website: "String",
+            featured: "Boolean",
+            registered: "Boolean",
+            announcement: "String",
             location: {
                 street: "String",
                 city: "String",
                 state: "String",
                 country: "String",
                 zip: "String",
-                latitude: "Number",
-                longitude: "Number"
+                lat: "Number",
+                lng: "Number"
             },
+            
             phone: "String",
             fan_count: "Number",
             checkins: "Number",
@@ -33,32 +36,18 @@ exports.transfer_objects = {
             links: {
                 facebook_login: "String",
                 facebook_checkin: "String",
-                share: "String",
+                facebook_like: "String",
                 feedback: "String"
             }
-        }
-    },
-
-    share_form: {
-
-        doc : "The form to share a Bozuko Page with someone via email or facebook",
-
-        def: {
-            facebook_friends: ["String"],
-            email_contacts: ["String"],
-            message: "String",
-            links: {
-                facebook_login: "String"
+        },
+        
+        create: function(page){
+            // this should hopefully be a Page model object
+            // lets check for a contest
+            if( page.registered ){
+                
             }
-        }
-    },
-
-    feedback_form: {
-
-        doc: "Feedback form",
-
-        def: {
-            message: "String"
+            return this.sanitize(page);
         }
     }
 };
@@ -66,18 +55,24 @@ exports.transfer_objects = {
 exports.links = {
     pages: {
         get: {
-            doc: "Return a list of pages",
+            doc: "Return a list of pages. Either the center or bounds parameters must be provided.",
 
             params: {
-                lat: {
-                    required: true,
-                    type: "Number",
-                    description: 'Center Latitude'
+                center : {
+                    type: "String",
+                    description: 'The center latitude / longitude separated by a comma (example 42.1234121,-71.2423423)'
                 },
-                lng: {
-                    required: true,
-                    type: "Number",
-                    description: 'Center Longitude'
+                bounds : {
+                    type: "String",
+                    description: 'The bounding geographic box to search within. '+
+                                 'This should be passed as 2 points - the top left (p1) and bottom right (p2). '+
+                                 'Each points should be passed the same as the center attribute and also separated by a comma. '+
+                                 'An example, where p1=lat1,lng1 and p2=lat2,lng2 would be passed as lat1,lng1,lat2,lng2'
+                },
+                favorites: {
+                    type: "Boolean",
+                    description: 'Pass this parameter as true to get a list of only favorites. '+
+                                 'The center lat/lng should still be passed so the results can be returned in order of closest location'
                 },
                 query: {
                     type:"String",
@@ -105,22 +100,15 @@ exports.links = {
         }
     },
 
-    share: {
-        put: {
-            doc: "Share this page with a friend",
-            body: {
-                required: true,
-                type: "share_form"
-            }
-        }
-    },
-
     feedback: {
         put: {
             doc: "Send feedback to Bozuko and the Page owner",
-            body: {
-                required: true,
-                type: "feedback_form"
+            params: {
+                message:{
+                    required: true,
+                    type: "String",
+                    description: "The message to send to the Business / Bozuko"
+                }
             }
         }
     }
@@ -173,21 +161,49 @@ exports.routes = {
         get: {
 
             handler: function(req,res) {
-                var lat = req.param('lat') || '42.645625';
-                var lng = req.param('lng') || '-71.307864';
+                var center = req.param('center');
+                var bounds = req.param('bounds');
                 var service = req.param('service');
-                var query = req.param('q');
-
+                var query = req.param('query');
+                
+                if( !center && !bounds ) return Bozuko.error('page/pages_center_or_bounds_required').send(res);
+                
                 var options = {
-                    latLng: {lat:lat, lng:lng},
                     limit: parseInt(req.param('limit')) || 25,
                     offset: parseInt(req.param('offset')) || 0
                 };
                 
+                // first, we will try center
+                if( center ){
+                    
+                    var parts = center.split(',');
+                    if( parts.length != 2 ){
+                        Bozuko.error('page/malformed_center').send(res);
+                    }
+                    var lat = parseFloat(parts[0]);
+                    var lng = parseFloat(parts[1]);
+                    options.latLng = {lat:lat, lng:lng};
+                }
+                
+                else if(bounds){
+                    var parts = center.split(',');
+                    if( parts.length != 4 ){
+                        Bozuko.error('page/malformed_bounds').send(res);
+                    }
+                    var lat1 = parseFloat(parts[0]);
+                    var lng1 = parseFloat(parts[1]);
+                    var lat2 = parseFloat(parts[2]);
+                    var lng2 = parseFloat(parts[3]);
+                    options.bounds = {
+                        tl: {lat:lat1,lng:lng1},
+                        br: {lat:lat2,lng:lng2}
+                    };
+                }
+                
                 if( query ) options.query = query;
                 if( service ) options.service = service;
                 
-                Bozuko.models.Page.search(options,
+                return Bozuko.models.Page.search(options,
                     function(error, results){
                         if( error ){
                             error.send(res);
@@ -195,8 +211,9 @@ exports.routes = {
                         
                         var ret=[];
                         if( results.pages ) results.pages.forEach(function(p){
-                            var page = Bozuko.sanitize('page', p);
+                            var page = Bozuko.transfer('page', p);
                             page.links = get_page_links(page, p.service('facebook').sid);
+                            page.registered = true;
                             if( p.contests ){
                                 p.games = [];
                                 p.contests.forEach(function(contest){
@@ -217,11 +234,7 @@ exports.routes = {
                             ret.push(Bozuko.sanitize('page',result));
                         });
                         
-                        ret.forEach( function(p){
-                            p = Bozuko.transfer('page', p);
-                        });
-                        var pages = Bozuko.transfer('page').sanitize(ret,['page']);
-                        console.log(pages);
+                        var pages = Bozuko.transfer('page',ret);
                         res.send(pages);
                     }
                 );
