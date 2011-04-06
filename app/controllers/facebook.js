@@ -139,16 +139,12 @@ exports.routes = {
                                     return page.getUserGames(req.session.user, function(error, games){
                                         if( error ) return error.send(res);
                                         
-                                        games.forEach(function(game, i){
-                                            games[i] = Bozuko.transfer('game').create(game);
-                                        });
-                                        
                                         var ret = {
                                             page_id: page.id,
                                             page_name: page.name,
                                             timestamp: checkin.timestamp,
                                             duration: Bozuko.config.checkin.duration.page,
-                                            games: games,
+                                            games: Bozuko.transfer('game', games),
                                             links: {
                                                 facebook_like: '/facebook/'+page.service('facebook').sid+'/like'
                                             }

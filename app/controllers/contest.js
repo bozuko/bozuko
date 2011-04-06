@@ -43,6 +43,7 @@ var game = {
     doc: "A Game Object",
 
     create : function(game){
+        
         game.config = game.contest.game_config;
         game.user_tokens = game.tokens;
         game.can_play = game.tokens > 0;
@@ -51,7 +52,6 @@ var game = {
             contest_result: '/contest/'+game.contest._id+'/result',
             page: '/page/'+game.contest.page_id
         };
-        console.log(obj);
         return obj;
     },
 
