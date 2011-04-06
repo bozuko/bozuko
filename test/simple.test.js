@@ -21,19 +21,82 @@ exports.get_root = function(test) {
         function(res) {
             var entry_point = JSON.parse(res.body);
             test.ok(Bozuko.validate('entry_point', entry_point));
-            link = entry_point.links.pages;
+            pages_link = entry_point.links.pages;
             test.done();
         });
 };
 
 exports.get_pages = function(test) {
     assert.response(test, Bozuko.app,
-        {url: link+'/?center=42.646261785714,-71.303897114286&query=owl&limit=5'},
+        {url: pages_link+'/?center=42.646261785714,-71.303897114286&query=owl&limit=5'},
         ok,
         function(res) {
             var page = JSON.parse(res.body)[0];
             test.ok(Bozuko.validate('page', page));
-            link = page.links.facebook_checkin;
+            checkin_link = page.links.facebook_checkin;
+            favorite_link = page.links.favorite;
+            test.done();
+        });
+};
+
+exports.favorite_add = function(test) {
+    assert.response(test, Bozuko.app,
+        {url: favorite_link+'/?token='+token, method:'PUT'},
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            test.ok(Bozuko.validate('favorite_response', result));
+            test.ok(result.added);
+            test.done();
+        });
+};
+
+exports.assert_one_fav= function(test) {
+    assert.response(test, Bozuko.app,
+        {url: pages_link+'/?center=42.646261785714,-71.303897114286&favorites=true'},
+        ok,
+        function(res) {
+            
+            test.done();
+        });
+};
+
+exports.favorite_del = function(test) {
+    assert.response(test, Bozuko.app,
+        {url: favorite_link+'/?token='+token, method:'DELETE'},
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            console.log(result);
+            test.ok(Bozuko.validate('favorite_response', result));
+            test.ok(result.removed);
+            test.done();
+        });
+};
+
+exports.favorite_toggle = function(test) {
+    assert.response(test, Bozuko.app,
+        {url: favorite_link+'/?token='+token, method:'POST'},
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            console.log(result);
+            test.ok(Bozuko.validate('favorite_response', result));
+            test.ok(result.added);
+            test.done();
+        });
+};
+
+
+exports.favorite_toggle_again = function(test) {
+    assert.response(test, Bozuko.app,
+        {url: favorite_link+'/?token='+token, method:'POST'},
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            console.log(result);
+            test.ok(Bozuko.validate('favorite_response', result));
+            test.ok(result.removed);
             test.done();
         });
 };
@@ -46,7 +109,7 @@ exports.facebook_checkin = function(test) {
     });
 
     assert.response(test, Bozuko.app,
-        {url: link+"/?token="+token,
+        {url: checkin_link+"/?token="+token,
         method: 'POST',
         headers: headers,
         data: params},
@@ -59,29 +122,6 @@ exports.facebook_checkin = function(test) {
             test.done();
         });
 };
-
-/*exports.facebook_checkin2 = function(test) {
-    var params = JSON.stringify({
-        lat: 42.646261785714,
-        lng: -71.303897114286,
-        message: "Bobby B kicking in checkin2!"
-    });
-
-    assert.response(Bozuko.app,
-        {url: link+"/?token="+token,
-        method: 'POST',
-        headers: headers,
-        data: params},
-        bad,
-        function(res) {
-            var facebook_checkin_result = JSON.parse(res.body);
-            test.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
-            console.log(JSON.stringify(facebook_checkin_result));
-            link = facebook_checkin_result.games[0].links.contest_result;
-            console.log("link = "+link);
-            test.done();
-        });
-};*/
 
 // Play the slots game and check the result
 exports.play3times = function(test) {
