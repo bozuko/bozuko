@@ -7,22 +7,30 @@ exports.transfer_objects = {
             id: "Number",
             state: "String",
             name: "String",
+			wrapper_message: "String",
 			description: "String",
             page: "String",
             win_time: "String",
-            redemption_time: "String",
-            expiration_time: "String",
+			redemption_period: "String",
+            redeemed_timestamp: "String",
+            expiration_timestamp: "String",
             business_img: "String",
             user_img: "String",
-            security_img: "String",
             links: {
 				redeem: "String",
                 page: "String",
-                contest: "String",
                 user: "String"
             }
         }
-    }
+    },
+	
+	redemption_object: {
+		doc: "Prize Redemption Object",
+		def: {
+			security_image: 'String',
+			prize: 'prize'
+		}
+	}
 };
 
 exports.links = {
@@ -47,9 +55,10 @@ exports.links = {
         }
     },
 
-    redemption: {
+    redeem: {
         post: {
-            doc: "Redeem a prize"
+            doc: "Redeem a prize",
+			returns: "redemption_object"
         }
     }
 };
@@ -104,17 +113,32 @@ exports.routes = {
     '/prize/:id' : {
 
 		get : {
-				access: 'user',
-	
-				handler: function(req, res) {
-					res.send(Bozuko.transfer('prize', prize));
-				}
+			access: 'user',
+
+			handler: function(req, res) {
+				res.send(Bozuko.transfer('prize', prize));
 			}
-		},
+		}
+	},
 
     '/prize/:id/redemption' : {
 
 		post : {
+			
+			access: 'user',
+			
+			handler: function(req,res){
+				// redeem the prize
+				Bozuko.models.Prize.getById(req.param('id'), function(error, prize){
+					if( error ) return error.send(res);
+					
+					return prize.redeem(req.user, function(error, redemption){
+						if( error ) return error.send(res);
+						// send the redemption object
+						return req.send( Bozuko.transfer('redemption_object', redemption) );
+					});
+				});
+			}
 			
 		}
 	}

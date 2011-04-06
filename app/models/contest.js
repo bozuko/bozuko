@@ -18,8 +18,8 @@ var Contest = module.exports = new Schema({
     total_entries           :{type:Number},
     total_plays             :{type:Number},
     results                 :{},
-    play_cursor             :{type:Number},
-    token_cursor            :{type:Number},
+    play_cursor             :{type:Number, default: -1},
+    token_cursor            :{type:Number, default: -1},
     winners                 :[ObjectId]
 });
 

@@ -72,9 +72,18 @@ exports.game = function(contest){
 exports.transfer = function(key, data){
 	if( !data ) return this._transferObjects[key];
 	try{
-            return this._transferObjects[key].sanitize(data);
+		
+		if( Array.isArray(data) ){
+			var ret = [];
+			var self = this;
+			data.forEach( function(o){ ret.push(self._transferObjects[key].create(o)); } );
+			return ret;
+		}
+        else{
+			return this._transferObjects[key].create(data);
+		}
 	}catch(e){
-            throw new Error("Transfer Object ["+key+"] does not exist");
+        throw new Error("Transfer Object ["+key+"] does not exist");
 	}
 };
 

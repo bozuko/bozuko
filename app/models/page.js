@@ -4,6 +4,7 @@ var _t = Bozuko.t;
     merge = require('connect').utils.merge,
     Schema = mongoose.Schema,
     Service = require('./embedded/service'),
+    Coords = require('./embedded/coords'),
     ObjectId = Schema.ObjectId;
 
 var Page = module.exports = new Schema({
@@ -13,9 +14,8 @@ var Page = module.exports = new Schema({
     is_location         :{type:Boolean},
     name                :{type:String},
     image               :{type:String},
+    security_img        :{type:String},
     location            :{
-        lat                 :Number,
-        lng                 :Number,
         street              :String,
         city                :String,
         state               :String,
@@ -26,8 +26,7 @@ var Page = module.exports = new Schema({
 });
 
 Service.initSchema(Page);
-
-Page.index('location', '2d');
+Coords.initSchema(Page);
 
 Page.method('getOwner', function(callback){
     Bozuko.models.User.findById( this.owner_id, callback );
@@ -222,17 +221,16 @@ Page.method('checkin', function(user, options, callback) {
 });
 
 Page.static('createFromServiceObject', function(place, callback){
-    var id = place.id;
-    var service = place.service;
-    delete place.id;
-    delete place.sid;
-    delete place.service;
+    var ignore = ['id','service','lat','lng','data'];
+    
     var page = new Bozuko.models.Page();
     Object.keys(place).forEach(function(prop){
-        page.set(prop, place[prop]);
+        if( !~ignore.indexOf(prop) ) page.set(prop, place[prop]);
     });
-    page.is_location = true;
-    page.service( service, id, null, place.data);
+    
+    page.set('is_location', true);
+    page.set('coords',[place.location.lat, place.location.lng]);
+    page.service( place.service, place.id, null, place.data);
     page.save( function(error){
         if( error ){
             return callback( error );
@@ -241,12 +239,82 @@ Page.static('createFromServiceObject', function(place, callback){
     });
 });
 
+Page.static('loadPagesContests', function(pages, callback){
+    var page_map = {}, now = new Date();
+    pages.forEach(function(page){
+        page_map[page.id+''] = page;
+    });
+    Bozuko.models.Contest.find(
+        {
+            page_id: {$in: Object.keys(page_map)},
+            start: {$lt: now},
+            end: {$gt: now},
+            $where: "this.token_cursor < this.total_entries;"
+        },
+        function( error, contests ){
+
+            if( error ) return callback(error);
+
+            var contestMap = {};
+
+            // attach active contests to pages
+            contests.forEach(function(contest){
+                contestMap[contest._id+''] = contest;
+                var page = page_map[contest.page_id+''];
+                if( !page.contests ){
+                    page.contests = [];
+                }
+                page.contests.push(contest);
+            });
+
+
+            /**
+             * TODO
+             *
+             * Use the "expiration" property for entry model to
+             * expire the tokens between entries
+             *
+             * or
+             *
+             * Upon new entry, delete the tokens off any existing
+             * entries
+             */
+            // find active entries for this user in each contest
+            return Bozuko.models.Entry.find({
+                contest_id: {$in: Object.keys(contestMap)},
+                tokens: {$gt: 0}
+            }, function(error, entries){
+                if( error ) return callback(error);
+
+                if( entries ) entries.forEach( function(entry){
+                    // find the contest
+                    var contest = contestMap[entry.contest_id+''];
+                    if( !contest.tokens ) contest.tokens = 0;
+                    contest.tokens+= entry.tokens;
+
+                    // also need to figure out which methods of entry are available
+                    // we will need to use the contest entry configuration
+                    // for this.
+                    /**
+                     * Pseudo code
+                     *
+                     * contest.getValidEntryMethods( fn(){} );
+                     *
+                     */
+                });
+
+                return callback(null, pages);
+            });
+        }
+    );
+});
+
 Page.static('search', function(options, callback){
 
     // use a 3rd party service to search geographically
     // and then match against our db
     var service = options.service || Bozuko.config.defaultService;
-
+    
     Bozuko.service(service).search(options, function(error, results){
         var map = {};
         if( results ) results.forEach( function(place, index){
@@ -256,81 +324,18 @@ Page.static('search', function(options, callback){
         else{
             callback( null, [] );
         }
+        
         Bozuko.models.Page.findByService(service, Object.keys(map), function(error, pages){
             if( error ) return callback( error );
-
-            var page_map = {};
+            
             pages.forEach(function(page){
-                page_map[page.id+''] = page;
-                results.splice( results.indexOf(map[page.service(service).id]), 1 );
+                results.splice( results.indexOf(map[page.service(service).sid]), 1 );
             });
 
-            var now = new Date();
-
             // reduce mongo calls by finding all active contests for all pages
-            return Bozuko.models.Contest.find(
-                {
-                    page_id: {$in: Object.keys(page_map)},
-                    start: {$lt: now},
-                    end: {$gt: now},
-                    $where: "this.token_cursor < this.total_entries;"
-                },
-                function( error, contests ){
-
-                    if( error ) return callback(error);
-
-                    var contestMap = {};
-
-                    // attach active contests to pages
-                    contests.forEach(function(contest){
-                        contestMap[contest._id+''] = contest;
-                        var page = page_map[contest.page_id+''];
-                        if( !page.contests ){
-                            page.contests = [];
-                        }
-                        page.contests.push(contest);
-                    });
-
-
-                    /**
-                     * TODO
-                     *
-                     * Use the "expiration" property for entry model to
-                     * expire the tokens between entries
-                     *
-                     * or
-                     *
-                     * Upon new entry, delete the tokens off any existing
-                     * entries
-                     */
-                    // find active entries for this user in each contest
-                    return Bozuko.models.Entry.find({
-                        contest_id: {$in: Object.keys(contestMap)},
-                        tokens: {$gt: 0}
-                    }, function(error, entries){
-                        if( error ) return callback(error);
-
-                        if( entries ) entries.forEach( function(entry){
-                            // find the contest
-                            var contest = contestMap[entry.contest_id+''];
-                            if( !contest.tokens ) contest.tokens = 0;
-                            contest.tokens+= entry.tokens;
-
-                            // also need to figure out which methods of entry are available
-                            // we will need to use the contest entry configuration
-                            // for this.
-                            /**
-                             * Pseudo code
-                             *
-                             * contest.getValidEntryMethods( fn(){} );
-                             *
-                             */
-                        });
-
-                        return callback(null, {pages: pages, service_results: results});
-                    });
-                }
-            );
+            return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
+                return callback(null, {pages: pages, service_results: results});
+            });
         });
     });
 });

@@ -1,6 +1,6 @@
 exports.transfer_objects = {
     entry_point: {
-        doc: "The entry point object of the application",
+        doc: "The entry point object of the application. If a user token is passed, the user and prizes links will be provided, otherwise, the facebook_login will be present.",
 
         def: {
             links: {
