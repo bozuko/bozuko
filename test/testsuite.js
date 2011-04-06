@@ -30,9 +30,11 @@ var auth = user.auth;
 
 exports.setup = function(fn) {
     process.env.NODE_ENV='test';
+	
     bozuko.app = express.createServer();
     bozuko.run();
-    console.log(Bozuko.config.server.port);
+	var profiler = Bozuko.require('util/profiler').create('setup');
+	console.log(Bozuko.config.server.port);
     async.series([
 	emptyCollection('User'),
 	emptyCollection('Page'),
@@ -45,6 +47,7 @@ exports.setup = function(fn) {
 	add_pages,
 	add_contests
         ], function(err, res) {
+		profiler.mark('setup complete')
         fn();
     });
 };

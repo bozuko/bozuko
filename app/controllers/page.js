@@ -1,4 +1,5 @@
-var async = require('async');
+var async = require('async'),
+    Profiler = Bozuko.require('util/profiler');
 
 var requestCount = 0;
 
@@ -45,12 +46,27 @@ exports.transfer_objects = {
         create: function(page){
             // this should hopefully be a Page model object
             // lets check for a contest
+            var fid = page.registered ? page.service('facebook').sid : page.id;
+            if( !page.registered ) delete page.id;
+            page.links = {
+                facebook_page       :'http://facebook.com/'+fid,
+                facebook_login      :'/user/login/facebook',
+                facebook_checkin    :'/facebook/'+fid+'/checkin',
+                facebook_like       :'/facebook/'+fid+'/like'
+            };
             if( page.registered ){
-                // if the page is registered, it may have contests
-                if( page.contests ){
-                    
-                }
+                
+                // add registered links...
+                page.links.page          ='/page/'+page.id,
+                page.links.share         ='/page/'+page.id+'/share';
+                page.links.feedback      ='/page/'+page.id+'/feedback';
+                
             }
+            var games = [];
+            
+            if( page.contests ) page.contests.forEach(function(contest){
+                games.push( contest.getGame() );
+            });
             return this.sanitize(page);
         }
     }
@@ -207,40 +223,24 @@ exports.routes = {
                 
                 if( query ) options.query = query;
                 if( service ) options.service = service;
-                
+                var profiler = Profiler.create('Page::search');
                 return Bozuko.models.Page.search(options,
                     function(error, results){
                         if( error ){
                             error.send(res);
                         }
-                        
+                        var searchEnd = new Date();
+                        profiler.mark('search time');
                         var ret=[];
                         if( results.pages ) results.pages.forEach(function(page){
                             // is this a user favorite?
                             if( req.user ){
                                 page.favorite = ~user.favorites.indexOf(page._id);
                             }
-                            page.links = get_page_links(page, page.service('facebook').sid);
                             page.registered = true;
-                            if( page.contests ){
-                                page.games = [];
-                                page.contests.forEach(function(contest){
-                                    // build games
-                                    page.games.push(Bozuko.game(contest));
-                                });
-                            }
                             ret.push(page);
                         });
-                        
-                        if( results.service_results ) results.service_results.forEach(function(r){
-                            var fid = r.id;
-                            delete r.id;
-                            var result = Bozuko.sanitize('page', r);
-                            if( r.service == 'facebook' ){
-                                result.links = get_page_links(null, fid);
-                            }
-                            ret.push(Bozuko.sanitize('page',result));
-                        });
+                        if( results.service_results ) ret.concat(results.service_results);
                         var pages = Bozuko.transfer('page',ret);
                         res.send(pages);
                     }

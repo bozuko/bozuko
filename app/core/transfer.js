@@ -58,7 +58,7 @@ $.sanitize = function(data, current){
     
     if( typeof current == 'string' ){
         // this _should be_ another transfer object
-        ret = Bozuko.transfer(current, data);
+        ret = data ? Bozuko.transfer(current, data) : null;
     }
 
     else if( current instanceof Array ){

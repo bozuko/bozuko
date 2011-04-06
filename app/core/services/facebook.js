@@ -212,7 +212,6 @@ $.search = function(options, callback){
         function facebook_search(results){
             // these need to be mapped to
             // generic Bozuko.objects
-            console.log(JSON.stringify(results));
             callback(null, self.sanitizePlaces(results.data));
         }
     );
