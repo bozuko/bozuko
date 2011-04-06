@@ -20,4 +20,15 @@ API accepts requests in JSON format with the application/json header, and also t
 application/x-www-form-urlencoded header. The POST or PUT bodies should be formatted accordingly.
 Either header will work fine with GET requests as the parameters are appended to the url.
 
+#### User Authentication
+
+Any links that are documented with Access Level of user require that the user token be passed
+as an additional parameter 'token'. The user token is supplied with the user object after
+a successful login.
+
+#### Client Version
+
+All API calls must have the client software version passed as an additional parameter 'version'
+in the URL string. 
+
 #### Documented Links

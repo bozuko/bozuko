@@ -29,17 +29,15 @@ exports.transfer_objects= {
 exports.links = {
     user: {
         get: {
+            access: 'user',
             doc: "Get Information about the user",
             returns: "user"
         }
     },
 
-    favorites: {
-        get: {
-            doc: "Get the current user's favorite pages",
-            returns: ["page"]
-        },
+    favorite: {
         put: {
+            access: 'user',
             doc: "Add a page to a user's favorites",
             params: {
                 page_id: {
@@ -50,6 +48,7 @@ exports.links = {
             }
         },
         del: {
+            access: 'user',
             doc: "Remove a page from a user's favorites",
             params: {
                 page_id: {
