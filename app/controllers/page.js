@@ -15,6 +15,7 @@ exports.transfer_objects = {
             category: "String",
             website: "String",
             featured: "Boolean",
+            favorite: "Boolean",
             registered: "Boolean",
             announcement: "String",
             location: {
@@ -31,13 +32,13 @@ exports.transfer_objects = {
             fan_count: "Number",
             checkins: "Number",
             info: "String",
-            // see the definition in the contest controller
             games: ["game"],
             links: {
                 facebook_login: "String",
                 facebook_checkin: "String",
                 facebook_like: "String",
-                feedback: "String"
+                feedback: "String",
+                favorite: "String"
             }
         },
         
@@ -45,7 +46,10 @@ exports.transfer_objects = {
             // this should hopefully be a Page model object
             // lets check for a contest
             if( page.registered ){
-                
+                // if the page is registered, it may have contests
+                if( page.contests ){
+                    
+                }
             }
             return this.sanitize(page);
         }
@@ -102,6 +106,7 @@ exports.links = {
 
     feedback: {
         put: {
+            access: 'user',
             doc: "Send feedback to Bozuko and the Page owner",
             params: {
                 message:{
@@ -210,15 +215,18 @@ exports.routes = {
                         }
                         
                         var ret=[];
-                        if( results.pages ) results.pages.forEach(function(p){
-                            var page = Bozuko.transfer('page', p);
-                            page.links = get_page_links(page, p.service('facebook').sid);
+                        if( results.pages ) results.pages.forEach(function(page){
+                            // is this a user favorite?
+                            if( req.user ){
+                                page.favorite = ~user.favorites.indexOf(page._id);
+                            }
+                            page.links = get_page_links(page, page.service('facebook').sid);
                             page.registered = true;
-                            if( p.contests ){
-                                p.games = [];
-                                p.contests.forEach(function(contest){
+                            if( page.contests ){
+                                page.games = [];
+                                page.contests.forEach(function(contest){
                                     // build games
-                                    p.games.push(Bozuko.game(contest));
+                                    page.games.push(Bozuko.game(contest));
                                 });
                             }
                             ret.push(page);
@@ -233,7 +241,6 @@ exports.routes = {
                             }
                             ret.push(Bozuko.sanitize('page',result));
                         });
-                        
                         var pages = Bozuko.transfer('page',ret);
                         res.send(pages);
                     }

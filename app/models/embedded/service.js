@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema
+    Schema = mongoose.Schema,
+    merge = require('connect').utils.merge
     ;
 
 var Service = module.exports = new Schema({
@@ -35,10 +36,17 @@ Service.initSchema = function(schema){
         return service;
     });
     
-    schema.static('findByService', function(name, id, callback){
+    schema.static('findByService', function(name, id, conditions, callback){
         // what is id
         var fn = Array.isArray(id) ? 'find' : 'findOne';
         var params = {'services.name':name,'services.sid': (fn=='find' ? {$in:id} : id)};
+        if( !callback ){
+            callback = conditions;
+            conditions = null;
+        }
+        if( conditions ){
+            merge(params, conditions);
+        }
         this[fn](params, callback);
     });
     

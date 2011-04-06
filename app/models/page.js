@@ -325,7 +325,7 @@ Page.static('search', function(options, callback){
             callback( null, [] );
         }
         
-        Bozuko.models.Page.findByService(service, Object.keys(map), function(error, pages){
+        Bozuko.models.Page.findByService(service, Object.keys(map), {owner_id: {$exists: true}}, function(error, pages){
             if( error ) return callback( error );
             
             pages.forEach(function(page){
