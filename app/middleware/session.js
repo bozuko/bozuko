@@ -18,10 +18,11 @@ module.exports = function session(){
 
         if (req.param('token')) {
             q.token = req.param('token');
-        } else if( cookie ) {
+        }
+        else if( cookie ) {
             var session = qs.parse(cookie);
             q['services.name']  = 'facebook';
-            q['services.sid']    = unescape(session.uid);
+            q['services.sid']   = unescape(session.uid);
             q['services.auth']  = unescape(session.access_token);
         }
 

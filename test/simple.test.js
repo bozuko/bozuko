@@ -28,7 +28,7 @@ exports.get_root = function(test) {
 
 exports.get_pages = function(test) {
     assert.response(test, Bozuko.app,
-        {url: link+'/?lat=42.646261785714&lng=-71.303897114286&query=owl&limit=1'},
+        {url: link+'/?lat=42.646261785714&lng=-71.303897114286&query=owl&limit=5'},
         ok,
         function(res) {
             var page = JSON.parse(res.body)[0];

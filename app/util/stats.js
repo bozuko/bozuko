@@ -88,8 +88,8 @@ var collect = exports.collect = function(service, city, latLng, callback) {
                     s.name = page.name;
                     s.city = city;
                     s.sid = page.id;
-                    s.lat = latLng.lat;
-                    s.lng = latLng.lng;
+                    s.lat = page.location.lat;
+                    s.lng = page.location.lng;
                     s.total_checkins = page.checkins;
                     s.timestamp = new Date();
                     s.save(function(err) {

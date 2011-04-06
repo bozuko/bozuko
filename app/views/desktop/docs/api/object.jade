@@ -4,7 +4,7 @@ h3.objectIcon= transfer.getTitle()
 
 p.description!= transfer.doc
 
-pre.code!= JSON.stringify(transfer.def,null,'  ');
+pre.code !{docify(key)};
 
 - if( transfer.def.links )
   h4 Referenced Links

@@ -4,7 +4,8 @@ var game_prize = {
         name: "String",
         description: "String",
         total: "Number",
-        available:"Number"
+        available:"Number",
+        result_icon: "String"
     }
 };
 
@@ -28,6 +29,7 @@ var game_result = {
         prize: "prize",
         game: "String",
         user_tokens: "Number",
+        game_update: "game_update",
         links: {
             facebook_checkin: "String",
             facebook_like: "String",
@@ -57,18 +59,32 @@ var game = {
         name: "String",
         icon: "String",
         description: "String",
+        list_message: "String",
         user_tokens: "Number",
         token_message: "String",
         config: "Object",
         can_play: "Boolean",
         start_time: "String",
         end_time: "String",
-        entry_methods:['entry'],
-        prizes:['prize'],
+        entry_methods:['entry_method'],
+        prizes:['game_prize'],
         rules: "String",
         links: {
             facebook_login: "String",
+            game_result: "String",
             page: "String"
+        }
+    }
+};
+
+var game_update = {
+    def: {
+        user_tokens: "Number",
+        can_play: "Boolean",
+        next_play_time: "String",
+        button_text: "String",
+        links: {
+            
         }
     }
 };
@@ -82,15 +98,20 @@ var entry_method = {
         reason: "String",
         type: "String",
         tokens: "Number",
+        button_text: "String",
         icon: "String",
         description: "String",
-        link: "String"
+        game_update: "game_update",
+        links:{
+            entry_method: "String"
+        }
     }
 };
 
 
 exports.transfer_objects = {
     game: game,
+    game_update: game_update,
     game_result: game_result,
     entry_method: entry_method,
     game_prize: game_prize
@@ -110,6 +131,12 @@ exports.links = {
                 "The user must have tokens credited to their account in order for this to work",
             returns: "game_result"
 
+        }
+    },
+    
+    entry_method: {
+        post: {
+            returns:  "entry_method"
         }
     }
 };
