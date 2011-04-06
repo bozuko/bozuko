@@ -4,6 +4,7 @@ var TransferObject = Bozuko.require('core/transfer')
 var HttpMethod = function(method, config, link){
     this.method = method;
     this.doc = config.doc;
+    this.access = config.access || false;
     this.params = config.params;
     this.returns = config.returns;
     this.link = link;

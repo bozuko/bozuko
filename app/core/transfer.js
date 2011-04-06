@@ -5,6 +5,7 @@ var TransferObject = module.exports = function(name, config){
     this.name = name;
     this.doc = config.doc;
     this.def = config.def;
+    this.access = config.access || false;
     this._create = config.create;
     this.title = config.title;
     this.links = {};
@@ -119,8 +120,14 @@ $.validate = function(data, current) {
 
     var self = this, ret = true;
     if( !current ) current = this.def;
+    
+    
+    if( typeof current == 'string' ){
+        // this _should be_ another transfer object
+        ret = Bozuko.validate(current, data);
+    }
 
-    if( current instanceof Array ){
+    else if( current instanceof Array ){
         if( !(data instanceof Array) ){
             return false;
         }

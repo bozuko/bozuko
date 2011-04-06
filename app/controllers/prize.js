@@ -36,6 +36,7 @@ exports.transfer_objects = {
 exports.links = {
     prizes: {
         get: {
+			access: 'user',
             doc:  "Return a list of prizes",
             params: {
                 state: {
@@ -50,6 +51,7 @@ exports.links = {
 
     prize: {
         get: {
+			access: 'user',
             doc: "Get a specific prize",
             returns: "prize"
         }
@@ -57,6 +59,7 @@ exports.links = {
 
     redeem: {
         post: {
+			access: 'user',
             doc: "Redeem a prize",
 			returns: "redemption_object"
         }

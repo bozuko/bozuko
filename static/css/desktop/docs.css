@@ -184,6 +184,7 @@ body {
   /*  IE8 */
 
   font-size: 20px;
+  position: relative;
   font-weight: normal;
   font-family: Impact;
   color: #333;
@@ -200,6 +201,22 @@ body {
 .api .x-panel-body .section .method {
   border: 1px solid #ccc;
   margin: 10px 0;
+}
+.api .x-panel-body .section .access-level {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 3px 10px;
+  border: 2px solid #fff;
+  border-bottom-left-radius: 10px;
+  border-top: 0;
+  border-right: 0;
+  font-family: Tahoma;
+  font-size: 13px;
+  float: right;
+  text-shadow: 1px 1px 1px #fff;
+  background: rgba(255, 0, 0, 0.3);
+  color: fff;
 }
 .api .x-panel-body .section .padded {
   padding: 0 10px;
