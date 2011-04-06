@@ -6,12 +6,12 @@ var http = require('http');
 
 var users = {
     a: {
-		'id': '100001848849081',
-		'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
+	'id': '100001848849081',
+	'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
     },
     b: {
-		'id': '100001863668743',
-		'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
+	'id': '100001863668743',
+	'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
     }
 };
 
@@ -96,7 +96,6 @@ assert.response = function(test, server, req, res, callback){
     request.end();
 
 };
-
 
 var auth = user.auth;
 
