@@ -2,6 +2,7 @@ var express = require('express');
 var bozuko = require('../bozuko');
 var assert = require('assert');
 var async = require('async');
+var http = require('http');
 
 var users = {
     a: {
@@ -18,35 +19,111 @@ var user = users.b;
 
 assert.token = "43a9d844542c6570a1b267e2c88a9f11d00556d51e4768c5b33364d78c4324ac17e5eee3f37a9ccea374fda76dfb44ec714ea533567e12cdadefbc0b44ea1e7e";
 
-assert.keys = function(object, properties) {
-    properties.forEach(function(prop) {
-	assert.ok(prop in object);
+assert.page_id = "181069118581729";
+
+
+/**
+ * Modified version of assert.response from expresso.
+ * Note that this counts as three nodeunit assertions for expect() purposes.
+ *
+ * Assert response from `server` with
+ * the given `req` object and `res` assertions object.
+ *
+ *
+ * @param {Server} server
+ * @param {Object} req
+ * @param {Object|Function} res
+ * @param {String} callback
+ */
+
+assert.response = function(test, server, req, res, callback){
+    var client = http.createClient(Bozuko.config.server.port);
+
+    // Issue request
+    var timer,
+    method = req.method || 'GET',
+    status = res.status || res.statusCode,
+    data = req.data || req.body,
+    requestTimeout = req.timeout || 10000;
+
+    var request = client.request(method, req.url, req.headers);
+
+    // Timeout
+    if (requestTimeout) {
+        timer = setTimeout(function(){
+            assert.fail('Request timed out after ' + requestTimeout + 'ms.');
+        }, requestTimeout);
+    }
+
+    if (data) request.write(data);
+    request.on('response', function(response){
+        response.body = '';
+        response.setEncoding('utf8');
+        response.on('data', function(chunk){ response.body += chunk; });
+        response.on('end', function(){
+            if (timer) clearTimeout(timer);
+
+            // Assert response body
+            if (res.body !== undefined) {
+                var eql = res.body instanceof RegExp
+                    ? res.body.test(response.body) : res.body === response.body;
+                test.ok(eql);
+            }
+
+            // Assert response status
+            if (typeof status === 'number') {
+                test.equal(response.statusCode, status);
+            }
+
+            // Assert response headers
+            if (res.headers) {
+                var keys = Object.keys(res.headers);
+                for (var i = 0, len = keys.length; i < len; ++i) {
+                    var name = keys[i],
+                    actual = response.headers[name.toLowerCase()],
+                    expected = res.headers[name],
+                    eql = expected instanceof RegExp
+                        ? expected.test(actual)
+                        : expected == actual;
+                    test.ok(eql);
+                }
+            }
+
+            // Callback
+            callback(response);
+        });
     });
+    request.end();
+
 };
 
-assert.page_id = "181069118581729";
 
 var auth = user.auth;
 
 exports.setup = function(fn) {
-    process.env.NODE_ENV='test';
-    bozuko.app = express.createServer();
-    bozuko.run();
-    console.log(Bozuko.config.server.port);
-    async.series([
-	emptyCollection('User'),
-	emptyCollection('Page'),
-	emptyCollection('Contest'),
-	emptyCollection('Entry'),
-	emptyCollection('Checkin'),
-	emptyCollection('Play'),
-	emptyCollection('Prize'),
-	add_users,
-	add_pages,
-	add_contests
+    if (typeof Bozuko === 'undefined') {
+        process.env.NODE_ENV='test';
+        bozuko.app = express.createServer();
+        bozuko.init();
+        bozuko.app.listen(Bozuko.config.server.port);
+        console.log(Bozuko.config.server.port);
+        async.series([
+            emptyCollection('User'),
+	    emptyCollection('Page'),
+	    emptyCollection('Contest'),
+	    emptyCollection('Entry'),
+	    emptyCollection('Checkin'),
+	    emptyCollection('Play'),
+	    emptyCollection('Prize'),
+	    add_users,
+	    add_pages,
+	    add_contests
         ], function(err, res) {
+            fn();
+        });
+    } else {
         fn();
-    });
+    }
 };
 
 exports.teardown = function() {
@@ -70,7 +147,6 @@ var add_users = function(callback) {
 	    user.service('facebook').auth = auth;
 	    return user.save( function(error){
 		if( error ) return callback( error );
-		console.log(user);
 		return callback( null, user);
 	    });
 	});
