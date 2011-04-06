@@ -8,7 +8,11 @@ h4 Methods
   
   - each method, name in link.methods
     .method
-      h5.method-name= name.toUpperCase()
+      h5.method-name
+        - if ( method.access == 'user' )
+          span.access-level Authenticated User Method
+        !=name.toUpperCase()
+        
       
       - if( method.doc )
         .description.padded

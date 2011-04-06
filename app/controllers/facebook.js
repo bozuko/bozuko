@@ -32,6 +32,7 @@ exports.links = {
     facebook_checkin: {
         post: {
             doc: "Checkin to facebook and receive tokens",
+            access: 'user',
             params: {
                 lat: {
                     required: true,
@@ -59,6 +60,7 @@ exports.links = {
 
     facebook_like: {
         post: {
+            access: 'user',
             doc: "Like a facebook page and receive tokens",
             returns: "facebook_result"
         },

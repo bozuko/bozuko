@@ -436,6 +436,7 @@ $.place = function(options, callback){
  *
  * @return {null}
  */
+
 $.get_user_pages = function(user, callback){
 
     facebook.graph('/me/accounts',

@@ -128,6 +128,7 @@ exports.links = {
 
     game_result: {
         post: {
+            access: 'user',
             doc: "Retrieve a result for the given game." +
                 "The user must have tokens credited to their account in order for this to work",
             returns: "game_result"
@@ -137,6 +138,7 @@ exports.links = {
     
     entry_method: {
         post: {
+            access: 'user',
             returns:  "entry_method"
         }
     }
