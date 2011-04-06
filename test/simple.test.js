@@ -39,6 +39,17 @@ exports.get_pages = function(test) {
         });
 };
 
+exports.get_pages_by_bounds = function(test){
+    assert.response(test, Bozuko.app,
+        {url: pages_link+'/?bounds=42.631243,-71.331739,42.655803,-71.293201'},
+        ok,
+        function(res) {
+            var page = JSON.parse(res.body);
+            console.log(page);
+            test.done();
+        });
+}
+
 exports.favorite_add = function(test) {
     assert.response(test, Bozuko.app,
         {url: favorite_link+'/?token='+token, method:'PUT'},
@@ -53,10 +64,11 @@ exports.favorite_add = function(test) {
 
 exports.assert_one_fav= function(test) {
     assert.response(test, Bozuko.app,
-        {url: pages_link+'/?center=42.646261785714,-71.303897114286&favorites=true'},
+        {url: pages_link+'/?center=42.646261785714,-71.303897114286&favorites=true&token='+token},
         ok,
         function(res) {
-            
+            var result = JSON.parse(res.body);
+            console.log(result);
             test.done();
         });
 };
