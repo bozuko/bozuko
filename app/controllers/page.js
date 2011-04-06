@@ -60,7 +60,7 @@ exports.transfer_objects = {
                 page.links.page          ='/page/'+page.id,
                 page.links.share         ='/page/'+page.id+'/share';
                 page.links.feedback      ='/page/'+page.id+'/feedback';
-                
+                page.links.favorite      ='/user/favorite/'+page.id;
             }
             var games = [];
             
@@ -91,7 +91,7 @@ exports.links = {
                 },
                 favorites: {
                     type: "Boolean",
-                    description: 'Pass this parameter as true to get a list of only favorites. '+
+                    description: 'Pass this parameter as true to get a list of user favorites. '+
                                  'The center lat/lng should still be passed so the results can be returned in order of closest location'
                 },
                 query: {
@@ -186,6 +186,7 @@ exports.routes = {
                 var bounds = req.param('bounds');
                 var service = req.param('service');
                 var query = req.param('query');
+                var favorites = req.param('favorites');
                 
                 if( !center && !bounds ) return Bozuko.error('page/pages_center_or_bounds_required').send(res);
                 
@@ -223,6 +224,7 @@ exports.routes = {
                 
                 if( query ) options.query = query;
                 if( service ) options.service = service;
+                if( favorites ) options.favorites = true;
                 var profiler = Profiler.create('Page::search');
                 return Bozuko.models.Page.search(options,
                     function(error, results){
