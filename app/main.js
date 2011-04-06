@@ -1,4 +1,4 @@
-Bozuko = require('bozuko');
+Bozuko = require('../bozuko');
 
 /**
  * Module dependencies.
@@ -14,7 +14,7 @@ var fs              = require('fs'),
     Link            = Bozuko.require('core/link'),
     Game            = Bozuko.require('core/game');
 
-exports.run = function(app){
+exports.init = function(app){
 
     // initialize the application
     initApplication(app);
@@ -33,7 +33,7 @@ exports.run = function(app){
 
     // setup the games
     initGames(app);
-    
+
 };
 
 function initApplication(app){
@@ -64,7 +64,7 @@ function initApplication(app){
     app.use(express.methodOverride());
     app.use(express.cookieParser());
     app.use(express.session({ store: new MemoryStore({ reapInterval: -1 }), secret: 'chqsmells' }));
-    
+
     app.use(Monomi.detectBrowserType());
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
@@ -164,7 +164,7 @@ function initGames(app){
     var dir = __dirname + '/games';
     fs.readdirSync(dir).forEach( function(file){
         var stat = fs.statSync(dir+'/'+file);
-        if( stat.isDirectory() && file!='test'){
+        if( stat.isDirectory() && file != 'test'){
             var name = file.replace(/\..*?$/, '');
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Bozuko.require('/games/'+file);

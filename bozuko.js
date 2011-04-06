@@ -48,12 +48,12 @@ exports.configure = function() {
     });
 };
 
-exports.run = function() {
+exports.init = function() {
     if (!process.env.NODE_ENV) {
 	throw new Error("No configuration given! Please set NODE_ENV environment variable.");
     }
     this.configure();
-    require('./app/main').run(this.app);
+    require('./app/main').init(this.app);
 };
 
 exports.services = {};
