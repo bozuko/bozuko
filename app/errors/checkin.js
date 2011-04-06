@@ -8,5 +8,13 @@ module.exports = {
         code: 400,
         message: "Page is required for checkin"
     },
+    too_many_attempts_per_page: {
+        code: 403,
+        message: "Checkin occurred too soon after the last checkin for this page"
+    },
+    too_many_attempts_per_user: {
+        code: 403,
+        message: "Checkin occurred too soon after the last checkin for this user"
+    }
 
 };
