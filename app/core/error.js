@@ -31,3 +31,10 @@ proto.generateMessage = function(fn){
 Error.prototype.send = function(res){
     return res.send( this.toTransfer(), this.code );
 };
+
+// sometimes the native mongo drivers return Strings instead of errors,
+// so lets extend the string prototype with the "send" method
+String.prototype.send = function(res){
+    var error = new Error(this);
+    return error.send(res);
+}
