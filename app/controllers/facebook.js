@@ -98,7 +98,7 @@ exports.routes = {
             access: 'user',
 
             handler: function(req, res) {
-                
+
                 var id = req.param('id');
                 var lat = req.param('lat');
                 var lng = req.param('lng');
@@ -109,7 +109,7 @@ exports.routes = {
                 }
 
                 return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
-                    
+
                     if( err ){
                         return err.send( res );
                     }
@@ -126,21 +126,21 @@ exports.routes = {
                                 if( error ){
                                     return error.send(res);
                                 }
-                                
+
                                 var checkin = result.checkin;
                                 var entries = result.entries;
-                                
+
                                 return checkin.getPage(function(error, page){
-                                    
+
                                     if( error ) return error.send(res);
-                                    
+
                                     return page.getUserGames(req.session.user, function(error, games){
                                         if( error ) return error.send(res);
-                                        
+
                                         games.forEach(function(game, i){
                                             games[i] = Bozuko.transfer('game').create(game);
                                         });
-                                        
+
                                         var ret = {
                                             page_id: page.id,
                                             page_name: page.name,
@@ -151,10 +151,10 @@ exports.routes = {
                                                 facebook_like: '/facebook/'+page.service('facebook').sid+'/like'
                                             }
                                         };
-                                        
+
                                         return res.send(ret);
                                     });
-                                });                                
+                                });
                             }
                         );
                     };

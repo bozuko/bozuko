@@ -23,7 +23,7 @@ var app = express.createServer(ssl);
 var bozuko= require('bozuko');
 
 bozuko.app = app;
-bozuko.run();
+bozuko.init();
 
 // Only listen on $ node app.js
 module.exports = app;

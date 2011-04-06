@@ -49,7 +49,6 @@ var game = {
             contest_result: '/contest/'+game.contest._id+'/result',
             page: '/page/'+game.contest.page_id
         };
-        console.log(obj);
         return obj;
     },
 
@@ -152,7 +151,6 @@ exports.routes = {
                     }
                     // lets let the contest handle finding entries, etc
                     return contest.play(req.session.user, function(error, result){
-                        console.log(result);
                         if( error ){
                             console.log('error', error);
                             return error.send(res);
