@@ -9,6 +9,7 @@ var hmac = crypto.createHmac('sha512', Bozuko.config.key);
 
 var User = module.exports = new Schema({
     name                :{type:String},
+    phones              :[],
     token               :{type:String},
     salt                :{type:Number},
     first_name          :{type:String},
@@ -46,6 +47,73 @@ User.static('createFromServiceObject', function(user, callback){
             return callback( error );
         }
         return Bozuko.models.User.findById(u.id, callback);
+    });
+});
+
+User.static('addOrModify', function(user, phone, service, callback) {
+    var q;
+    var service_id = {'services.name':service,'services.sid':user.id};
+    if (service === 'facebook') {
+        q = {
+            $or:[
+                {email:user.email},
+                service_id
+            ]
+        };
+    } else {
+        q = {
+            $or:[
+                {email:user.contact.email},
+                service_id
+            ]
+        };
+    }
+
+    Bozuko.models.User.findOne(q, function(err, u){
+        if (err) return callback(err);
+
+        if( !u ){
+            u = new Bozuko.models.User();
+        }
+
+        if (service === 'facebook') {
+            u.name = user.name;
+            u.first_name = user.first_name;
+            u.last_name = user.last_name;
+            u.email = user.email;
+            u.facebook_id = user.id;
+            u.facebook_auth = user.token;
+        } else {
+            u.name = user.firstName+' '+user.lastName;
+            u.first_name = user.firstName;
+            u.last_name = user.lastName;
+            u.email = user.contact.email;
+        }
+        u.gender = user.gender;
+
+        var phone_type_mismatch = false;
+        // Add the phone to the user's account if it isn't there
+        // TODO: Make sure this phone doesn't exist with any other facebook accounts
+        if (u.phones.every(function(p) {
+            if (p.type === phone.type && p.id === phone.id) {
+                return false;
+            } else if (p.type !== phone.type && p.id === phone.id) {
+                console.log("Error: attempt to change phone type from "+p.type+" to "+phone.type+" for facebook id: "+user.id);
+                phone_type_mismatch = true;
+                return false;
+            }
+            return true;
+        })) {
+            u.phones.push(phone);
+            console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+user.id);
+        }
+        if (phone_type_mismatch) return callback(Bozuko.error('login/phone_type_mismatch'));
+
+        u.service(service, user.id, user.token, user);
+        u.save(function(err) {
+            if (err) return callback(err);
+            return callback(null, u);
+        });
     });
 });
 

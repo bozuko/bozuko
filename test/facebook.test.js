@@ -1,7 +1,7 @@
 var print = require('util').debug;
 var assert = require('assert');
 var qs = require('querystring');
-var testsuite = require('./testsuite');
+var testsuite = require('./config/testsuite');
 
 var id = assert.page_id;
 var token = assert.token;
@@ -12,29 +12,11 @@ exports.setup = function(test) {
     testsuite.setup(test.done);
 };
 
-exports['POST /facebook/:id/checkin'] = function(test) {
-
-    var params = JSON.stringify({
-        lat: 42.646261785714,
-        lng: -71.303897114286,
-        message: "testing"
-    });
-
-    assert.response(test,Bozuko.app, {
-        url: '/facebook/'+id+'/checkin'+tokstr,
-        headers: headers,
-	method: 'POST',
-	data: params
-    },
-    {
-	status: 200,
-	headers: {'Content-Type': 'application/json'}
-    },
-    function(res) {
-	var result = JSON.parse(res.body);
-        test.done();
-    });
-};
+/*
+ *  Working facebook checkin is tested in simple.test.js
+ *  Testing it again here would break simple due to checkin timing constraints and ordering of tests.
+ *
+ */
 
 exports['POST /facebook/:id/checkin No User'] = function(test) {
 
