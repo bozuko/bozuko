@@ -27,7 +27,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){};
  * Accepts an options argument in the form of:
  * 
  *  {
- *      lngLat : {lng: Number, lat: Number},
+ *      center : [lng,lat],
  *      query : String,
  *      fields : Array
  *  }
