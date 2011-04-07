@@ -1,7 +1,7 @@
 var print = require('util').debug;
 var assert = require('assert');
 var async = require('async');
-var testsuite = require('./testsuite');
+var testsuite = require('./config/testsuite');
 
 var token = assert.token;
 var headers = {'content-type': 'application/json'};
@@ -59,29 +59,6 @@ exports.facebook_checkin = function(test) {
             test.done();
         });
 };
-
-/*exports.facebook_checkin2 = function(test) {
-    var params = JSON.stringify({
-        lat: 42.646261785714,
-        lng: -71.303897114286,
-        message: "Bobby B kicking in checkin2!"
-    });
-
-    assert.response(Bozuko.app,
-        {url: link+"/?token="+token,
-        method: 'POST',
-        headers: headers,
-        data: params},
-        bad,
-        function(res) {
-            var facebook_checkin_result = JSON.parse(res.body);
-            test.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
-            console.log(JSON.stringify(facebook_checkin_result));
-            link = facebook_checkin_result.games[0].links.contest_result;
-            console.log("link = "+link);
-            test.done();
-        });
-};*/
 
 // Play the slots game and check the result
 exports.play3times = function(test) {

@@ -31,13 +31,17 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
+    var phone = {
+        type: req.param('phone_type'),
+        id: req.param('phone_id')
+    };
 
     var protocol = (req.app.key?'https:':'http:');
 
     var params = {
         'client_id' : Bozuko.config.facebook.app.id,
         'scope' : Bozuko.config.facebook.perms[scope],
-        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname
+        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+url.search
     };
 
     if( req.session.device == 'touch'){
@@ -46,8 +50,6 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
 
     if( !code && !error_reason ){
         // we need to send this person to facebook to get the code...
-        var ret = req.param('return');
-        req.session.redirect = ret;
         res.redirect('https://graph.facebook.com/oauth/authorize?'+qs.stringify(params));
     }
     else if( error_reason ){
@@ -66,13 +68,12 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
         res.redirect(ret);
     }
     else{
-
         params.client_secret = Bozuko.config.facebook.app.secret;
         params.code = code;
 
+
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
-
         http.request({
             url: 'https://graph.facebook.com/oauth/access_token',
             params: params,
@@ -89,61 +90,47 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             access_token : token
                         }
                     }, function(user){
-                        Bozuko.models.User.findOne({'services.name':'facebook','services.sid':user.id}, function(err, u){
-                            if( !u ){
-                                u = new Bozuko.models.User();
+                        user.token = token;
+                        Bozuko.models.User.addOrModify(user, phone, 'facebook', function(err, u) {
+                            if (err) {
+                                console.log("Facebook login error: "+err);
+                                return err.send(res);
                             }
-                            // update the user's details
-                            u.name = user.name;
-                            u.first_name = user.first_name;
-                            u.last_name = user.last_name;
-                            u.gender = user.gender;
-                            u.email = user.email;
-                            u.facebook_id = user.id;
-                            u.facebook_auth = token;
+                            // okay, definitely a little weird mr. mongoose...
+                            // after a save, we need to do a get user or embedded docs
+                            // get messed up... yokay
 
-                            u.service('facebook', user.id, token, user);
+                            Bozuko.models.User.findById(u.id, function(error, u){
+                                var device = req.session.device;
+                                req.session.regenerate(function(err){
+                                    res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
+                                    req.session.userJustLoggedIn = true;
+                                    req.session.user = u;
+                                    req.session.device = device;
 
-                            u.save(function(){
-
-                                // okay, definitely a little weird mr. mongoose...
-                                // after a save, we need to do a get user or embedded docs
-                                // get messed up... yokay
-
-                                Bozuko.models.User.findById(u.id, function(error, u){
-                                    var device = req.session.device;
-                                    req.session.regenerate(function(err){
-                                        res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
-                                        req.session.userJustLoggedIn = true;
-                                        req.session.user = u;
-                                        req.session.device = device;
-
-                                        if( success ){
-                                            if( success(u,req,res) === false ){
-                                                return;
-                                            }
+                                    if( success ){
+                                        if( success(u,req,res) === false ){
+                                            return;
                                         }
-                                        res.redirect(ret || '/user');
-                                    });
+                                    }
+                                    res.redirect(ret || '/user');
                                 });
                             });
                         });
                     });
-                }
-                else {
+                } else {
                     if( failure ){
                         if( failure('Authentication Failed', req, res) === false ){
                             return;
                         }
                     }
-                    res.send("<html><h1>Facebook authentication failed :( </h1></html>")
+                    res.send("<html><h1>Facebook authentication failed :( </h1></html>");
                 }
             },
             scope : this
         });
     }
 };
-
 
 /**
  * Location based search
@@ -299,7 +286,7 @@ $.user = function(options, callback){
 
     var params ={};
     if( options.fields )        params.fields       = options.fields;
-    
+
     var self = this;
     return facebook.graph('/'+uid,{
         user: options.user,

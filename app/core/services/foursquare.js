@@ -64,6 +64,10 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
+    var phone = {
+        type: req.param('phone_type'),
+        id: req.param('phone_id')
+    };
 
     var protocol = (req.app.key?'https:':'http:');
 
@@ -129,45 +133,28 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                 return res.send("<html><h1>Foursquare authentication failed :( </h1></html>");
                             }
                             var user = result.user;
-                            return Bozuko.models.User.findOne(
-                                {
-                                    $or:[
-                                         {email:user.contact.email},
-                                         {'services.name':'foursquare','services.sid':user.id}
-                                    ]
-                                },
-                                function(err, u){
-                                    if( !u ){
-                                        u = new Bozuko.models.User();
-                                        // update the user's details
-                                        u.name = user.firstName+' '+user.lastName;
-                                        u.first_name = user.firstName;
-                                        u.last_name = user.lastName;
-                                        u.gender = user.gender;
-                                        u.email = user.contact.email;
-                                    }
-                                    u.service('foursquare', user.id, token, user);
-                                    u.save(function(){
-                                        var device = req.session.device;
-                                        req.session.regenerate(function(err){
-                                            // res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
-                                            req.session.userJustLoggedIn = true;
-                                            req.session.user = u;
-                                            req.session.device = device;
-                                            if( success ){
-                                                if( success(u,req,res) === false ){
-                                                    return;
-                                                }
-                                            }
-                                            res.redirect(ret || '/user');
-                                        });
-                                    });
+                            user.token = token;
+                            Bozuko.models.User.addOrModify(user, phone, 'foursquare', function(err, u){
+                                if (err) {
+                                    console.log("Foursquare login error: "+err);
+                                    return err.send(res);
                                 }
-                            );
+                                var device = req.session.device;
+                                req.session.regenerate(function(err){
+                                    req.session.userJustLoggedIn = true;
+                                    req.session.user = u;
+                                    req.session.device = device;
+                                    if( success ){
+                                        if( success(u,req,res) === false ){
+                                            return;
+                                        }
+                                    }
+                                    res.redirect(ret || '/user');
+                                });
+                            });
                         }
                     );
-                }
-                else {
+                } else {
                     if( failure ){
                         if( failure('Authentication Failed', req, res) === false ){
                             return;

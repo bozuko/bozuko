@@ -1,5 +1,5 @@
 var assert = require('assert');
-var testsuite = require('./testsuite');
+var testsuite = require('./config/testsuite');
 
 var uid = assert.uid;
 var token = assert.token;
