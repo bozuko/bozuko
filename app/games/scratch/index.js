@@ -11,64 +11,92 @@ var proto = Scratch.prototype;
 
 proto.name = "Scratch";
 
-proto.process = function(outcome) {
-    var user_numbers;
-    var winning_numbers = pick_winners();
+var min = 0,
+    max = 99;
 
+var size = 6;
+var num_matches = 3;
+
+proto.process = function(outcome) {
+    var numbers;
     if (outcome === false) {
-        user_numbers = lose(winning_numbers);
+        numbers = lose();
     } else {
-        user_numbers = win(outcome, winning_numbers);
+        numbers = win();
+    }
+
+    return numbers;
+};
+
+function win() {
+    var ar = [];
+    for (var i = 0; i < size; i++) { ar[i] = i; }
+
+    winning_number = rand(min, max);
+    var results = [];
+
+    // fill in winning positions
+    for (i = 0; i < num_matches; i++) {
+        var random = rand(0, ar.length-1);
+        var index = ar[random];
+        ar.splice(random, 1);
+        results[index] = winning_number;
+    }
+
+    var done;
+    var used_nums = {};
+    var val;
+
+    // fill in other positions
+    for (i = 0;  i < ar.length; i++) {
+        var index = ar[i];
+        done = false;
+        while (!done) {
+            val = rand(min, max);
+            if (val != winning_number) {
+                if (!used_nums[val]) {
+                    results[index] = val;
+                    used_nums[val] = 1;
+                    done = true;
+                } else if (used_nums[val] < num_matches-1) {
+                    results[index] = val;
+                    used_nums[val]++;
+                    done = true;
+                }
+            }
+        }
     }
 
     return {
-        winning_numbers: winning_numbers,
-        user_numbers: user_numbers
+        winning_number: winning_number,
+        numbers: results
     };
-};
+}
 
-// All winning numbers must be unique
-var pick_winners = function() {
-    var winning_numbers = [rand(0,100)];
-    var num = rand(0, 100);
-    while (num === winning_numbers[0]) {
-        num = rand(0, 100);
-    }
-    winning_numbers.push(num);
-    while (num === winning_numbers[0] || num === winning_numbers[1]) {
-        num = rand(0, 100);
-    }
-    winning_numbers.push(num);
-    return winning_numbers;
-};
+function lose() {
+    var results = [];
+    var used_nums = {};
+    var done = false;
+    var val;
 
-var lose = function(winning_numbers) {
-    var num;
-    var user_numbers = [];
-    for (var i = 0; i < 6; i++) {
-        num = rand(0,100);
-        while (num === winning_numbers[0] || num === winning_numbers[1] || num === winning_numbers[2]) {
-            num = rand(0,100);
-        }
-        user_numbers.push(num);
-    }
-    return user_numbers;
-};
-
-// winning_numbers[match_index] must equal exactly 1 user number;
-var win = function(match_index, winning_numbers) {
-    var user_numbers = [];
-    var user_match = rand(0, 5);
-    for (var i = 0; i < 6; i++) {
-        if (user_match === i) {
-            user_numbers.push(winning_numbers[match_index]);
-        } else {
-            var num = rand(0,100);
-            while (num === winning_numbers[0] || num === winning_numbers[1] || num === winning_numbers[2]) {
-                num = rand(0,100);
+    for (var i = 0; i < size; i++) {
+        done = false;
+        while (!done) {
+            val = rand(min, max);
+            if (!used_nums[val]) {
+                results[i] = val;
+                used_nums[val] = 1;
+                done = true;
+            } else if (used_nums[val] < num_matches-1) {
+                results[i] = val;
+                used_nums[val]++;
+                done = true;
             }
-            user_numbers.push(num);
         }
     }
-    return user_numbers;
-};
+
+    return {
+        numbers: results
+    };
+
+}

@@ -3,7 +3,7 @@ apt-get update
 apt-get install -y python-software-properties
 
 # Add mongodb repository
-echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list
+echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" >> /etc/apt/sources.list
 apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
 
 # Add nginx repository
@@ -19,7 +19,7 @@ apt-get install -y nginx
 cp config/nginx.conf /etc/nginx/
 
 # install mongodb
-apt-get install -y mongodb-stable
+apt-get install -y mongodb-10gen
 
 # install essential libraries and build tools
 apt-get install -y build-essential libssl-dev

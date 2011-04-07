@@ -1,16 +1,4 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    EntryConfig = require('../embedded/contest/entry/config'),
-    Prize = require('../embedded/contest/prize'),
-    ObjectId = Schema.ObjectId,
-    async = require('async'),
-    express = require('express'),
-    bozuko = require('../../../bozuko');
-
-// Initialize Bozuko
-process.env.NODE_ENV='test';
-bozuko.app = express.createServer();
-bozuko.init();
+var testsuite = require('./config/testsuite');
 
 var start = new Date();
 var end = new Date();

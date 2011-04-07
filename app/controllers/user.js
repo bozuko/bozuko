@@ -113,6 +113,9 @@ exports.routes = {
         aliases     :['/login/:service?'],
 
         get : function(req,res){
+            if (!req.param('phone_type') || !req.param('phone_id')) {
+                return Bozuko.error('login/no_phone_info').send(res);
+            }
             service = req.param('service') || 'facebook';
             Bozuko.service(service).login(req,res,'user','/user');
         }
