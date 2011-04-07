@@ -25,3 +25,14 @@ exports.model = function(name, schema){
         return getConnection().model(name);
     }
 };
+
+
+mongoose.SchemaTypes.Array.prototype.$conditionalHandlers['$near'] = function (val) {
+    return this.cast(val);
+};
+mongoose.SchemaTypes.Array.prototype.$conditionalHandlers['$box'] = function (val) {
+    return this.cast(val);
+};
+mongoose.SchemaTypes.Array.prototype.$conditionalHandlers['$within'] = function (val) {
+    return this.cast(val);
+};

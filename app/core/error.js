@@ -3,6 +3,7 @@ var MongooseError   = require('mongoose').Error;
 var BozukoError = module.exports = function(name,message,data,code){
     Error.call(this);
     Error.captureStackTrace(this, arguments.callee);
+    this.name = name;
     this.data = data;
     if( code ) this.code = code;
     if( message instanceof Function)
@@ -30,3 +31,10 @@ proto.generateMessage = function(fn){
 Error.prototype.send = function(res){
     return res.send( this.toTransfer(), this.code );
 };
+
+// sometimes the native mongo drivers return Strings instead of errors,
+// so lets extend the string prototype with the "send" method
+String.prototype.send = function(res){
+    var error = new Error(this);
+    return error.send(res);
+}
