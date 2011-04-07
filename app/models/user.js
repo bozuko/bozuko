@@ -14,6 +14,7 @@ var User = module.exports = new Schema({
     salt                :{type:Number},
     first_name          :{type:String},
     last_name           :{type:String},
+    image               :{type:String},
     gender              :{type:String},
     email               :{type:String, index: true},
     sign_up_date        :{type:Date, default: Date.now},

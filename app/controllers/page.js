@@ -60,7 +60,7 @@ exports.transfer_objects = {
                 page.links.page          ='/page/'+page.id,
                 page.links.share         ='/page/'+page.id+'/share';
                 page.links.feedback      ='/page/'+page.id+'/feedback';
-                
+                page.links.favorite      ='/user/favorite/'+page.id;
             }
             var games = [];
             
@@ -85,13 +85,13 @@ exports.links = {
                 bounds : {
                     type: "String",
                     description: 'The bounding geographic box to search within. '+
-                                 'This should be passed as 2 points - the top left (p1) and bottom right (p2). '+
+                                 'This should be passed as 2 points - the bottom left (p1) and top right (p2). '+
                                  'Each points should be passed the same as the center attribute and also separated by a comma. '+
                                  'An example, where p1=lat1,lng1 and p2=lat2,lng2 would be passed as lat1,lng1,lat2,lng2'
                 },
                 favorites: {
                     type: "Boolean",
-                    description: 'Pass this parameter as true to get a list of only favorites. '+
+                    description: 'Pass this parameter as true to get a list of user favorites. '+
                                  'The center lat/lng should still be passed so the results can be returned in order of closest location'
                 },
                 query: {
@@ -186,12 +186,14 @@ exports.routes = {
                 var bounds = req.param('bounds');
                 var service = req.param('service');
                 var query = req.param('query');
+                var favorites = req.param('favorites');
                 
                 if( !center && !bounds ) return Bozuko.error('page/pages_center_or_bounds_required').send(res);
                 
                 var options = {
                     limit: parseInt(req.param('limit')) || 25,
-                    offset: parseInt(req.param('offset')) || 0
+                    offset: parseInt(req.param('offset')) || 0,
+                    user: req.session.user
                 };
                 
                 // first, we will try center
@@ -207,7 +209,7 @@ exports.routes = {
                 }
                 
                 else if(bounds){
-                    var parts = center.split(',');
+                    var parts = bounds.split(',');
                     if( parts.length != 4 ){
                         Bozuko.error('page/malformed_bounds').send(res);
                     }
@@ -215,19 +217,21 @@ exports.routes = {
                     var lng1 = parseFloat(parts[1]);
                     var lat2 = parseFloat(parts[2]);
                     var lng2 = parseFloat(parts[3]);
-                    options.bounds = {
-                        tl: {lat:lat1,lng:lng1},
-                        br: {lat:lat2,lng:lng2}
-                    };
+                    options.bounds = [
+                        [lat1,lng1],
+                        [lat2,lng2]
+                    ];
                 }
                 
                 if( query ) options.query = query;
                 if( service ) options.service = service;
+                if( favorites ) options.favorites = true;
                 var profiler = Profiler.create('Page::search');
                 return Bozuko.models.Page.search(options,
                     function(error, results){
                         if( error ){
-                            error.send(res);
+                            console.log(error);
+                            return error.send(res);
                         }
                         var searchEnd = new Date();
                         profiler.mark('search time');
@@ -242,7 +246,7 @@ exports.routes = {
                         });
                         if( results.service_results ) ret.concat(results.service_results);
                         var pages = Bozuko.transfer('page',ret);
-                        res.send(pages);
+                        return res.send(pages);
                     }
                 );
             }

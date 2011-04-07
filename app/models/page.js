@@ -309,8 +309,92 @@ Page.static('loadPagesContests', function(pages, callback){
     );
 });
 
+/**
+* Various argument possibilities
+* 1 callback
+* 2 selector, callback,
+* 3 selector, fields, callback
+* 3 selector, options, callback
+* 4,selector, fields, options, callback
+* 5 selector, fields, skip, limit, callback
+* 6 selector, fields, skip, limit, timeout, callback
+*
+* Available options:
+* limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
+*/
+Page.static('nativeFind', function(){
+    var coll = Bozuko.models.Page.collection;
+    var cb = arguments[arguments.length-1];
+    arguments[arguments.length-1] = function(error, cursor){
+        // we are going to change this to model objects...
+        if( error ){
+            return callback(error);
+        }
+        // convert to model objects
+        var pages = [];
+        cursor.toArray( function (err, docs) {
+            if (err) return callback(err);
+            for (var i = 0; i < docs.length; i++) {
+                pages[i] = new Bozuko.models.Page();
+                pages[i].init(docs[i], function (err) {
+                    if (err) return callback(err);
+                    return true;
+                });
+            }
+            return true;
+        });
+        return cb(null, pages);
+    }
+    coll.find.apply(coll, arguments);
+});
+
 Page.static('search', function(options, callback){
 
+    // are we looking for favorites?
+    if( options.favorites ){
+        if( !options.user ){
+            return callback(null, {pages:[], service_results:[]});
+        }
+        var user = options.user;
+        var selector = {
+            _id: {$in:user.favorites||[]},
+            coords: {
+                $near:[options.latLng.lat,options.latLng.lng]
+            }
+        };
+        if( options.query ){
+            selector.name = new RegExp('^'+options.query, "i");
+        }
+        return Bozuko.models.Page.find(selector, function(error, pages){
+            if( error ){
+                return callback(error);
+            }
+            return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
+                return callback(null, {pages: pages, service_results: []});
+            });
+        });
+    }
+    
+    // are we looking for bounded results
+    if( options.bounds ){
+        
+        var selector = {
+            // only registered...
+            owner_id: {$exists:true},
+            coords: {$within: {$box: options.bounds}}
+        };
+        if( options.query ){
+            selector.name = new RegExp('^'+options.query, "i");
+        }
+        
+        return Bozuko.models.Page.nativeFind(selector, function(error, pages){
+            if( error ) return callback( error );
+            return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
+                return callback(null, {pages: pages, service_results: []});
+            });
+        });
+    }
+    
     // use a 3rd party service to search geographically
     // and then match against our db
     var service = options.service || Bozuko.config.defaultService;

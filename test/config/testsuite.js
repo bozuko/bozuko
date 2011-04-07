@@ -103,13 +103,14 @@ assert.response = function(test, server, req, res, callback){
 };
 
 var auth = user.auth;
+var profiler;
 
 exports.setup = function(fn) {
     if (typeof Bozuko === 'undefined') {
         process.env.NODE_ENV='test';
         bozuko.app = express.createServer();
         bozuko.init();
-        var profiler = Bozuko.require('util/profiler').create('setup');
+        profiler = Bozuko.require('util/profiler').create('testsuite');
         bozuko.app.listen(Bozuko.config.server.port);
         console.log(Bozuko.config.server.port);
         async.series([
@@ -156,33 +157,53 @@ var add_users = function(callback) {
     });
 };
 
+var pages = [
+    // hookslides
+    '181069118581729', // owl watch
+    '147180168638415', // middlesex
+    "111730305528832", // dunks
+    // boston
+    "108123539229568", // hard rock
+    "116813875003123" // black rose
+];
 var add_pages = function(callback) {
-    var auth = "166078836756369|242533771ff71c4e019a9350-557924168|KsXKYtlwW3IQuduNQQofNZ-A8Vw";
-    Bozuko.service('facebook').place({place_id:'181069118581729'}, function(error, place){
-	if( error ){
-	    return callback(error);
-	}
-	return Bozuko.models.Page.createFromServiceObject(place, function(error, page){
-            if( error ){
-		return callback(error);
-	    }
+    if( pages.length > 0 ){
+        add_page(pages.shift(), function(error){
+            profiler.mark('add page');
+            add_pages(callback);
+        });
+    }
+    else{
+        callback(null,'');
+    }
+};
 
-	    if( !page ){
-		return callback(new Error("WTF!!!"));
-	    }
-	    page.service('facebook').auth = auth;
-	    return Bozuko.models.User.findOne({name: /bozuko/i}, function(err, user) {
-		if (user) {
-		    assert.uid = ''+user._id;
-		    page.owner_id = user._id;
-		    page.save(function(){callback(null,'');});
-		} else {
-		    throw("Error looking up Bobby Bozuko: err = "+err);
-		}
-	    });
+function add_page(id, callback){
+    Bozuko.service('facebook').place({place_id:id}, function(error, place){
+        if( error ){
+            return callback(error);
+        }
+        return Bozuko.models.Page.createFromServiceObject(place, function(error, page){
+            if( error ){
+                return callback(error);
+            }
+
+            if( !page ){
+                return callback(new Error("WTF!!!"));
+            }
+            return Bozuko.models.User.findOne({name: /bozuko/i}, function(err, user) {
+                if (user) {
+                    assert.uid = ''+user._id;
+                    page.owner_id = user._id;
+                    page.save(function(){callback(null,'');});
+                } else {
+                    callback(new Error("Can't find Bobby!"));
+                }
+            });
         });
     });
-};
+}
+
 
 
 var add_contests = function(callback) {

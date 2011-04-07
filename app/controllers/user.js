@@ -23,6 +23,15 @@ exports.transfer_objects= {
     favorites: {
         doc: "Bozuko User Favorites",
         def: ["page"]
+    },
+    
+    favorite_response: {
+        doc: "The response from a favorite add or delete",
+        def: {
+            added: "Boolean",
+            removed: "Boolean",
+            page_id: "String"
+        }
     }
 };
 
@@ -35,28 +44,38 @@ exports.links = {
         }
     },
 
+    favorites: {
+        
+        get: {
+            access: 'user',
+            doc: "Get users favorites",
+            params: {
+                "center":{
+                    required:true,
+                    type:"String",
+                    description:"The latitude, longitude of the user (see pages link documentation)"
+                }
+            },
+            returns: ['page']
+        }
+    },
+    
     favorite: {
+        
         put: {
             access: 'user',
             doc: "Add a page to a user's favorites",
-            params: {
-                page_id: {
-                    required: true,
-                    type: "Number",
-                    description: "The id of the page being added"
-                }
-            }
+            returns: 'favorite_response'
         },
         del: {
             access: 'user',
             doc: "Remove a page from a user's favorites",
-            params: {
-                page_id: {
-                    required: true,
-                    type: "Number",
-                    description: "The id of the page being added"
-                }
-            }
+            returns: 'favorite_response'
+        },
+        post: {
+            access: 'user',
+            doc: "Toggle a page as a user's favorite",
+            returns: 'favorite_response'
         }
     },
 
@@ -109,10 +128,8 @@ exports.routes = {
             access: 'user',
 
             handler: function(req, res) {
-                res.setHeader('content-type', 'application/json');
                 var user = req.session.user;
                 user.id = user._id;
-                user.img = "https://graph.facebook.com/"+user.id+"/picture";
                 user.links = {
                     facebook_login: "/user/login/facebook",
                     facebook_logout: "/user/logout/facebook",
@@ -124,37 +141,126 @@ exports.routes = {
     },
 
     '/user/favorites' : {
-
+        
         get : {
             access: 'user',
 
             handler: function(req, res) {
-                var user = req.session.user;
-                Bozuko.models.Page.find({'_id': {$in: user.favorites}}, function(err, pages) {
-                    if (err) {
-                        console.log("ERROR - favorites: err = "+err);
-                        err.send(res);
-                    } else {
-                        if (pages.length > 0) {
-                            res.send(pages);
-                        } else {
-                            res.statusCode = 404;
-                            res.end();
-                        }
-                    }
-                });
+                // a get request is just all favorites
+                // we need to have the token by now...
+                var token = req.param('token');
+                var center = req.param('center');
+                res.redirect('/pages?favorites=true&center='+center+'&token='+token);
             }
-        },
-
+        }
+        
+    },
+    
+    '/user/favorite/:id':{
+        
         put: {
+            access: 'user',
             handler: function(req, res) {
+                var id = req.param('id');
+                var user = req.session.user;
+                var favorites = user.favorites;
+                var found = false;
+                if( favorites ) for(var i=0; i<favorites.length && found == false; i++){
+                    if( favorites[i]+'' == id ){
+                        found = i;
+                    }
+                }
+                if( found !== false ){
+                    return Bozuko.error('user/favorite_exists');
+                }
+                // lets make sure the page exists
+                return Bozuko.models.Page.findById(id, function(error, page){
+                    if( error ) return error.send(res);
+                    if( !page ) return Bozuko.error('page/does_not_exist').send(res);
+                    user.favorites.push(id);
+                    return user.save(function(error){
+                        if(error) return error.send(res);
+                        return res.send(Bozuko.transfer('favorite_response', {
+                            added: true,
+                            page_id: id
+                        }));
+                    });
+                });                
             }
         },
-
+        
         del: {
+            access: 'user',
+            handler: function(req, res) {
+                var id = req.param('id');
+                var user = req.session.user;
+                var favorites = user.favorites;
+                var found = false;
+                
+                if( favorites ) for(var i=0; i<favorites.length && found === false; i++){
+                    if( favorites[i]+'' == id ){
+                        found = i;
+                    }
+                }
+                if( found === false ){
+                    return Bozuko.error('user/favorite_does_not_exist').send(res);
+                }
+                // lets make sure the page exists
+                return Bozuko.models.Page.findById(id, function(error, page){
+                    if( error ) return error.send(res);
+                    if( !page ) return Bozuko.error('page/does_not_exist').send(res);
+                    user.favorites.splice(found,1);
+                    // weird mongoose shit...
+                    if( user.favorites.length === 0 ) user.favorites = [];
+                    return user.save(function(error){
+                        if(error) return error.send(res);
+                        return res.send(Bozuko.transfer('favorite_response', {
+                            removed: true,
+                            page_id: id
+                        }));
+                    });
+                });                
+            }
+        },
+        
+        post: {
+            access: 'user',
+            handler: function(req, res) {
+                var id = req.param('id');
+                var user = req.session.user;
+                var favorites = user.favorites;
+                var found = false;
+                
+                if( favorites ) for(var i=0; i<favorites.length && found === false; i++){
+                    if( favorites[i]+'' == id ){
+                        found = i;
+                    }
+                }
+                // lets make sure the page exists
+                return Bozuko.models.Page.findById(id, function(error, page){
+                    if( error ) return error.send(res);
+                    if( !page ) return Bozuko.error('page/does_not_exist').send(res);
+                    var ret = {
+                        page_id: id
+                    };
+                    if( found !== false ){
+                        user.favorites.splice(found,1);
+                        if( user.favorites.length === 0 ) user.favorites = [];
+                        ret.removed = true;
+                    }
+                    else{
+                        user.favorites.push(id);
+                        ret.added = true;
+                    }
+                    return user.save(function(error){
+                        if(error) return error.send(res);
+                        return res.send(Bozuko.transfer('favorite_response', ret));
+                    });
+                });                
+            }
         }
     },
-
+    
     '/user/prizes' : {
 
         get : {
