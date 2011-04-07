@@ -1,7 +1,7 @@
 var print = require('util').debug;
 var assert = require('assert');
 var async = require('async');
-var testsuite = require('./testsuite');
+var testsuite = require('./config/testsuite');
 
 var token = assert.token;
 var headers = {'content-type': 'application/json'};

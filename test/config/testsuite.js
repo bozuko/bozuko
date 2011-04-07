@@ -1,5 +1,5 @@
 var express = require('express');
-var bozuko = require('../bozuko');
+var bozuko = require('../../bozuko');
 var assert = require('assert');
 var async = require('async');
 var http = require('http');
@@ -20,6 +20,11 @@ var user = users.b;
 assert.token = "43a9d844542c6570a1b267e2c88a9f11d00556d51e4768c5b33364d78c4324ac17e5eee3f37a9ccea374fda76dfb44ec714ea533567e12cdadefbc0b44ea1e7e";
 
 assert.page_id = "181069118581729";
+
+assert.phone = {
+    type: 'iphone',
+    id: 4253525252325352
+};
 
 
 /**
@@ -51,7 +56,7 @@ assert.response = function(test, server, req, res, callback){
     // Timeout
     if (requestTimeout) {
         timer = setTimeout(function(){
-            assert.fail('Request timed out after ' + requestTimeout + 'ms.');
+            test.fail('Request timed out after ' + requestTimeout + 'ms.');
         }, requestTimeout);
     }
 
@@ -120,16 +125,12 @@ exports.setup = function(fn) {
 	    add_pages,
 	    add_contests
         ], function(err, res) {
-            profiler.mark('setup complete');
+	    profiler.mark('setup complete');
             fn();
         });
     } else {
         fn();
     }
-};
-
-exports.teardown = function() {
-    setTimeout(function(){Bozuko.db.conn().disconnect();}, 1);
 };
 
 var emptyCollection = function(name) {
@@ -147,6 +148,7 @@ var add_users = function(callback) {
 	return Bozuko.models.User.createFromServiceObject(user, function(error, user){
 	    if( error ) return callback( error );
 	    user.service('facebook').auth = auth;
+            user.phones = [assert.phone];
 	    return user.save( function(error){
 		if( error ) return callback( error );
 		return callback( null, user);
@@ -185,7 +187,7 @@ function add_page(id, callback){
             if( error ){
                 return callback(error);
             }
-    
+
             if( !page ){
                 return callback(new Error("WTF!!!"));
             }
@@ -201,6 +203,7 @@ function add_page(id, callback){
         });
     });
 }
+
 
 
 var add_contests = function(callback) {
