@@ -1,4 +1,4 @@
-var assert = require('assert');
+var testsuite = require('./config/testsuite');
 
 // Mock contest
 var contest = {
@@ -8,16 +8,18 @@ var contest = {
 var Slots = require('../slots/index.js');
 var slots = new Slots(contest);
 
-exports['lose'] = function() {
+exports['lose'] = function(test) {
     var result = slots.process(false);
-    assert.notEqual(result[0], result[1]);
-    assert.notEqual(result[0], result[2]);
-    assert.notEqual(result[1], result[2]);
+    test.notEqual(result[0], result[1]);
+    test.notEqual(result[0], result[2]);
+    test.notEqual(result[1], result[2]);
+    test.done();
 };
 
-exports['win'] = function() {
+exports['win'] = function(test) {
     var result = slots.process(3);
-    assert.eql(result[0], 'banana');
-    assert.eql(result[0], result[1]);
-    assert.eql(result[1], result[2]);
+    test.equal(result[0], 'banana');
+    test.equal(result[0], result[1]);
+    test.equal(result[1], result[2]);
+    test.done();
 };
