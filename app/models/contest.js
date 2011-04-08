@@ -31,10 +31,8 @@ Contest.method('generateResults', function(callback){
     Bozuko.require('core/contest/engine').generateResults(this);
     var self = this;
     this.save(function(error){
-        if( error ){
-            return callback(error);
-        }
-        return Bozuko.models.Contest.findById(self.id, callback);
+        if( error ) return callback(error);
+        callback(null, self.results);
     });
 });
 
@@ -73,16 +71,18 @@ Contest.method('enter', function(entry, callback){
 
 Contest.method('incrementPlayCursor', function(callback) {
     var self = this;
+    if (this.total_plays - this.play_cursor === 1) {
+        return callback( Bozuko.error('contest/incrementing_play_cursor', self) );
+    }
     Bozuko.models.Contest.update(
         {_id:self._id, play_cursor:self.play_cursor},
         {play_cursor: self.play_cursor + 1},
         function(error, object){
             if( error ){
-
                 return Bozuko.models.Contest.findById( self._id, function(error, contest){
                     if( error ) return callback( error );
-                    if (contest.total_plays - contest.play_cursor <= 1) {
-                        return callback( Bozuko.error('contest/error_incrementing_play_cursor', self) );
+                    if (contest.total_plays - contest.play_cursor === 1) {
+                        return callback( Bozuko.error('contest/incrementing_play_cursor', self) );
                     }
                     return contest.incrementPlayCursor(callback);
                 });
@@ -92,9 +92,37 @@ Contest.method('incrementPlayCursor', function(callback) {
     );
 });
 
+function add_play(game_result, user, contest, entry, prize, callback) {
+    // record the "Play" in our db, win or lose
+    var play = new Bozuko.models.Play();
+    play.set('user_id', user._id);
+    play.set('page_id', contest.page_id);
+    play.set('contest_id', contest._id);
+    play.set('entry_id', entry._id);
+    play.set('timestamp', new Date());
+    play.set('game', contest.game);
+    play.set('win', prize ? true : false);
+
+    if (prize) {
+        play.set('prize_id', prize._id);
+        play.set('prize_name', prize.get('name'));
+    }
+
+    play.save( function(error){
+        if( error ) return callback( error );
+        return callback(null, {
+            entry: entry,
+            play: play,
+            game_result: game_result,
+            prize: prize ? prize : false
+        });
+    });
+}
+
 Contest.method('play', function(user, callback){
     var self = this;
-    // first, lets find the entries for this contest
+
+    // Find an entry for this contest that still has tokens
     Bozuko.models.Entry.findOne(
         {user_id:user.id, contest_id:this.id, tokens: {$gt:0}},
         function(error, entry){
@@ -104,34 +132,23 @@ Contest.method('play', function(user, callback){
             else if( !entry ){
                 return callback( Bozuko.error("contest/no_tokens") );
             }
-            // okay, we have an entry that is valid for this game
-            // let's play a token, however, we need to do it asynchronosly
-            return self.incrementPlayCursor( function(error, index){
 
-                if( error ) return callback( error );
+            return entry.decrementTokens(function(error, numtokens) {
+                // TODO: If the tokens reach 0 (an error is returned) then re-do the entry search
+                // to see if any other entries for this contest have tokens
+                if ( error ) return callback ( error );
 
-                // now lets process the result
-                var result = self.results[index];
+                self.incrementPlayCursor( function(error, index){
 
-                // ???: Fix Race condition here or guarantee that there is never a second play using
-                //  the same entry before the save returns
-                entry.tokens--;
+                    if( error ) return callback( error );
 
-                return entry.save( function(error){
+                    // now lets process the result
+                    var result = self.results[''+index];
+
                     if( error ) return callback( error );
 
                     var game_result = Bozuko.game( self ).process( result ? result.index : false );
                     var prize = result ? result.prize : false;
-
-                    // record the "Play" in our db, win or lose
-                    var play = new Bozuko.models.Play();
-                    play.set('user_id', user._id);
-                    play.set('page_id', self.page_id);
-                    play.set('contest_id', self._id);
-                    play.set('entry_id', entry._id);
-                    play.set('timestamp', new Date());
-                    play.set('game', self.game);
-                    play.set('win', prize ? true : false);
 
                     if( prize ){
 
@@ -158,39 +175,14 @@ Contest.method('play', function(user, callback){
 
                         return user_prize.save( function(error){
                             if( error ) return callback( error );
-                            return Bozuko.models.Prize.findById(user_prize._id, function(error, prize){
-                                play.set('prize_id', prize._id);
-                                play.set('prize_name', prize.get('name'));
-                                play.save( function(error){
-                                    if( error ) return callback( error );
-                                    return Bozuko.models.Play.findById(play._id, function(error){
-                                        if( error ) return callback( error );
-                                        return callback(null, {
-                                            entry: entry,
-                                            play: play,
-                                            game_result: game_result,
-                                            prize: prize
-                                        });
-                                    });
-                                });
-                            });
+                            add_play(game_result, user, self, entry, user_prize, callback);
                         });
 
                     }
+                    add_play(game_result, user, self, entry, false, callback);
 
-                    return play.save(function(error){
-                        if( error ) return callback(error);
-                        return Bozuko.models.Play.findById(play._id, function(error){
-                            if( error ) return callback( error );
-                            return callback(null, {
-                                entry: entry,
-                                play: play,
-                                game_result: game_result,
-                                prize: false
-                            });
-                        });
-                    });
                 });
+
             });
         }
     );

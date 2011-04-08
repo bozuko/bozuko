@@ -129,7 +129,7 @@ proto.process = function( callback ){
  * @returns {Boolean} If there is enough tokens
  */
 proto.ensureTokens = function(){
-    return this.contest.token_cursor + this.getTokenCount() < this.contest.total_entries;
+    return this.contest.token_cursor + this.getTokenCount() < this.contest.total_plays;
 };
 
 /**
