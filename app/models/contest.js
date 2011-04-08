@@ -71,8 +71,7 @@ Contest.method('enter', function(entry, callback){
     });
 });
 
-Contest.method('incrementPlayCursor', function(callback, tries){
-    tries = tries || 0;
+Contest.method('incrementPlayCursor', function(callback) {
     var self = this;
     Bozuko.models.Contest.update(
         {_id:self._id, play_cursor:self.play_cursor},
@@ -80,17 +79,15 @@ Contest.method('incrementPlayCursor', function(callback, tries){
         function(error, object){
             if( error ){
 
-                // how many times have we tried to do this?
-                if( tries > 10 ){
-                    return callback( Bozuko.error('contest/error_incrementing_play_cursor', self) );
-                }
-
                 return Bozuko.models.Contest.findById( self._id, function(error, contest){
                     if( error ) return callback( error );
-                    return contest.incrementPlayCursor(callback, tries+1);
+                    if (contest.total_plays - contest.play_cursor <= 1) {
+                        return callback( Bozuko.error('contest/error_incrementing_play_cursor', self) );
+                    }
+                    return contest.incrementPlayCursor(callback);
                 });
             }
-            return callback( null, object["$set"].play_cursor );
+            return callback( null, self.play_cursor+1 );
         }
     );
 });
