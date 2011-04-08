@@ -1,4 +1,6 @@
 var testsuite = require('./config/testsuite');
+var async = require('async');
+var util = require('util');
 
 var start = new Date();
 var end = new Date();
@@ -29,8 +31,8 @@ var contest = new Bozuko.models.Contest(
     }],
     start: start,
     end: end,
-    total_entries: 1000,
-    total_plays: 3000,
+    total_entries: 1,
+    total_plays: 3,
     play_cursor: -1,
     token_cursor: -1
 });
@@ -88,8 +90,8 @@ exports['save checkin'] = function(test) {
 
 };
 
-exports['generate results'] = function(test) {
-    contest.generateResults(function(err) {
+exports['generate contest results'] = function(test) {
+    contest.generateResults(function(err, results) {
         test.ok(!err);
         test.done();
     });
@@ -122,6 +124,74 @@ exports['increment play cursor'] = function(test) {
     });
 };
 
+function increment_play_cursor(callback) {
+    contest.incrementPlayCursor(function(err, cursor) {
+        callback(err);
+    });
+};
+
+exports['increment play cursor 3 times async parallel'] = function(test) {
+    var ipc = increment_play_cursor;
+    async.parallel([ipc, ipc, ipc], function(err, results) {
+        test.ok(!err);
+        Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+            test.ok(!err);
+            test.deepEqual(c.play_cursor+0, 2);
+            test.done();
+        });
+    });
+};
+
+exports['fail to increment play cursor - no more plays'] = function(test) {
+    contest.incrementPlayCursor(function(err, cursor) {
+        test.ok(err);
+        Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+            test.ok(!err);
+            test.deepEqual(c.play_cursor+0, 2);
+            test.done();
+        });
+    });
+};
+
+exports['restore play cursor'] = function(test) {
+    contest.play_cursor = -1;
+    contest.save(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+function play(callback) {
+    contest.play(user, function(err, result) {
+        callback(err, result);
+    });
+}
+
+exports['play  3 times'] = function(test) {
+    async.parallel([play, play, play], function(err, results) {
+        test.ok(!err);
+        var res = results[0];
+        test.deepEqual(contest._id, res.entry.contest_id);
+        test.deepEqual(res.entry.contest_id, res.play.contest_id);
+        var gr = res.game_result;
+        test.deepEqual(res.play.game, 'slots');
+        // are the icons the same ?
+        test.deepEqual(gr[0], gr[1]);
+        test.deepEqual(gr[1], gr[2]);
+        test.done();
+    });
+};
+
+exports['play fail - no tokens'] = function(test) {
+    contest.play(user, function(err, result) {
+        test.ok(err);
+    });
+    Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+        test.ok(!err);
+        test.deepEqual(c.play_cursor+0, 2);
+        test.done();
+    });
+};
 
 exports.cleanup = function(test) {
     Bozuko.models.User.remove(function(err) {
@@ -132,7 +202,13 @@ exports.cleanup = function(test) {
                 test.ok(!err);
                 Bozuko.models.Checkin.remove(function(err) {
                     test.ok(!err);
-                    test.done();
+                    Bozuko.models.Prize.remove(function(err) {
+                        test.ok(!err);
+                        Bozuko.models.Play.remove(function(err) {
+                            test.ok(!err);
+                            test.done();
+                        });
+                    });
                 });
             });
         });
