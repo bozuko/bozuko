@@ -28,10 +28,11 @@ exports.get_root = function(test) {
 
 exports.get_pages = function(test) {
     assert.response(test, Bozuko.app,
-        {url: pages_link+'/?center=42.646261785714,-71.303897114286&query=owl&limit=5'},
+        {url: pages_link+'/?ll=42.646261785714,-71.303897114286'},
         ok,
         function(res) {
-            var page = JSON.parse(res.body)[0];
+            var pages = JSON.parse(res.body);
+            var page = pages[0];
             test.ok(Bozuko.validate('page', page));
             checkin_link = page.links.facebook_checkin;
             favorite_link = page.links.favorite;
@@ -41,11 +42,11 @@ exports.get_pages = function(test) {
 
 exports.get_pages_by_bounds = function(test){
     assert.response(test, Bozuko.app,
-        {url: pages_link+'/?bounds=42.631243,-71.331739,42.655803,-71.293201'},
+        {url: pages_link+'/?bounds=42.631243,-71.331739,42.655803,-71.293201&ll=42.646261785714,-71.303897114286'},
         ok,
         function(res) {
-            var page = JSON.parse(res.body);
-            console.log(page);
+            var pages = JSON.parse(res.body);
+            test.ok( pages.length == 3 );
             test.done();
         });
 }
@@ -64,11 +65,17 @@ exports.favorite_add = function(test) {
 
 exports.assert_one_fav= function(test) {
     assert.response(test, Bozuko.app,
-        {url: pages_link+'/?center=42.646261785714,-71.303897114286&favorites=true&token='+token},
+        {url: pages_link+'/?ll=-71.303897114286,42.646261785714&favorites=true&token='+token},
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            console.log(result);
+            try{
+                test.ok(result.length == 1);
+            }catch(e){
+                console.log(result);
+                throw e;
+            }
+            
             test.done();
         });
 };
@@ -117,7 +124,7 @@ exports.facebook_checkin = function(test) {
     var params = JSON.stringify({
         lat: 42.646261785714,
         lng: -71.303897114286,
-        message: "Bobby B in da house"
+        message: "What's up Owl Watch peoples!"
     });
 
     assert.response(test, Bozuko.app,

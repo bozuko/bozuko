@@ -5,6 +5,7 @@ var _t = Bozuko.t;
     Schema = mongoose.Schema,
     Service = require('./embedded/service'),
     Coords = require('./embedded/coords'),
+    Geo = Bozuko.require('util/geo'),
     ObjectId = Schema.ObjectId;
 
 var Page = module.exports = new Schema({
@@ -14,7 +15,11 @@ var Page = module.exports = new Schema({
     is_location         :{type:Boolean},
     name                :{type:String},
     image               :{type:String},
+    use_twitter         :{type:Boolean, default: false},
+    twitter_id          :{type:String},
+    announcement        :{type:String},
     security_img        :{type:String},
+    active              :{type:Boolean, default: true},
     location            :{
         street              :String,
         city                :String,
@@ -75,7 +80,6 @@ Page.method('getUserGames', function(user, callback){
                 var key = ''+entry.contest_id;
                 var game = gamesMap[key];
                 if( !game ){
-
                     var contest = contestMap[''+entry.contest_id];
                     var game = contest.getGame();
                     gamesMap[key] = game;
@@ -229,7 +233,7 @@ Page.static('createFromServiceObject', function(place, callback){
     });
 
     page.set('is_location', true);
-    page.set('coords',[place.location.lat, place.location.lng]);
+    page.set('coords',[place.location.lng, place.location.lat]);
     page.service( place.service, place.id, null, place.data);
     page.save( function(error){
         if( error ){
@@ -269,16 +273,16 @@ Page.static('loadPagesContests', function(pages, callback){
 
 
             /**
-             * TODO
-             *
-             * Use the "expiration" property for entry model to
-             * expire the tokens between entries
-             *
-             * or
-             *
-             * Upon new entry, delete the tokens off any existing
-             * entries
-             */
+             *              * TODO
+             *              *
+             *              * Use the "expiration" property for entry model to
+             *              * expire the tokens between entries
+             *              *
+             *              * or
+             *              *
+             *              * Upon new entry, delete the tokens off any existing
+             *              * entries
+             *              */
             // find active entries for this user in each contest
             return Bozuko.models.Entry.find({
                 contest_id: {$in: Object.keys(contestMap)},
@@ -296,11 +300,11 @@ Page.static('loadPagesContests', function(pages, callback){
                     // we will need to use the contest entry configuration
                     // for this.
                     /**
-                     * Pseudo code
-                     *
-                     * contest.getValidEntryMethods( fn(){} );
-                     *
-                     */
+                     *                      * Pseudo code
+                     *                      *
+                     *                      * contest.getValidEntryMethods( fn(){} );
+                     *                      *
+                     *                      */
                 });
 
                 return callback(null, pages);
@@ -310,29 +314,38 @@ Page.static('loadPagesContests', function(pages, callback){
 });
 
 /**
-* Various argument possibilities
-* 1 callback
-* 2 selector, callback,
-* 3 selector, fields, callback
-* 3 selector, options, callback
-* 4,selector, fields, options, callback
-* 5 selector, fields, skip, limit, callback
-* 6 selector, fields, skip, limit, timeout, callback
-*
-* Available options:
-* limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
-*/
+ *  * mongo find using the low level database driver. The callback is always the last argument.
+ *  *
+ *  * BE CAREFUL when creating the 'selector' parameter as variables will _not_ be cast
+ *  * to the type defined in the mongoose Schema, so it must be done manually.
+ *  *
+ *  * This is needed for performing "within" searches as I do not see how it is done
+ *  * within mongoose right now.
+ *  *
+ *  * Various argument possibilities
+ *  * 1 callback
+ *  * 2 selector, callback,
+ *  * 3 selector, fields, callback
+ *  * 3 selector, options, callback
+ *  * 4,selector, fields, options, callback
+ *  * 5 selector, fields, skip, limit, callback
+ *  * 6 selector, fields, skip, limit, timeout, callback
+ *  *
+ *  * Available options:
+ *  * limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
+ *  */
 Page.static('nativeFind', function(){
     var coll = Bozuko.models.Page.collection;
     var cb = arguments[arguments.length-1];
     arguments[arguments.length-1] = function(error, cursor){
+
         // we are going to change this to model objects...
         if( error ){
             return callback(error);
         }
         // convert to model objects
         var pages = [];
-        cursor.toArray( function (err, docs) {
+        return cursor.toArray( function (err, docs) {
             if (err) return callback(err);
             for (var i = 0; i < docs.length; i++) {
                 pages[i] = new Bozuko.models.Page();
@@ -341,84 +354,136 @@ Page.static('nativeFind', function(){
                     return true;
                 });
             }
-            return true;
+            return cb(null, pages);
         });
-        return cb(null, pages);
     }
     coll.find.apply(coll, arguments);
 });
 
+/**
+ *  * Big honkin search function that does all the page searches
+ *  * including a search (by location - center), "favorites" (by location - center),
+ *  *
+ *  */
 Page.static('search', function(options, callback){
+
+    var bozukoSearch = {type:'find', selector:{}, options:{}};
+    var serviceSearch = {};
+    if( options.query ){
+        bozukoSearch.selector.name = new RegExp('^'+options.query, "i");
+    }
 
     // are we looking for favorites?
     if( options.favorites ){
         if( !options.user ){
-            return callback(null, {pages:[], service_results:[]});
+            return callback(Bozuko.error('bozuko/user_not_logged_in', 'Getting Favorites'));
         }
         var user = options.user;
-        var selector = {
+        bozukoSearch.selector = {
             _id: {$in:user.favorites||[]},
             coords: {
-                $near:[options.latLng.lat,options.latLng.lng]
+                $nearSphere: options.ll
             }
         };
-        if( options.query ){
-            selector.name = new RegExp('^'+options.query, "i");
-        }
-        return Bozuko.models.Page.find(selector, function(error, pages){
-            if( error ){
-                return callback(error);
-            }
-            return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
-                return callback(null, {pages: pages, service_results: []});
-            });
-        });
+        serviceSearch = false;
     }
-
     // are we looking for bounded results
-    if( options.bounds ){
+    else if( options.bounds ){
 
-        var selector = {
-            // only registered...
+        bozukoSearch.selector = {
+            // only registered ?
             owner_id: {$exists:true},
             coords: {$within: {$box: options.bounds}}
         };
-        if( options.query ){
-            selector.name = new RegExp('^'+options.query, "i");
-        }
+        bozukoSearch.type='nativeFind';
+        /**
+         *          * TODO
+         *          *
+         *          * Decide if we should also perform a service search
+         *          *
+         *          */
+        serviceSearch = false;
+    }
+    /**
+     *      * This is a standard center search, we will use a service to get
+     *      * additional results, but also do a search
+     *      *
+     *      */
+    else {
 
-        return Bozuko.models.Page.nativeFind(selector, function(error, pages){
-            if( error ) return callback( error );
-            return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
-                return callback(null, {pages: pages, service_results: []});
-            });
-        });
+        var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
+        bozukoSearch.selector = {
+            // only registered...
+            coords: {$nearSphere: options.ll, $maxDistance: distance}
+        };
+        bozukoSearch.options.limit = 4;
+        bozukoSearch.type='nativeFind';
     }
 
-    // use a 3rd party service to search geographically
-    // and then match against our db
-    var service = options.service || Bozuko.config.defaultService;
+    // utility function
+    function prepare_pages(pages, fn){
+        for(var i=0; i<pages.length; i++){
+            var page = pages[i];
+            if( options.user ){
+                page.favorite = ~(user.favorites||[]).indexOf(page._id);
+            }
+            if( page.owner_id ){
+                page.registered = true;
+            }
+            page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
+            if(fn) fn.call(this, page);
+        };
+    }
+    return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.options, function(error, pages){
+        if( error ) return callback(error);
 
-    Bozuko.service(service).search(options, function(error, results){
-        var map = {};
-        if( results ) results.forEach( function(place, index){
-            // lets create a map for searching...
-            map[place.id] = place;
-        });
-        else{
-            callback( null, [] );
-        }
+        return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
+            if( error ) return callback(error);
+            var page_ids = [];
+            prepare_pages(pages, function(page){ page_ids.push(page._id);});
+            if( !serviceSearch ) return callback(null, pages);
+            options.center=options.ll;
 
-        Bozuko.models.Page.findByService(service, Object.keys(map), {owner_id: {$exists: true}}, function(error, pages){
-            if( error ) return callback( error );
+            // use a 3rd party service to get additional results
+            // and then match against our db
+            var service = options.service || Bozuko.config.defaultService;
 
-            pages.forEach(function(page){
-                results.splice( results.indexOf(map[page.service(service).sid]), 1 );
-            });
+            return Bozuko.service(service).search(options, function(error, results){
 
-            // reduce mongo calls by finding all active contests for all pages
-            return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
-                return callback(null, {pages: pages, service_results: results});
+                if( error ) return callback(error);
+
+                var map = {};
+                if( results ) results.forEach( function(place, index){
+                    map[place.id] = place;
+                });
+                else{
+                    callback( null, [] );
+                }
+                return Bozuko.models.Page.findByService(service, Object.keys(map), {
+                    owner_id: {
+                        $exists: true
+                    },
+                    _id: {$nin: page_ids}
+                }, function(error, _pages){
+                    if( error ) return callback( error );
+
+
+                    prepare_pages(_pages, function(page){
+                        results.splice( results.indexOf(map[page.service(service).sid]), 1 );
+                    });
+                    prepare_pages(pages, function(page){
+                        results.splice( results.indexOf(map[page.service(service).sid]), 1 );
+                    });
+                    results.forEach(function(result){
+                        result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
+                    });
+
+                    return Bozuko.models.Page.loadPagesContests(_pages, function(error, _pages){
+                        pages = pages.concat(_pages);
+                        pages = pages.concat(results);
+                        return callback(null, pages);
+                    });
+                });
             });
         });
     });

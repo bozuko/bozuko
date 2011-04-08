@@ -7,5 +7,8 @@ module.exports = {
     lang_not_enough_args: "Translation needs at least 2 arguments",
     lang_bad_path: function(){
         return "Translation had a bad path ["+this.data+"]";
+    },
+    user_not_logged_in: function(){
+        return "The user must be logged in ["+this.data+"]";
     }
 };
