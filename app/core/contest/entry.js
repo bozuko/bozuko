@@ -2,7 +2,7 @@
  * Abstract class for method of entry
  *
  * Defines what all Entry Methods must have for variables / methods
- * 
+ *
  * @param {String} key The key for this entry
  */
 var Entry = module.exports = function(type, user){
@@ -30,7 +30,7 @@ proto.description = 'This type of entry needs';
 proto.icon = '';
 
 /**
- * Configure the entryMethod 
+ * Configure the entryMethod
  *
  * @param {EntryConfig} config The configuration for this entry method
  */
@@ -55,7 +55,7 @@ proto.setContest = function( contest ){
 proto.getTokenCount = function(){
     return this.config && this.config.tokens ? this.config.tokens : 1;
 };
-    
+
 /**
  * Perform all necessary actions accociated with this entry method (eg, checkin, check for location, etc)
  *
@@ -99,7 +99,7 @@ proto.process = function( callback ){
             else{
                 // update our contest
                 self.contest.token_cursor += self.getTokenCount();
-                
+
                 // create a Bozuko Entry model
                 var Entry = new Bozuko.models.Entry({
                     contest_id: self.contest.id,
@@ -109,17 +109,17 @@ proto.process = function( callback ){
                     tokens: self.getTokenCount(),
                     intial_tokens: self.getTokenCount()
                 });
-                
+
                 Entry.save( function(error){
                     if( error ){
                         return callback( error );
                     }
                     return callback( null, Entry );
                 });
-                
+
             }
         }
-    )
+    );
 };
 
 
@@ -143,21 +143,21 @@ proto.validate = function( callback ){
     var self = this;
     // check for contest
     if( !this.contest ) return callback( Bozuko.error('entry/no_contest') );
-    
+
     // check for user
     if( !this.user ) return callback( Bozuko.error('entry/no_user') );
-    
+
     // check that there is enough tokens left
     if( this.ensureTokens() === false ){
         return callback( Bozuko.error('entry/not_enough_tokens') );
     }
-    
+
     // check for duration
     if( this.config && this.config.duration ){
         var now = new Date();
         var last = new Date();
         last.setTime( now.getTime() - duration );
-        
+
         return Bozuko.models.Entry.find({
             user_id:self.user.id,
             contest_id: self.contest.id,
@@ -175,6 +175,6 @@ proto.validate = function( callback ){
             }
         });
     }
-    
+
     return callback( null );
 };

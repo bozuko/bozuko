@@ -41,8 +41,10 @@ Contest.method('generateResults', function(callback){
 /**
  * Enter a contest
  *
- * @param {User}
- * @param {EntryMethod}
+ * @param {Entry}
+ *
+ * Note that the entry param is not an entry model, it is an Entry defined in
+ * core/contest/entry.js
  */
 Contest.method('enter', function(entry, callback){
 
@@ -88,12 +90,7 @@ Contest.method('incrementPlayCursor', function(callback, tries){
                     return contest.incrementPlayCursor(callback, tries+1);
                 });
             }
-            self.play_cursor++;
-            return self.save(function(error){
-                if( error ) return error;
-                return callback( null, self.play_cursor );
-            });
-
+            return callback( null, object["$set"].play_cursor );
         }
     );
 });
@@ -118,6 +115,9 @@ Contest.method('play', function(user, callback){
 
                 // now lets process the result
                 var result = self.results[index];
+
+                // ???: Fix Race condition here or guarantee that there is never a second play using
+                //  the same entry before the save returns
                 entry.tokens--;
 
                 return entry.save( function(error){

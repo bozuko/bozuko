@@ -222,12 +222,12 @@ Page.method('checkin', function(user, options, callback) {
 
 Page.static('createFromServiceObject', function(place, callback){
     var ignore = ['id','service','lat','lng','data'];
-    
+
     var page = new Bozuko.models.Page();
     Object.keys(place).forEach(function(prop){
         if( !~ignore.indexOf(prop) ) page.set(prop, place[prop]);
     });
-    
+
     page.set('is_location', true);
     page.set('coords',[place.location.lat, place.location.lng]);
     page.service( place.service, place.id, null, place.data);
@@ -374,10 +374,10 @@ Page.static('search', function(options, callback){
             });
         });
     }
-    
+
     // are we looking for bounded results
     if( options.bounds ){
-        
+
         var selector = {
             // only registered...
             owner_id: {$exists:true},
@@ -386,7 +386,7 @@ Page.static('search', function(options, callback){
         if( options.query ){
             selector.name = new RegExp('^'+options.query, "i");
         }
-        
+
         return Bozuko.models.Page.nativeFind(selector, function(error, pages){
             if( error ) return callback( error );
             return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
@@ -394,11 +394,11 @@ Page.static('search', function(options, callback){
             });
         });
     }
-    
+
     // use a 3rd party service to search geographically
     // and then match against our db
     var service = options.service || Bozuko.config.defaultService;
-    
+
     Bozuko.service(service).search(options, function(error, results){
         var map = {};
         if( results ) results.forEach( function(place, index){
@@ -408,10 +408,10 @@ Page.static('search', function(options, callback){
         else{
             callback( null, [] );
         }
-        
+
         Bozuko.models.Page.findByService(service, Object.keys(map), {owner_id: {$exists: true}}, function(error, pages){
             if( error ) return callback( error );
-            
+
             pages.forEach(function(page){
                 results.splice( results.indexOf(map[page.service(service).sid]), 1 );
             });
