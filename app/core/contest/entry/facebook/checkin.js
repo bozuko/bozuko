@@ -42,6 +42,7 @@ proto.validate = function( callback ){
     var self = this;
     Entry.prototype.validate.call( this, function(error){
         if( error ){
+            console.log("error from validate call");
             return callback( error );
         }
         if( self.checkin.page_id+'' != self.contest.page_id+'' ){
@@ -49,7 +50,7 @@ proto.validate = function( callback ){
         }
         /**
          * TODO
-         * 
+         *
          * we should also check to make sure that
          * its not too soon between checkins per contest
          */
@@ -65,11 +66,11 @@ proto.validate = function( callback ){
  * @param {Function} callback The callback function
  */
 proto.process = function( callback ){
-    
+
     // lets process this...
     var self = this;
     Entry.prototype.process.call(this, function(error, entry){
-        
+
         if( error ){
             return callback( error );
         }
