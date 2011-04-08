@@ -68,8 +68,8 @@ var locations = {
     "Canada - Montreal":[45.497684,-73.575954]
 };
 
-var collect = exports.collect = function(service, city, latLng, callback) {
-    Bozuko.service(service).search({latLng: latLng, limit: 50}, function(err, results) {
+var collect = exports.collect = function(service, city, center, callback) {
+    Bozuko.service(service).search({center: center, limit: 50}, function(err, results) {
         if (err) {
             console.log(service+" search error: latLng = "+JSON.stringify(latLng)+", error = "+err);
             return callback(err);
@@ -118,13 +118,11 @@ exports.collect_all = function(callback) {
     var errors = 0;
     var stats = 0;
     Object.keys(locations).forEach(function(city) {
-        var latLng = {
-            lat: locations[city][0],
-            lng: locations[city][1]
-        };
+        var center = locations[city][0];
+            
         ['facebook','foursquare'].forEach(function(service){
             fns.push(function(callback){
-                collect(service, city, latLng, function(error, counters){
+                collect(service, city, center, function(error, counters){
                     if( error ){
                         errors += 1;
                         return callback(null, 'error');

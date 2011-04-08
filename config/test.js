@@ -31,6 +31,11 @@ module.exports = {
             page: 1000 * 60 * 60 * 4
         }
     },
+    
+    search: {
+        // radius to search for "Nearby Games"
+        nearbyRadius: 2
+    },
 
     server: {
         host: 'bonobo.Bozuko.com',

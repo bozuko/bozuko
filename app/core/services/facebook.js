@@ -138,7 +138,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  * Accepts an options argument in the form of:
  *
  *  {
- *      latLng : {lng: Number, lat: Number},
+ *      center : [lng,lat],
  *      query : String,
  *      fields : Array
  *  }
@@ -167,15 +167,16 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  */
 $.search = function(options, callback){
     var self = this;
-    if( !options || !(options.latLng || options.query) ){
+    if( !options || !(options.center || options.query) ){
         return callback(Bozuko.error('facebook/no_lat_lng_query'));
     }
 
     var params = {
-        type : options.latLng ? 'place' : 'page'
+        type : options.center ? 'place' : 'page'
     };
 
-    if( options.latLng ) params.center = options.latLng.lat+','+options.latLng.lng;
+    if( options.center ) params.center = options.center[1]+','+options.center[0];
+    console.log(params.center);
     if( options.query ) params.q = options.query;
     if( !options.fields ) {
         options.fields = ['name','category','checkins','location'];

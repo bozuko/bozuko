@@ -175,7 +175,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  * Accepts an options argument in the form of:
  *
  *  {
- *      latLng : {lng: Number, lat: Number},
+ *      center : [lng,lat],
  *      query : String,
  *      fields : Array
  *  }
@@ -203,11 +203,11 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  * @return {null}
  */
 $.search = function(options, callback){
-    if( !options || !options.latLng ){
+    if( !options || !options.center ){
         return callback( Bozuko.error('foursquare/search_no_lat_lng') );
     }
     var params = {
-        ll : options.latLng.lat+','+options.latLng.lng,
+        ll : options.center[1]+','+options.center[0],
         intent: 'checkin',
         limit: options.limit || 25
     };

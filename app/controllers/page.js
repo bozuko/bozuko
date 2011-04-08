@@ -19,6 +19,7 @@ exports.transfer_objects = {
             favorite: "Boolean",
             registered: "Boolean",
             announcement: "String",
+            distance: "String",
             location: {
                 street: "String",
                 city: "String",
@@ -75,24 +76,24 @@ exports.transfer_objects = {
 exports.links = {
     pages: {
         get: {
-            doc: "Return a list of pages. Either the center or bounds parameters must be provided.",
+            doc: "Return a list of pages. The center (user) latitude is always required.",
 
             params: {
-                center : {
+                ll : {
+                    required: true,
                     type: "String",
-                    description: 'The center latitude / longitude separated by a comma (example 42.1234121,-71.2423423)'
+                    description: 'The user\'s latitude / latitude separated by a comma (example 42.1234121,-71.2423423). This is always required.'
                 },
                 bounds : {
                     type: "String",
                     description: 'The bounding geographic box to search within. '+
                                  'This should be passed as 2 points - the bottom left (p1) and top right (p2). '+
-                                 'Each points should be passed the same as the center attribute and also separated by a comma. '+
+                                 'Each points should be passed the same as the ll parameter and also separated by a comma. '+
                                  'An example, where p1=lat1,lng1 and p2=lat2,lng2 would be passed as lat1,lng1,lat2,lng2'
                 },
                 favorites: {
                     type: "Boolean",
-                    description: 'Pass this parameter as true to get a list of user favorites. '+
-                                 'The center lat/lng should still be passed so the results can be returned in order of closest location'
+                    description: 'Pass this parameter as true to get a list of user favorites. '
                 },
                 query: {
                     type:"String",
@@ -182,13 +183,13 @@ exports.routes = {
         get: {
 
             handler: function(req,res) {
-                var center = req.param('center');
+                var ll = req.param('ll');
                 var bounds = req.param('bounds');
                 var service = req.param('service');
                 var query = req.param('query');
                 var favorites = req.param('favorites');
                 
-                if( !center && !bounds ) return Bozuko.error('page/pages_center_or_bounds_required').send(res);
+                if( !ll) return Bozuko.error('page/pages_no_ll').send(res);
                 
                 var options = {
                     limit: parseInt(req.param('limit')) || 25,
@@ -197,18 +198,18 @@ exports.routes = {
                 };
                 
                 // first, we will try center
-                if( center ){
+                if( ll ){
                     
-                    var parts = center.split(',');
+                    var parts = ll.split(',');
                     if( parts.length != 2 ){
                         Bozuko.error('page/malformed_center').send(res);
                     }
                     var lat = parseFloat(parts[0]);
                     var lng = parseFloat(parts[1]);
-                    options.latLng = {lat:lat, lng:lng};
+                    options.ll = [lng,lat];
                 }
                 
-                else if(bounds){
+                if(bounds){
                     var parts = bounds.split(',');
                     if( parts.length != 4 ){
                         Bozuko.error('page/malformed_bounds').send(res);
@@ -218,8 +219,8 @@ exports.routes = {
                     var lat2 = parseFloat(parts[2]);
                     var lng2 = parseFloat(parts[3]);
                     options.bounds = [
-                        [lat1,lng1],
-                        [lat2,lng2]
+                        [lng1,lat1],
+                        [lng2,lat2]
                     ];
                 }
                 
@@ -228,25 +229,20 @@ exports.routes = {
                 if( favorites ) options.favorites = true;
                 var profiler = Profiler.create('Page::search');
                 return Bozuko.models.Page.search(options,
-                    function(error, results){
+                    function(error, pages){
                         if( error ){
                             console.log(error);
                             return error.send(res);
                         }
                         var searchEnd = new Date();
                         profiler.mark('search time');
-                        var ret=[];
-                        if( results.pages ) results.pages.forEach(function(page){
+                        if( pages ) pages.forEach(function(page){
                             // is this a user favorite?
-                            if( req.user ){
+                            if( page.registered && req.user ){
                                 page.favorite = ~user.favorites.indexOf(page._id);
                             }
-                            page.registered = true;
-                            ret.push(page);
                         });
-                        if( results.service_results ) ret.concat(results.service_results);
-                        var pages = Bozuko.transfer('page',ret);
-                        return res.send(pages);
+                        return res.send(Bozuko.transfer('page',pages));
                     }
                 );
             }
