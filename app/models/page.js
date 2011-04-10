@@ -226,12 +226,12 @@ Page.method('checkin', function(user, options, callback) {
 
 Page.static('createFromServiceObject', function(place, callback){
     var ignore = ['id','service','lat','lng','data'];
-    
+
     var page = new Bozuko.models.Page();
     Object.keys(place).forEach(function(prop){
         if( !~ignore.indexOf(prop) ) page.set(prop, place[prop]);
     });
-    
+
     page.set('is_location', true);
     page.set('coords',[place.location.lng, place.location.lat]);
     page.service( place.service, place.id, null, place.data);
@@ -273,16 +273,16 @@ Page.static('loadPagesContests', function(pages, callback){
 
 
             /**
-             * TODO
-             *
-             * Use the "expiration" property for entry model to
-             * expire the tokens between entries
-             *
-             * or
-             *
-             * Upon new entry, delete the tokens off any existing
-             * entries
-             */
+             *              * TODO
+             *              *
+             *              * Use the "expiration" property for entry model to
+             *              * expire the tokens between entries
+             *              *
+             *              * or
+             *              *
+             *              * Upon new entry, delete the tokens off any existing
+             *              * entries
+             *              */
             // find active entries for this user in each contest
             return Bozuko.models.Entry.find({
                 contest_id: {$in: Object.keys(contestMap)},
@@ -300,11 +300,11 @@ Page.static('loadPagesContests', function(pages, callback){
                     // we will need to use the contest entry configuration
                     // for this.
                     /**
-                     * Pseudo code
-                     *
-                     * contest.getValidEntryMethods( fn(){} );
-                     *
-                     */
+                     *                      * Pseudo code
+                     *                      *
+                     *                      * contest.getValidEntryMethods( fn(){} );
+                     *                      *
+                     *                      */
                 });
 
                 return callback(null, pages);
@@ -314,31 +314,31 @@ Page.static('loadPagesContests', function(pages, callback){
 });
 
 /**
- * mongo find using the low level database driver. The callback is always the last argument.
- *
- * BE CAREFUL when creating the 'selector' parameter as variables will _not_ be cast
- * to the type defined in the mongoose Schema, so it must be done manually.
- *
- * This is needed for performing "within" searches as I do not see how it is done
- * within mongoose right now.
- *
- * Various argument possibilities
- * 1 callback
- * 2 selector, callback,
- * 3 selector, fields, callback
- * 3 selector, options, callback
- * 4,selector, fields, options, callback
- * 5 selector, fields, skip, limit, callback
- * 6 selector, fields, skip, limit, timeout, callback
- *
- * Available options:
- * limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
- */
+ *  * mongo find using the low level database driver. The callback is always the last argument.
+ *  *
+ *  * BE CAREFUL when creating the 'selector' parameter as variables will _not_ be cast
+ *  * to the type defined in the mongoose Schema, so it must be done manually.
+ *  *
+ *  * This is needed for performing "within" searches as I do not see how it is done
+ *  * within mongoose right now.
+ *  *
+ *  * Various argument possibilities
+ *  * 1 callback
+ *  * 2 selector, callback,
+ *  * 3 selector, fields, callback
+ *  * 3 selector, options, callback
+ *  * 4,selector, fields, options, callback
+ *  * 5 selector, fields, skip, limit, callback
+ *  * 6 selector, fields, skip, limit, timeout, callback
+ *  *
+ *  * Available options:
+ *  * limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
+ *  */
 Page.static('nativeFind', function(){
     var coll = Bozuko.models.Page.collection;
     var cb = arguments[arguments.length-1];
     arguments[arguments.length-1] = function(error, cursor){
-        
+
         // we are going to change this to model objects...
         if( error ){
             return callback(error);
@@ -361,12 +361,12 @@ Page.static('nativeFind', function(){
 });
 
 /**
- * Big honkin search function that does all the page searches
- * including a search (by location - center), "favorites" (by location - center), 
- *
- */
+ *  * Big honkin search function that does all the page searches
+ *  * including a search (by location - center), "favorites" (by location - center),
+ *  *
+ *  */
 Page.static('search', function(options, callback){
-    
+
     var bozukoSearch = {type:'find', selector:{}, options:{}};
     var serviceSearch = {};
     if( options.query ){
@@ -389,7 +389,7 @@ Page.static('search', function(options, callback){
     }
     // are we looking for bounded results
     else if( options.bounds ){
-        
+
         bozukoSearch.selector = {
             // only registered ?
             owner_id: {$exists:true},
@@ -397,20 +397,20 @@ Page.static('search', function(options, callback){
         };
         bozukoSearch.type='nativeFind';
         /**
-         * TODO
-         *
-         * Decide if we should also perform a service search
-         * 
-         */
+         *          * TODO
+         *          *
+         *          * Decide if we should also perform a service search
+         *          *
+         *          */
         serviceSearch = false;
     }
     /**
-     * This is a standard center search, we will use a service to get
-     * additional results, but also do a search 
-     * 
-     */
+     *      * This is a standard center search, we will use a service to get
+     *      * additional results, but also do a search
+     *      *
+     *      */
     else {
-        
+
         var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
         bozukoSearch.selector = {
             // only registered...
@@ -419,7 +419,7 @@ Page.static('search', function(options, callback){
         bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
         bozukoSearch.type='nativeFind';
     }
-    
+
     // utility function
     function prepare_pages(pages, user, fn){
         for(var i=0; i<pages.length; i++){
@@ -436,7 +436,7 @@ Page.static('search', function(options, callback){
     }
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.options, function(error, pages){
         if( error ) return callback(error);
-        
+
         return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
@@ -448,15 +448,15 @@ Page.static('search', function(options, callback){
             }
             
             options.center=options.ll;
-            
+
             // use a 3rd party service to get additional results
             // and then match against our db
             var service = options.service || Bozuko.config.defaultService;
-            
+
             return Bozuko.service(service).search(options, function(error, results){
-        
+
                 if( error ) return callback(error);
-                
+
                 var map = {};
                 if( results ) results.forEach( function(place, index){
                     map[place.id] = place;
@@ -469,7 +469,6 @@ Page.static('search', function(options, callback){
                     _id: {$nin: page_ids}
                 }, function(error, _pages){
                     if( error ) return callback( error );
-                    
                     prepare_pages(_pages, function(page){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                     });
@@ -479,7 +478,7 @@ Page.static('search', function(options, callback){
                     results.forEach(function(result){
                         result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                     });
-                    
+
                     return Bozuko.models.Page.loadPagesContests(_pages, function(error, _pages){
                         pages = pages.concat(_pages);
                         pages = pages.concat(results);
