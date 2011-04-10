@@ -33,11 +33,14 @@ module.exports = {
     },
     
     search: {
-        // radius to search for "Nearby Games"
-        nearbyRadius: 2
+        // radius to search for "Nearby Games" in miles
+        nearbyRadius: 2,
+        nearbyLimit: 4
     },
 
     server: {
+        ssl: true,
+        auth: false,
         host: 'bonobo.Bozuko.com',
         port: port
     },

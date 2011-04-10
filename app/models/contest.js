@@ -89,11 +89,7 @@ Contest.method('incrementPlayCursor', function(callback, tries){
                 });
             }
             self.play_cursor++;
-            return self.save(function(error){
-                if( error ) return error;
-                return callback( null, self.play_cursor );
-            });
-
+            return callback( null, self.play_cursor );
         }
     );
 });
@@ -207,7 +203,7 @@ Contest.method('getBestPrize', function(){
     if( this.prizes.length == 0 ) return null;
     var prizes = this.prizes;
     prizes.sort( function(a, b){
-        return a.value - b.value;
+        return b.value - a.value;
     });
     return prizes[0];
 });

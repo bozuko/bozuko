@@ -1,4 +1,6 @@
 Bozuko = require('../bozuko');
+var http = Bozuko.require('util/http'),
+    create_url = Bozuko.require('util/url').create;
 
 /**
  * Module dependencies.
@@ -33,6 +35,9 @@ exports.init = function(app){
 
     // setup the games
     initGames(app);
+    
+    // setup facebook pubsub
+    initFacebookPubSub();
 
 };
 
@@ -51,7 +56,7 @@ function initApplication(app){
 
 
     // setup basic authentication for development
-    if( Bozuko.env == 'development'){
+    if( Bozuko.config.server.auth ){
         app.use(express.basicAuth(function(user, pass){
             return Bozuko.config.auth[user] == pass;
         }));
@@ -169,6 +174,45 @@ function initGames(app){
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Bozuko.require('/games/'+file);
             app.use('/game/'+name, express.static(Bozuko.dir+'/games/'+name+'/resources'));
+        }
+    });
+}
+
+// this will be called 4 times with multinode...
+// not sure how to avoid this...
+function initFacebookPubSub(){
+    var url = 'https://graph.facebook.com/'+
+              Bozuko.config.facebook.app.id+
+              '/subscriptions?access_token='+
+              Bozuko.config.facebook.app.access_token;
+              
+    // first we need to delete any existing subscriptions
+    http.request({
+        url: url,
+        method: 'DELETE',
+        callback: function(body){
+            // now lets setup the new subscriptions
+            console.log('deleted?');
+            http.request({
+                url: url,
+                method: 'POST',
+                params: {
+                    object: 'user',
+                    fields: 'likes',
+                    callback_url: create_url('/facebook/pubsub'),
+                    verify_token: Bozuko.config.facebook.app.pubsub_verify                    
+                }
+            });
+            http.request({
+                url: url,
+                method: 'POST',
+                params: {
+                    object: 'permissions',
+                    fields: Bozuko.config.facebook.perms.business,
+                    callback_url: create_url('/facebook/pubsub'),
+                    verify_token: Bozuko.config.facebook.app.pubsub_verify
+                }
+            });
         }
     });
 }

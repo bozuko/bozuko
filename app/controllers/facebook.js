@@ -119,7 +119,7 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
-                                test: true,
+                                //test: true,
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 latLng: {lat:lat,lng:lng},
                                 message: msg
@@ -185,6 +185,28 @@ exports.routes = {
                 run(req, res, 'like', {}, function() { like(req, res); });
             }
         }
+    },
+    
+    '/facebook/pubsub':{
+        
+        post: {
+            handler : function(req, res){
+                res.send({});
+                
+            }
+        },
+        get: {
+            handler : function(req, res){
+                var verify = req.param('hub.verify_token');
+                if( verify != Bozuko.config.facebook.app.pubsub_verify ){
+                    return res.send('invalid subscription verify token', 500);
+                }
+                // okay, we are good.
+                console.log('Facebook subscription for '+req.param('hub.mode')+' is setup');
+                return res.send(req.param('hub.challenge'));
+            }
+        }
+        
     }
 
 };
