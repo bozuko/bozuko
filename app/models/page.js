@@ -416,23 +416,23 @@ Page.static('search', function(options, callback){
             // only registered...
             coords: {$nearSphere: options.ll, $maxDistance: distance}
         };
-        bozukoSearch.options.limit = 4;
+        bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
         bozukoSearch.type='nativeFind';
     }
     
     // utility function
-    function prepare_pages(pages, fn){
+    function prepare_pages(pages, user, fn){
         for(var i=0; i<pages.length; i++){
             var page = pages[i];
             if( options.user ){
-                page.favorite = ~(user.favorites||[]).indexOf(page._id);
+                page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
             if( page.owner_id ){
                 page.registered = true;
             }
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
-        };
+        }
     }
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.options, function(error, pages){
         if( error ) return callback(error);
@@ -440,8 +440,13 @@ Page.static('search', function(options, callback){
         return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
+            
             prepare_pages(pages, function(page){ page_ids.push(page._id);});
-            if( !serviceSearch ) return callback(null, pages);
+            
+            if( !serviceSearch ){
+                return callback(null, pages);
+            }
+            
             options.center=options.ll;
             
             // use a 3rd party service to get additional results
@@ -456,9 +461,7 @@ Page.static('search', function(options, callback){
                 if( results ) results.forEach( function(place, index){
                     map[place.id] = place;
                 });
-                else{
-                    callback( null, [] );
-                }
+                
                 return Bozuko.models.Page.findByService(service, Object.keys(map), {
                     owner_id: {
                         $exists: true
@@ -467,11 +470,10 @@ Page.static('search', function(options, callback){
                 }, function(error, _pages){
                     if( error ) return callback( error );
                     
-                    
                     prepare_pages(_pages, function(page){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                     });
-                    prepare_pages(pages, function(page){
+                    pages.forEach(function(page){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                     });
                     results.forEach(function(result){

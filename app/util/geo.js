@@ -34,20 +34,26 @@ module.exports = {
         if( unit == 'km' ) return d;
         // less that 50 feet is basically there.
         if( d < 40/5280 ){
-            return 'Your current location';
+            return 'Current location';
         }
-        if( d < 100/5280 ){
+        else if( d < 100/5280 ){
             var feet = d * 5280 /* feet per mile */;
             feet = Math.round(feet/10)*10;
             return 'About '+feet+' feet away';
             return 'Your current location';
         }
-        if( d <= .25 ){
-            var feet = d * 5280 /* feet per mile */;
-            feet = Math.round(feet/100)*100;
-            return 'About '+feet+' feet away';
+        else if( d <= .15 ){
+            var yards = d * 5280 / 3; /* yards per mile */;
+            yards = Math.round(yards/10)*10;
+            return 'About '+yards+' yards away';
         }
-        else if( d <= .65 ){
+        else if( d < .3 ){
+            return 'About 1/4 mile away';
+        }
+        else if( d < .4 ){
+            return 'About 1/3 mile away';
+        }
+        else if( d <= .6 ){
             return 'About 1/2 mile away';
         }
         else if( d <= .8 ){
