@@ -19,3 +19,27 @@ var Entry = module.exports = new Schema({
     initial_tokens          :{type:Number},
     data                    :{}
 });
+
+Entry.method('decrementTokens', function(callback) {
+    var self = this;
+    if (this.tokens === 0) {
+        return callback(Bozuko.error('entry/no_tokens', this));
+    }
+    Bozuko.models.Entry.update(
+        {_id: self._id, tokens: self.tokens},
+        {tokens: self.tokens - 1},
+        function(err, object) {
+            if (err) {
+                return Bozuko.models.Entry.findById(self._id, function(err, entry) {
+                    if (err) return callback(err);
+
+                    if (entry.tokens === 0) {
+                        return callback(Bozuko.error('entry/no_tokens'), self);
+                    }
+                    return entry.decrementTokens(callback);
+                });
+            }
+            return callback(null, self.tokens - 1);
+        }
+    );
+});
