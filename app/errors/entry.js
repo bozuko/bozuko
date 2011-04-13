@@ -8,6 +8,7 @@ module.exports = {
     too_soon            :function(){
         var next = this.data;
         return "User cannot enter this contest again until "+next;
-    }
+    },
+    db_error            : "Unknown DB error"
 
 };

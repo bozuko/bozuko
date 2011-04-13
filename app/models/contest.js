@@ -9,6 +9,8 @@ var mongoose = require('mongoose'),
 
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
+    version                 :{type:Number, default: 0},
+    users                   :{},
     game                    :{type:String},
     game_config             :{},
     entry_config            :[EntryConfig],
@@ -46,6 +48,7 @@ Contest.method('generateResults', function(callback){
  */
 Contest.method('enter', function(entry, callback){
 
+    var self = this;
     // get the entry_config
     var cfg = null, found=false;
     for(var i=0; i<this.entry_config.length && found == false; i++){
@@ -62,127 +65,170 @@ Contest.method('enter', function(entry, callback){
             // yikes
             callback(error);
         }
-        else entry.process( function(error, Entry){
-            // this will return an Entry model object on success.
-            callback(error, Entry);
-        });
+        var e = {
+            timestamp: new Date(),
+            type: entry.type,
+            tokens: entry.getTokenCount(),
+            initial_tokens: entry.getTokenCount()
+        };
+        var tries = self.total_plays - self.token_cursor;
+        self.addUserEntry(entry.user.id, e, tries, callback);
     });
 });
 
-Contest.method('incrementPlayCursor', function(callback) {
+Contest.method('addUserEntry', function(user_id, entry, tries, callback) {
     var self = this;
-    if (this.total_plays - this.play_cursor === 1) {
-        return callback( Bozuko.error('contest/incrementing_play_cursor', self) );
+
+    // Ensure that the contest isn't out of tokens
+    if (this.token_cursor + entry.tokens >= this.total_plays) {
+        return callback( Bozuko.error('entry/not_enough_tokens') );
     }
+
+    if (!this.users) this.users = {};
+
+    // Add the entry to the users object
+    if (this.users[user_id]) {
+        this.users[user_id].entries.push(entry);
+   } else {
+       this.users[user_id] = {
+           active_plays: [],
+           plays: [],
+           entries: [entry]
+       };
+   }
+
     Bozuko.models.Contest.update(
-        {_id:self._id, play_cursor:self.play_cursor},
-        {play_cursor: self.play_cursor + 1},
-        function(error, object){
-            if( error ){
-                return Bozuko.models.Contest.findById( self._id, function(error, contest){
-                    if( error ) return callback( error );
-                    if (contest.total_plays - contest.play_cursor === 1) {
-                        return callback( Bozuko.error('contest/incrementing_play_cursor', self) );
-                    }
-                    return contest.incrementPlayCursor(callback);
+        {_id: this._id, version: this.version},
+        {token_cursor: this.token_cursor+entry.tokens, users: this.users, version: this.version+1},
+        function(err, contest) {
+            if (err) {
+                if (tries === 0)  return callback(Bozuko.error('entry/db_error'));
+                return Bozuko.models.Contest.findById(self._id, function(e, c) {
+                    if (e) return callback(e);
+                    if (!c) return callback(Bozuko.error('contest/not_found', self));
+                    return c.addUserEntry(user_id, entry, tries-1, callback);
                 });
             }
-            return callback( null, self.play_cursor+1 );
+            return callback(null, entry);
         }
     );
 });
 
-function add_play(game_result, user, contest, entry, prize, callback) {
-    // record the "Play" in our db, win or lose
-    var play = new Bozuko.models.Play();
-    play.set('user_id', user._id);
-    play.set('page_id', contest.page_id);
-    play.set('contest_id', contest._id);
-    play.set('entry_id', entry._id);
-    play.set('timestamp', new Date());
-    play.set('game', contest.game);
-    play.set('win', prize ? true : false);
+Contest.method('play', function(user_id, callback){
+    var tries = this.total_plays - this.play_cursor;
+    this._play(user_id, tries, callback);
+});
 
-    if (prize) {
-        play.set('prize_id', prize._id);
-        play.set('prize_name', prize.get('name'));
+Contest.method('_play', function(user_id, tries, callback) {
+    var self = this;
+    var user = this.users[user_id];
+    if (!user) return callback( Bozuko.error("contest/unknown_user"), user_id);
+    if (tries === 0) {
+        console.log("total_plays = "+this.total_plays+", play_cursor = "+this.play_cursor);
+        return callback(Bozuko.error("contest/no_plays"));
     }
 
-    play.save( function(error){
-        if( error ) return callback( error );
-        return callback(null, {
-            entry: entry,
-            play: play,
-            game_result: game_result,
-            prize: prize ? prize : false
-        });
-    });
-}
+    var tokens_available = false;
+    for (var i = 0; i < user.entries.length; i++) {
+        if (user.entries[i].tokens > 0) {
+            user.entries[i].tokens--;
+            tokens_available = true;
+            break;
+        }
+    }
 
-Contest.method('play', function(user, callback){
+    if (!tokens_available) return callback(Bozuko.error("contest/no_tokens"));
+
+    user.active_plays.push(this.play_cursor+1);
+
+    Bozuko.models.Contest.update(
+        {_id: this._id, version: this.version},
+        {play_cursor: this.play_cursor+1, users: this.users, version: this.version+1},
+        function(err, contest) {
+            if (err) {
+                if (tries === 0)  return callback(Bozuko.error('entry/db_error'));
+                return Bozuko.models.Contest.findById(self._id, function(e, c) {
+                    if (e) return callback(e);
+                    if (!c) return callback(Bozuko.error('contest/not_found', self));
+                    return c._play(user_id, tries-1, callback);
+                });
+            }
+            self.addUserPrize(user_id, self.play_cursor+1, callback);
+        }
+    );
+
+});
+
+Contest.method('addUserPrize', function(user_id, index, callback) {
+
     var self = this;
 
-    // Find an entry for this contest that still has tokens
-    Bozuko.models.Entry.findOne(
-        {user_id:user.id, contest_id:this.id, tokens: {$gt:0}},
-        function(error, entry){
-            if( error ){
-                return callback( error );
+    // now lets process the result
+    var result = this.results[''+index];
+
+    var game_result = Bozuko.game( self ).process( result ? result.index : false );
+    var prize = result ? result.prize : false;
+
+    var play = {
+        game: this.game,
+        play_cursor: index,
+        timestamp: new Date(),
+        win: prize ? true : false
+    };
+
+    if( prize ){
+        // get the actual prize
+        var prize_object = null;
+        for( var i=0; i<self.prizes.length && prize_object == null; i++){
+            if( self.prizes[i]._id+'' == prize ){
+                prize_object = self.prizes[i];
             }
-            else if( !entry ){
-                return callback( Bozuko.error("contest/no_tokens") );
-            }
+        }
 
-            return entry.decrementTokens(function(error, numtokens) {
-                // TODO: If the tokens reach 0 (an error is returned) then re-do the entry search
-                // to see if any other entries for this contest have tokens
-                if ( error ) return callback ( error );
+        // lets add the prize for this user
+        var user_prize = {
+            contest_id: this._id,
+            timestamp: play.timestamp,
+            play_cursor: index,
+            value: prize_object.value,
+            name: prize_object.name,
+            image: prize_object.image,
+            description: prize_object.description,
+            redeemed: false
+        };
 
-                self.incrementPlayCursor( function(error, index){
+        Bozuko.models.User.addPrize(user_id, user_prize, function(err) {
+            if (err) return callback(err);
+            self.endPlay(user_id, play, game_result, user_prize, callback);
+        });
+    }
+    self.endPlay(user_id, play, game_result, false, callback);
 
-                    if( error ) return callback( error );
+});
 
-                    // now lets process the result
-                    var result = self.results[''+index];
+Contest.method('endPlay', function(user_id, play, result, prize, callback) {
+    var self = this;
+    var user = this.users[user_id];
 
-                    if( error ) return callback( error );
+    var play_index = user.active_plays.indexOf(play.play_cursor);
+    user.active_plays.splice(play_index, 1);
+    user.plays.push(play);
 
-                    var game_result = Bozuko.game( self ).process( result ? result.index : false );
-                    var prize = result ? result.prize : false;
-
-                    if( prize ){
-
-                        // get the actual prize
-                        var prize_object = null;
-                        for( var i=0; i<self.prizes.length && prize_object == null; i++){
-                            if( self.prizes[i]._id+'' == prize ){
-                                prize_object = self.prizes[i];
-                            }
-                        }
-
-                        // lets add the prize for this user
-                        var user_prize = new Bozuko.models.Prize();
-
-                        user_prize.user_id = user._id;
-                        user_prize.page_id = self.page_id;
-                        user_prize.contest_id = self._id;
-                        user_prize.value = prize_object.value;
-                        user_prize.name = prize_object.name;
-                        user_prize.image = prize_object.image;
-                        user_prize.description = prize_object.description;
-                        user_prize.instructions = prize_object.instructions;
-                        user_prize.redeemed = false;
-
-                        return user_prize.save( function(error){
-                            if( error ) return callback( error );
-                            add_play(game_result, user, self, entry, user_prize, callback);
-                        });
-
-                    }
-                    add_play(game_result, user, self, entry, false, callback);
-
+    Bozuko.models.Contest.update(
+        {_id: this._id,  version: this.version},
+        {users: this.users, version: this.version+1},
+        function(err, contest) {
+            if (err) {
+                return Bozuko.models.Contest.findById(self._id, function(e, c) {
+                    if (e) return callback(e);
+                    if (!c) return callback(Bozuko.error('contest/not_found', self));
+                    return c.endPlay(user_id, play, result, prize, callback);
                 });
-
+            }
+            return callback(null, {
+                play: play,
+                game_result: result,
+                prize: false
             });
         }
     );
