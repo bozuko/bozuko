@@ -95,7 +95,6 @@ function initModels(){
         });
 
         Bozuko.db.model( Name, schema );
-        //Mongoose.Model.define(Name, config);
         Bozuko.models[Name] = Bozuko.db.model(Name);
     });
 }
