@@ -107,9 +107,16 @@ exports['enter contest'] = function(test) {
     });
 };
 
+exports['enter contest fail - no tokens'] = function(test) {
+  var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+    contest.enter(entryMethod, function(err, e) {
+        test.ok(err);
+        test.done();
+    });
+};
+
 function play(callback) {
     contest.play(user._id, function(err, result) {
-        console.log("err = "+err);
         callback(err, result);
     });
 }
@@ -118,6 +125,10 @@ exports['play  3 times'] = function(test) {
     async.parallel([play, play, play], function(err, results) {
         test.ok(!err);
         var res = results[0];
+        test.deepEqual(res.play.game, 'slots');
+        test.deepEqual(res.play.play_cursor+0, 0);
+        test.deepEqual(results[1].play.play_cursor+0, 1);
+        test.deepEqual(results[2].play.play_cursor+0, 2);
         test.done();
     });
 };
@@ -125,26 +136,26 @@ exports['play  3 times'] = function(test) {
 exports['play fail - no tokens'] = function(test) {
     contest.play(user._id, function(err, result) {
         test.ok(err);
-    });
-    Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
-        test.ok(!err);
-        test.deepEqual(c.play_cursor+0, 2);
-        test.done();
-    });
-};
-
-exports.cleanup = function(test) {
-    cleanup(test.done);
-};
-
-function cleanup(callback) {
-    Bozuko.models.User.remove(function(err) {
-        Bozuko.models.Contest.remove(function(err) {
-            Bozuko.models.Page.remove(function(err) {
-                Bozuko.models.Checkin.remove(function(err) {
-                    callback();
-                });
-            });
+        Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+            test.ok(!err);
+            test.deepEqual(c.play_cursor+0, 2);
+            test.deepEqual(c.users[user._id].entries[0].tokens+0, 0);
+            test.done();
         });
     });
+};
+
+// exports.cleanup = function(test) {
+//     cleanup(test.done);
+// };
+
+function cleanup(callback) {
+    var e = emptyCollection;
+    async.parallel([e('User'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize')], callback);
 }
+
+function emptyCollection(name) {
+    return function(callback){
+        Bozuko.models[name].remove(function(){callback(null, '');});
+    };
+};

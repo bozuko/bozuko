@@ -3,7 +3,8 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     Services = require('./embedded/service'),
     crypto = require('crypto'),
-    Prize = require('./embedded/user/prize')
+    Prize = require('./embedded/user/prize'),
+    async = require('async')
     ;
 
 var hmac = crypto.createHmac('sha512', Bozuko.config.key);
@@ -20,8 +21,7 @@ var User = module.exports = new Schema({
     email               :{type:String, index: true},
     sign_up_date        :{type:Date, default: Date.now},
     favorites           :[ObjectId],
-    can_manage_pages    :{type:Boolean},
-    prizes              :[Prize]
+    can_manage_pages    :{type:Boolean}
 });
 
 Services.initSchema(User);
@@ -31,27 +31,6 @@ User.pre('save', function(next) {
         return create_token(this, 1, next);
     }
     return next();
-});
-
-User.static('addPrize', function(id, prize, callback) {
-    Bozuko.models.User.findOne({_id: id}, function(err, user) {
-        if (err) return callback(err);
-        if (!user) return callback(Bozuko.error('user/not_found'));
-        user._addPrize(id, prize, 100, callback);
-    });
-});
-
-User.method('_addPrize', function(id, prize, tries, callback) {
-    var self = this;
-    var prizes = this.prizes.slice();
-    prizes.push(prize);
-    Bozuko.models.User.update({_id: id, prizes: this.prizes}, {prizes: prizes}, function(err, _) {
-        if (err) {
-            if (tries === 0) return callback(err);
-            return self._addPrize(id, prize, tries-1, callback);
-        }
-        return callback(null);
-    });
 });
 
 User.static('createFromServiceObject', function(user, callback){
