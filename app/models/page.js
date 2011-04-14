@@ -60,36 +60,17 @@ Page.method('getUserGames', function(user, callback){
     this.getActiveContests( function(error, contests){
         if( error ) return callback(error);
 
-        var ids = [];
         var games = [];
-        var gamesMap= {};
-        var contestMap = {};
         contests.forEach( function(contest){
-            contestMap[contest._id+''] = contest;
-            ids.push( contest._id );
-        });
-
-        return Bozuko.models.Entry.find({
-            tokens: {$gt: 0},
-            user_id: user._id,
-            contest_id: {$in: ids}
-        }, function(error, entries){
-            if( error ) return callback( error );
-            var total = 0;
+            var game = contest.getGame();
+            if (!game.tokens) game.tokens = 0;
+            var entries = contest.users[user._id].entries;
             entries.forEach( function(entry){
-                var key = ''+entry.contest_id;
-                var game = gamesMap[key];
-                if( !game ){
-                    var contest = contestMap[''+entry.contest_id];
-                    var game = contest.getGame();
-                    gamesMap[key] = game;
-                    games.push(game);
-                }
-                if( !game.tokens )  game.tokens = 0;
-                game.tokens+= entry.get('tokens');
+                game.tokens += entry.tokens;
             });
-            return callback( null, games );
+            games.push(game);
         });
+        return callback( null, games );
     });
 });
 
@@ -271,44 +252,7 @@ Page.static('loadPagesContests', function(pages, callback){
                 page.contests.push(contest);
             });
 
-
-            /**
-             *              * TODO
-             *              *
-             *              * Use the "expiration" property for entry model to
-             *              * expire the tokens between entries
-             *              *
-             *              * or
-             *              *
-             *              * Upon new entry, delete the tokens off any existing
-             *              * entries
-             *              */
-            // find active entries for this user in each contest
-            return Bozuko.models.Entry.find({
-                contest_id: {$in: Object.keys(contestMap)},
-                tokens: {$gt: 0}
-            }, function(error, entries){
-                if( error ) return callback(error);
-
-                if( entries ) entries.forEach( function(entry){
-                    // find the contest
-                    var contest = contestMap[entry.contest_id+''];
-                    if( !contest.tokens ) contest.tokens = 0;
-                    contest.tokens+= entry.tokens;
-
-                    // also need to figure out which methods of entry are available
-                    // we will need to use the contest entry configuration
-                    // for this.
-                    /**
-                     *                      * Pseudo code
-                     *                      *
-                     *                      * contest.getValidEntryMethods( fn(){} );
-                     *                      *
-                     *                      */
-                });
-
-                return callback(null, pages);
-            });
+            return callback(null, pages);
         }
     );
 });
