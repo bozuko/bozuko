@@ -83,7 +83,7 @@ exports.links = {
                 ll : {
                     required: true,
                     type: "String",
-                    description: 'The user\'s latitude / latitude separated by a comma (example 42.1234121,-71.2423423). This is always required.'
+                    description: 'The user\'s latitude / longitude separated by a comma (example 42.1234121,-71.2423423). This is always required.'
                 },
                 bounds : {
                     type: "String",

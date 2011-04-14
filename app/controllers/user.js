@@ -114,10 +114,13 @@ exports.routes = {
 
         get : function(req,res){
             if (!req.param('phone_type') || !req.param('phone_id')) {
-                return Bozuko.error('login/no_phone_info').send(res);
+                //return Bozuko.error('login/no_phone_info').send(res);
             }
             service = req.param('service') || 'facebook';
-            Bozuko.service(service).login(req,res,'user','/user');
+            if( req.param('return') ){
+                req.session.user_redirect = req.param('return');
+            }
+            return Bozuko.service(service).login(req,res,'user',req.session.user_redirect||'/user');
         }
     },
 
@@ -175,7 +178,9 @@ exports.routes = {
                 }
                 // lets make sure the page exists
                 return Bozuko.models.Page.findById(id, function(error, page){
-                    if( error ) return error.send(res);
+                    if( error ){
+                        return error.send(res);
+                    }
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
                     user.favorites.push(id);
                     return user.save(function(error){

@@ -6,11 +6,28 @@ var facebook    = Bozuko.require('util/facebook'),
     url         = require('url')    
 ;
 
+exports.renderOptions = {
+    title : "Bozuko for Business"
+};
+
 exports.routes = {
     
     '/business/login' : {
         
         description :"Business login - sends user to facebook",
+        
+        get : function(req,res){
+            Bozuko.require('core/auth').login(req,res,'business',req.param('return') || '/business/account',function(user){
+                // need to set a flag that this user let us manage pages
+                user.can_manage_pages = true;
+                user.save(function(){});
+            });
+        }
+    },
+    
+    '/business/sign-up' : {
+        
+        description :"Business registration - sends user to facebook",
         
         get : function(req,res){
             Bozuko.require('core/auth').login(req,res,'business','/business/account',function(user){
@@ -26,6 +43,7 @@ exports.routes = {
         description :"Display business account details",
         
         get : function(req,res){
+            console.log(req.session);
             if( !req.session.user || !req.session.user.can_manage_pages ){
                 var params = {
                     "return":url.parse(req.url).pathname
@@ -35,7 +53,7 @@ exports.routes = {
             }
             
             var locals = {
-                title : "your business account"
+                //title : "your business account"
             };
             
             Bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, pages){
@@ -48,9 +66,10 @@ exports.routes = {
     '/business/account/add_page' : {
         
         description :"Add a new page",
-        methods : ["get","post"],
         
         get : function(req,res){
+            
+            var self = this;
             
             Bozuko.service('facebook').get_user_pages(req.session.user, function(err, facebook_pages){
                 var locals = {
@@ -58,7 +77,7 @@ exports.routes = {
                     pages : facebook_pages || [],
                     error : req.flash('error')
                 };
-                res.render('business/account/add_page', locals );
+                self.render(res, 'business/account/add_page', locals );
                 
             });
             
@@ -66,6 +85,7 @@ exports.routes = {
         
         post : function(req,res){
             
+            var self = this;
             
             if( !req.session.user || !req.session.user.can_manage_pages ){
                 req.flash('error', 'You must be logged in to add a page.');
@@ -172,6 +192,7 @@ exports.routes = {
     '/business/account/page/:id/create_games' : {
         description :'Create games for the page (setup screen)',
         get : function(req,res){
+            
             var id = req.param('id');
             // lets grab all the games we know of
             var games = [];
@@ -227,7 +248,5 @@ exports.routes = {
                 }
             );
         }
-    },
-    
-    '/business' : Page('Bozuko for business', 'business/index')
+    }
 };

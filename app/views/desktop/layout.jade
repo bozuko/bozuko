@@ -23,28 +23,21 @@ html
       .hd
         .page-width
           h1.logo
-            a(href="/") bozuko
+            a(href="/", title="Bozuko - Go to Home Page") bozuko
           
           - if( user )
             .profile
               img(src="https://graph.facebook.com/"+user.service('facebook').sid+"/picture?type=square",alt=user.name)
               | Logged in as
               a(href=user.can_manage_pages?"/business/account":"/user/account")= user.name
-            
-          ul.nav
-            li
-              a(href="/p/about") about
-              
-            li
-              a(href="/business") bozuko for business
-            
-            li
-              -if( user )
-                a(href="javascript:FB.logout()") logout
-                
-              -else
-                a(class="login", href="/business/login") login
-            
+          
+          - if( locals.nav )
+            ul.nav
+              - each item in locals.nav
+                - if( item instanceof Function )
+                  - item = item.call(this,locals);
+                li
+                  a(href=item.link)!= item.text
           
       .bd
         .page-width

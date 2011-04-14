@@ -18,7 +18,7 @@ module.exports = {
         },
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access",
-            business:"email,publish_checkins,publish_stream,offline_access,manage_pages"
+            business:"email,publish_stream,offline_access,manage_pages"
         }
     },
 

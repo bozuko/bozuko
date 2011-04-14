@@ -6,30 +6,24 @@ module.exports = function session(){
 
         var path = parse(req.url).pathname;
 
-        var ignoreExtensions = ['ico','png','jpe?g','gif','css'];
+        var ignoreExtensions = ['ico','png','jpe?g','gif','css','woff','js'];
+        ignoreExtensions.forEach(function(ext){ ext='\\.'+ext; });
         var re = new RegExp('('+ignoreExtensions.join('|')+')$', 'i');
         if( !req.session || re.test(path) ){
             return next();
         }
-
-        var cookie = req.cookies['fbs_'+Bozuko.config.facebook.app.id];
+        console.log(req.session);
 
         var q = {};
 
         if (req.param('token')) {
             q.token = req.param('token');
         }
-        else if( cookie ) {
-            var session = qs.parse(cookie);
-            q['services.name']  = 'facebook';
-            q['services.sid']   = unescape(session.uid);
-            q['services.auth']  = unescape(session.access_token);
-        }
-
+        
         var newSession = req.session.userJustLoggedIn;
         req.session.userJustLoggedIn = false;
 
-        if( (q.token || q['services.sid']) && !newSession ){
+        if( q.token  && !newSession ){
             req.session.user = false;
             // check for the user in our database
             return Bozuko.models.User.findOne(q, function(err, u){
