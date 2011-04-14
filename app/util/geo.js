@@ -32,7 +32,7 @@ module.exports = {
     
     formatDistance: function(d, unit){
         if( unit == 'km' ) return d;
-        // less that 50 feet is basically there.
+        // less that 40 feet is basically there.
         if( d < 40/5280 ){
             return 'Current location';
         }
@@ -61,9 +61,6 @@ module.exports = {
         }
         else if( d <= 1.2 ){
             return 'About 1 mile away';
-        }
-        else if( d <= 1.75 ){
-            return 'About 1.5 miles away';
         }
         else if( d <= 1.75 ){
             return 'About 1.5 miles away';

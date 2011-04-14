@@ -32,7 +32,7 @@ Contest.method('generateResults', function(callback){
     var self = this;
     this.save(function(error){
         if( error ) return callback(error);
-        callback(null, self.results);
+        return callback(null, self.results);
     });
 });
 

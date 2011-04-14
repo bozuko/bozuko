@@ -37,7 +37,8 @@ exports.init = function(app){
     initGames(app);
     
     // setup facebook pubsub
-    initFacebookPubSub();
+    
+    // initFacebookPubSub();
 
 };
 
@@ -68,18 +69,17 @@ function initApplication(app){
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    app.use(express.session({ store: new MemoryStore({ reapInterval: -1 }), secret: 'chqsmells' }));
+    app.use(express.session({ store: new MemoryStore({key:'bozuko_sid'}), secret: 'chqsmells' }));
 
     app.use(Monomi.detectBrowserType());
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
 
     app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
-    app.use(express.compiler({ src: __dirname + '/../static', enable: ['less'] }));
+    app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
     //    app.use(express.repl('Bozuko.', 8050));
-    app.use(express.static(__dirname + '/../static'));
-
+    app.use(express.static(__dirname + '/static'));
 }
 
 function initModels(){
@@ -160,7 +160,7 @@ function initControllers(app){
 
         var name = file.replace(/\..*?$/, '');
         var Name = name.charAt(0).toUpperCase()+name.slice(1);
-        Bozuko.controllers[Name] = Controller.create(app,name,Bozuko.require('controllers/'+name).routes);
+        Bozuko.controllers[Name] = Controller.create(app,name,Bozuko.require('controllers/'+name));
     });
 }
 

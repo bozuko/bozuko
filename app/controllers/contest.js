@@ -67,7 +67,7 @@ var game = {
         can_play: "Boolean",
         start_time: "String",
         end_time: "String",
-        entry_methods:['entry_method'],
+        entry_methods:'entry_method',
         prizes:['game_prize'],
         rules: "String",
         links: {
@@ -84,6 +84,7 @@ var game_update = {
         can_play: "Boolean",
         next_play_time: "String",
         button_text: "String",
+        button_enabled: "Boolean",
         links: {
             
         }
@@ -96,13 +97,11 @@ var entry_method = {
 
     def: {
         available: "Boolean",
-        reason: "String",
         type: "String",
         tokens: "Number",
         button_text: "String",
         icon: "String",
         description: "String",
-        game_update: "game_update",
         links:{
             entry_method: "String"
         }

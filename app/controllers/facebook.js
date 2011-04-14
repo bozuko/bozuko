@@ -187,12 +187,48 @@ exports.routes = {
         }
     },
     
+    /**
+     * Facebook Realtime updates
+     *
+     */
     '/facebook/pubsub':{
         
+        /**
+         * This is posted as a json object with application/json content-type
+         * header
+         */
         post: {
             handler : function(req, res){
-                res.send({});
+                var object = req.param('object');
+                var entry = req.param('entry');
+                if( undefined === entry || false === entry ) return res.send({});
+                if( !Array.isArray(entry) ) entry = [entry];
                 
+                switch(req.param('object')){
+                    
+                    case 'user':
+                        var ids = [];
+                        entry.forEach(function(user){
+                            var uid = user.uid;
+                            if( ~user.changed_fields.indexOf('likes') ) ids.push(uid);
+                        });
+                        return Bozuko.models.User.updateFacebookLikes(ids, function(){
+                            res.send({});
+                        });
+                        
+                    
+                    case 'permissions':
+                        /**
+                         * TODO
+                         *
+                         * track permissions in the internal object
+                         */
+                        return res.send({});
+                        
+                    
+                    default:
+                        return res.send({});
+                }
             }
         },
         get: {

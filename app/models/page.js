@@ -100,7 +100,15 @@ Page.method('canUserCheckin', function(user, callback){
 
     var page_last_allowed_checkin = new Date();
     var user_last_allowed_checkin = new Date();
-
+    /**
+     * TODO - what about contest entry configs?
+     *
+     * However, this could get weird - what if they are on the business page
+     * and want to checkin, should we allow that as long as they satisfy the global
+     * page checkin duration, even if one contest checkin duration is longer? What
+     * if there are two contests with different checkin durations? 
+     * 
+     */
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
 
@@ -202,6 +210,16 @@ Page.method('checkin', function(user, options, callback) {
                 }
                 var current = 0, entries = [];
                 return contests.forEach( function(contest){
+                    // check to make sure that the contest requires a checkin
+                    var found = false;
+                    contest.entry_config.forEach(function(entry_config){
+                        if( entry_config.type == options.service+'/checkin' ){
+                            found = true;
+                        }
+                    });
+                    if( !found ){
+                        
+                    }
                     // try to enter the contest
                     var entry = Bozuko.entry(options.service+'/checkin', user, {
                         checkin: checkin
@@ -273,16 +291,16 @@ Page.static('loadPagesContests', function(pages, callback){
 
 
             /**
-             *              * TODO
-             *              *
-             *              * Use the "expiration" property for entry model to
-             *              * expire the tokens between entries
-             *              *
-             *              * or
-             *              *
-             *              * Upon new entry, delete the tokens off any existing
-             *              * entries
-             *              */
+             * TODO
+             *
+             * Use the "expiration" property for entry model to
+             * expire the tokens between entries
+             *
+             * or
+             *
+             * Upon new entry, delete the tokens off any existing
+             * entries
+             */
             // find active entries for this user in each contest
             return Bozuko.models.Entry.find({
                 contest_id: {$in: Object.keys(contestMap)},
@@ -300,11 +318,11 @@ Page.static('loadPagesContests', function(pages, callback){
                     // we will need to use the contest entry configuration
                     // for this.
                     /**
-                     *                      * Pseudo code
-                     *                      *
-                     *                      * contest.getValidEntryMethods( fn(){} );
-                     *                      *
-                     *                      */
+                     * Pseudo code
+                     *
+                     * contest.getValidEntryMethods( fn(){} );
+                     *
+                     */
                 });
 
                 return callback(null, pages);
@@ -397,18 +415,18 @@ Page.static('search', function(options, callback){
         };
         bozukoSearch.type='nativeFind';
         /**
-         *          * TODO
-         *          *
-         *          * Decide if we should also perform a service search
-         *          *
-         *          */
+         * TODO
+         *
+         * Decide if we should also perform a service search
+         *
+         */
         serviceSearch = false;
     }
     /**
-     *      * This is a standard center search, we will use a service to get
-     *      * additional results, but also do a search
-     *      *
-     *      */
+     * This is a standard center search, we will use a service to get
+     * additional results, but also do a search
+     *
+     */
     else {
 
         var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
