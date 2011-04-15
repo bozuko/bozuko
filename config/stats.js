@@ -3,7 +3,8 @@ var port = 5100;
 module.exports = {
 
     db:{
-        host:'mongodb://localhost/bozuko_stats'
+        name: 'bozuko_stats',
+        host: 'localhost'
     },
 
     facebook: {

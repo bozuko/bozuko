@@ -114,7 +114,7 @@ exports.setup = function(fn) {
         bozuko.app.listen(Bozuko.config.server.port);
         console.log(Bozuko.config.server.port);
         async.series([
-            emptyCollection('User'),
+        emptyCollection('User'),
 	    emptyCollection('Page'),
 	    emptyCollection('Contest'),
 	    emptyCollection('Checkin'),

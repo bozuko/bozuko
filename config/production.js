@@ -1,6 +1,7 @@
 module.exports = {
     db:{
-        host:'mongodb://localhost/bozuko_prod'
+        name: 'bozuko_prod',
+        host: 'localhost'
     },
     facebook: {
         app:{
