@@ -12,7 +12,6 @@ module.exports = function session(){
         if( !req.session || re.test(path) ){
             return next();
         }
-        console.log(req.session);
 
         var q = {};
 

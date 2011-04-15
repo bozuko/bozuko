@@ -43,7 +43,7 @@ var game = {
     doc: "A Game Object",
 
     create : function(game){
-        
+
         game.config = game.contest.game_config;
         game.user_tokens = game.tokens;
         game.can_play = game.tokens > 0;
@@ -86,7 +86,7 @@ var game_update = {
         button_text: "String",
         button_enabled: "Boolean",
         links: {
-            
+
         }
     }
 };
@@ -134,7 +134,7 @@ exports.links = {
 
         }
     },
-    
+
     entry_method: {
         post: {
             access: 'user',
@@ -179,7 +179,7 @@ exports.routes = {
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
                     // lets let the contest handle finding entries, etc
-                    return contest.play(req.session.user, function(error, result){
+                    return contest.play(req.session.user._id, function(error, result){
                         if( error ){
                             console.log('error', error);
                             return error.send(res);

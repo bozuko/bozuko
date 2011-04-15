@@ -117,7 +117,6 @@ exports.setup = function(fn) {
             emptyCollection('User'),
 	    emptyCollection('Page'),
 	    emptyCollection('Contest'),
-	    emptyCollection('Entry'),
 	    emptyCollection('Checkin'),
 	    emptyCollection('Play'),
 	    emptyCollection('Prize'),

@@ -30,6 +30,12 @@ html
               img(src="https://graph.facebook.com/"+user.service('facebook').sid+"/picture?type=square",alt=user.name)
               | Logged in as
               a(href=user.can_manage_pages?"/business/account":"/user/account")= user.name
+              |  
+              a(href="/logout") Logout
+          - else
+            .profile
+              a.fb_button.fb_button_medium(href="/user/login?return=/")
+                span.fb_button_text Login
           
           - if( locals.nav )
             ul.nav
@@ -53,8 +59,8 @@ html
             script(type="text/extjs-tmpl", id=key)= tmpl
         
     #fb-root
-    script(src="http://connect.facebook.net/en_US/all.js")
-    script(type="text/javascript",src="/js/desktop/core.js")
+    // script(src="http://connect.facebook.net/en_US/all.js")
+    // script(type="text/javascript",src="/js/desktop/core.js")
     
     - if (locals.scripts)
       - each script in scripts

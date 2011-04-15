@@ -123,6 +123,18 @@ exports.routes = {
             return Bozuko.service(service).login(req,res,'user',req.session.user_redirect||'/user');
         }
     },
+    
+    '/user/logout' : {
+
+        description :"User logout",
+        
+        aliases: ['/logout'],
+
+        get : function(req,res){
+            req.session.destroy();
+            res.redirect('/');
+        }
+    },
 
     '/user' : {
 

@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 var _db;
 function getConnection(){
     if( !_db){
-        _db = mongoose.connect(Bozuko.config.db.host);
+        _db = mongoose.connect('mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name);
     }
     return _db;
 }
@@ -25,7 +25,6 @@ exports.model = function(name, schema){
         return getConnection().model(name);
     }
 };
-
 
 mongoose.SchemaTypes.Array.prototype.$conditionalHandlers['$near'] = function (val) {
     return this.cast(val);

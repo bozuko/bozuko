@@ -53,7 +53,7 @@ exports.routes = {
             }
             
             var locals = {
-                //title : "your business account"
+                title : "your business account"
             };
             
             Bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, pages){
@@ -77,7 +77,7 @@ exports.routes = {
                     pages : facebook_pages || [],
                     error : req.flash('error')
                 };
-                self.render(res, 'business/account/add_page', locals );
+                res.render('business/account/add_page', locals );
                 
             });
             
