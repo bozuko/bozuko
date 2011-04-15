@@ -6,18 +6,20 @@ if (process.env.USER === 'docs') port = 7002;
 module.exports = {
 
     db:{
-        host:'mongodb://localhost/bozuko_dev'+port
+        name: 'bozuko_dev'+port,
+        host: 'localhost'
     },
 
     facebook: {
         app:{
-            id:'166078836756369',
-            secret:'df03acad0cda5e6f2ec2161c00cf5bf3',
-            access_token:'166078836756369|5PhifMaZ8cZzgdlY4ZhfFPvGtOk'
+            id:'215589698455936',
+            secret:'659158dbd9a51f02bb9fffcf39804434',
+            access_token:'215589698455936|Ino_wd7UTm9e9Tpr34LzNM_-Zl8',
+            pubsub_verify:'12kg0a8b9123kab91831laa9sb'
         },
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access",
-            business:"email,publish_checkins,publish_stream,offline_access,manage_pages"
+            business:"email,publish_stream,offline_access,manage_pages"
         }
     },
 
@@ -38,11 +40,14 @@ module.exports = {
     },
     
     search: {
-        // radius to search for "Nearby Games"
-        nearbyRadius: 2
+        // radius to search for "Nearby Games" in miles
+        nearbyRadius: 2,
+        nearbyLimit: 4
     },
 
     server: {
+        auth: false,
+        ssl: false,
         host: 'bonobo.bozuko.com',
         port: port
     },

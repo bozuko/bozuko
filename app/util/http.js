@@ -25,7 +25,8 @@ exports.request = function(config){
     
     var method = (config.method || "GET").toUpperCase();
     
-    var path = url_parsed.pathname;
+    var path = url_parsed.pathname+(url_parsed.search||'');
+    
     var params = url_parsed.params || false;
     
     if( config.params || params ){

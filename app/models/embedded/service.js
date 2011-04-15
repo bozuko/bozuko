@@ -7,7 +7,8 @@ var Service = module.exports = new Schema({
     name                :{type:String},
     sid                 :{type:String},
     auth                :{type:String},
-    data                :{}
+    data                :{},
+    internal            :{}
 });
 
 Service.initSchema = function(schema){

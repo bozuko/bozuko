@@ -81,7 +81,15 @@ Page.method('canUserCheckin', function(user, callback){
 
     var page_last_allowed_checkin = new Date();
     var user_last_allowed_checkin = new Date();
-
+    /**
+     * TODO - what about contest entry configs?
+     *
+     * However, this could get weird - what if they are on the business page
+     * and want to checkin, should we allow that as long as they satisfy the global
+     * page checkin duration, even if one contest checkin duration is longer? What
+     * if there are two contests with different checkin durations? 
+     * 
+     */
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
 
@@ -183,6 +191,16 @@ Page.method('checkin', function(user, options, callback) {
                 }
                 var current = 0, entries = [];
                 return contests.forEach( function(contest){
+                    // check to make sure that the contest requires a checkin
+                    var found = false;
+                    contest.entry_config.forEach(function(entry_config){
+                        if( entry_config.type == options.service+'/checkin' ){
+                            found = true;
+                        }
+                    });
+                    if( !found ){
+                        
+                    }
                     // try to enter the contest
                     var entry = Bozuko.entry(options.service+'/checkin', user, {
                         checkin: checkin
@@ -341,18 +359,18 @@ Page.static('search', function(options, callback){
         };
         bozukoSearch.type='nativeFind';
         /**
-         *          * TODO
-         *          *
-         *          * Decide if we should also perform a service search
-         *          *
-         *          */
+         * TODO
+         *
+         * Decide if we should also perform a service search
+         *
+         */
         serviceSearch = false;
     }
     /**
-     *      * This is a standard center search, we will use a service to get
-     *      * additional results, but also do a search
-     *      *
-     *      */
+     * This is a standard center search, we will use a service to get
+     * additional results, but also do a search
+     *
+     */
     else {
 
         var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
@@ -360,23 +378,23 @@ Page.static('search', function(options, callback){
             // only registered...
             coords: {$nearSphere: options.ll, $maxDistance: distance}
         };
-        bozukoSearch.options.limit = 4;
+        bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
         bozukoSearch.type='nativeFind';
     }
 
     // utility function
-    function prepare_pages(pages, fn){
+    function prepare_pages(pages, user, fn){
         for(var i=0; i<pages.length; i++){
             var page = pages[i];
             if( options.user ){
-                page.favorite = ~(user.favorites||[]).indexOf(page._id);
+                page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
             if( page.owner_id ){
                 page.registered = true;
             }
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
-        };
+        }
     }
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.options, function(error, pages){
         if( error ) return callback(error);
@@ -384,8 +402,13 @@ Page.static('search', function(options, callback){
         return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
+            
             prepare_pages(pages, function(page){ page_ids.push(page._id);});
-            if( !serviceSearch ) return callback(null, pages);
+            
+            if( !serviceSearch ){
+                return callback(null, pages);
+            }
+            
             options.center=options.ll;
 
             // use a 3rd party service to get additional results
@@ -400,9 +423,7 @@ Page.static('search', function(options, callback){
                 if( results ) results.forEach( function(place, index){
                     map[place.id] = place;
                 });
-                else{
-                    callback( null, [] );
-                }
+                
                 return Bozuko.models.Page.findByService(service, Object.keys(map), {
                     owner_id: {
                         $exists: true
@@ -410,12 +431,10 @@ Page.static('search', function(options, callback){
                     _id: {$nin: page_ids}
                 }, function(error, _pages){
                     if( error ) return callback( error );
-
-
                     prepare_pages(_pages, function(page){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                     });
-                    prepare_pages(pages, function(page){
+                    pages.forEach(function(page){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                     });
                     results.forEach(function(result){

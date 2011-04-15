@@ -33,6 +33,31 @@ User.pre('save', function(next) {
     return next();
 });
 
+User.static('updateFacebookLikes', function(ids, callback){
+    if( !Array.isArray(ids) ) ids = [ids];
+    Bozuko.models.User.findByService('facebook', ids, function(error, users){
+        if( error ) callback(error);
+        async.forEachSeries( users, function(user, cb){
+            // grab their likes
+            Bozuko.service('facebook').user_favorites(user, function(error, fb_user){
+                if( error ) return callback( error );
+                var fb = user.service('facebook');
+                if( !fb ) return cb( Bozuko.error('bozuko/user_no_facebook') );
+                if( !fb.internal ) fb.internal = {};
+                fb.internal.likes = fb_user.data.likes;
+                fb.commit('internal');
+                return user.save(function(error){
+                    if( error ) return cb(error);
+                    return cb();
+                });
+            });
+        }, function(error){
+            if(error) callback(error);
+            callback(null, true);
+        });
+    });
+});
+
 User.static('createFromServiceObject', function(user, callback){
     var id = user.id;
     var service = user.service;

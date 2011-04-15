@@ -5,12 +5,12 @@
  *
  * @param {String} key The key for this entry
  */
-var Entry = module.exports = function(type, user){
+var EntryMethod = module.exports = function(type, user){
     this.type = type;
     this.user = user;
 };
 
-var proto = Entry.prototype;
+var proto = EntryMethod.prototype;
 
 /**
  * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
@@ -28,6 +28,20 @@ proto.description = 'This type of entry needs';
  * TODO - decide if we need multiple types - mobile / admin, etc.
  */
 proto.icon = '';
+
+/**
+ * To refresh or not, that is the question
+ */
+proto.refresh = false;
+
+/**
+ * Refresh rate
+ *
+ * How often to refresh (seconds)
+ *
+ * defauts 1 hour
+ */
+proto.refresh_interval = 1000*60*60*1;
 
 /**
  * Configure the entryMethod
@@ -101,7 +115,7 @@ proto.process = function( callback ){
                 self.contest.token_cursor += self.getTokenCount();
 
                 // create a Bozuko Entry model
-                var Entry = new Bozuko.models.Entry({
+                var entry = new Bozuko.models.Entry({
                     contest_id: self.contest.id,
                     user_id: self.user.id,
                     timestamp: new Date(),
@@ -110,11 +124,11 @@ proto.process = function( callback ){
                     intial_tokens: self.getTokenCount()
                 });
 
-                Entry.save( function(error){
+                entry.save( function(error){
                     if( error ){
                         return callback( error );
                     }
-                    return callback( null, Entry );
+                    return callback( null, entry );
                 });
 
             }

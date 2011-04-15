@@ -119,7 +119,7 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
-                                test: true,
+                                //test: true,
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 latLng: {lat:lat,lng:lng},
                                 message: msg
@@ -185,6 +185,64 @@ exports.routes = {
                 run(req, res, 'like', {}, function() { like(req, res); });
             }
         }
+    },
+    
+    /**
+     * Facebook Realtime updates
+     *
+     */
+    '/facebook/pubsub':{
+        
+        /**
+         * This is posted as a json object with application/json content-type
+         * header
+         */
+        post: {
+            handler : function(req, res){
+                var object = req.param('object');
+                var entry = req.param('entry');
+                if( undefined === entry || false === entry ) return res.send({});
+                if( !Array.isArray(entry) ) entry = [entry];
+                
+                switch(req.param('object')){
+                    
+                    case 'user':
+                        var ids = [];
+                        entry.forEach(function(user){
+                            var uid = user.uid;
+                            if( ~user.changed_fields.indexOf('likes') ) ids.push(uid);
+                        });
+                        return Bozuko.models.User.updateFacebookLikes(ids, function(){
+                            res.send({});
+                        });
+                        
+                    
+                    case 'permissions':
+                        /**
+                         * TODO
+                         *
+                         * track permissions in the internal object
+                         */
+                        return res.send({});
+                        
+                    
+                    default:
+                        return res.send({});
+                }
+            }
+        },
+        get: {
+            handler : function(req, res){
+                var verify = req.param('hub.verify_token');
+                if( verify != Bozuko.config.facebook.app.pubsub_verify ){
+                    return res.send('invalid subscription verify token', 500);
+                }
+                // okay, we are good.
+                console.log('Facebook subscription for '+req.param('hub.mode')+' is setup');
+                return res.send(req.param('hub.challenge'));
+            }
+        }
+        
     }
 
 };

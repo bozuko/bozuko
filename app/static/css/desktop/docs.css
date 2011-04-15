@@ -3,31 +3,24 @@ body {
   font-size: 12px;
 }
 .header .x-panel-body {
-  background-color: #ffffff;
-  background-image: -moz-linear-gradient(top, #ffffff, #dddddd);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #dddddd));
-  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#dddddd)";
-  /*  IE6 & 7 */
-
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#dddddd)";
-  /*  IE8 */
-
+  background: #111111 url("/images/desktop/site/bg_hd.png") repeat-x 0 100%;
 }
 .header .title {
   height: 100px;
-  background: url("/images/desktop/docs/logo.png") no-repeat 0 0;
+  background: url("/images/desktop/site/img_logo.png") no-repeat 10px 10px;
   position: relative;
 }
 .header .title span {
   position: absolute;
   bottom: 10px;
   left: 80px;
+  color: #fff;
 }
 .header .confidential {
   position: absolute;
   top: 20px;
   right: 10px;
-  text-shadow: 2px 2px 2px #ffffff;
+  text-shadow: 2px 2px 2px #000;
 }
 .header .confidential .big {
   text-transform: uppercase;
@@ -40,7 +33,7 @@ body {
   display: block;
   text-align: center;
   text-transform: uppercase;
-  color: #761616;
+  color: #dd4646;
 }
 .controllerIcon {
   background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
@@ -263,7 +256,7 @@ body {
   line-height: 16px;
 }
 .api .x-panel-body h3 {
-  color: #bc3023;
+  color: #006b35;
   font-size: 24px;
   font-family: "Impact";
   font-weight: 100;
@@ -298,10 +291,10 @@ body {
 }
 .api .x-panel-body a:link, .api .x-panel-body a:visited, .api .x-panel-body a:active {
   text-decoration: none;
-  color: #bc3023;
+  color: #00a854;
 }
 .api .x-panel-body a:hover {
-  color: #641a13;
+  color: #006b35;
 }
 .api .x-panel-body p, .api .x-panel-body ol {
   line-height: 1.5em!important;

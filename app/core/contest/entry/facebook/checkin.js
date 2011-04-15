@@ -1,20 +1,20 @@
-var Entry = Bozuko.require('core/contest/entry');
+var EntryMethod = Bozuko.require('core/contest/entry');
 
 /**
  * Facebook Checkin
  *
  */
-var FacebookCheckin = module.exports = function(key, user, options){
+var FacebookCheckinMethod = module.exports = function(key, user, options){
     options = options || {};
-    Entry.prototype.constructor.call(this,key,user);
+    EntryMethod.call(this,key,user);
     // set the valid options
-    if( !options.checkin ) throw Bozuko.error('entry/facebook/no_checkin');
-    this.checkin = options.checkin;
+    this.options = options;
+    this.checkin = this.options.checkin || false;
 };
 
-FacebookCheckin.prototype.__proto__ = Entry.prototype;
+FacebookCheckinMethod.prototype.__proto__ = EntryMethod.prototype;
 
-var proto = FacebookCheckin.prototype;
+var proto = FacebookCheckinMethod.prototype;
 
 /**
  * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
@@ -39,11 +39,15 @@ proto.icon = '';
  * @param {Function} Callback Function
  */
 proto.validate = function( callback ){
+    
+    // we need to check to see if this entry method has been satisified.
     var self = this;
-    Entry.prototype.validate.call( this, function(error){
+    
+    // first lets check for any previous entries in this contest
+    EntryMethod.prototype.validate.call( this, function(error){
         if( error ){
             console.log("error from validate call");
-            return callback( error );
+            return callback( error );   
         }
         if( self.checkin.page_id+'' != self.contest.page_id+'' ){
             return callback( Bozuko.error('entry/facebook/invalid_checkin') );
@@ -69,14 +73,15 @@ proto.process = function( callback ){
 
     // lets process this...
     var self = this;
-    Entry.prototype.process.call(this, function(error, entry){
+    EntryMethod.prototype.process.call(this, function(error, entry){
 
         if( error ){
             return callback( error );
         }
         entry.action_id = self.checkin.id;
         return entry.save(function(error){
-            return error || Bozuko.models.Entry.findById(entry.id,callback);
+            if( error ) return callback( error );
+            return callback(null, entry);
         });
     });
 };
