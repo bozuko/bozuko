@@ -11,15 +11,6 @@ exports.setup = function(test) {
     testsuite.setup(test.done);
 };
 
-exports['GET /user/login - no phone info'] = function(test) {
-    assert.response(test, Bozuko.app,
-        {url: '/user/login'},
-        {status: 400, headers: {'Content-Type': 'application/json'}},
-        function(res) {
-            test.done();
-        });
-};
-
 // This only verifies a redirect to facebook and does not exercise login logic.
 // We don't want to hit facebook oauth everytime we run these tests. Maybe that should be a
 // separate test module in manual_tests.

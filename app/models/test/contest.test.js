@@ -129,7 +129,11 @@ exports['play  3 times'] = function(test) {
         test.deepEqual(res.play.play_cursor+0, 0);
         test.deepEqual(results[1].play.play_cursor+0, 1);
         test.deepEqual(results[2].play.play_cursor+0, 2);
-        test.done();
+
+        Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+            test.equal(c.users[user._id].active_plays.length, 0);
+            test.done();
+        });
     });
 };
 
@@ -140,8 +144,102 @@ exports['play fail - no tokens'] = function(test) {
             test.ok(!err);
             test.deepEqual(c.play_cursor+0, 2);
             test.deepEqual(c.users[user._id].entries[0].tokens+0, 0);
+            test.equal(c.users[user._id].active_plays.length, 0);
             test.done();
         });
+    });
+};
+
+exports['audit - missing prize and play'] = function(test) {
+
+    // Add a fake active_play to the user's record for the contest.
+    // The play_cursor is longer than the results array, but it doesn't matter for the test.
+
+    var active_play = {
+        play_cursor: 3,
+        game_result: ['seven', 'seven', 'seven'],
+        prize_index: 1,
+        timestamp: new Date()
+    };
+    Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+        test.ok(!err);
+        c.users[user._id].active_plays.push(active_play);
+        Bozuko.models.Contest.update({_id: contest._id}, {users: c.users, version: c.version+1}, function(err) {
+            test.ok(!err);
+            test.equal(c.users[user._id].active_plays.length, 1);
+            Bozuko.models.Contest.audit(function(err) {
+                test.ok(!err);
+                Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+                    test.ok(!err);
+                    test.equal(c.users[user._id].active_plays.length, 0);
+                    Bozuko.models.Prize.findOne(
+                        {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                        function(err, prize) {
+                            test.ok(!err);
+                            test.ok(prize);
+                            test.equal(prize.timestamp.getTime(), active_play.timestamp.getTime());
+                            Bozuko.models.Play.findOne(
+                                {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                                function(err, play) {
+                                    test.ok(!err);
+                                    test.ok(play);
+                                    test.equal(play.timestamp.getTime(), active_play.timestamp.getTime());
+                                    test.done();
+                                }
+                            );
+                        }
+                    );
+                });
+            });
+        });
+    });
+};
+
+exports['audit - missing play'] = function(test) {
+    var active_play = {
+        play_cursor: 4,
+        game_result: ['seven', 'bar', 'bozuko'],
+        prize_index: false,
+        timestamp: new Date()
+    };
+
+    Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+        test.ok(!err);
+        c.users[user._id].active_plays.push(active_play);
+        Bozuko.models.Contest.update(
+            {_id: contest._id},
+            {users: c.users, version: c.version+1},
+            function(err) {
+                test.ok(!err);
+                test.equal(c.users[user._id].active_plays.length, 1);
+                Bozuko.models.Contest.audit(function(err) {
+                    test.ok(!err);
+                    Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+                        test.ok(!err);
+                        test.equal(c.users[user._id].active_plays.length, 0);
+                        Bozuko.models.Prize.findOne(
+                            {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                            function(err, prize) {
+                                test.ok(!err);
+                                test.ok(!prize);
+                                Bozuko.models.Play.findOne(
+                                    {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                                    function(err, play) {
+                                        test.ok(!err);
+                                        test.ok(play);
+                                        test.equal(
+                                            play.timestamp.getTime(),
+                                            active_play.timestamp.getTime()
+                                        );
+                                        test.done();
+                                    }
+                                );
+                            }
+                        );
+                    });
+                });
+            }
+        );
     });
 };
 
