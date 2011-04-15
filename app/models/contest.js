@@ -92,7 +92,6 @@ Contest.method('addUserEntry', function(user_id, entry, tries, callback) {
    } else {
        this.users[user_id] = {
            active_plays: [],
-           plays: [],
            entries: [entry]
        };
    }
@@ -117,41 +116,61 @@ Contest.method('addUserEntry', function(user_id, entry, tries, callback) {
 Contest.static('audit', function(callback) {
     return Bozuko.models.Contest.find({}, function(err, contests) {
         if (err) return callback(err);
-        contests.forEach(function(contest) {
-            Object.keys(contest.users).forEach(function(user_id) {
+        if (!contests) return callback(null);
+        async.forEachSeries(contests, function(contest, callback) {
+
+            var uids = Object.keys(contest.users);
+            if (uids.length == 0) return callback(null);
+
+            uids.forEach(function(user_id) {
+
+                if (contest.users[user_id].active_plays.length == 0) return callback(null);
+
                 contest.users[user_id].active_plays.forEach(function(active_play) {
 
-                    var play_cursor = active_play.play_cursor;
-
-                    function auditor(model, collection) {
-                        return function (callback) {
-                            Bozuko.models[model].find(
-                                {contest_id: contest._id, play_cursor: play_cursor},
-                                function(err, models) {
-                                    if (err) return callback(err);
-                                    var needs_fixing = active_play[collection].filter(function(id) {
-                                        var found = false;
-                                        for (var i = 0; i < models.length; i++) {
-                                            if (models[i]._id === id) {
-                                                found = true;
-                                                break;
-                                            }
+                    if (active_play.prize_index != false) {
+                    // The user won so there should be a prize and play entry
+                        Bozuko.models.Prize.findOne(
+                            {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                            function(err, prize) {
+                                if (err) return callback(err);
+                                if (!prize) {
+                                    return contest.savePrize(user_id, active_play, callback);
+                                }
+                                return Bozuko.models.Play.findOne(
+                                    {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                                    function(err, play) {
+                                        if (err) return callback(err);
+                                        if (!play) {
+                                            return contest.savePlay(user_id, active_play, prize, callback);
                                         }
-                                        return !found;
-                                    });
-                                    return fix(model, needs_fixing, callback);
-                                });
-                            };
+                                        // Both prize and play already exist - nothing to fix
+                                        return callback(null);
+                                    }
+                                );
+                            }
+                        );
 
-                    async.parallel([auditor('Play', 'plays'), auditor('Prize', 'prizes')], function(err, results) {
-                        if (err) return callback(err);
-                        var active_plays = contest.users[user_id].active_plays.filter(function(val) {
-                            return val != play_cursor;
-                        });
-                        return callback(null);
-                    });
+                    } else {
+                    // The user lost so there should only be a play entry
+                        Bozuko.models.Play.findOne(
+                            {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                            function(err, play) {
+                                if (err) return callback(err);
+                                if (!play) {
+                                    return contest.savePlay(user_id, active_play, null, callback);
+                                }
+                                // play already exists - nothing to fix
+                                return callback(null);
+                            }
+                        );
+                    }
                 });
             });
+
+        },
+        function(err) {
+            callback(err);
         });
     });
 });
@@ -180,7 +199,15 @@ Contest.method('startPlay', function(user_id, tries, callback) {
 
     if (!tokens_available) return callback(Bozuko.error("contest/no_tokens"));
 
-    user.active_plays.push({play_cursor: this.play_cursor+1});
+    var result = this.results[''+this.play_cursor+1];
+
+    var active_play = {
+        play_cursor: this.play_cursor+1,
+        game_result: Bozuko.game( this ).process( result ? result.index : false ),
+        prize_index: result ? result.index : false,
+        timestamp: new Date()
+    };
+    user.active_plays.push(active_play);
 
     return Bozuko.models.Contest.update(
         {_id: this._id, version: this.version},
@@ -193,60 +220,51 @@ Contest.method('startPlay', function(user_id, tries, callback) {
                     return c.startPlay(user_id, tries-1, callback);
                 });
             }
-            return self.savePrize(user_id, self.play_cursor+1, callback);
+            return self.savePrize(user_id, active_play, callback);
         }
     );
 });
 
-Contest.method('savePrize', function(user_id, play_cursor, callback) {
+Contest.method('savePrize', function(user_id, active_play, callback) {
     var self = this;
-    var result = this.results[''+play_cursor];
-    var game_result = Bozuko.game( self ).process( result ? result.index : false );
-    var prize = result ? result.prize : false;
-
-    if( prize ){
+    if( active_play.prize_index != false ){
         // get the actual prize
-        var prize_object = null;
-        for( var i=0; i<self.prizes.length && prize_object == null; i++){
-            if( self.prizes[i]._id+'' == prize ){
-                prize_object = self.prizes[i];
-            }
-        }
+        var prize = self.prizes[active_play.prize_index];
 
-        if (!prize_object) return callback(Bozuko.error('contest/no_prize'));
+        if (!prize) return callback(Bozuko.error('contest/no_prize'));
 
         // lets add the prize for this user
         var user_prize = new Bozuko.models.Prize({
             contest_id: this._id,
             page_id: this.page_id,
             user_id: user_id,
-            value: prize_object.value,
-            name: prize_object.name,
-            timestamp: new Date(),
+            value: prize.value,
+            name: prize.name,
+            timestamp: active_play.timestamp,
             status: 'active',
-            expires: prize_object.expires,
-            play_cursor: play_cursor,
-            description: prize_object.description,
+            expires: prize.expires,
+            play_cursor: active_play.play_cursor,
+            description: prize.description,
             redeemed: false
         });
 
         return user_prize.save(function(err) {
             if (err) return callback(err);
-            return self.savePlay(user_id, play_cursor, game_result, user_prize, callback);
+            return self.savePlay(user_id, active_play, user_prize, callback);
         });
     }
 
-    return self.savePlay(user_id, play_cursor, game_result, null, callback);
+    return self.savePlay(user_id, active_play, null, callback);
 });
 
-Contest.method('savePlay', function(user_id, play_cursor, game_result, prize, callback) {
+Contest.method('savePlay', function(user_id, active_play, prize, callback) {
     var self = this;
     var play = new Bozuko.models.Play({
         contest_id: this._id,
         page_id: this.page_id,
         user_id: user_id,
-        play_cursor:  play_cursor,
-        timestamp: prize ? prize.timestamp : new Date(),
+        play_cursor:  active_play.play_cursor,
+        timestamp: active_play.timestamp,
         game: this.game,
         win: prize ? true : false
     });
@@ -258,17 +276,17 @@ Contest.method('savePlay', function(user_id, play_cursor, game_result, prize, ca
 
     return play.save(function(err) {
         if (err) return callback(err);
-        self.endPlay(user_id, play, game_result, prize, 10, callback);
+        self.endPlay(user_id, active_play, play, prize, 10, callback);
     });
 });
 
-Contest.method('endPlay', function(user_id, play, result, prize, tries, callback) {
+Contest.method('endPlay', function(user_id, active_play, play, prize, tries, callback) {
     var self = this;
 
     if (tries === 0) return callback(Bozuko.error("contest/db_update"));
 
     var user = this.users[user_id];
-    var play_index = user.active_plays.indexOf(play.play_cursor);
+    var play_index = user.active_plays.indexOf(active_play);
     user.active_plays.splice(play_index, 1);
 
     return Bozuko.models.Contest.update(
@@ -279,12 +297,12 @@ Contest.method('endPlay', function(user_id, play, result, prize, tries, callback
                 return Bozuko.models.Contest.findById(self._id, function(e, c) {
                     if (e) return callback(e);
                     if (!c) return callback(Bozuko.error('contest/not_found', self));
-                    return c.endPlay(user_id, play, result, prize, tries-1, callback);
+                    return c.endPlay(user_id, active_play, play,  prize, tries-1, callback);
                 });
             }
             return callback(null, {
                 play: play,
-                game_result: result,
+                game_result: active_play.game_result,
                 prize: prize
             });
         }

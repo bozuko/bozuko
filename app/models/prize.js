@@ -8,6 +8,7 @@ var Prize = module.exports = new Schema({
     user_id                 :{type:ObjectId, index:true},
     value                   :{type:Number},
     name                    :{type:String},
+    timestamp               :{type:Date},
     image                   :{type:String},
     status                  :{type:String},
     message                 :{type:String},
