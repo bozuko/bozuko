@@ -114,6 +114,48 @@ Contest.method('addUserEntry', function(user_id, entry, tries, callback) {
     );
 });
 
+Contest.static('audit', function(callback) {
+    return Bozuko.models.Contest.find({}, function(err, contests) {
+        if (err) return callback(err);
+        contests.forEach(function(contest) {
+            Object.keys(contest.users).forEach(function(user_id) {
+                contest.users[user_id].active_plays.forEach(function(active_play) {
+
+                    var play_cursor = active_play.play_cursor;
+
+                    function auditor(model, collection) {
+                        return function (callback) {
+                            Bozuko.models[model].find(
+                                {contest_id: contest._id, play_cursor: play_cursor},
+                                function(err, models) {
+                                    if (err) return callback(err);
+                                    var needs_fixing = active_play[collection].filter(function(id) {
+                                        var found = false;
+                                        for (var i = 0; i < models.length; i++) {
+                                            if (models[i]._id === id) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        return !found;
+                                    });
+                                    return fix(model, needs_fixing, callback);
+                                });
+                            };
+
+                    async.parallel([auditor('Play', 'plays'), auditor('Prize', 'prizes')], function(err, results) {
+                        if (err) return callback(err);
+                        var active_plays = contest.users[user_id].active_plays.filter(function(val) {
+                            return val != play_cursor;
+                        });
+                        return callback(null);
+                    });
+                });
+            });
+        });
+    });
+});
+
 Contest.method('play', function(user_id, callback){
     var tries = this.total_plays - this.play_cursor;
     this.startPlay(user_id, tries, callback);
@@ -138,7 +180,7 @@ Contest.method('startPlay', function(user_id, tries, callback) {
 
     if (!tokens_available) return callback(Bozuko.error("contest/no_tokens"));
 
-    user.active_plays.push(this.play_cursor+1);
+    user.active_plays.push({play_cursor: this.play_cursor+1});
 
     return Bozuko.models.Contest.update(
         {_id: this._id, version: this.version},
