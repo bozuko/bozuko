@@ -9,7 +9,7 @@ var fs              = require('fs'),
     // log4js      = require('log4js')(),
     express         = require('express'),
     Schema          = require('mongoose').Schema,
-    MemoryStore     = require('connect').middleware.session.MemoryStore,
+    BozukoStore     = Bozuko.require('core/session/store'),
     Monomi          = require('monomi'),
     Controller      = Bozuko.require('core/controller'),
     TransferObject  = Bozuko.require('core/transfer'),
@@ -35,10 +35,6 @@ exports.init = function(app){
 
     // setup the games
     initGames(app);
-    
-    // setup facebook pubsub
-    
-    // initFacebookPubSub();
 
 };
 
@@ -69,12 +65,19 @@ function initApplication(app){
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    app.use(express.session({ store: new MemoryStore({key:'bozuko_sid'}), secret: 'chqsmells' }));
+    
+    Bozuko.sessionStore = new BozukoStore({
+        reapInterval: 1000 * 60 * 5,
+        maxAge: 1000 * 60 * 60 * 24
+    });
+    
+    app.use(express.session({key:'bozuko_sid', secret: 'chqsmells', store: Bozuko.sessionStore }));
+    // app.use(express.session({key:'bozuko_sid', secret: 'chqsmells'}));
 
     app.use(Monomi.detectBrowserType());
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
-
+    app.use(express.profiler());
     app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
@@ -100,7 +103,6 @@ function initModels(){
         });
 
         Bozuko.db.model( Name, schema );
-        //Mongoose.Model.define(Name, config);
         Bozuko.models[Name] = Bozuko.db.model(Name);
     });
 }

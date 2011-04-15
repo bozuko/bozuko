@@ -28,7 +28,6 @@ bozuko.init();
 // Only listen on $ node app.js
 module.exports = app;
 
-
 // If we are running the application in the context of another application,
 // like another router or with the 'connect' command, then let them
 // start listening.

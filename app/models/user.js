@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     Services = require('./embedded/service'),
     crypto = require('crypto'),
+    Prize = require('./embedded/user/prize'),
     async = require('async')
     ;
 

@@ -13,16 +13,6 @@ exports.renderOptions = {
         {
             text: 'bozuko for business',
             link: '/business'
-        },
-        function(locals){
-            var link = locals.user ? {
-                text: 'logout',
-                link: '/user/logout'
-            } : {
-                text: 'login',
-                link: '/login?return='+escape('/')
-            };
-            return link;
         }
     ]
 }
