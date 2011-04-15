@@ -1,4 +1,4 @@
-@import "static/css/mixins";
+@import "app/static/css/mixins";
 
 body {
     font-family: Tahoma;
@@ -7,24 +7,25 @@ body {
 
 .header {
     .x-panel-body {
-        .background_gradient(#ffffff, #dddddd);
+        background: #111 url("/images/desktop/site/bg_hd.png") repeat-x 0 100%;
     }
     .title {
         height: 100px;
-        background: url("/images/desktop/docs/logo.png") no-repeat 0 0;
+        background: url("/images/desktop/site/img_logo.png") no-repeat 10px 10px;
         position: relative;
         
         span {
             position: absolute;
             bottom: 10px;
             left: 80px;
+            color: #fff;
         }
     }
     .confidential {
         position: absolute;
         top: 20px;
         right: 10px;
-        text-shadow:2px 2px 2px #ffffff;
+        text-shadow:2px 2px 2px #000;
         
         .big {
             text-transform: uppercase;
@@ -39,7 +40,7 @@ body {
             display: block;
             text-align: center;
             text-transform: uppercase;
-            color: #761616;
+            color: #dd4646;
         }
     }
 }
@@ -299,7 +300,7 @@ body {
     }
     
     h3 {
-        color: #bc3023;
+        color: #006b35;
         font-size: 24px;
         font-family: "Impact";
         font-weight: 100;
@@ -342,10 +343,10 @@ body {
     
     a:link, a:visited, a:active {
         text-decoration: none;
-        color: #bc3023;
+        color: #00a854;
     }
     a:hover{
-        color: #641a13;
+        color: #006b35;
     }
     
     line-height: 1.5em;

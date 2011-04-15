@@ -33,7 +33,7 @@ Contest.method('generateResults', function(callback){
     var self = this;
     this.save(function(error){
         if( error ) return callback(error);
-        callback(null, self.results);
+        return callback(null, self.results);
     });
 });
 
@@ -299,7 +299,7 @@ Contest.method('getBestPrize', function(){
     if( this.prizes.length == 0 ) return null;
     var prizes = this.prizes;
     prizes.sort( function(a, b){
-        return a.value - b.value;
+        return b.value - a.value;
     });
     return prizes[0];
 });

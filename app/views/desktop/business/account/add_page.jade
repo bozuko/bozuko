@@ -39,7 +39,7 @@ h1= title
                 h4= page.name
                 - if( page.location )
                   p= page.location.city+", "+page.location.state
-                p Fan Count: #{page.fan_count||0}
+                p Likes: #{page.likes||0}
         input.button(type="submit",value="Add Page")
         
     - else

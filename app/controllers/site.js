@@ -3,6 +3,19 @@ var ExtJs       = Bozuko.require('util/extjs'),
     Page        = Bozuko.require('util/page'),
     URL         = require('url'),
     qs          = require('querystring');
+    
+exports.renderOptions = {
+    nav: [
+        {
+            text: 'about',
+            link: '/p/about'
+        },
+        {
+            text: 'bozuko for business',
+            link: '/business'
+        }
+    ]
+}
 
 exports.routes = {
 
@@ -36,6 +49,8 @@ exports.routes = {
             res.render(path,{'title' : 'Bozuko'});
         }
     },
+    
+    '/business' : Page('Bozuko for business', 'business/index'),
 
     '/get_token' : {
 
@@ -96,6 +111,7 @@ exports.routes = {
         }
 
         return {
+            access: 'user',
             get : graph,
             post : graph
         };

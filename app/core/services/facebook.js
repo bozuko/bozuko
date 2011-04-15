@@ -31,20 +31,29 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
+    var self = this;
     var phone = {
         type: req.param('phone_type'),
         id: req.param('phone_id')
     };
+    if( defaultReturn ){
+        req.session.redirect = defaultReturn;
+    }
 
     var protocol = (req.app.key?'https:':'http:');
 
     var params = {
         'client_id' : Bozuko.config.facebook.app.id,
         'scope' : Bozuko.config.facebook.perms[scope],
-        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+url.search
+        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname
     };
+    
+    if( req.param('display')){
+        params.display = req.param('display');
+        req.session.display = req.param('display');
+    }
 
-    if( req.session.device == 'touch'){
+    else if( req.session.device == 'touch'){
         params.display = 'touch';
     }
 
@@ -70,7 +79,9 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     else{
         params.client_secret = Bozuko.config.facebook.app.secret;
         params.code = code;
-
+        
+        console.log(req.session);
+        
 
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
@@ -78,7 +89,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
             url: 'https://graph.facebook.com/oauth/access_token',
             params: params,
             callback : function facebook_callback(response){
-
+                
                 var result = qs.parse(response);
                 if( result['access_token'] ) {
                     // grab the access token
@@ -99,22 +110,46 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             // okay, definitely a little weird mr. mongoose...
                             // after a save, we need to do a get user or embedded docs
                             // get messed up... yokay
-
-                            Bozuko.models.User.findById(u.id, function(error, u){
-                                var device = req.session.device;
-                                req.session.regenerate(function(err){
-                                    res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
-                                    req.session.userJustLoggedIn = true;
-                                    req.session.user = u;
-                                    req.session.device = device;
-
-                                    if( success ){
-                                        if( success(u,req,res) === false ){
-                                            return;
+                            
+                            return Bozuko.models.User.findById(u.id, function(error, u){
+                                
+                                var finish = function(){
+                                    var device = req.session.device;
+                                    req.session.regenerate(function(err){
+                                        //res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
+                                        req.session.userJustLoggedIn = true;
+                                        req.session.user = u;
+                                        req.session.device = device;
+    
+                                        if( success ){
+                                            if( success(u,req,res) === false ){
+                                                return;
+                                            }
                                         }
-                                    }
-                                    res.redirect(ret || '/user');
+                                        res.redirect(ret || '/user');
+                                    });
+                                };
+                                // specifically for facebook, we are going to monitor
+                                // the user "likes" AND the "permissions" objects
+                                // in the interal service object
+                                var internal = u.service('facebook').internal;
+                                if( internal && internal.subscriptions ) return finish();
+                                return self.user_favorites({user:u},function(error, user){
+                                    u.service('facebook').internal = {
+                                        likes: user.data.likes
+                                    };
+                                    console.log(user.data.likes);
+                                    u.commit('facebook.internal');
+                                    u.save(function(error){
+                                        /**
+                                         * TODO
+                                         *
+                                         * error conditions for login
+                                         */
+                                        return finish();
+                                    });
                                 });
+                                
                             });
                         });
                     });
@@ -279,7 +314,7 @@ $.checkin = function(options, callback){
  */
 $.user = function(options, callback){
 
-    if( !options || !(options.user_id || options.user_id)  ){
+    if( !options || !(options.user_id  || options.user) ){
         return callback(Bozuko.error('facebook/no_user'));
     }
 
@@ -430,10 +465,11 @@ $.get_user_pages = function(user, callback){
         {
             user: user,
             params:{
-                fields: 'id,name,fan_count,location,category'
+                fields:['id','name','category','likes','location'].join(',')
             }
         },
         function(accounts){
+            console.log(accounts);
             var pages = [];
             var ids = [];
             if( accounts && accounts.data ) accounts.data.forEach(function(account){
@@ -453,15 +489,14 @@ $.get_user_pages = function(user, callback){
                 }
             });
 
-            pages.sort(sort_FacebookPageFanCount);
-            pages.sort(sort_FacebookPageLocation).reverse();
+            pages.sort(sort_FacebookPageLocationLikes);
 
             if( ids.length > 0 ){
                 Bozuko.models.Page.find({'services.name':'facebook','services.sid':{$in:ids}}, function(err, bozuko_pages){
-                    if( bozuko_pages != null ) Bozuko.pages.forEach(function(bozuko_page){
+                    if( bozuko_pages != null ) bozuko_pages.forEach(function(bozuko_page){
                         var i = ids.indexOf(bozuko_page.service('facebook').sid);
                         pages[i].has_owner = true;
-                        pages[i].is_owner = (bozuko_page.owner_id.id == user._id.id);
+                        pages[i].is_owner = (bozuko_page.owner_id == user._id);
                     });
                     callback(null, pages);
                 });
@@ -567,13 +602,11 @@ $._sanitizeUser = function(user){
  * Utility Functions
  */
 
-function sort_FacebookPageLocation(a,b){
+function sort_FacebookPageLocationLikes(a,b){
     var a_has_location = a.location && a.location.latitude;
     var b_has_location = b.location && b.location.latitude;
-    if( a_has_location && !b_has_location ) return 1;
-    if( b_has_location && !a_has_location ) return -1;
-    return 0;
-}
-function sort_FacebookPageFanCount(a,b){
-    return (a.fan_count||0) - (b.fan_count||0);
+    if( b_has_location && !a_has_location ) return 1;
+    if( a_has_location && !b_has_location ) return -1;
+    // now sort by likes
+    return (b.likes||0) - (a.likes||0);
 }

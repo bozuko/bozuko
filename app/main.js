@@ -1,4 +1,6 @@
 Bozuko = require('../bozuko');
+var http = Bozuko.require('util/http'),
+    create_url = Bozuko.require('util/url').create;
 
 /**
  * Module dependencies.
@@ -7,7 +9,7 @@ var fs              = require('fs'),
     // log4js      = require('log4js')(),
     express         = require('express'),
     Schema          = require('mongoose').Schema,
-    MemoryStore     = require('connect').middleware.session.MemoryStore,
+    BozukoStore     = Bozuko.require('core/session/store'),
     Monomi          = require('monomi'),
     Controller      = Bozuko.require('core/controller'),
     TransferObject  = Bozuko.require('core/transfer'),
@@ -51,7 +53,7 @@ function initApplication(app){
 
 
     // setup basic authentication for development
-    if( Bozuko.env == 'development'){
+    if( Bozuko.config.server.auth ){
         app.use(express.basicAuth(function(user, pass){
             return Bozuko.config.auth[user] == pass;
         }));
@@ -63,18 +65,24 @@ function initApplication(app){
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    app.use(express.session({ store: new MemoryStore({ reapInterval: -1 }), secret: 'chqsmells' }));
+    
+    Bozuko.sessionStore = new BozukoStore({
+        reapInterval: 1000 * 60 * 5,
+        maxAge: 1000 * 60 * 60 * 24
+    });
+    
+    app.use(express.session({key:'bozuko_sid', secret: 'chqsmells', store: Bozuko.sessionStore }));
+    // app.use(express.session({key:'bozuko_sid', secret: 'chqsmells'}));
 
     app.use(Monomi.detectBrowserType());
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
-
+    app.use(express.profiler());
     app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
-    app.use(express.compiler({ src: __dirname + '/../static', enable: ['less'] }));
+    app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
     //    app.use(express.repl('Bozuko.', 8050));
-    app.use(express.static(__dirname + '/../static'));
-
+    app.use(express.static(__dirname + '/static'));
 }
 
 function initModels(){
@@ -154,7 +162,7 @@ function initControllers(app){
 
         var name = file.replace(/\..*?$/, '');
         var Name = name.charAt(0).toUpperCase()+name.slice(1);
-        Bozuko.controllers[Name] = Controller.create(app,name,Bozuko.require('controllers/'+name).routes);
+        Bozuko.controllers[Name] = Controller.create(app,name,Bozuko.require('controllers/'+name));
     });
 }
 
@@ -168,6 +176,45 @@ function initGames(app){
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Bozuko.require('/games/'+file);
             app.use('/game/'+name, express.static(Bozuko.dir+'/games/'+name+'/resources'));
+        }
+    });
+}
+
+// this will be called 4 times with multinode...
+// not sure how to avoid this...
+function initFacebookPubSub(){
+    var url = 'https://graph.facebook.com/'+
+              Bozuko.config.facebook.app.id+
+              '/subscriptions?access_token='+
+              Bozuko.config.facebook.app.access_token;
+              
+    // first we need to delete any existing subscriptions
+    http.request({
+        url: url,
+        method: 'DELETE',
+        callback: function(body){
+            // now lets setup the new subscriptions
+            console.log('deleted?');
+            http.request({
+                url: url,
+                method: 'POST',
+                params: {
+                    object: 'user',
+                    fields: 'likes',
+                    callback_url: create_url('/facebook/pubsub'),
+                    verify_token: Bozuko.config.facebook.app.pubsub_verify                    
+                }
+            });
+            http.request({
+                url: url,
+                method: 'POST',
+                params: {
+                    object: 'permissions',
+                    fields: Bozuko.config.facebook.perms.business,
+                    callback_url: create_url('/facebook/pubsub'),
+                    verify_token: Bozuko.config.facebook.app.pubsub_verify
+                }
+            });
         }
     });
 }

@@ -10,6 +10,7 @@ exports.transfer_objects = {
         doc: "A Bozuko Page",
 
         def: {
+            id: "String",
             name: "String",
             image: "String",
             facebook_page: "String",
@@ -82,7 +83,7 @@ exports.links = {
                 ll : {
                     required: true,
                     type: "String",
-                    description: 'The user\'s latitude / latitude separated by a comma (example 42.1234121,-71.2423423). This is always required.'
+                    description: 'The user\'s latitude / longitude separated by a comma (example 42.1234121,-71.2423423). This is always required.'
                 },
                 bounds : {
                     type: "String",
@@ -208,7 +209,7 @@ exports.routes = {
                     var lng = parseFloat(parts[1]);
                     options.ll = [lng,lat];
                 }
-                
+                // lets also look for bounds
                 if(bounds){
                     var parts = bounds.split(',');
                     if( parts.length != 4 ){
@@ -236,12 +237,6 @@ exports.routes = {
                         }
                         var searchEnd = new Date();
                         profiler.mark('search time');
-                        if( pages ) pages.forEach(function(page){
-                            // is this a user favorite?
-                            if( page.registered && req.user ){
-                                page.favorite = ~user.favorites.indexOf(page._id);
-                            }
-                        });
                         return res.send(Bozuko.transfer('page',pages));
                     }
                 );
