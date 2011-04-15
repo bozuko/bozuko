@@ -115,10 +115,7 @@ BozukoStore.prototype.set = function(sid, data, fn){
  */
 
 BozukoStore.prototype.destroy = function(sid, fn){
-    Bozuko.models.Session.remove({sid:sid}, function(error){
-        console.log(arguments);
-        fn();
-    });
+    Bozuko.models.Session.remove({sid:sid}, fn);
 };
 
 /**
