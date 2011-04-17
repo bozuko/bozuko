@@ -1,0 +1,37 @@
+!!!
+html
+  head
+    title Bozuko - Coming Soon
+    script(type="text/javascript",src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js")
+    script(type="text/javascript",src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js")
+    link(rel="stylesheet",type="text/css",href="/css/desktop/coming-soon.css")
+    link(rel="stylesheet",type="text/css",href="/css/bozuko-ui/jquery-ui-1.8.11.custom.css")
+    script(type="text/javascript",src="/js/desktop/coming-soon.js")
+  
+  body
+    #coming-soon
+      .logo
+        .subtext Coming Soon...
+      
+      .signup
+        p Sign up to be notified when we launch.
+        
+        form(action="http://bozuko.us2.list-manage1.com/subscribe/post?u=95f277ab7ff56e69283f6a4e6&amp;id=9440d65eea",
+             method="post",
+             id="mc")
+          
+          input.email(type="text", name="EMAIL")
+          input.submit(type="submit",value="Sign Up &raquo;")
+          
+          .hidden
+            .city
+              p Which cities do you want to get updates about?
+              
+              ul
+                -each city, i in cities
+                  li
+                    input(type="checkbox",value="1",name="group[1]["+(i==0?1:Math.pow(2,i))+"]",id="mce-group[1]-1-"+i)
+                    label(for="mce-group[1]-1-"+i) #{city}
+        
+      .copyright
+        &copy; 2011 Bozuko, Inc.
