@@ -1,0 +1,118 @@
+@import url("/css/fonts/ptsans/stylesheet.css");
+
+@import url("/css/oocss/core/libraries.css");
+
+@import url("/css/oocss/core/grid/grids.css");
+
+@import url("/css/oocss/core/heading/heading.css");
+
+@import url("/css/oocss/core/template/template.css");
+
+@import url("typography.css");
+html {
+  background: #333333 url("/images/cs/bg_cs-bd.png") repeat 0 0;
+}
+#coming-soon {
+  background: transparent url("/images/cs/bg_cs-top.png") repeat-x 0 0;
+  text-align: center;
+  padding-top: 100px;
+}
+#coming-soon * {
+  outline: none !important;
+}
+#coming-soon .logo {
+  width: 446px;
+  height: 152px;
+  margin: 0 auto;
+  position: relative;
+  background: url("/images/cs/img_cs-logo.png") no-repeat 0 0;
+}
+#coming-soon .logo .subtext {
+  color: #fff;
+  position: absolute;
+  font-family: PTSansBold;
+  bottom: 0px;
+  left: 170px;
+  text-shadow: 4px 4px 4px #111;
+  font-size: 30px;
+}
+#coming-soon .signup {
+  margin-bottom: 10px;
+  margin-top: 60px;
+}
+#coming-soon .signup p {
+  font-family: PTSansRegular;
+  color: #fff;
+  text-shadow: 4px 4px 4px #111;
+  font-size: 30px;
+}
+#coming-soon .signup form {
+  width: 588px;
+  height: 64px;
+  margin: 0 auto;
+  position: relative;
+}
+#coming-soon .signup form .email {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: transparent;
+  border: 0;
+  background: url("/images/cs/bg_input.png") no-repeat 0 0;
+  padding: 10px;
+  font-size: 30px;
+  color: #999;
+  height: 44px;
+  width: 401px;
+}
+#coming-soon .signup form .email-active {
+  color: #666;
+}
+#coming-soon .signup form .email:focus {
+  background: url("/images/cs/bg_input.png") no-repeat 0 -65px;
+}
+#coming-soon .signup form .submit {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  font-family: PTSansBold;
+  text-align: center;
+  background: url("/images/cs/bg_input.png") no-repeat 100% 0;
+  padding: 10px;
+  font-size: 30px;
+  color: #fff;
+  width: 167px;
+  text-shadow: 1px 1px 1px #111;
+  cursor: pointer;
+}
+#coming-soon .signup form .submit-focus {
+  background-position: 100% -65px;
+}
+#coming-soon .signup form .submit:active {
+  background-position: 100% -130px;
+}
+#coming-soon .signup form .hidden {
+  display: none;
+}
+#coming-soon .copyright {
+  color: #999;
+}
+.city {
+  font-family: PTSansRegular;
+  font-size: 16px;
+}
+.city p {
+  font-weight: bold;
+}
+.city input {
+  margin-right: 10px;
+}
+.city li {
+  margin-left: 20px;
+  margin-bottom: 4px;
+}

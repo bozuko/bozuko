@@ -2,9 +2,10 @@ var ExtJs       = Bozuko.require('util/extjs'),
     facebook    = Bozuko.require('util/facebook'),
     Page        = Bozuko.require('util/page'),
     URL         = require('url'),
+    fs          = require('fs'),
     qs          = require('querystring');
     
-exports.renderOptions = {
+exports.locals = {
     nav: [
         {
             text: 'about',
@@ -14,18 +15,19 @@ exports.renderOptions = {
             text: 'bozuko for business',
             link: '/business'
         }
-    ]
+    ],
+    scripts: ['/js/jquery/plugins/jquery.fancybox-1.3.4/fancybox/jquery.fancybox-1.3.4.pack.js'],
+    // styles: ['/js/jquery/plugins/jquery.fancybox-1.3.4/style.css'],
+    title: "Bozuko"
 }
 
 exports.routes = {
 
     '/' : {
         
-
         description :'Index page',
 
-        all : function(req,res){
-            var i = 0;
+        get: function(req,res){
             var u = req.session.user;
             var locals = {
                 title: 'Bozuko',
@@ -34,7 +36,29 @@ exports.routes = {
             if( req.session.device == 'desktop' ){
                 locals.scripts.push('/js/desktop/pages/index.js');
             }
-            res.render('site/index.jade', locals);
+            res.render('site/index', locals);
+        }
+    },
+    
+    'coming-soon':{
+        description: 'Coming soon page',
+        
+        get : function(req,res){
+            res.locals.layout = false;
+            // get the mailchimp signup form
+            res.locals.cities = [
+                "Boston, MA",
+                "New York, NY",
+                "Austin, TX",
+                "San Francisco, CA",
+                "Los Angeles, CA",
+                "Las Vegas, NV",
+                "Chicago, IL",
+                "Seattle, WA",
+                "Miami, FL"
+            ];
+            res.locals.signup = fs.readFileSync(Bozuko.dir+'/content/site/mailchimp-signup.html', 'utf-8');
+            res.render('site/coming-soon');
         }
     },
 
@@ -50,7 +74,25 @@ exports.routes = {
         }
     },
     
-    '/business' : Page('Bozuko for business', 'business/index'),
+    '/business' : {
+        
+        locals: {
+            test: 'route config local'
+        },
+        
+        get: {
+            
+            locals : {
+                title: "Business Page",
+                test: 'method config local'
+            },
+            
+            handler : function(req,res){
+                //res.locals.test = "handler local";
+                res.render('business/index');
+            }
+        }
+    },
 
     '/get_token' : {
 

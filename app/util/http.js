@@ -52,6 +52,7 @@ exports.request = function(config){
     
     var request = http_.request({
         host: url_parsed.host,
+        agent: false,
         port: port,
         path: path,
         headers: headers,

@@ -33,6 +33,7 @@ function api(path, options, callback){
     merge(params, options.params || {});
 
     var _callback = function(response){
+        console.log(response);
         if( !response || response.meta.code != 200 ){
             return callback( Bozuko.error('foursquare/api', response.meta) );
         }

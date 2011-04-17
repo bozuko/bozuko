@@ -11,7 +11,7 @@ module.exports = function session(){
         var re = new RegExp('('+ignoreExtensions.join('|')+')$', 'i');
         if( !req.session || re.test(path) ){
             return next();
-        }
+        }        
 
         var q = {};
 

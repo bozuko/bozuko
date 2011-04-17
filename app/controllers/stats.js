@@ -44,49 +44,65 @@ exports.routes = {
                     }
                 }
                 options.sort = sort;
+                
 
-                return Bozuko.models.Statistic.search(options, function(error, stats) {
+                if( format == 'csv') return Bozuko.models.Statistic.collection.find({}, function(error, cursor) {
 
-                    if( format == 'csv' ){
-                        var fields = [
-                            'service',
-                            'sid',
-                            'name',
-                            'city',
-                            'lat',
-                            'lng',
-                            'total_checkins',
-                            'daily_checkins',
-                            'timestamp',
-                            'link'
-                        ];
-                        res.header('content-type','text/csv');
-                        stats.forEach(function(stat){
-                            if( !stat.get('daily_checkins') ) stat.set('daily_checkins', 0);
-                            var line = [];
-                            fields.forEach(function(field){
-                                var v;
-                                if( field == 'link' ){
-                                    v = 'https://'+Bozuko.config.server.host
-                                        +':'+Bozuko.config.server.port+'/stats/redirect/'
-                                        +stat.get('service')+'/'+stat.get('sid');
-                                }
-                                else{
-                                    v = stat.get(field);
-                                }
-                                v = v+'';
-                                line.push( '"'+(v.replace(/"/g,'\"'))+'"');
-                            });
-                            res.write(line.join(',')+'\n');
+                    var fields = [
+                        'service',
+                        'sid',
+                        'name',
+                        'city',
+                        'lat',
+                        'lng',
+                        'total_checkins',
+                        'daily_checkins',
+                        'timestamp',
+                        'link'
+                    ];
+                    res.header('content-type','text/csv');
+                    res.writeHead(200);
+                    var nostat=0;
+                    var cstat=0;
+                    cursor.each(function(error,stat){
+                        
+                        if( error ) console.log(error);
+                        
+                        if( !stat ){
+                            // this is the last record.
+                            res.end();
+                            return;
+                        }
+                        
+                        //console.log('stat '+(++cstat));
+                        if( !stat.daily_checkins ) stat.daily_checkins = 0;
+                        var line = [];
+                        fields.forEach(function(field){
+                            var v;
+                            if( field == 'link' ){
+                                v = 'https://'+Bozuko.config.server.host
+                                    +':'+Bozuko.config.server.port+'/stats/redirect/'
+                                    +stat.service+'/'+stat.sid;
+                            }
+                            else{
+                                v = stat[field];
+                            }
+                            v = v+'';
+                            line.push( '"'+(v.replace(/"/g,'\"'))+'"');
                         });
-                        return res.end();
-                    }
-                    else{
-                        if (error) return error.send(res);
-                        return res.send(stats);
-                    }
+                        line = line.join(',');
+                        //console.log(line);
+                        res.write(line+'\n','utf-8');
+                    });
+                    
+                });
+                
+                return Bozuko.models.Statistic.search(options, function(error, stats){
+                    if (error) return error.send(res);
+                    return res.send(stats);
                 });
             }
+            
         }
     },
 
