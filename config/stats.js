@@ -57,7 +57,7 @@ module.exports = {
             user: "mailer@bozuko.com",
             pass: "7axxn7d8"
         },
-        sender: 'Bozuko Mailer <mailer@bozuko.com>'
+        sender: 'Bozuko Stats Mailer <mailer@bozuko.com>'
     },
 
     defaultService:'facebook',
