@@ -51,6 +51,18 @@ module.exports = {
         host: 'bonobo.bozuko.com',
         port: port
     },
+    
+    email : {
+        smtp:{
+            host: "smtp.gmail.com",
+            port: 465,
+            ssl: true,
+            use_authentication: true,
+            user: "mailer@bozuko.com",
+            pass: "7axxn7d8"
+        },
+        sender: 'Bozuko Mailer <mailer@bozuko.com>'
+    },
 
     defaultService:'facebook',
 

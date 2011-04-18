@@ -37,6 +37,7 @@ var BozukoStore = module.exports = function BozukoStore(options) {
             self.reap(self.maxAge);
         }, this.reapInterval, this);
     }
+    this.reap();
 };
 
 /**
@@ -115,7 +116,10 @@ BozukoStore.prototype.set = function(sid, data, fn){
  */
 
 BozukoStore.prototype.destroy = function(sid, fn){
-    Bozuko.models.Session.remove({sid:sid}, fn);
+    Bozuko.models.Session.remove({sid:sid}, function(error){
+        if( error ) console.log(error, error.stack);
+        fn(null);
+    });
 };
 
 /**

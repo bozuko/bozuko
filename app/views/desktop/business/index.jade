@@ -3,14 +3,17 @@
   .unit.size3of4
     h1= title
     p
-      | Description of how bozuko for business works.
-      | Describe the benefits of Bozuko vs. Facebook deals, etc.
+    | Description of how bozuko for business works.
+    | Describe the benefits of Bozuko vs. Facebook deals, etc.
+      
+    p
+    != test
   
   .unit.size1of4.lastUnit
-  
-    - if( user && user.can_manage_pages )
-      h3 Your Account
-      a(href="/business/account") Go to your account page
-    
-    - else
-      a(href="/business/sign-up") Sign up your business today!
+    .right-column
+      - if( user && user.can_manage_pages )
+        h3 Your Account
+        a(href="/business/account") Go to your account page
+      
+      - else
+        a(href="/business/sign-up") Sign up your business today!

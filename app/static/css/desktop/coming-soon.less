@@ -1,0 +1,130 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+@import url("/css/fonts/ptsans/stylesheet.css");
+
+@import url("/css/oocss/core/libraries.css");
+@import url("/css/oocss/core/grid/grids.css");
+@import url("/css/oocss/core/heading/heading.css");
+@import url("/css/oocss/core/template/template.css");
+
+@import url("typography.css");
+
+html {
+    background: #333 url("/images/cs/bg_cs-bd.png") repeat 0 0;
+}
+#coming-soon{
+    background: transparent url("/images/cs/bg_cs-top.png") repeat-x 0 0;
+    text-align: center;
+    padding-top: 100px;
+    
+    *{ outline: none !important;}
+    
+    .logo {
+        width: 446px;
+        height: 152px;
+        margin: 0 auto;
+        position: relative;
+        background: url("/images/cs/img_cs-logo.png") no-repeat 0 0;
+        
+        .subtext {
+            color: #fff;
+            position: absolute;
+            font-family: PTSansBold;
+            bottom: 0px;
+            left: 170px;
+            text-shadow: 4px 4px 4px #111;
+            font-size: 30px;
+        }
+    }
+    
+    .signup {
+        margin-bottom: 10px;
+        margin-top: 60px;
+        p {
+            font-family: PTSansRegular;
+            color: #fff;
+            text-shadow: 4px 4px 4px #111;
+            font-size: 30px;
+        }
+        
+        form {
+            width: 588px;
+            height: 64px;
+            margin: 0 auto;
+            position: relative;
+            
+            .email {
+                position: absolute;
+                left: 0;
+                top: 0;
+                background: transparent;
+                border: 0;
+                background: url("/images/cs/bg_input.png") no-repeat 0 0;
+                padding: 10px;
+                font-size: 30px;
+                color: #999;
+                height: 44px;
+                width: 401px;
+            }
+            .email-active{
+                color: #666;
+            }
+            .email:focus{
+                background: url("/images/cs/bg_input.png") no-repeat 0 -65px;
+            }
+            
+            .submit{
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                margin: 0;
+                background: transparent;
+                border: 0;
+                font-family: PTSansBold;
+                text-align: center;
+                background: url("/images/cs/bg_input.png") no-repeat 100% 0;
+                padding: 10px;
+                font-size: 30px;
+                color: #fff;
+                width: 167px;
+                text-shadow: 1px 1px 1px #111;
+                cursor: pointer;
+            }
+            
+            .submit-focus{
+                background-position: 100% -65px;
+            }
+            
+            .submit:active{
+                background-position: 100% -130px;
+            }
+            .hidden{
+                display: none;
+            }
+        }
+    }
+    .copyright {
+        color: #999;
+    }
+}
+
+.city {
+    font-family: PTSansRegular;
+    font-size: 16px;
+    
+    p {
+        font-weight: bold;
+    }
+    
+    input {
+        margin-right: 10px;
+    }
+    
+    li {
+        margin-left: 20px;
+        margin-bottom: 4px;
+    }
+}

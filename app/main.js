@@ -18,14 +18,14 @@ var fs              = require('fs'),
 
 exports.init = function(app){
 
+    // setup our models
+    initModels();
+    
     // initialize the application
     initApplication(app);
 
     // setup our device dependent renderer
     Bozuko.require('core/view');
-
-    // setup our models
-    initModels();
 
     // setup out transfer objects
     initTransferObjects();
@@ -77,12 +77,12 @@ function initApplication(app){
     app.use(Monomi.detectBrowserType());
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
-    app.use(express.profiler());
+    // app.use(express.profiler());
     app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
-    //    app.use(express.repl('Bozuko.', 8050));
     app.use(express.static(__dirname + '/static'));
+    //    app.use(express.repl('Bozuko.', 8050))    
 }
 
 function initModels(){

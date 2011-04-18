@@ -25,10 +25,39 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
+    
+    checkin: {
+        duration: {
+            // 15 minutes between any checkins per user
+            user: 1000 * 60 * 15,
+            // 4 hours between checkins at the same place
+            page: 1000 * 60 * 60 * 4
+        }
+    },
+    
+    search: {
+        // radius to search for "Nearby Games" in miles
+        nearbyRadius: 2,
+        nearbyLimit: 4
+    },
 
     server: {
+        auth: false,
+        ssl: false,
         host: 'bonobo.bozuko.com',
         port: port
+    },
+    
+    email : {
+        smtp:{
+            host: "smtp.gmail.com",
+            port: 465,
+            ssl: true,
+            use_authentication: true,
+            user: "mailer@bozuko.com",
+            pass: "7axxn7d8"
+        },
+        sender: 'Bozuko Stats Mailer <mailer@bozuko.com>'
     },
 
     defaultService:'facebook',
