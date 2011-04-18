@@ -1,4 +1,5 @@
-var merge = require('connect').utils.merge;
+var merge = require('connect').utils.merge,
+    auth = require('./auth');
 
 function Controller(app,name,config){
     this.app = app;
@@ -58,30 +59,9 @@ Controller.prototype = {
                         }
 
                         if( methodConfig.access ){
-                            var _handler = handler;
-                            switch( methodConfig.access ){
-                                case 'user':
-                                    handler = function(req,res){
-                                        if( !req.session.user ){
-                                            return Bozuko.error('bozuko/auth').send(res);
-                                        }
-                                        return _handler(req,res);
-                                    };
-                                    break;
-                                case 'appuser':
-                                    handler = function(req,res){
-                                        if( !req.session.user ){
-                                            return Bozuko.error('bozuko/auth').send(res);
-                                        }
-                                        if( !req.session.user ){
-                                            // TODO - check to make sure the user has a phone-id and phone-type
-                                        }
-                                        return _handler(req,res);
-                                    };
-                                    break;
-                            }
+                            handler = auth.check(methodConfig.access, handler);
                         }
-                        
+
                         if( methodConfig.title ){
                             _locals.title = methodConfig.title;
                         }
@@ -102,7 +82,7 @@ Controller.prototype = {
                         };
 
                     }
-                    
+
                     // change the controller to use a modified version of the
                     // express "render" function
                     var $handler = handler;
@@ -114,10 +94,10 @@ Controller.prototype = {
                         }
                         res.render = function(){
                             var args = Array.prototype.slice.call(arguments, 0);
-                            
+
                             // local variables should be the second variable
                             if( args.length == 0  ) return _render.apply(res, args);
-                            
+
                             // need to clone renderOptions to prevent the original from being corrupted
                             var locals = {};
                             for( var i in res.locals){
@@ -143,13 +123,13 @@ Controller.prototype = {
             });
         });
     },
-    
+
     _cleanPath : function(path){
         if( !/^\//.test(path)) path = '/'+path;
         if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
         return path;
     },
-    
+
 
     forward : function(path){
 
