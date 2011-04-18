@@ -72,7 +72,7 @@ exports.game = function(contest){
 exports.transfer = function(key, data){
 	if( !data ) return this._transferObjects[key];
 	try{
-		
+
 		if( Array.isArray(data) ){
 			var ret = [];
 			var self = this;

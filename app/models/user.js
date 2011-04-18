@@ -118,10 +118,24 @@ User.static('addOrModify', function(user, phone, service, callback) {
             u.email = user.contact.email;
         }
         u.gender = user.gender;
+        var val = u.verify_phone(phone);
+        if (val === 'mismatch') {
+            return callback(Bozuko.error('login/phone_type_mismatch'));
+        } else if (val === 'new') {
+            u.phones.push(phone);
+        }
 
+        u.service(service, user.id, user.token, user);
+        u.save(function(err) {
+            if (err) return callback(err);
+            return callback(null, u);
+        });
+    });
+});
+
+User.method('verify_phone', function(phone) {
         var phone_type_mismatch = false;
-        // Add the phone to the user's account if it isn't there
-        // TODO: Make sure this phone doesn't exist with any other facebook accounts
+
         if (u.phones.every(function(p) {
             if (p.type === phone.type && p.id === phone.id) {
                 return false;
@@ -132,18 +146,14 @@ User.static('addOrModify', function(user, phone, service, callback) {
             }
             return true;
         })) {
-            u.phones.push(phone);
             console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+user.id);
+            return 'new';
         }
-        if (phone_type_mismatch) return callback(Bozuko.error('login/phone_type_mismatch'));
-
-        u.service(service, user.id, user.token, user);
-        u.save(function(err) {
-            if (err) return callback(err);
-            return callback(null, u);
-        });
-    });
+        if (phone_type_mismatch) return 'mismatch';
+        return 'match';
 });
+
+
 
 function create_token(user, salt, next) {
     var token = hmac.update(user.name+salt).digest('hex');
