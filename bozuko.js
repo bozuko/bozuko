@@ -72,7 +72,7 @@ exports.game = function(contest){
 exports.transfer = function(key, data){
 	if( !data ) return this._transferObjects[key];
 	try{
-		
+
 		if( Array.isArray(data) ){
 			var ret = [];
 			var self = this;
@@ -135,4 +135,7 @@ exports.error = function(name, data){
 
 exports.t = function(){
     return self.require('core/lang').translate.apply(this, arguments);
+};
+
+exports.access = {
 };
