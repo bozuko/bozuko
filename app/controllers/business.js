@@ -6,7 +6,7 @@ var facebook    = Bozuko.require('util/facebook'),
     url         = require('url')    
 ;
 
-exports.renderOptions = {
+exports.locals = {
     title : "Bozuko for Business"
 };
 

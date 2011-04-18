@@ -67,7 +67,7 @@ var game = {
         can_play: "Boolean",
         start_time: "String",
         end_time: "String",
-        entry_methods:'entry_method',
+        entry_method:'entry_method',
         prizes:['game_prize'],
         rules: "String",
         links: {

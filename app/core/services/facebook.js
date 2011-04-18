@@ -138,7 +138,6 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                     u.service('facebook').internal = {
                                         likes: user.data.likes
                                     };
-                                    console.log(user.data.likes);
                                     u.commit('facebook.internal');
                                     u.save(function(error){
                                         /**

@@ -1,5 +1,5 @@
-var merge = require('connect').utils.merge;
-var auth = require('./auth');
+var merge = require('connect').utils.merge,
+    auth = require('./auth');
 
 function Controller(app,name,config){
     this.app = app;
@@ -16,7 +16,7 @@ Controller.prototype = {
 
     route : function(routes){
 
-        var _this = this;
+        var self = this;
         var app = this.app;
 
         Object.keys(routes).forEach(function(route){
@@ -29,15 +29,15 @@ Controller.prototype = {
             if( !config.aliases ) config.aliases = [];
             if( config.alias ) config.aliases.push(config.alias);
 
-            if( !/^\//.test(path)) path = '/'+path;
-            if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
-
             ['get','post','put','del','all'].forEach( function(method){
 
                 if( config[method] ){
                     var handler = function(req,res){
                         res.send("Handler is not configured yet :(");
                     };
+                    var _locals = self.locals || {};
+                    merge(_locals, config.locals || {});
+                    if( config.title ) _locals.title = config.title;
                     if( config[method] instanceof Function ){
                         handler = config[method];
                     }
@@ -49,7 +49,7 @@ Controller.prototype = {
                             handler = function(req,res){
                                 var ret = example;
                                 if( example instanceof Function ){
-                                    ret = example.apply(_this,arguments);
+                                    ret = example.apply(self,arguments);
                                 }
                                 res.send(ret);
                             };
@@ -62,9 +62,16 @@ Controller.prototype = {
                             handler = auth.check(methodConfig.access, handler);
                         }
 
+                        if( methodConfig.title ){
+                            _locals.title = methodConfig.title;
+                        }
+                        if( methodConfig.locals ){
+                            merge(_locals, methodConfig.locals);
+                        }
+
                         // check for docs...
-                        if( !_this.doc.routes[route] ) _this.doc.routes[route] = {};
-                        var doc = _this.doc.routes[route];
+                        if( !self.doc.routes[route] ) self.doc.routes[route] = {};
+                        var doc = self.doc.routes[route];
 
                         doc[method] = methodConfig.doc || {
                             description: 'No decription yet',
@@ -81,37 +88,46 @@ Controller.prototype = {
                     var $handler = handler;
                     handler = function(req,res){
                         var _render = res.render;
+                        res.locals = {};
+                        for(var i in _locals){
+                            res.locals[i] = _locals[i];
+                        }
                         res.render = function(){
                             var args = Array.prototype.slice.call(arguments, 0);
 
                             // local variables should be the second variable
-                            if( args.length < 2 ) return _render.apply(res, args);
-                            var opts = _this.renderOptions || {};
+                            if( args.length == 0  ) return _render.apply(res, args);
 
                             // need to clone renderOptions to prevent the original from being corrupted
-                            var _opts = {};
-                            for( var i in (opts||{})){
-                                _opts[i] = opts[i];
+                            var locals = {};
+                            for( var i in res.locals){
+                                locals[i] = res.locals[i];
                             }
-
                             // combine any locals that were provided
-                            args[1] = merge( _opts , args[1] || {} );
+                            args[1] = merge( locals, args[1] || {} );
                             return _render.apply(res, args);
                         }
                         $handler(req,res);
                     };
-
+                    path = self._cleanPath(path);
                     app[method](path, function(req,res){
-                        handler.apply(_this,arguments);
+                        handler.apply(self,arguments);
                     });
                     config.aliases.forEach(function(alias){
+                        alias = self._cleanPath(alias);
                         app[method](alias, function(req,res){
-                            handler.apply(_this,arguments);
+                            handler.apply(self,arguments);
                         });
                     });
                 }
             });
         });
+    },
+
+    _cleanPath : function(path){
+        if( !/^\//.test(path)) path = '/'+path;
+        if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
+        return path;
     },
 
 

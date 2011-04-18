@@ -1,4 +1,6 @@
-var async = require('async');
+var async = require('async'),
+    mail = Bozuko.require('util/mail')
+    ;
 
 var locations = {
     "MA - Faneuil Hall":[42.360133,-71.055767],
@@ -71,7 +73,7 @@ var locations = {
 var collect = exports.collect = function(service, city, center, callback) {
     Bozuko.service(service).search({center: center, limit: 50}, function(err, results) {
         if (err) {
-            console.log(service+" search error: latLng = "+JSON.stringify(latLng)+", error = "+err);
+            console.log(service+" search error: latLng = "+JSON.stringify(center)+", error = "+err);
             return callback(err);
         }
 
@@ -80,6 +82,7 @@ var collect = exports.collect = function(service, city, center, callback) {
                 stats: 0,
                 errors: 0
             };
+                
             console.log(service+' got '+results.length+' results for '+city);
             return async.forEach(results,
                 function(page, cb) {
@@ -117,8 +120,25 @@ exports.collect_all = function(callback) {
     var fns = [];
     var errors = 0;
     var stats = 0;
+    
+    mail.send({ 
+        to      :"info@bozuko.com",
+        subject :"Bozuko Stat Collection Starting",
+        body    :["Yo-",
+                  "",
+                  "FYI - The statistic collection process just started, I'll send an email when its finished.",
+                  "If you do not receive the follow up email, there may be a problem.",
+                  "",
+                  "-Bozuko"].join('\n')
+    },
+    function(error, success){
+        if( error || !success ){
+            console.log("Error sending mail");
+        }
+    });
+    
     Object.keys(locations).forEach(function(city) {
-        var center = locations[city][0];
+        var center = locations[city].reverse();
             
         ['facebook','foursquare'].forEach(function(service){
             fns.push(function(callback){
@@ -134,9 +154,79 @@ exports.collect_all = function(callback) {
             });
         });
     });
-
     async.series(fns, function(err, results){
         console.log('Collect All ran - found '+errors+' errors, '+stats+' places');
+        // lets create a csv buffer
+        var d = new Date();
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        
+        Bozuko.models.Statistic.find({timestamp:{$gt:d}}, function(error, statistics){
+            
+            if( error ){
+                return console.log(error);
+            }
+            var fields = [
+                'service',
+                'sid',
+                'name',
+                'city',
+                'lat',
+                'lng',
+                'total_checkins',
+                'daily_checkins',
+                'timestamp',
+                'link'
+            ];
+            var lines = [];
+            statistics.forEach(function(stat){
+                if( !stat ) return;
+                        
+                if( !stat.daily_checkins ) stat.daily_checkins = 0;
+                var line = [];
+                fields.forEach(function(field){
+                    var v;
+                    if( field == 'link' ){
+                        v = 'https://'+Bozuko.config.server.host
+                            +':'+Bozuko.config.server.port+'/stats/redirect/'
+                            +stat.service+'/'+stat.sid;
+                    }
+                    else{
+                        v = stat[field];
+                    }
+                    v = v+'';
+                    line.push( '"'+(v.replace(/"/g,'\"'))+'"');
+                });
+                lines.push(line);
+            });
+            
+            var csv = {
+                filename: "Bozuko_Stats_"+(d.getMonth()+1)+'-'+(d.getDate())+'-'+d.getFullYear()+'.csv',
+                contents: new Buffer(lines.join('\n'),'utf-8')
+            };
+            
+            return mail.send({
+                to      :"info@bozuko.com",
+                subject :"Bozuko Stat Collection Finished",
+                body    :["Looking good-",
+                          "",
+                          "The stats collection finished. Here is a quick overview:",
+                          "We collected stats for "+stats+" places.",
+                          "There were "+errors+" errors during collection",
+                          "",
+                          "",
+                          "",
+                          "-Bozuko"].join('\n'),
+                attachments: [csv]
+            },
+            function(error, success){
+                if( error || !success ){
+                    console.log("Error sending mail");
+                }
+            });
+            
+        });
     });
 
 };

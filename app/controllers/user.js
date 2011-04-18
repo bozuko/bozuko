@@ -128,8 +128,9 @@ exports.routes = {
         aliases: ['/logout'],
 
         get : function(req,res){
-            req.session.destroy();
-            res.redirect('/');
+            req.session.destroy(function(){
+                res.redirect('/');
+            });
         }
     },
 
