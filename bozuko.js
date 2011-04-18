@@ -136,6 +136,3 @@ exports.error = function(name, data){
 exports.t = function(){
     return self.require('core/lang').translate.apply(this, arguments);
 };
-
-exports.access = {
-};
