@@ -1,4 +1,5 @@
 var merge = require('connect').utils.merge;
+var auth = require('./auth');
 
 function Controller(app,name,config){
     this.app = app;
@@ -58,28 +59,7 @@ Controller.prototype = {
                         }
 
                         if( methodConfig.access ){
-                            var _handler = handler;
-                            switch( methodConfig.access ){
-                                case 'user':
-                                    handler = function(req,res){
-                                        if( !req.session.user ){
-                                            return Bozuko.error('bozuko/auth').send(res);
-                                        }
-                                        return _handler(req,res);
-                                    };
-                                    break;
-                                case 'appuser':
-                                    handler = function(req,res){
-                                        if( !req.session.user ){
-                                            return Bozuko.error('bozuko/auth').send(res);
-                                        }
-                                        if( !req.session.user ){
-                                            // TODO - check to make sure the user has a phone-id and phone-type
-                                        }
-                                        return _handler(req,res);
-                                    };
-                                    break;
-                            }
+                            handler = auth.check(methodConfig.access, handler);
                         }
 
                         // check for docs...
@@ -95,7 +75,7 @@ Controller.prototype = {
                         };
 
                     }
-                    
+
                     // change the controller to use a modified version of the
                     // express "render" function
                     var $handler = handler;
@@ -103,24 +83,24 @@ Controller.prototype = {
                         var _render = res.render;
                         res.render = function(){
                             var args = Array.prototype.slice.call(arguments, 0);
-                            
+
                             // local variables should be the second variable
                             if( args.length < 2 ) return _render.apply(res, args);
                             var opts = _this.renderOptions || {};
-                            
+
                             // need to clone renderOptions to prevent the original from being corrupted
                             var _opts = {};
                             for( var i in (opts||{})){
                                 _opts[i] = opts[i];
                             }
-                            
+
                             // combine any locals that were provided
                             args[1] = merge( _opts , args[1] || {} );
                             return _render.apply(res, args);
                         }
                         $handler(req,res);
                     };
-                    
+
                     app[method](path, function(req,res){
                         handler.apply(_this,arguments);
                     });
@@ -133,7 +113,7 @@ Controller.prototype = {
             });
         });
     },
-    
+
 
     forward : function(path){
 

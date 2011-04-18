@@ -24,7 +24,7 @@ exports.transfer_objects= {
         doc: "Bozuko User Favorites",
         def: ["page"]
     },
-    
+
     favorite_response: {
         doc: "The response from a favorite add or delete",
         def: {
@@ -45,7 +45,7 @@ exports.links = {
     },
 
     favorites: {
-        
+
         get: {
             access: 'user',
             doc: "Get users favorites",
@@ -59,9 +59,9 @@ exports.links = {
             returns: ['page']
         }
     },
-    
+
     favorite: {
-        
+
         put: {
             access: 'user',
             doc: "Add a page to a user's favorites",
@@ -113,9 +113,6 @@ exports.routes = {
         aliases     :['/login/:service?'],
 
         get : function(req,res){
-            if (!req.param('phone_type') || !req.param('phone_id')) {
-                //return Bozuko.error('login/no_phone_info').send(res);
-            }
             service = req.param('service') || 'facebook';
             if( req.param('return') ){
                 req.session.user_redirect = req.param('return');
@@ -123,11 +120,11 @@ exports.routes = {
             return Bozuko.service(service).login(req,res,'user',req.session.user_redirect||'/user');
         }
     },
-    
+
     '/user/logout' : {
 
         description :"User logout",
-        
+
         aliases: ['/logout'],
 
         get : function(req,res){
@@ -156,7 +153,7 @@ exports.routes = {
     },
 
     '/user/favorites' : {
-        
+
         get : {
             access: 'user',
 
@@ -168,11 +165,11 @@ exports.routes = {
                 res.redirect('/pages?favorites=true&center='+center+'&token='+token);
             }
         }
-        
+
     },
-    
+
     '/user/favorite/:id':{
-        
+
         put: {
             access: 'user',
             handler: function(req, res) {
@@ -186,7 +183,7 @@ exports.routes = {
                     }
                 }
                 if( found !== false ){
-                    return Bozuko.error('user/favorite_exists');
+                    return Bozuko.error('user/favorite_exists').send(res);
                 }
                 // lets make sure the page exists
                 return Bozuko.models.Page.findById(id, function(error, page){
@@ -202,10 +199,10 @@ exports.routes = {
                             page_id: id
                         }));
                     });
-                });                
+                });
             }
         },
-        
+
         del: {
             access: 'user',
             handler: function(req, res) {
@@ -213,7 +210,7 @@ exports.routes = {
                 var user = req.session.user;
                 var favorites = user.favorites;
                 var found = false;
-                
+
                 if( favorites ) for(var i=0; i<favorites.length && found === false; i++){
                     if( favorites[i]+'' == id ){
                         found = i;
@@ -236,10 +233,10 @@ exports.routes = {
                             page_id: id
                         }));
                     });
-                });                
+                });
             }
         },
-        
+
         post: {
             access: 'user',
             handler: function(req, res) {
@@ -247,7 +244,7 @@ exports.routes = {
                 var user = req.session.user;
                 var favorites = user.favorites;
                 var found = false;
-                
+
                 if( favorites ) for(var i=0; i<favorites.length && found === false; i++){
                     if( favorites[i]+'' == id ){
                         found = i;
@@ -273,11 +270,11 @@ exports.routes = {
                         if(error) return error.send(res);
                         return res.send(Bozuko.transfer('favorite_response', ret));
                     });
-                });                
+                });
             }
         }
     },
-    
+
     '/user/prizes' : {
 
         get : {

@@ -18,7 +18,7 @@ module.exports = function session(){
         if (req.param('token')) {
             q.token = req.param('token');
         }
-        
+
         var newSession = req.session.userJustLoggedIn;
         req.session.userJustLoggedIn = false;
 
@@ -37,7 +37,7 @@ module.exports = function session(){
             // we should really grab this from the db... i think this is what is screwing up our user...
             return Bozuko.models.User.findById(req.session.user._id, function(error, user){
                 req.session.user = user;
-                next();
+                return next();
             });
         }
 
