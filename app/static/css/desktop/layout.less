@@ -2,7 +2,7 @@
 @import "app/static/css/mixins";
 
 html {
-    background: #e8e8e8;
+    background: #e8e8e8 url(/images/desktop/site/bg_bd-scratch.png) 50% 50%;
 }
 
 .page-width {
@@ -17,7 +17,7 @@ html {
 .hd {
     overflow: hidden;
     background: url(/images/desktop/site/bg_hd.png) repeat-x 0 100%;
-    border-bottom: 2px solid #00a24f;
+    border-bottom: 4px solid #00a24f;
     
     .logo {
         width: 306px;
@@ -70,12 +70,17 @@ html {
             margin-left: 20px;
             
             a {
-                font-family: PTSansRegular;
+                font-family: PTSansBold;
                 text-decoration: none;
                 font-size: 20px;
                 line-height: 1.2em;
                 color: #e3e3e3;
             }
+            
+            a:hover{
+                color: #fff;
+            }
+            
         }
     }
 }

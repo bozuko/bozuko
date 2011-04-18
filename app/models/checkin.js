@@ -1,4 +1,5 @@
 var mongoose = require('mongoose'),
+    Coords = require('./plugins/coords'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
@@ -6,17 +7,12 @@ var Checkin = module.exports = new Schema({
     user_id                 :{type:ObjectId},
     page_id                 :{type:ObjectId},
     timestamp               :{type:Date, default: Date.now},
-    coords                  :{
-        lat                 :Number,
-        lng                 :Number
-    },
     description             :{type:String},
     message                 :{type:String},
     service                 :{type:String},
     data                    :{}
 });
-
-Checkin.index({coords:'2d'});
+Checkin.plugin(Coords);
 
 Checkin.method('getPage', function(callback){
     Bozuko.models.Page.findById(this.page_id, callback);
