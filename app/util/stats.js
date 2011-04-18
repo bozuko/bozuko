@@ -138,7 +138,8 @@ exports.collect_all = function(callback) {
     });
     
     Object.keys(locations).forEach(function(city) {
-        var center = locations[city].reverse();
+        var center = locations[city];
+        center.reverse();
             
         ['facebook','foursquare'].forEach(function(service){
             fns.push(function(callback){

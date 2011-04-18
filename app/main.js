@@ -97,6 +97,8 @@ function initModels(){
 
         // create the model
         var schema =  require('./models/'+name);
+        // plugin native functions
+        schema.plugin(require('./models/plugins/native'));
         // add the name
         schema.static('getBozukoModel', function(){
             return Bozuko.models[Name];

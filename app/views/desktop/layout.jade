@@ -8,8 +8,9 @@ html
     -if( locals.styles )
       - each style in styles
         link(rel='stylesheet', type='text/css', href=style);
-    script(type="text/javascript",src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js")
-    script(type="text/javascript",src="/site/config")
+    - if (locals.head_scripts)
+      - each script in head_scripts
+        script(type="text/javascript",src=script)
     
     //- Assign the uid from the last active fb session here.
     script

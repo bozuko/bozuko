@@ -14,6 +14,8 @@ var Statistic = module.exports = new Schema({
     timestamp        :{type: Date, default: Date.now}
 });
 
+Statistic.index({sid: 1, service: 1});
+
 Statistic.pre('save', function(next){
     var self = this;
     Bozuko.models.Statistic.find({

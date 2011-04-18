@@ -16,7 +16,10 @@ exports.locals = {
             link: '/business'
         }
     ],
-    scripts: ['/js/jquery/plugins/jquery.fancybox-1.3.4/fancybox/jquery.fancybox-1.3.4.pack.js'],
+    head_scripts:[
+        'https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js',
+        '/js/jquery/plugins/jquery.fancybox-1.3.4/fancybox/jquery.fancybox-1.3.4.pack.js'
+    ],
     // styles: ['/js/jquery/plugins/jquery.fancybox-1.3.4/style.css'],
     title: "Bozuko"
 }
