@@ -64,10 +64,6 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
-    var phone = {
-        type: req.param('phone_type'),
-        id: req.param('phone_id')
-    };
 
     var protocol = (req.app.key?'https:':'http:');
 
@@ -134,7 +130,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             }
                             var user = result.user;
                             user.token = token;
-                            Bozuko.models.User.addOrModify(user, phone, 'foursquare', function(err, u){
+                            Bozuko.models.User.addOrModify(user, 'foursquare', function(err, u){
                                 if (err) {
                                     console.log("Foursquare login error: "+err);
                                     return err.send(res);
