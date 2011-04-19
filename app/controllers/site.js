@@ -8,12 +8,20 @@ var ExtJs       = Bozuko.require('util/extjs'),
 exports.locals = {
     nav: [
         {
-            text: 'about',
+            text: 'Home',
+            link: '/'
+        },
+        {
+            text: 'About Bozuko',
             link: '/p/about'
         },
         {
-            text: 'bozuko for business',
+            text: 'Bozuko for Business',
             link: '/business'
+        },
+        {
+            text: 'Contact',
+            link: '#'
         }
     ],
     head_scripts:[
@@ -83,15 +91,11 @@ exports.routes = {
             test: 'route config local'
         },
         
+        title: "Bozuko for Business",
+        
         get: {
             
-            locals : {
-                title: "Business Page",
-                test: 'method config local'
-            },
-            
             handler : function(req,res){
-                //res.locals.test = "handler local";
                 res.render('business/index');
             }
         }
