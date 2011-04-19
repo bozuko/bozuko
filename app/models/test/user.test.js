@@ -21,59 +21,19 @@ var fs_user = {
     token: '325252fadf'
 };
 
-var phone1 = {
-    type: 'iphone',
-    id: '323423423423'
-};
-
-var phone1_android = {
-    type: 'android',
-    id: '323423423423'
-};
-
 exports['Add Facebook user'] = function(test) {
-    Bozuko.models.User.addOrModify(fb_user, phone1, 'facebook', function(err, u) {
+    Bozuko.models.User.addOrModify(fb_user, 'facebook', function(err, u) {
         test.ok(!err);
-        test.equal(u.phones.length, 1);
         test.equal(u.services.length, 1);
         test.done();
     });
 };
 
-exports['Change phone type for Facebook user'] = function(test) {
-    Bozuko.models.User.addOrModify(fb_user, phone1_android, 'facebook', function(err, u) {
-        test.ok(err);
-        Bozuko.models.User.findOne({'services.name': 'facebook', 'services.sid': fb_user.id}, function(err, user) {
-            test.ok(!err);
-            test.ok(user);
-            test.equal(user.phones.length, 1);
-            test.equal(user.services.length, 1);
-            test.deepEqual(user.phones[0].type, phone1.type);
-            test.done();
-        });
-    });
-};
-
 exports['Add Foursquare user'] = function(test) {
-    Bozuko.models.User.addOrModify(fs_user, phone1, 'foursquare', function(err, u) {
+    Bozuko.models.User.addOrModify(fs_user, 'foursquare', function(err, u) {
         test.ok(!err);
-        test.equal(u.phones.length, 1);
         test.equal(u.services.length, 2);
         test.done();
-    });
-};
-
-exports['Change phone type for Foursquare user'] = function(test) {
-    Bozuko.models.User.addOrModify(fs_user, phone1_android, 'foursquare', function(err, u) {
-        test.ok(err);
-        Bozuko.models.User.findOne({'services.name': 'foursquare', 'services.sid': fs_user.id}, function(err, user) {
-            test.ok(!err);
-            test.ok(user);
-            test.equal(user.phones.length, 1);
-            test.equal(user.services.length, 2);
-            test.deepEqual(user.phones[0].type, phone1.type);
-            test.done();
-        });
     });
 };
 

@@ -3,7 +3,10 @@ var assert = require('assert');
 var async = require('async');
 var testsuite = require('./config/testsuite');
 
+var auth = Bozuko.require('core/auth');
 var token = assert.token;
+var challenge = assert.challenge;
+var phone = assert.phone;
 var headers = {'content-type': 'application/json'};
 var ok = {status: 200, headers: {'Content-Type': 'application/json'}};
 var bad = {status: 500, headers: {'Content-Type': 'application/json'}};
@@ -75,7 +78,7 @@ exports.assert_one_fav= function(test) {
                 console.log(result);
                 throw e;
             }
-            
+
             test.done();
         });
 };
@@ -124,9 +127,16 @@ exports.facebook_checkin = function(test) {
     var params = JSON.stringify({
         lat: 42.646261785714,
         lng: -71.303897114286,
-        message: "What's up Owl Watch peoples!"
+        message: "What's up Owl Watch peoples!",
+        phone_type: phone.type,
+        phone_id: phone.unique_id,
+        mobile_version: '1.0',
+        challenge_response: auth.mobile_algorithms['1.0'](challenge)
     });
-
+    console.log('phone.type = '+phone.type);
+    console.log('phone.unique_id = '+phone.unique_id);
+    console.log("challenge = "+challenge);
+    console.log('challenge response = '+auth.mobile_algorithms['1.0'](challenge));
     assert.response(test, Bozuko.app,
         {url: checkin_link+"/?token="+token,
         method: 'POST',
@@ -134,6 +144,7 @@ exports.facebook_checkin = function(test) {
         data: params},
         ok,
         function(res) {
+            console.log(res.body);
             var facebook_checkin_result = JSON.parse(res.body);
             test.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
             console.log(res.body);

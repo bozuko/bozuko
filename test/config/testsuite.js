@@ -23,7 +23,7 @@ assert.page_id = "181069118581729";
 
 assert.phone = {
     type: 'iphone',
-    id: 4253525252325352
+    unique_id: '425352525232535'
 };
 
 
@@ -148,6 +148,7 @@ var add_users = function(callback) {
 	    if( error ) return callback( error );
 	    user.service('facebook').auth = auth;
             user.phones = [assert.phone];
+            assert.challenge = user.challenge;
 	    return user.save( function(error){
 		if( error ) return callback( error );
 		return callback( null, user);
