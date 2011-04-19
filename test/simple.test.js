@@ -3,7 +3,6 @@ var assert = require('assert');
 var async = require('async');
 var testsuite = require('./config/testsuite');
 
-var auth = Bozuko.require('core/auth');
 var token = assert.token;
 var challenge = assert.challenge;
 var phone = assert.phone;
@@ -131,12 +130,12 @@ exports.facebook_checkin = function(test) {
         phone_type: phone.type,
         phone_id: phone.unique_id,
         mobile_version: '1.0',
-        challenge_response: auth.mobile_algorithms['1.0'](challenge)
+        challenge_response: Bozuko.require('core/auth').mobile_algorithms['1.0'](challenge)
     });
     console.log('phone.type = '+phone.type);
     console.log('phone.unique_id = '+phone.unique_id);
     console.log("challenge = "+challenge);
-    console.log('challenge response = '+auth.mobile_algorithms['1.0'](challenge));
+    console.log('challenge response = '+Bozuko.require('core/auth').mobile_algorithms['1.0'](challenge));
     assert.response(test, Bozuko.app,
         {url: checkin_link+"/?token="+token,
         method: 'POST',
