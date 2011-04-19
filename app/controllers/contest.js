@@ -29,7 +29,7 @@ var game_result = {
         prize: "prize",
         game: "String",
         user_tokens: "Number",
-        game_update: "game_update",
+        game_state: "game_state",
         links: {
             facebook_checkin: "String",
             facebook_like: "String",
@@ -61,13 +61,11 @@ var game = {
         icon: "String",
         description: "String",
         list_message: "String",
-        user_tokens: "Number",
-        token_message: "String",
         config: "Object",
-        can_play: "Boolean",
         start_time: "String",
         end_time: "String",
         entry_method:'entry_method',
+        game_state: 'game_state',
         prizes:['game_prize'],
         rules: "String",
         links: {
@@ -78,10 +76,11 @@ var game = {
     }
 };
 
-var game_update = {
+var game_state = {
     def: {
         user_tokens: "Number",
         can_play: "Boolean",
+        can_enter: "Boolean",
         next_play_time: "String",
         button_text: "String",
         button_enabled: "Boolean",
@@ -98,7 +97,6 @@ var entry_method = {
     def: {
         available: "Boolean",
         type: "String",
-        tokens: "Number",
         button_text: "String",
         icon: "String",
         description: "String",
@@ -111,7 +109,7 @@ var entry_method = {
 
 exports.transfer_objects = {
     game: game,
-    game_update: game_update,
+    game_state: game_state,
     game_result: game_result,
     entry_method: entry_method,
     game_prize: game_prize

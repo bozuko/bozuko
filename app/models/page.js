@@ -3,8 +3,8 @@ var _t = Bozuko.t;
     mongoose = require('mongoose'),
     merge = require('connect').utils.merge,
     Schema = mongoose.Schema,
-    Service = require('./embedded/service'),
-    Coords = require('./embedded/coords'),
+    Services = require('./plugins/service'),
+    Coords = require('./plugins/coords'),
     Geo = Bozuko.require('util/geo'),
     ObjectId = Schema.ObjectId;
 
@@ -30,8 +30,8 @@ var Page = module.exports = new Schema({
     owner_id            :{type:ObjectId, index: true}
 });
 
-Service.initSchema(Page);
-Coords.initSchema(Page);
+Page.plugin(Services);
+Page.plugin(Coords);
 
 Page.method('getOwner', function(callback){
     Bozuko.models.User.findById( this.owner_id, callback );
@@ -276,57 +276,10 @@ Page.static('loadPagesContests', function(pages, callback){
 });
 
 /**
- *  * mongo find using the low level database driver. The callback is always the last argument.
- *  *
- *  * BE CAREFUL when creating the 'selector' parameter as variables will _not_ be cast
- *  * to the type defined in the mongoose Schema, so it must be done manually.
- *  *
- *  * This is needed for performing "within" searches as I do not see how it is done
- *  * within mongoose right now.
- *  *
- *  * Various argument possibilities
- *  * 1 callback
- *  * 2 selector, callback,
- *  * 3 selector, fields, callback
- *  * 3 selector, options, callback
- *  * 4,selector, fields, options, callback
- *  * 5 selector, fields, skip, limit, callback
- *  * 6 selector, fields, skip, limit, timeout, callback
- *  *
- *  * Available options:
- *  * limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
- *  */
-Page.static('nativeFind', function(){
-    var coll = Bozuko.models.Page.collection;
-    var cb = arguments[arguments.length-1];
-    arguments[arguments.length-1] = function(error, cursor){
-
-        // we are going to change this to model objects...
-        if( error ){
-            return callback(error);
-        }
-        // convert to model objects
-        var pages = [];
-        return cursor.toArray( function (err, docs) {
-            if (err) return callback(err);
-            for (var i = 0; i < docs.length; i++) {
-                pages[i] = new Bozuko.models.Page();
-                pages[i].init(docs[i], function (err) {
-                    if (err) return callback(err);
-                    return true;
-                });
-            }
-            return cb(null, pages);
-        });
-    }
-    coll.find.apply(coll, arguments);
-});
-
-/**
- *  * Big honkin search function that does all the page searches
- *  * including a search (by location - center), "favorites" (by location - center),
- *  *
- *  */
+ * Big honkin search function that does all the page searches
+ * including a search (by location - center), "favorites" (by location - center),
+ *
+ */
 Page.static('search', function(options, callback){
 
     var bozukoSearch = {type:'find', selector:{}, options:{}};

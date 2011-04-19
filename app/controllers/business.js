@@ -80,7 +80,6 @@ exports.routes = {
                 res.render('business/account/add_page', locals );
                 
             });
-            
         },
         
         post : function(req,res){
