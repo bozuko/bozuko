@@ -33,15 +33,18 @@ auth.check = function(access, callback) {
     }
 
     return function(req, res) {
+
         var layer;
         async.forEachSeries(access, function(layer, cb) {
             auth[layer](req, res, cb);
         }, function(err) {
             if (err) {
                 console.log("err = "+err);
+                clear_session_auth(req.session);
                 return err.send(res);
             }
               // Authorization Succeeded
+            clear_session_auth(req.session);
             return callback(req,res);
         });
     };
@@ -104,3 +107,9 @@ auth.mobile = function(req, res, callback) {
     });
 
 };
+
+function clear_session_auth(session) {
+    delete session.phone;
+    delete session.mobile_version;
+    delete session.challenge_response;
+}
