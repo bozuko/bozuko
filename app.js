@@ -47,7 +47,7 @@ if (!module.parent) {
         }
         var replServer = net.createServer(function(socket){
             repl.start("bozuko> ", socket);
-        }).listen(Bozuko.config.server.port+10);
+        }).listen(Bozuko.config.server.port+10, '127.0.0.1');
 
         console.log("Bozuko REPL listening on port ",Bozuko.config.server.port+10);
     }
