@@ -16,7 +16,7 @@ exports.setup = function(test) {
 // separate test module in manual_tests.
 exports['GET /user/login/facebook'] = function(test) {
     assert.response(test, Bozuko.app,
-        {url: '/user/login/facebook/?phone_type='+phone.type+'&phone_id='+phone.id},
+        {url: '/user/login/facebook/'},
         {status: 302, headers: {'Content-Type': 'text/html'}},
         function(res) {
             console.log(res.body);
@@ -29,7 +29,7 @@ exports['GET /user/login/facebook'] = function(test) {
 // separate test module in manual_tests.
 exports['GET /user/login/foursquare'] = function(test) {
     assert.response(test, Bozuko.app,
-        {url: '/user/login/foursquare/?phone_type='+phone.type+'&phone_id='+phone.id},
+        {url: '/user/login/foursquare/'},
         {status: 302, headers: {'Content-Type': 'text/html'}},
         function(res) {
             console.log(res.body);

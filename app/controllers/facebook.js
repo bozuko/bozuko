@@ -47,14 +47,34 @@ exports.links = {
                 message : {
                     type: "String",
                     description: "The user message to post with the checkin."
+                },
+                phone_type: {
+                    required: true,
+                    type: "String",
+                    description: " \'iphone\' or \'android\' "
+                },
+                phone_id: {
+                    required: true,
+                    type: "String",
+                    description: "The unique id of the phone"
+                },
+                mobile_version: {
+                    required: true,
+                    type: "String",
+                    description: "The version of the mobile app"
+                },
+                challenge_response: {
+                    required: true,
+                    type: "Number",
+                    description: "A version appropriate algorithm result to the user challenge"
                 }
             },
-            returns: ["facebook_checkin_result"]
+            returns: ["facebook_result"]
         },
 
         get: {
             doc: "Retrieve information about the last facebook checkin for the user",
-            returns: "facebook_checkin_result"
+            returns: "facebook__result"
         }
     },
 
@@ -97,7 +117,7 @@ exports.routes = {
 
     '/facebook/:id/checkin': {
         post: {
-            access: 'user',
+            access: 'mobile',
 
             handler: function(req, res) {
 
@@ -186,13 +206,13 @@ exports.routes = {
             }
         }
     },
-    
+
     /**
      * Facebook Realtime updates
      *
      */
     '/facebook/pubsub':{
-        
+
         /**
          * This is posted as a json object with application/json content-type
          * header
@@ -203,9 +223,9 @@ exports.routes = {
                 var entry = req.param('entry');
                 if( undefined === entry || false === entry ) return res.send({});
                 if( !Array.isArray(entry) ) entry = [entry];
-                
+
                 switch(req.param('object')){
-                    
+
                     case 'user':
                         var ids = [];
                         entry.forEach(function(user){
@@ -215,8 +235,8 @@ exports.routes = {
                         return Bozuko.models.User.updateFacebookLikes(ids, function(){
                             res.send({});
                         });
-                        
-                    
+
+
                     case 'permissions':
                         /**
                          * TODO
@@ -224,8 +244,8 @@ exports.routes = {
                          * track permissions in the internal object
                          */
                         return res.send({});
-                        
-                    
+
+
                     default:
                         return res.send({});
                 }
@@ -242,7 +262,7 @@ exports.routes = {
                 return res.send(req.param('hub.challenge'));
             }
         }
-        
+
     }
 
 };

@@ -1,35 +1,50 @@
-var qs          = require('querystring'),
-    URL         = require('url'),
-    facebook    = Bozuko.require('util/facebook'),
-    http        = Bozuko.require('util/http');
+var async = require('async');
 
 var auth = exports;
+
+/*
+ * Mobile app version security keys and algorithms
+ *
+ * There should be a matching key and algorithm embedded in the mobile app for each version
+ */
+
+var mobile_keys = {
+    '1.0': [647, 321, 984, 1281, 519, 5127]
+};
+
+auth.mobile_algorithms = {
+    '1.0': function(challenge) {
+        var result;
+        for (var i = 0; i < mobile_keys['1.0'].length; i++) {
+            result = challenge + mobile_keys['1.0'][i];
+        }
+        return result;
+    }
+};
 
 auth.login = function(req,res,scope,defaultReturn,success,failure){
     var service = Bozuko.service('facebook');
     service.login.apply(service, arguments);
 };
 
-auth.check = function(access, handler) {
-    if (typeof(access) === 'Array') {
-        return function(req, res) {
-            var layer;
-            while (layer = access.unshift()) {
-                if ( !auth[layer](req, res) ) {
-                    // Authorization Failed
-                    return;
-                }
-            }
-            // Authorization Succeeded
-            return handler(req,res);
-        };
-    } else {
-        return function(req, res) {
-            if (auth[access](req, res)) {
-                return handler(req, res);
-            }
-        };
+auth.check = function(access, callback) {
+    if (typeof(access) != 'Array') {
+        access = [access];
     }
+
+    return function(req, res) {
+        var layer;
+        async.forEachSeries(access, function(layer, cb) {
+            auth[layer](req, res, cb);
+        }, function(err) {
+            if (err) {
+                console.log("err = "+err);
+                return err.send(res);
+            }
+              // Authorization Succeeded
+            return callback(req,res);
+        });
+    };
 };
 
 /**
@@ -37,14 +52,55 @@ auth.check = function(access, handler) {
  *
  * Note: Each layer should operate independent of the order the layers are run.
  */
-auth.user = function(req, res) {
+auth.user = function(req, res, callback) {
     if( !req.session.user ){
-        Bozuko.error('bozuko/auth').send(res);
-        return false;
+        return callback(Bozuko.error('bozuko/auth'));
     }
-    return true;
+    callback();
 };
 
-auth.mobile = function(req, res) {
-    return true;
+auth.mobile = function(req, res, callback) {
+    var user = req.session.user;
+    if( !user ){
+        return callback(Bozuko.error('auth/user'));
+    }
+
+    async.series([
+
+        // Verify phone type and unique id
+        function(callback) {
+            if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
+            var result = user.verify_phone(req.session.phone);
+            if ( result === 'mismatch') {
+                return callback(Bozuko.error('auth/mobile'));
+            } else if ( result === 'match') {
+                return callback();
+            } else if (result === 'new') {
+                user.phones.push(req.session.phone);
+                user.save(function(err) {
+                if (err) return callback(err);
+                    return callback(null);
+                });
+            } else {
+                console.log("Unkown result from user.verify_phone: "+result);
+                return callback(Bozuko.error('auth/mobile'));
+            }
+        },
+
+        // Verify challenge response for the given mobile app version
+        function(callback) {
+            var fn, result;
+            if (fn = auth.mobile_algorithms[req.session.mobile_version]) {
+                result = fn(user.challenge);
+                if (result === req.session.challenge_response) {
+                    return callback(null);
+                }
+            }
+            return callback(Bozuko.error('auth/mobile'));
+        }
+
+    ], function(err) {
+        callback(err);
+    });
+
 };

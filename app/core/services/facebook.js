@@ -32,10 +32,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
     var self = this;
-    var phone = {
-        type: req.param('phone_type'),
-        id: req.param('phone_id')
-    };
+
     if( defaultReturn ){
         req.session.redirect = defaultReturn;
     }
@@ -47,7 +44,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
         'scope' : Bozuko.config.facebook.perms[scope],
         'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname
     };
-    
+
     if( req.param('display')){
         params.display = req.param('display');
         req.session.display = req.param('display');
@@ -79,9 +76,9 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
     else{
         params.client_secret = Bozuko.config.facebook.app.secret;
         params.code = code;
-        
+
         console.log(req.session);
-        
+
 
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
@@ -89,7 +86,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
             url: 'https://graph.facebook.com/oauth/access_token',
             params: params,
             callback : function facebook_callback(response){
-                
+
                 var result = qs.parse(response);
                 if( result['access_token'] ) {
                     // grab the access token
@@ -102,7 +99,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                         }
                     }, function(user){
                         user.token = token;
-                        Bozuko.models.User.addOrModify(user, phone, 'facebook', function(err, u) {
+                        Bozuko.models.User.addOrModify(user, 'facebook', function(err, u) {
                             if (err) {
                                 console.log("Facebook login error: "+err);
                                 return err.send(res);
@@ -110,9 +107,9 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             // okay, definitely a little weird mr. mongoose...
                             // after a save, we need to do a get user or embedded docs
                             // get messed up... yokay
-                            
+
                             return Bozuko.models.User.findById(u.id, function(error, u){
-                                
+
                                 var finish = function(){
                                     var device = req.session.device;
                                     req.session.regenerate(function(err){
@@ -120,7 +117,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                         req.session.userJustLoggedIn = true;
                                         req.session.user = u;
                                         req.session.device = device;
-    
+
                                         if( success ){
                                             if( success(u,req,res) === false ){
                                                 return;
@@ -148,7 +145,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                         return finish();
                                     });
                                 });
-                                
+
                             });
                         });
                     });
