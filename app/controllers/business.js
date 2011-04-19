@@ -17,7 +17,10 @@ exports.routes = {
         description :"Business login - sends user to facebook",
         
         get : function(req,res){
-            Bozuko.require('core/auth').login(req,res,'business',req.param('return') || '/business/account',function(user){
+            if( req.param('return') ){
+                req.session.login_redirect = req.param('return');
+            }
+            Bozuko.require('core/auth').login(req,res,'business',req.session.login_redirect||'/business/account',function(user){
                 // need to set a flag that this user let us manage pages
                 user.can_manage_pages = true;
                 user.save(function(){});
@@ -29,12 +32,21 @@ exports.routes = {
         
         description :"Business registration - sends user to facebook",
         
+        title: "Bozuko for Business - Sign up",
+        
+        locals:{
+            html_classes:['sign-up'],
+            hide_top_profile: true,
+            scripts:[
+                '/js/ext-4.0/ext-core.js',
+                '/js/desktop/business/sign-up.js'
+            ]
+        },
+        
         get : function(req,res){
-            Bozuko.require('core/auth').login(req,res,'business','/business/account',function(user){
-                // need to set a flag that this user let us manage pages
-                user.can_manage_pages = true;
-                user.save(function(){});
-            });
+            // show the signup screen
+            
+            res.render('business/sign-up',{});
         }
     },
     

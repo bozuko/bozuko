@@ -1,5 +1,5 @@
 !!! 5
-html
+html(class=locals.html_classes?html_classes.join(' '):'')
   head
   
     title= title
@@ -12,12 +12,6 @@ html
       - each script in head_scripts
         script(type="text/javascript",src=script)
     
-    //- Assign the uid from the last active fb session here.
-    script
-      var _uid = #{user ? user.service('facebook').id : -1};
-    
-    
-    
   body
     .page
     
@@ -26,24 +20,36 @@ html
           h1.logo
             a(href="/", title="Bozuko - Go to Home Page") bozuko
           
-          - if( user )
-            .profile
-              img(src="https://graph.facebook.com/"+user.service('facebook').sid+"/picture?type=square",alt=user.name)
-              | Hi #{user.first_name}!
-              a(href="/logout") Logout
-              
-          - else
-            .profile
-              a.fb_button.fb_button_medium(href="/user/login?return=/")
-                span.fb_button_text Login
-          
-          - if( locals.nav )
-            ul.nav
-              - each item in locals.nav
-                - if( item instanceof Function )
-                  - item = item.call(this,locals);
-                li
-                  a(href=item.link)!= item.text
+          - if( !locals.hide_top_profile)
+            - if( user )
+              .profile
+                img(src="https://graph.facebook.com/"+user.service('facebook').sid+"/picture?type=square",alt=user.name)
+                | Hi #{user.first_name}!
+                a(href="/logout") Logout
+                
+            - else
+              .profile
+                a.fb_button.fb_button_medium(href="/user/login?return=/")
+                  span.fb_button_text Login
+            
+            - if( locals.nav )
+              ul.nav
+                - each item, i in locals.nav
+                  - if( item instanceof Function )
+                    - item = item.call(this,locals);
+                    
+                  - var item_classes = [];
+                  
+                  - if( i==0 )
+                    - item_classes.push('first')
+                    
+                  - if( i==nav.length-1 )
+                    - item_classes.push('last')
+                    
+                  - if( req.url == item.link )
+                    - item_classes.push('active')
+                  li
+                    a(href=item.link,class=item_classes.join(' '))!= item.text
           
       .bd
         .page-width

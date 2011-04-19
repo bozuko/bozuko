@@ -16,6 +16,7 @@ var ssl = {
     cert:fs.readFileSync('ssl/certificate.pem')
 };
 var app = express.createServer(ssl);
+// var app = express.createServer();
 
 /**
  * Load common Bozuko stuff

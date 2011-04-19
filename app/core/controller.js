@@ -103,6 +103,7 @@ Controller.prototype = {
                             for( var i in res.locals){
                                 locals[i] = res.locals[i];
                             }
+                            locals['req'] = req;
                             // combine any locals that were provided
                             args[1] = merge( locals, args[1] || {} );
                             return _render.apply(res, args);

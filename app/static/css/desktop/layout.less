@@ -2,7 +2,7 @@
 @import "app/static/css/mixins";
 
 html {
-    background: #e8e8e8 url(/images/desktop/site/bg_bd-scratch.png) 50% 50%;
+    background: #fff;
 }
 
 .page-width {
@@ -18,6 +18,8 @@ html {
     overflow: hidden;
     background: url(/images/desktop/site/bg_hd.png) repeat-x 0 100%;
     border-bottom: 4px solid #00a24f;
+    
+    
     
     .logo {
         width: 306px;
@@ -67,7 +69,6 @@ html {
             display: inline-block;
             list-style: none;
             padding: 0;
-            margin-left: 20px;
             
             a {
                 font-family: PTSansBold;
@@ -75,13 +76,89 @@ html {
                 font-size: 20px;
                 line-height: 1.2em;
                 color: #e3e3e3;
+                .background_gradient(#444,#222);
+                border: 1px solid #000;
+                border-left-width: 0;
+                padding: 6px 10px;
+            }
+            a.first {
+                border-left-width: 1px;
+                .multi_rounded_corners(8px, 0, 0, 8px);
+            }
+            a.last {
+                .multi_rounded_corners(0, 8px, 8px, 0);
             }
             
             a:hover{
                 color: #fff;
+                .background_gradient(#555,#333);
             }
-            
+            a.active {
+                .background_gradient(@brand_color,darken(@brand_color,15%));
+            }
         }
+    }
+}
+.home {
+    .banner {
+        .phones {
+            float: right;
+        }
+        
+        h1 {
+            font-size: 50px;
+            font-weight: normal;
+            font-family: PTSansBold;
+            line-height: 1.5em;
+            color: @dark_color;
+        }
+    }
+    
+    .scroller {
+        background: #ddd;
+        border: 1px solid #ccc;
+        clear: both;
+        height: 200px;
+        .border_radius(10px);
+    }
+}
+
+.sign-up {
+    .page-width {
+        width: 600px;
+    }
+    
+    .bd {
+        padding-top:  10px;
+        
+        .content{
+            h2 {
+                text-align:center;
+                font-weight: normal;
+                font-family: PTSansBold;
+                .background_gradient(#666, #333);
+                border: 1px solid #000;
+                line-height: 1.3em;
+                color: #fff;
+                padding: 4px 10px;
+                .multi_rounded_corners(6px,6px,0,0);
+                margin-top:0;
+            }
+            .content-bd{
+                .multi_rounded_corners(0,0,6px,6px);
+                border: 1px solid #ddd;
+                border-top-width: 0;
+                background: #f3f3f3;
+                padding: 10px;
+            }
+            h3 {
+                color: #666;
+                font-size: 18px;
+                font-weight: normal;
+                font-family: PTSansBold;
+            }
+        }
+        
     }
 }
 
@@ -95,7 +172,7 @@ html {
         background: #fff;
         
         .wrap {
-            padding: 10px 4px;
+            padding: 10px 0;
         }
         
     }
@@ -108,6 +185,27 @@ html {
         text-align: center;
         border-radius: 8px;
         -webkit-border-radius: 8px;
+    }
+    
+    .right-column {
+        margin-left: 20px;
+        border: 1px solid #e3e3e3;
+        padding: 10px;
+        .border_radius(4px);
+        background: #f8f8f8;
+        
+        h3 {
+            text-align: center;
+            .background_gradient(#f3f3f3, #e0e0e0);
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ccc;
+            margin: 4px -10px;
+            padding: 4px 10px;
+            line-height: 1.4em;
+            color: #333;
+            font-size: 28px;
+            font-family: PTSansBold;
+        }
     }
 }
 
