@@ -1,5 +1,10 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
 body {
     font-family: PTSansRegular;
+    font-size: 14px;
+    line-height: 1.4em;
 }
 h3, .h3, h5, .h5 {
     
@@ -12,7 +17,7 @@ h3, .h3, h5, .h5 {
 }
 
 p {
-    margin-bottom: 1em;
+    margin: 1em 0;
 }
 
 h1, .h1{color:#03a250;}
@@ -33,4 +38,24 @@ h1 {
     padding: 2px 4px;
     font-family: PTSansBold;
     font-size: 140%;
+}
+
+.big-button {
+    display: inline-block;
+    .border_radius(4px);
+    .background_gradient(@brand_color, @dark_color);
+    color: #fff;
+    border: 1px solid darken(@brand_color, 20%);
+    padding: 6px 14px;
+    font-size: 20px;
+    font-family: PTSansBold;
+    text-decoration: none;
+}
+
+.big-button:hover{
+    .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
+}
+
+.big-button:active{
+    .background_gradient(@dark_color, @brand_color);
 }

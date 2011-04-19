@@ -1,6 +1,6 @@
 .line
   
-  .unit.size3of4
+  .unit.size3of5
     h1= title
     p
     | Description of how bozuko for business works.
@@ -8,11 +8,16 @@
     
     
   
-  .unit.size1of4.lastUnit
+  .unit.size2of5.lastUnit
     .right-column
-      - if( user && user.can_manage_pages )
-        h3 Your Account
-        a(href="/business/account") Go to your account page
+    
+      h3 Add your Business!
       
-      - else
-        a(href="/business/sign-up") Sign up your business today!
+      p Creating a Bozuko campaign is easy.
+        |  All you have to do is select your Facebook business page
+        | and you can start your first campaign in minutes.
+      
+      p(style="text-align:center;")
+        a.big-button(href="/business/sign-up") Get Started! &raquo;
+      
+      // TODO - check for other business and add as links

@@ -135,18 +135,19 @@ User.static('addOrModify', function(user, phone, service, callback) {
 
 User.method('verify_phone', function(phone) {
         var phone_type_mismatch = false;
+        var self = this;
 
-        if (u.phones.every(function(p) {
+        if (this.phones.every(function(p) {
             if (p.type === phone.type && p.id === phone.id) {
                 return false;
             } else if (p.type !== phone.type && p.id === phone.id) {
-                console.log("Error: attempt to change phone type from "+p.type+" to "+phone.type+" for facebook id: "+user.id);
+                console.log("Error: attempt to change phone type from "+p.type+" to "+phone.type+" for facebook id: "+self.id);
                 phone_type_mismatch = true;
                 return false;
             }
             return true;
         })) {
-            console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+user.id);
+            console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+self.id);
             return 'new';
         }
         if (phone_type_mismatch) return 'mismatch';
