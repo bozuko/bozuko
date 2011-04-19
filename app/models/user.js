@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
-    Services = require('./embedded/service'),
+    Services = require('./plugins/service'),
     crypto = require('crypto'),
     Phone = require('./embedded/user/phone'),
     async = require('async')
@@ -25,7 +25,7 @@ var User = module.exports = new Schema({
     can_manage_pages    :{type:Boolean}
 });
 
-Services.initSchema(User);
+User.plugin(Services);
 
 User.pre('save', function(next) {
     if (!this.challenge) {
