@@ -132,10 +132,6 @@ exports.facebook_checkin = function(test) {
         mobile_version: '1.0',
         challenge_response: Bozuko.require('core/auth').mobile_algorithms['1.0'](challenge)
     });
-    console.log('phone.type = '+phone.type);
-    console.log('phone.unique_id = '+phone.unique_id);
-    console.log("challenge = "+challenge);
-    console.log('challenge response = '+Bozuko.require('core/auth').mobile_algorithms['1.0'](challenge));
     assert.response(test, Bozuko.app,
         {url: checkin_link+"/?token="+token,
         method: 'POST',
@@ -154,12 +150,20 @@ exports.facebook_checkin = function(test) {
 
 // Play the slots game and check the result
 exports.play3times = function(test) {
+    var params = JSON.stringify({
+        phone_type: phone.type,
+        phone_id: phone.unique_id,
+        mobile_version: '1.0',
+        challenge_response: auth.mobile_algorithms['1.0'](challenge)
+    });
+
     var play = function(callback) {
         assert.response(test, Bozuko.app,
             {
                 url: link+"/?token="+token,
                 method: 'POST',
-                headers: headers
+                headers: headers,
+                data: params
             },
             ok,
             function(res) {
@@ -176,11 +180,19 @@ exports.play3times = function(test) {
 
 // Play the slots game and check the result
 exports.playError = function(test) {
+    var params = JSON.stringify({
+        phone_type: phone.type,
+        phone_id: phone.unique_id,
+        mobile_version: '1.0',
+        challenge_response: auth.mobile_algorithms['1.0'](challenge)
+    });
+
     assert.response(test, Bozuko.app,
         {
             url: link+"/?token="+token,
             method: 'POST',
-            headers: headers
+            headers: headers,
+            data: params
         },
         bad,
         function(res) {

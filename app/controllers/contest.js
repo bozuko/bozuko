@@ -125,7 +125,7 @@ exports.links = {
 
     game_result: {
         post: {
-            access: 'user',
+            access: 'mobile',
             doc: "Retrieve a result for the given game." +
                 "The user must have tokens credited to their account in order for this to work",
             returns: "game_result"
@@ -164,9 +164,9 @@ exports.routes = {
      */
     '/contest/:id/result' : {
 
-        access : 'user',
-
         post: {
+
+            access : 'mobile',
 
             handler : function(req,res){
                 Bozuko.models.Contest.findById(req.params.id, function(error, contest){
