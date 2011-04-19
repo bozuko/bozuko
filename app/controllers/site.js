@@ -25,8 +25,7 @@ exports.locals = {
         }
     ],
     head_scripts:[
-        'https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js',
-        '/js/jquery/plugins/jquery.fancybox-1.3.4/fancybox/jquery.fancybox-1.3.4.pack.js'
+        '/js/ext-4.0/ext-core.js'
     ],
     // styles: ['/js/jquery/plugins/jquery.fancybox-1.3.4/style.css'],
     title: "Bozuko"

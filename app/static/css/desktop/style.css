@@ -12,7 +12,7 @@
 
 @import url("typography.css");
 .fb_button_simple, .fb_button_simple_rtl {
-  background-image: url("http://static.ak.fbcdn.net/rsrc.php/v1/zH/r/eIpbnVKI9lR.png");
+  background-image: url("/images/fb_icon_small.png");
   background-repeat: no-repeat;
   cursor: pointer;
   outline: none;
@@ -35,7 +35,7 @@ a.fb_button_simple_rtl:hover .fb_button_text,
   text-decoration: underline;
 }
 .fb_button, .fb_button_rtl {
-  background: #29447e url("http://static.ak.fbcdn.net/rsrc.php/v1/zL/r/FGFbc80dUKj.png");
+  background: #29447e url("/images/fb_icons.png");
   background-repeat: no-repeat;
   cursor: pointer;
   display: inline-block;
@@ -44,7 +44,7 @@ a.fb_button_simple_rtl:hover .fb_button_text,
   outline: none;
 }
 .fb_button .fb_button_text, .fb_button_rtl .fb_button_text {
-  background: #5f78ab url("http://static.ak.fbcdn.net/rsrc.php/v1/zL/r/FGFbc80dUKj.png");
+  background: #5f78ab url("/images/fb_icons.png");
   border-top: solid 1px #879ac0;
   border-bottom: solid 1px #1a356e;
   color: #fff;
