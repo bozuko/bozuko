@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     Services = require('./embedded/service'),
     crypto = require('crypto'),
-    Prize = require('./embedded/user/prize'),
+    Phone = require('./embedded/user/phone'),
     async = require('async')
     ;
 
@@ -11,9 +11,10 @@ var hmac = crypto.createHmac('sha512', Bozuko.config.key);
 
 var User = module.exports = new Schema({
     name                :{type:String},
-    phones              :[],
+    phones              :[Phone],
     token               :{type:String},
     salt                :{type:Number},
+    challenge           :{type:Number},
     first_name          :{type:String},
     last_name           :{type:String},
     image               :{type:String},
@@ -27,6 +28,9 @@ var User = module.exports = new Schema({
 Services.initSchema(User);
 
 User.pre('save', function(next) {
+    if (!this.challenge) {
+        this.challenge = Math.floor(Math.random()*100000);
+    }
     if (!this.token) {
         return create_token(this, 1, next);
     }
@@ -78,7 +82,7 @@ User.static('createFromServiceObject', function(user, callback){
     });
 });
 
-User.static('addOrModify', function(user, phone, service, callback) {
+User.static('addOrModify', function(user, service, callback) {
     var q;
     var service_id = {'services.name':service,'services.sid':user.id};
     if (service === 'facebook') {
@@ -118,12 +122,6 @@ User.static('addOrModify', function(user, phone, service, callback) {
             u.email = user.contact.email;
         }
         u.gender = user.gender;
-        var val = u.verify_phone(phone);
-        if (val === 'mismatch') {
-            return callback(Bozuko.error('login/phone_type_mismatch'));
-        } else if (val === 'new') {
-            u.phones.push(phone);
-        }
 
         u.service(service, user.id, user.token, user);
         u.save(function(err) {
@@ -135,18 +133,18 @@ User.static('addOrModify', function(user, phone, service, callback) {
 
 User.method('verify_phone', function(phone) {
         var phone_type_mismatch = false;
-
-        if (u.phones.every(function(p) {
-            if (p.type === phone.type && p.id === phone.id) {
+        var self = this;
+        if (this.phones.every(function(p) {
+            if (p.type === phone.type && p.unique_id === phone.unique_id) {
                 return false;
-            } else if (p.type !== phone.type && p.id === phone.id) {
-                console.log("Error: attempt to change phone type from "+p.type+" to "+phone.type+" for facebook id: "+user.id);
+            } else if (p.type !== phone.type && p.unique_id === phone.unique_id) {
+                console.log("Error: attempt to change phone type from "+p.type+" to "+phone.type+" for facebook id: "+self.id);
                 phone_type_mismatch = true;
                 return false;
             }
             return true;
         })) {
-            console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+user.id);
+            console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+self.id);
             return 'new';
         }
         if (phone_type_mismatch) return 'mismatch';

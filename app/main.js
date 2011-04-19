@@ -20,7 +20,7 @@ exports.init = function(app){
 
     // setup our models
     initModels();
-    
+
     // initialize the application
     initApplication(app);
 
@@ -65,24 +65,25 @@ function initApplication(app){
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
-    
+
     Bozuko.sessionStore = new BozukoStore({
         reapInterval: 1000 * 60 * 5,
         maxAge: 1000 * 60 * 60 * 24
     });
-    
+
     app.use(express.session({key:'bozuko_sid', secret: 'chqsmells', store: Bozuko.sessionStore }));
     // app.use(express.session({key:'bozuko_sid', secret: 'chqsmells'}));
 
     app.use(Monomi.detectBrowserType());
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
+    app.use(Bozuko.require('middleware/mobile')());
     // app.use(express.profiler());
     app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
     app.use(express.static(__dirname + '/static'));
-    //    app.use(express.repl('Bozuko.', 8050))    
+    //    app.use(express.repl('Bozuko.', 8050))
 }
 
 function initModels(){
@@ -187,7 +188,7 @@ function initFacebookPubSub(){
               Bozuko.config.facebook.app.id+
               '/subscriptions?access_token='+
               Bozuko.config.facebook.app.access_token;
-              
+
     // first we need to delete any existing subscriptions
     http.request({
         url: url,
@@ -202,7 +203,7 @@ function initFacebookPubSub(){
                     object: 'user',
                     fields: 'likes',
                     callback_url: create_url('/facebook/pubsub'),
-                    verify_token: Bozuko.config.facebook.app.pubsub_verify                    
+                    verify_token: Bozuko.config.facebook.app.pubsub_verify
                 }
             });
             http.request({

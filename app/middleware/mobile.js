@@ -4,7 +4,7 @@ module.exports = function mobile() {
         var phone = {};
         var val;
         if (val = req.param('phone_id')) {
-            phone.id = val;
+            phone.unique_id = val;
         }
         if (val = req.param('phone_type')) {
             phone.type = val;
@@ -18,9 +18,10 @@ module.exports = function mobile() {
             req.session.challenge_response = val;
         }
 
-        if (phone.id && phone.type) {
+        if (phone.unique_id && phone.type) {
             req.session.phone = phone;
         }
 
+        next();
     };
 };
