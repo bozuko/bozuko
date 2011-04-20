@@ -82,24 +82,15 @@ User.static('createFromServiceObject', function(user, callback){
     });
 });
 
-User.static('addOrModify', function(user, service, callback) {
+User.static('addOrModify', function(user, phone, callback) {
     var q;
-    var service_id = {'services.name':service,'services.sid':user.id};
-    if (service === 'facebook') {
-        q = {
-            $or:[
-                {email:user.email},
-                service_id
-            ]
-        };
-    } else {
-        q = {
-            $or:[
-                {email:user.contact.email},
-                service_id
-            ]
-        };
-    }
+    var service_id = {'services.name':user.service,'services.sid':user.id};
+    q = {
+        $or:[
+            {email:user.email},
+            service_id
+        ]
+    };
 
     Bozuko.models.User.findOne(q, function(err, u){
         if (err) return callback(err);
@@ -108,22 +99,24 @@ User.static('addOrModify', function(user, service, callback) {
             u = new Bozuko.models.User();
         }
 
-        if (service === 'facebook') {
-            u.name = user.name;
-            u.first_name = user.first_name;
-            u.last_name = user.last_name;
-            u.email = user.email;
-            u.facebook_id = user.id;
-            u.facebook_auth = user.token;
-        } else {
-            u.name = user.firstName+' '+user.lastName;
-            u.first_name = user.firstName;
-            u.last_name = user.lastName;
-            u.email = user.contact.email;
-        }
+        u.name = user.name;
+        u.first_name = user.first_name;
+        u.last_name = user.last_name;
+        u.image = user.image;
+        u.email = user.email;
         u.gender = user.gender;
 
-        u.service(service, user.id, user.token, user);
+        if (phone) {
+            var result = u.verify_phone(phone);
+            if (result === 'new') {
+                console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+u.id);
+                u.phones.push(phone);
+            } else if (result === 'mismatch') {
+                return callback(Bozuko.error('auth/mobile'));
+            }
+        }
+
+        u.service(user.service, user.id, user.token, user);
         u.save(function(err) {
             if (err) return callback(err);
             return callback(null, u);
@@ -144,7 +137,6 @@ User.method('verify_phone', function(phone) {
             }
             return true;
         })) {
-            console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+self.id);
             return 'new';
         }
         if (phone_type_mismatch) return 'mismatch';

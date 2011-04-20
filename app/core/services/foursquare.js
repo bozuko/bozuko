@@ -129,8 +129,9 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                 return res.send("<html><h1>Foursquare authentication failed :( </h1></html>");
                             }
                             var user = result.user;
+                            user = self.sanitizeUser(user);
                             user.token = token;
-                            Bozuko.models.User.addOrModify(user, 'foursquare', function(err, u){
+                            Bozuko.models.User.addOrModify(user, req.session.phone, function(err, u){
                                 if (err) {
                                     console.log("Foursquare login error: "+err);
                                     return err.send(res);
@@ -396,4 +397,43 @@ $._sanitizePlace = function(place){
         data.image = cat.icon.replace(/\.png$/, '_64.png');
     }
     return data;
+};
+
+/**
+ * Private santiziation method for users
+ *
+ * MUST BE IMPLEMENTED IN IMPLEMENTATION
+ *
+ * This should return data in the following format
+ * The data field can hold any extranneous information.
+ *
+ *  {
+ *      id: Number,
+ *      name: String,
+ *      firstName: String,
+ *      lastName: String,
+ *      email: String,
+ *      phone: String,
+ *      image: String,
+ *      data: Object
+ *  }
+ *
+ * @param {Object}          place           The place to sanitize
+ *
+ * @return {Object}         place           The sanitized object / objects
+ */
+$._sanitizeUser = function(user){
+
+    if( !user ) return null;
+    return {
+        service: 'facebook',
+        id: user.id,
+        name: user.name,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        image: 'http://graph.facebook.com/'+user.id+'/picture?type=large',
+        email: user.email,
+        gender: user.gender,
+        data: user
+    };
 };
