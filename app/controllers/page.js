@@ -37,6 +37,7 @@ exports.transfer_objects = {
             info: "String",
             games: ["game"],
             links: {
+                recommend: "String",
                 facebook_login: "String",
                 facebook_checkin: "String",
                 facebook_like: "String",
@@ -73,7 +74,7 @@ exports.transfer_objects = {
             return this.sanitize(page);
         }
     },
-    
+
     pages : {
         doc: "List of pages",
         def:{
@@ -141,7 +142,9 @@ exports.links = {
                     type: "String",
                     description: "The message to send to the Business / Bozuko"
                 }
-            }
+            },
+
+            returns: "success_message"
         }
     }
 };

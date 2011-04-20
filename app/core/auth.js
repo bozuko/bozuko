@@ -40,11 +40,9 @@ auth.check = function(access, callback) {
         }, function(err) {
             if (err) {
                 console.log("err = "+err);
-                clear_session_auth(req.session);
                 return err.send(res);
             }
               // Authorization Succeeded
-            clear_session_auth(req.session);
             return callback(req,res);
         });
     };
@@ -79,11 +77,7 @@ auth.mobile = function(req, res, callback) {
             } else if ( result === 'match') {
                 return callback();
             } else if (result === 'new') {
-                user.phones.push(req.session.phone);
-                user.save(function(err) {
-                if (err) return callback(err);
-                    return callback(null);
-                });
+                return callback(Bozuko.error('auth/mobile'));
             } else {
                 console.log("Unkown result from user.verify_phone: "+result);
                 return callback(Bozuko.error('auth/mobile'));
@@ -108,8 +102,3 @@ auth.mobile = function(req, res, callback) {
 
 };
 
-function clear_session_auth(session) {
-    delete session.phone;
-    delete session.mobile_version;
-    delete session.challenge_response;
-}

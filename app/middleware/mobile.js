@@ -3,6 +3,13 @@ module.exports = function mobile() {
 
         var phone = {};
         var val;
+
+        // clear old info
+        delete req.session.phone;
+        delete req.session.mobile_version;
+        delete req.session.challenge_response;
+
+
         if (val = req.param('phone_id')) {
             phone.unique_id = val;
         }
