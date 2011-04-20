@@ -24,6 +24,14 @@ exports.transfer_objects = {
         }
     },
 	
+	prizes: {
+		doc: "The list of prizes",
+		def: {
+			"prizes" :["prize"],
+			"next" : "String"
+		}
+	},
+	
 	redemption_object: {
 		doc: "Prize Redemption Object",
 		def: {
@@ -45,7 +53,7 @@ exports.links = {
                     description: "The state of the prizes to search"
                 }
             },
-            returns: ["prize"]
+            returns: "prizes"
         }
     },
 
