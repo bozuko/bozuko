@@ -45,7 +45,7 @@ jQuery(function($){
             e.preventDefault();
             return;
         }
-        if( !cities_picked ){
+        if( false && !cities_picked ){
             $('.city').dialog({
                 title:"Choose your city",
                 modal: true,

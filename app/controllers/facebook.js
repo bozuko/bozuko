@@ -32,7 +32,7 @@ exports.links = {
     facebook_checkin: {
         post: {
             doc: "Checkin to facebook and receive tokens",
-            access: 'user',
+            access: 'mobile',
             params: {
                 lat: {
                     required: true,
@@ -47,34 +47,9 @@ exports.links = {
                 message : {
                     type: "String",
                     description: "The user message to post with the checkin."
-                },
-                phone_type: {
-                    required: true,
-                    type: "String",
-                    description: " \'iphone\' or \'android\' "
-                },
-                phone_id: {
-                    required: true,
-                    type: "String",
-                    description: "The unique id of the phone"
-                },
-                mobile_version: {
-                    required: true,
-                    type: "String",
-                    description: "The version of the mobile app"
-                },
-                challenge_response: {
-                    required: true,
-                    type: "Number",
-                    description: "A version appropriate algorithm result to the user challenge"
                 }
             },
-            returns: ["facebook_result"]
-        },
-
-        get: {
-            doc: "Retrieve information about the last facebook checkin for the user",
-            returns: "facebook__result"
+            returns: ["game_state"]
         }
     },
 
@@ -82,12 +57,7 @@ exports.links = {
         post: {
             access: 'user',
             doc: "Like a facebook page and receive tokens",
-            returns: "facebook_result"
-        },
-
-        get: {
-            doc: "Retrieve information about the last facebook like for the user.",
-            returns: "facebook_result"
+            returns: ["game_state"]
         }
     }
 };

@@ -42,8 +42,7 @@ var game = {
 
     doc: "A Game Object",
 
-    create : function(game){
-
+    create : function(game){        
         game.config = game.contest.game_config;
         game.user_tokens = game.tokens;
         game.can_play = game.tokens > 0;
@@ -56,9 +55,10 @@ var game = {
     },
 
     def:{
+        id: "String",
         type: "String",
         name: "String",
-        icon: "String",
+        image: "String",
         description: "String",
         list_message: "String",
         config: "Object",
@@ -71,7 +71,8 @@ var game = {
         links: {
             facebook_login: "String",
             game_result: "String",
-            page: "String"
+            page: "String",
+            game: "String"
         }
     }
 };
@@ -79,11 +80,10 @@ var game = {
 var game_state = {
     def: {
         user_tokens: "Number",
-        can_play: "Boolean",
-        can_enter: "Boolean",
-        next_play_time: "String",
+        next_enter_time: "String",
         button_text: "String",
         button_enabled: "Boolean",
+        button_is_entry: "Boolean",
         links: {
 
         }
@@ -95,13 +95,11 @@ var entry_method = {
     doc: "An entry method ",
 
     def: {
-        available: "Boolean",
         type: "String",
-        button_text: "String",
-        icon: "String",
+        image: "String",
         description: "String",
         links:{
-            entry_method: "String"
+            game_entry: "String"
         }
     }
 };
@@ -133,10 +131,16 @@ exports.links = {
         }
     },
 
-    entry_method: {
+    game_entry: {
         post: {
-            access: 'user',
-            returns:  "entry_method"
+            access: 'mobile',
+            params: {
+                ll: {
+                    type: 'String',
+                    description: "Latitude, Longitude"
+                }
+            },
+            returns: ['game_state']
         }
     }
 };
