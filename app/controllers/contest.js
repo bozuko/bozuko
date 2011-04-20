@@ -27,13 +27,13 @@ var game_result = {
         result: "Mixed",
         redemption_type: "String",
         prize: "prize",
-        game: "String",
         user_tokens: "Number",
         game_state: "game_state",
         links: {
             facebook_checkin: "String",
             facebook_like: "String",
-            page: "String"
+            page: "String",
+            game: "String"
         }
     }
 };
@@ -141,6 +141,13 @@ exports.links = {
                 }
             },
             returns: ['game_state']
+        }
+    },
+    
+    game_state: {
+        get : {
+            access: 'user',
+            returns: 'game_state'
         }
     }
 };
