@@ -9,8 +9,9 @@ h4 Methods
   - each method, name in link.methods
     .method
       h5.method-name
-        - if ( method.access == 'user' )
-          span.access-level Authenticated User Method
+        - if ( method.access )
+          a.access-level(class=method.access, href="#/links") Authenticated #{method.access.toUpperCase()} Method
+          
         !=name.toUpperCase()
         
       
