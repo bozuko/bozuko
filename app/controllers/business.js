@@ -28,6 +28,21 @@ exports.routes = {
         }
     },
     
+    '/business/login/popup' : {
+        
+        description: "The pop up window to show after login",
+        
+        get : {
+            locals: {
+                layout: false
+            },
+            handler: function(req,res){
+                res.render('business/login/popup');
+            }
+        }
+        
+    },
+    
     '/business/sign-up' : {
         
         description :"Business registration - sends user to facebook",

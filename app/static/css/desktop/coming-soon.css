@@ -1,106 +1,116 @@
-@import url("/css/fonts/ptsans/stylesheet.css");
+@import url("/css/fonts/honey-script/stylesheet.css");
+
+@import url("/css/fonts/arvo/stylesheet.css");
 
 @import url("/css/oocss/core/libraries.css");
 
-@import url("/css/oocss/core/grid/grids.css");
-
-@import url("/css/oocss/core/heading/heading.css");
-
-@import url("/css/oocss/core/template/template.css");
-
 @import url("typography.css");
 html {
-  background: #333333 url("/images/cs/bg_cs-bd.png") repeat 0 0;
+  background: #318f51 url("/images/cs/bg_html.jpg") repeat-x 0 0;
+  height: 100%;
+}
+body {
+  position: relative;
+  min-height: 100%;
+  _height: 100%;
+  background: transparent url("/images/cs/bg_splash.jpg") no-repeat 50% 0;
 }
 #coming-soon {
-  background: transparent url("/images/cs/bg_cs-top.png") repeat-x 0 0;
   text-align: center;
-  padding-top: 100px;
+  padding-top: 150px;
 }
 #coming-soon * {
   outline: none !important;
 }
 #coming-soon .logo {
-  width: 446px;
-  height: 152px;
+  width: 400px;
+  height: 115px;
   margin: 0 auto;
   position: relative;
-  background: url("/images/cs/img_cs-logo.png") no-repeat 0 0;
+  background: url("/images/cs/img_logo.png") no-repeat 50% 0;
 }
 #coming-soon .logo .subtext {
-  color: #fff;
+  color: #006B35;
   position: absolute;
-  font-family: PTSansBold;
+  font-family: HoneyScriptLight;
+  font-weight: 800;
   bottom: 0px;
-  left: 170px;
-  text-shadow: 4px 4px 4px #111;
-  font-size: 30px;
+  left: 210px;
+  font-size: 43px;
+  text-shadow: 1px 1px 1px #ccc;
 }
 #coming-soon .signup {
   margin-bottom: 10px;
   margin-top: 60px;
 }
 #coming-soon .signup p {
-  font-family: PTSansRegular;
+  font-family: ArvoRegular;
+  letter-spacing: 0em;
   color: #fff;
-  text-shadow: 4px 4px 4px #111;
-  font-size: 30px;
+  font-size: 24px;
+  color: #006B35;
+  text-shadow: 1px 1px 1px #ccc;
 }
 #coming-soon .signup form {
-  width: 588px;
   height: 64px;
   margin: 0 auto;
   position: relative;
+  padding-bottom: 40px;
 }
 #coming-soon .signup form .email {
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: transparent;
+  position: relative;
   border: 0;
-  background: url("/images/cs/bg_input.png") no-repeat 0 0;
+  background: transparent url("/images/cs/bg_input.png") no-repeat 0 0;
   padding: 10px;
-  font-size: 30px;
+  font-size: 20px;
   color: #999;
-  height: 44px;
-  width: 401px;
+  height: 23px;
+  font-family: ArvoRegular;
+  width: 237px;
+  margin-right: 10px;
+  text-shadow: 1px 1px 1px #ccc;
 }
 #coming-soon .signup form .email-active {
   color: #666;
 }
-#coming-soon .signup form .email:focus {
-  background: url("/images/cs/bg_input.png") no-repeat 0 -65px;
-}
 #coming-soon .signup form .submit {
-  display: block;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: 0;
+  display: inline-block;
+  position: relative;
   background: transparent;
   border: 0;
-  font-family: PTSansBold;
+  font-family: ArvoBold;
+  text-transform: uppercase;
   text-align: center;
-  background: url("/images/cs/bg_input.png") no-repeat 100% 0;
-  padding: 10px;
-  font-size: 30px;
+  background: url("/images/cs/bg_button.png") no-repeat 100% 0;
+  font-size: 20px;
+  font-weight: bold;
   color: #fff;
-  width: 167px;
-  text-shadow: 1px 1px 1px #111;
+  width: 122px;
+  height: 43px;
+  font-size: 23px;
+  line-height: 43px;
   cursor: pointer;
+  text-shadow: 1px 1px 1px #666;
 }
 #coming-soon .signup form .submit-focus {
-  background-position: 100% -65px;
+  background-position: 100% -47px;
 }
 #coming-soon .signup form .submit:active {
-  background-position: 100% -130px;
+  background-position: 100% -94px;
 }
 #coming-soon .signup form .hidden {
   display: none;
 }
-#coming-soon .copyright {
-  color: #999;
+.copyright {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  font-size: 16px;
+  left: 0;
+  padding: 10px 0;
+  text-align: center;
+  color: #fff;
+  font-family: ArvoRegular;
 }
 .city {
   font-family: PTSansRegular;

@@ -41,7 +41,8 @@ exports.transfer_objects = {
                 facebook_checkin: "String",
                 facebook_like: "String",
                 feedback: "String",
-                favorite: "String"
+                favorite: "String",
+                page: "String"
             }
         },
         
@@ -70,6 +71,14 @@ exports.transfer_objects = {
                 games.push( contest.getGame() );
             });
             return this.sanitize(page);
+        }
+    },
+    
+    pages : {
+        doc: "List of pages",
+        def:{
+            "pages" : ['page'],
+            "next" : "String"
         }
     }
 };
@@ -110,7 +119,7 @@ exports.links = {
                 }
             },
 
-            returns: ["page"]
+            returns: "pages"
 
         }
     },
