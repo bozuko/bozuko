@@ -2,20 +2,19 @@ var http = Bozuko.require('util/http');
 
 exports.transfer_objects = {
     prize: {
-        doc: "Bozuko Prize Object",
+        doc: "Bozuko Prize Object - state is either active, redeemed, or expired",
         def: {
             id: "Number",
             state: "String",
             name: "String",
 			wrapper_message: "String",
 			description: "String",
-            page: "String",
             win_time: "String",
-			redemption_period: "String",
-            redeemed_timestamp: "String",
+			redeemed_timestamp: "String",
             expiration_timestamp: "String",
             business_img: "String",
             user_img: "String",
+			code: "String",
             links: {
 				redeem: "String",
                 page: "String",
@@ -67,7 +66,7 @@ exports.links = {
 
     redeem: {
         post: {
-			access: 'user',
+			access: 'mobile',
             doc: "Redeem a prize",
 			params: {
 				message : {

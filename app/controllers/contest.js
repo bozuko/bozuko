@@ -40,7 +40,7 @@ var game_result = {
 
 var game = {
 
-    doc: "A Game Object",
+    doc: "A Game Object - the game config will differ depending on the game.",
 
     create : function(game){        
         game.config = game.contest.game_config;
