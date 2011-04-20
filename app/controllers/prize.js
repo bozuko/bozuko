@@ -69,6 +69,12 @@ exports.links = {
         post: {
 			access: 'user',
             doc: "Redeem a prize",
+			params: {
+				message : {
+					type: "String",
+					description: "The user entered message"
+				}
+			},
 			returns: "redemption_object"
         }
     }
