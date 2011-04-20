@@ -25,13 +25,13 @@ var req = {
     }
 };
 
+var res = {
+    send: function() {}
+};
+
 var new_phone = {
     type: 'iphone',
     unique_id: '11111111'
-};
-
-var res = {
-    send: function() {}
 };
 
 exports['Add Facebook user'] = function(test) {

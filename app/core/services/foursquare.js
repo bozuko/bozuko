@@ -428,11 +428,11 @@ $._sanitizeUser = function(user){
     return {
         service: 'facebook',
         id: user.id,
-        name: user.name,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        image: 'http://graph.facebook.com/'+user.id+'/picture?type=large',
-        email: user.email,
+        name: user.firstName + user.lastName,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        image: '',
+        email: user.contact.email,
         gender: user.gender,
         data: user
     };
