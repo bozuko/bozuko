@@ -35,7 +35,7 @@ Controller.prototype = {
                     var handler = function(req,res){
                         res.send("Handler is not configured yet :(");
                     };
-                    var _locals = self.locals || {};
+                    var _locals = merge({}, self.locals || {});
                     merge(_locals, config.locals || {});
                     if( config.title ) _locals.title = config.title;
                     if( config[method] instanceof Function ){
