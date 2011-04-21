@@ -125,22 +125,19 @@ User.static('addOrModify', function(user, phone, callback) {
 });
 
 User.method('verify_phone', function(phone) {
-        var phone_type_mismatch = false;
-        var self = this;
-        if (this.phones.every(function(p) {
+        var self = this, found = false, mismatch=false;
+        for(var i=0; i<this.phones.length && !found && !mismatch; i++){
+            var p = this.phones[i];
             if (p.type === phone.type && p.unique_id === phone.unique_id) {
-                return false;
+                found =true;
             } else if (p.type !== phone.type && p.unique_id === phone.unique_id) {
-                console.log("Error: attempt to change phone type from "+p.type+" to "+phone.type+" for facebook id: "+self.id);
-                phone_type_mismatch = true;
-                return false;
+                // udid does not match the saved phone type
+                mismatch = true;
             }
-            return true;
-        })) {
-            return 'new';
         }
-        if (phone_type_mismatch) return 'mismatch';
-        return 'match';
+        if(mismatch) return 'mismatch';
+        if(found) return 'match';
+        return 'new';
 });
 
 
