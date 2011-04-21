@@ -12,8 +12,9 @@ var express = require('express');
  * Create our main server
  */
 var ssl = {
-    key:fs.readFileSync('ssl/privatekey.pem'),
-    cert:fs.readFileSync('ssl/certificate.pem')
+    key:fs.readFileSync('ssl/wildcard/wildcard.bozuko.com.key'),
+    ca:fs.readFileSync('ssl/wildcard/gd_bundle.crt'),
+    cert:fs.readFileSync('ssl/wildcard/bozuko.com.crt')
 };
 var app = express.createServer(ssl);
 // var app = express.createServer();

@@ -147,11 +147,11 @@ var add_users = function(callback) {
 	return Bozuko.models.User.createFromServiceObject(user, function(error, user){
 	    if( error ) return callback( error );
 	    user.service('facebook').auth = auth;
-            user.phones = [assert.phone];
+            user.phones.push(assert.phone);
             assert.challenge = user.challenge;
 	    return user.save( function(error){
-		if( error ) return callback( error );
-		return callback( null, user);
+			if( error ) return callback( error );
+			return callback( null, user);
 	    });
 	});
     });

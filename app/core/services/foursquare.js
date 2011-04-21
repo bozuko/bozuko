@@ -392,9 +392,12 @@ $._sanitizePlace = function(place){
         data: place
     };
     if( place.categories && place.categories.length ){
-        var cat = place.categories[0];
-        data.category = cat.name;
-        data.image = cat.icon.replace(/\.png$/, '_64.png');
+        var cats = [];
+        place.categories.forEach(function(cat){
+            cats.push(cat.name);
+            data.image = cat.icon.replace(/\.png$/, '_64.png');
+        });
+        data.category = cats.join(', ');
     }
     return data;
 };

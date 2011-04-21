@@ -128,7 +128,7 @@ exports.facebook_checkin = function(test) {
     var params = JSON.stringify({
         lat: 42.646261785714,
         lng: -71.303897114286,
-        message: "What's up Owl Watch peoples!",
+        message: "This place is off the hook!",
         phone_type: phone.type,
         phone_id: phone.unique_id,
         mobile_version: '1.0',
@@ -144,7 +144,6 @@ exports.facebook_checkin = function(test) {
             console.log(res.body);
             var facebook_checkin_result = JSON.parse(res.body);
             test.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
-            console.log(res.body);
             link = facebook_checkin_result.games[0].links.contest_result;
             test.done();
         });
