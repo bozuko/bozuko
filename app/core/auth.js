@@ -70,7 +70,8 @@ auth.mobile = function(req, res, callback) {
 
         // Verify phone type and unique id
         function(callback) {
-            if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
+            
+            // if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
             var result = user.verify_phone(req.session.phone);
             if ( result === 'mismatch') {
                 return callback(Bozuko.error('auth/mobile'));
@@ -87,7 +88,7 @@ auth.mobile = function(req, res, callback) {
         // Verify challenge response for the given mobile app version
         function(callback) {
             var fn, result;
-            if (fn = auth.mobile_algorithms[req.session.mobile_version]) {
+            if ((fn = auth.mobile_algorithms[req.session.mobile_version])) {
                 result = fn(user.challenge);
                 if (result === req.session.challenge_response) {
                     return callback(null);
