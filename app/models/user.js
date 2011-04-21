@@ -117,7 +117,7 @@ User.static('addOrModify', function(user, phone, callback) {
         }
 
         u.service(user.service, user.id, user.token, user);
-        u.save(function(err) {
+        return u.save(function(err) {
             if (err) return callback(err);
             return callback(null, u);
         });
