@@ -99,7 +99,8 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                         }
                     }, function(user){
                         user.token = token;
-                        Bozuko.models.User.addOrModify(user, 'facebook', function(err, u) {
+                        user = self.sanitizeUser(user);
+                        Bozuko.models.User.addOrModify(user, req.session.phone, function(err, u) {
                             if (err) {
                                 console.log("Facebook login error: "+err);
                                 return err.send(res);
@@ -591,6 +592,7 @@ $._sanitizeUser = function(user){
         last_name: user.last_name,
         image: 'http://graph.facebook.com/'+user.id+'/picture?type=large',
         email: user.email,
+        gender: user.gender,
         data: user
     };
 };
