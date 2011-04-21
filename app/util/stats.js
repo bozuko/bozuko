@@ -96,9 +96,7 @@ var collect = exports.collect = function(service, city, center, callback) {
                     s.total_checkins = page.checkins;
                     s.timestamp = new Date();
                     // collect the category
-                    if( service == 'facebook' ){
-                        s.category = page.category;
-                    }
+                    s.category = page.category;
                     s.save(function(err) {
                         if (err){
                             counters.errors++;
