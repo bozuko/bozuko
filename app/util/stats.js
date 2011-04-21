@@ -152,7 +152,8 @@ exports.collect_all = function(callback) {
                     }
                     errors += counters.errors;
                     stats += counters.stats;
-                    return callback(null, 'ok');
+                    // buffer for 4s
+                    return setTimeout( function(){ callback(null, 'ok') }, 200 );
                 });
             });
         });
