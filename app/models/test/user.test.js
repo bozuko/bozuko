@@ -10,18 +10,13 @@ var fb_user = {
     gender: 'male'
 };
 
-var fs_user = {
-    id: '12345',
-    service: 'foursquare',
-    first_name: 'Charlie',
-    last_name: 'Sheen',
-    email: 'cs@winning.com',
-    gender: 'male',
-    token: '325252fadf'
+var phone = {
+    type: 'iphone',
+    unique_id: '11111111'
 };
 
 exports['Add Facebook user'] = function(test) {
-    Bozuko.models.User.addOrModify(fb_user, null, function(err, u) {
+    Bozuko.models.User.addOrModify(fb_user, phone, function(err, u) {
         test.ok(!err);
         test.equal(u.services.length, 1);
         test.done();
@@ -29,7 +24,8 @@ exports['Add Facebook user'] = function(test) {
 };
 
 exports['Add Foursquare user'] = function(test) {
-    Bozuko.models.User.addOrModify(fs_user, null, function(err, u) {
+    fb_user.service = 'foursquare';
+    Bozuko.models.User.addOrModify(fb_user, phone, function(err, u) {
         test.ok(!err);
         test.equal(u.services.length, 2);
         test.done();
