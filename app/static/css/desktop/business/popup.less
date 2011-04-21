@@ -1,0 +1,48 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+@import url("/css/fonts/ptsans/stylesheet.css");
+@import url("/css/fonts/honey-script/stylesheet.css");
+@import url("/css/fonts/arvo/stylesheet.css");
+@import url("/css/oocss/core/libraries.css");
+
+@import url("typography.css");
+
+html {
+    background: #318f51 url("/images/cs/bg_html.jpg") repeat-x 0 0;
+    height: 100%;
+}
+body {
+    position: relative;
+    min-height: 100%;
+    _height: 100%;
+    background: transparent url("/images/cs/bg_splash.jpg") no-repeat 50% 0;
+}
+.content{
+    
+    text-align: center;
+    padding-top: 150px;
+    
+    *{ outline: none !important;}
+    
+    .logo {
+        width: 400px;
+        height: 115px;
+        margin: 0 auto;
+        position: relative;
+        background: url("/images/cs/img_logo.png") no-repeat 50% 0;
+    }
+    
+    .message {
+        font-family: PTSansBold;
+        font-size: 20px;
+        
+        .success {
+            color: @dark_color;
+        }
+        .error {
+            color: darkred;
+        }
+    }
+    
+}
