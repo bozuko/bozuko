@@ -70,7 +70,6 @@ auth.mobile = function(req, res, callback) {
 
         // Verify phone type and unique id
         function(callback) {
-            
             if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
             var result = user.verify_phone(req.session.phone);
             if ( result === 'mismatch') {
