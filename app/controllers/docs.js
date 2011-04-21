@@ -4,6 +4,14 @@ var fs          = require('fs'),
     util        = require('util'),
     docify      = Bozuko.require('util/docs').docify;
 
+exports.filter = function(req,res,next){
+    console.log('Docs Controller filter');
+    if( req.session.device == 'tablet' ){
+        req.session.device = 'desktop';
+    }
+    next();
+};
+
 exports.routes = {
 
     '/docs': {
@@ -153,23 +161,31 @@ exports.routes = {
     '/docs/api/*' : {
         description : 'Mobile Developer API Doc Page',
         
-        get : function(req,res){
-            var parts = URL.parse(req.url).pathname.replace(/\/docs\/api\//,'').split('/');
-            if( parts.length == 1 ){
-                if( !this.html ) this.html = {};
-                if( !this.html[parts[0]]){
-                    this.html[parts[0]] = markdown.parse( fs.readFileSync(Bozuko.dir+'/docs/api/'+parts[0]+'.md', 'utf-8'));
+        get : {
+            
+            filter : function(req,res,next){
+                console.log('Method filter');
+                next();
+            },
+            
+            handler: function(req,res){
+                var parts = URL.parse(req.url).pathname.replace(/\/docs\/api\//,'').split('/');
+                if( parts.length == 1 ){
+                    if( !this.html ) this.html = {};
+                    if( !this.html[parts[0]]){
+                        this.html[parts[0]] = markdown.parse( fs.readFileSync(Bozuko.dir+'/docs/api/'+parts[0]+'.md', 'utf-8'));
+                    }
+                    var html = this.html[parts[0]];
+                    res.render('docs/api/'+parts[0], {layout: false, bozuko:Bozuko, html: html});
                 }
-                var html = this.html[parts[0]];
-                res.render('docs/api/'+parts[0], {layout: false, bozuko:Bozuko, html: html});
-            }
-            else{
-                res.render('docs/api/'+(parts[0].replace(/s$/,'')), {
-                    layout: false,
-                    bozuko: Bozuko,
-                    docify: docify,
-                    key: parts[1]
-                });
+                else{
+                    res.render('docs/api/'+(parts[0].replace(/s$/,'')), {
+                        layout: false,
+                        bozuko: Bozuko,
+                        docify: docify,
+                        key: parts[1]
+                    });
+                }
             }
         }
     }

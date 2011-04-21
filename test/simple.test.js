@@ -132,8 +132,9 @@ exports.facebook_checkin = function(test) {
         phone_type: phone.type,
         phone_id: phone.unique_id,
         mobile_version: '1.0',
-        challenge_response: auth.mobile_algorithms['1.0'](challenge)
+        challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
     });
+    console.log(params);
     assert.response(test, Bozuko.app,
         {url: checkin_link+"/?token="+token,
         method: 'POST',
@@ -155,7 +156,7 @@ exports.play3times = function(test) {
         phone_type: phone.type,
         phone_id: phone.unique_id,
         mobile_version: '1.0',
-        challenge_response: auth.mobile_algorithms['1.0'](challenge)
+        challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
     });
 
     var play = function(callback) {
@@ -168,6 +169,7 @@ exports.play3times = function(test) {
             },
             ok,
             function(res) {
+                console.log(res.body);
                 var result = JSON.parse(res.body);
                 callback(null, '');
             }
@@ -185,7 +187,7 @@ exports.playError = function(test) {
         phone_type: phone.type,
         phone_id: phone.unique_id,
         mobile_version: '1.0',
-        challenge_response: auth.mobile_algorithms['1.0'](challenge)
+        challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
     });
 
     assert.response(test, Bozuko.app,

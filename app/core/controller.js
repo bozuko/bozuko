@@ -68,6 +68,10 @@ Controller.prototype = {
                         if( methodConfig.locals ){
                             merge(_locals, methodConfig.locals);
                         }
+                        
+                        if( methodConfig.filter ){
+                            handler = middleware( methodConfig.filter, handler, self);
+                        }
 
                         // check for docs...
                         if( !self.doc.routes[route] ) self.doc.routes[route] = {};
@@ -110,6 +114,12 @@ Controller.prototype = {
                         }
                         $handler(req,res);
                     };
+                    
+                    // add our controller middleware
+                    if (self.filter ){
+                        handler = middleware(self.filter, handler, self);
+                    }
+                    
                     path = self._cleanPath(path);
                     app[method](path, function(req,res){
                         handler.apply(self,arguments);
@@ -131,7 +141,6 @@ Controller.prototype = {
         return path;
     },
 
-
     forward : function(path){
 
     }
@@ -141,6 +150,14 @@ Controller.prototype = {
 function createController(app,name,config){
     var controller = new Controller(app,name,config);
     return controller;
+}
+
+function middleware(fn, old, scope){
+    return function(req, res){
+        fn.call(scope, req, res, function(){
+            return old.call(scope,req,res);
+        });
+    };
 }
 
 exports.Controller = Controller;
