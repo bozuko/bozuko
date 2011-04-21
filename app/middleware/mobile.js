@@ -10,18 +10,18 @@ module.exports = function mobile() {
         delete req.session.challenge_response;
 
 
-        if (val = req.param('phone_id')) {
+        if ( (val = req.param('phone_id')) ) {
             phone.unique_id = val;
         }
-        if (val = req.param('phone_type')) {
+        if ( (val = req.param('phone_type')) ) {
             phone.type = val;
         }
 
-        if (val = req.param('mobile_version')) {
+        if ( (val = req.param('mobile_version')) ) {
             req.session.mobile_version = val;
         }
 
-        if (val = req.param('challenge_response')) {
+        if ( (val = req.param('challenge_response')) ) {
             req.session.challenge_response = val;
         }
 
