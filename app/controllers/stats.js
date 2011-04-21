@@ -51,6 +51,7 @@ exports.routes = {
                     var fields = [
                         'service',
                         'sid',
+                        'category',
                         'name',
                         'city',
                         'lat',

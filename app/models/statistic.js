@@ -3,15 +3,16 @@ var facebook = Bozuko.require('util/facebook'),
     Schema = mongoose.Schema;
 
 var Statistic = module.exports = new Schema({
-    service          :{type: String},
-    name             :{type: String},
-    city             :{type: String},
-    sid              :{type: String},
-    lat              :{type: Number},
-    lng              :{type: Number},
-    total_checkins   :{type: Number},
-    daily_checkins   :{type: Number},
-    timestamp        :{type: Date, default: Date.now}
+    service             :{type: String},
+    category            :{type: String},
+    name                :{type: String},
+    city                :{type: String},
+    sid                 :{type: String},
+    lat                 :{type: Number},
+    lng                 :{type: Number},
+    total_checkins      :{type: Number},
+    daily_checkins      :{type: Number},
+    timestamp           :{type: Date, default: Date.now}
 });
 
 Statistic.index({sid: 1, service: 1});

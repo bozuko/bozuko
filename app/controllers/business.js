@@ -12,6 +12,7 @@ exports.locals = {
 
 exports.routes = {
     
+    
     '/business/login' : {
         
         description :"Business login - sends user to facebook",
@@ -37,6 +38,9 @@ exports.routes = {
                 layout: false
             },
             handler: function(req,res){
+                var error = req.param('error_reason');
+                res.locals.message = error ? "Error Connecting to Facebook" : "Successfully Connected to Facebook";
+                res.locals.cls = error ? 'error' : 'success';
                 res.render('business/login/popup');
             }
         }

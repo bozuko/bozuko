@@ -540,6 +540,7 @@ $._sanitizePlace = function(place){
         id: place.id,
         checkins: place.checkins||0,
         name: place.name,
+        category: place.category,
         image: 'http://graph.facebook.com/'+place.id+'/picture?type=large',
         location: {
             street: place.location.street || '',
