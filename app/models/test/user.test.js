@@ -10,29 +10,15 @@ var fb_user = {
     gender: 'male'
 };
 
-var fs_user = {
-    id: '12345',
-    firstName: 'Charlie',
-    lastName: 'Sheen',
-    contact: {
-        email: 'cs@winning.com'
-    },
-    gender: 'male',
-    token: '325252fadf'
+var phone = {
+    type: 'iphone',
+    unique_id: '11111111'
 };
 
 exports['Add Facebook user'] = function(test) {
-    Bozuko.models.User.addOrModify(fb_user, 'facebook', function(err, u) {
+    Bozuko.models.User.addOrModify(fb_user, phone, function(err, u) {
         test.ok(!err);
         test.equal(u.services.length, 1);
-        test.done();
-    });
-};
-
-exports['Add Foursquare user'] = function(test) {
-    Bozuko.models.User.addOrModify(fs_user, 'foursquare', function(err, u) {
-        test.ok(!err);
-        test.equal(u.services.length, 2);
         test.done();
     });
 };
