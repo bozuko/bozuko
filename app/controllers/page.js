@@ -4,7 +4,7 @@ var async = require('async'),
 var requestCount = 0;
 
 exports.transfer_objects = {
-    
+
     page: {
 
         doc: "A Bozuko Page",
@@ -30,13 +30,14 @@ exports.transfer_objects = {
                 lat: "Number",
                 lng: "Number"
             },
-            
+
             phone: "String",
             fan_count: "Number",
             checkins: "Number",
             info: "String",
             games: ["game"],
             links: {
+                recommend: "String",
                 facebook_login: "String",
                 facebook_checkin: "String",
                 facebook_like: "String",
@@ -45,7 +46,7 @@ exports.transfer_objects = {
                 page: "String"
             }
         },
-        
+
         create: function(page){
             // this should hopefully be a Page model object
             // lets check for a contest
@@ -58,7 +59,7 @@ exports.transfer_objects = {
                 facebook_like       :'/facebook/'+fid+'/like'
             };
             if( page.registered ){
-                
+
                 // add registered links...
                 page.links.page          ='/page/'+page.id,
                 page.links.share         ='/page/'+page.id+'/share';
@@ -66,14 +67,14 @@ exports.transfer_objects = {
                 page.links.favorite      ='/user/favorite/'+page.id;
             }
             var games = [];
-            
+
             if( page.contests ) page.contests.forEach(function(contest){
                 games.push( contest.getGame() );
             });
             return this.sanitize(page);
         }
     },
-    
+
     pages : {
         doc: "List of pages",
         def:{
@@ -141,7 +142,9 @@ exports.links = {
                     type: "String",
                     description: "The message to send to the Business / Bozuko"
                 }
-            }
+            },
+
+            returns: "success_message"
         }
     }
 };
@@ -198,18 +201,18 @@ exports.routes = {
                 var service = req.param('service');
                 var query = req.param('query');
                 var favorites = req.param('favorites');
-                
+
                 if( !ll) return Bozuko.error('page/pages_no_ll').send(res);
-                
+
                 var options = {
                     limit: parseInt(req.param('limit')) || 25,
                     offset: parseInt(req.param('offset')) || 0,
                     user: req.session.user
                 };
-                
+
                 // first, we will try center
                 if( ll ){
-                    
+
                     var parts = ll.split(',');
                     if( parts.length != 2 ){
                         Bozuko.error('page/malformed_center').send(res);
@@ -233,7 +236,7 @@ exports.routes = {
                         [lng2,lat2]
                     ];
                 }
-                
+
                 if( query ) options.query = query;
                 if( service ) options.service = service;
                 if( favorites ) options.favorites = true;
@@ -276,9 +279,9 @@ exports.routes = {
             }
         }
     },
-    
+
     'page/:id/image': {
-        
+
         get : {
             handler : function(req,res){
                 Bozuko.models.Page.findById(req.param('id'), function(error, page) {
@@ -287,6 +290,6 @@ exports.routes = {
                 });
             }
         }
-        
+
     }
 };

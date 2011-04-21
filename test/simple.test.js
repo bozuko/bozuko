@@ -9,9 +9,11 @@ var phone = assert.phone;
 var headers = {'content-type': 'application/json'};
 var ok = {status: 200, headers: {'Content-Type': 'application/json'}};
 var bad = {status: 500, headers: {'Content-Type': 'application/json'}};
+var auth;
 
 exports.setup = function(test) {
     testsuite.setup(test.done);
+    auth = Bozuko.require('core/auth');
 };
 
 var link = '/api';
@@ -130,7 +132,7 @@ exports.facebook_checkin = function(test) {
         phone_type: phone.type,
         phone_id: phone.unique_id,
         mobile_version: '1.0',
-        challenge_response: Bozuko.require('core/auth').mobile_algorithms['1.0'](challenge)
+        challenge_response: auth.mobile_algorithms['1.0'](challenge)
     });
     assert.response(test, Bozuko.app,
         {url: checkin_link+"/?token="+token,

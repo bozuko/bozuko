@@ -42,7 +42,7 @@ var game = {
 
     doc: "A Game Object - the game config will differ depending on the game.",
 
-    create : function(game){        
+    create : function(game){
         game.config = game.contest.game_config;
         game.user_tokens = game.tokens;
         game.can_play = game.tokens > 0;
@@ -83,9 +83,11 @@ var game_state = {
         next_enter_time: "String",
         button_text: "String",
         button_enabled: "Boolean",
-        button_is_entry: "Boolean",
+        button_action: "String",
         links: {
-
+            game_result: "String",
+            game_entry: "String",
+            game_state: "String"
         }
     }
 };
@@ -97,10 +99,7 @@ var entry_method = {
     def: {
         type: "String",
         image: "String",
-        description: "String",
-        links:{
-            game_entry: "String"
-        }
+        description: "String"
     }
 };
 

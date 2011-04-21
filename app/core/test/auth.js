@@ -2,6 +2,7 @@ var auth = require('../auth');
 var testsuite = require('./config/testsuite');
 
 var fb_user = {
+    service: 'facebook',
     id: '32423432523',
     name: 'Charlie Sheen',
     first_name: 'Charlie',
@@ -23,12 +24,18 @@ var req = {
         mobile_version: '1.0'
     }
 };
+
 var res = {
     send: function() {}
 };
 
+var new_phone = {
+    type: 'iphone',
+    unique_id: '11111111'
+};
+
 exports['Add Facebook user'] = function(test) {
-    Bozuko.models.User.addOrModify(fb_user, 'facebook', function(err, u) {
+    Bozuko.models.User.addOrModify(fb_user, req.session.phone, function(err, u) {
         test.ok(!err);
         test.equal(u.services.length, 1);
 
@@ -71,6 +78,11 @@ exports['authorize mobile - fail - bad version'] = function(test) {
 exports['authorize mobile - fail - bad challenge response'] = function(test) {
     req.session.mobile_version = '1.0';
     req.session.challenge_response = 'bad value';
+    authorize(test, 'mobile', false);
+};
+
+exports['authorize mobile - fail - new phone which isn\'t in session'] = function(test) {
+    req.session.phone = new_phone;
     authorize(test, 'mobile', false);
 };
 
