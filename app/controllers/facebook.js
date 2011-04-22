@@ -34,15 +34,10 @@ exports.links = {
             doc: "Checkin to facebook and receive tokens",
             access: 'mobile',
             params: {
-                lat: {
+                ll: {
                     required: true,
-                    type: "Number",
-                    description: "User latitude"
-                },
-                lng: {
-                    required: true,
-                    type: "Number",
-                    description: "User longitude"
+                    type: "String",
+                    description: "The users latitude and longitude in lat,lng format"
                 },
                 message : {
                     type: "String",
@@ -92,13 +87,17 @@ exports.routes = {
             handler: function(req, res) {
 
                 var id = req.param('id');
-                var lat = req.param('lat');
-                var lng = req.param('lng');
+                var ll = req.param('ll');
                 var msg = req.param('message') || '';
 
-                if( !lat || !lng ){
+                if( !ll ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
+                var parts = ll.split(',');
+                if( parts.length != 2 ){
+                    return Bozuko.error('facebook/no_lat_lng').send(res);
+                }
+                var lat = ll[0], lng = ll[1];
 
                 return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
 

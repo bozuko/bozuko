@@ -1,3 +1,8 @@
+var fs              = require('fs'),
+    path            = require('path'),
+    markdown        = require('markdown-js')
+    ;
+
 /**
  * Abstract Bozuko Transfer Object
  */
@@ -10,6 +15,12 @@ var TransferObject = module.exports = function(name, config){
     this.title = config.title;
     this.links = {};
     this.returned = [];
+    
+    // check for .md documentation
+    var filename = Bozuko.dir+'/content/docs/api/transfers/'+this.name+'.md';
+    if( path.existsSync(filename) ){
+        this.doc = markdown.parse( fs.readFileSync(filename, 'utf-8'));
+    }
 
     // run through the links and associate with this controller
     if( this.def.links ){

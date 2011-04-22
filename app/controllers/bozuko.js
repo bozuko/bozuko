@@ -10,6 +10,13 @@ exports.transfer_objects= {
                 creating_contest: "String"
             }
         }
+    },
+    
+    success_message:{
+        doc:"Generic success message",
+        def:{
+            success: "Boolean"
+        }
     }
 };
 

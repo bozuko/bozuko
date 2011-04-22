@@ -13,8 +13,7 @@ exports.transfer_objects= {
             email: "String",
             img: "String",
             links: {
-                facebook_login: "String",
-                facebook_logout: "String",
+                logout: "String",
                 favorites: "String"
             }
         }
@@ -79,15 +78,26 @@ exports.links = {
         }
     },
 
-    facebook_login: {
+    login: {
         get: {
-            doc: "Login to facebook"
+            params: {
+                phone_type: {
+                    required: true,
+                    type: "String",
+                    description: "The type of phone (iphone4, etc)"
+                },
+                phone_id: {
+                    required: true,
+                    type: "String",
+                    description: "The unique id of the phone (udid)"
+                }
+            }
         }
     },
 
-    facebook_logout: {
+    logout: {   
         get: {
-            doc: "Logout of facebook"
+            doc: "Logout of Bozuko"
         }
     }
 };

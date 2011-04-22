@@ -10,4 +10,4 @@ else
     export NODE_ENV='development';
 fi
 
-nohup supervisor -w ./app -p app.js >> ./logs/bozuko.log &
+nohup supervisor -w ./app,./content -p app.js >> ./logs/bozuko.log &

@@ -193,6 +193,9 @@ font: 13.34px helvetica, arial, freesans, clean, sans-serif;body {
   text-transform: uppercase;
   font-weight: normal;
 }
+.section ul {
+  padding: 0;
+}
 .section .method {
   border: 1px solid #ccc;
   margin: 10px 0;
@@ -232,7 +235,7 @@ font: 13.34px helvetica, arial, freesans, clean, sans-serif;body {
   padding: 0 10px 0 20px;
 }
 .section .description p {
-  margin: 4px 0;
+  margin: 1em 0;
 }
 .section .label {
   margin-right: 10px;
@@ -300,4 +303,7 @@ a:hover {
 }
 p, ol {
   line-height: 1.5em!important;
+}
+p {
+  margin: 1em;
 }
