@@ -1,13 +1,21 @@
-var TransferObject = Bozuko.require('core/transfer')
+var TransferObject  = Bozuko.require('core/transfer'),
+    fs              = require('fs'),
+    path            = require('path'),
+    markdown        = require('markdown-js')
     ;
 
 var HttpMethod = function(method, config, link){
     this.method = method;
-    this.doc = config.doc;
     this.access = config.access || false;
     this.params = config.params;
     this.returns = config.returns;
     this.link = link;
+    this.doc = config.doc;
+    // check for .md documentation
+    var filename = Bozuko.dir+'/content/docs/api/links/'+this.link.name+'/'+this.method+'.md';
+    if( path.existsSync(filename)){
+        this.doc = markdown.parse( fs.readFileSync(filename, 'utf-8'));
+    }
 };
 
 /**
@@ -22,7 +30,7 @@ var Link = module.exports = function(name, config){
     var self = this;
     
     Object.keys(config).forEach(function(method){
-        self.addMethod(new HttpMethod(method, config[method], this));
+        self.addMethod(new HttpMethod(method, config[method], self));
     });
 };
 

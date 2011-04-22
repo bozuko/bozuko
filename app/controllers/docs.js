@@ -62,7 +62,7 @@ exports.routes = {
             // grab the welcome html
             
             if( !this.welcomeHTML ){
-                this.welcomeHTML = markdown.parse( fs.readFileSync(Bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
+                this.welcomeHTML = markdown.parse( fs.readFileSync(Bozuko.dir+'/content/docs/api/welcome.md', 'utf-8'));
             }
             
             return res.render('docs/index', {
@@ -145,7 +145,7 @@ exports.routes = {
             // grab the welcome html
             
             if( !this.welcomeHTML ){
-                this.welcomeHTML = markdown.parse( fs.readFileSync(Bozuko.dir+'/docs/api/welcome.md', 'utf-8'));
+                this.welcomeHTML = markdown.parse( fs.readFileSync(Bozuko.dir+'/content/docs/api/welcome.md', 'utf-8'));
             }
             
             res.render('docs/api', {
@@ -173,7 +173,7 @@ exports.routes = {
                 if( parts.length == 1 ){
                     if( !this.html ) this.html = {};
                     if( !this.html[parts[0]]){
-                        this.html[parts[0]] = markdown.parse( fs.readFileSync(Bozuko.dir+'/docs/api/'+parts[0]+'.md', 'utf-8'));
+                        this.html[parts[0]] = markdown.parse( fs.readFileSync(Bozuko.dir+'/content/docs/api/'+parts[0]+'.md', 'utf-8'));
                     }
                     var html = this.html[parts[0]];
                     res.render('docs/api/'+parts[0], {layout: false, bozuko:Bozuko, html: html});

@@ -69,7 +69,7 @@ var game = {
         prizes:['game_prize'],
         rules: "String",
         links: {
-            facebook_login: "String",
+            login: "String",
             game_result: "String",
             page: "String",
             game: "String"
@@ -135,8 +135,9 @@ exports.links = {
             access: 'mobile',
             params: {
                 ll: {
+                    required: true,
                     type: 'String',
-                    description: "Latitude, Longitude"
+                    description: "Latitude and Longitude in the form of lat,lng"
                 }
             },
             returns: ['game_state']

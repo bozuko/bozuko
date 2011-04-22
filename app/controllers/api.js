@@ -1,11 +1,12 @@
 exports.transfer_objects = {
     entry_point: {
-        doc: "The entry point object of the application. If a user token is passed, the user and prizes links will be provided, otherwise, the facebook_login will be present.",
+        doc: "The entry point object of the application. If a user token is passed, the "+
+             "user and prizes links will be provided, otherwise, the login link will be present.",
 
         def: {
             links: {
                 pages: "String",
-                facebook_login: "String",
+                login: "String",
                 bozuko : "String",
                 user: "String",
                 prizes: "String"
@@ -47,7 +48,7 @@ exports.routes = {
                     links.user = "/user/",
                     links.prizes = "/user/prizes";
                 } else {
-                    links.facebook_login = "/user/login/facebook";
+                    links.login = "/user/login";
                 }
                 res.send(Bozuko.transfer('entry_point', {links: links}));
             }

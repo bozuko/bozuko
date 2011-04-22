@@ -34,11 +34,10 @@ exports.transfer_objects = {
             phone: "String",
             fan_count: "Number",
             checkins: "Number",
-            info: "String",
             games: ["game"],
             links: {
                 recommend: "String",
-                facebook_login: "String",
+                login: "String",
                 facebook_checkin: "String",
                 facebook_like: "String",
                 feedback: "String",
@@ -54,7 +53,7 @@ exports.transfer_objects = {
             if( !page.registered ) delete page.id;
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
-                facebook_login      :'/user/login/facebook',
+                login               :'/user/login',
                 facebook_checkin    :'/facebook/'+fid+'/checkin',
                 facebook_like       :'/facebook/'+fid+'/like'
             };
@@ -165,7 +164,7 @@ var fill_page = function(p, callback) {
         }
         page.links.facebook_checkin = "/facebook/"+page.id+"/checkin";
         page.links.facebook_like = "/facebook/"+page.id+"/like";
-        page.links.facebook_login = "/facebook/login";
+        page.links.login = "/user/login";
         page.links.share = page_path+"/share";
         page.links.feedback = page_path+"/feedback";
         callback(null, page);
@@ -175,7 +174,7 @@ var fill_page = function(p, callback) {
 function get_page_links(page, fid){
     var links = {
         facebook_page       :'http://facebook.com/'+fid,
-        facebook_login      :'/user/login/facebook',
+        login               :'/user/login/facebook',
         facebook_checkin    :'/facebook/'+fid+'/checkin',
         facebook_like       :'/facebook/'+fid+'/like'
     };

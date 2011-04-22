@@ -56,12 +56,12 @@ Ext.setup({
         
         nestedList.on('leafitemtap', function(list, i, el, e, detailCard) {
             var r = list.getRecord(el);
-            changePage(r);
+            window.location.hash = r.get('id');
+            //changePage(r);
         });
         
         function changePage(r){
             if( typeof r == 'string'){
-                console.log(r);
                 r = store.getRootNode().findChild('id', r, true).getRecord();
             }
             var id = r.get('id');
@@ -78,8 +78,8 @@ Ext.setup({
             });
         }
         
-        window.onhashchange = function(){
-            var id = window.location.hash.substr(1);
+        function onHashChange(){
+            var id = window.location.hash ? window.location.hash.substr(1) : '/';
             changePage(id);
         };
         
@@ -99,7 +99,7 @@ Ext.setup({
             scroll: 'vertical'
         });
         
-        changePage('/');
-        
+        window.onhashchange = onHashChange;
+        onHashChange();
     }
 });

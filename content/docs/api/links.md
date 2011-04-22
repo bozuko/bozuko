@@ -20,11 +20,26 @@ API accepts requests in JSON format with the application/json header, and also t
 application/x-www-form-urlencoded header. The POST or PUT bodies should be formatted accordingly.
 Either header will work fine with GET requests as the parameters are appended to the url.
 
-#### User Authentication
+#### Authenticated Methods
 
-Any links that are documented with Access Level of user require that the user token be passed
-as an additional parameter 'token'. The user token is supplied with the user object after
-a successful login.
+##### User 
+
+User authenticated methods reqire that the following parameter is passed along with
+the with the request:
+
+ + **token** The token is returned with user transfer object
+
+##### Mobile
+
+Mobile authenticated methods require that the following parameters are passed along with
+with the request:
+
+ + **phone_type**  The phone type (iphone4 or android)
+ + **phone_id**  The udid of the phone
+ + **challenge_response**  The challenge seed is passed with the user transfer object.
+   The challenge response is an number that is calculated using the version specific algorithm
+   provided to the client developers upon request.
+
 
 #### Client Version
 

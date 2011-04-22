@@ -10,14 +10,14 @@ h4 Methods
     .method
       h5.method-name
         - if ( method.access )
-          a.access-level(class=method.access, href="#/links") Authenticated #{method.access.toUpperCase()} Method
+          a.access-level(class=method.access, href="#/links") #{method.access.toUpperCase()} Authenticated Method
           
         !=name.toUpperCase()
         
       
       - if( method.doc )
         .description.padded
-          p= method.doc
+          p!= method.doc
         
       - if( method.params )
         .params
@@ -34,7 +34,7 @@ h4 Methods
                   span.type= doc.type
                   
                 .description
-                  p= doc.description
+                  p!= doc.description
       
       - if( method.returns )
         .returns
