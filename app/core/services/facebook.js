@@ -544,7 +544,7 @@ $._sanitizePlace = function(place){
         likes: place.likes,
         name: place.name,
         category: place.category,
-        image: 'http://graph.facebook.com/'+place.id+'/picture?type=large',
+        image: 'https://graph.facebook.com/'+place.id+'/picture?type=large',
         location: {
             street: place.location.street || '',
             city: place.location.city || '',
@@ -604,8 +604,8 @@ $._sanitizeUser = function(user){
  */
 
 function sort_FacebookPageLocationLikes(a,b){
-    var a_has_location = a.location && a.location.latitude;
-    var b_has_location = b.location && b.location.latitude;
+    var a_has_location = a.location && a.location.lat;
+    var b_has_location = b.location && b.location.lng;
     if( b_has_location && !a_has_location ) return 1;
     if( a_has_location && !b_has_location ) return -1;
     // now sort by likes

@@ -78,6 +78,9 @@ exports.routes = {
             hide_top_profile: true,
             scripts:[
                 '/js/ext-4.0/ext-core.js'
+            ],
+            styles:[
+                '/css/desktop/business/sign-up.css'
             ]
         },
         
