@@ -1,0 +1,303 @@
+line-height: 1.5em;
+font: 13.34px helvetica, arial, freesans, clean, sans-serif;body {
+  font-family: Tahoma;
+  font-size: 12px;
+}
+.x-tablet .x-nested-list, .x-desktop .x-nested-list {
+  border-right: 1px solid #000;
+}
+.header .x-panel-body {
+  background: #111111 url("/images/desktop/site/bg_hd.png") repeat-x 0 100%;
+}
+.header .title {
+  height: 100px;
+  background: url("/images/desktop/site/img_logo.png") no-repeat 10px 10px;
+  position: relative;
+}
+.header .title span {
+  position: absolute;
+  bottom: 10px;
+  left: 80px;
+  color: #fff;
+}
+.header .confidential {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  text-shadow: 2px 2px 2px #000;
+}
+.header .confidential .big {
+  text-transform: uppercase;
+  color: #d62929;
+  font-family: impact;
+  font-size: 40px;
+  display: block;
+}
+.header .confidential .smaller {
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+  color: #dd4646;
+}
+.controllerIcon {
+  background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+.objectIcon, .objectsIcon {
+  padding-left: 20px;
+  background: url("/images/icons/16x16/package_green.png") no-repeat 0 50% !important;
+}
+.linkIcon, .linksIcon {
+  padding-left: 20px;
+  background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+.routeIcon {
+  background: url("/images/icons/16x16/link.png") no-repeat 0 50% !important;
+}
+.methodIcon {
+  background: url("/images/icons/16x16/world.png") no-repeat 0 50% !important;
+}
+.controller-page ul.routes {
+  margin: 0;
+  list-style: none;
+  border-bottom: 1px solid #e3e3e3;
+}
+.controller-page ul.routes li.route {
+  margin: 0;
+  list-style: none;
+  border: 1px solid #e3e3e3;
+  border-bottom: 0;
+  margin-bottom: 10px;
+}
+.controller-page ul.routes li.route blockquote {
+  margin: 0;
+}
+.controller-page ul.routes li.route h3.route {
+  position: relative;
+  margin: 0;
+  padding: 10px;
+  background: #f2f2f2;
+  z-index: 3;
+}
+.controller-page ul.routes li.route .methods-block {
+  margin-left: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid #e3e3e3;
+}
+.controller-page ul.routes li.route .methods-block .method-separator {
+  clear: both;
+  height: 1px;
+  line-height: 1px;
+  font-size: 1px;
+  overflow: hidden;
+  background: #e3e3e3;
+  margin: 10px 0;
+}
+.controller-page ul.routes li.route .methods-block .type {
+  color: #999;
+  margin-left: 6px;
+  font-style: italic;
+}
+.controller-page ul.routes li.route .methods-block .name, .controller-page ul.routes li.route .methods-block .label {
+  font-weight: bold;
+}
+.controller-page ul.routes li.route .methods-block ul.params, .controller-page ul.routes li.route .methods-block .return {
+  margin: 0 10px 10px 0;
+  border: 1px solid #e8e8e8;
+  border-bottom-width: 0;
+  list-style: none;
+}
+.controller-page ul.routes li.route .methods-block ul.params .param-title,
+.controller-page ul.routes li.route .methods-block .return .param-title,
+.controller-page ul.routes li.route .methods-block ul.params .return-title,
+.controller-page ul.routes li.route .methods-block .return .return-title,
+.controller-page ul.routes li.route .methods-block ul.params .param-values,
+.controller-page ul.routes li.route .methods-block .return .param-values {
+  padding: 4px 20px;
+  background: #f3f3f3;
+}
+.controller-page ul.routes li.route .methods-block ul.params .param-values, .controller-page ul.routes li.route .methods-block .return .param-values {
+  background: #fff;
+  margin-top: 5px;
+  border-top: 1px solid #f3f3f3;
+}
+.controller-page ul.routes li.route .methods-block ul.params .param-desc,
+.controller-page ul.routes li.route .methods-block .return .param-desc,
+.controller-page ul.routes li.route .methods-block ul.params .return-desc,
+.controller-page ul.routes li.route .methods-block .return .return-desc {
+  padding: 4px 20px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.controller-page ul.routes li.route .methods-block ul.params .required .param-title, .controller-page ul.routes li.route .methods-block .return .required .param-title {
+  background-image: url("/images/icons/16x16/bullet_star.png");
+  background-repeat: no-repeat;
+  background-position: 2px 50%;
+}
+.controller-page ul.routes li.route .methods-block ul.params .label, .controller-page ul.routes li.route .methods-block .return .label {
+  color: #999;
+}
+.controller-page ul.routes li.route .methods-block ul.params .param-values, .controller-page ul.routes li.route .methods-block .return .param-values {
+  padding-left: 6px;
+  color: #666;
+}
+.controller-page ul.routes li.route .methods-block .method {
+  margin-top: 0;
+  float: left;
+  width: 60px;
+  color: #bc3023;
+  text-transform: uppercase;
+  padding: 0 10px;
+}
+.controller-page ul.routes li.route .methods-block .content {
+  margin-left: 80px;
+}
+.controller-page ul.routes li.route .methods-block .content blockquote {
+  margin: 0;
+}
+.controller-page ul.routes li.route .methods-block .content h5 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #999;
+}
+.controller-page ul.routes li.route .methods-block pre {
+  border: 1px solid #e8e8e8;
+  background: #f3f3f3;
+  padding: 4px 6px;
+}
+.section {
+  margin: 10px 0;
+}
+.section h5 {
+  margin: 0;
+  padding: 5px 10px;
+  background-color: #f3f3f3;
+  background-image: -moz-linear-gradient(top, #f3f3f3, #dddddd);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f3f3f3), color-stop(1, #dddddd));
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f3f3f3, endColorstr=#dddddd)";
+  /*  IE6 & 7 */
+
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#f3f3f3, endColorstr=#dddddd)";
+  /*  IE8 */
+
+  font-size: 20px;
+  position: relative;
+  font-weight: normal;
+  font-family: Impact;
+  color: #333;
+  text-shadow: 2px 2px 1px #ffffff;
+}
+.section h6 {
+  font-size: 13px;
+  margin: 0;
+  padding: 10px;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: normal;
+}
+.section .method {
+  border: 1px solid #ccc;
+  margin: 10px 0;
+}
+.section .access-level {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 3px 10px;
+  border: 2px solid #fff;
+  border-bottom-left-radius: 10px;
+  border-top: 0;
+  border-right: 0;
+  font-family: Tahoma;
+  font-size: 13px;
+  float: right;
+  background: rgba(255, 0, 0, 0.3);
+  color: #000 !important;
+  text-shadow: 0 0 0;
+}
+.section .padded {
+  padding: 0 10px;
+}
+.section .params, .section .param {
+  list-style: none;
+  margin: 0;
+}
+.section ul.params {
+  margin: 0 10px 10px;
+  border: 1px solid #e8e8e8;
+}
+.section .title {
+  padding: 8px 10px 8px 20px;
+  background: #f3f3f3;
+}
+.section .description {
+  padding: 0 10px 0 20px;
+}
+.section .description p {
+  margin: 4px 0;
+}
+.section .label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+.section .type {
+  color: #999;
+  font-style: normal;
+}
+.section .required .title {
+  background-image: url("/images/icons/16x16/bullet_star.png");
+  background-repeat: no-repeat;
+  background-position: 2px 50%;
+}
+.section .returns {
+  padding-bottom: 10px;
+}
+.section .returns a {
+  font-weight: bold;
+}
+.internalLink {
+  padding-left: 20px;
+  line-height: 16px;
+}
+h3 {
+  color: #006b35;
+  font-size: 24px;
+  font-family: "Impact";
+  font-weight: 100;
+  margin-top: 0;
+}
+h3.objectIcon, h3.linkIcon {
+  padding-left: 20px;
+}
+h4 {
+  font-size: 16px;
+  color: #666;
+}
+h5 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #999;
+}
+pre {
+  font-family: "Consolas", "Courier New";
+  background: #f3f3f3;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.references ul, .references li {
+  list-style: none;
+}
+.references li {
+  margin-bottom: 4px;
+}
+.links ul {
+  margin-left: 0;
+}
+a:link, a:visited, a:active {
+  text-decoration: none;
+  color: #00a854 !important;
+}
+a:hover {
+  color: #006b35 !important;
+}
+p, ol {
+  line-height: 1.5em!important;
+}

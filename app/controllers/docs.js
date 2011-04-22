@@ -7,7 +7,7 @@ var fs          = require('fs'),
 exports.filter = function(req,res,next){
     console.log('Docs Controller filter');
     if( req.session.device == 'tablet' ){
-        req.session.device = 'desktop';
+        // req.session.device = 'desktop';
     }
     next();
 };
@@ -164,7 +164,7 @@ exports.routes = {
         get : {
             
             filter : function(req,res,next){
-                console.log('Method filter');
+                req.session.device = 'desktop';
                 next();
             },
             
