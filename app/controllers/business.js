@@ -41,6 +41,7 @@ exports.routes = {
                 var error = req.param('error_reason');
                 res.locals.message = error ? "Error Connecting to Facebook" : "Successfully Connected to Facebook";
                 res.locals.cls = error ? 'error' : 'success';
+                res.locals.error = !!error;
                 res.render('business/login/popup');
             }
         }
@@ -64,8 +65,34 @@ exports.routes = {
         
         get : function(req,res){
             // show the signup screen
-            
             res.render('business/sign-up',{});
+        }
+    },
+    
+    '/business/sign-up/account' : {
+        
+        title: "Bozuko for Business - Sign up - Choose Account",
+        
+        locals:{
+            html_classes:['sign-up'],
+            hide_top_profile: true,
+            scripts:[
+                '/js/ext-4.0/ext-core.js'
+            ]
+        },
+        
+        get : {
+            
+            access: 'business',
+            
+            handler: function(req,res){
+                // get the users businesses
+                var self = this;
+                Bozuko.service('facebook').get_user_pages(req.session.user, function(error , facebook_pages){
+                    res.locals.pages = facebook_pages || [];
+                    res.render('business/sign-up-account');
+                });
+            }
         }
     },
     

@@ -457,7 +457,7 @@ $.place = function(options, callback){
  */
 
 $.get_user_pages = function(user, callback){
-
+    var self = this;
     facebook.graph('/me/accounts',
         {
             user: user,
@@ -466,11 +466,11 @@ $.get_user_pages = function(user, callback){
             }
         },
         function(accounts){
-            console.log(accounts);
             var pages = [];
             var ids = [];
             if( accounts && accounts.data ) accounts.data.forEach(function(account){
                 delete account.access_token;
+                account = self.sanitizePlace(account);
                 if( account.location && account.location.latitude ){
                     account.is_place = true;
                 }
@@ -487,6 +487,7 @@ $.get_user_pages = function(user, callback){
             });
 
             pages.sort(sort_FacebookPageLocationLikes);
+            
 
             if( ids.length > 0 ){
                 Bozuko.models.Page.find({'services.name':'facebook','services.sid':{$in:ids}}, function(err, bozuko_pages){
@@ -540,6 +541,7 @@ $._sanitizePlace = function(place){
         service: 'facebook',
         id: place.id,
         checkins: place.checkins||0,
+        likes: place.likes,
         name: place.name,
         category: place.category,
         image: 'http://graph.facebook.com/'+place.id+'/picture?type=large',

@@ -1,0 +1,15 @@
+
+h2 Create your Bozuko Account
+
+.content-bd
+  h3 Select your Business
+  
+  .pages
+    - each page in pages
+      .page
+        img.logo(src=page.image, alt=page.name, height="50")
+        .name= page.name
+        .category= page.category
+        .likes= page.likes
+  
+  
