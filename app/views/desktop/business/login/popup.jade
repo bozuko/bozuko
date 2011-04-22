@@ -3,7 +3,7 @@ html
   head
     title Bozuko for Business - Connect with Facebook
     link(rel="stylesheet",type="text/css",href="/css/desktop/business/popup.css")
-    
+    script(type="text/javascript",src=locals.script)
     
   body
     .content
@@ -11,3 +11,5 @@ html
       .message
         span(class=cls)!= message
     
+    script(type="text/javascript")
+      window.opener['onLogin#{error?'Failure':'Success'}']();

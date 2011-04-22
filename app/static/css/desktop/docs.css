@@ -207,9 +207,16 @@ body {
   font-family: Tahoma;
   font-size: 13px;
   float: right;
-  background: rgba(255, 0, 0, 0.3);
+  background: rgba(255, 0, 0, 0.3) none no-repeat 4px 50%;
   color: #000 !important;
   text-shadow: 0 0 0;
+  padding-left: 24px;
+}
+.api .x-panel-body .section .access-level.user {
+  background-image: url(/images/icons/16x16/user.png);
+}
+.api .x-panel-body .section .access-level.mobile {
+  background-image: url(/images/icons/16x16/phone.png);
 }
 .api .x-panel-body .section .padded {
   padding: 0 10px;
