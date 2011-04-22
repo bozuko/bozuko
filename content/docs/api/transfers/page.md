@@ -11,5 +11,5 @@ are:
 
 + **id** The Bozuko specific page (should be used for caching)
 + **favorite** Only available for Bozuko pages.
-+ **announcement** Only available or Bozuko pages.
-+ **games** Only available or Bozuko pages.
++ **announcement** Only available for Bozuko pages.
++ **games** Only available for Bozuko pages.
