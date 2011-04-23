@@ -1,0 +1,18 @@
+
+h2 Create your Bozuko Account
+
+.content-bd
+  h3 Select your Business
+  
+  form(method="post",action="/business/sign-up/account")
+    .pages
+      - each page in pages
+        .page-wrap
+          .page(id=page.id)
+            img.logo(src=page.image, alt=page.name, height="50")
+            .name= page.name
+            .category= page.category
+            .likes= page.likes
+    
+    .buttons
+      input.big-button(type="submit",value="Create Account")
