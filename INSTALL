@@ -1,4 +1,4 @@
----------
+-----------
 PRE_INSTALL
 ----------
 Run the following as root to setup a brand new image
@@ -37,8 +37,14 @@ BOZ_DIR=~bozuko/bozuko
 git clone git@github.com:bozuko/bozuko.git $BOZ_DIR
 chown -hR bozuko:bozuko $BOZ_DIR
 cd ~bozuko/bozuko/install
+
+If this is an appserver run the following
 ./install_privileged.sh
 
+if this is a db server run the following
+./install_privileged.sh db
+
+If this is not a DB server then you want to install node.
 
 ------------
 INSTALL
