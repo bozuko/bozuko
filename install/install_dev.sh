@@ -19,3 +19,6 @@ wget http://tsung.erlang-projects.org/dist/${TSUNG}.tar.gz
 tar xvzf ${TSUNG}.tar.gz
 cd $TSUNG
 ./configure && make && sudo make install
+
+# Gnuplot
+sudo apt-get install gnuplot

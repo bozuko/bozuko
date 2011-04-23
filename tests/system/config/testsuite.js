@@ -1,5 +1,5 @@
 var express = require('express');
-var bozuko = require('../../bozuko');
+var bozuko = require('../../../bozuko');
 var assert = require('assert');
 var async = require('async');
 var http = require('http');
