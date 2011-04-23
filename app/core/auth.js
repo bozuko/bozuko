@@ -60,6 +60,16 @@ auth.user = function(req, res, callback) {
     callback();
 };
 
+auth.business = function(req,res, callback){
+    if( !req.session.user ){
+        return callback(Bozuko.error('bozuko/auth'));
+    }
+    else if( !req.session.user.can_manage_pages ){
+        return callback(Bozuko.error('bozuko/auth'));
+    }
+    callback();
+}
+
 auth.mobile = function(req, res, callback) {
     var user = req.session.user;
     if( !user ){
