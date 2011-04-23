@@ -4,6 +4,9 @@ PRE_INSTALL
 Run the following as root to setup a brand new image
 ---------
 
+
+If this is not a db server then you need a bozuko user.
+
 Create the bozuko user
 --------
 adduser bozuko - use the standard password
