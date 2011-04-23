@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/local/share/tsung/tsung-1.0.dtd" [] >
+<tsung loglevel="info">
+
+<clients>
+  <client host="localhost" maxusers="500000" use_controller_vm="true"/>
+</clients>
+
+<servers>
+  <server host="66.228.35.144" port="7999" type="ssl"></server>
+</servers>
+
+<load>
+  <arrivalphase phase="1" duration="5" unit="minute">
+    <users interarrival="0.001" unit="second"></users>
+  </arrivalphase>
+</load>
+
+<sessions>
+  <session name="simple" probability="100" type="ts_http">
+    <request> <http url="/api" method="GET" version="1.1"></http></request>
+  </session>
+</sessions>
+
+</tsung>

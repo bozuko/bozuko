@@ -27,5 +27,10 @@ apt-get install -y build-essential libssl-dev
 # install useful tools and utilities
 apt-get install -y emacs vim
 
-#install all upstart scripts
+# install all upstart scripts
 cp upstart/* /etc/init
+
+# tweak kernel for servers
+echo "*		 soft    nofile          50000" >> /etc/security/limits.conf
+echo "* 	 hard	 nofile		 50000" >> /etc/security/limits.conf
+
