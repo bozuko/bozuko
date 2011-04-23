@@ -7,16 +7,20 @@ echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" >>
 apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
 
 # Add nginx repository
-nginx=development
-add-apt-repository ppa:nginx/$nginx
+if [[ "$1" != 'db' ]] ; then
+    nginx=development
+    add-apt-repository ppa:nginx/$nginx
+fi
 
 # bring the base ubuntu distribution up to date
 apt-get update
 apt-get upgrade
 
 # install nginx
-apt-get install -y nginx
-cp config/nginx.conf /etc/nginx/
+if [[ "$1" != 'db' ]] ; then
+    apt-get install -y nginx
+    cp config/nginx.conf /etc/nginx/
+fi
 
 # install mongodb
 apt-get install -y mongodb-10gen
