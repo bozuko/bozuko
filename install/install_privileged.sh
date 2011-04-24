@@ -34,6 +34,11 @@ apt-get install -y emacs vim
 # install all upstart scripts
 cp upstart/* /etc/init
 
+# don't let ssh timeout
+echo "ClientAliveInterval 30" >> /etc/ssh/sshd_config
+echo "ClientAliveCountMax 4" >> /etc/ssh/sshd_config
+
+
 # tweak kernel for servers
 echo "*		 soft    nofile          50000" >> /etc/security/limits.conf
 echo "* 	 hard	 nofile		 50000" >> /etc/security/limits.conf
