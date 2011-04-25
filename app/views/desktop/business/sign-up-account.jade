@@ -1,18 +1,32 @@
+- var current_type = false;
 
 h2 Create your Bozuko Account
 
 .content-bd
-  h3 Select your Business
+  h3 Select your Business from your Facebook Pages
+  
+  -if( locals.error )
+    .error!= error
   
   form(method="post",action="/business/sign-up/account")
     .pages
       - each page in pages
+        // lets see if they are a place
+        -if( !current_type || current_type != (page.is_place?'place':'non-place'))
+          - current_type = page.is_place?'place':'non-place';
+          h3= current_type=='place'?'Places':'Other Pages'
+          
         .page-wrap
           .page(id=page.id)
-            img.logo(src=page.image, alt=page.name, height="50")
+            input.hidden(type="checkbox",name="id",value=page.id)
+            img.logo(src=page.image.replace(/large/,'square'), alt=page.name)
+            .likes #{page.likes ? page.likes : '0'} Likes
             .name= page.name
             .category= page.category
-            .likes= page.likes
+            -if (page.is_place)
+              .address
+                .street= page.location.street
+                .city #{page.location.city}, #{page.location.state}
     
     .buttons
-      input.big-button(type="submit",value="Create Account")
+      input.big-button(class="big-button-disabled",disabled="true",type="submit",value="Create Account &raquo;")

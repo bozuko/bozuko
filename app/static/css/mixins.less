@@ -17,6 +17,13 @@
 
 }
 
+.opacity(@op:100){
+    filter:alpha(opacity=@op);
+    -moz-opacity:@op/100;
+    -khtml-opacity:@op/100;
+    opacity:@op/100;
+}
+
 .background_gradient(@from: #ccc, @to: #fff) {
 
     background-color: @from;

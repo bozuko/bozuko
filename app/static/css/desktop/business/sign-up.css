@@ -1,19 +1,81 @@
 .pages {
-  overflow: hidden;
+  overflow: auto;
+  background: #fff;
+  padding: 10px;
+  max-height: 266px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+}
+.pages h3 {
+  clear: both;
+  padding: 4px 0px 4px 10px;
+  background: #666;
+  border: 1px solid #e8e8e8;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-clip: padding-box;
+  margin-bottom: 10px;
+  color: #fff !important;
 }
 .pages .page-wrap {
   width: 48%;
   float: left;
   margin-left: 1%;
+  margin-right: 1%;
 }
 .pages .page-wrap .page {
+  cursor: pointer;
   border: 1px solid #e0e0e0;
+  background: #f3f3f3;
   overflow: hidden;
   margin-bottom: 10px;
+  padding: 10px;
+  height: 70px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+}
+.pages .page-wrap .page .name {
+  font-family: PTSansBold;
+  font-size: 14px;
+  color: #333;
+}
+.pages .page-wrap .page .category {
+  font-family: PTSansRegular;
+  text-transform: none;
+  font-size: 12px;
+  color: #666;
+}
+.pages .page-wrap .page .address {
+  font-family: PTSansRegular;
+  text-transform: none;
+  font-size: 12px;
+  line-height: 1.2em;
+  color: #666;
+}
+.pages .page-wrap .page .likes {
+  clear: left;
+  float: left;
+  font-size: 12px;
+  color: #666;
 }
 .pages .page-wrap .page img {
+  height: 50px;
   float: left;
-  margin: 10px;
+  margin: 0 10px 0 0;
+  border: 2px solid #fff;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
@@ -24,23 +86,29 @@
 .pages .page-wrap .page h2 {
   font-size: 20px;
 }
-.pages .page-wrap .page .actions {
-  float: right;
+.pages .page-wrap .page-hover {
+  border: 2px solid #999;
+  padding: 9px;
+  background: #fff;
 }
-.pages .page-wrap .page .actions .action {
-  background-position: 0 0;
-  background-repeat: no-repeat;
-  line-height: 16px;
-  padding-left: 20px;
-  margin-left: 10px;
-  float: left;
+.pages .page-wrap .page-selected {
+  border: 2px solid #318f51;
+  padding: 9px;
+  background: #bce9cc;
 }
-.pages .page-wrap .page .actions .add_games {
-  background-image: url(../../images/icons/16x16/add.png);
-}
-.pages .page-wrap .page .actions .delete {
-  background-image: url(../../images/icons/16x16/delete.png);
+.pages .page-wrap .page-selected .name, .pages .page-wrap .page-selected .category, .pages .page-wrap .page-selected address {
+  color: #000;
 }
 .buttons {
   text-align: right;
+}
+.hidden {
+  position: absolute;
+  top: -9999em;
+  left: -9999em;
+}
+.error {
+  margin: 10px 0;
+  border: 1px solid red;
+  background: #fff;
 }

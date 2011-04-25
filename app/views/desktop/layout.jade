@@ -25,6 +25,9 @@ html(class=locals.html_classes?html_classes.join(' '):'')
               .profile
                 img(src="https://graph.facebook.com/"+user.service('facebook').sid+"/picture?type=square",alt=user.name)
                 | Hi #{user.first_name}!
+                - if( user.can_manage_pages)
+                  a(href="/business/admin") Business Dashboard
+                  | 
                 a(href="/logout") Logout
                 
             - else
