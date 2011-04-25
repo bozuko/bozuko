@@ -19,6 +19,7 @@ var Page = module.exports = new Schema({
     twitter_id          :{type:String},
     announcement        :{type:String},
     security_img        :{type:String},
+    test                :{type:Boolean, index: true},
     active              :{type:Boolean, default: true},
     location            :{
         street              :String,
@@ -235,10 +236,7 @@ Page.static('createFromServiceObject', function(place, callback){
     page.set('coords',[place.location.lng, place.location.lat]);
     page.service( place.service, place.id, null, place.data);
     page.save( function(error){
-        if( error ){
-            return callback( error );
-        }
-        return Bozuko.models.Page.findById(page.id, callback);
+        return error ? callback( error ) : callback( null, page);
     });
 });
 
@@ -319,6 +317,15 @@ Page.static('search', function(options, callback){
          */
         serviceSearch = false;
     }
+    
+    // add a test place
+    if( options.test ){
+        var s = bozukoSearch.selector;
+        bozukoSearch.selector = {
+            $or: [s, {test:true}]
+        }
+    }
+    
     /**
      * This is a standard center search, we will use a service to get
      * additional results, but also do a search

@@ -1,0 +1,50 @@
+.game-choice {
+  position: relative;
+  cursor: pointer;
+}
+.game-choice .x-form-radio {
+  position: absolute;
+  top: -99999em;
+  left: -99999em;
+}
+.game-choice .game-ct {
+  margin: 2px;
+  overflow: hidden;
+  padding: 10px;
+  border: 1px solid #ccc;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+}
+.game-choice .game-ct img {
+  float: left;
+  margin-right: 6px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-clip: padding-box;
+}
+.game-choice .game-ct .game-name {
+  text-align: left;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+.game-choice-over .game-ct {
+  margin: 1px;
+  border: 2px solid #999;
+}
+.game-choice-click .game-ct {
+  margin: 0px;
+  border: 3px solid darkblue;
+}
+.game-choice-selected .game-ct {
+  background: #f3f3f3;
+  margin: 0px;
+  border: 3px solid blue;
+}

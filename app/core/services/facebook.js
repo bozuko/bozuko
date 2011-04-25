@@ -133,18 +133,23 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                 var internal = u.service('facebook').internal;
                                 if( internal && internal.subscriptions ) return finish();
                                 return self.user_favorites({user:u},function(error, user){
-                                    u.service('facebook').internal = {
-                                        likes: user.data.likes
-                                    };
-                                    u.commit('facebook.internal');
-                                    u.save(function(error){
-                                        /**
-                                         * TODO
-                                         *
-                                         * error conditions for login
-                                         */
+                                    if( user ){
+                                        u.service('facebook').internal = {
+                                            likes: user.data.likes
+                                        };
+                                        u.commit('facebook.internal');
+                                        return u.save(function(error){
+                                            /**
+                                             * TODO
+                                             *
+                                             * error conditions for login
+                                             */
+                                            return finish();
+                                        });
+                                    }
+                                    else{
                                         return finish();
-                                    });
+                                    }
                                 });
 
                             });
@@ -471,7 +476,7 @@ $.get_user_pages = function(user, callback){
             if( accounts && accounts.data ) accounts.data.forEach(function(account){
                 delete account.access_token;
                 account = self.sanitizePlace(account);
-                if( account.location && account.location.latitude ){
+                if( account.location && account.location.lat ){
                     account.is_place = true;
                 }
                 else{
