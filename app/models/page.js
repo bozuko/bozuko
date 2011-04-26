@@ -1,16 +1,21 @@
-var _t = Bozuko.t;
+var _t = Bozuko.t,
     facebook = Bozuko.require('util/facebook'),
     mongoose = require('mongoose'),
     merge = require('connect').utils.merge,
     Schema = mongoose.Schema,
-    Services = require('./plugins/service'),
+    Services = require('./plugins/services'),
     Coords = require('./plugins/coords'),
     Geo = Bozuko.require('util/geo'),
-    ObjectId = Schema.ObjectId;
+    ObjectId = Schema.ObjectId
+    async = require('async')
+;
 
 var Page = module.exports = new Schema({
     // path is for creating a tree structure
     path                :{type:String},
+    category            :{type:String},
+    website             :{type:String},
+    phone               :{type:String},
     description         :{type:String},
     is_location         :{type:Boolean},
     name                :{type:String},
@@ -19,6 +24,8 @@ var Page = module.exports = new Schema({
     twitter_id          :{type:String},
     announcement        :{type:String},
     security_img        :{type:String},
+    featured            :{type:Boolean},
+    test                :{type:Boolean, index: true, default: false},
     active              :{type:Boolean, default: true},
     location            :{
         street              :String,
@@ -41,10 +48,33 @@ Page.method('getContests', function(callback){
     Bozuko.models.Contest.find({page_id:this.id}, callback);
 });
 
+Page.method('loadContests', function(user, callback){
+    var self = this;
+    this.getActiveContests(function(error, contests){
+        if( error ) return callback( error );
+        
+        // else, we have contests!
+        return async.forEach( contests,
+            
+            function load_contest(contest, cb){
+                contest.loadGameState(user, function(error, contest){
+                    cb(null);
+                });
+            },
+            
+            function return_pages(error){
+                return callback(error);
+            }
+        );
+        
+    });
+});
+
 Page.method('getActiveContests', function(callback){
     var now = new Date();
     var params = {
         page_id:this.id,
+        active: true,
         start: {$lt: now},
         end: {$gt: now},
         $where: "this.token_cursor < this.total_entries;"
@@ -59,7 +89,6 @@ Page.method('getActiveContests', function(callback){
 Page.method('getUserGames', function(user, callback){
     this.getActiveContests( function(error, contests){
         if( error ) return callback(error);
-
         var games = [];
         contests.forEach( function(contest){
             var game = contest.getGame();
@@ -228,21 +257,20 @@ Page.static('createFromServiceObject', function(place, callback){
 
     var page = new Bozuko.models.Page();
     Object.keys(place).forEach(function(prop){
-        if( !~ignore.indexOf(prop) ) page.set(prop, place[prop]);
+        if( !~ignore.indexOf(prop) ){
+            page.set(prop, place[prop]);
+        }
     });
-
+    
     page.set('is_location', true);
     page.set('coords',[place.location.lng, place.location.lat]);
     page.service( place.service, place.id, null, place.data);
     page.save( function(error){
-        if( error ){
-            return callback( error );
-        }
-        return Bozuko.models.Page.findById(page.id, callback);
+        return error ? callback( error ) : callback( null, page);
     });
 });
 
-Page.static('loadPagesContests', function(pages, callback){
+Page.static('loadPagesContests', function(pages, user, callback){
     var page_map = {}, now = new Date();
     pages.forEach(function(page){
         page_map[page.id+''] = page;
@@ -261,16 +289,23 @@ Page.static('loadPagesContests', function(pages, callback){
             var contestMap = {};
 
             // attach active contests to pages
-            contests.forEach(function(contest){
-                contestMap[contest._id+''] = contest;
-                var page = page_map[contest.page_id+''];
-                if( !page.contests ){
-                    page.contests = [];
+            return async.forEach(contests,
+                function iterator(contest, cb){
+                    contestMap[contest._id+''] = contest;
+                    var page = page_map[contest.page_id+''];
+                    if( !page.contests ){
+                        page.contests = [];
+                    }
+                    // load contest game state
+                    contest.loadGameState(user, function(error){
+                        page.contests.push(contest);
+                        cb(error);
+                    });
+                },
+                function contests_foreach_callback(err){
+                    callback(null, pages);
                 }
-                page.contests.push(contest);
-            });
-
-            return callback(null, pages);
+            );
         }
     );
 });
@@ -282,7 +317,13 @@ Page.static('loadPagesContests', function(pages, callback){
  */
 Page.static('search', function(options, callback){
 
-    var bozukoSearch = {type:'find', selector:{}, options:{}};
+    var bozukoSearch = {
+        type:'find',
+        selector:{},
+        fields: {},
+        // sorting asc puts true first
+        options:{sort: {'featured':-1}}
+    };
     var serviceSearch = {};
     if( options.query ){
         bozukoSearch.selector.name = new RegExp('^'+options.query, "i");
@@ -319,43 +360,54 @@ Page.static('search', function(options, callback){
          */
         serviceSearch = false;
     }
+    
     /**
      * This is a standard center search, we will use a service to get
      * additional results, but also do a search
      *
      */
     else {
-
-        var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
-        bozukoSearch.selector = {
-            // only registered...
-            coords: {$nearSphere: options.ll, $maxDistance: distance}
-        };
-        bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
-        bozukoSearch.type='nativeFind';
+        if( Bozuko.env == 'development' && !options.query ){
+        
+            var s = bozukoSearch.selector;
+            bozukoSearch.selector = {
+                $or: [s, {test: true, featured:true}]
+            }
+        }
+        else{
+            var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
+            console.log(distance, Bozuko.config.search.nearbyRadius);
+            bozukoSearch.selector = {
+                // only registered...
+                coords: {$near: options.ll, $maxDistance: distance}
+            };
+            bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
+            bozukoSearch.type='nativeFind';
+        }
     }
 
     // utility function
     function prepare_pages(pages, user, fn){
         for(var i=0; i<pages.length; i++){
             var page = pages[i];
+            // console.log(page);
             if( options.user ){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
             if( page.owner_id ){
                 page.registered = true;
             }
+            // console.log(page.name, JSON.stringify({options:options.ll, page: page.coords}));
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }
     }
-    return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.options, function(error, pages){
+    return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
         if( error ) return callback(error);
 
-        return Bozuko.models.Page.loadPagesContests(pages, function(error, pages){
+        return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
-            
             prepare_pages(pages, function(page){ page_ids.push(page._id);});
             
             if( !serviceSearch ){
@@ -396,7 +448,7 @@ Page.static('search', function(options, callback){
                         });
 		    }
 
-                    return Bozuko.models.Page.loadPagesContests(_pages, function(error, _pages){
+                    return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                         pages = pages.concat(_pages);
                         pages = pages.concat(results);
                         return callback(null, pages);

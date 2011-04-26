@@ -1,0 +1,58 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+.game-choice{
+    position: relative;
+    cursor: pointer;
+    
+    
+    .x-form-radio{
+        position: absolute;
+        top: -99999em;
+        left: -99999em;
+    }
+    
+    .game-ct {
+        margin: 2px;
+        overflow: hidden;
+        padding: 10px;
+        border: 1px solid #ccc;
+        .border_radius(6px);
+        
+        img {
+            float: left;
+            margin-right: 6px;
+            .border_radius(4px);
+        }
+        
+        .game-name {
+            text-align: left;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    }
+    
+}
+
+.game-choice-over {
+    .game-ct {
+        margin: 1px;
+        border: 2px solid #999;
+    }
+}
+
+
+.game-choice-click {
+    .game-ct {
+        margin: 0px;
+        border: 3px solid darkblue;
+    }
+}
+
+.game-choice-selected{
+    .game-ct {
+        background: #f3f3f3;
+        margin: 0px;
+        border: 3px solid blue;
+    }
+}

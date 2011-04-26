@@ -2,55 +2,110 @@
 @import "app/static/css/mixins";
 .pages {
     
-    overflow: hidden;
+    overflow: auto;
+    background: #fff;
+    padding: 10px;
+    max-height: 266px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    .border_radius(6px);
+    
+    h3 {
+        clear: both;
+        padding: 4px 0px 4px 10px;
+        background: #666;
+        border: 1px solid #e8e8e8;
+        .border_radius(4px);
+        margin-bottom: 10px;
+        color: #fff !important;
+    }
     
     .page-wrap {
         
         width: 48%;
         float: left;
         margin-left: 1%;
+        margin-right: 1%;
         
         .page {
             
+            cursor: pointer;
+            
             border: 1px solid #e0e0e0;
+            background: #f3f3f3;
             overflow: hidden;
             margin-bottom: 10px;
+            padding: 10px;
+            height: 70px;
+            
+            .border_radius(6px);
+            
+            .name {
+                font-family: PTSansBold;
+                font-size: 14px;
+                color: #333;
+            }
+            .category {
+                font-family: PTSansRegular;
+                text-transform: none;
+                font-size: 12px;
+                color: #666;
+            }
+            
+            .address {
+                font-family: PTSansRegular;
+                text-transform: none;
+                font-size: 12px;
+                line-height: 1.2em;
+                color: #666;
+            }
+            .likes {
+                clear: left;
+                float: left;
+                font-size: 12px;
+                color: #666;
+            }
             
             img {
+                height: 50px;
                 float: left;
-                margin: 10px;
+                margin: 0 10px 0 0;
+                border: 2px solid #fff;
                 .border_radius(6px);
             }
             
             h2 {
                 font-size: 20px;
             }
-            
-            .actions {
-                
-                float: right;
-                
-                .action {
-                    background-position: 0 0;
-                    background-repeat: no-repeat;
-                    line-height: 16px;
-                    padding-left: 20px;
-                    margin-left: 10px;
-                    float: left;
-                }
-                
-                .add_games {
-                    background-image: url(../../images/icons/16x16/add.png);
-                }
-                
-                .delete {
-                    background-image: url(../../images/icons/16x16/delete.png);
-                }
-            }
+        }
+        
+        .page-hover {
+            border: 2px solid #999;
+            padding: 9px;
+            background: #fff;
+        }
+        
+        .page-selected{
+            border: 2px solid #318f51;
+            padding: 9px;
+            background: #bce9cc;
+            .name, .category, address{ color: #000; }
         }
     }
 }
 
 .buttons {
     text-align: right;
+}
+
+.hidden{
+    position: absolute;
+    top: -9999em;
+    left: -9999em;
+}
+
+.error {
+    margin: 10px 0;
+    border: 1px solid red;
+    background: #fff;
 }

@@ -58,7 +58,7 @@ exports.routes = {
             html_classes:['sign-up'],
             hide_top_profile: true,
             scripts:[
-                '/js/ext-4.0/ext-core.js',
+                'https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core.js',
                 '/js/desktop/business/sign-up.js'
             ]
         },
@@ -77,7 +77,8 @@ exports.routes = {
             html_classes:['sign-up'],
             hide_top_profile: true,
             scripts:[
-                '/js/ext-4.0/ext-core.js'
+                'https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core.js',
+                '/js/desktop/business/sign-up-account.js'
             ],
             styles:[
                 '/css/desktop/business/sign-up.css'
@@ -91,10 +92,108 @@ exports.routes = {
             handler: function(req,res){
                 // get the users businesses
                 var self = this;
+                res.locals.error = req.flash('error');
                 Bozuko.service('facebook').get_user_pages(req.session.user, function(error , facebook_pages){
+                    facebook_pages.forEach(function(p){
+                        if( /owl/i.test(p.name)){
+                            console.log(p);
+                        }
+                    });
                     res.locals.pages = facebook_pages || [];
                     res.render('business/sign-up-account');
                 });
+            }
+        },
+        
+        post : {
+            access: 'business',
+            
+            handler: function(req,res){
+                var self = this;
+            
+                var id = req.param('id');
+                if( !id ){
+                    req.flash('error', 'No Page Selected');
+                    return res.redirect(req.url);
+                }
+                
+                // first, lets get the page details from facebook
+                return Bozuko.service('facebook').place({'place_id':id, user: req.session.user}, function(error, place){
+                    if( !place ){
+                        req.flash('error', 'That page does not exist');
+                        return res.redirect(req.url);
+                    }
+                    return Bozuko.models.Page.findByService('facebook',id, function(err, page){
+                        if( err ){
+                            res.locals.error = req.flash('error');
+                            return res.redirect(req.url);
+                        }
+                        if( page && page.owner_id != req.session.user._id ){
+                            /**
+                             * TODO
+                             *
+                             * Allow multiple admins of a page...
+                             * 
+                             */
+                            req.flash('error', 'This page is being managed by someone else. Currently, only one person can manage a page.');
+                            return res.redirect(req.url);
+                        }
+                        else if( !page ) page = new Bozuko.models.Page();
+                        
+                        page.service('facebook', place.id, req.session.user.service('facebook').auth, place.data);
+                        
+                        var ignore = ['id','service','lat','lng','data'];
+
+                        Object.keys(place).forEach(function(prop){
+                            if( !~ignore.indexOf(prop) ){
+                                console.log(prop);
+                                page.set(prop, place[prop]);
+                            }
+                        });
+                        
+                        page.set('is_location', true);
+                        page.set('coords',[place.location.lng, place.location.lat]);
+                        page.games = [];
+                        
+                        page.is_location = place.location && place.location.lat ? true : false;
+                        page.owner_id = req.session.user._id;
+                        return page.save(function(err){
+                            // cool, we have them saved now...
+                            res.redirect('/business/admin#createCampaign');
+                        });
+                    });
+                });
+            }
+        }
+    },
+    
+    '/business/admin': {
+        get : {
+            
+            locals:{
+                html_classes:['business-admin'],
+                scripts:[
+                    '/js/ext-4.0/ext-all.js',
+                    '/js/desktop/business/admin.js'
+                ],
+                styles:[
+                    '/js/ext-4.0/resources/css/ext-all.css',
+                    '/css/desktop/business/admin.css'
+                ],
+                nav:[
+                    {
+                        text: "Manage Campaigns",
+                        link: '#'
+                    },
+                    {
+                        text: "Create Campaign",
+                        link: '#'
+                    },
+                ]
+            },
+            
+            handler: function(req, res){
+                res.render('business/admin');
             }
         }
     },

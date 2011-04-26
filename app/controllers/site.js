@@ -3,6 +3,7 @@ var ExtJs       = Bozuko.require('util/extjs'),
     Page        = Bozuko.require('util/page'),
     URL         = require('url'),
     fs          = require('fs'),
+    markdown    = require('markdown-js'),
     qs          = require('querystring');
     
 exports.locals = {
@@ -95,6 +96,7 @@ exports.routes = {
         get: {
             
             handler : function(req,res){
+                res.locals.content = markdown.parse(fs.readFileSync(Bozuko.dir+'/content/site/businesses.md', 'utf-8'));
                 res.render('business/index');
             }
         }
