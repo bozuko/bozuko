@@ -277,13 +277,13 @@ Page.static('loadPagesContests', function(pages, user, callback){
     });
     Bozuko.models.Contest.find(
         {
+            active: true,
             page_id: {$in: Object.keys(page_map)},
             start: {$lt: now},
             end: {$gt: now},
             $where: "this.token_cursor < this.total_entries;"
         },
         function( error, contests ){
-
             if( error ) return callback(error);
 
             var contestMap = {};
@@ -403,11 +403,13 @@ Page.static('search', function(options, callback){
         }
     }
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
+        
         if( error ) return callback(error);
-
+        
         return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
+            
             prepare_pages(pages, function(page){ page_ids.push(page._id);});
             
             if( !serviceSearch ){
@@ -443,6 +445,7 @@ Page.static('search', function(options, callback){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                     });
                     results.forEach(function(result){
+                        result.registered = false;
                         result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                     });
 
