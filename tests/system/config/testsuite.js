@@ -90,6 +90,7 @@ assert.response = function(test, server, req, res, callback){
                     eql = expected instanceof RegExp
                         ? expected.test(actual)
                         : expected == actual;
+					console.log(expected, actual);
                     test.ok(eql);
                 }
             }
@@ -159,12 +160,14 @@ var add_users = function(callback) {
 
 var pages = [
     // hookslides
-    '181069118581729', // owl watch
-    '147180168638415', // middlesex
-    "111730305528832", // dunks
+    '181069118581729', 	// owl watch
+    '147180168638415', 	// middlesex
+    "111730305528832", 	// dunks
     // boston
-    "108123539229568", // hard rock
-    "116813875003123" // black rose
+    "108123539229568",	// hard rock
+    "116813875003123", 	// black rose
+	// florida
+	"185253393876" 		// owl watch florida
 ];
 var add_pages = function(callback) {
     if( pages.length > 0 ){
@@ -220,45 +223,57 @@ var add_contests = function(callback) {
 		total_entries           :30
     };
 
-    Bozuko.models.Page.findOne({name:/owl/i}, function(error, page){
-        if( error || !page ){
+    Bozuko.models.Page.find({name:/owl/i}, function(error, pages){
+        if( error || !pages ){
             throw("No page for Owl Watch");
         }
-        data.page_id = ''+page._id;
-        var contest = new Bozuko.models.Contest(data);
-        contest.entry_config.push({
-            type: 'facebook/checkin',
-            tokens: 3
-        });
-        contest.prizes.push({
-            name: 'Wicked cool T-Shirt',
-            value: '20',
-            description: "Awesome Owl Watch T-Shirt",
-            details: "Only available in Large or Extra-large",
-            instructions: "Show this screen to an employee",
-            total: 2
-        });
-        contest.prizes.push({
-            name: 'Owl Watch Mug',
-            value: '10',
-            description: "Sweet travel Mug",
-            details: "Not good for drinking out of.",
-            instructions: "Show this screen to an employee",
-            total: 10
-        });
-		contest.prizes.push({
-            name: 'A whole lot of nothing',
-            value: '0',
-            description: "You get nothing at all",
-            instructions: "Show this screen to an employee",
-            total: 20
-        });
-        contest.save(function(error){
-            Bozuko.models.Contest.findById(contest.id,function(error, contest){
-                contest.generateResults( function(error){
-                    callback(null);
-                });
-            });
-        });
+		async.forEach(pages,
+			
+			function iterator(page,cb){
+				data.page_id = ''+page._id;
+				var contest = new Bozuko.models.Contest(data);
+				contest.entry_config.push({
+					type: 'facebook/checkin',
+					tokens: 3
+				});
+				contest.prizes.push({
+					name: 'Wicked cool T-Shirt',
+					value: '20',
+					description: "Awesome Owl Watch T-Shirt",
+					details: "Only available in Large or Extra-large",
+					instructions: "Show this screen to an employee",
+					total: 2
+				});
+				contest.prizes.push({
+					name: 'Owl Watch Mug',
+					value: '10',
+					description: "Sweet travel Mug",
+					details: "Not good for drinking out of.",
+					instructions: "Show this screen to an employee",
+					total: 10
+				});
+				contest.prizes.push({
+					name: 'A whole lot of nothing',
+					value: '0',
+					description: "You get nothing at all",
+					instructions: "Show this screen to an employee",
+					total: 20
+				});
+				contest.save(function(error){
+					if( error ) return cb(error);
+					return Bozuko.models.Contest.findById(contest.id,function(error, contest){
+						if( error ) return cb(error);
+						return contest.generateResults( function(error){
+							cb(error);
+						});
+					});
+				});
+			},
+			
+			function finish(err){
+				callback(null);
+			}
+		);
+        
     });
 };

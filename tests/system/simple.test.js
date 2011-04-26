@@ -7,8 +7,8 @@ var token = assert.token;
 var challenge = assert.challenge;
 var phone = assert.phone;
 var headers = {'content-type': 'application/json'};
-var ok = {status: 200, headers: {'Content-Type': 'application/json'}};
-var bad = {status: 500, headers: {'Content-Type': 'application/json'}};
+var ok = {status: 200, headers: {'Content-Type': 'application/json; charset=utf-8'}};
+var bad = {status: 500, headers: {'Content-Type': 'application/json; charset=utf-8'}};
 var auth;
 
 exports.setup = function(test) {
@@ -23,6 +23,7 @@ exports.get_root = function(test) {
         {url: link},
         ok,
         function(res) {
+            test.ok(true);
             var entry_point = JSON.parse(res.body);
             test.ok(Bozuko.validate('entry_point', entry_point));
             pages_link = entry_point.links.pages;
@@ -37,7 +38,8 @@ exports.get_pages = function(test) {
         function(res) {
             var result = JSON.parse(res.body);
             var page = result.pages[0];
-            test.ok(Bozuko.validate('page', page));
+            var valid = Bozuko.validate('page', page);
+            test.ok(valid);
             checkin_link = page.links.facebook_checkin;
             favorite_link = page.links.favorite;
             test.done();
@@ -50,7 +52,7 @@ exports.get_pages_by_bounds = function(test){
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            test.ok( result.pages.length == 3 );
+            test.ok( result.pages.length === 3 );
             test.done();
         });
 }

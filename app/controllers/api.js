@@ -39,7 +39,6 @@ exports.routes = {
     '/api' : {
         get : {
             handler: function(req, res) {
-                res.setHeader('content-type', 'application/json');
                 var links = {
                     pages: "/pages",
                     bozuko: "/bozuko"

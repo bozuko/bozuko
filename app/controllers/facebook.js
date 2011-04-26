@@ -89,7 +89,7 @@ exports.routes = {
                 var id = req.param('id');
                 var ll = req.param('ll');
                 var msg = req.param('message') || '';
-
+                
                 if( !ll ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
@@ -97,7 +97,7 @@ exports.routes = {
                 if( parts.length != 2 ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
-                var lat = ll[0], lng = ll[1];
+                var lat = parts[0], lng = parts[1];
 
                 return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
 
@@ -108,7 +108,7 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
-                                //test: true,
+                                // test: true,
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 latLng: {lat:lat,lng:lng},
                                 message: msg
@@ -123,10 +123,14 @@ exports.routes = {
 
                                 return checkin.getPage(function(error, page){
 
-                                    if( error ) return error.send(res);
+                                    if( error ){
+                                        return error.send(res);
+                                    }
 
                                     return page.getUserGames(req.session.user, function(error, games){
-                                        if( error ) return error.send(res);
+                                        if( error ){
+                                            return error.send(res);
+                                        }
                                         var ret = {
                                             page_id: page.id,
                                             page_name: page.name,
@@ -147,8 +151,10 @@ exports.routes = {
 
                     // if there is no page for this place yet, lets create one
                     if( !page ){
-                        return Bozuko.service('facebook').place(id, function(error, place){
-                            if( error ) return error.send(res);
+                        return Bozuko.service('facebook').place({place_id:id}, function(error, place){
+                            if( error ){
+                                return error.send(res);
+                            }
                             if( !place ){
                                 return Bozuko.error('facebook/bad_place_id').send(res);
                             }

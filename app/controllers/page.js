@@ -51,6 +51,7 @@ exports.transfer_objects = {
         create: function(page){
             // this should hopefully be a Page model object
             // lets check for a contest
+            
             var fid = page.registered ? page.service('facebook').sid : page.id;
             // console.log(JSON.stringify(page, null, ' '));
             if( !page.registered ) delete page.id;
@@ -262,6 +263,7 @@ exports.routes = {
                             return error.send(res);
                         }
                         profiler.mark('search time');
+                        
                         return res.send(Bozuko.transfer('pages',{
                             pages:pages,
                             next: next

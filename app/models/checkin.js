@@ -29,6 +29,7 @@ Checkin.static('process', function(options, callback){
         options.place_id = options.page.service( options.service ).sid+'';
         
         Bozuko.service( options.service ).checkin( options, function(error, result){
+            console.log(arguments);
             if( error ) return callback( error );
             
             // okay, good so far, let's create a checkin object
