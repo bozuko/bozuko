@@ -36,7 +36,8 @@ module.exports = app;
 if (!module.parent) {
     var nodes = multinode.listen({
         port: Bozuko.config.server.port,
-        nodes: 4
+        nodes: 4,
+	masterListen: false
     }, app);
 
     console.log("Bozuko Server listening on port ",Bozuko.config.server.port);
