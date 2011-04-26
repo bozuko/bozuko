@@ -5,7 +5,7 @@ h2 Create your Bozuko Account
 .content-bd
   h3 Select your Business from your Facebook Pages
   
-  -if( locals.error )
+  -if( locals.error && error != '')
     .error!= error
   
   form(method="post",action="/business/sign-up/account")

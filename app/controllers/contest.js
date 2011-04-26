@@ -47,6 +47,7 @@ var game = {
         game.user_tokens = game.tokens;
         game.can_play = game.tokens > 0;
         var obj = this.merge(game, game.contest);
+        
         obj.links = {
             contest_result: '/contest/'+game.contest._id+'/result',
             page: '/page/'+game.contest.page_id

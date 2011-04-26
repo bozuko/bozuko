@@ -46,6 +46,10 @@ if (!module.parent) {
         if(Bozuko.env === 'stats' || Bozuko.env === 'test'){
             initStats();
         }
+        if( Bozuko.env == 'development' ){
+            Bozuko.require('dev/setup').init();
+        }
+        
         var replServer = net.createServer(function(socket){
             repl.start("bozuko> ", socket);
         }).listen(Bozuko.config.server.port+10, '127.0.0.1');

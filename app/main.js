@@ -1,4 +1,6 @@
+// initialize the "Bozuko" global object
 Bozuko = require('../bozuko');
+
 var http = Bozuko.require('util/http'),
     create_url = Bozuko.require('util/url').create;
 

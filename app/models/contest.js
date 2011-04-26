@@ -12,8 +12,10 @@ var Contest = module.exports = new Schema({
     users                   :{},
     game                    :{type:String},
     game_config             :{},
+    rules                   :{type:String},
     entry_config            :[EntryConfig],
     prizes                  :[Prize],
+    active                  :{type:Boolean},
     start                   :{type:Date},
     end                     :{type:Date},
     total_entries           :{type:Number},
@@ -76,6 +78,11 @@ Contest.method('enter', function(entry, callback){
     });
 });
 
+Contest.method('loadGameState', function(user, callback){
+    
+    callback(null);
+});
+
 Contest.method('addUserEntry', function(user_id, entry, tries, callback) {
     var self = this;
 
@@ -117,16 +124,16 @@ Contest.static('audit', function(callback) {
     return Bozuko.models.Contest.find({}, function(err, contests) {
         if (err) return callback(err);
         if (!contests) return callback(null);
-        async.forEachSeries(contests, function(contest, callback) {
+        return async.forEachSeries(contests, function(contest, callback) {
 
             var uids = Object.keys(contest.users);
             if (uids.length == 0) return callback(null);
 
-            uids.forEach(function(user_id) {
+            return uids.forEach(function(user_id) {
 
                 if (contest.users[user_id].active_plays.length == 0) return callback(null);
 
-                contest.users[user_id].active_plays.forEach(function(active_play) {
+                return contest.users[user_id].active_plays.forEach(function(active_play) {
 
                     if (active_play.prize_index != false) {
                     // The user won so there should be a prize and play entry
