@@ -62,7 +62,7 @@ Page.method('loadContests', function(user, callback){
                 });
             },
             
-            function return_pages(error){
+            function return_contests(error){
                 return callback(error);
             }
         );

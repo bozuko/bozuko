@@ -4,14 +4,6 @@ var fs          = require('fs'),
     util        = require('util'),
     docify      = Bozuko.require('util/docs').docify;
 
-exports.filter = function(req,res,next){
-    console.log('Docs Controller filter');
-    if( req.session.device == 'tablet' ){
-        // req.session.device = 'desktop';
-    }
-    next();
-};
-
 exports.routes = {
 
     '/docs': {
