@@ -29,7 +29,7 @@ apt-get install -y mongodb-10gen
 apt-get install -y build-essential libssl-dev
 
 # install useful tools and utilities
-apt-get install -y emacs vim
+apt-get install -y emacs vim js2-mode
 
 # install all upstart scripts
 cp upstart/* /etc/init
