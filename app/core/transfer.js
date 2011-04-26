@@ -86,7 +86,7 @@ $.sanitize = function(data, current){
             data = {};
         }
         Object.keys(current).forEach(function(key){
-            if( data[key] ){
+            if( data[key] !== undefined ){
                 // Cast the value to the proper type.
                 var v = data[key];
                 var c = current[key];
@@ -109,6 +109,9 @@ $.sanitize = function(data, current){
                         case 'number':
                             v = parseFloat(v);
                             break;
+                        
+                        case 'boolean':
+                            v = Boolean(v);
 
                     }
                     ret[key] = v;

@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
-    Services = require('./plugins/service'),
+    Services = require('./plugins/services'),
     crypto = require('crypto'),
     Phone = require('./embedded/user/phone'),
     async = require('async')

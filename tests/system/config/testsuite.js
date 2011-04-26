@@ -114,17 +114,17 @@ exports.setup = function(fn) {
         bozuko.app.listen(Bozuko.config.server.port);
         console.log(Bozuko.config.server.port);
         async.series([
-        emptyCollection('User'),
-	    emptyCollection('Page'),
-	    emptyCollection('Contest'),
-	    emptyCollection('Checkin'),
-	    emptyCollection('Play'),
-	    emptyCollection('Prize'),
-	    add_users,
-	    add_pages,
-	    add_contests
+			emptyCollection('User'),
+			emptyCollection('Page'),
+			emptyCollection('Contest'),
+			emptyCollection('Checkin'),
+			emptyCollection('Play'),
+			emptyCollection('Prize'),
+			add_users,
+			add_pages,
+			add_contests
         ], function(err, res) {
-	    profiler.mark('setup complete');
+			profiler.mark('setup complete');
             fn();
         });
     } else {
@@ -212,11 +212,12 @@ var add_contests = function(callback) {
     end.setTime(start.getTime()+1000*60*60*24*2);
 
     var data = {
+		active					:true,
         start                   :start,
-	game			:'slots',
-	game_config      	:{},
-	end                     :end,
-	total_entries           :30
+		game					:'slots',
+		game_config      		:{},
+		end                     :end,
+		total_entries           :30
     };
 
     Bozuko.models.Page.findOne({name:/owl/i}, function(error, page){
@@ -244,6 +245,13 @@ var add_contests = function(callback) {
             details: "Not good for drinking out of.",
             instructions: "Show this screen to an employee",
             total: 10
+        });
+		contest.prizes.push({
+            name: 'A whole lot of nothing',
+            value: '0',
+            description: "You get nothing at all",
+            instructions: "Show this screen to an employee",
+            total: 20
         });
         contest.save(function(error){
             Bozuko.models.Contest.findById(contest.id,function(error, contest){

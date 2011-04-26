@@ -94,6 +94,11 @@ exports.routes = {
                 var self = this;
                 res.locals.error = req.flash('error');
                 Bozuko.service('facebook').get_user_pages(req.session.user, function(error , facebook_pages){
+                    facebook_pages.forEach(function(p){
+                        if( /owl/i.test(p.name)){
+                            console.log(p);
+                        }
+                    });
                     res.locals.pages = facebook_pages || [];
                     res.render('business/sign-up-account');
                 });
@@ -107,18 +112,16 @@ exports.routes = {
                 var self = this;
             
                 var id = req.param('id');
-                console.log(id);
                 if( !id ){
                     req.flash('error', 'No Page Selected');
                     return res.redirect(req.url);
                 }
                 
                 // first, lets get the page details from facebook
-                return Bozuko.service('facebook').place({'place_id':id, user: req.session.user}, function(error, data){
-                    if( !data ){
+                return Bozuko.service('facebook').place({'place_id':id, user: req.session.user}, function(error, place){
+                    if( !place ){
                         req.flash('error', 'That page does not exist');
                         return res.redirect(req.url);
-                        
                     }
                     return Bozuko.models.Page.findByService('facebook',id, function(err, page){
                         if( err ){
@@ -137,16 +140,22 @@ exports.routes = {
                         }
                         else if( !page ) page = new Bozuko.models.Page();
                         
-                        page.service('facebook', data.id, req.session.user.service('facebook').auth, data);
+                        page.service('facebook', place.id, req.session.user.service('facebook').auth, place.data);
                         
-                        page.name = data.name;
+                        var ignore = ['id','service','lat','lng','data'];
+
+                        Object.keys(place).forEach(function(prop){
+                            if( !~ignore.indexOf(prop) ){
+                                console.log(prop);
+                                page.set(prop, place[prop]);
+                            }
+                        });
+                        
+                        page.set('is_location', true);
+                        page.set('coords',[place.location.lng, place.location.lat]);
                         page.games = [];
                         
-                        page.is_location = data.location && data.location.latitude ? true : false;
-                        if( page.is_location ){
-                            page.lat = parseFloat(data.location.lat);
-                            page.lng = parseFloat(data.location.lng);
-                        }
+                        page.is_location = place.location && place.location.lat ? true : false;
                         page.owner_id = req.session.user._id;
                         return page.save(function(err){
                             // cool, we have them saved now...

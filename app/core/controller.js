@@ -67,7 +67,6 @@ Controller.prototype = {
                         }
                         if( methodConfig.locals ){
                             merge(_locals, methodConfig.locals);
-                            console.log(_locals);
                         }
                         
                         if( methodConfig.filter ){
