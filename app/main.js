@@ -1,4 +1,6 @@
+// initialize the "Bozuko" global object
 Bozuko = require('../bozuko');
+
 var http = Bozuko.require('util/http'),
     create_url = Bozuko.require('util/url').create;
 
@@ -178,7 +180,7 @@ function initGames(app){
             var name = file.replace(/\..*?$/, '');
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Bozuko.require('/games/'+file);
-            app.use('/game/'+name, express.static(Bozuko.dir+'/games/'+name+'/resources'));
+            app.use('/games/'+name, express.static(Bozuko.dir+'/app/games/'+name+'/resources'));
         }
     });
 }

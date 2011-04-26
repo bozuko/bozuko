@@ -35,8 +35,8 @@ exports.get_pages = function(test) {
         {url: pages_link+'/?ll=42.646261785714,-71.303897114286'},
         ok,
         function(res) {
-            var pages = JSON.parse(res.body);
-            var page = pages[0];
+            var result = JSON.parse(res.body);
+            var page = result.pages[0];
             test.ok(Bozuko.validate('page', page));
             checkin_link = page.links.facebook_checkin;
             favorite_link = page.links.favorite;
@@ -49,8 +49,8 @@ exports.get_pages_by_bounds = function(test){
         {url: pages_link+'/?bounds=42.631243,-71.331739,42.655803,-71.293201&ll=42.646261785714,-71.303897114286'},
         ok,
         function(res) {
-            var pages = JSON.parse(res.body);
-            test.ok( pages.length == 3 );
+            var result = JSON.parse(res.body);
+            test.ok( result.pages.length == 3 );
             test.done();
         });
 }
@@ -69,17 +69,16 @@ exports.favorite_add = function(test) {
 
 exports.assert_one_fav= function(test) {
     assert.response(test, Bozuko.app,
-        {url: pages_link+'/?ll=-71.303897114286,42.646261785714&favorites=true&token='+token},
+        {url: pages_link+'/?ll=42.646261785714,-71.303897114286&favorites=true&token='+token},
         ok,
         function(res) {
             var result = JSON.parse(res.body);
             try{
-                test.ok(result.length == 1);
+                test.ok(result.pages.length == 1);
             }catch(e){
                 console.log(result);
                 throw e;
             }
-
             test.done();
         });
 };
@@ -126,8 +125,7 @@ exports.favorite_toggle_again = function(test) {
 
 exports.facebook_checkin = function(test) {
     var params = JSON.stringify({
-        lat: 42.646261785714,
-        lng: -71.303897114286,
+        ll: '42.646261785714,-71.303897114286',
         message: "This place is off the hook!",
         phone_type: phone.type,
         phone_id: phone.unique_id,

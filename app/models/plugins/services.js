@@ -11,7 +11,7 @@ var Service = new Schema({
     internal            :{}
 });
 
-var ServicePlugin = module.exports = function(schema, opts){
+var ServicesPlugin = module.exports = function(schema, opts){
     
     schema.add({
         'services': [Service]

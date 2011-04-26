@@ -1,4 +1,7 @@
 var async = require('async'),
+    qs = require('querystring'),
+    URL = require('url'),
+    burl = Bozuko.require('util/url').create,
     Profiler = Bozuko.require('util/profiler');
 
 var requestCount = 0;
@@ -32,7 +35,6 @@ exports.transfer_objects = {
             },
 
             phone: "String",
-            fan_count: "Number",
             checkins: "Number",
             games: ["game"],
             links: {
@@ -50,6 +52,7 @@ exports.transfer_objects = {
             // this should hopefully be a Page model object
             // lets check for a contest
             var fid = page.registered ? page.service('facebook').sid : page.id;
+            // console.log(JSON.stringify(page, null, ' '));
             if( !page.registered ) delete page.id;
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
@@ -60,16 +63,20 @@ exports.transfer_objects = {
             if( page.registered ){
 
                 // add registered links...
-                page.links.page          ='/page/'+page.id,
-                page.links.share         ='/page/'+page.id+'/share';
-                page.links.feedback      ='/page/'+page.id+'/feedback';
-                page.links.favorite      ='/user/favorite/'+page.id;
+                page.links.page         ='/page/'+page.id,
+                page.links.share        ='/page/'+page.id+'/share';
+                page.links.feedback     ='/page/'+page.id+'/feedback';
+                page.links.favorite     ='/user/favorite/'+page.id;
+            }
+            else{
+                page.links.recommend    ='/page/recommend/facebook/'+fid;
             }
             var games = [];
 
             if( page.contests ) page.contests.forEach(function(contest){
                 games.push( contest.getGame() );
             });
+            page.games = games;
             return this.sanitize(page);
         }
     },
@@ -202,12 +209,20 @@ exports.routes = {
                 var favorites = req.param('favorites');
 
                 if( !ll) return Bozuko.error('page/pages_no_ll').send(res);
-
+                
                 var options = {
                     limit: parseInt(req.param('limit')) || 25,
                     offset: parseInt(req.param('offset')) || 0,
                     user: req.session.user
                 };
+                
+                var url_parsed = URL.parse(req.url);
+                var params = qs.parse(url_parsed.query);
+                
+                params['limit'] = options.limit;
+                params['offset'] = options.offset+options.limit;
+                
+                var next = url_parsed.pathname+'?'+qs.stringify(params);
 
                 // first, we will try center
                 if( ll ){
@@ -246,9 +261,11 @@ exports.routes = {
                             console.log(error);
                             return error.send(res);
                         }
-                        var searchEnd = new Date();
                         profiler.mark('search time');
-                        return res.send(Bozuko.transfer('page',pages));
+                        return res.send(Bozuko.transfer('pages',{
+                            pages:pages,
+                            next: next
+                        }));
                     }
                 );
             }
@@ -261,19 +278,17 @@ exports.routes = {
         get: {
             handler: function(req,res) {
                 var page_id = req.param('id');
-                Bozuko.models.Page.findOne({_id: page_id}, function(err, p) {
-                    if (err) {
-                        res.statusCode = 500;
-                        res.end();
-                        return;
-                    }
-
-                    if (!p) {
-                        res.statusCode = 404;
-                        res.end();
-                        return;
-                    };
-                    fill_page(p, function(err, page) { res.send(page); });
+                Bozuko.models.Page.findById(page_id, function(error, page) {
+                    if( error ) return error.send(res);
+                    if( !page ) return Bozuko.error('page/does_not_exist').send(res);
+                    
+                    page.registered=true;
+                    
+                    // need to popuplate the page with the right stuff
+                    return page.loadContests( req.session.user, function(error){
+                        if( error ) return error.send(res);
+                        return res.send(Bozuko.transfer('page', page));
+                    });
                 });
             }
         }
@@ -289,6 +304,19 @@ exports.routes = {
                 });
             }
         }
-
+    },
+    
+    'page/recommend/:service/:id': {
+        
+        post : {
+            
+            handler : function(req,res){
+                /**
+                 * TODO - add the recommendation logic
+                 */
+                res.send(Bozuko.transfer('success_message', {success: true}));
+            }
+        }
+        
     }
 };

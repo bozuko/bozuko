@@ -111,11 +111,32 @@ exports.routes = {
         aliases     :['/login/:service?'],
 
         get : function(req,res){
+            
+            // if we are being redirected with a token, its internal
+            if( req.param('token')){
+                // lets show the response screen
+                return res.send('Will clean this up to look good...');
+            }
+            
             service = req.param('service') || 'facebook';
             if( req.param('return') ){
                 req.session.user_redirect = req.param('return');
             }
+            else if(req.param('phone_id') && req.param('phone_type')){
+                req.session.user_redirect = '/user/mobile'
+            }
             return Bozuko.service(service).login(req,res,'user',req.session.user_redirect||'/user');
+        }
+    },
+    
+    '/user/mobile' : {
+        get : {
+            
+            access: 'user',
+            handler: function(req,res){
+                var token = req.session.user.token;
+                res.redirect('/user/login?token='+token);
+            }
         }
     },
 

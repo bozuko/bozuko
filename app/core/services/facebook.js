@@ -77,9 +77,6 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
         params.client_secret = Bozuko.config.facebook.app.secret;
         params.code = code;
 
-        console.log(req.session);
-
-
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
         http.request({
@@ -133,18 +130,23 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                 var internal = u.service('facebook').internal;
                                 if( internal && internal.subscriptions ) return finish();
                                 return self.user_favorites({user:u},function(error, user){
-                                    u.service('facebook').internal = {
-                                        likes: user.data.likes
-                                    };
-                                    u.commit('facebook.internal');
-                                    u.save(function(error){
-                                        /**
-                                         * TODO
-                                         *
-                                         * error conditions for login
-                                         */
+                                    if( user ){
+                                        u.service('facebook').internal = {
+                                            likes: user.data.likes
+                                        };
+                                        u.commit('facebook.internal');
+                                        return u.save(function(error){
+                                            /**
+                                             * TODO
+                                             *
+                                             * error conditions for login
+                                             */
+                                            return finish();
+                                        });
+                                    }
+                                    else{
                                         return finish();
-                                    });
+                                    }
                                 });
 
                             });
@@ -208,10 +210,9 @@ $.search = function(options, callback){
     };
 
     if( options.center ) params.center = options.center[1]+','+options.center[0];
-    console.log(params.center);
     if( options.query ) params.q = options.query;
     if( !options.fields ) {
-        options.fields = ['name','category','checkins','location'];
+        options.fields = ['name','category','checkins','location','website','phone'];
     }
     else if( !~options.fields.indexOf('checkins') ){
         options.fields.push('checkins');
@@ -462,7 +463,7 @@ $.get_user_pages = function(user, callback){
         {
             user: user,
             params:{
-                fields:['id','name','category','likes','location'].join(',')
+                fields:['id','name','category','likes','location','website','phone'].join(',')
             }
         },
         function(accounts){
@@ -471,7 +472,7 @@ $.get_user_pages = function(user, callback){
             if( accounts && accounts.data ) accounts.data.forEach(function(account){
                 delete account.access_token;
                 account = self.sanitizePlace(account);
-                if( account.location && account.location.latitude ){
+                if( account.location && account.location.lat ){
                     account.is_place = true;
                 }
                 else{
@@ -542,6 +543,8 @@ $._sanitizePlace = function(place){
         id: place.id,
         checkins: place.checkins||0,
         likes: place.likes,
+        website: place.website,
+        phone: place.phone,
         name: place.name,
         category: place.category,
         image: 'https://graph.facebook.com/'+place.id+'/picture?type=large',

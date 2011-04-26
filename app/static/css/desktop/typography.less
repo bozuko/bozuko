@@ -41,6 +41,7 @@ h1 {
 }
 
 .big-button {
+    cursor: pointer;
     display: inline-block;
     .border_radius(4px);
     .background_gradient(@brand_color, @dark_color);
@@ -59,4 +60,18 @@ h1 {
 
 .big-button:active{
     .background_gradient(@dark_color, @brand_color);
+}
+
+
+.big-button-disabled {
+    .opacity(40);
+    cursor: default;
+}
+
+.big-button-disabled:hover{
+    .background_gradient(@brand_color, @dark_color);
+}
+
+.big-button-disabled:active{
+    .background_gradient(@brand_color, @dark_color);
 }
