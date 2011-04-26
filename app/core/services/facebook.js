@@ -130,6 +130,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                                 var internal = u.service('facebook').internal;
                                 if( internal && internal.subscriptions ) return finish();
                                 return self.user_favorites({user:u},function(error, user){
+                                    console.log(arguments);
                                     if( user ){
                                         u.service('facebook').internal = {
                                             likes: user.data.likes

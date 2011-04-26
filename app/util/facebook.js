@@ -29,6 +29,10 @@ exports.graph = function(path, options, callback){
 
     if( options.params ) params = merge(params, options.params);
     var url = 'https://graph.facebook.com'+path;
+    
+    if( /\/pages/.test(url) ){
+        url = 'http://graph.facebook.com'+path;
+    }
 
     var now = new Date();
 
