@@ -295,18 +295,5 @@ exports.routes = {
                 });
             }
         }
-    },
-
-    '/user/prizes' : {
-
-        get : {
-
-            access: 'user',
-
-            handler: function(req, res) {
-
-
-            }
-        }
     }
 };

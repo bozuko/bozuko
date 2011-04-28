@@ -10,7 +10,6 @@ var Prize = module.exports = new Schema({
     name                    :{type:String},
     timestamp               :{type:Date},
     image                   :{type:String},
-    status                  :{type:String},
     message                 :{type:String},
     expires                 :{type:Date},
     play_cursor             :{type:Number},
@@ -26,13 +25,23 @@ Prize.REDEEMED = 'redeemed';
 Prize.ACTIVE = 'active';
 Prize.EXPIRED = 'expired';
 
+
+Prize.virtual('state')
+    .get(function(){
+        if( this.redeemed ) return Prize.REDEEMED;
+        var now = new Date();
+        if( now < this.expires ) return Prize.ACTIVE;
+        return Prize.EXPIRED;
+    });
+
 Prize.method('redeem', function(user, callback){
-    if( this.redeemed ){
+    var self = this;
+    if( self.redeemed ){
         // not sure if we should throw an error...
         return callback( Bozuko.error('prize/already_redeemed') );
     }
     var now = new Date();
-    if( this.expires > now ){
+    if( self.expires > now ){
         // ruh-roh.
         return callback( Bozuko.error('prize/expired') );
     }
@@ -40,16 +49,16 @@ Prize.method('redeem', function(user, callback){
         return callback( Bozuko.error('prize/redeem_bad_user') );
     }
     // looks like we got past all the error conditions....
-    this.redeemed = true;
-    this.redeemed_time = now;
-    this.save( function(error, prize){
+    self.redeemed = true;
+    self.redeemed_time = now;
+    return self.save( function(error){
         if( error ) return callback( error );
         // okay, lets get the page and get its security image
-        return Bozuko.models.Page.getById(prize.page_id, function(error, page){
+        return Bozuko.models.Page.getById(self.page_id, function(error, page){
             if( error ) return callback( error );
             return callback(null, {
                 security_img: page.security_img,
-                prize: prize
+                prize: self
             });
         });
     });

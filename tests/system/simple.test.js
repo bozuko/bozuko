@@ -346,11 +346,45 @@ exports.check_prize = function(test){
     // lets get the prize link
     var prize_link = prizes[0].links.prize;
     
-    assert.response(test, Bozuko.app,
+    return assert.response(test, Bozuko.app,
         {url: prize_link+'/?token='+token},
         ok,
         function(res) {
             var result = JSON.parse(res.body);
+            test.done();
+        });
+};
+
+exports.redeem_prize = function(test){
+    
+    if( wins == 0 ){
+        return test.done();
+    }
+    
+    // lets get the prize link
+    var redeem_link = prizes[0].links.redeem;
+    
+    console.log(prizes[0].links);
+    
+    var params = JSON.stringify({
+        ll: '42.646261785714,-71.303897114286',
+        phone_type: phone.type,
+        phone_id: phone.unique_id,
+        mobile_version: '1.0',
+        challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+    });
+    
+    return assert.response(test, Bozuko.app,
+        {
+            url: redeem_link+'/?token='+token,
+            method: 'POST',
+            headers: headers,
+            data: params
+        },
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            console.log(result);
             test.done();
         });
 }
