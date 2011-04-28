@@ -43,8 +43,9 @@ $.getTitle = function(){
     return this.title || this.name;
 };
 
-$.create = function(data){
-    return this._create ? this._create(data) : this.sanitize(data);
+$.create = function(data, user){
+    
+    return this._create ? this._create(data, user) : this.sanitize(data, null, user);
 };
 
 $.returnedBy = function(link){
@@ -61,7 +62,9 @@ $.merge = function(a,b){
     return a;
 };
 
-$.sanitize = function(data, current){
+var native_types = ['string', 'number', 'object', 'int', 'integer'];
+
+$.sanitize = function(data, current, user){
 
     // make this conform to our def
     var self = this, ret = {};
@@ -69,7 +72,7 @@ $.sanitize = function(data, current){
     
     if( typeof current == 'string' ){
         // this _should be_ another transfer object
-        ret = data ? Bozuko.transfer(current, data) : null;
+        ret = data ? Bozuko.transfer(current, data, user) : null;
     }
 
     else if( current instanceof Array ){
@@ -78,7 +81,7 @@ $.sanitize = function(data, current){
             data = [];
         }
         data.forEach(function(v,k){
-            ret[k] = self.sanitize(v,current[0]);
+            ret[k] = self.sanitize(v,current[0],user);
         });
     }
     else{
@@ -97,7 +100,7 @@ $.sanitize = function(data, current){
                     switch(c.toLowerCase()){
 
                         case 'string':
-                            v = ''+v;
+                            v = String(v);
                             break;
 
                         case 'int':
@@ -112,6 +115,13 @@ $.sanitize = function(data, current){
                         
                         case 'boolean':
                             v = Boolean(v);
+                            break;
+                        
+                        case 'object':
+                            break;
+                        
+                        default:
+                            v  = Bozuko.transfer(c, v, user);
 
                     }
                     ret[key] = v;
@@ -120,7 +130,7 @@ $.sanitize = function(data, current){
                     v = parseFloat(v);
                 }
                 else if(c instanceof Object || typeof c == 'object'){
-                    ret[key] = self.sanitize(v,c);
+                    ret[key] = self.sanitize(v,c,user);
                 }
             }
         });
@@ -159,16 +169,21 @@ $.validate = function(data, current) {
             if( data[key] ){
                 var v = data[key];
                 var c = current[key];
-                if (typeof c != 'string') {
+                
+                if (typeof c != 'string' ) {
                     if (!self.validate(v, c)) {
                         ret = false;
                     }
-                } else if (c.toLowerCase() != typeof v ) {
+                }
+                else if( typeof v == 'object' && !~native_types.indexOf(c.toLowerCase())){
+                    ret = Bozuko.validate(c, v);
+                }
+                else if( c.toLowerCase() != typeof v ) {
                     console.log("failed key = "+key);
                     console.log("typeof c = "+typeof c);
                     console.log("typeof v = "+typeof v);
                     ret = false;
-                }
+                } 
             }
         });
     }

@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     EntryConfig = require('./embedded/contest/entry/config'),
     Prize = require('./embedded/contest/prize'),
     ObjectId = Schema.ObjectId,
+    Native = require('./plugins/native'),
     async = require('async')
 ;
 
@@ -25,6 +26,8 @@ var Contest = module.exports = new Schema({
     token_cursor            :{type:Number, default: -1},
     winners                 :[ObjectId]
 });
+
+Contest.plugin( Native );
 
 /**
  * Create the results array
@@ -62,6 +65,7 @@ Contest.method('enter', function(entry, callback){
     entry.setContest(this);
     entry.configure(cfg);
     return entry.validate( function(error){
+        
         if( error ){
             // yikes
             return callback(error);
@@ -80,28 +84,112 @@ Contest.method('enter', function(entry, callback){
 
 Contest.method('loadGameState', function(user, callback){
     
-    callback(null);
+    
+    var self =this;
+    
+    // we need to create an entry to see whats up...
+    var config = this.entry_config[0];
+    var entryMethod = Bozuko.entry(config.type, user);
+    entryMethod.setContest(this);
+    entryMethod.configure(config);
+    
+    var state = {
+        user_tokens: 0,
+        next_enter_time: new Date(),
+        button_text: '',
+        button_enabled: true,
+        button_action: 'enter',
+        contest: self
+    };
+    
+    // how many tokens
+    var contest_user = user && self.users ? self.users[user.id] : false;
+    if( contest_user ){
+        var tokens = 0;
+        contest_user.entries.forEach(function(entry){
+            // check timestamp
+            var now = new Date();
+            if( entry.timestamp.getTime()+Bozuko.config.entry.token_expiration > now.getTime() ){
+                // we should be good
+                tokens += entry.tokens;
+            }
+        });
+        // okay, have all the tokens
+        state.user_tokens = tokens;
+    }
+    
+    entryMethod.getButtonText( state.user_tokens, function(error, text){
+        if( error ) return callback(error);
+        state.button_text= text;
+        return entryMethod.getNextEntryTime( function(error, time){
+            if( error ) return callback( error );
+            state.next_enter_time = time;
+            var now = new Date();
+            if( state.next_enter_time > now ){
+                if( state.user_tokens > 0 ){
+                    state.button_text = 'Play';
+                    state.button_enabled = true;
+                }
+                else{
+                    state.button_text = 'Play again at '+state.next_enter_time;
+                    state.button_enabled = false;
+                    delete state.button_action;
+                }
+            }
+            self.game_state = state;
+            return callback(null, state);
+        });
+    })
 });
 
-Contest.method('addUserEntry', function(user_id, entry, tries, callback) {
-    var self = this;
+Contest.method('loadEntryMethod', function(user, callback){
+    
+    
+    var self =this;
+    
+    // we need to create an entry to see whats up...
+    var config = this.entry_config[0];
+    var entryMethod = Bozuko.entry(config.type, user);
+    entryMethod.setContest(this);
+    entryMethod.configure(config);
+    
+    self.entry_method = entryMethod;
+    callback( null, entryMethod );
+    
+});
 
+Contest.method('loadTransferObject', function(user, callback){
+    var self = this;
+    return self.loadGameState(user, function(error){
+        if( error ) return callback(error);
+        return self.loadEntryMethod(user, function(error){
+            if( error ) return callback(error);
+            return callback( null, this);
+        })
+    });
+});
+
+
+Contest.method('addUserEntry', function(user_id, entry, tries, callback) {
+    
+    var self = this;
+    
     // Ensure that the contest isn't out of tokens
     if (this.token_cursor + entry.tokens >= this.total_plays) {
         return callback( Bozuko.error('entry/not_enough_tokens') );
     }
 
     if (!this.users) this.users = {};
-
+    
     // Add the entry to the users object
     if (this.users[user_id]) {
         this.users[user_id].entries.push(entry);
-   } else {
+    } else {
        this.users[user_id] = {
            active_plays: [],
            entries: [entry]
        };
-   }
+    }
 
     return Bozuko.models.Contest.update(
         {_id: this._id, version: this.version},
@@ -196,11 +284,12 @@ Contest.method('startPlay', function(user_id, tries, callback) {
     }
 
     var tokens_available = false;
-    for (var i = 0; i < user.entries.length; i++) {
-        if (user.entries[i].tokens > 0) {
-            user.entries[i].tokens--;
+    for (var i = 0; i < user.entries.length && !tokens_available; i++) {
+        var entry = user.entries[i];
+        var now = new Date();
+        if (entry.tokens > 0 && entry.timestamp.getTime()+Bozuko.config.entry.token_expiration > now.getTime() ) {
+            entry.tokens--;
             tokens_available = true;
-            break;
         }
     }
 

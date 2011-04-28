@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
 var EntryConfig = module.exports = new Schema({
     type            :{type:String},
     duration        :{type:Number},
+    // tokens here is actually the maximum amount of tokens
     tokens          :{type:Number},
     options         :{}
 });

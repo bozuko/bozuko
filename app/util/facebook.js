@@ -29,11 +29,12 @@ exports.graph = function(path, options, callback){
 
     if( options.params ) params = merge(params, options.params);
     var url = 'https://graph.facebook.com'+path;
-    
-    if( /\/pages/.test(url) ){
+    /*
+    if( /\/pages/.test(url) || /\/search/.test(url) ){
         url = 'http://graph.facebook.com'+path;
+        delete params.access_token;
     }
-
+    */
     var now = new Date();
 
     if( !options.method ) options.method = 'get';
@@ -64,7 +65,12 @@ exports.graph = function(path, options, callback){
         url: url,
         method: options.method,
         params: params,
-        callback : function(){
+        callback : function(result){
+            
+            if( result.error && callback ){
+                return callback( Bozuko.error('facebook/api', result.error ));
+            }
+            
             /**
              * If we want to debug all facebook requests it can go here..
              */
@@ -75,8 +81,8 @@ exports.graph = function(path, options, callback){
             if( !Bozuko.facebook_requests ) Bozuko.facebook_requests={};
             if( !Bozuko.facebook_requests[url] ) Bozuko.facebook_requests[url] = [];
             Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
-            if (callback instanceof Function) callback.apply(this,arguments);
-            else console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
+            if (callback instanceof Function) return callback.apply(this,[null, result]);
+            else return console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
         },
         scope : options.scope,
         returnJSON : options.returnJSON

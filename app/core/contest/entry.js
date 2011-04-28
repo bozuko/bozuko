@@ -5,7 +5,7 @@
  *
  * @param {String} key The key for this entry
  */
-var EntryMethod = module.exports = function(type, user){
+var EntryMethod = module.exports = function(type, /* optional */ user){
     this.type = type;
     this.user = user;
 };
@@ -23,11 +23,19 @@ proto.name = 'Abstract Entry Method';
 proto.description = 'This type of entry needs';
 
 /**
+ * Button Text strings
+ */
+proto.button_text = {
+    enter: "Enter",
+    play: 'Play'
+};
+
+/**
  * Icon to display.
  *
  * TODO - decide if we need multiple types - mobile / admin, etc.
  */
-proto.icon = '';
+proto.image = '';
 
 /**
  * To refresh or not, that is the question
@@ -78,11 +86,13 @@ proto.getTokenCount = function(){
  * @param {Function} callback The callback function
  */
 proto.process = function( callback ){
+    
+    if( !this.user ) return callback(Bozuko.error('entry/process_no_user'));
     var self = this;
     // first, update this contests token cursor
     // this actually needs another check to make sure that the contest
     // has not changed since we grabbed it.
-    Bozuko.models.Contest.update(
+    return Bozuko.models.Contest.update(
         {_id:this.contest._id, token_cursor:this.contest.token_cursor},
         {token_cursor: this.contest.token_cursor + this.getTokenCount()},
         function(error, object){
@@ -156,39 +166,86 @@ proto.ensureTokens = function(){
 proto.validate = function( callback ){
     var self = this;
     // check for contest
-    if( !this.contest ) return callback( Bozuko.error('entry/no_contest') );
+    if( !self.contest ) return callback( Bozuko.error('entry/no_contest') );
 
     // check for user
-    if( !this.user ) return callback( Bozuko.error('entry/no_user') );
+    if( !self.user ) return callback( Bozuko.error('entry/no_user') );
 
     // check that there is enough tokens left
-    if( this.ensureTokens() === false ){
+    if( self.ensureTokens() === false ){
         return callback( Bozuko.error('entry/not_enough_tokens') );
     }
-
+    
     // check for duration
-    if( this.config && this.config.duration ){
+    if( self.config && self.config.duration ){
         var now = new Date();
         var last = new Date();
-        last.setTime( now.getTime() - duration );
-
-        return Bozuko.models.Entry.find({
-            user_id:self.user.id,
-            contest_id: self.contest.id,
-            timestamp:{'gt':last}
-        }, function(error, entry){
-            if( entry ){
-                // ruh, ro.
-                var now = new Date();
-                var next = new Date();
-                next.setTime(entry.timestamp.getTime()+self.config.duration);
-                callback( Bozuko.error('entry/too_soon', next) );
-            }
-            else{
-                callback( null );
-            }
+        last.setTime( now.getTime() - self.config.duration );
+        // need to check for other entries
+        var key = 'users.'+self.user.id+'entries.timestamp';
+        var selector = {};
+        selector[key] = {$gt: last};
+        return Bozuko.models.Contest.nativeFind(selector, function(error, entries){
+            if( error ) return callback( error );
+            return callback( null, entries.length ? false: true);
         });
     }
-
     return callback( null );
+};
+
+proto.load = function(callback){
+    var self = this,
+        force = false;
+    if( arguments.length > 1 ){
+        callback = arguments[1];
+        force = arguments[0];
+    }
+    // this contest should already have previous entries
+    if( force || !self._loaded ){
+        return self._load(function(error){
+            self._loaded = true;
+            callback(error);
+        });
+    }
+    return callback();
+};
+
+proto._load = function( callback ){
+    callback();
+}
+
+proto.getNextEntryTime = function( callback ){
+    var self = this;
+    this.load( function(error){
+        if( error ) return callback( error );
+        if( self._nextEntryTime ) callback(null, self._nextEntryTime );
+        var now = new Date();
+        if( !self.user ){
+            return callback(null, now);
+        }
+        // assume we have the contest
+        var u = self.contest.users ? self.contest.users[self.user.id] : false;
+        if( !u || u.entries.length == 0) {
+            return callback(null, now);
+        }
+        // lets peak at the top entry
+        var e = u.entries[u.entries.length-1];
+        // check the timestamp on this bad boy.
+        var timestamp = e.timestamp;
+        timestamp.setTime( timestamp.getTime() + (self.config.duration||0));
+        var now = new Date();
+        self._nextEntryTime = timestamp > now ? timestamp : now;
+        return callback(null, self._nextEntryTime);
+    });
+};
+
+proto.getButtonText = function( tokens, callback ){
+    var self = this;
+    this.load( function(error){
+        if( error ) return callback( error );
+        if( !tokens ){
+            return callback(null, self.button_text.enter );
+        }
+        return callback(null, self.button_text.play );
+    });
 };

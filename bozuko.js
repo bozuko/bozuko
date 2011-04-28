@@ -69,21 +69,21 @@ exports.game = function(contest){
 	return new this.games[contest.game](contest);
 };
 
-exports.transfer = function(key, data){
+exports.transfer = function(key, data, user){
 	if( !data ) return this._transferObjects[key];
 	try{
 
 		if( Array.isArray(data) ){
 			var ret = [];
 			var self = this;
-			data.forEach( function(o){ ret.push(self._transferObjects[key].create(o)); } );
+			data.forEach( function(o){ ret.push(self._transferObjects[key].create(o, user)); } );
 			return ret;
 		}
         else{
-			return this._transferObjects[key].create(data);
+			return this._transferObjects[key].create(data, user);
 		}
 	}catch(e){
-        throw new Error("Transfer Object ["+key+"] does not exist");
+        throw new Error("Error creating Transfer Object ["+key+"]: "+e.message);
 	}
 };
 

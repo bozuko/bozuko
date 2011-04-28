@@ -39,6 +39,10 @@ module.exports = {
         }
     },
     
+    entry : {
+        token_expiration: 1000 * 60 * 60 * 24 * 1 // one day.
+    },
+    
     search: {
         // radius to search for "Nearby Games" in miles
         nearbyRadius: 2,

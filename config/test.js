@@ -7,9 +7,10 @@ module.exports = {
     },
     facebook: {
         app:{
-            id:'166078836756369',
-            secret:'df03acad0cda5e6f2ec2161c00cf5bf3',
-            access_token:'166078836756369|5PhifMaZ8cZzgdlY4ZhfFPvGtOk'
+            id:'215589698455936',
+            secret:'659158dbd9a51f02bb9fffcf39804434',
+            access_token:'215589698455936|Ino_wd7UTm9e9Tpr34LzNM_-Zl8',
+            pubsub_verify:'12kg0a8b9123kab91831laa9sb'
         },
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access",
@@ -25,12 +26,21 @@ module.exports = {
     },
 
     checkin: {
+        /**
+         * IMPORTANT
+         * 
+         * These are intentially super low for Test Purposes
+         */
         duration: {
-            // 15 minutes between any checkins per user
-            user: 1000 * 60 * 15,
-            // 4 hours between checkins at the same place
-            page: 1000 * 60 * 60 * 4
+            // 5 seconds
+            user: 1000 * 5,
+            // 5 seconds
+            page: 1000 * 5
         }
+    },
+    
+    entry : {
+        token_expiration: 1000 * 60 * 60 * 24 * 1 // one day.
     },
     
     search: {
@@ -42,7 +52,7 @@ module.exports = {
     server: {
         ssl: true,
         auth: false,
-        host: 'bonobo.Bozuko.com',
+        host: 'bonobo.bozuko.com',
         port: port
     },
 
