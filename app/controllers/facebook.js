@@ -102,18 +102,11 @@ exports.routes = {
                                         if( error ){
                                             return error.send(res);
                                         }
-                                        var ret = {
-                                            page_id: page.id,
-                                            page_name: page.name,
-                                            timestamp: checkin.timestamp,
-                                            duration: Bozuko.config.checkin.duration.page,
-                                            games: Bozuko.transfer('game', games),
-                                            links: {
-                                                facebook_like: '/facebook/'+page.service('facebook').sid+'/like'
-                                            }
-                                        };
-
-                                        return res.send(ret);
+                                        var states = [];
+                                        games.forEach(function(game){
+                                            states.push( Bozuko.transfer('game_state', game.contest.game_state, req.session.user));
+                                        });                                        
+                                        return res.send(states);
                                     });
                                 });
                             }
