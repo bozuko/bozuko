@@ -6,7 +6,7 @@ var _t = Bozuko.t,
     Services = require('./plugins/services'),
     Coords = require('./plugins/coords'),
     Geo = Bozuko.require('util/geo'),
-    ObjectId = Schema.ObjectId
+    ObjectId = Schema.ObjectId,
     async = require('async')
 ;
 
@@ -383,7 +383,7 @@ Page.static('search', function(options, callback){
             var s = bozukoSearch.selector;
             bozukoSearch.selector = {
                 $or: [s, {test: true, featured:true}]
-            }
+            };
         }
         else{
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
@@ -455,10 +455,13 @@ Page.static('search', function(options, callback){
                     pages.forEach(function(page){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                     });
-                    results.forEach(function(result){
-                        result.registered = false;
-                        result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
-                    });
+
+		    if (results) {
+			results.forEach(function(result){
+			    result.registered = false;
+			    result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
+                        });
+		    }
 
                     return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                         pages = pages.concat(_pages);
