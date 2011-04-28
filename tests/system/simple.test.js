@@ -92,7 +92,6 @@ exports.favorite_del = function(test) {
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            console.log(result);
             test.ok(Bozuko.validate('favorite_response', result));
             test.ok(result.removed);
             test.done();
@@ -105,7 +104,9 @@ exports.favorite_toggle = function(test) {
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            console.log(result);
+            
+            console.log('favorite_toggle', result);
+            
             test.ok(Bozuko.validate('favorite_response', result));
             test.ok(result.added);
             test.done();
@@ -119,7 +120,6 @@ exports.favorite_toggle_again = function(test) {
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            console.log(result);
             test.ok(Bozuko.validate('favorite_response', result));
             test.ok(result.removed);
             test.done();
@@ -127,13 +127,11 @@ exports.favorite_toggle_again = function(test) {
 };
 
 exports.check_game_state = function(test){
-    console.log(game_state_link);
     assert.response(test, Bozuko.app,
         {url: game_state_link+'/?token='+token, method:'GET'},
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            console.log(result);
             test.done();
         });
 };
@@ -154,11 +152,11 @@ exports.facebook_checkin = function(test) {
         data: params},
         ok,
         function(res) {
-            var facebook_checkin_result = JSON.parse(res.body);
-            test.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
-            tokens = facebook_checkin_result.games[0].game_state.user_tokens;
+            var game_states = JSON.parse(res.body);
+            test.ok(Bozuko.validate(['game_state'], game_states));
+            tokens = game_states[0].user_tokens;
             test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
-            link = facebook_checkin_result.games[0].game_state.links.game_result;
+            link = game_states[0].links.game_result;
             test.done();
         });
 };
@@ -183,7 +181,6 @@ exports.play3times = function(test) {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                console.log(result);
                 test.ok( --tokens === result.game_state.user_tokens);
                 if( tokens > 0 ){
                     test.ok( typeof result.game_state.links.game_result == 'string' );
@@ -317,8 +314,8 @@ exports.do_next_entry = function(test){
         data: params},
         ok,
         function(res) {
-            var facebook_checkin_result = JSON.parse(res.body);
-            tokens = facebook_checkin_result.games[0].game_state.user_tokens;
+            var game_states = JSON.parse(res.body);
+            tokens = game_states[0].user_tokens;
             test.done();
         });
 };
@@ -349,14 +346,11 @@ exports.check_prize = function(test){
     // lets get the prize link
     var prize_link = prizes[0].links.prize;
     
-    console.log(prize_link);
-    
     assert.response(test, Bozuko.app,
         {url: prize_link+'/?token='+token},
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            console.log(result);
             test.done();
         });
 }

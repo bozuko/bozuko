@@ -245,8 +245,9 @@ exports.routes = {
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
                     user.favorites.splice(found,1);
                     // weird mongoose shit...
-                    if( user.favorites.length === 0 ) user.favorites = [];
+                    user.commit('favorites');
                     return user.save(function(error){
+                        console.log(JSON.stringify(user.favorites));
                         if(error) return error.send(res);
                         return res.send(Bozuko.transfer('favorite_response', {
                             removed: true,
@@ -270,6 +271,7 @@ exports.routes = {
                         found = i;
                     }
                 }
+                
                 // lets make sure the page exists
                 return Bozuko.models.Page.findById(id, function(error, page){
                     if( error ) return error.send(res);
@@ -279,7 +281,7 @@ exports.routes = {
                     };
                     if( found !== false ){
                         user.favorites.splice(found,1);
-                        if( user.favorites.length === 0 ) user.favorites = [];
+                        user.commit('favorites');
                         ret.removed = true;
                     }
                     else{
