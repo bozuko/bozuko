@@ -98,7 +98,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                         params:{
                             access_token : token
                         }
-                    }, function(user){
+                    }, function(error, user){
                         user.token = token;
                         user = self.sanitizeUser(user);
                         Bozuko.models.User.addOrModify(user, req.session.phone, function(err, u) {

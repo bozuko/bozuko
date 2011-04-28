@@ -201,6 +201,7 @@ function add_page(id, callback){
                 if (user) {
                     assert.uid = ''+user._id;
                     page.owner_id = user._id;
+					page.security_img = '/security/image.png'
                     page.save(function(){callback(null,'');});
                 } else {
                     callback(new Error("Can't find Bobby!"));

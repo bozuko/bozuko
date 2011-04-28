@@ -1,4 +1,5 @@
-var http = Bozuko.require('util/http');
+var http = Bozuko.require('util/http'),
+	Prize = Bozuko.models.Prize;
 
 exports.transfer_objects = {
     prize: {
@@ -25,12 +26,17 @@ exports.transfer_objects = {
 		
 		create : function( prize, user){
 			var o = this.sanitize(prize);
-			
 			o.links = {
 				prize : '/prize/'+prize.id,
 				page: '/page/'+prize.page_id,
 				user: '/user/'+prize.user_id
 			};
+			
+			console.log(prize);
+			
+			if( o.state == 'active' ){
+				o.links.redeem = '/prize/'+prize.id+'/redemption';
+			}
 			
 			return this.sanitize(o, null, user);
 		}
@@ -119,22 +125,45 @@ exports.routes = {
             access: 'user',
 
             handler: function(req, res) {
-                var state = req.param('state');
-                if (state && state != 'active' && state != 'redeemed' && state != 'expired') {
+                
+				var state = req.param('state'),
+					query = req.param('query')
+					;
+					
+                if (state && state != Prize.ACTIVE && state != Prize.REDEEMED && state != Prize.EXPIRED) {
 					return Bozuko.error('prize/bad_state').send(res);
                 }
 				var selector = {
 					user_id: req.session.user.id
 				};
                 if( state ){
-					selector.state = state;
+					switch( state ){
+						case Bozuko.models.Prize.REDEEMED:
+							selector.redeemed = true;
+							break;
+						
+						case Bozuko.models.Prize.ACTIVE:
+							selector.redeemed = false;
+							selector.expires = {$gt: new Date()};
+							break;
+						
+						case Bozuko.models.Prize.EXPIRED:
+							selector.redeemed = false;
+							selector.expires = {$lte: new Date()};
+							break;
+					}
 				}
+				
+				if( query ){
+					selector.name = new RegExp(query, 'i');
+				}
+				
+				var limit = req.param('limit') || 25;
 				var offset = req.param('offset') || 0;
-				return Bozuko.models.Prize.find(selector, {}, {limit: 25, offset: offset, sort: {timestamp: 1}}, function(error, prizes){
+				return Bozuko.models.Prize.find(selector, {}, {limit: limit, offset: offset, sort: {timestamp: 1}}, function(error, prizes){
 					if( error ) return error.send( res );
 					var ret = {
-						prizes: prizes,
-						next: ''
+						prizes: prizes
 					};
 					return res.send( Bozuko.transfer('prizes', ret, req.session.user));
 				});
@@ -159,7 +188,7 @@ exports.routes = {
 				
 				return Bozuko.models.Prize.findOne(selector, function(error, prize){
 					if( error ) return error.send(res);
-					console.log(prize);
+					
 					if( !prize ){
 						return Bozuko.error('prize/not_found').send(res);
 					}
@@ -175,7 +204,7 @@ exports.routes = {
 
 		post : {
 			
-			access: 'user',
+			access: 'mobile',
 			
 			handler: function(req,res){
 				// redeem the prize
