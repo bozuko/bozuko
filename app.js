@@ -43,7 +43,7 @@ if (!module.parent) {
 
     if (nodes.isMaster) {
         // setup stats collection
-        if(Bozuko.env === 'stats' || Bozuko.env === 'test'){
+        if(Bozuko.env === 'stats'){
             initStats();
         }
         if( Bozuko.env == 'development' ){

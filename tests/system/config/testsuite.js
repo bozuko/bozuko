@@ -6,12 +6,12 @@ var http = require('http');
 
 var users = {
     a: {
-	'id': '100001848849081',
-	'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
+		'id': '100001848849081',
+		'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
     },
     b: {
-	'id': '100001863668743',
-	'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
+		'id': '100001863668743',
+		'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
     }
 };
 
@@ -135,14 +135,17 @@ exports.setup = function(fn) {
 
 var emptyCollection = function(name) {
     return function(callback){
-        Bozuko.models[name].remove(function(){callback(null, '');});
+        Bozuko.models[name].remove(function(){
+			console.log(name+' collection emptied');
+			callback(null, '');
+		});
     };
 };
 
 var add_users = function(callback) {
     Bozuko.service('facebook').user({user_id:user.id}, function(error, user){
 	if( error ){
-	    console.log(error);
+	    console.log(error.stack);
 	    return callback(error);
 	}
 	return Bozuko.models.User.createFromServiceObject(user, function(error, user){
@@ -234,7 +237,8 @@ var add_contests = function(callback) {
 				var contest = new Bozuko.models.Contest(data);
 				contest.entry_config.push({
 					type: 'facebook/checkin',
-					tokens: 3
+					tokens: 3,
+					duration: 1000 * 5
 				});
 				contest.prizes.push({
 					name: 'Wicked cool T-Shirt',

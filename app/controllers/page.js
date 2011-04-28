@@ -39,7 +39,6 @@ exports.transfer_objects = {
             games: ["game"],
             links: {
                 recommend: "String",
-                login: "String",
                 facebook_checkin: "String",
                 facebook_like: "String",
                 feedback: "String",
@@ -48,7 +47,7 @@ exports.transfer_objects = {
             }
         },
 
-        create: function(page){
+        create: function(page, user){
             // this should hopefully be a Page model object
             // lets check for a contest
             
@@ -57,17 +56,18 @@ exports.transfer_objects = {
             if( !page.registered ) delete page.id;
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
-                login               :'/user/login',
                 facebook_checkin    :'/facebook/'+fid+'/checkin',
                 facebook_like       :'/facebook/'+fid+'/like'
             };
+            if( user ){
+                page.links.favorite     ='/user/favorite/'+page.id;
+            }
             if( page.registered ){
 
                 // add registered links...
                 page.links.page         ='/page/'+page.id,
                 page.links.share        ='/page/'+page.id+'/share';
                 page.links.feedback     ='/page/'+page.id+'/feedback';
-                page.links.favorite     ='/user/favorite/'+page.id;
             }
             else{
                 page.links.recommend    ='/page/recommend/facebook/'+fid;
@@ -156,44 +156,6 @@ exports.links = {
     }
 };
 
-var fill_page = function(p, callback) {
-    p.getContests(function(error, contests) {
-        // Return everything with a facebook format for now
-        var page = p.service('facebook').data;
-        var page_path = "/page/"+p._id;
-        page.links = {};
-
-        // Just use first contest for now
-        if (contests.length > 0) {
-            page.games = contests[0].games;
-            var contest_id = contests[0]._id;
-            page.links.contest = "/contest/"+contest_id;
-            page.links.contest_result = "/contests/"+contest_id+"/result";
-        }
-        page.links.facebook_checkin = "/facebook/"+page.id+"/checkin";
-        page.links.facebook_like = "/facebook/"+page.id+"/like";
-        page.links.login = "/user/login";
-        page.links.share = page_path+"/share";
-        page.links.feedback = page_path+"/feedback";
-        callback(null, page);
-    });
-};
-
-function get_page_links(page, fid){
-    var links = {
-        facebook_page       :'http://facebook.com/'+fid,
-        login               :'/user/login/facebook',
-        facebook_checkin    :'/facebook/'+fid+'/checkin',
-        facebook_like       :'/facebook/'+fid+'/like'
-    };
-    if( page ){
-        links.page          ='/page/'+page.id,
-        links.share         ='/page/'+page.id+'/share';
-        links.feedback      ='/page/'+page.id+'/feedback';
-    }
-    return links;
-}
-
 exports.routes = {
 
     '/pages': {
@@ -267,7 +229,7 @@ exports.routes = {
                         return res.send(Bozuko.transfer('pages',{
                             pages:pages,
                             next: next
-                        }));
+                        }, req.session.user));
                     }
                 );
             }
@@ -289,7 +251,7 @@ exports.routes = {
                     // need to popuplate the page with the right stuff
                     return page.loadContests( req.session.user, function(error){
                         if( error ) return error.send(res);
-                        return res.send(Bozuko.transfer('page', page));
+                        return res.send(Bozuko.transfer('page', page, req.session.user));
                     });
                 });
             }

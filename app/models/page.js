@@ -50,6 +50,7 @@ Page.method('getContests', function(callback){
 
 Page.method('loadContests', function(user, callback){
     var self = this;
+    self.contests = [];
     this.getActiveContests(function(error, contests){
         if( error ) return callback( error );
         
@@ -57,13 +58,16 @@ Page.method('loadContests', function(user, callback){
         return async.forEach( contests,
             
             function load_contest(contest, cb){
-                contest.loadGameState(user, function(error, contest){
+                contest.loadGameState(user, function(error, state){
+                    contest.loadEntryMethod(user, function(error, method){
+                        self.contests.push(contest);
+                    });
                     cb(null);
                 });
             },
             
             function return_contests(error){
-                return callback(error);
+                return callback(error, self.contests);
             }
         );
         
@@ -77,11 +81,10 @@ Page.method('getActiveContests', function(callback){
         active: true,
         start: {$lt: now},
         end: {$gt: now},
-        $where: "this.token_cursor < this.total_entries;"
+        $where: "this.token_cursor < this.total_plays;"
     };
     if( arguments.length == 2 ){
         callback = arguments[1];
-
     }
     Bozuko.models.Contest.find(params, callback);
 });
@@ -90,16 +93,20 @@ Page.method('getUserGames', function(user, callback){
     this.getActiveContests( function(error, contests){
         if( error ) return callback(error);
         var games = [];
-        contests.forEach( function(contest){
-            var game = contest.getGame();
-            if (!game.tokens) game.tokens = 0;
-            var entries = contest.users[user._id].entries;
-            entries.forEach( function(entry){
-                game.tokens += entry.tokens;
-            });
-            games.push(game);
-        });
-        return callback( null, games );
+        return async.forEach( contests,
+            
+            function iterator(contest, cb){
+                contest.loadTransferObject(user, function(error){
+                    games.push(contest.getGame());
+                    cb(null);
+                });
+            },
+            
+            function ret(error){                
+                return callback( error, games );
+            }
+        );
+        
     });
 });
 
@@ -219,6 +226,7 @@ Page.method('checkin', function(user, options, callback) {
                     return callback( null, {checkin:checkin, entries:[]} );
                 }
                 var current = 0, entries = [];
+                var count = 0;
                 return contests.forEach( function(contest){
                     // check to make sure that the contest requires a checkin
                     var found = false;
@@ -234,7 +242,9 @@ Page.method('checkin', function(user, options, callback) {
                     var entry = Bozuko.entry(options.service+'/checkin', user, {
                         checkin: checkin
                     });
+                    
                     contest.enter( entry, function(error, entry){
+                        console.log('entry '+(count++));
                         if( error ){
                             return callback( error );
                         }
@@ -242,7 +252,6 @@ Page.method('checkin', function(user, options, callback) {
                         if( ++current == contests.length ){
                             return callback( null, {checkin:checkin, entries:entries});
                         }
-                        console.log(current);
                         return true;
                     });
                 });
@@ -298,8 +307,10 @@ Page.static('loadPagesContests', function(pages, user, callback){
                     }
                     // load contest game state
                     contest.loadGameState(user, function(error){
-                        page.contests.push(contest);
-                        cb(error);
+                        contest.loadEntryMethod(user, function(error){
+                            page.contests.push(contest);
+                            cb(error);
+                        });
                     });
                 },
                 function contests_foreach_callback(err){

@@ -13,6 +13,10 @@ var FacebookService = module.exports = function(){
 
 FacebookService.prototype.__proto__ = Service.prototype;
 
+function api(){
+    facebook.graph()
+}
+
 var $ = FacebookService.prototype;
 
 /**
@@ -231,10 +235,11 @@ $.search = function(options, callback){
         {
             params: params
         },
-        function facebook_search(results){
+        function facebook_search(error, results){
+            if( error ) return callback( error );
             // these need to be mapped to
             // generic Bozuko.objects
-            callback(null, self.sanitizePlaces(results.data));
+            return callback(null, self.sanitizePlaces(results.data));
         }
     );
 };
@@ -284,12 +289,10 @@ $.checkin = function(options, callback){
         user: options.user,
         params: params,
         method:'post'
-    },function(result){
+    },function(error, result){
         // check the result..
-        if( result.error ){
-            callback( Bozuko.error('facebook/api', result.error) );
-        }
-        callback(null, result);
+        if( error ) return callback( error );
+        return callback(null, result);
     });
 };
 
@@ -326,11 +329,9 @@ $.user = function(options, callback){
     return facebook.graph('/'+uid,{
         user: options.user,
         params: params
-    },function(result){
-        if( result.error ){
-            callback( Bozuko.error('facebook/api', result.error) );
-        }
-        callback(null, self.sanitizeUser(result));
+    },function(error, result){
+        if( error ) return callback( error );
+        return callback(null, self.sanitizeUser(result));
     });
 };
 
@@ -394,10 +395,8 @@ $.like = function(options, callback){
     return facebook.graph('/'+options.object_id+'/likes',{
         user: options.user,
         method:'post'
-    },function(result){
-        if( result.error ){
-            return callback( Bozuko.error('facebook/api', result.error) );
-        }
+    },function(error, result){
+        if( error ) return callback( error );
         return callback(null, result);
     });
 };
@@ -435,10 +434,8 @@ $.place = function(options, callback){
     }
     facebook.graph('/'+options.place_id, {
         params: params
-    },function(result){
-        if( result.error ){
-            return callback( Bozuko.error('facebook/api', result.error) );
-        }
+    },function(error, result){
+        if( error ) return callback( error );
         return callback(null, self.sanitizePlace(result) );
     });
 
@@ -467,7 +464,9 @@ $.get_user_pages = function(user, callback){
                 fields:['id','name','category','likes','location','website','phone'].join(',')
             }
         },
-        function(accounts){
+        function(error, accounts){
+            if( error ) return callback( error );
+            
             var pages = [];
             var ids = [];
             if( accounts && accounts.data ) accounts.data.forEach(function(account){
@@ -492,17 +491,18 @@ $.get_user_pages = function(user, callback){
             
 
             if( ids.length > 0 ){
-                Bozuko.models.Page.find({'services.name':'facebook','services.sid':{$in:ids}}, function(err, bozuko_pages){
+                return Bozuko.models.Page.find({'services.name':'facebook','services.sid':{$in:ids}}, function(err, bozuko_pages){
+                    if( err ) return callback( err );
                     if( bozuko_pages != null ) bozuko_pages.forEach(function(bozuko_page){
                         var i = ids.indexOf(bozuko_page.service('facebook').sid);
                         pages[i].has_owner = true;
                         pages[i].is_owner = (bozuko_page.owner_id == user._id);
                     });
-                    callback(null, pages);
+                    return callback(null, pages);
                 });
             }
             else{
-                callback(null, pages);
+                return callback(null, pages);
             }
         }
     );

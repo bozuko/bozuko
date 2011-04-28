@@ -9,6 +9,7 @@ module.exports = {
         var next = this.data;
         return "User cannot enter this contest again until "+next;
     },
-    db_error            : "Unknown DB error"
+    db_error            : "Unknown DB error",
+    process_no_user     :"Cannot process an entry without a valid user."
 
 };
