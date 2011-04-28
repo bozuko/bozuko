@@ -1,33 +1,4 @@
 
-var facebook_result = {
-    doc: "Result from a Facebook Operation",
-    def:{
-        page_id : "String",
-        page_name: "String",
-        timestamp: "String",
-        duration: "Number",
-        games: ['game'],
-        links: {
-            facebook_like: "String"
-        }
-    }
-};
-
-exports.transfer_objects = {
-    facebook_result: {
-        doc: "Result from a Facebook Operation",
-        def:{
-            id: "Number",
-            tokens: "Number",
-            timestamp: "String",
-            duration: "Number",
-            links: {
-                facebook_like: "String"
-            }
-        }
-    }
-};
-
 exports.links = {
     facebook_checkin: {
         post: {

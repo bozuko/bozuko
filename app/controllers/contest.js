@@ -50,8 +50,9 @@ var game = {
         var obj = this.merge(game, game.contest);
         // obj.can_play = obj.game_state.user_tokens > 0;
         obj.links = {
-            contest_result: '/game/'+game.contest._id+'/result',
-            page: '/page/'+game.contest.page_id
+            game_result: '/game/'+game.contest._id+'/result',
+            page: '/page/'+game.contest.page_id,
+            game: '/game/'+game.contest.id
         };
         return this.sanitize(obj, null, user);
     },
@@ -175,15 +176,25 @@ exports.routes = {
 
     '/game/:id': {
 
-        /**
-         * TODO -
-         *
-         *
-         *
-         */
-
         get: {
-
+            handler: function(req,res){
+                Bozuko.models.Contest.findById(req.params.id, function(error, contest){
+                    if( error ){
+                        return error.send(res);
+                    }
+                    if( !contest ){
+                        return Bozuko.error('contest/unknown', req.params.id).send(res);
+                    }
+                    // lets let the contest handle finding entries, etc
+                    return contest.loadGameState( req.session.user, function(error){
+                        if( error ) return error.send(res);
+                        var game = contest.getGame();
+                        return res.send(
+                            Bozuko.transfer('game', game, req.session.user)
+                        );
+                    });
+                });
+            }
         }
 
     },

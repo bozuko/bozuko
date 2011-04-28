@@ -45,7 +45,7 @@ exports.routes = {
                 };
                 if (req.session.user) {
                     links.user = "/user/",
-                    links.prizes = "/user/prizes";
+                    links.prizes = "/prizes";
                 } else {
                     links.login = "/user/login";
                 }
