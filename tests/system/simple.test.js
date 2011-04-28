@@ -9,7 +9,7 @@ var phone = assert.phone;
 var headers = {'content-type': 'application/json'};
 var ok = {status: 200, headers: {'Content-Type': 'application/json; charset=utf-8'}};
 var bad = {status: 500, headers: {'Content-Type': 'application/json; charset=utf-8'}};
-var auth, tokens;
+var auth, tokens, wins=0, prizes_link, prizes;
 
 exports.setup = function(test) {
     testsuite.setup(test.done);
@@ -20,13 +20,13 @@ var link = '/api';
 
 exports.get_root = function(test) {
     assert.response(test, Bozuko.app,
-        {url: link},
+        {url: link+'/?token='+token},
         ok,
         function(res) {
-            test.ok(true);
             var entry_point = JSON.parse(res.body);
             test.ok(Bozuko.validate('entry_point', entry_point));
             pages_link = entry_point.links.pages;
+            prizes_link = entry_point.links.prizes;
             test.done();
         });
 };
@@ -188,6 +188,8 @@ exports.play3times = function(test) {
                 if( tokens > 0 ){
                     test.ok( typeof result.game_state.links.game_result == 'string' );
                 }
+                // we also want to see if we won    
+                if( result.win ) wins++;
                 callback(null, '');
             }
         );
@@ -324,3 +326,37 @@ exports.do_next_entry = function(test){
 exports.play_3more = function(test){
     exports.play3times(test);
 };
+
+exports.check_prizes = function(test){
+    assert.response(test, Bozuko.app,
+        {url: prizes_link+'/?token='+token},
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            test.ok( result.prizes.length === wins, 'Correct number of prizes' );
+            prizes = result.prizes;
+            test.done();
+        });
+}
+
+exports.check_prize = function(test){
+    
+    if( wins == 0 ){
+        console.log('holy crap, you lost! run again to test /prize');
+        return test.done();
+    }
+    
+    // lets get the prize link
+    var prize_link = prizes[0].links.prize;
+    
+    console.log(prize_link);
+    
+    assert.response(test, Bozuko.app,
+        {url: prize_link+'/?token='+token},
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            console.log(result);
+            test.done();
+        });
+}
