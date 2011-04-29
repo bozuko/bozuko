@@ -80,7 +80,7 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
     app.use(Bozuko.require('middleware/mobile')());
-    // app.use(express.profiler());
+    app.use(express.profiler());
     app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
