@@ -90,7 +90,7 @@ assert.response = function(test, server, req, res, callback){
                     eql = expected instanceof RegExp
                         ? expected.test(actual)
                         : expected == actual;
-					console.log(expected, actual);
+		    console.log(expected, actual);
                     test.ok(eql);
                 }
             }
@@ -115,17 +115,17 @@ exports.setup = function(fn) {
         bozuko.app.listen(Bozuko.config.server.port);
         console.log(Bozuko.config.server.port);
         async.series([
-			emptyCollection('User'),
-			emptyCollection('Page'),
-			emptyCollection('Contest'),
-			emptyCollection('Checkin'),
-			emptyCollection('Play'),
-			emptyCollection('Prize'),
-			add_users,
-			add_pages,
-			add_contests
+	    emptyCollection('User'),
+	    emptyCollection('Page'),
+	    emptyCollection('Contest'),
+	    emptyCollection('Checkin'),
+	    emptyCollection('Play'),
+	    emptyCollection('Prize'),
+	    add_users,
+	    add_pages,
+	    add_contests
         ], function(err, res) {
-			profiler.mark('setup complete');
+	    profiler.mark('setup complete');
             fn();
         });
     } else {
@@ -136,9 +136,9 @@ exports.setup = function(fn) {
 var emptyCollection = function(name) {
     return function(callback){
         Bozuko.models[name].remove(function(){
-			console.log(name+' collection emptied');
-			callback(null, '');
-		});
+	    console.log(name+' collection emptied');
+	    callback(null, '');
+	});
     };
 };
 
@@ -201,7 +201,7 @@ function add_page(id, callback){
                 if (user) {
                     assert.uid = ''+user._id;
                     page.owner_id = user._id;
-					page.security_img = '/security/image.png'
+		    page.security_img = '/security/image.png';
                     page.save(function(){callback(null,'');});
                 } else {
                     callback(new Error("Can't find Bobby!"));
@@ -232,7 +232,7 @@ var add_contests = function(callback) {
             throw("No page for Owl Watch");
         }
 		async.forEach(pages,
-			
+
 			function iterator(page,cb){
 				data.page_id = ''+page._id;
 				var contest = new Bozuko.models.Contest(data);
@@ -274,11 +274,11 @@ var add_contests = function(callback) {
 					});
 				});
 			},
-			
+
 			function finish(err){
 				callback(null);
 			}
 		);
-        
+
     });
 };

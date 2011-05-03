@@ -1,7 +1,7 @@
 module.exports = {
     db:{
         name: 'bozuko',
-        host: 'localhost'
+        host: '192.168.170.232'
     },
     facebook: {
         app:{

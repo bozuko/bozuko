@@ -6,49 +6,48 @@ var http    = require('http'),
     qs      = require('querystring');
 
 exports.request = function(config){
-    
-    
+
+
     if( config instanceof String){
         config = {url:config};
     }
-    
+
     if( !config.url ){
         throw "Error[util::http] - request method called with no url";
     }
-    
+
     var url_parsed = url.parse(config.url);
-    
+
     var port = config.port || url_parsed.port || (url_parsed.protocol==='https:' ? 443 : 80);
     var ssl = config.ssl || (url_parsed.protocol === 'https:' ? true : false);
-    
+
     var http_ = ssl ? https : http;
-    
+
     var method = (config.method || "GET").toUpperCase();
-    
+
     var path = url_parsed.pathname+(url_parsed.search||'');
-    
+
     var params = url_parsed.params || false;
-    
+
     if( config.params || params ){
         params = params || {};
         if( config.params ) params = merge( params, config.params);
     }
-    
+
     if( method == 'GET' && params ){
         // add the params to the path
         path+=((~path.indexOf('?')?'&':'?')+qs.stringify(params));
     }
-    
+
     var headers = {'host':url_parsed.host};
     if( config.headers ) headers = merge(headers, config.headers);
-    
+
     var body = null, encoding = null;
-    
+
     if( method == 'POST' && params ){
         body = qs.stringify(params);
         encoding = config.encoding || 'utf-8';
     }
-    
     
     var request = http_.request({
         host: url_parsed.host,
@@ -74,7 +73,7 @@ exports.request = function(config){
                 try{
                     result = JSON.parse(data);
                 }catch(e){
-                    
+
                 }
             }
             if( config.onEnd ){
@@ -85,9 +84,9 @@ exports.request = function(config){
             }
         });
     });
-    
-    
-    
+
+
+
     /**
      * Not entirely sure what the upgrade event is.
      */
@@ -96,7 +95,7 @@ exports.request = function(config){
             config.onUpgrade.apply(this,arguments);
         });
     }
-    
+
     /**
      * Also not entirely sure what the continue event is.
      * This is not in node 0.2.6, just 0.3+
@@ -106,7 +105,7 @@ exports.request = function(config){
             config.onContinue.apply(this,arguments);
         });
     }
-    
+
     request.end(body,encoding);
-    
+
 };
