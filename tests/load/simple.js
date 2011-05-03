@@ -6,14 +6,12 @@ var async = require('async');
 var assert = require('assert');
 var load = require('../../../node-load/load');
 var express = require('express');
-var bozuko = require('../../bozuko');
 var db = require('util/db');
 var qs = require('querystring');
 
 // should probably add some sort of load test config
 process.env.NODE_ENV='production';
-bozuko.app = express.createServer();
-bozuko.init();
+var Bozuko = require('../../app/bozuko');
 
 var auth = Bozuko.require('core/auth');
 

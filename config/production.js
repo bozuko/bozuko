@@ -29,11 +29,11 @@ module.exports = {
             page: 1000 * 60 * 60 * 4
         }
     },
-    
+
     entry : {
         token_expiration: 1000 * 60 * 60 * 24 * 1 // one day.
     },
-    
+
     search: {
         // radius to search for "Nearby Games" in miles
         nearbyRadius: 2,
@@ -44,7 +44,7 @@ module.exports = {
         auth: false,
         ssl: false,
         host: 'bozuko.com',
-        port: 80
+        port: 8000
     },
 
     email : {

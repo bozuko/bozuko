@@ -1,5 +1,5 @@
 var cluster         = require('cluster'),
-    Bozuko          = require('app/bozuko')
+    Bozuko          = require('./app/bozuko')
     ;
 
 
@@ -22,12 +22,12 @@ var proc = cluster( Bozuko.getApp() )
         .use(cluster.stats())
         .use(cluster.repl( Bozuko.config.server.port+10 ) )
         .listen( Bozuko.config.server.port );
-    
+
 if( proc.isMaster ){
     if(Bozuko.env() === 'stats'){
         Bozuko.initStats();
     }
-        
+
     if( Bozuko.env() === 'development' ){
         console.log('intializing development environment');
         Bozuko.require('dev/setup').init();
