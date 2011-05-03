@@ -21,9 +21,9 @@ var self = this;
 /**
  * Module dependencies.
  */
-   
+
 var http            = Bozuko.require('util/http'),
-    create_url      = Bozuko.require('util/url').create
+    create_url      = Bozuko.require('util/url').create,
     express         = require('express'),
     Schema          = require('mongoose').Schema,
     BozukoStore     = Bozuko.require('core/session/store'),
@@ -35,7 +35,7 @@ var http            = Bozuko.require('util/http'),
 
 Bozuko.env = function(){
     return process.env.NODE_ENV || 'development';
-    
+
 };
 
 Bozuko.getConfig = function(){
@@ -48,8 +48,8 @@ Bozuko.getApp = function(){
     if( !Bozuko.app ){
         var app = Bozuko.require('core/server');
         Bozuko.configureApp(app);
-		initApplication( app );
-		initControllers( app );
+        initApplication( app );
+        initControllers( app );
         initGames( app );
         // setup our device dependent renderer
         Bozuko.require('core/view');
@@ -68,7 +68,7 @@ Bozuko.configureApp = function(app) {
     }
     app.configure( Bozuko.env(), function(){
         switch( Bozuko.env() ){
-        
+
             case 'production':
                 app.use(express.errorHandler());
                 break;
@@ -163,10 +163,6 @@ Bozuko.t = function(){
 
 
 function initApplication(app){
-
-    // app.use(express.profiler());
-
-
     // setup basic authentication for development
     if( Bozuko.config.server.auth ){
         app.use(express.basicAuth(function(user, pass){
@@ -185,7 +181,7 @@ function initApplication(app){
         reapInterval: 1000 * 60 * 5,
         maxAge: 1000 * 60 * 60 * 24
     });
-	
+
 
     app.use(express.session({key:'bozuko_sid', secret: 'chqsmells', store: Bozuko.sessionStore }));
     app.use(Monomi.detectBrowserType());
