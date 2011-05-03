@@ -199,8 +199,14 @@ exports.routes = {
                 var service = req.param('service');
                 var query = req.param('query');
                 var favorites = req.param('favorites');
+                
+                if( req.param('throw_error')){
+                    throw new Error('intentional error');
+                }
 
                 if( !ll) return Bozuko.error('page/pages_no_ll').send(res);
+                
+                
                 
                 var options = {
                     limit: parseInt(req.param('limit')) || 25,
