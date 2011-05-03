@@ -46,6 +46,10 @@ exports.get_pages = function(test) {
         });
 };
 
+/*
+ 
+ // This is redundant - use simple test
+ 
 exports.facebook_checkin = function(test) {
     var params = JSON.stringify({
         ll: ll,
@@ -64,9 +68,8 @@ exports.facebook_checkin = function(test) {
         ok,
         function(res) {
             var facebook_checkin_result = JSON.parse(res.body);
-            console.log(facebook_checkin_result);
-            test.ok(Bozuko.validate('facebook_result', facebook_checkin_result));
-            link = facebook_checkin_result.games[0].links.contest_result;
+            test.ok(Bozuko.validate('game_state', facebook_checkin_result));
             test.done();
         });
 };
+*/

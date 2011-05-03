@@ -95,11 +95,6 @@ proto.validate = function( callback ){
             return callback( null, true );
         }
         
-        // there was a checkin... if it was at the same place, it should be okay.
-        if( String(self.contest.page_id) == String(self._lastCheckin.page_id) ){
-            return callback( null, true );
-        }
-        
         var ts = new Date();
         ts.setTime( ts.getTime() - self.config.duration );
         
