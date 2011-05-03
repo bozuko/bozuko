@@ -2,7 +2,7 @@ module.exports = {
     
     api: {
         code:500,
-        message: function(){ return this.data.type+"\n\n"+this.data; }
+        message: function(){ return this.data.type+": "+this.data.message; }
     },
     
     no_lat_lng : {
