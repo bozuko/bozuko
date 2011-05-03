@@ -4,6 +4,7 @@ module.exports = {
         message: "The user does not exist"
     },
     favorite_does_not_exist:"The favorite you are removing does not exist",
-    like_bad_page: "Invalid 'page' parameter for User::like"
+    like_bad_page: "Invalid 'page' parameter for User::like",
+    favorites_no_ll: "User favorites requires an ll parameter and a user token"
 
 };

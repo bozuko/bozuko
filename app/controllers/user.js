@@ -188,7 +188,10 @@ exports.routes = {
                 // we need to have the token by now...
                 var token = req.param('token');
                 var ll = req.param('ll');
-                res.redirect('/pages?favorites=true&ll='+ll+'&token='+token);
+                if( !token || !ll ){
+                    return Bozuko.error('user/favorites_no_ll').send(res);
+                }
+                return res.redirect('/pages?favorites=true&ll='+ll+'&token='+token);
             }
         }
 

@@ -97,9 +97,15 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             access_token : token
                         }
                     }, function(error, user){
+                        if( error ){
+                            if( failure && failure('Error retrieving user', req, res) === false){
+                                return false;
+                            }
+                            return error.send(res);
+                        }
                         user = self.sanitizeUser(user);
                         user.token = token;
-                        Bozuko.models.User.addOrModify(user, req.session.phone, function(err, u) {
+                        return Bozuko.models.User.addOrModify(user, req.session.phone, function(err, u) {
                             if (err) {
                                 console.log("Facebook login error: "+err);
                                 return err.send(res);
