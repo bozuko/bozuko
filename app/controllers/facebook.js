@@ -59,7 +59,7 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
-                                test: true,
+                                test: ['development','test'].indexOf(Bozuko.env()),
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 latLng: {lat:lat,lng:lng},
                                 message: msg

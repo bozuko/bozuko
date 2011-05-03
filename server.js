@@ -12,7 +12,7 @@ var proc = cluster( Bozuko.getApp() )
         .use(cluster.pidfiles('pids'))
         .use(cluster.cli())
         .use(cluster.stats())
-        .use(cluster.repl( Bozuko.config.server.port+10 ) )
+        .use(cluster.repl( Bozuko.config.server.port+10, '127.0.0.1' ) )
         .listen( Bozuko.config.server.port )
     .in('production')
         .use(cluster.reload())
@@ -20,7 +20,7 @@ var proc = cluster( Bozuko.getApp() )
         .use(cluster.pidfiles('pids'))
         .use(cluster.cli())
         .use(cluster.stats())
-        .use(cluster.repl( Bozuko.config.server.port+10 ) )
+        .use(cluster.repl( Bozuko.config.server.port+10, '127.0.0.1' ) )
         .listen( Bozuko.config.server.port );
 
 if( proc.isMaster ){
