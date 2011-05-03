@@ -21,6 +21,14 @@ var proc = cluster( Bozuko.getApp() )
         .use(cluster.cli())
         .use(cluster.stats())
         .use(cluster.repl( Bozuko.config.server.port+10, '127.0.0.1' ) )
+        .listen( Bozuko.config.server.port )
+    .in('load')
+        .use(cluster.reload())
+        .use(cluster.logger('logs', 'info'))
+        .use(cluster.pidfiles('pids'))
+        .use(cluster.cli())
+        .use(cluster.stats())
+        .use(cluster.repl( Bozuko.config.server.port+10, '127.0.0.1' ) )
         .listen( Bozuko.config.server.port );
 
 if( proc.isMaster ){
