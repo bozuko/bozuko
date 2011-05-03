@@ -179,6 +179,7 @@ exports['game tests'] = {
             phone_id: phone.unique_id,
             mobile_version: '1.0',
             challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+
         });
         
         assert.response(test, Bozuko.app,
@@ -364,6 +365,7 @@ exports['game tests'] = {
     }
 
 };
+
 
 exports['prizes tests'] = {
     'check number of wins matches amount of prizes' : function(test){
