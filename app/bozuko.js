@@ -188,8 +188,6 @@ function initApplication(app){
 	
 
     app.use(express.session({key:'bozuko_sid', secret: 'chqsmells', store: Bozuko.sessionStore }));
-    // app.use(express.session({key:'bozuko_sid', secret: 'chqsmells'}));
-
     app.use(Monomi.detectBrowserType());
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
@@ -199,7 +197,6 @@ function initApplication(app){
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
     app.use(express.static(__dirname + '/static'));
-    //    app.use(express.repl('Bozuko.', 8050))
 }
 
 function initModels(){

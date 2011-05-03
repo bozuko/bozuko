@@ -7,8 +7,6 @@ var mongoose = require('mongoose'),
     async = require('async')
     ;
 
-var hmac = crypto.createHmac('sha512', Bozuko.config.key);
-
 var User = module.exports = new Schema({
     name                :{type:String},
     phones              :[Phone],
@@ -186,8 +184,8 @@ User.method('verify_phone', function(phone) {
 });
 
 
-
 function create_token(user, salt, next) {
+    var hmac = crypto.createHmac('sha512', Bozuko.config.key);
     var token = hmac.update(user.name+salt).digest('hex');
     Bozuko.models.User.findOne({token: token}, function(err, u) {
         if (err) return next(err);

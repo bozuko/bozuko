@@ -6,20 +6,20 @@ apt-get install -y python-software-properties
 echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" >> /etc/apt/sources.list
 apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
 
-# Add nginx repository
-if [[ "$1" != 'db' ]] ; then
-    nginx=development
-    add-apt-repository ppa:nginx/$nginx
-fi
-
 # bring the base ubuntu distribution up to date
 apt-get update
 apt-get upgrade
 
 # install nginx
 if [[ "$1" != 'db' ]] ; then
-    apt-get install -y nginx
-    cp config/nginx.conf /etc/nginx/
+    wget http://nginx.org/download/nginx-1.0.0.tar.gz
+    wget https://nodeload.github.com/agentzh/chunkin-nginx-module/tarball/v0.21
+    tar xvzf nginx-1.0.0.tar.gz 
+    tar xvzf v0.21
+    cd nginx-1.0.0
+    ./configure --add-module=../agentzh-chunkin-nginx-module-847b3de --without-http_rewrite_module --with-http_ssl_module
+    make && make install
+    cp config/nginx.conf /usr/local/nginx/conf/
 fi
 
 # install mongodb

@@ -32,6 +32,7 @@ Contest.plugin( Native );
 /**
  * Create the results array
  *
+ * @public
  */
 Contest.method('generateResults', function(callback){
     Bozuko.require('core/contest/engine').generateResults(this);
@@ -47,6 +48,7 @@ Contest.method('generateResults', function(callback){
  *
  * @param {Entry}
  *
+ * @public
  * Note that the entry param is not an entry model, it is an Entry defined in
  * core/contest/entry.js
  */
@@ -68,16 +70,15 @@ Contest.method('enter', function(entry, callback){
 });
 
 Contest.method('loadGameState', function(user, callback){
-    
-    
+
     var self =this;
-    
+
     // we need to create an entry to see whats up...
     var config = this.entry_config[0];
     var entryMethod = Bozuko.entry(config.type, user);
     entryMethod.setContest(this);
     entryMethod.configure(config);
-    
+
     var state = {
         user_tokens: 0,
         next_enter_time: new Date(),
@@ -86,7 +87,7 @@ Contest.method('loadGameState', function(user, callback){
         button_action: 'enter',
         contest: self
     };
-    
+
     // how many tokens
     var contest_user = user && self.users ? self.users[user.id] : false;
     if( contest_user ){
@@ -102,7 +103,7 @@ Contest.method('loadGameState', function(user, callback){
         // okay, have all the tokens
         state.user_tokens = tokens;
     }
-    
+
     entryMethod.getButtonText( state.user_tokens, function(error, text){
         if( error ) return callback(error);
         state.button_text= text;
@@ -124,23 +125,23 @@ Contest.method('loadGameState', function(user, callback){
             self.game_state = state;
             return callback(null, state);
         });
-    })
+    });
 });
 
 Contest.method('loadEntryMethod', function(user, callback){
-    
-    
+
+
     var self =this;
-    
+
     // we need to create an entry to see whats up...
     var config = this.entry_config[0];
     var entryMethod = Bozuko.entry(config.type, user);
     entryMethod.setContest(this);
     entryMethod.configure(config);
-    
+
     self.entry_method = entryMethod;
     callback( null, entryMethod );
-    
+
 });
 
 Contest.method('loadTransferObject', function(user, callback){
@@ -150,22 +151,22 @@ Contest.method('loadTransferObject', function(user, callback){
         return self.loadEntryMethod(user, function(error){
             if( error ) return callback(error);
             return callback( null, this);
-        })
+        });
     });
 });
 
 
 Contest.method('addUserEntry', function(user_id, entry, tries, callback) {
-    
+
     var self = this;
-    
+
     // Ensure that the contest isn't out of tokens
     if (this.token_cursor + entry.tokens >= this.total_plays) {
         return callback( Bozuko.error('entry/not_enough_tokens') );
     }
 
     if (!this.users) this.users = {};
-    
+
     // Add the entry to the users object
     if (this.users[user_id]) {
         this.users[user_id].entries.push(entry);

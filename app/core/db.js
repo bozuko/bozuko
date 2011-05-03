@@ -7,10 +7,25 @@ var mongoose = require('mongoose');
  * Global Variables
  */
 var _db;
+
 function getConnection(){
     if( !_db){
-        console.log('mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name);
-        _db = mongoose.connect('mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name);
+        var uri = 'mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name+
+            '/?connect=replicaSet;safe=true;w=2;wtimeout=5000;fsync=true';
+        mongoose.connection.on('opening', function() {
+            console.log("Mongoose opening "+uri);
+        });
+        mongoose.connection.on('close', function() {
+            console.log("Mongoose closed connection to "+uri);
+        });
+        mongoose.connection.on('open', function() {
+            console.log("Mongoose connected to "+uri);
+        });
+        mongoose.connection.on('error', function(err) {
+            console.log("Mongoose connection error: "+err);
+        });
+        _db = mongoose.connect(uri);
+        console.log('db uri = '+uri);
     }
     return _db;
 }
