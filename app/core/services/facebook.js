@@ -13,9 +13,7 @@ var FacebookService = module.exports = function(){
 
 FacebookService.prototype.__proto__ = Service.prototype;
 
-function api(){
-    facebook.graph()
-}
+var api = facebook.graph;
 
 var $ = FacebookService.prototype;
 
@@ -99,61 +97,29 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                             access_token : token
                         }
                     }, function(error, user){
-                        user.token = token;
                         user = self.sanitizeUser(user);
+                        user.token = token;
                         Bozuko.models.User.addOrModify(user, req.session.phone, function(err, u) {
                             if (err) {
                                 console.log("Facebook login error: "+err);
                                 return err.send(res);
                             }
-                            // okay, definitely a little weird mr. mongoose...
-                            // after a save, we need to do a get user or embedded docs
-                            // get messed up... yokay
+                            
+                            return u.updateLikes( function(error){
+                                var device = req.session.device;
+                                req.session.regenerate(function(err){
+                                    //res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
+                                    req.session.userJustLoggedIn = true;
+                                    req.session.user = u;
+                                    req.session.device = device;
 
-                            return Bozuko.models.User.findById(u.id, function(error, u){
-
-                                var finish = function(){
-                                    var device = req.session.device;
-                                    req.session.regenerate(function(err){
-                                        //res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
-                                        req.session.userJustLoggedIn = true;
-                                        req.session.user = u;
-                                        req.session.device = device;
-
-                                        if( success ){
-                                            if( success(u,req,res) === false ){
-                                                return;
-                                            }
+                                    if( success ){
+                                        if( success(u,req,res) === false ){
+                                            return;
                                         }
-                                        res.redirect(ret || '/user');
-                                    });
-                                };
-                                // specifically for facebook, we are going to monitor
-                                // the user "likes" AND the "permissions" objects
-                                // in the interal service object
-                                var internal = u.service('facebook').internal;
-                                if( internal && internal.subscriptions ) return finish();
-                                return self.user_favorites({user:u},function(error, user){
-                                    console.log(arguments);
-                                    if( user ){
-                                        u.service('facebook').internal = {
-                                            likes: user.data.likes
-                                        };
-                                        u.commit('facebook.internal');
-                                        return u.save(function(error){
-                                            /**
-                                             * TODO
-                                             *
-                                             * error conditions for login
-                                             */
-                                            return finish();
-                                        });
                                     }
-                                    else{
-                                        return finish();
-                                    }
+                                    res.redirect(ret || '/user');
                                 });
-
                             });
                         });
                     });
@@ -274,13 +240,14 @@ $.checkin = function(options, callback){
         place           :options.place_id,
         coordinates     :JSON.stringify({latitude:options.latLng.lat,longitude: options.latLng.lng})
     };
+    
     if( options.name )          params.name         = options.name;
     if( options.message )       params.message      = options.message;
     if( options.picture )       params.picture      = options.picture;
     if( options.link )          params.link         = options.link;
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
-
+    
     if( options.test ){
         return callback(null, {id:134574646614657});
     }

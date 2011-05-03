@@ -25,10 +25,18 @@ proto.process = function(outcome){
     }
 
     else {
-        var icon = this.icons[outcome];
-        ret = [icon,icon,icon];
+        ret = [outcome,outcome,outcome];
     }
 
     return ret;
 
+};
+
+proto.getConfig = function(){
+    var theme = this.getTheme();
+    
+    return {
+        theme: theme,
+        icons: this.icons
+    }
 };

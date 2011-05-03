@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 
 var Prize = module.exports = new Schema({
     value                   :{type:Number},
+    duration                :{type:Number},
     image                   :{type:String},
     name                    :{type:String},
     description             :{type:String},

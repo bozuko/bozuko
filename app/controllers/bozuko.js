@@ -26,18 +26,6 @@ exports.links = {
             doc: "Retrieve information about Bozuko",
             returns: "bozuko"
         }
-    },
-    bozuko_accept_terms: {
-        put: {
-            doc: "Accept the Bozuko terms of use",
-            params: {
-                accept: {
-                    required: true,
-                    type: "Boolean",
-                    description: "Does the user accept the the terms of use"
-                }
-            }
-        }
     }
 };
 

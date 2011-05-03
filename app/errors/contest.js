@@ -16,6 +16,10 @@ module.exports = {
     incrementing_play_cursor: function() {
         return "Failed to increment the play cursor for contest ["+this.data.contest._id+"]";
     },
+    
+    game_entry_requires_ll : function(){
+        return "Game entry requires ll parameter";
+    },
 
     unknown_user :{
         code: 404,

@@ -1,5 +1,7 @@
+process.env.NODE_ENV='test';
+
 var express = require('express');
-var bozuko = require('../../../bozuko');
+var Bozuko = require('../../../app/bozuko');
 var assert = require('assert');
 var async = require('async');
 var http = require('http');
@@ -90,8 +92,7 @@ assert.response = function(test, server, req, res, callback){
                     eql = expected instanceof RegExp
                         ? expected.test(actual)
                         : expected == actual;
-					console.log(expected, actual);
-                    test.ok(eql);
+					test.ok(eql);
                 }
             }
 
@@ -107,30 +108,26 @@ var auth = user.auth;
 var profiler;
 
 exports.setup = function(fn) {
-    if (typeof Bozuko === 'undefined') {
-        process.env.NODE_ENV='test';
-        bozuko.app = express.createServer();
-        bozuko.init();
-        profiler = Bozuko.require('util/profiler').create('testsuite');
-        bozuko.app.listen(Bozuko.config.server.port);
-        console.log(Bozuko.config.server.port);
-        async.series([
-			emptyCollection('User'),
-			emptyCollection('Page'),
-			emptyCollection('Contest'),
-			emptyCollection('Checkin'),
-			emptyCollection('Play'),
-			emptyCollection('Prize'),
-			add_users,
-			add_pages,
-			add_contests
-        ], function(err, res) {
-			profiler.mark('setup complete');
-            fn();
-        });
-    } else {
-        fn();
-    }
+    
+	
+	
+	profiler = Bozuko.require('util/profiler').create('testsuite');
+	Bozuko.getApp().listen(Bozuko.getConfig().server.port);
+	console.log(Bozuko.getConfig().server.port);
+	async.series([
+		emptyCollection('User'),
+		emptyCollection('Page'),
+		emptyCollection('Contest'),
+		emptyCollection('Checkin'),
+		emptyCollection('Play'),
+		emptyCollection('Prize'),
+		add_users,
+		add_pages,
+		add_contests
+	], function(err, res) {
+		profiler.mark('setup complete');
+		fn();
+	});
 };
 
 var emptyCollection = function(name) {
@@ -151,8 +148,11 @@ var add_users = function(callback) {
 	return Bozuko.models.User.createFromServiceObject(user, function(error, user){
 	    if( error ) return callback( error );
 	    user.service('facebook').auth = auth;
-            user.phones.push(assert.phone);
-            assert.challenge = user.challenge;
+        user.phones.push(assert.phone);
+        assert.challenge = user.challenge;
+		
+		user.service('facebook').internal = {likes : ['181069118581729']};
+		
 	    return user.save( function(error){
 			if( error ) return callback( error );
 			return callback( null, user);
@@ -239,6 +239,8 @@ var add_contests = function(callback) {
 				contest.entry_config.push({
 					type: 'facebook/checkin',
 					tokens: 3,
+					enable_like: false,
+					like_tokens: 1,
 					duration: 1000 * 5
 				});
 				contest.prizes.push({
@@ -247,6 +249,7 @@ var add_contests = function(callback) {
 					description: "Awesome Owl Watch T-Shirt",
 					details: "Only available in Large or Extra-large",
 					instructions: "Show this screen to an employee",
+					duration: 1000*60*60,
 					total: 2
 				});
 				contest.prizes.push({
@@ -255,6 +258,7 @@ var add_contests = function(callback) {
 					description: "Sweet travel Mug",
 					details: "Not good for drinking out of.",
 					instructions: "Show this screen to an employee",
+					duration: 1000*60*60,
 					total: 10
 				});
 				contest.prizes.push({
@@ -262,6 +266,7 @@ var add_contests = function(callback) {
 					value: '0',
 					description: "You get nothing at all",
 					instructions: "Show this screen to an employee",
+					duration: 1000*60*60,
 					total: 20
 				});
 				contest.save(function(error){

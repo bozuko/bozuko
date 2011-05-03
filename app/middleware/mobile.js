@@ -9,7 +9,6 @@ module.exports = function mobile() {
             if( req.session && req.session[key]) delete req.session[key];
         });
 
-
         if ( (val = req.param('phone_id')) ) {
             phone.unique_id = val;
         }

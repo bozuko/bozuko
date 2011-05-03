@@ -28,13 +28,13 @@ auth.login = function(req,res,scope,defaultReturn,success,failure){
 };
 
 auth.check = function(access, callback) {
-    if (typeof(access) != 'Array') {
+    if (typeof(access) != 'array') {
         access = [access];
     }
 
     return function(req, res) {
-
         var layer;
+        
         async.forEachSeries(access, function(layer, cb) {
             auth[layer](req, res, cb);
         }, function(err) {
@@ -71,11 +71,15 @@ auth.business = function(req,res, callback){
 }
 
 auth.mobile = function(req, res, callback) {
+    
+    
     var user = req.session.user;
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
-
+    
+    console.log(req.session.phone);
+    
     async.series([
 
         // Verify phone type and unique id

@@ -18,8 +18,8 @@ module.exports = {
             pubsub_verify:'12kg0a8b9123kab91831laa9sb'
         },
         perms:{
-            user:"email,publish_checkins,publish_stream,offline_access",
-            business:"email,publish_stream,offline_access,manage_pages"
+            user:"email,publish_checkins,publish_stream,offline_access,user_likes",
+            business:"email,manage_pages"
         }
     },
 
@@ -51,7 +51,7 @@ module.exports = {
 
     server: {
         auth: false,
-        ssl: false,
+        ssl: true,
         host: 'bonobo.bozuko.com',
         port: port
     },

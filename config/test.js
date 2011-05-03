@@ -50,7 +50,7 @@ module.exports = {
     },
 
     server: {
-        ssl: true,
+        ssl: false,
         auth: false,
         host: 'bonobo.bozuko.com',
         port: port

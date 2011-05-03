@@ -9,6 +9,7 @@ var mongoose = require('mongoose');
 var _db;
 function getConnection(){
     if( !_db){
+        console.log('mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name);
         _db = mongoose.connect('mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name);
     }
     return _db;

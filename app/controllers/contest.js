@@ -235,6 +235,30 @@ exports.routes = {
         }
     },
     
+    '/game/:id/entry' : {
+
+        post: {
+            
+            access: 'mobile',
+
+            handler : function(req,res){
+                return Bozuko.models.Contest.findById(req.params.id, function(error, contest){
+                    if( error ){
+                        return error.send(res);
+                    }
+                    if( !contest ){
+                        return Bozuko.error('contest/unknown', req.params.id).send(res);
+                    }
+                    // we need to process the entry
+                    var ll = req.param('ll');
+                    if( !ll ){
+                        return Bozuko.error('contest/game_entry_requires_ll', req.params.id).send(res);
+                    }
+                });
+            }
+        }
+    },
+    
     '/game/:id/state' : {
 
         get: {

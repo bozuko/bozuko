@@ -23,38 +23,18 @@ exports.links = {
         post: {
             access: 'user',
             doc: "Like a facebook page and receive tokens",
-            returns: ["game_state"]
+            returns: ["success_message"]
         }
     }
-};
-
-var like = function(req, res) {
-    Bozuko.service('facebook').like({
-        test: true,
-        user: req.session.user._id,
-        link        :'http://Bozuko.com',
-        picture     :'http://Bozuko.com/images/Bozuko.chest-check.png',
-        description :'Bozuko is a fun way to get deals at your favorite places. Just play a game for a chance to win big!',
-        object_id   : req.param('id')
-    },
-    function(err, result) {
-        if (err) {
-            return err.send(res);
-        }
-        // TODO: send a real result
-        return res.send({
-            links: {
-            }
-        });
-    });
 };
 
 exports.routes = {
 
     '/facebook/:id/checkin': {
         post: {
+            
             access: 'mobile',
-
+            
             handler: function(req, res) {
 
                 var id = req.param('id');
@@ -141,7 +121,18 @@ exports.routes = {
             access: 'user',
 
             handler : function(req, res){
-                run(req, res, 'like', {}, function() { like(req, res); });
+                Bozuko.service('facebook').like({
+                    user: req.session.user,
+                    object_id   : req.param('id')
+                },
+                function(err, result) {
+                    if (err) {
+                        return err.send(res);
+                    }
+                    return res.send(Bozuko.transfer('success_message', {
+                        success: true
+                    }));
+                });
             }
         }
     },
