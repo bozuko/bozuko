@@ -15,7 +15,7 @@ source ~/.bashrc
 
 # node packages
 echo "*** Installing node packages with npm"
-cd ~ && npm install connect connect-auth express expresso jade mongodb mongoose monomi oauth qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date cluster
+cd ~ && npm install connect connect-auth express jade mongodb mongoose monomi oauth qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date cluster
 
 # Use our fork of expresso
 patch_expresso
