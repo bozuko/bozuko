@@ -137,17 +137,19 @@ User.static('addOrModify', function(user, phone, callback) {
 
     Bozuko.models.User.findOne(q, function(err, u){
         if (err) return callback(err);
+        
+        var isNew = false;
 
         if( !u ){
             u = new Bozuko.models.User();
+            isNew = true;
+            u.name = user.name;
+            u.first_name = user.first_name;
+            u.last_name = user.last_name;
+            u.image = user.image;
+            u.email = user.email;
+            u.gender = user.gender;
         }
-
-        u.name = user.name;
-        u.first_name = user.first_name;
-        u.last_name = user.last_name;
-        u.image = user.image;
-        u.email = user.email;
-        u.gender = user.gender;
 
         if (phone) {
             var result = u.verify_phone(phone);
