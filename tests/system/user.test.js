@@ -40,11 +40,11 @@ exports['GET /user/login/foursquare'] = function(test) {
 exports['GET /user'] = function(test) {
     assert.response(test, Bozuko.app,
 	{url: '/user'+tokstr},
-	{status: 200, headers: {'Content-Type': 'application/json'}},
+	{status: 200, headers: {'Content-Type': 'application/json; charset=utf-8'}},
 	function(res) {
 	    var user = JSON.parse(res.body);
-            test.ok(Bozuko.validate('user', user));
-            test.done();
+		test.ok(Bozuko.validate('user', user));
+		test.done();
 	});
 };
 
