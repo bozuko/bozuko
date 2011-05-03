@@ -104,9 +104,9 @@ exports.favorite_toggle = function(test) {
         ok,
         function(res) {
             var result = JSON.parse(res.body);
-            
+
             console.log('favorite_toggle', result);
-            
+
             test.ok(Bozuko.validate('favorite_response', result));
             test.ok(result.added);
             test.done();
@@ -185,7 +185,7 @@ exports.play3times = function(test) {
                 if( tokens > 0 ){
                     test.ok( typeof result.game_state.links.game_result == 'string' );
                 }
-                // we also want to see if we won    
+                // we also want to see if we won
                 if( result.win ) wins++;
                 callback(null, '');
             }
@@ -240,7 +240,7 @@ exports.checkin_again = function(test) {
         {status: 403, headers: {'Content-Type': 'application/json; charset=utf-8'}},
         function(res) {
             var facebook_checkin_result = JSON.parse(res.body);
-            console.log(facebook_checkin_result)
+            console.log(facebook_checkin_result);
             test.done();
         });
 };
@@ -292,7 +292,7 @@ exports.get_next_entry_state = function(test){
             test.ok( game_state.button_enabled === true, 'Button enable again');
             test.ok( game_state.button_action === 'enter', 'Button action is enter');
             test.ok( typeof game_state.links.game_entry === 'string', 'we have an entry link');
-            
+
             // lets print the next time
             test.done();
         });
@@ -337,15 +337,15 @@ exports.check_prizes = function(test){
 }
 
 exports.check_prize = function(test){
-    
+
     if( wins == 0 ){
         console.log('holy crap, you lost! run again to test /prize');
         return test.done();
     }
-    
+
     // lets get the prize link
     var prize_link = prizes[0].links.prize;
-    
+
     return assert.response(test, Bozuko.app,
         {url: prize_link+'/?token='+token},
         ok,
@@ -356,16 +356,16 @@ exports.check_prize = function(test){
 };
 
 exports.redeem_prize = function(test){
-    
+
     if( wins == 0 ){
         return test.done();
     }
-    
+
     // lets get the prize link
     var redeem_link = prizes[0].links.redeem;
-    
+
     console.log(prizes[0].links);
-    
+
     var params = JSON.stringify({
         ll: '42.646261785714,-71.303897114286',
         phone_type: phone.type,
@@ -373,7 +373,7 @@ exports.redeem_prize = function(test){
         mobile_version: '1.0',
         challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
     });
-    
+
     return assert.response(test, Bozuko.app,
         {
             url: redeem_link+'/?token='+token,
