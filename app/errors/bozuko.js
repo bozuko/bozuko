@@ -10,5 +10,12 @@ module.exports = {
     },
     user_not_logged_in: function(){
         return "The user must be logged in ["+this.data+"]";
+    },
+    
+    transfer :{
+        code: 500,
+        message: function(){
+            return "Error creating transfer object: "+this.data;
+        }
     }
 };

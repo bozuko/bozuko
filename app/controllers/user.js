@@ -97,6 +97,7 @@ exports.links = {
 
     logout: {   
         get: {
+            access: 'user',
             doc: "Logout of Bozuko"
         }
     }
@@ -146,10 +147,15 @@ exports.routes = {
 
         aliases: ['/logout'],
 
-        get : function(req,res){
-            req.session.destroy(function(){
-                res.redirect('/');
-            });
+        get : {
+            
+            access: 'user',
+            
+            handler: function(req,res){
+                req.session.destroy(function(){
+                    res.redirect('/');
+                });
+            }
         }
     },
 
@@ -165,7 +171,7 @@ exports.routes = {
                 user.links = {
                     facebook_login: "/user/login/facebook",
                     facebook_logout: "/user/logout/facebook",
-                    favorites: "/user/"+user.id+"/favorites"
+                    favorites: "/user/favorites"
                 };
                 res.send(Bozuko.transfer('user', user));
             }
@@ -181,8 +187,8 @@ exports.routes = {
                 // a get request is just all favorites
                 // we need to have the token by now...
                 var token = req.param('token');
-                var center = req.param('center');
-                res.redirect('/pages?favorites=true&center='+center+'&token='+token);
+                var ll = req.param('ll');
+                res.redirect('/pages?favorites=true&ll='+ll+'&token='+token);
             }
         }
 

@@ -177,7 +177,8 @@ exports.routes = {
                     '/js/desktop/business/admin.js'
                 ],
                 styles:[
-                    '/js/ext-4.0/resources/css/ext-all.css',
+                    // '/js/ext-4.0/resources/css/ext-all.css',
+                    '/js/ext-4.0/resources/themes/templates/resources/css/bozuko-theme.css',
                     '/css/desktop/business/admin.css'
                 ],
                 nav:[

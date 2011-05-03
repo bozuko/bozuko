@@ -68,6 +68,7 @@ exports.graph = function(path, options, callback){
         callback : function(result){
             
             if( result.error && callback ){
+                console.log( result.error );
                 return callback( Bozuko.error('facebook/api', result.error ));
             }
             

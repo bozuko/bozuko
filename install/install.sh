@@ -23,15 +23,7 @@ npm config set unsafe-perm true
 
 # node packages
 echo "*** Installing node packages with npm"
-npm install connect-auth express expresso jade mongodb mongoose monomi oauth qs socket.io supervisor markdown-js async sprintf nodeunit nodemailer
+npm install connect-auth express expresso jade mongodb mongoose monomi oauth qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date cluster
 
 # Use our fork of expresso
 patch_expresso
-
-# multi-node
-echo "*** Installing multi-node"
-git clone git://github.com/andrewjstone/multi-node.git
-cd multi-node
-npm install
-cd ..
-rm -rf multi-node

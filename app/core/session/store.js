@@ -79,8 +79,21 @@ BozukoStore.prototype.get = function(sid, fn){
         if( error ){
             return fn && fn(error);
         }
-        // else, lets return the session data
-        return fn && fn(null, session ? JSON.parse(session.data) : null);
+        var sess = session ? JSON.parse(session.data) : null;
+        if( sess && sess.user_id ){
+            // lets get the user
+            return Bozuko.models.User.findById(sess.user_id, function(error, user){
+                if( !error && user ){
+                    sess.user = user;
+                    delete sess.user_id;
+                }
+                // else, lets return the session data
+                return fn && fn(null, sess);
+            });
+        }
+        else{
+            return fn(null, sess);
+        }
     });
 };
 
@@ -93,14 +106,19 @@ BozukoStore.prototype.get = function(sid, fn){
  * @api public
  */
 
-BozukoStore.prototype.set = function(sid, data, fn){
+BozukoStore.prototype.set = function(sid, sess, fn){
     var now = new Date();
     Bozuko.models.Session.findOne({sid: sid}, function(error, session){
         if( error ) return fn && fn(error);
         if( !session ) session = new Bozuko.models.Session();
+        if( sess.user ){
+            // we don't really want to save this whole thing every time...
+            sess.user_id = String(sess.user._id);
+            delete sess.user;
+        }
         session.sid = sid;
         session.lastAccess = new Date();
-        session.data = JSON.stringify(data);
+        session.data = JSON.stringify(sess);
         return session.save(function(error){
             if( error ) return fn && fn(error);
             return fn && fn(null, session.data);

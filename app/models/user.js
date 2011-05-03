@@ -37,27 +37,70 @@ User.pre('save', function(next) {
     return next();
 });
 
+User.method('like', function(page, callback){
+    var self = this;
+    if( typeof page != 'string' ){
+        try{
+            page = page.service('facebook').sid;
+        }catch(e){
+            callback( Bozuko.error('user/like_bad_page') );
+        }
+    }
+    // okay, this should be a facebook string
+    Bozuko.service('facebook').like({user: self, object_id: page}, callback);
+});
+
+User.method('likes', function(page){
+    // check to see if the user already likes a page
+    var self = this;
+    if( typeof page != 'string' ){
+        try{
+            page = page.service('facebook').sid;
+        }catch(e){
+            callback( Bozuko.error('user/like_bad_page') );
+        }
+    }
+    var fb = self.service('facebook');
+    if( !fb || !fb.internal ) return false;
+    
+    var likes = fb.internal.likes || [];
+    return ~likes.indexOf( page );
+});
+
+User.method('updateLikes', function(callback){
+    var self = this;
+    if( !self.service('facebook')) return callback( Bozuko.error('user/no_facebook') );
+    return Bozuko.service('facebook').user_favorites({user:self}, function(error, result){
+        if( error ) return callback( error );
+        var likes = [];
+        try{
+            var data = result.data.likes.data;
+            data.forEach(function(object){
+                likes.push(object.id);
+            });
+        }catch(e){
+            likes = [];
+        }
+        if( !self.service('facebook').internal ){
+            self.service('facebook').internal = {};
+        }
+        self.service('facebook').internal.likes = likes;
+        self.service('facebook').commit('internal');
+        self.commit('services');
+        return self.save(callback);
+    });
+});
+
 User.static('updateFacebookLikes', function(ids, callback){
     if( !Array.isArray(ids) ) ids = [ids];
     Bozuko.models.User.findByService('facebook', ids, function(error, users){
         if( error ) callback(error);
         async.forEachSeries( users, function(user, cb){
             // grab their likes
-            Bozuko.service('facebook').user_favorites(user, function(error, fb_user){
-                if( error ) return callback( error );
-                var fb = user.service('facebook');
-                if( !fb ) return cb( Bozuko.error('bozuko/user_no_facebook') );
-                if( !fb.internal ) fb.internal = {};
-                fb.internal.likes = fb_user.data.likes;
-                fb.commit('internal');
-                return user.save(function(error){
-                    if( error ) return cb(error);
-                    return cb();
-                });
-            });
+            return user.updateLikes( cb );
         }, function(error){
-            if(error) callback(error);
-            callback(null, true);
+            if(error) return callback(error);
+            return callback(null, true);
         });
     });
 });
@@ -116,7 +159,7 @@ User.static('addOrModify', function(user, phone, callback) {
             }
         }
 
-        u.service(user.service, user.id, user.token, user);
+        u.service(user.service, user.id, user.token, user.data);
         return u.save(function(err) {
             if (err) return callback(err);
             return callback(null, u);

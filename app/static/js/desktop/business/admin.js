@@ -78,9 +78,9 @@ Ext.define('Bozuko.form.Prizes', {
 
 Ext.define('Bozuko.view.campaign.Builder', {
     
-    extend: 'Ext.form.FormPanel',
+    extend: 'Ext.form.Panel',
     
-    requires: ['Ext.tab.TabPanel'],
+    requires: ['Ext.tab.Panel'],
 
     title: "Create Campaign",
     
@@ -89,7 +89,7 @@ Ext.define('Bozuko.view.campaign.Builder', {
     constructor : function(config){
         
         var me = this;
-        me.tabPanel = Ext.create('Ext.tab.TabPanel',{
+        me.tabPanel = Ext.create('Ext.tab.Panel',{
             region: 'center',
             plain: true,
             activeTab: 0,

@@ -1,5 +1,7 @@
 var http = Bozuko.require('util/http'),
-	Prize = Bozuko.models.Prize;
+	dateFormat = require('dateformat'),
+	XRegExp = Bozuko.require('util/xregexp'),
+	PrizeSchema = Bozuko.models.Prize.schema;
 
 exports.transfer_objects = {
     prize: {
@@ -8,6 +10,7 @@ exports.transfer_objects = {
             id: "Number",
             state: "String",
             name: "String",
+			page_name: "String",
 			wrapper_message: "String",
 			description: "String",
             win_time: "String",
@@ -26,13 +29,20 @@ exports.transfer_objects = {
 		
 		create : function( prize, user){
 			var o = this.sanitize(prize);
+			
+			o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
+								". This prize expires "+dateFormat(this.expires, 'dddd mmmm dd yyyy hh:MM TT');
+			o.win_time = prize.timestamp;
+			o.business_img = prize.page.image;
+			o.user_img = prize.user.image;
+			if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
+			o.expiration_timestamp = prize.expires;
+								
 			o.links = {
 				prize : '/prize/'+prize.id,
 				page: '/page/'+prize.page_id,
 				user: '/user/'+prize.user_id
 			};
-			
-			console.log(prize);
 			
 			if( o.state == 'active' ){
 				o.links.redeem = '/prize/'+prize.id+'/redemption';
@@ -130,7 +140,8 @@ exports.routes = {
 					query = req.param('query')
 					;
 					
-                if (state && state != Prize.ACTIVE && state != Prize.REDEEMED && state != Prize.EXPIRED) {
+                if (state && state != PrizeSchema.ACTIVE && state != PrizeSchema.REDEEMED && state != PrizeSchema.EXPIRED) {
+					console.log(state, PrizeSchema.ACTIVE);
 					return Bozuko.error('prize/bad_state').send(res);
                 }
 				var selector = {
@@ -138,16 +149,16 @@ exports.routes = {
 				};
                 if( state ){
 					switch( state ){
-						case Bozuko.models.Prize.REDEEMED:
+						case PrizeSchema.REDEEMED:
 							selector.redeemed = true;
 							break;
 						
-						case Bozuko.models.Prize.ACTIVE:
+						case PrizeSchema.ACTIVE:
 							selector.redeemed = false;
 							selector.expires = {$gt: new Date()};
 							break;
 						
-						case Bozuko.models.Prize.EXPIRED:
+						case PrizeSchema.EXPIRED:
 							selector.redeemed = false;
 							selector.expires = {$lte: new Date()};
 							break;
@@ -155,12 +166,16 @@ exports.routes = {
 				}
 				
 				if( query ){
-					selector.name = new RegExp(query, 'i');
+					var re = new RegExp( '^'+XRegExp.escape( query ), 'i' );
+					selector['$or'] = [
+						{name: re},
+						{page_name: re}
+					];
 				}
 				
 				var limit = req.param('limit') || 25;
 				var offset = req.param('offset') || 0;
-				return Bozuko.models.Prize.find(selector, {}, {limit: limit, offset: offset, sort: {timestamp: 1}}, function(error, prizes){
+				return Bozuko.models.Prize.search(selector, {}, {limit: limit, offset: offset, sort: {timestamp: 1}}, function(error, prizes){
 					if( error ) return error.send( res );
 					var ret = {
 						prizes: prizes
@@ -192,9 +207,13 @@ exports.routes = {
 					if( !prize ){
 						return Bozuko.error('prize/not_found').send(res);
 					}
-					
-					var ret = Bozuko.transfer('prize', prize, req.session.user);
-					return res.send(ret);
+					return prize.loadTransferObject( function(error, prize){
+						
+						if( error ) return error.send(res);
+						
+						var ret = Bozuko.transfer('prize', prize, req.session.user);
+						return res.send(ret);
+					})
 				});
 			}
 		}
@@ -208,10 +227,10 @@ exports.routes = {
 			
 			handler: function(req,res){
 				// redeem the prize
-				return Bozuko.models.Prize.getById(req.param('id'), function(error, prize){
+				return Bozuko.models.Prize.findById(req.param('id'), function(error, prize){
 					if( error ) return error.send(res);
 					
-					return prize.redeem(req.user, function(error, redemption){
+					return prize.redeem(req.session.user, function(error, redemption){
 						if( error ) return error.send(res);
 						// send the redemption object
 						return res.send( Bozuko.transfer('redemption_object', redemption) );

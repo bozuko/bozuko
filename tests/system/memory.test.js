@@ -16,14 +16,32 @@ exports.setup = function(test) {
     auth = Bozuko.require('core/auth');
 };
 
-var link = '/api';
+var link = '/api',
+    concurrent_count = 4,
+    total_count = 100000,
+    slow_down = 97000,
+    slow_down2 = 92000,
+    speed_up = 60000,
+    slow_time = 100,
+    slow_time2 = 300
+    ;
 
 function get_api(test, count, cb){
     assert.response(test, Bozuko.app,
         {url: link+'/?token='+token},
         ok,
         function(res) {
-            if( --count > 0 ) get_api(test, count, cb);
+            var timeout = 0;
+            if( count < slow_down2 ){
+                console.log('slow down2');
+                timeout = slow_time2;
+            }else if(count < slow_down ){
+                console.log('slow down');
+                timeout = slow_time;
+            }
+            if( --count > 0 ) setTimeout( function(){
+                get_api(test, count, cb);
+            }, timeout);
             else cb();
         });
 }
@@ -32,8 +50,8 @@ exports.get_root = function(test) {
     
     // lets setup all of our increments
     var concurrent = [];
-    for(var i=0; i<10; i++){
-        concurrent[i] = 10000;
+    for(var i=0; i<concurrent_count; i++){
+        concurrent[i] = total_count;
         get_api( test, concurrent[i], function(){
             var still_going = false;
             for( var i=0; i<concurrent.length && !still_going; i++){

@@ -21,6 +21,7 @@ exports.transfer_objects = {
             website: "String",
             featured: "Boolean",
             favorite: "Boolean",
+            liked: "Boolean",
             registered: "Boolean",
             announcement: "String",
             distance: "String",
@@ -54,13 +55,33 @@ exports.transfer_objects = {
             var fid = page.registered ? page.service('facebook').sid : page.id;
             // console.log(JSON.stringify(page, null, ' '));
             if( !page.registered ) delete page.id;
+            page.liked = false;
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
                 facebook_checkin    :'/facebook/'+fid+'/checkin',
                 facebook_like       :'/facebook/'+fid+'/like'
             };
             if( user ){
-                page.links.favorite     ='/user/favorite/'+page.id;
+                if( page.registered ){
+                    page.links.favorite     ='/user/favorite/'+page.id;
+                
+                    if( page.service('facebook') ){
+                        try{
+                            page.liked = user.likes(page);
+                            if( page.liked ) delete page.links.facebook_like;
+                        }catch(e){
+                            page.liked = false;
+                        }
+                    }
+                }
+                else{
+                    try{
+                        page.liked = user.likes(fid);
+                        if( page.liked ) delete page.links.facebook_like;
+                    }catch(e){
+                        page.liked = false;
+                    }
+                }
             }
             if( page.registered ){
 
@@ -153,6 +174,14 @@ exports.links = {
 
             returns: "success_message"
         }
+    },
+    
+    recommend: {
+        post: {
+            access: 'user',
+            doc: 'Allow a user to recommend Bozuko to a place',
+            returns: 'success_message'
+        }
     }
 };
 
@@ -220,12 +249,9 @@ exports.routes = {
                 var profiler = Profiler.create('Page::search');
                 return Bozuko.models.Page.search(options,
                     function(error, pages){
-                        if( error ){
-                            console.log(error);
-                            return error.send(res);
-                        }
-                        profiler.mark('search time');
+                        if( error )return error.send(res);
                         
+                        profiler.mark('search time');
                         return res.send(Bozuko.transfer('pages',{
                             pages:pages,
                             next: next

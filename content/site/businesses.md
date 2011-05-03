@@ -8,4 +8,6 @@ This is a regular paragraph.
     </tr>
 </table>
 
+Blah
+
 This is another regular paragraph.

@@ -7,7 +7,7 @@ var BozukoError = module.exports = function(name,message,data,code){
     this.data = data;
     if( code ) this.code = code;
     if( message instanceof Function)
-        this.generateMesesage();
+        this.generateMessage(message);
     else
         this.message = message;
 };

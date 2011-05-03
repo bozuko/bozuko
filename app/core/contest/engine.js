@@ -13,7 +13,9 @@ module.exports = {
 
         var max=0;
         contest.entry_config.forEach(function(entry_config){
-            max = Math.max(parseInt(entry_config.tokens),max);
+            var entryMethod = Bozuko.entry(entry_config.type, contest);
+            entryMethod.configure( entry_config );
+            max = Math.max(parseInt(entryMethod.getMaxTokens()),max);
         });
 
         var totalPlays = max*contest.total_entries;

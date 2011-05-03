@@ -64,22 +64,7 @@ Contest.method('enter', function(entry, callback){
     if( !found ) return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
     entry.setContest(this);
     entry.configure(cfg);
-    return entry.validate( function(error){
-        
-        if( error ){
-            // yikes
-            return callback(error);
-        }
-
-        var e = {
-            timestamp: new Date(),
-            type: entry.type,
-            tokens: entry.getTokenCount(),
-            initial_tokens: entry.getTokenCount()
-        };
-        var tries = self.total_plays - self.token_cursor;
-        return self.addUserEntry(entry.user.id, e, tries, callback);
-    });
+    return entry.process( callback );
 });
 
 Contest.method('loadGameState', function(user, callback){
@@ -323,31 +308,44 @@ Contest.method('startPlay', function(user_id, tries, callback) {
 
 Contest.method('savePrize', function(user_id, active_play, callback) {
     var self = this;
+    
     if( active_play.prize_index != false ){
         // get the actual prize
         var prize = self.prizes[active_play.prize_index];
 
         if (!prize) return callback(Bozuko.error('contest/no_prize'));
-
-        // lets add the prize for this user
-        var user_prize = new Bozuko.models.Prize({
-            contest_id: this._id,
-            page_id: this.page_id,
-            user_id: user_id,
-            value: prize.value,
-            name: prize.name,
-            timestamp: active_play.timestamp,
-            status: 'active',
-            expires: prize.expires,
-            play_cursor: active_play.play_cursor,
-            description: prize.description,
-            redeemed: false
+        
+        return Bozuko.models.Page.findById( self.page_id, function(error, page){
+            if( error ) return callback( error );
+            if( !page ){
+                return callback( Bozuko.error('contest/save_prize_no_page') );
+            }
+            // lets add the prize for this user
+            var expires = new Date();
+            expires.setTime( expires.getTime() + prize.duration );
+            var user_prize = new Bozuko.models.Prize({
+                contest_id: self._id,
+                page_id: self.page_id,
+                user_id: user_id,
+                value: prize.value,
+                page_name: page.name,
+                name: prize.name,
+                timestamp: active_play.timestamp,
+                status: 'active',
+                instructions: prize.instructions,
+                expires: expires,
+                play_cursor: active_play.play_cursor,
+                description: prize.description,
+                redeemed: false
+            });
+    
+            return user_prize.save(function(err) {
+                if (err) return callback(err);
+                return self.savePlay(user_id, active_play, user_prize, callback);
+            });
+            
         });
-
-        return user_prize.save(function(err) {
-            if (err) return callback(err);
-            return self.savePlay(user_id, active_play, user_prize, callback);
-        });
+        
     }
 
     return self.savePlay(user_id, active_play, null, callback);

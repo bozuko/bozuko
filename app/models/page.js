@@ -6,6 +6,7 @@ var _t = Bozuko.t,
     Services = require('./plugins/services'),
     Coords = require('./plugins/coords'),
     Geo = Bozuko.require('util/geo'),
+    XRegExp = Bozuko.require('util/xregexp'),
     ObjectId = Schema.ObjectId,
     async = require('async')
 ;
@@ -337,7 +338,7 @@ Page.static('search', function(options, callback){
     };
     var serviceSearch = {};
     if( options.query ){
-        bozukoSearch.selector.name = new RegExp('^'+options.query, "i");
+        bozukoSearch.selector.name = new RegExp('^'+XRegExp.escape(options.query), "i");
     }
 
     // are we looking for favorites?
@@ -378,11 +379,11 @@ Page.static('search', function(options, callback){
      *
      */
     else {
-        if( Bozuko.env == 'development' && !options.query ){
+        if( Bozuko.env() == 'development' && !options.query ){
         
             var s = bozukoSearch.selector;
             bozukoSearch.selector = {
-                $or: [s, {test: true, featured:true}]
+                $or: [s, {test: true}, {featured:true}]
             };
         }
         else{
@@ -413,6 +414,7 @@ Page.static('search', function(options, callback){
             if(fn) fn.call(this, page);
         }
     }
+    
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
         
         if( error ) return callback(error);
@@ -456,12 +458,12 @@ Page.static('search', function(options, callback){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                     });
 
-		    if (results) {
-			results.forEach(function(result){
-			    result.registered = false;
-			    result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
+                    if (results) {
+                        results.forEach(function(result){
+                            result.registered = false;
+                            result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                         });
-		    }
+                    }
 
                     return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                         pages = pages.concat(_pages);

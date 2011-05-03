@@ -44,8 +44,11 @@ $.getTitle = function(){
 };
 
 $.create = function(data, user){
-    
-    return this._create ? this._create(data, user) : this.sanitize(data, null, user);
+    try{
+        return this._create ? this._create(data, user) : this.sanitize(data, null, user);
+    }catch(e){
+        throw e;
+    }
 };
 
 $.returnedBy = function(link){
