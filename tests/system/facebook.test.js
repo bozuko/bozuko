@@ -27,19 +27,19 @@ exports['POST /facebook/:id/checkin No User'] = function(test) {
     });
 
     assert.response(test,Bozuko.app, {
-	url: '/facebook/'+id+'/checkin',
-	headers: headers,
-	method: 'POST',
-	data: params
-    },
-    {
-        status:401,
-	headers: {'Content-Type': 'application/json'}
-    },
-    function(res) {
-        var result = JSON.parse(res.body);
-        test.done();
-    });
+		url: '/facebook/'+id+'/checkin',
+		headers: headers,
+		method: 'POST',
+		data: params
+		},
+		{
+			status:401,
+			headers:  {'Content-Type': 'application/json; charset=utf-8'}
+		},
+		function(res) {
+			var result = JSON.parse(res.body);
+			test.done();
+		});
 };
 
 exports['POST /facebook/:id/checkin No Latitude Longitude'] = function(test) {
@@ -49,17 +49,17 @@ exports['POST /facebook/:id/checkin No Latitude Longitude'] = function(test) {
     });
 
     assert.response(test,Bozuko.app, {
-	url: '/facebook/'+id+'/checkin'+tokstr,
-	headers: headers,
-	method: 'POST',
-	data: params
-    },
-    {
-        status:400,
-	headers: {'Content-Type': 'application/json'}
-    },
-    function(res) {
-        var result = JSON.parse(res.body);
-        test.done();
-    });
+		url: '/facebook/'+id+'/checkin'+tokstr,
+		headers: headers,
+		method: 'POST',
+		data: params
+		},
+		{
+			status:400,
+			headers: {'Content-Type': 'application/json; charset=utf-8'}
+		},
+		function(res) {
+			var result = JSON.parse(res.body);
+			test.done();
+		});
 };

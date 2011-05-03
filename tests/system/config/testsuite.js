@@ -109,25 +109,28 @@ var profiler;
 
 exports.setup = function(fn) {
     
-	
-	
-	profiler = Bozuko.require('util/profiler').create('testsuite');
-	Bozuko.getApp().listen(Bozuko.getConfig().server.port);
-	console.log(Bozuko.getConfig().server.port);
-	async.series([
-		emptyCollection('User'),
-		emptyCollection('Page'),
-		emptyCollection('Contest'),
-		emptyCollection('Checkin'),
-		emptyCollection('Play'),
-		emptyCollection('Prize'),
-		add_users,
-		add_pages,
-		add_contests
-	], function(err, res) {
-		profiler.mark('setup complete');
+	if( !Bozuko.app ){
+		profiler = Bozuko.require('util/profiler').create('testsuite');
+		Bozuko.getApp().listen(Bozuko.getConfig().server.port);
+		console.log(Bozuko.getConfig().server.port);
+		async.series([
+			emptyCollection('User'),
+			emptyCollection('Page'),
+			emptyCollection('Contest'),
+			emptyCollection('Checkin'),
+			emptyCollection('Play'),
+			emptyCollection('Prize'),
+			add_users,
+			add_pages,
+			add_contests
+		], function(err, res) {
+			profiler.mark('setup complete');
+			fn();
+		});
+	}
+	else{
 		fn();
-	});
+	}
 };
 
 var emptyCollection = function(name) {
