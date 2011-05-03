@@ -11,13 +11,16 @@ var express = require('express');
 /**
  * Create our main server
  */
-var ssl = {
-    key:fs.readFileSync('./ssl/wildcard/wildcard.bozuko.com.key'),
-    ca:fs.readFileSync('./ssl/wildcard/gd_bundle.crt'),
-    cert:fs.readFileSync('./ssl/wildcard/bozuko.com.crt')
-};
-var app = express.createServer(ssl);
-// var app = express.createServer();
+if (process.env.NODE_ENV != 'production') {
+    var ssl = {
+        key:fs.readFileSync('./ssl/wildcard/wildcard.bozuko.com.key'),
+        ca:fs.readFileSync('./ssl/wildcard/gd_bundle.crt'),
+        cert:fs.readFileSync('./ssl/wildcard/bozuko.com.crt')
+    };
+    var app = express.createServer(ssl);
+} else {
+    var app = express.createServer();
+}
 
 /**
  * Load common Bozuko stuff
@@ -50,7 +53,7 @@ if (!module.parent) {
         if( Bozuko.env == 'development' ){
             Bozuko.require('dev/setup').init();
         }
-        
+
         var replServer = net.createServer(function(socket){
             repl.start("bozuko> ", socket);
         }).listen(Bozuko.config.server.port+10, '127.0.0.1');
