@@ -10,7 +10,7 @@ var db = require('util/db');
 var qs = require('querystring');
 
 // should probably add some sort of load test config
-process.env.NODE_ENV='production';
+process.env.NODE_ENV='load';
 var Bozuko = require('../../app/bozuko');
 
 var auth = Bozuko.require('core/auth');

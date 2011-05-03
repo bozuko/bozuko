@@ -32,15 +32,15 @@ exports.routes = {
 
     '/facebook/:id/checkin': {
         post: {
-            
+
             access: 'mobile',
-            
+
             handler: function(req, res) {
 
                 var id = req.param('id');
                 var ll = req.param('ll');
                 var msg = req.param('message') || '';
-                
+
                 if( !ll ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
@@ -59,7 +59,7 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
-                                test: ['development','test'].indexOf(Bozuko.env()),
+                                test: ['development','test', 'load'].indexOf(Bozuko.env()),
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 latLng: {lat:lat,lng:lng},
                                 message: msg
@@ -85,7 +85,7 @@ exports.routes = {
                                         var states = [];
                                         games.forEach(function(game){
                                             states.push( Bozuko.transfer('game_state', game.contest.game_state, req.session.user));
-                                        });                                        
+                                        });
                                         return res.send(states);
                                     });
                                 });
