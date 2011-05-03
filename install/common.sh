@@ -19,10 +19,4 @@ function install_node() {
     nvm use $NODE_VER
 }
 
-function patch_expresso() {
-    echo "*** Patching Expresso"
-    git clone git://github.com/andrewjstone/expresso.git
-    mv expresso/bin/expresso `which expresso`
-    rm -rf expresso
-}
 
