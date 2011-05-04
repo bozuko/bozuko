@@ -209,6 +209,7 @@ function add_contest(page_id, callback) {
         end: new Date(2013, 9, 2),
         total_entries: 1000000,
         total_plays: 3000000,
+        active: true,
         play_cursor: -1,
         token_cursor: -1
     });
