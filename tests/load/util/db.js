@@ -136,7 +136,7 @@ exports.setup = function(options, callback) {
     mongoose.connection.on('open', function() {
         cleanup(function(err) {
             if (err) return callback(err);
-            async.forEach([
+            async.forEachSeries([
                 {
                     fn: add_users,
                     val: options.users
@@ -167,16 +167,17 @@ var emptyCollection = function(name) {
 function add_pages(pages, callback) {
     async.forEach(pages,
         function(location, cb) {
-            async.forEach(location.ids, function(sid, cb) {
-                Bozuko.service('facebook').place({place_id: sid}, function(err, place) {
+            return async.forEach(location.ids, function(sid, cb) {
+                return Bozuko.service('facebook').place({place_id: sid}, function(err, place) {
                     if (err) return cb(err);
                     if (!place) return cb();
 
                     return Bozuko.models.Page.createFromServiceObject(place, function(err, page) {
+                        if (err) return cb(err);
                         if (!page) return cb(new Error("page "+sid+" not created"));
                         page.owner_id = user_ids[Math.floor(Math.random()*user_ct)];
                         return page.save(function(err) {
-                            if (err) cb(err);
+                            if (err) return cb(err);
                             page_ids.push(page._id);
                             add_contest(page._id, cb);
                         });
@@ -184,12 +185,12 @@ function add_pages(pages, callback) {
                 });
                 },
                 function(err) {
-                    cb(err);
+                    return cb(err);
                 }
             );
         },
         function(err) {
-            callback(err);
+            return callback(err);
         }
     );
 }
@@ -203,7 +204,9 @@ function add_contest(page_id, callback) {
         },
         entry_config: [{
             type: "facebook/checkin",
-            tokens: 3
+            tokens: 3,
+            // allow unlimited checkins
+            duration: 0
         }],
         start: new Date(),
         end: new Date(2013, 9, 2),
@@ -225,7 +228,7 @@ function add_contest(page_id, callback) {
         if (err) return callback(err);
         contest_ids.push(contest._id);
         contest.generateResults(function(err) {
-            callback(err);
+            return callback(err);
         });
     });
 }
@@ -233,7 +236,7 @@ function add_contest(page_id, callback) {
 function add_users(count, callback) {
     var ct = 0;
     async.until(
-        function() { return ct === count - 1; },
+        function() { return ct === count; },
         function(cb) {
             var user = new Bozuko.models.User({
                 id: ''+ct,
@@ -250,9 +253,10 @@ function add_users(count, callback) {
                 unique_id: ''+ct
             };
             Bozuko.models.User.addOrModify(user, phone, function(err, u) {
+                if (err) return cb(err);
                 user_ids.push(u._id);
                 ct++;
-                cb(err);
+                cb();
             });
         },
         function(err) {
