@@ -5,6 +5,8 @@ var express = require('express');
 var db = require('./util/db');
 var qs = require('querystring');
 
+var inspect = require('util').inspect;
+
 process.env.NODE_ENV='load';
 var Bozuko = require('../../app/bozuko');
 
@@ -19,7 +21,8 @@ var options = {
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
     rate: 50, // req/sec
-    time: 100, // sec
+    time: 120, // sec
+    wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
     sessions: [{
@@ -27,7 +30,6 @@ var options = {
 	requests: [
             get_pages,
             checkin,
-            play,
             play,
             play,
             play
@@ -54,6 +56,9 @@ db.setup({users: 1000}, function(err) {
     load.run(options, function(err, results) {
         if (err) return console.log("Err = "+err);
         console.log("results = "+require('util').inspect(results));
+
+        // close the mongoose connection so the process exits
+        Bozuko.db.conn().disconnect();
     });
 });
 
@@ -112,7 +117,6 @@ function checkin(res, callback) {
 }
 
 function play(res, callback) {
-    console.log("res.body = "+res.body);
     var rv = JSON.parse(res.body);
 
     if (res.opaque.last_op === 'checkin') {
@@ -139,12 +143,18 @@ function play(res, callback) {
             // End the session
             return callback(null, 'done');
         }
-  //        if (!Bozuko.validate('game_result', rv)) return callback(new Error("Invalid game_result"));
+
         var token_ct = res.opaque.user_tokens - 1;
         if (rv.game_state.user_tokens != token_ct) return callback(new Error(
             "User token count incorrect: Expected: "+token_ct+", got: "+rv.user_tokens)
         );
+
+        if (token_ct === 0) {
+            return callback(null, 'done');
+        }
+
         res.opaque.user_tokens = token_ct;
+
         return callback(null, {
             path: rv.game_state.links.game_result+'/?token='+res.opaque.auth_token,
             method: 'POST',
