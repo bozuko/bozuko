@@ -9,7 +9,7 @@ var phone = assert.phone;
 var headers = {'content-type': 'application/json'};
 var ok = {status: 200, headers: {'Content-Type': 'application/json; charset=utf-8'}};
 var bad = {status: 500, headers: {'Content-Type': 'application/json; charset=utf-8'}};
-var auth, tokens, wins=0, prizes_link, prizes, win_results = [];
+var auth, tokens, wins=0, prizes_link, game_entry_link, prizes, win_results = [];
 
 exports.setup = function(test) {
     testsuite.setup(test.done);
@@ -47,9 +47,14 @@ exports['page tests'] = {
                 var page = result.pages[0];
                 var valid = Bozuko.validate('page', page);
                 test.ok(valid);
+                console.log(page.games[0]);
                 checkin_link = page.links.facebook_checkin;
                 like_link = page.links.facebook_like;
                 game_state_link = page.games[0].game_state.links.game_state;
+                game_entry_link = page.games[0].game_state.links.game_entry;
+                // check for list_message
+                
+                test.ok( page.games[0].list_message != null, 'No list message');
                 favorite_link = page.links.favorite;
                 test.done();
             });
@@ -143,6 +148,8 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
+                console.log(result.button_text);
+                // test.ok(result.button_text == 'Check in to Play', 'Button text is wrong');
                 test.done();
             });
     },
@@ -170,7 +177,7 @@ exports['game tests'] = {
     },
     
     
-    'attempt a facebook checkin' : function(test) {
+    'attempt a game entry' : function(test) {
         
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
@@ -183,7 +190,7 @@ exports['game tests'] = {
         });
         
         assert.response(test, Bozuko.app,
-            {url: checkin_link+"/?token="+token,
+            {url: game_entry_link+"/?token="+token,
             method: 'POST',
             headers: headers,
             data: params},
@@ -328,8 +335,10 @@ exports['game tests'] = {
                 var game_state = JSON.parse(res.body);
                 var date = new Date( Date.parse( game_state.next_enter_time ) );
                 var now = new Date();
+                console.log(game_state);
                 test.ok( game_state.button_enabled === true, 'Button enable again');
                 test.ok( game_state.button_action === 'enter', 'Button action is enter');
+                // test.ok( game_state.button_text === 'Play Again', 'Button text is wrong');
                 test.ok( typeof game_state.links.game_entry === 'string', 'we have an entry link');
                 
                 // lets print the next time
@@ -337,7 +346,7 @@ exports['game tests'] = {
             });
     },
     
-    'enter again (facebook checkin)' : function(test){
+    'try a facebook checkin (fail, too soon)' : function(test){
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Still here bitches!",
@@ -351,9 +360,32 @@ exports['game tests'] = {
             method: 'POST',
             headers: headers,
             data: params},
+            {status: 403, headers: {'Content-Type': 'application/json; charset=utf-8'}},
+            function(res) {
+                var game_states = JSON.parse(res.body);
+                console.log(game_states);
+                test.done();
+            });
+    },
+    
+    'enter game again' : function(test){
+        var params = JSON.stringify({
+            ll: '42.646261785714,-71.303897114286',
+            message: "Still here bitches!",
+            phone_type: phone.type,
+            phone_id: phone.unique_id,
+            mobile_version: '1.0',
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+        });
+        assert.response(test, Bozuko.app,
+            {url: game_entry_link+"/?token="+token,
+            method: 'POST',
+            headers: headers,
+            data: params},
             ok,
             function(res) {
                 var game_states = JSON.parse(res.body);
+                console.log(game_states);
                 tokens = game_states[0].user_tokens;
                 test.done();
             });
@@ -362,6 +394,91 @@ exports['game tests'] = {
     
     'play 3 more times': function(test){
         exports['game tests']['play 3 times'](test);
+    },
+    
+    // Play the slots game and check the result
+    'try to enter again': function(test) {
+        var params = JSON.stringify({
+            ll: '42.646261785714,-71.303897114286',
+            message: "Don't let me enter",
+            phone_type: phone.type,
+            phone_id: phone.unique_id,
+            mobile_version: '1.0',
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+        });
+        assert.response(test, Bozuko.app,
+            {url: game_entry_link+"/?token="+token,
+            method: 'POST',
+            headers: headers,
+            data: params},
+            {status: 500, headers: {'Content-Type': 'application/json; charset=utf-8'}},
+            function(res) {
+                var facebook_checkin_result = JSON.parse(res.body);
+                console.log(facebook_checkin_result)
+                test.done();
+            });
+    },
+    
+    // Play the slots game and check the result
+    'double check game entry and wait' : function(test) {
+        var params = JSON.stringify({
+            phone_type: phone.type,
+            phone_id: phone.unique_id,
+            mobile_version: '1.0',
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+        });
+        assert.response(test, Bozuko.app,
+            {url: game_state_link+"/?token="+token,
+            method: 'GET'},
+            ok,
+            function(res) {
+                var game_state = JSON.parse(res.body);
+                console.log( game_state );
+                test.ok( game_state.button_enabled == false, 'Out of tokens, need to wait till next entry' );
+                // test.ok( game_state.button_text == 'Play again later...', 'Out of tokens, need to wait till next entry' );
+                // lets print the next time
+                var date = new Date( Date.parse( game_state.next_enter_time ) );
+                var now = new Date();
+                // set timeout
+                var ms = date.getTime() - now.getTime();
+                var countdown = Math.round(ms/1000)+1;
+                console.log( date.getTime() - now.getTime() );
+                var interval = setInterval( function(){
+                    console.log(--countdown);
+                }, 1000);
+                console.log('Wait 5 seconds before next checkin');
+                var timeout = setTimeout(function(){
+                    clearInterval( interval );
+                    test.done();
+                }, (date.getTime() - now.getTime()) + 1000);
+            });
+    },
+    'do a literal facebook checkin' : function(test) {
+        
+        var params = JSON.stringify({
+            ll: '42.646261785714,-71.303897114286',
+            phone_type: phone.type,
+            phone_id: phone.unique_id,
+            mobile_version: '1.0',
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+
+        });
+        
+        assert.response(test, Bozuko.app,
+            {url: checkin_link+"/?token="+token,
+            method: 'POST',
+            headers: headers,
+            data: params},
+            ok,
+            function(res) {
+                var game_states = JSON.parse(res.body);
+                console.log(game_states);
+                test.ok(Bozuko.validate(['game_state'], game_states));
+                tokens = game_states[0].user_tokens;
+                test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
+                link = game_states[0].links.game_result;
+                exports['game tests']['play 3 times'](test);
+            });
     }
 
 };
