@@ -3,15 +3,14 @@ var URL         = require('url'),
     merge       = require('connect').utils.merge,
     qs          = require('querystring'),
     url         = require('url'),
-    facebook    = Bozuko.require('util/facebook'),
     Service     = Bozuko.require('core/service')
 ;
 
-var FacebookService = module.exports = function(){
+var BozukoService = module.exports = function(){
     Service.apply(this,arguments);
 };
 
-FacebookService.prototype.__proto__ = Service.prototype;
+BozukoService.prototype.__proto__ = Service.prototype;
 
 var api = facebook.graph;
 
@@ -27,7 +26,7 @@ var api = facebook.graph;
  *
  * @returns {null}
  */
-FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,failure){
+BozukoService.prototype.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
@@ -174,7 +173,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
  *
  * @return {null}
  */
-FacebookService.prototype.search = function(options, callback){
+BozukoService.prototype.search = function(options, callback){
     var self = this;
     if( !options || !(options.center || options.query) ){
         return callback(Bozuko.error('facebook/no_lat_lng_query'));
@@ -234,7 +233,7 @@ FacebookService.prototype.search = function(options, callback){
  *
  * @return {null}
  */
-FacebookService.prototype.checkin = function(options, callback){
+BozukoService.prototype.checkin = function(options, callback){
 
     if( !options || !options.place_id || !options.ll || !options.user ){
         return callback(Bozuko.error('facebook/no_lat_lng_user_place'));
@@ -285,7 +284,7 @@ FacebookService.prototype.checkin = function(options, callback){
  *
  * @return {null}
  */
-FacebookService.prototype.user = function(options, callback){
+BozukoService.prototype.user = function(options, callback){
 
     if( !options || !(options.user_id  || options.user) ){
         return callback(Bozuko.error('facebook/no_user'));
@@ -323,7 +322,7 @@ FacebookService.prototype.user = function(options, callback){
  *
  * @return {null}
  */
-FacebookService.prototype.user_favorites = function(options, callback){
+BozukoService.prototype.user_favorites = function(options, callback){
     options.fields = 'likes';
     return this.user(options, callback);
 };
@@ -346,7 +345,7 @@ FacebookService.prototype.user_favorites = function(options, callback){
  *
  * @return {null}
  */
-FacebookService.prototype.like = function(options, callback){
+BozukoService.prototype.like = function(options, callback){
 
     if( !options || !options.object_id || !options.user ){
         return callback(Bozuko.error('facebook/no_page_id_user'));
@@ -393,7 +392,7 @@ FacebookService.prototype.like = function(options, callback){
  *
  * @return {null}
  */
-FacebookService.prototype.place = function(options, callback){
+BozukoService.prototype.place = function(options, callback){
     var self = this;
     if( !options || !options.place_id ){
         return callback(Bozuko.error('facebook/no_page_id'));
@@ -426,7 +425,7 @@ FacebookService.prototype.place = function(options, callback){
  * @return {null}
  */
 
-FacebookService.prototype.get_user_pages = function(user, callback){
+BozukoService.prototype.get_user_pages = function(user, callback){
     var self = this;
     facebook.graph('/me/accounts',
         {
@@ -507,7 +506,7 @@ FacebookService.prototype.get_user_pages = function(user, callback){
  *
  * @return {Object}         place           The sanitized object / objects
  */
-FacebookService.prototype._sanitizePlace = function(place){
+BozukoService.prototype._sanitizePlace = function(place){
     if( !place ) return null;
     if( !place.location ) place.location = {};
     return {
@@ -558,7 +557,7 @@ FacebookService.prototype._sanitizePlace = function(place){
  *
  * @return {Object}         place           The sanitized object / objects
  */
-FacebookService.prototype._sanitizeUser = function(user){
+BozukoService.prototype._sanitizeUser = function(user){
 
     if( !user ) return null;
     return {
