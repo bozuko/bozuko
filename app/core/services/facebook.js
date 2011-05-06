@@ -238,13 +238,13 @@ $.search = function(options, callback){
  */
 $.checkin = function(options, callback){
 
-    if( !options || !options.place_id || !options.latLng || !options.user ){
+    if( !options || !options.place_id || !options.ll || !options.user ){
         return callback(Bozuko.error('facebook/no_lat_lng_user_place'));
     }
 
     var params = {
         place           :options.place_id,
-        coordinates     :JSON.stringify({latitude:options.latLng.lat,longitude: options.latLng.lng})
+        coordinates     :JSON.stringify({latitude:options.ll[1],longitude: options.ll[0]})
     };
     
     if( options.name )          params.name         = options.name;

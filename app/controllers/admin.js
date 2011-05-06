@@ -7,28 +7,16 @@ var facebook    = Bozuko.require('util/facebook'),
     sys         = require('sys')
 ;
 
+exports.access = 'admin';
 
 exports.routes = {
     
-    '/admin/logs/?' : {
+    '/admin/' : {
         
-        description :"Business login - sends user to facebook",
-        
-        methods     :['get'],
-        
-        fn : function(req,res){
-            // http://nodejs.org/api.html#_child_processes
-            var sys = require('sys');
-            var spawn = require('child_process').spawn;
-            var filename = Bozuko.dir+'/logs/bozuko.log';
-            
-            var tail = spawn("tail", ["-f", filename]);
-            
-            res.writeHeader(200,{"Content-Type":"text/plain"});
-            
-            tail.stdout.on("data", function (data) {
-                
-            });
+        get : {
+            handler: function(req,res){
+                res.send('hello word');
+            }
         }
     }
 };

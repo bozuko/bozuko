@@ -57,8 +57,19 @@ auth.user = function(req, res, callback) {
     if( !req.session.user ){
         return callback(Bozuko.error('bozuko/auth'));
     }
-    callback();
+    return callback();
 };
+
+/**
+ * Admin auth
+ */
+auth.admin = function(req, res, callback ){
+    /**
+     * TODO - add connect middleware basic auth
+     */
+    callback();
+}
+
 
 auth.business = function(req,res, callback){
     if( !req.session.user ){
@@ -69,6 +80,7 @@ auth.business = function(req,res, callback){
     }
     callback();
 }
+
 
 auth.mobile = function(req, res, callback) {
     

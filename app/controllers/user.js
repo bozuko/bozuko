@@ -11,6 +11,7 @@ exports.transfer_objects= {
             last_name: "String",
             gender: "String",
             email: "String",
+            challenge: "String",
             img: "String",
             links: {
                 logout: "String",

@@ -28,6 +28,8 @@ Controller.prototype = {
             var path = route;
             if( !config.aliases ) config.aliases = [];
             if( config.alias ) config.aliases.push(config.alias);
+            
+            
 
             ['get','post','put','del','all'].forEach( function(method){
 
@@ -35,6 +37,9 @@ Controller.prototype = {
                     var handler = function(req,res){
                         res.send("Handler is not configured yet :(");
                     };
+                    if( self.access ){
+                        auth.check( self.access, handler );
+                    }
                     var _locals = merge({}, self.locals || {});
                     merge(_locals, config.locals || {});
                     if( config.title ) _locals.title = config.title;
