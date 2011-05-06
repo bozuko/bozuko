@@ -5,17 +5,28 @@ var cluster         = require('cluster'),
 
 var proc = cluster( Bozuko.getApp() )
     .set('socket path', Bozuko.dir+'/sockets')
+    
     .in('development')
-        .use(cluster.reload())
         .use(cluster.logger('logs', 'debug'))
         .use(cluster.debug())
         .use(cluster.pidfiles('pids'))
         .use(cluster.cli())
         .use(cluster.stats())
         .use(cluster.repl( Bozuko.config.server.port+10, '127.0.0.1' ) )
+        .use(cluster.reload(['app','config','content']))
         .listen( Bozuko.config.server.port )
+    
+    .in('stats')
+        .use(cluster.logger('logs', 'debug'))
+        .use(cluster.debug())
+        .use(cluster.pidfiles('pids'))
+        .use(cluster.cli())
+        .use(cluster.stats())
+        .use(cluster.repl( Bozuko.config.server.port+10, '127.0.0.1' ) )
+        .use(cluster.reload(['app','config','content']))
+        .listen( Bozuko.config.server.port )
+        
     .in('production')
-        .use(cluster.reload())
         .use(cluster.logger('logs', 'info'))
         .use(cluster.pidfiles('pids'))
         .use(cluster.cli())
@@ -24,6 +35,7 @@ var proc = cluster( Bozuko.getApp() )
         .listen( Bozuko.config.server.port );
 
 if( proc.isMaster ){
+    
     if(Bozuko.env() === 'stats'){
         Bozuko.initStats();
     }
@@ -32,4 +44,5 @@ if( proc.isMaster ){
         console.log('intializing development environment');
         Bozuko.require('dev/setup').init();
     }
+    
 }

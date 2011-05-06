@@ -44,6 +44,7 @@ exports['GET /user'] = function(test) {
 	function(res) {
 	    var user = JSON.parse(res.body);
 		test.ok(Bozuko.validate('user', user));
+		test.ok( user.challenge != undefined );
 		test.done();
 	});
 };

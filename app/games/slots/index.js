@@ -1,4 +1,5 @@
-var Game = Bozuko.require('core/game');
+var Game = Bozuko.require('core/game'),
+    burl = Bozuko.require('util/url').create;
 
 var Slots = module.exports = function(){
     Game.apply(this,arguments);
@@ -10,6 +11,8 @@ Slots.prototype.__proto__ = Game.prototype;
 var proto = Slots.prototype;
 
 proto.name = "Slots";
+
+proto.icon = burl('/games/slots/slots_icon.png');
 
 proto.default_icons = ['seven','bar','bell','banana','monkey','cherries'];
 
