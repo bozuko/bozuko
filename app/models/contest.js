@@ -315,7 +315,7 @@ Contest.method('startPlay', function(user_id, tries, callback) {
                     if (!c) return callback(Bozuko.error('contest/not_found', self));
                     return setTimeout(function() {
                         c.startPlay(user_id, tries-1, callback);
-                    }, Math.floor(Math.random()*4));
+                    }, Math.floor(Math.random()*20));
                 });
             }
             return self.savePrize(user_id, active_play, callback);
@@ -410,7 +410,7 @@ Contest.method('endPlay', function(user_id, active_play, play, prize, tries, cal
                     if (!c) return callback(Bozuko.error('contest/not_found', self));
                     return setTimeout(function() {
                         c.endPlay(user_id, active_play, play,  prize, tries-1, callback);
-                    }, Math.floor(Math.random()*4));
+                    }, Math.floor(Math.random()*20));
                 });
             }
             return callback(null, {
