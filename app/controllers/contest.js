@@ -49,10 +49,11 @@ var game = {
     doc: "A Game Object - the game config will differ depending on the game.",
 
     create : function(game, user){
+        console.log(game);
         game.config = game.contest.game_config;
         var obj = this.merge(game, game.contest);
+        obj.image = game.icon;
         obj.list_message = game.contest.getListMessage();
-        console.log( game.contest.getEntryMethodDescription() );
         obj.entry_method.description = game.contest.getEntryMethodDescription();
         // obj.can_play = obj.game_state.user_tokens > 0;
         obj.links = {
