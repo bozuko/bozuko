@@ -21,7 +21,7 @@ var dev = {
     },
     contest:{
         game:'slots',
-        icon: burl('/games/slots/slots_icon.png'),
+        image: burl('/games/slots/slots_icon.png'),
         game_config: {
             theme: {
                 name: 'default',
