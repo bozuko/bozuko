@@ -299,7 +299,9 @@ Contest.method('startPlay', function(user_id, tries, callback) {
                 return Bozuko.models.Contest.findById(self._id, function(e, c) {
                     if (e) return callback(e);
                     if (!c) return callback(Bozuko.error('contest/not_found', self));
-                    return c.startPlay(user_id, tries-1, callback);
+                    return setTimeout(function() {
+                        c.startPlay(user_id, tries-1, callback);
+                    }, Math.floor(Math.random()*4));
                 });
             }
             return self.savePrize(user_id, active_play, callback);
@@ -309,13 +311,13 @@ Contest.method('startPlay', function(user_id, tries, callback) {
 
 Contest.method('savePrize', function(user_id, active_play, callback) {
     var self = this;
-    
+
     if( active_play.prize_index != false ){
         // get the actual prize
         var prize = self.prizes[active_play.prize_index];
 
         if (!prize) return callback(Bozuko.error('contest/no_prize'));
-        
+
         return Bozuko.models.Page.findById( self.page_id, function(error, page){
             if( error ) return callback( error );
             if( !page ){
@@ -339,14 +341,14 @@ Contest.method('savePrize', function(user_id, active_play, callback) {
                 description: prize.description,
                 redeemed: false
             });
-    
+
             return user_prize.save(function(err) {
                 if (err) return callback(err);
                 return self.savePlay(user_id, active_play, user_prize, callback);
             });
-            
+
         });
-        
+
     }
 
     return self.savePlay(user_id, active_play, null, callback);
@@ -392,7 +394,9 @@ Contest.method('endPlay', function(user_id, active_play, play, prize, tries, cal
                 return Bozuko.models.Contest.findById(self._id, function(e, c) {
                     if (e) return callback(e);
                     if (!c) return callback(Bozuko.error('contest/not_found', self));
-                    return c.endPlay(user_id, active_play, play,  prize, tries-1, callback);
+                    return setTimeout(function() {
+                        c.endPlay(user_id, active_play, play,  prize, tries-1, callback);
+                    }, Math.floor(Math.random()*4));
                 });
             }
             return callback(null, {
