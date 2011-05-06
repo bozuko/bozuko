@@ -211,6 +211,7 @@ exports['game tests'] = {
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
+            token: token,
             mobile_version: '1.0',
             challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
         });
@@ -218,7 +219,7 @@ exports['game tests'] = {
         var play = function(callback) {
             assert.response(test, Bozuko.app,
                 {
-                    url: link+"/?token="+token,
+                    url: link,
                     method: 'POST',
                     headers: headers,
                     data: params

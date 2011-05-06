@@ -17,6 +17,7 @@ module.exports = function session(){
 
         if (req.param('token')) {
             q.token = req.param('token');
+            console.log( 'Token = '+q.token );
         }
         
         var newSession = req.session.userJustLoggedIn;
