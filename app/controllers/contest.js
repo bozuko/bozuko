@@ -49,7 +49,6 @@ var game = {
     doc: "A Game Object - the game config will differ depending on the game.",
 
     create : function(game, user){
-        console.log(game);
         game.config = game.contest.game_config;
         var obj = this.merge(game, game.contest);
         obj.image = game.icon;
@@ -88,7 +87,7 @@ var game = {
 };
 
 var game_state = {
-    
+
     create : function(game_state, user){
         if( game_state.contest){
             var links = {
@@ -104,7 +103,7 @@ var game_state = {
         }
         return this.sanitize(game_state);
     },
-    
+
     def: {
         user_tokens: "Number",
         next_enter_time: "String",
@@ -122,7 +121,7 @@ var game_state = {
 var entry_method = {
 
     doc: "An entry method ",
-    
+
     def: {
         type: "String",
         image: "String",
@@ -170,7 +169,7 @@ exports.links = {
             returns: ['game_state']
         }
     },
-    
+
     game_state: {
         get : {
             access: 'user',
@@ -241,11 +240,11 @@ exports.routes = {
             }
         }
     },
-    
+
     '/game/:id/entry' : {
 
         post: {
-            
+
             access: 'mobile',
 
             handler : function(req,res){
@@ -275,11 +274,11 @@ exports.routes = {
                     var entry = Bozuko.entry( config.type, req.session.user, {ll:parts} );
                     return contest.enter( entry, function(error, entry){
                         if( error ) return error.send(res);
-                        
+
                         if( !entry ){
                             return Bozuko.error('contest/entry_not_found').send(res);
                         }
-                        
+
                         // cool it went through, lets get all games and states in case this handled multiple
                         return Bozuko.models.Page.findById(contest.page_id, function(error, page){
                             if( error ) return error.send(res);
@@ -299,7 +298,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/game/:id/state' : {
 
         get: {
