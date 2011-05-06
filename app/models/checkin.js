@@ -26,7 +26,8 @@ Checkin.static('process', function(options, callback){
         return callback( Bozuko.error('checkin/no_page'));
     }
     if( options.service ){
-        options.place_id = options.page.service( options.service ).sid+'';
+        if( options.server != 'bozuko' ) options.place_id = String( options.page.service( options.service ).sid );
+        else options.place_id = options.page.id;
         
         Bozuko.service( options.service ).checkin( options, function(error, result){
             if( error ) return callback( error );
