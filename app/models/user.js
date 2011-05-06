@@ -60,7 +60,7 @@ User.method('likes', function(page){
     }
     var fb = self.service('facebook');
     if( !fb || !fb.internal ) return false;
-    
+
     var likes = fb.internal.likes || [];
     return ~likes.indexOf( page );
 });
@@ -135,7 +135,7 @@ User.static('addOrModify', function(user, phone, callback) {
 
     Bozuko.models.User.findOne(q, function(err, u){
         if (err) return callback(err);
-        
+
         var isNew = false;
 
         if( !u ){
@@ -152,7 +152,7 @@ User.static('addOrModify', function(user, phone, callback) {
         if (phone) {
             var result = u.verify_phone(phone);
             if (result === 'new') {
-                console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+u.id);
+                console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+service_id);
                 u.phones.push(phone);
             } else if (result === 'mismatch') {
                 return callback(Bozuko.error('auth/mobile'));

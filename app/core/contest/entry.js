@@ -74,7 +74,7 @@ EntryMethod.prototype.configure = function( config ){
         for( i in o.defaults ){
             self.config[i] = o.defaults[i];
         }
-    }
+    };
     _defaults(this);
     if( config.toObject ){
         config = config.toObject();
@@ -117,10 +117,10 @@ EntryMethod.prototype.process = function( callback ){
     
     if( !this.user ) return callback(Bozuko.error('entry/process_no_user'));
     if( !this.contest ) return callback(Bozuko.error('entry/process_no_contest'));
-    
+
     var self = this;
     self.validate( function(error){
-        
+
         if( error ){
             // yikes
             return callback(error);
@@ -133,7 +133,7 @@ EntryMethod.prototype.process = function( callback ){
             tokens: self.getTokenCount(),
             initial_tokens: self.getTokenCount()
         };
-        
+
         var tries = self.total_plays - self.token_cursor;
         return self.contest.addUserEntry(self.user.id, e, tries, function(error, entry){
             if( error ) return callback(error);
@@ -181,15 +181,15 @@ EntryMethod.prototype.validate = function( callback ){
         if( error ) return callback( error );
         // check for contest
         if( !self.contest ) return callback( Bozuko.error('entry/no_contest') );
-    
+
         // check for user
         if( !self.user ) return callback( Bozuko.error('entry/no_user') );
-    
+
         // check that there is enough tokens left
         if( self.ensureTokens() === false ){
             return callback( Bozuko.error('entry/not_enough_tokens') );
         }
-        
+
         // check for duration
         if( self.config && self.config.duration ){
             var now = new Date();

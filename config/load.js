@@ -23,10 +23,9 @@ module.exports = {
 
     checkin: {
         duration: {
-            // 15 minutes between any checkins per user
-            user: 1000 * 60 * 15,
-            // 4 hours between checkins at the same place
-            page: 1000 * 60 * 60 * 4
+            // Allow unlimited checkins
+            user: 0,
+            page: 0
         }
     },
 
