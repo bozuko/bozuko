@@ -33,9 +33,9 @@ module.exports = {
          */
         duration: {
             // 5 seconds
-            user: 1000 * 5,
+            user: 1000 * 10,
             // 5 seconds
-            page: 1000 * 5
+            page: 1000 * 10
         }
     },
     

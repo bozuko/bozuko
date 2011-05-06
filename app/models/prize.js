@@ -18,7 +18,8 @@ var Prize = module.exports = new Schema({
     details                 :{type:String},
     instructions            :{type:String},
     redeemed                :{type:Boolean},
-    redeemed_time           :{type:Date}
+    redeemed_time           :{type:Date},
+    is_email                :{type:Boolean, default:false}
 });
 
 // setup our constants

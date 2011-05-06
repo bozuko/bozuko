@@ -203,7 +203,7 @@ Page.method('checkin', function(user, options, callback) {
                     }
                 }
                 var game = contest.getGame();
-                options.name = _t(user.lang, 'checkin/general_checkin_name', self.name);
+                options.name = _t(user.lang, 'checkin/contest_checkin_name', self.name);
                 options.description = _t(
                     user.lang,
                     'checkin/contest_checkin_desc',
@@ -221,41 +221,45 @@ Page.method('checkin', function(user, options, callback) {
             options.user = user;
 
             return Bozuko.models.Checkin.process(options, function(error, checkin){
-                if( error ) return error;
+                if( error ) return callback( error );
 
                 if( contests.length == 0 ){
                     return callback( null, {checkin:checkin, entries:[]} );
                 }
                 var current = 0, entries = [];
                 var count = 0;
-                return contests.forEach( function(contest){
-                    // check to make sure that the contest requires a checkin
-                    var found = false;
-                    contest.entry_config.forEach(function(entry_config){
-                        if( entry_config.type == options.service+'/checkin' ){
-                            found = true;
+                return async.forEach( contests,
+                                     
+                    function(contest, cb){
+                        // check to make sure that the contest requires a checkin
+                        var found = false;
+                        contest.entry_config.forEach(function(entry_config){
+                            if( entry_config.type == options.service+'/checkin' ){
+                                found = true;
+                            }
+                        });
+                        if( !found ){
+                            return cb(null);
                         }
-                    });
-                    if( !found ){
+                        // try to enter the contest
+                        var entry = Bozuko.entry(options.service+'/checkin', user, {
+                            checkin: checkin
+                        });
                         
-                    }
-                    // try to enter the contest
-                    var entry = Bozuko.entry(options.service+'/checkin', user, {
-                        checkin: checkin
-                    });
+                        return contest.enter( entry, function(error, entry){
+                            if( error ){
+                                return callback( error );
+                            }
+                            entries.push(entry);
+                            return cb(null);
+                        });
+                    },
                     
-                    contest.enter( entry, function(error, entry){
-                        console.log('entry '+(count++));
-                        if( error ){
-                            return callback( error );
-                        }
-                        entries.push(entry);
-                        if( ++current == contests.length ){
-                            return callback( null, {checkin:checkin, entries:entries});
-                        }
-                        return true;
-                    });
-                });
+                    function(error){
+                        if( error ) return callback( error );
+                        return callback( null, {checkin:checkin, entries:entries});
+                    }
+                );
             });
 
         });
@@ -353,6 +357,7 @@ Page.static('search', function(options, callback){
                 $nearSphere: options.ll
             }
         };
+        
         serviceSearch = false;
     }
     // are we looking for bounded results
@@ -364,6 +369,7 @@ Page.static('search', function(options, callback){
             coords: {$within: {$box: options.bounds}}
         };
         bozukoSearch.type='nativeFind';
+        
         /**
          * TODO
          *
@@ -406,7 +412,7 @@ Page.static('search', function(options, callback){
             if( options.user ){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
-            if( page.owner_id ){
+            if( page.doc ){
                 page.registered = true;
             }
             // console.log(page.name, JSON.stringify({options:options.ll, page: page.coords}));

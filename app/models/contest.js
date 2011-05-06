@@ -16,6 +16,8 @@ var Contest = module.exports = new Schema({
     rules                   :{type:String},
     entry_config            :[EntryConfig],
     prizes                  :[Prize],
+    consolation_prizes      :[Prize],
+    free_spins              :{type:Number},
     active                  :{type:Boolean},
     start                   :{type:Date},
     end                     :{type:Date},
@@ -69,6 +71,20 @@ Contest.method('enter', function(entry, callback){
     return entry.process( callback );
 });
 
+Contest.method('getListMessage', function(){
+    var config = this.entry_config[0];
+    var entryMethod = Bozuko.entry( config.type );
+    return entryMethod.getListMessage();
+});
+
+Contest.method('getEntryMethodDescription', function(){
+    var config = this.entry_config[0];
+    var entryMethod = Bozuko.entry( config.type );
+    entryMethod.configure( config );
+    entryMethod.setContest( this );
+    return entryMethod.getDescription();
+});
+
 Contest.method('loadGameState', function(user, callback){
 
     var self =this;
@@ -113,11 +129,11 @@ Contest.method('loadGameState', function(user, callback){
             var now = new Date();
             if( state.next_enter_time > now ){
                 if( state.user_tokens > 0 ){
-                    state.button_text = 'Play';
+                    // state.button_text = 'Play';
                     state.button_enabled = true;
                 }
                 else{
-                    state.button_text = 'Play again at '+state.next_enter_time;
+                    // state.button_text = 'Play again at '+state.next_enter_time;
                     state.button_enabled = false;
                     delete state.button_action;
                 }
@@ -129,8 +145,6 @@ Contest.method('loadGameState', function(user, callback){
 });
 
 Contest.method('loadEntryMethod', function(user, callback){
-
-
     var self =this;
 
     // we need to create an entry to see whats up...
@@ -371,7 +385,7 @@ Contest.method('savePlay', function(user_id, active_play, prize, callback) {
 
     return play.save(function(err) {
         if (err) return callback(err);
-        self.endPlay(user_id, active_play, play, prize, 10, callback);
+        return self.endPlay(user_id, active_play, play, prize, 10, callback);
     });
 });
 

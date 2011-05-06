@@ -26,8 +26,17 @@ module.exports = {
         message : "User: " + this.data + "  has not entered this contest"
     },
     no_plays : "There are no plays left in the contest",
+    
+    invalid_entry : "Error validating the entry",
 
     db_update: "Failed to Update the record in the database",
 
-    no_prize: "The prize was not found for this contest"
+    no_prize: "The prize was not found for this contest",
+    
+    no_entry_found_after_checkin: "No entry was found after checkin",
+    
+    entry_not_found : {
+        code: 404,
+        message: "Error entering contest - entry was not found"
+    }
 };

@@ -48,7 +48,7 @@ exports.routes = {
                 if( parts.length != 2 ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
                 }
-                var lat = parts[0], lng = parts[1];
+                ll = [parseFloat(parts[1]),parseFloat(parts[0])];
 
                 return Bozuko.models.Page.findByService('facebook', id, function(err, page) {
 
@@ -61,7 +61,7 @@ exports.routes = {
                             {
                                 test: ['development','test', 'load'].indexOf(Bozuko.env()),
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
-                                latLng: {lat:lat,lng:lng},
+                                ll: ll,
                                 message: msg
                             },
                             function(error, result){

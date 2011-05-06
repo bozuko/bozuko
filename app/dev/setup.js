@@ -21,29 +21,35 @@ var dev = {
     },
     contest:{
         game:'slots',
+        icon: burl('/games/slots/slots_icon.png'),
         game_config: {
             theme: {
                 name: 'default',
-                base: burl('/games/slots/themes/default'),
+                base: burl('/games/slots/themes/default/default_theme'),
                 icons: {
-                    'seven'     :'seven.png',
+                    
                     'bell'      :'bell.png',
                     'bar'       :'bar.png',
-                    'raygun'    :'raygun.png',
-                    'watermelon':'watermelon.png',
-                    'dollar'    :'dollar.png',
-                    'rocket'    :'rocket.png',
-                    'cherries'  :'cherries.png',
+                    'cherry'    :'cherry.png',
                     'coins'     :'coins.png',
+                    'dollar'    :'dollar.png',
+                    'doublebar' :'doublebar.png',
+                    'gold'      :'gold.png',
                     'horseshoe' :'horseshoe.png',
                     'lemon'     :'lemon.png',
-                    'gold'      :'gold.png',
+                    'raygun'    :'raygun.png',
+                    'rocket'    :'rocket.png',
+                    'seven'     :'seven.png',
                     'shamrock'  :'shamrock.png',
                     'strawberry':'strawberry.png',
-                    'doublebar' :'doublebar.png'
+                    'watermelon':'watermelon.png'
                 }
             },
+            custom_icons: [
+                
+            ],
             icons: [
+                'shamrock',
                 'seven',
                 'bell',
                 'rocket',
@@ -56,14 +62,15 @@ var dev = {
                 'horseshoe',
                 'lemon',
                 'gold',
-                'shamrock',
                 'strawberry',
                 'doublebar' 
             ]
         },
         entry_config:[{
             type: 'facebook/checkin',
-            tokens: 3
+            tokens: 3,
+            enable_like: true,
+            like_tokens: 3
         }],
         prizes: [{
             name: 'a Free iPhone4',

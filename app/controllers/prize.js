@@ -10,6 +10,7 @@ exports.transfer_objects = {
             id: "Number",
             state: "String",
             name: "String",
+			is_email: "Boolean",
 			page_name: "String",
 			wrapper_message: "String",
 			description: "String",
@@ -31,7 +32,7 @@ exports.transfer_objects = {
 			var o = this.sanitize(prize);
 			
 			o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
-								". This prize expires "+dateFormat(this.expires, 'dddd mmmm dd yyyy hh:MM TT');
+								". This prize expires "+dateFormat(this.expires, 'mmmm dd yyyy hh:MM TT');
 			o.win_time = prize.timestamp;
 			o.business_img = prize.page.image;
 			o.user_img = prize.user.image;
