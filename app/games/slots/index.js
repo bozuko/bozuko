@@ -28,7 +28,8 @@ proto.process = function(outcome){
     }
 
     else {
-        ret = [outcome,outcome,outcome];
+        var icon = this.icons[outcome];
+        ret = [icon,icon,icon];
     }
 
     return ret;
