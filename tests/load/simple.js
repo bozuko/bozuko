@@ -21,10 +21,11 @@ var options = {
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
     rate: 50, // req/sec
-    time: 120, // sec
+    time: 1800, // sec
     wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
+    max_sessions: 1000,
     sessions: [{
 	probability: 100,
 	requests: [
@@ -45,7 +46,7 @@ function random_user_id() {
 }
 
 var db_setup_start = Date.now();
-db.setup({users: 1000}, function(err) {
+db.setup({users: options.max_sessions}, function(err) {
     var db_setup_end = Date.now();
 
     user_ids_free = db.user_ids.slice();
@@ -73,6 +74,7 @@ function get_pages(res, callback) {
 }
 
 function checkin(res, callback) {
+    console.log("checkin json = "+res.body);
     var pages = JSON.parse(res.body).pages;
     // grab a random page
     var page = pages[Math.floor(Math.random()*pages.length)];
@@ -90,6 +92,7 @@ function checkin(res, callback) {
     Bozuko.models.User.findById(uid, function(err, user) {
         if (err) return callback(err);
         if (!user) {
+            console.log("user_ids_free.length = "+user_ids_free.length);
             return callback(new Error("Couldn\'t find user "+uid));
         }
         var checkin_link = page.links.facebook_checkin;
@@ -117,6 +120,7 @@ function checkin(res, callback) {
 }
 
 function play(res, callback) {
+    console.log("res.body = "+res.body);
     var rv = JSON.parse(res.body);
 
     if (res.opaque.last_op === 'checkin') {
@@ -140,6 +144,10 @@ function play(res, callback) {
             // This should be an error code (out of tokens)
             if (res.statusCode === 200) return callback(new Error("Play allowed with no tokens!"));
 
+            // allow reuse of this user
+            console.log("res.opaque.user_id = "+res.opaque.user_id);
+            user_ids_free.push(res.opaque.user_id);
+
             // End the session
             return callback(null, 'done');
         }
@@ -150,6 +158,9 @@ function play(res, callback) {
         );
 
         if (token_ct === 0) {
+            // allow reuse of this user
+            console.log("res.opaque.user_id = "+res.opaque.user_id);
+            user_ids_free.push(res.opaque.user_id);
             return callback(null, 'done');
         }
 
