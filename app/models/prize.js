@@ -6,6 +6,7 @@ var Prize = module.exports = new Schema({
     contest_id              :{type:ObjectId, index:true},
     page_id                 :{type:ObjectId, index:true},
     user_id                 :{type:ObjectId, index:true},
+    uuid                    :{type:String},
     value                   :{type:Number},
     name                    :{type:String},
     page_name               :{type:String},
@@ -84,34 +85,34 @@ Prize.method('loadTransferObject', function(callback){
 Prize.static('search', function(){
     var callback = arguments[arguments.length-1];
     arguments[arguments.length-1] = function(error, prizes){
-        
+
         if( error ) return callback( error );
-        
+
         // no prizes, just send back the empty array then
         if( prizes.length == 0 ){
             return callback(null, prizes);
         }
-        
+
         // else, lets go through each page and load users and pages
         var page_ids = [],
             user_ids = [],
             page_map = {},
             user_map = {};
-            
+
         prizes.forEach(function(prize){
-            
+
             page_ids.push(prize.page_id);
             if( !page_map[prize.page_id] ) page_map[prize.page_id] = [];
             page_map[prize.page_id].push( prize );
-            
+
             user_ids.push(prize.user_id);
             if( !user_map[prize.user_id] ) user_map[prize.user_id] = [];
             user_map[prize.user_id].push( prize );
-            
+
         });
-        
-        
-        
+
+
+
         return Bozuko.models.Page.find({_id: {$in: page_ids}}, function(error, pages){
             if( error ) return callback( error );
             pages.forEach( function(page){

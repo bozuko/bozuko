@@ -57,14 +57,14 @@ FacebookCheckinMethod.prototype.defaults = {
  *
  */
 EntryMethod.prototype.getDescription = function(){
-    
+
     // need a nice duration
     // get the number of minutes:
     var seconds = this.config.duration / 1000,
         minutes = seconds / 60,
         hours = minutes / 60,
         days = hours / 24;
-        
+
     var duration = '';
     if( days > 1 ){
         days = Math.floor( days );
@@ -103,7 +103,7 @@ FacebookCheckinMethod.prototype.getMaxTokens = function(){
 FacebookCheckinMethod.prototype.getTokenCount = function(){
     if( !this.contest || !this.user) return this.config.tokens;
     var tokens = this.config.tokens;
-    
+
     if( this.config.enable_like && this.user && this.user.likes( this.contest.page ) ){
         tokens += this.config.like_tokens;
     }
@@ -121,12 +121,12 @@ FacebookCheckinMethod.prototype.process = function( callback ){
 
     // lets process this...
     var self = this;
-    
+
     if( !self.checkin ){
         return self.validate( function(error, valid){
             if( error ) return callback( error );
             if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
-            
+
             if( self.can_checkin ){
                 return self.page.checkin( self.user, {
                     test: true,
@@ -137,7 +137,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                     message: self.options.message
                 }, function(error, result){
                     if( error ) return callback( error );
-                    
+
                     for(var i=0; i<result.entries.length; i++){
                         var entry = result.entries[i];
                         if( entry.type == self.type && entry.contest_id == self.contest.id ){
@@ -145,17 +145,17 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                             return callback( null, entry );
                         }
                     }
-                    
+
                     return callback( Bozuko.error('contest/no_entry_found_after_checkin') );
                 });
             }
-            
+
             return EntryMethod.prototype.process.call(self, callback);
-            
+
         });
     }
-    
-    
+
+
     return EntryMethod.prototype.process.call(this, callback);
 };
 
@@ -181,8 +181,8 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
     this.load( function(error){
         if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
-            
+        return self.getNextEntryTime( self.getLastEntry(), function( error, time ){
+
             if( error ) return callback( error );
             if( !tokens ){
                 var now = new Date();
@@ -213,5 +213,5 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
             return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/play' ) );
         });
     });
-    
+
 };

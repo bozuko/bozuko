@@ -15,6 +15,4 @@ Engine.prototype.generateResults = function(contest){
 /**
  * Get the result of a play
  */
-Engine.prototype.play = function(contest){
-    
-};
+Engine.prototype.play = function(contest){};

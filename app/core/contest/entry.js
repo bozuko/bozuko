@@ -1,6 +1,6 @@
 var _t = Bozuko.t,
     dateFormat = require('dateformat');
-    
+
 /**
  * Abstract class for method of entry
  *
@@ -114,7 +114,7 @@ EntryMethod.prototype.getMaxTokens = function(){
  * @param {Function} callback The callback function
  */
 EntryMethod.prototype.process = function( callback ){
-    
+
     if( !this.user ) return callback(Bozuko.error('entry/process_no_user'));
     if( !this.contest ) return callback(Bozuko.error('entry/process_no_contest'));
 
@@ -127,22 +127,22 @@ EntryMethod.prototype.process = function( callback ){
         }
 
         var e = {
-            contest_id: self.contest.id,
+            user_id: self.user._id,
+            contest_id: self.contest._id,
             timestamp: new Date(),
             type: self.type,
             tokens: self.getTokenCount(),
             initial_tokens: self.getTokenCount()
         };
 
-        var tries = self.total_plays - self.token_cursor;
-        return self.contest.addUserEntry(self.user.id, e, tries, function(error, entry){
+        return self.contest.addEntry(e, function(error, entry){
             if( error ) return callback(error);
-            
+
             // save a top level entry for analytics
             var Entry = new Bozuko.models.Entry();
             self.prepareAnalyticEntry( Entry );
             Entry.timestamp = entry.timestamp;
-            
+
             return Entry.save( function(error){
                 return callback( error, entry );
             });
@@ -187,6 +187,7 @@ EntryMethod.prototype.validate = function( callback ){
 
         // check that there is enough tokens left
         if( self.ensureTokens() === false ){
+            console.log("entry 22222");
             return callback( Bozuko.error('entry/not_enough_tokens') );
         }
 
@@ -196,9 +197,13 @@ EntryMethod.prototype.validate = function( callback ){
             var last = new Date();
             last.setTime( now.getTime() - self.config.duration );
             // need to check for other entries
-            var key = 'users.'+self.user.id+'.entries.timestamp';
-            var selector = {};
-            selector[key] = {$gt: last};
+
+            var selector = { entries: {$elemMatch : {
+                user_id: self.user._id,
+                timestamp: {$gt : last}
+                }
+            }};
+
             return Bozuko.models.Contest.nativeFind(selector, function(error, entries){
                 if( error ) return callback( error );
                 return callback( null, entries.length ? false: true);
@@ -227,9 +232,9 @@ EntryMethod.prototype.load = function(callback){
 
 EntryMethod.prototype._load = function( callback ){
     callback();
-}
+};
 
-EntryMethod.prototype.getNextEntryTime = function( callback ){
+EntryMethod.prototype.getNextEntryTime = function( lastEntry, callback ){
     var self = this;
     this.load( function(error){
         if( error ) return callback( error );
@@ -239,12 +244,11 @@ EntryMethod.prototype.getNextEntryTime = function( callback ){
             return callback(null, now);
         }
         // assume we have the contest
-        var e = self.getLastEntry();
-        if( !e ) return callback( null, new Date() );
+        if( !lastEntry ) return callback( null, new Date() );
         // check the timestamp on this bad boy.
-        var timestamp = e.timestamp;
+        var timestamp = lastEntry.timestamp;
         timestamp.setTime( timestamp.getTime() + (self.config.duration||0));
-        var now = new Date();
+        now = new Date();
         self._nextEntryTime = timestamp > now ? timestamp : now;
         return callback(null, self._nextEntryTime);
     });
@@ -252,13 +256,14 @@ EntryMethod.prototype.getNextEntryTime = function( callback ){
 
 EntryMethod.prototype.getLastEntry = function(){
     // assume we have the contest
-    var self = this;
-    var u = self.contest.users ? self.contest.users[self.user.id] : false;
-    if( !u || u.entries.length == 0) {
-        return false;
+    var entries = this.contest.entries;
+
+    for (var i = entries.length-1; i >= 0; i--) {
+        if (entries[i].user_id == this.user.id) {
+            return entries[i];
+        }
     }
-    // lets peak at the top entry
-    return u.entries[u.entries.length-1];
+    return null;
 };
 
 EntryMethod.prototype.getButtonText = function( tokens, callback ){
@@ -266,8 +271,9 @@ EntryMethod.prototype.getButtonText = function( tokens, callback ){
     if( self._buttonText ) return callback( null, self._buttonText );
     return this.load( function(error){
         if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
-            
+        var lastEntry = self.getLastEntry();
+        return self.getNextEntryTime( lastEntry, function( error, time ){
+
             if( error ) return callback( error );
             if( !tokens ){
                 var now = new Date();
