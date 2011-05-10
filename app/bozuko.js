@@ -215,8 +215,7 @@ function initModels(){
             return Bozuko.models[Name];
         });
 
-        Bozuko.db.model( Name, schema );
-        Bozuko.models[Name] = Bozuko.db.model(Name);
+        Bozuko.models[Name] = Bozuko.db.model( Name, schema );
     });
 }
 

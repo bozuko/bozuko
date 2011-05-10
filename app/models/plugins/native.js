@@ -1,33 +1,32 @@
-
-/**
- * mongo find using the database driver. The callback is always the last argument.
- *
- * BE CAREFUL when creating the 'selector' parameter as variables will _not_ be cast
- * to the type defined in the mongoose Schema, so it must be done manually.
- *
- * This is needed for performing "within" searches as I do not see how it is done
- * within mongoose right now.
- *
- * Various argument possibilities
- * 1 callback
- * 2 selector, callback,
- * 3 selector, fields, callback
- * 3 selector, options, callback
- * 4,selector, fields, options, callback
- * 5 selector, fields, skip, limit, callback
- * 6 selector, fields, skip, limit, timeout, callback
- *
- * Available options:
- * limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
- */
 var NativePlugin = module.exports = function NativePlugin(schema, options){
-    
+
+    /**
+     * mongo find using the database driver. The callback is always the last argument.
+     *
+     * BE CAREFUL when creating the 'selector' parameter as variables will _not_ be cast
+     * to the type defined in the mongoose Schema, so it must be done manually.
+     *
+     * This is needed for performing "within" searches as I do not see how it is done
+     * within mongoose right now.
+     *
+     * Various argument possibilities
+     * 1 callback
+     * 2 selector, callback,
+     * 3 selector, fields, callback
+     * 3 selector, options, callback
+     * 4,selector, fields, options, callback
+     * 5 selector, fields, skip, limit, callback
+     * 6 selector, fields, skip, limit, timeout, callback
+     *
+     * Available options:
+     * limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
+     */
     schema.static('nativeFind', function(){
         var self = this;
         var coll = this.collection;
         var cb = arguments[arguments.length-1];
         arguments[arguments.length-1] = function(error, cursor){
-    
+
             // we are going to change this to model objects...
             if( error ){
                 return cb(error);
@@ -45,7 +44,28 @@ var NativePlugin = module.exports = function NativePlugin(schema, options){
                 }
                 return cb(null, pages);
             });
-        }
+        };
         coll.find.apply(coll, arguments);
     });
+
+
+    schema.static('findAndModify', function() {
+        var self = this;
+        var cb = arguments[arguments.length-1];
+        arguments[arguments.length-1] = function(error, doc){
+            if (error) return callback(error);
+
+            // convert to model object
+            var model = new self();
+
+            if (!doc) return cb(null);
+            model.init(doc, function(err) {
+                if (err) return cb(err);
+                return cb(null, model);
+            });
+        };
+
+        this.collection.findAndModify.apply(this.collection, arguments);
+    });
 };
+
