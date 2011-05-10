@@ -21,7 +21,7 @@ var options = {
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
     rate: 50, // req/sec
-    time: 1800, // sec
+    time: 30, // sec
     wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
@@ -65,7 +65,11 @@ db.setup({users: options.max_sessions}, function(err) {
 
 function get_pages(res, callback) {
     var city = db.random_city();
-    var pages_link = JSON.parse(res.body).links.pages;
+    try {
+        var pages_link = JSON.parse(res.body).links.pages;
+    } catch(err) {
+        return callback(err);
+    }
     return callback(null, {
         path: pages_link+'/?ll='+city.lat+','+city.lng,
         method: 'GET',
@@ -74,8 +78,12 @@ function get_pages(res, callback) {
 }
 
 function checkin(res, callback) {
-    console.log("checkin json = "+res.body);
-    var pages = JSON.parse(res.body).pages;
+    try {
+        var pages = JSON.parse(res.body).pages;
+    } catch(err) {
+        console.log("res = "+res);
+        return callback(err);
+    }
     // grab a random page
     var page = pages[Math.floor(Math.random()*pages.length)];
     if (!Bozuko.validate('page', page)) {
@@ -121,7 +129,11 @@ function checkin(res, callback) {
 
 function play(res, callback) {
     console.log("res.body = "+res.body);
-    var rv = JSON.parse(res.body);
+    try {
+        var rv = JSON.parse(res.body);
+    } catch(err) {
+        return callback(err);
+    }
 
     if (res.opaque.last_op === 'checkin') {
         if (!Bozuko.validate(['game_state'], rv)) return callback(new Error("Invalid game_state"));
