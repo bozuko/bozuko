@@ -106,23 +106,25 @@ Contest.method('loadGameState', function(user, callback){
         contest: self
     };
 
-    var tokens = 0;
-    var lastEntry = null;
-    // how many tokens ?
-    this.entries.forEach(function(entry){
-        // check timestamp and user_id
-        var now = new Date();
-        if (entry.user_id == String(user._id)) {
-            lastEntry = entry;
-        }
-        if( entry.user_id == String(user._id) && entry.timestamp.getTime()+Bozuko.config.entry.token_expiration > now.getTime() ){
-            // we should be good
-            tokens += entry.tokens;
-        }
-    });
+    if (user) {
+        var tokens = 0;
+        var lastEntry = null;
+        // how many tokens ?
+        this.entries.forEach(function(entry){
+            // check timestamp and user_id
+            var now = new Date();
+            if (entry.user_id == String(user._id)) {
+                lastEntry = entry;
+            }
+            if( entry.user_id == String(user._id) && entry.timestamp.getTime()+Bozuko.config.entry.token_expiration > now.getTime() ){
+                // we should be good
+                tokens += entry.tokens;
+            }
+        });
 
-    // okay, have all the tokens
-    state.user_tokens = tokens;
+        // okay, have all the tokens
+        state.user_tokens = tokens;
+    }
 
     entryMethod.getButtonText( state.user_tokens, function(error, text){
         if( error ) return callback(error);
