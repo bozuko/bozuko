@@ -228,9 +228,8 @@ exports.routes = {
                         if( error ){
                             return error.send(res);
                         }
-                        return contest.loadGameState( req.session.user, function(error){
+                        return result.contest.loadGameState( req.session.user, function(error){
                             if( error ) return error.send(res);
-                            result.contest = contest;
                             return res.send(
                                 Bozuko.transfer('game_result', result, req.session.user)
                             );
