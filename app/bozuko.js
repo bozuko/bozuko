@@ -91,7 +91,6 @@ Bozuko.service = function(name){
 Bozuko.game = function(contest){
 	return new this.games[contest.game](contest);
 };
-
 Bozuko.transfer = function(key, data, user){
 	if( !data ) return this._transferObjects[key];
 	try{
@@ -152,8 +151,10 @@ Bozuko.error = function(name, data){
 	    }
 	    return new BozukoError(name,message,data,code);
 	}catch(e){
-		console.log(e.stack);
-        return new BozukoError();
+		var error = new BozukoError();
+		error.name = name;
+		error.code = 500;
+		return error;
 	}
 };
 

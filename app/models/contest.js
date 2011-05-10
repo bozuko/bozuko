@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
     version                 :{type:Number, default: 0},
+    engine_type             :{type:String, default:'order'},
     users                   :{},
     game                    :{type:String},
     game_config             :{},
@@ -37,7 +38,7 @@ Contest.plugin( Native );
  * @public
  */
 Contest.method('generateResults', function(callback){
-    Bozuko.require('core/contest/engine').generateResults(this);
+    this.getEngine().generateResults(this);
     var self = this;
     this.save(function(error){
         if( error ) return callback(error);
@@ -69,6 +70,16 @@ Contest.method('enter', function(entry, callback){
     entry.setContest(this);
     entry.configure(cfg);
     return entry.process( callback );
+});
+
+Contest.method('getEngine', function(){
+    if( !this._engine ){
+        var type = String(this.engine_type);
+        if( type == '') type = 'order';
+        var Engine = Bozuko.require('core/contest/engine/'+type);
+        this._engine = new Engine( this );
+    }
+    return this._engine;
 });
 
 Contest.method('getListMessage', function(){
@@ -126,20 +137,14 @@ Contest.method('loadGameState', function(user, callback){
         return entryMethod.getNextEntryTime( function(error, time){
             if( error ) return callback( error );
             state.next_enter_time = time;
-            var now = new Date();
-            if( state.next_enter_time > now ){
-                if( state.user_tokens > 0 ){
-                    // state.button_text = 'Play';
-                    state.button_enabled = true;
-                }
-                else{
-                    // state.button_text = 'Play again at '+state.next_enter_time;
-                    state.button_enabled = false;
-                    delete state.button_action;
-                }
-            }
-            self.game_state = state;
-            return callback(null, state);
+            
+            return entryMethod.getButtonEnabled( state.user_tokens, function(error, enabled){
+                if( error ) return callback( error);
+                state.button_enabled = enabled;
+                self.game_state = state;
+                return callback(null, state);
+            });
+            
         });
     });
 });
@@ -295,8 +300,7 @@ Contest.method('startPlay', function(user_id, tries, callback) {
 
     if (!tokens_available) return callback(Bozuko.error("contest/no_tokens"));
 
-    var result = this.results[''+this.play_cursor+1];
-
+    var result = this.results[String(this.play_cursor+1)];
     var active_play = {
         play_cursor: this.play_cursor+1,
         game_result: Bozuko.game( this ).process( result ? result.index : false ),
