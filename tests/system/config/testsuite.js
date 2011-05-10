@@ -108,7 +108,7 @@ var auth = user.auth;
 var profiler;
 
 exports.setup = function(fn) {
-    
+
 	if( !Bozuko.app ){
 		profiler = Bozuko.require('util/profiler').create('testsuite');
 		Bozuko.getApp().listen(Bozuko.getConfig().server.port);
@@ -153,9 +153,9 @@ var add_users = function(callback) {
 	    user.service('facebook').auth = auth;
         user.phones.push(assert.phone);
         assert.challenge = user.challenge;
-		
+
 		user.service('facebook').internal = {likes : ['181069118581729']};
-		
+
 	    return user.save( function(error){
 			if( error ) return callback( error );
 			return callback( null, user);
@@ -222,12 +222,13 @@ var add_contests = function(callback) {
     end.setTime(start.getTime()+1000*60*60*24*2);
 
     var data = {
-		active					:true,
-        start                   :start,
-		game					:'slots',
-		game_config      		:{},
-		end                     :end,
-		total_entries           :30
+	active: true,
+        start: start,
+        game: 'slots',
+	game_config: {},
+	end: end,
+	total_entries: 30,
+        total_plays: 90 // 3 tokens/checkin * 30 checkins
     };
 
     Bozuko.models.Page.find({name:/owl/i}, function(error, pages){

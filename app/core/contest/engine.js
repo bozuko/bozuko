@@ -18,7 +18,8 @@ module.exports = {
             max = Math.max(parseInt(entryMethod.getMaxTokens()),max);
         });
 
-        var totalPlays = max*contest.total_entries;
+        //var totalPlays = max*contest.total_entries;
+        var totalPlays = contest.total_plays;
 
         // not sure if this is the best way to do this, but it works
         var ar = [];
@@ -40,6 +41,5 @@ module.exports = {
         delete ar;
 
         contest.results = results;
-        contest.total_plays = totalPlays;
     }
 };
