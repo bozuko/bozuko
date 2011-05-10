@@ -294,7 +294,8 @@ EntryMethod.prototype.getButtonText = function( tokens, callback ){
 
 EntryMethod.prototype.getButtonEnabled = function( tokens, callback ){
     var self = this;
-    self.getNextEntryTime( function(error, time){
+    var lastEntry = self.getLastEntry();
+    self.getNextEntryTime( lastEntry, function(error, time){
         if( error ) return callback( error );
         var enabled = true;
         var now = new Date();
