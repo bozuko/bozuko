@@ -15,6 +15,10 @@ module.exports = {
     too_many_attempts_per_user: {
         code: 403,
         message: "Checkin occurred too soon after the last checkin for this user"
+    },
+    too_far: {
+        code: 500,
+        message: "User is too far away to checkin to this location."
     }
 
 };

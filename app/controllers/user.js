@@ -150,8 +150,6 @@ exports.routes = {
 
         get : {
             
-            access: 'user',
-            
             handler: function(req,res){
                 req.session.destroy(function(){
                     res.redirect('/');

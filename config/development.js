@@ -36,11 +36,21 @@ module.exports = {
             user: 1000 * 60 * 15,
             // 4 hours between checkins at the same place
             page: 1000 * 60 * 60 * 4
-        }
+        },
+        
+        distance : 100 /* feet */
     },
     
     entry : {
         token_expiration: 1000 * 60 * 60 * 24 * 1 // one day.
+    },
+    
+    contest : {
+        engine : {
+            order: {
+                chunk_size: 2
+            }
+        }
     },
     
     search: {
@@ -79,5 +89,11 @@ module.exports = {
         'bozuko'        :'cracksmack',
         'developer'     :'bluebeard',
         'guest'         :'virgil'
-    }
+    },
+    
+    admins: [
+        'mark.fabrizio@bozuko.com',
+        'andrew.stone@bozuko.com',
+        'jacob.epstein@bozuko.com'
+    ]
 };

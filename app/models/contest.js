@@ -11,6 +11,7 @@ var mongoose = require('mongoose'),
 
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
+    engine_type             :{type:String, default:'order'},
     entries                 :[],
     plays                   :[],
     game                    :{type:String},
@@ -39,7 +40,7 @@ Contest.plugin( Native );
  * @public
  */
 Contest.method('generateResults', function(callback){
-    Bozuko.require('core/contest/engine').generateResults(this);
+    this.getEngine().generateResults(this);
     var self = this;
     this.save(function(error){
         if( error ) return callback(error);
@@ -71,6 +72,16 @@ Contest.method('enter', function(entry, callback){
     entry.setContest(this);
     entry.configure(cfg);
     return entry.process( callback );
+});
+
+Contest.method('getEngine', function(){
+    if( !this._engine ){
+        var type = String(this.engine_type);
+        if( type == '') type = 'order';
+        var Engine = Bozuko.require('core/contest/engine/'+type);
+        this._engine = new Engine( this );
+    }
+    return this._engine;
 });
 
 Contest.method('getListMessage', function(){
@@ -132,20 +143,14 @@ Contest.method('loadGameState', function(user, callback){
         return entryMethod.getNextEntryTime( lastEntry, function(error, time){
             if( error ) return callback( error );
             state.next_enter_time = time;
-            var now = new Date();
-            if( state.next_enter_time > now ){
-                if( state.user_tokens > 0 ){
-                    // state.button_text = 'Play';
-                    state.button_enabled = true;
-                }
-                else{
-                    // state.button_text = 'Play again at '+state.next_enter_time;
-                    state.button_enabled = false;
-                    delete state.button_action;
-                }
-            }
-            self.game_state = state;
-            return callback(null, state);
+            
+            return entryMethod.getButtonEnabled( state.user_tokens, function(error, enabled){
+                if( error ) return callback( error);
+                state.button_enabled = enabled;
+                self.game_state = state;
+                return callback(null, state);
+            });
+            
         });
     });
 });
@@ -227,7 +232,7 @@ Contest.static('audit', function(callback) {
                             }
                             // We already the play saved, so just remove the active flag.
                             play.active = false;
-                            contest.save(function(err) {
+                            return contest.save(function(err) {
                                 if (err) return callback(err);
                                 return callback(null);
                             });
@@ -245,13 +250,13 @@ Contest.static('audit', function(callback) {
                                 return contest.savePrize(play.user_id, index, play.timestamp, play.uuid, callback);
                             }
                             // The prize record already exists so check the play record
-                            fixPlay(prize);
+                            return fixPlay(prize);
                         }
                     );
                 }
 
                 // The user didn't win so there should only be a play record
-                fix_play(null);
+                return  fix_play(null);
         },
         function(err) {
             callback(err);
@@ -269,6 +274,7 @@ Contest.method('play', function(user_id, callback){
 
 Contest.method('startPlay', function(user_id, callback) {
     var self = this;
+
 
     var now = new Date();
     var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);

@@ -1,0 +1,47 @@
+#header {
+  background: #111111 url("/images/desktop/site/bg_hd.png") repeat-x 0 100%;
+}
+#header .title {
+  height: 100px;
+  background: url("/images/desktop/site/img_logo.png") no-repeat 10px 10px;
+  position: relative;
+}
+#header .title span {
+  position: absolute;
+  bottom: 14px;
+  left: 90px;
+  color: #fff;
+  line-height: 20px;
+  font-weight: bold;
+}
+#header .logged-in {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #fff;
+}
+.page-list .page {
+  cursor: pointer;
+  clear: both;
+  border-bottom: 1px solid #ccc;
+  overflow: hidden;
+  padding: 6px;
+}
+.page-list .page img {
+  height: 50px;
+  float: right;
+}
+.page-list .page .name {
+  margin-top: 6px;
+  font-weight: bold !important;
+}
+.page-list .page .address {
+  font-size: .85em;
+  color: #999;
+}
+.page-list .page-over {
+  background: #f3f3f3;
+}
+.page-list .page-selected {
+  background: #d5eaf9;
+}
