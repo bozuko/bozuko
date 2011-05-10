@@ -25,8 +25,9 @@ OrderEngine.prototype.generateResults = function( ){
         max = Math.max(parseInt(entryMethod.getMaxTokens()),max);
     });
 
-    var totalPlays = max*contest.total_entries;
-
+    // var totalPlays = max*contest.total_entries;
+    var totalPlays = contest.total_plays;
+    
     // not sure if this is the best way to do this, but it works
     var ar = [];
     for( var i=0; i<totalPlays; i++) ar.push(i);
@@ -38,16 +39,7 @@ OrderEngine.prototype.generateResults = function( ){
             var random = rand(0,ar.length-1);
             var index = ar[random];
             
-            
-            // lets take a chunk out of here to stagger wins
-            /*
-            var chunk_size = Bozuko.config.contest.engine.order.chunk_size;
-            var start = Math.max(0, random-chunk_size);
-            var end = Math.min( ar.length-1, random+chunk_size);
-            ar.splice( start, end-start );
-            */
             ar.splice( random, 1 );
-            console.log( index, ar.length );
             results[index] = {
                 index: prize_index,
                 prize: prize._id
