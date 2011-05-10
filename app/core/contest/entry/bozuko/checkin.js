@@ -6,7 +6,7 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  * Facebook Checkin
  *
  */
-var FacebookCheckinMethod = module.exports = function(key, user, options){
+var BozukoCheckinMethod = module.exports = function(key, user, options){
     options = options || {};
     EntryMethod.call(this,key,user);
     // set the valid options
@@ -15,40 +15,38 @@ var FacebookCheckinMethod = module.exports = function(key, user, options){
     this._lastCheckin = false;
 };
 
-FacebookCheckinMethod.prototype.__proto__ = EntryMethod.prototype;
+BozukoCheckinMethod.prototype.__proto__ = EntryMethod.prototype;
 
 /**
  * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
  */
-FacebookCheckinMethod.prototype.name = 'Facebook Checkin';
+BozukoCheckinMethod.prototype.name = 'Facebook Checkin';
 
 /**
  * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
  */
-FacebookCheckinMethod.prototype.description = 'Checkin to a Facebook Page with Bozuko';
+BozukoCheckinMethod.prototype.description = 'Checkin to a Facebook Page with Bozuko';
 
 /**
  * Icon to display.
  *
  * TODO - decide if we need multiple types - mobile / admin, etc.
  */
-FacebookCheckinMethod.prototype.icon = '';
+BozukoCheckinMethod.prototype.icon = '';
 
 /**
  * List Message String
  *
  */
-FacebookCheckinMethod.prototype.list_message = 'Facebook check-in required';
+BozukoCheckinMethod.prototype.list_message = 'Facebook check-in required';
 
 
 /**
  * Configuration defaults
  *
  */
-FacebookCheckinMethod.prototype.defaults = {
-    duration: 1000*60*60*1,
-    enable_like: false,
-    like_tokens: 1
+BozukoCheckinMethod.prototype.defaults = {
+    duration: 1000*60*60*1
 };
 
 
@@ -79,10 +77,8 @@ EntryMethod.prototype.getDescription = function(){
     else{
         duration = Math.ceil(seconds)+' seconds';
     }
-    var description = "Check In on Facebook\n";
+    var description = "Check In on Bozuko\n";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-    if( this.config.enable_like )
-        description+= "\nDouble your plays if you like us on Facebook!";
     
     return description;
 }
@@ -92,22 +88,16 @@ EntryMethod.prototype.getDescription = function(){
  * Get the maximum amount of tokens
  *
  */
-FacebookCheckinMethod.prototype.getMaxTokens = function(){
-    return this.config.tokens + (this.config.enable_like ? this.config.like_tokens : 0);
+BozukoCheckinMethod.prototype.getMaxTokens = function(){
+    return this.config.tokens;
 }
 
 /**
  * Get the number of tokens for this user on a successfull entry
  *
  */
-FacebookCheckinMethod.prototype.getTokenCount = function(){
-    if( !this.contest || !this.user) return this.config.tokens;
-    var tokens = this.config.tokens;
-    
-    if( this.config.enable_like && this.user && this.user.likes( this.contest.page ) ){
-        tokens += this.config.like_tokens;
-    }
-    return tokens;
+BozukoCheckinMethod.prototype.getTokenCount = function(){
+    return this.config.tokens;
 }
 
 /**
@@ -117,7 +107,7 @@ FacebookCheckinMethod.prototype.getTokenCount = function(){
  *
  * @param {Function} callback The callback function
  */
-FacebookCheckinMethod.prototype.process = function( callback ){
+BozukoCheckinMethod.prototype.process = function( callback ){
 
     // lets process this...
     var self = this;
@@ -132,7 +122,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                     test: true,
                     user: self.user,
                     contest: self.contest,
-                    service: 'facebook',
+                    service: 'bozuko',
                     ll: self.options.ll,
                     message: self.options.message
                 }, function(error, result){
@@ -159,7 +149,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
     return EntryMethod.prototype.process.call(this, callback);
 };
 
-FacebookCheckinMethod.prototype._load = function( callback ){
+BozukoCheckinMethod.prototype._load = function( callback ){
     var self = this;
     return Bozuko.models.Page.findById( self.contest.page_id, function(error, page){
         if( error ) return callback( error );
@@ -177,7 +167,7 @@ FacebookCheckinMethod.prototype._load = function( callback ){
     });
 };
 
-FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
+BozukoCheckinMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
     this.load( function(error){
         if( error ) return callback( error );
@@ -203,14 +193,14 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
                     if( minutes > 1 ){
                         time_str = dateFormat( time, 'hh:MM TT');
                     }
-                    return callback(null, _t( self.user ? self.user.lang : 'en', use_time ? 'entry/facebook/wait_time' : 'entry/facebook/wait_date', time_str )  );
+                    return callback(null, _t( self.user ? self.user.lang : 'en', use_time ? 'entry/bozuko/wait_time' : 'entry/bozuko/wait_date', time_str )  );
                 }
                 if( self.user && !self.can_checkin ){
-                    return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/facebook/enter' )  );
+                    return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/bozuko/enter' )  );
                 }
-                return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/checkin_to_play' ));
+                return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/checkin_to_play' ));
             }
-            return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/play' ) );
+            return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/play' ) );
         });
     });
     

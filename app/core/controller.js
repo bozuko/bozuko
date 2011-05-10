@@ -37,9 +37,6 @@ Controller.prototype = {
                     var handler = function(req,res){
                         res.send("Handler is not configured yet :(");
                     };
-                    if( self.access ){
-                        auth.check( self.access, handler );
-                    }
                     var _locals = merge({}, self.locals || {});
                     merge(_locals, config.locals || {});
                     if( config.title ) _locals.title = config.title;
@@ -89,7 +86,6 @@ Controller.prototype = {
                                 type: 'undefined'
                             }
                         };
-
                     }
 
                     // change the controller to use a modified version of the
@@ -123,6 +119,10 @@ Controller.prototype = {
                     // add our controller middleware
                     if (self.filter ){
                         handler = middleware(self.filter, handler, self);
+                    }
+                    // add our access
+                    if( self.access ){
+                        handler = auth.check( self.access, handler );
                     }
                     
                     path = self._cleanPath(path);

@@ -263,7 +263,8 @@ EntryMethod.prototype.getLastEntry = function(){
 
 EntryMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
-    this.load( function(error){
+    if( self._buttonText ) return callback( null, self._buttonText );
+    return this.load( function(error){
         if( error ) return callback( error );
         return self.getNextEntryTime( function( error, time ){
             
@@ -271,11 +272,31 @@ EntryMethod.prototype.getButtonText = function( tokens, callback ){
             if( !tokens ){
                 var now = new Date();
                 if( time.getTime() >= now.getTime() ){
-                    return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/wait', relativeDate( time) ) );
+                    self._buttonText = _t( self.user ? self.user.lang : 'en', 'entry/wait', relativeDate( time) );
                 }
-                return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/enter') );
+                else{
+                    self._buttonText =  _t( self.user ? self.user.lang : 'en', 'entry/enter');
+                }
             }
-            return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/play') );
+            else{
+                self._buttonText = _t( self.user ? self.user.lang : 'en', 'entry/play');
+            }
+            return callback( null, self._buttonText );
         });
+    });
+};
+
+EntryMethod.prototype.getButtonEnabled = function( tokens, callback ){
+    var self = this;
+    self.getNextEntryTime( function(error, time){
+        if( error ) return callback( error );
+        var enabled = true;
+        var now = new Date();
+        if( time > now ){
+            if( tokens == 0 ){
+                enabled = false;
+            }
+        }
+        return callback( null, enabled );
     });
 };
