@@ -40,8 +40,9 @@ Contest.plugin( Native );
  * @public
  */
 Contest.method('generateResults', function(callback){
-    this.getEngine().generateResults(this);
     var self = this;
+    
+    self.getEngine().generateResults(this);
     this.save(function(error){
         if( error ) return callback(error);
         return callback(null, self.results);

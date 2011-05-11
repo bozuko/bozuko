@@ -94,6 +94,7 @@ exports['save checkin'] = function(test) {
 
 exports['generate contest results'] = function(test) {
     contest.generateResults(function(err, results) {
+        console.log(contest.doc);
         test.ok(!err);
         test.done();
     });
