@@ -34,7 +34,7 @@ auth.check = function(access, callback) {
 
     return function(req, res) {
         var layer;
-        
+
         async.forEachSeries(access, function(layer, cb) {
             auth[layer](req, res, cb);
         }, function(err) {
@@ -71,15 +71,15 @@ auth.business = function(req,res, callback){
 }
 
 auth.mobile = function(req, res, callback) {
-    
-    
+
+
     var user = req.session.user;
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
-    
+
     console.log(req.session.phone);
-    
+
     async.series([
 
         // Verify phone type and unique id
@@ -91,7 +91,13 @@ auth.mobile = function(req, res, callback) {
             } else if ( result === 'match') {
                 return callback();
             } else if (result === 'new') {
-                return callback(Bozuko.error('auth/mobile'));
+                // Always add new phones. We may want to change this in the future.
+                // This could be an attack vector potentially.
+                user.phones.push(req.session.phone);
+                user.save(function(err) {
+                    if (err) return callback(err);
+                    return callback(null);
+                });
             } else {
                 console.log("Unkown result from user.verify_phone: "+result);
                 return callback(Bozuko.error('auth/mobile'));
