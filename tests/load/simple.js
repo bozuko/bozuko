@@ -20,8 +20,8 @@ var options = {
     port: 443,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 50, // req/sec
-    time: 30, // sec
+    rate: 20, // req/sec
+    time: 1800, // sec
     wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
@@ -81,7 +81,6 @@ function checkin(res, callback) {
     try {
         var pages = JSON.parse(res.body).pages;
     } catch(err) {
-        console.log("res = "+res);
         return callback(err);
     }
     // grab a random page
@@ -100,7 +99,6 @@ function checkin(res, callback) {
     Bozuko.models.User.findById(uid, function(err, user) {
         if (err) return callback(err);
         if (!user) {
-            console.log("user_ids_free.length = "+user_ids_free.length);
             return callback(new Error("Couldn\'t find user "+uid));
         }
         var checkin_link = page.links.facebook_checkin;
@@ -128,7 +126,6 @@ function checkin(res, callback) {
 }
 
 function play(res, callback) {
-    console.log("res.body = "+res.body);
     try {
         var rv = JSON.parse(res.body);
     } catch(err) {
@@ -157,7 +154,6 @@ function play(res, callback) {
             if (res.statusCode === 200) return callback(new Error("Play allowed with no tokens!"));
 
             // allow reuse of this user
-            console.log("res.opaque.user_id = "+res.opaque.user_id);
             user_ids_free.push(res.opaque.user_id);
 
             // End the session
@@ -171,7 +167,6 @@ function play(res, callback) {
 
         if (token_ct === 0) {
             // allow reuse of this user
-            console.log("res.opaque.user_id = "+res.opaque.user_id);
             user_ids_free.push(res.opaque.user_id);
             return callback(null, 'done');
         }

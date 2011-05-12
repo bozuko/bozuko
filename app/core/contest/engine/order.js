@@ -8,7 +8,7 @@ var OrderEngine = module.exports = function(){
 inherits( OrderEngine, Engine );
 
 OrderEngine.prototype.generateResults = function( ){
-    
+
     var contest = this.contest;
     var results = {};
 
@@ -22,35 +22,46 @@ OrderEngine.prototype.generateResults = function( ){
     contest.entry_config.forEach(function(entry_config){
         var entryMethod = Bozuko.entry(entry_config.type, contest);
         entryMethod.configure( entry_config );
-        max = Math.max(parseInt(entryMethod.getMaxTokens()),max);
+       max = Math.max(parseInt(entryMethod.getMaxTokens()),max);
     });
 
-    // var totalPlays = max*contest.total_entries;
-    var totalPlays = contest.total_plays;
-    
+    var totalPlays = max*contest.total_entries;
+    var freePlays = Math.floor(contest.free_play_pct/100*totalPlays);
+    totalPlays = totalPlays + freePlays;
+
     // not sure if this is the best way to do this, but it works
     var ar = [];
     for( var i=0; i<totalPlays; i++) ar.push(i);
 
+    function pick_index() {
+        var random = rand(0,ar.length-1);
+        var index = ar[random];
+        ar.splice( random, 1 );
+        return index;
+    }
 
+    var index;
     prizes.forEach(function(prize, prize_index){
         for( var i = 0; i < prize.total; i++ ){
-            // get a random number
-            var random = rand(0,ar.length-1);
-            var index = ar[random];
-            
-            ar.splice( random, 1 );
+            index = pick_index();
             results[index] = {
                 index: prize_index,
                 prize: prize._id
             };
         }
     });
+
+    for (i = 0; i < freePlays; i++) {
+        index = pick_index();
+        results[index] = 'free_play';
+    }
+
     delete ar;
 
     contest.results = results;
     contest.total_plays = totalPlays;
-}
+    contest.total_free_plays = freePlays;
+};
 
 OrderEngine.prototype.play = function( user_id, callback ){
     var tries = this.contest.total_plays - this.contest.play_cursor;
