@@ -25,8 +25,8 @@ OrderEngine.prototype.generateResults = function( ){
         max = Math.max(parseInt(entryMethod.getMaxTokens()),max);
     });
 
-    // var totalPlays = max*contest.total_entries;
-    var totalPlays = contest.total_plays;
+    var totalPlays = max*contest.total_entries;
+    // var totalPlays = contest.total_plays;
     
     // not sure if this is the best way to do this, but it works
     var ar = [];
