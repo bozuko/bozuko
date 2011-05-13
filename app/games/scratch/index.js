@@ -1,5 +1,6 @@
-var Game = Bozuko.require('core/game');
-var rand = Bozuko.require('util/math').rand;
+var Game = Bozuko.require('core/game'),
+    burl = Bozuko.require('util/url').create,
+    rand = Bozuko.require('util/math').rand;
 
 var Scratch = module.exports = function() {
     Game.apply(this,arguments);
@@ -10,6 +11,8 @@ Scratch.prototype.__proto__ = Game.prototype;
 var proto = Scratch.prototype;
 
 proto.name = "Scratch";
+
+proto.icon = burl('/games/scratch/scratch_icon.png');
 
 var min = 0,
     max = 99;

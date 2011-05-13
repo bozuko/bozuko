@@ -91,7 +91,6 @@ Bozuko.service = function(name){
 Bozuko.game = function(contest){
 	return new this.games[contest.game](contest);
 };
-
 Bozuko.transfer = function(key, data, user){
 	if( !data ) return this._transferObjects[key];
 	try{
@@ -152,8 +151,10 @@ Bozuko.error = function(name, data){
 	    }
 	    return new BozukoError(name,message,data,code);
 	}catch(e){
-		console.log(e.stack);
-        return new BozukoError();
+		var error = new BozukoError();
+		error.name = name;
+		error.code = 500;
+		return error;
 	}
 };
 
@@ -163,6 +164,10 @@ Bozuko.t = function(){
 
 
 function initApplication(app){
+    if (Bozuko.env() != 'test') {
+        app.use(Bozuko.require('middleware/profiler')());
+    }
+
     // setup basic authentication for development
     if( Bozuko.config.server.auth ){
         app.use(express.basicAuth(function(user, pass){
@@ -182,14 +187,14 @@ function initApplication(app){
         maxAge: 1000 * 60 * 60 * 24
     });
 
-
     app.use(express.session({key:'bozuko_sid', secret: 'chqsmells', store: Bozuko.sessionStore }));
     app.use(Monomi.detectBrowserType());
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
     app.use(Bozuko.require('middleware/mobile')());
-    app.use(express.profiler());
-    app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
+    if (Bozuko.env() != 'test') {
+        app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
+    }
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
     app.use(express.static(__dirname + '/static'));
@@ -214,8 +219,7 @@ function initModels(){
             return Bozuko.models[Name];
         });
 
-        Bozuko.db.model( Name, schema );
-        Bozuko.models[Name] = Bozuko.db.model(Name);
+        Bozuko.models[Name] = Bozuko.db.model( Name, schema );
     });
 }
 

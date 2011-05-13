@@ -1,6 +1,7 @@
 var testsuite = require('./config/testsuite');
 var async = require('async');
 var util = require('util');
+var uuid = require('node-uuid');
 
 var start = new Date();
 var end = new Date();
@@ -30,10 +31,8 @@ var contest = new Bozuko.models.Contest(
     }],
     start: start,
     end: end,
-    total_entries: 1,
-    total_plays: 3,
-    play_cursor: -1,
-    token_cursor: -1
+    free_play_pct: 50,
+    total_entries: 1
 });
 contest.prizes.push({
     name: 'Wicked cool T-Shirt',
@@ -41,7 +40,7 @@ contest.prizes.push({
     description: "Awesome Owl Watch T-Shirt",
     details: "Only available in Large or Extra-large",
     instructions: "Show this screen to an employee",
-    total: 2
+    total: 1
 });
 contest.prizes.push({
     name: 'Owl Watch Mug',
@@ -49,7 +48,7 @@ contest.prizes.push({
     description: "Sweet travel Mug",
     details: "Not good for drinking out of.",
     instructions: "Show this screen to an employee",
-    total: 10
+    total: 1
 });
 
 var checkin = new Bozuko.models.Checkin();
@@ -115,14 +114,17 @@ exports['enter contest fail - no tokens'] = function(test) {
     });
 };
 
+var free_play = false;
+
 function play(callback) {
     contest.play(user._id, function(err, result) {
+        if (result.play.free_play) free_play = true;
         callback(err, result);
     });
 }
 
 exports['play  3 times'] = function(test) {
-    async.parallel([play, play, play], function(err, results) {
+    async.series([play, play, play], function(err, results) {
         test.ok(!err);
         var res = results[0];
         test.deepEqual(res.play.game, 'slots');
@@ -131,20 +133,34 @@ exports['play  3 times'] = function(test) {
         test.deepEqual(results[2].play.play_cursor+0, 2);
 
         Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
-            test.equal(c.users[user._id].active_plays.length, 0);
+            test.equal(c.plays[0].active, false);
+            test.equal(c.plays[1].active, false);
+            test.equal(c.plays[2].active, false);
             test.done();
         });
+    });
+};
+
+exports['use free play if won'] = function(test) {
+    if (!free_play) return test.done();
+
+    console.log("Congratulations: You won a free play!");
+
+    play(function(err, result) {
+        test.equal(3, result.play.play_cursor);
+        test.done();
     });
 };
 
 exports['play fail - no tokens'] = function(test) {
     contest.play(user._id, function(err, result) {
         test.ok(err);
+        var play_cursor = free_play ? 3 : 2;
         Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
             test.ok(!err);
-            test.deepEqual(c.play_cursor+0, 2);
-            test.deepEqual(c.users[user._id].entries[0].tokens+0, 0);
-            test.equal(c.users[user._id].active_plays.length, 0);
+            test.deepEqual(c.play_cursor+0, play_cursor);
+            test.deepEqual(c.entries[0].tokens+0, 0);
+            test.equal(c.plays[play_cursor].active, false);
             test.done();
         });
     });
@@ -152,38 +168,53 @@ exports['play fail - no tokens'] = function(test) {
 
 exports['audit - missing prize and play'] = function(test) {
 
-    // Add a fake active_play to the user's record for the contest.
-    // The play_cursor is longer than the results array, but it doesn't matter for the test.
+    var timestamp = new Date();
 
-    var active_play = {
-        play_cursor: 3,
-        game_result: ['seven', 'seven', 'seven'],
-        prize_index: 1,
-        timestamp: new Date()
-    };
     Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
         test.ok(!err);
-        c.users[user._id].active_plays.push(active_play);
-        Bozuko.models.Contest.update({_id: contest._id}, {users: c.users, version: c.version+1}, function(err) {
+
+        var plays = free_play ? 5 : 4;
+
+        // Add a fake prize onto the end of the results so we can force a win
+        var results = c.results;
+        results[plays - 1] = {
+            index: 0,
+            prize: '4dcc0c766982a2fb72000005'
+        };
+
+        // Add a fake active_play to the user's record for the contest.
+        return Bozuko.models.Contest.findAndModify(
+            {_id: contest._id},
+            [],
+            {$inc: {play_cursor: 1},
+             $push: {plays: {timestamp: timestamp, active: true, uuid: uuid(), user_id: user._id}},
+             $set: {results: results}},
+            {new: true},
+          function(err, c) {
             test.ok(!err);
-            test.equal(c.users[user._id].active_plays.length, 1);
+            test.equal(c.plays.length, plays);
+            test.equal(c.plays[plays-1].active, true);
             Bozuko.models.Contest.audit(function(err) {
                 test.ok(!err);
                 Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
                     test.ok(!err);
-                    test.equal(c.users[user._id].active_plays.length, 0);
+                    test.equal(c.plays.length, plays);
+                    test.equal(c.plays[plays-1].active, false);
                     Bozuko.models.Prize.findOne(
-                        {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                        {contest_id: contest._id, play_cursor: plays - 1},
                         function(err, prize) {
                             test.ok(!err);
-                            test.ok(prize);
-                            test.equal(prize.timestamp.getTime(), active_play.timestamp.getTime());
+                            console.log("prize = "+JSON.stringify(prize));
+                            test.ok(prize != null);
+                            test.equal(prize.timestamp.getTime(), timestamp.getTime());
+                            test.equal(prize.uuid, c.plays[plays-1].uuid);
                             Bozuko.models.Play.findOne(
-                                {contest_id: contest._id, play_cursor: active_play.play_cursor},
+                                {contest_id: contest._id, play_cursor: plays - 1},
                                 function(err, play) {
                                     test.ok(!err);
                                     test.ok(play);
-                                    test.equal(play.timestamp.getTime(), active_play.timestamp.getTime());
+                                    test.equal(play.timestamp.getTime(), timestamp.getTime());
+                                    test.equal(play.uuid, c.plays[plays-1].uuid);
                                     test.done();
                                 }
                             );
@@ -196,56 +227,43 @@ exports['audit - missing prize and play'] = function(test) {
 };
 
 exports['audit - missing play'] = function(test) {
-    var active_play = {
-        play_cursor: 4,
-        game_result: ['seven', 'bar', 'bozuko'],
-        prize_index: false,
-        timestamp: new Date()
-    };
+
+    var timestamp = new Date();
+    var plays = free_play ? 6 : 5;
 
     Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
         test.ok(!err);
-        c.users[user._id].active_plays.push(active_play);
-        Bozuko.models.Contest.update(
-            {_id: contest._id},
-            {users: c.users, version: c.version+1},
-            function(err) {
+
+        // Add a fake active_play to the user's record for the contest.
+        // The play_cursor is longer than the results array, but it doesn't matter for the test.
+        c.plays.push({timestamp: timestamp, active: true, uuid: uuid(), user_id: user._id});
+        c.play_cursor++;
+
+        c.save(function(err) {
+            test.ok(!err);
+            test.equal(c.plays.length, plays);
+            test.equal(c.plays[plays-1].active, true);
+            Bozuko.models.Contest.audit(function(err) {
                 test.ok(!err);
-                test.equal(c.users[user._id].active_plays.length, 1);
-                Bozuko.models.Contest.audit(function(err) {
+                Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
                     test.ok(!err);
-                    Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
-                        test.ok(!err);
-                        test.equal(c.users[user._id].active_plays.length, 0);
-                        Bozuko.models.Prize.findOne(
-                            {contest_id: contest._id, play_cursor: active_play.play_cursor},
-                            function(err, prize) {
-                                test.ok(!err);
-                                test.ok(!prize);
-                                Bozuko.models.Play.findOne(
-                                    {contest_id: contest._id, play_cursor: active_play.play_cursor},
-                                    function(err, play) {
-                                        test.ok(!err);
-                                        test.ok(play);
-                                        test.equal(
-                                            play.timestamp.getTime(),
-                                            active_play.timestamp.getTime()
-                                        );
-                                        test.done();
-                                    }
-                                );
-                            }
-                        );
-                    });
+                    test.equal(c.plays.length, plays);
+                    test.equal(c.plays[plays-1].active, false);
+                    Bozuko.models.Play.findOne(
+                        {contest_id: contest._id, play_cursor: plays-1},
+                        function(err, play) {
+                            test.ok(!err);
+                            test.ok(play);
+                            test.equal(play.timestamp.getTime(), timestamp.getTime());
+                            test.equal(play.uuid, c.plays[plays-1].uuid);
+                            test.done();
+                        }
+                    );
                 });
-            }
-        );
+            });
+        });
     });
 };
-
-// exports.cleanup = function(test) {
-//     cleanup(test.done);
-// };
 
 function cleanup(callback) {
     var e = emptyCollection;

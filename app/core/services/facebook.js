@@ -15,8 +15,6 @@ FacebookService.prototype.__proto__ = Service.prototype;
 
 var api = facebook.graph;
 
-var $ = FacebookService.prototype;
-
 /**
  * Login function
  *
@@ -29,7 +27,7 @@ var $ = FacebookService.prototype;
  *
  * @returns {null}
  */
-$.login = function(req,res,scope,defaultReturn,success,failure){
+FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,failure){
     var code = req.param('code');
     var error_reason = req.param('error_reason');
     var url = URL.parse(req.url);
@@ -176,7 +174,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
  *
  * @return {null}
  */
-$.search = function(options, callback){
+FacebookService.prototype.search = function(options, callback){
     var self = this;
     if( !options || !(options.center || options.query) ){
         return callback(Bozuko.error('facebook/no_lat_lng_query'));
@@ -236,15 +234,15 @@ $.search = function(options, callback){
  *
  * @return {null}
  */
-$.checkin = function(options, callback){
+FacebookService.prototype.checkin = function(options, callback){
 
-    if( !options || !options.place_id || !options.latLng || !options.user ){
+    if( !options || !options.place_id || !options.ll || !options.user ){
         return callback(Bozuko.error('facebook/no_lat_lng_user_place'));
     }
 
     var params = {
         place           :options.place_id,
-        coordinates     :JSON.stringify({latitude:options.latLng.lat,longitude: options.latLng.lng})
+        coordinates     :JSON.stringify({latitude:options.ll[1],longitude: options.ll[0]})
     };
     
     if( options.name )          params.name         = options.name;
@@ -287,7 +285,7 @@ $.checkin = function(options, callback){
  *
  * @return {null}
  */
-$.user = function(options, callback){
+FacebookService.prototype.user = function(options, callback){
 
     if( !options || !(options.user_id  || options.user) ){
         return callback(Bozuko.error('facebook/no_user'));
@@ -325,7 +323,7 @@ $.user = function(options, callback){
  *
  * @return {null}
  */
-$.user_favorites = function(options, callback){
+FacebookService.prototype.user_favorites = function(options, callback){
     options.fields = 'likes';
     return this.user(options, callback);
 };
@@ -348,7 +346,7 @@ $.user_favorites = function(options, callback){
  *
  * @return {null}
  */
-$.like = function(options, callback){
+FacebookService.prototype.like = function(options, callback){
 
     if( !options || !options.object_id || !options.user ){
         return callback(Bozuko.error('facebook/no_page_id_user'));
@@ -395,7 +393,7 @@ $.like = function(options, callback){
  *
  * @return {null}
  */
-$.place = function(options, callback){
+FacebookService.prototype.place = function(options, callback){
     var self = this;
     if( !options || !options.place_id ){
         return callback(Bozuko.error('facebook/no_page_id'));
@@ -428,7 +426,7 @@ $.place = function(options, callback){
  * @return {null}
  */
 
-$.get_user_pages = function(user, callback){
+FacebookService.prototype.get_user_pages = function(user, callback){
     var self = this;
     facebook.graph('/me/accounts',
         {
@@ -509,7 +507,7 @@ $.get_user_pages = function(user, callback){
  *
  * @return {Object}         place           The sanitized object / objects
  */
-$._sanitizePlace = function(place){
+FacebookService.prototype._sanitizePlace = function(place){
     if( !place ) return null;
     if( !place.location ) place.location = {};
     return {
@@ -560,7 +558,7 @@ $._sanitizePlace = function(place){
  *
  * @return {Object}         place           The sanitized object / objects
  */
-$._sanitizeUser = function(user){
+FacebookService.prototype._sanitizeUser = function(user){
 
     if( !user ) return null;
     return {

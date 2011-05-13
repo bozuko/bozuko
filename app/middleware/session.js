@@ -11,17 +11,19 @@ module.exports = function session(){
         var re = new RegExp('('+ignoreExtensions.join('|')+')$', 'i');
         if( !req.session || re.test(path) ){
             return next();
-        }        
+        }
 
         var q = {};
 
         if (req.param('token')) {
             q.token = req.param('token');
+            if (Bozuko.env() != 'test') {
+                console.log( 'Token = '+q.token );
+            }
         }
 
         var newSession = req.session.userJustLoggedIn;
         req.session.userJustLoggedIn = false;
-
         if( q.token  && !newSession ){
             req.session.user = false;
             // check for the user in our database
