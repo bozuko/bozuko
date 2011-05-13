@@ -125,7 +125,7 @@ exports.routes = {
                 req.session.user_redirect = req.param('return');
             }
             else if(req.param('phone_id') && req.param('phone_type')){
-                req.session.user_redirect = '/user/mobile'
+                req.session.user_redirect = '/user/mobile';
             }
             return Bozuko.service(service).login(req,res,'user',req.session.user_redirect||'/user');
         }

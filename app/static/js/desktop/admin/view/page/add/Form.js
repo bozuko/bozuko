@@ -3,10 +3,81 @@ Ext.define('Bozuko.view.page.add.Form' ,{
     extend          :'Ext.panel.Panel',
     alias           :'widget.pageaddform',
     
+    layout          :'border',
+    margin          :'4',
+    border          :false,
+    defaults        :{
+        border          :true
+    },
+    
     initComponent : function(){
-        this.html = 'form';
-        this.callParent( arguments );
+        var me = this;
+        
+        me.items = [{
+            region          :'north',
+            title           :'Choose Place',
+            data            :{},
+            height          :126,
+            bodyPadding     :10,
+            margin          :'0 0 4',
+            tpl             :[
+                '<tpl if="name">',
+                    '<img src="{image}&type=square" height="80" style="float: left; margin: 0 10px 10px 0" />',
+                    '<div style="font-weight: bold;">{name}</div>',
+                    '<div>{category}</div>',
+                '</tpl>',
+                '<tpl if="!name">',
+                    '<h3>Please select a place from the map</h3>',
+                '</tpl>'
+            ]
+        },{
+            region          :'center',
+            title           :'Select the Owner',
+            margin          :'0 0 0 0',
+            items           :[{
+                xtype           :'dataview',
+                store           :me.store,
+                autoScroll      :true,
+                overItemCls     :'list-item-over',
+                selectedItemCls :'list-item-selected',
+                itemSelector    :'.list-item',
+                emptyText       :'No Pages',
+                tpl             :[
+                    '<div class="bozuko-list">',
+                        '<tpl for=".">',
+                            '<div class="list-item">',
+                                '<img src="{image}&type=square" />',
+                                '<span class="title">{name}</span>',
+                            '</div>',
+                        '</tpl>',
+                    '</div>'
+                ],
+                listeners       :{
+                    scope           :me,
+                    select          :function(view, user){
+                        me.setUser( user );
+                    }
+                }
+            }]
+        }];
+        me.callParent( arguments );
+    },
+    
+    setPlace : function(place){
+        this.place = place;
+        this.down('panel[region=north]').update( place.data );
+        this.checkComplete();
+    },
+    
+    setUser : function(user){
+        this.user = user;
+        this.checkComplete();
+    },
+    
+    checkComplete : function(){
+        if( this.user && me.place ){
+            this.fireEvent('allset');
+        }
     }
     
-    // we need to add a google map after this fires
 });

@@ -2,8 +2,9 @@ Ext.define('Bozuko.controller.Pages' ,{
     extend: 'Ext.app.Controller',
     
     views: ['page.Panel','page.Add'],
-    stores: ['Pages'],
-    models: ['Page'],
+    stores: ['Pages', 'Places', 'Users'],
+    
+    models: ['Page', 'User'],
     
     refs : [
         {ref: 'pageData', selector: 'pagelist dataview'},
@@ -11,6 +12,7 @@ Ext.define('Bozuko.controller.Pages' ,{
     ],
     
     init : function(){
+        var me = this;
         this._tabs = {};
         this.control({
             'pagelist dataview':{
@@ -18,16 +20,28 @@ Ext.define('Bozuko.controller.Pages' ,{
             },
             'pagelist button[action=add]':{
                 click: this.addPage
+            },
+            'pagelist button[action=reload]':{
+                click: function(){
+                    me.getPagesStore().load();
+                }
             }
         });
     },
     
     onLaunch: function(){
         
-        var store = this.getPagesStore(),
+        var me = this,
+            store = this.getPagesStore(),
             dataview = this.getPageData();
             
         dataview.bindStore( store );
+        store.on('update', function(s, r){
+            var id = r.get('_id');
+            if( me._tabs && me._tabs[id] ){
+                me._tabs[id].setTitle(r.get('name'));
+            }
+        });
     },
     
     addPage : function(){
@@ -38,16 +52,40 @@ Ext.define('Bozuko.controller.Pages' ,{
                 title: 'Add a Business Page',
                 width: 800,
                 height: 600,
+                store: me.getPlacesStore(),
+                usersStore: Ext.create('Bozuko.store.Users'),
                 listeners: {
                     close : function(){
                         delete me._addWindow;
                     },
                     latlngchange : function(center){
-                        // do a place search...
-                        console.log(center)
+                        me.getPlacesStore().load({
+                            params:{
+                                ll: center.lat()+','+center.lng()
+                            }
+                        });
                     }
                 }
             });
+            me._addWindow.down('button[action=add]').on('click', function(){
+                
+                var form = me._addWindow.down('pageaddform');
+                var user = form.user;
+                var place = form.place;
+                
+                Ext.Ajax.request({
+                    url: '/admin/addpage',
+                    params:{
+                        user_id: user.get('_id'),
+                        place_id: place.get('id')
+                    },
+                    method: 'post',
+                    success: function(){
+                        me.getPagesStore().load();
+                        me._addWindow.close();
+                    }
+                });
+            }, me);
         }
         this._addWindow.show();
     },
@@ -57,9 +95,9 @@ Ext.define('Bozuko.controller.Pages' ,{
         var id = record.get('_id'),
             me = this;
         if( !this._tabs[id] ){
-            
+            var copy = record.copy();
             var panel = Ext.create('Bozuko.view.page.Panel', {
-                record: record,
+                record: copy,
                 closable: true,
                 page_id: id,
                 title: record.get('name'),
@@ -88,6 +126,7 @@ Ext.define('Bozuko.controller.Pages' ,{
     },
     
     savePage : function( form ){
+        var me = this;
         // update the record...
         var saveBtn = form.down('button[action=save]');
         var values = form.getForm().getValues();
@@ -107,6 +146,12 @@ Ext.define('Bozuko.controller.Pages' ,{
         saveBtn.disable();
         form.record.save({
             success: function(){
+                // also double check that we have this
+                var r = me.getPagesStore().getById(form.record.getId());
+                if( r ){
+                    r.set( form.record.data );
+                    r.commit();
+                }
                 saveBtn.enable();
             },
             failure: function(){

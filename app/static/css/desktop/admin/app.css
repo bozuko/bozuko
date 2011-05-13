@@ -20,28 +20,28 @@
   right: 10px;
   color: #fff;
 }
-.page-list .page {
+.bozuko-list .list-item {
   cursor: pointer;
   clear: both;
   border-bottom: 1px solid #ccc;
   overflow: hidden;
   padding: 6px;
 }
-.page-list .page img {
+.bozuko-list .list-item img {
   height: 50px;
   float: right;
 }
-.page-list .page .name {
+.bozuko-list .list-item .title {
   margin-top: 6px;
   font-weight: bold !important;
 }
-.page-list .page .address {
+.bozuko-list .list-item .sub {
   font-size: .85em;
   color: #999;
 }
-.page-list .page-over {
+.bozuko-list .list-item-over {
   background: #f3f3f3;
 }
-.page-list .page-selected {
+.bozuko-list .list-item-selected {
   background: #d5eaf9;
 }
