@@ -12,6 +12,7 @@ var Play = module.exports = new Schema({
     timestamp           :{type:Date},
     game                :{type:String},
     win                 :{type:Boolean},
+    free_play           :{type:Boolean},
     prize_id            :{type:ObjectId},
     prize_name          :{type:String}
 });

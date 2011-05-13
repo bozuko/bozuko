@@ -24,7 +24,6 @@ exports['get_root'] = function(test) {
         ok,
         function(res) {
 
-            console.log(res.body);
             var entry_point = JSON.parse(res.body);
 
             test.ok(Bozuko.validate('entry_point', entry_point));
@@ -45,7 +44,6 @@ exports['page tests'] = {
                 var page = result.pages[0];
                 var valid = Bozuko.validate('page', page);
                 test.ok(valid);
-                console.log(page.games[0]);
                 checkin_link = page.links.facebook_checkin;
                 like_link = page.links.facebook_like;
                 game_state_link = page.games[0].game_state.links.game_state;
@@ -139,6 +137,9 @@ exports['favorite tests'] = {
     }
 };
 
+var free_plays = 0;
+var play_fn;
+
 exports['game tests'] = {
     'check for game state' : function(test){
         assert.response(test, Bozuko.app,
@@ -146,7 +147,6 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                console.log(result.button_text);
                 // test.ok(result.button_text == 'Check in to Play', 'Button text is wrong');
                 test.done();
             });
@@ -169,7 +169,6 @@ exports['game tests'] = {
             headers: headers,
             data: params
         }, bad, function(res){
-            console.log(JSON.parse(res.body));
             return test.done();
         });
     },
@@ -195,7 +194,6 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var game_states = JSON.parse(res.body);
-                console.log(game_states);
                 test.ok(Bozuko.validate(['game_state'], game_states));
                 tokens = game_states[0].user_tokens;
                 test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
@@ -214,7 +212,7 @@ exports['game tests'] = {
             challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
         });
 
-        var play = function(callback) {
+        var play = play_fn = function(callback) {
             assert.response(test, Bozuko.app,
                 {
                     url: link,
@@ -225,10 +223,12 @@ exports['game tests'] = {
                 ok,
                 function(res) {
                     var result = JSON.parse(res.body);
-                    console.log(result);
-                    console.log("tokens = "+tokens);
-                    console.log("result.game_state.user_tokens = "+result.game_state.user_tokens);
-                    test.ok( --tokens === result.game_state.user_tokens);
+                    if (result.free_play) {
+                        tokens++;
+                        free_plays++;
+                        console.log("Congratulations, you won a free play!");
+                    }
+                    test.deepEqual(--tokens, result.game_state.user_tokens);
                     if( tokens > 0 ){
                         test.ok( typeof result.game_state.links.game_result == 'string' );
                     }
@@ -246,8 +246,29 @@ exports['game tests'] = {
         });
     },
 
+    'play again if there is a free play' : function(test) {
+        var params = JSON.stringify({
+            phone_type: phone.type,
+            phone_id: phone.unique_id,
+            mobile_version: '1.0',
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+        });
+
+        async.until(
+            function() { return free_plays === 0; },
+            function(callback) {
+                free_plays--;
+                play_fn(callback);
+            },
+            function(err) {
+                test.ok(!err);
+                test.done();
+            }
+        );
+    },
+
     // Play the slots game and check the result
-    'play the game one to many times' : function(test) {
+    'play the game one too many times' : function(test) {
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
@@ -265,7 +286,6 @@ exports['game tests'] = {
             {status: 500},
             function(res) {
                 var result = JSON.parse(res.body);
-                console.log(res.statusCode, result);
                 test.done();
             }
         );
@@ -289,7 +309,6 @@ exports['game tests'] = {
             {status: 403, headers: {'Content-Type': 'application/json; charset=utf-8'}},
             function(res) {
                 var facebook_checkin_result = JSON.parse(res.body);
-                console.log(facebook_checkin_result);
                 test.done();
             });
     },
@@ -307,7 +326,6 @@ exports['game tests'] = {
             method: 'GET'},
             ok,
             function(res) {
-                console.log("res.body = "+res.body);
                 var game_state = JSON.parse(res.body);
                 test.ok( game_state.button_enabled == false, 'Out of tokens, need to wait till next entry' );
                 // lets print the next time
@@ -316,7 +334,6 @@ exports['game tests'] = {
                 // set timeout
                 var ms = date.getTime() - now.getTime();
                 var countdown = Math.round(ms/1000)+1;
-                console.log( date.getTime() - now.getTime() );
                 var interval = setInterval( function(){
                     console.log(--countdown);
                 }, 1000);
@@ -338,7 +355,6 @@ exports['game tests'] = {
                 var game_state = JSON.parse(res.body);
                 var date = new Date( Date.parse( game_state.next_enter_time ) );
                 var now = new Date();
-                console.log(game_state);
                 test.ok( game_state.button_enabled === true, 'Button enable again');
                 test.ok( game_state.button_action === 'enter', 'Button action is enter');
                 // test.ok( game_state.button_text === 'Play Again', 'Button text is wrong');
@@ -366,7 +382,6 @@ exports['game tests'] = {
             {status: 403, headers: {'Content-Type': 'application/json; charset=utf-8'}},
             function(res) {
                 var game_states = JSON.parse(res.body);
-                console.log(game_states);
                 test.done();
             });
     },
@@ -388,17 +403,18 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var game_states = JSON.parse(res.body);
-                console.log(game_states);
                 tokens = game_states[0].user_tokens;
                 test.done();
             });
     },
 
-
     'play 3 more times': function(test){
         exports['game tests']['play 3 times'](test);
     },
 
+    'play more if there are free plays' : function(test) {
+        exports['game tests']['play again if there is a free play'](test);
+    },
 
     'try to enter again': function(test) {
         var params = JSON.stringify({
@@ -417,7 +433,6 @@ exports['game tests'] = {
             {status: 500, headers: {'Content-Type': 'application/json; charset=utf-8'}},
             function(res) {
                 var facebook_checkin_result = JSON.parse(res.body);
-                console.log(facebook_checkin_result);
                 test.done();
             });
     },
@@ -436,7 +451,6 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var game_state = JSON.parse(res.body);
-                console.log( game_state );
                 test.ok( game_state.button_enabled == false, 'Out of tokens, need to wait till next entry' );
                 // test.ok( game_state.button_text == 'Play again later...', 'Out of tokens, need to wait till next entry' );
                 // lets print the next time
@@ -445,7 +459,6 @@ exports['game tests'] = {
                 // set timeout
                 var ms = date.getTime() - now.getTime();
                 var countdown = Math.round(ms/1000)+1;
-                console.log( date.getTime() - now.getTime() );
                 var interval = setInterval( function(){
                     console.log(--countdown);
                 }, 1000);
@@ -475,7 +488,6 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var game_states = JSON.parse(res.body);
-                console.log(game_states);
                 test.ok(Bozuko.validate(['game_state'], game_states));
                 tokens = game_states[0].user_tokens;
                 test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
@@ -515,7 +527,6 @@ exports['prizes tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                console.log(result);
                 test.ok( result.prizes.length > 0, 'Found one' );
                 test.done();
             });
@@ -555,7 +566,6 @@ exports['prizes tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                console.log(result);
                 test.done();
             });
     } ,
@@ -603,7 +613,6 @@ exports['prizes tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                console.log(result);
                 test.ok( result.prizes.length === wins-1, 'Correct number of prizes' );
                 test.done();
             });

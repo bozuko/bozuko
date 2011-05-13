@@ -228,7 +228,7 @@ var add_contests = function(callback) {
 	game_config: {},
 	end: end,
 	total_entries: 30,
-        total_plays: 90 // 3 tokens/checkin * 30 checkins
+        free_play_pct: 50
     };
 
     Bozuko.models.Page.find({name:/owl/i}, function(error, pages){

@@ -11,15 +11,17 @@ module.exports = function session(){
         var re = new RegExp('('+ignoreExtensions.join('|')+')$', 'i');
         if( !req.session || re.test(path) ){
             return next();
-        }        
+        }
 
         var q = {};
 
         if (req.param('token')) {
             q.token = req.param('token');
-            console.log( 'Token = '+q.token );
+            if (Bozuko.env() != 'test') {
+                console.log( 'Token = '+q.token );
+            }
         }
-        
+
         var newSession = req.session.userJustLoggedIn;
         req.session.userJustLoggedIn = false;
         if( q.token  && !newSession ){
@@ -32,7 +34,7 @@ module.exports = function session(){
                 return next();
             });
         }
-        
+
         else if( req.session.user ){
             // we should really grab this from the db... i think this is what is screwing up our user...
             return Bozuko.models.User.findById(req.session.user._id, function(error, user){

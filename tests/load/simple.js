@@ -20,7 +20,7 @@ var options = {
     port: 443,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 50, // req/sec
+    rate: 20, // req/sec
     time: 1800, // sec
     wait_time: 10000, // ms
     path: '/api',
@@ -65,7 +65,11 @@ db.setup({users: options.max_sessions}, function(err) {
 
 function get_pages(res, callback) {
     var city = db.random_city();
-    var pages_link = JSON.parse(res.body).links.pages;
+    try {
+        var pages_link = JSON.parse(res.body).links.pages;
+    } catch(err) {
+        return callback(err);
+    }
     return callback(null, {
         path: pages_link+'/?ll='+city.lat+','+city.lng,
         method: 'GET',
@@ -74,8 +78,11 @@ function get_pages(res, callback) {
 }
 
 function checkin(res, callback) {
-    console.log("checkin json = "+res.body);
-    var pages = JSON.parse(res.body).pages;
+    try {
+        var pages = JSON.parse(res.body).pages;
+    } catch(err) {
+        return callback(err);
+    }
     // grab a random page
     var page = pages[Math.floor(Math.random()*pages.length)];
     if (!Bozuko.validate('page', page)) {
@@ -92,7 +99,6 @@ function checkin(res, callback) {
     Bozuko.models.User.findById(uid, function(err, user) {
         if (err) return callback(err);
         if (!user) {
-            console.log("user_ids_free.length = "+user_ids_free.length);
             return callback(new Error("Couldn\'t find user "+uid));
         }
         var checkin_link = page.links.facebook_checkin;
@@ -120,8 +126,11 @@ function checkin(res, callback) {
 }
 
 function play(res, callback) {
-    console.log("res.body = "+res.body);
-    var rv = JSON.parse(res.body);
+    try {
+        var rv = JSON.parse(res.body);
+    } catch(err) {
+        return callback(err);
+    }
 
     if (res.opaque.last_op === 'checkin') {
         if (!Bozuko.validate(['game_state'], rv)) return callback(new Error("Invalid game_state"));
@@ -145,7 +154,6 @@ function play(res, callback) {
             if (res.statusCode === 200) return callback(new Error("Play allowed with no tokens!"));
 
             // allow reuse of this user
-            console.log("res.opaque.user_id = "+res.opaque.user_id);
             user_ids_free.push(res.opaque.user_id);
 
             // End the session
@@ -159,7 +167,6 @@ function play(res, callback) {
 
         if (token_ct === 0) {
             // allow reuse of this user
-            console.log("res.opaque.user_id = "+res.opaque.user_id);
             user_ids_free.push(res.opaque.user_id);
             return callback(null, 'done');
         }
