@@ -202,7 +202,7 @@ function setupPlace(place, featured, cb){
                 contest.page_id = place._id;
                 contest.active = true;
                 contest.generateResults(function(error){
-                    console.log( 'generated results for contest');
+                    if( error ) console.log(error, contest.doc );
                     cb();
                 });
             });

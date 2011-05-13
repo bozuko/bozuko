@@ -26,7 +26,7 @@ OrderEngine.prototype.generateResults = function( ){
     });
 
     var totalPlays = max*contest.total_entries;
-    var freePlays = Math.floor(contest.free_play_pct/100*totalPlays);
+    var freePlays = Math.floor(contest.free_play_pct/100*totalPlays) || 0;
     totalPlays = totalPlays + freePlays;
 
     // not sure if this is the best way to do this, but it works

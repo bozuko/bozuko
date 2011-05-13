@@ -14,8 +14,3 @@ var Prize = module.exports = new Schema({
     total                   :{type:Number},
     claimed                 :{type:Number}
 });
-
-Prize.pre('save', function (next) {
-    if( this._id == '' ) delete this._id;
-    next();
-});
