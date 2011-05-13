@@ -48,7 +48,7 @@ exports.request = function(config){
         body = qs.stringify(params);
         encoding = config.encoding || 'utf-8';
     }
-    
+
     var request = http_.request({
         host: url_parsed.host,
         agent: false,
@@ -85,6 +85,9 @@ exports.request = function(config){
         });
     });
 
+    request.on('error', function(error) {
+        console.error("util/http: "+error);
+    });
 
 
     /**

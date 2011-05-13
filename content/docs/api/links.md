@@ -43,7 +43,7 @@ with the request:
 
 #### Client Version
 
-All API calls must have the client software version passed as an additional parameter 'version'
+All API calls must have the client software version passed as an additional parameter 'mobile\_version'
 in the URL string. 
 
 #### Documented Links

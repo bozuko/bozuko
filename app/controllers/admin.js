@@ -7,28 +7,53 @@ var facebook    = Bozuko.require('util/facebook'),
     sys         = require('sys')
 ;
 
+exports.access = 'admin';
 
 exports.routes = {
     
-    '/admin/logs/?' : {
+    '/admin' : {
         
-        description :"Business login - sends user to facebook",
+        get : {
+            
+            title: 'Bozuko Administration',
+            locals:{
+                layout: false
+            },
+            
+            handler: function(req,res){
+                res.render('admin/index');
+            }
+        }
+    },
+    
+    '/admin/pages' : {
         
-        methods     :['get'],
+        get : {
+            handler : function(req, res){
+                // need to get all pages
+                return Bozuko.models.Page.find({},{},{sort:{name:1}}, function(error, pages){
+                    if( error ) return error.send(res);
+                    return res.send({items:pages});
+                });
+            }
+        }
+    },
+    
+    'admin/pages/:id' : {
         
-        fn : function(req,res){
-            // http://nodejs.org/api.html#_child_processes
-            var sys = require('sys');
-            var spawn = require('child_process').spawn;
-            var filename = Bozuko.dir+'/logs/bozuko.log';
-            
-            var tail = spawn("tail", ["-f", filename]);
-            
-            res.writeHeader(200,{"Content-Type":"text/plain"});
-            
-            tail.stdout.on("data", function (data) {
-                
-            });
+        /* update */
+        put : {
+            handler : function(req,res){
+                return Bozuko.models.Page.findById( req.param('id'), function(error, page){
+                    if( error ) return error.send( res );
+                    // else, lets bind the reqest to the page
+                    page.set( req.body );
+                    return page.save( function(error){
+                        if( error ) return error.send(res);
+                        return res.send( {items: [page]} );
+                    });
+                })
+            }
         }
     }
 };

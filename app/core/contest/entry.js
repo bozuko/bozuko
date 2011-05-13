@@ -1,3 +1,5 @@
+var _t = Bozuko.t,
+    dateFormat = require('dateformat');
 
 /**
  * Abstract class for method of entry
@@ -11,27 +13,17 @@ var EntryMethod = module.exports = function(type, /* optional */ user){
     this.user = user;
 };
 
-var proto = EntryMethod.prototype;
+/**
+ * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
+ */
+EntryMethod.prototype.name = 'Abstract Entry Method';
 
 /**
  * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
  */
-proto.name = 'Abstract Entry Method';
+EntryMethod.prototype.description = 'This type of entry needs';
 
-/**
- * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
- */
-proto.description = 'This type of entry needs';
-
-/**
- * Button Text strings
- */
-proto.button_text = {
-    enter: "Enter",
-    play: 'Play'
-};
-
-proto.defaults = {
+EntryMethod.prototype.defaults = {
     duration: 1000*60*1
 };
 
@@ -40,28 +32,40 @@ proto.defaults = {
  *
  * TODO - decide if we need multiple types - mobile / admin, etc.
  */
-proto.image = '';
+EntryMethod.prototype.image = '';
+
 
 /**
- * To refresh or not, that is the question
+ * List Message String
+ *
  */
-proto.refresh = false;
+EntryMethod.prototype.list_message = 'Nothing is required to play this game.';
+
 
 /**
- * Refresh rate
+ * Get List Message
  *
- * How often to refresh (seconds)
- *
- * defauts 1 hour
  */
-proto.refresh_interval = 1000*60*60*1;
+EntryMethod.prototype.getListMessage = function(){
+    return this.list_message;
+}
+
+
+/**
+ * Get Description - allow for formatting.
+ *
+ */
+EntryMethod.prototype.getDescription = function(){
+    return this.description;
+}
+
 
 /**
  * Configure the entryMethod
  *
  * @param {EntryConfig} config The configuration for this entry method
  */
-proto.configure = function( config ){
+EntryMethod.prototype.configure = function( config ){
     var i, self = this;
     this.config = {};
     var _defaults = function(o){
@@ -70,7 +74,7 @@ proto.configure = function( config ){
         for( i in o.defaults ){
             self.config[i] = o.defaults[i];
         }
-    }
+    };
     _defaults(this);
     if( config.toObject ){
         config = config.toObject();
@@ -85,7 +89,7 @@ proto.configure = function( config ){
  *
  * @param {Contest} contest The contest for this entry.
  */
-proto.setContest = function( contest ){
+EntryMethod.prototype.setContest = function( contest ){
     this.contest = contest;
 };
 
@@ -94,11 +98,11 @@ proto.setContest = function( contest ){
  *
  * @returns {Number} The number of tokens for this contest
  */
-proto.getTokenCount = function(){
+EntryMethod.prototype.getTokenCount = function(){
     return this.config && this.config.tokens ? this.config.tokens : 1;
 };
 
-proto.getMaxTokens = function(){
+EntryMethod.prototype.getMaxTokens = function(){
     return this.getTokenCount();
 }
 
@@ -109,30 +113,49 @@ proto.getMaxTokens = function(){
  *
  * @param {Function} callback The callback function
  */
-proto.process = function( callback ){
-    
+EntryMethod.prototype.process = function( callback ){
+
     if( !this.user ) return callback(Bozuko.error('entry/process_no_user'));
     if( !this.contest ) return callback(Bozuko.error('entry/process_no_contest'));
-    
+
     var self = this;
     self.validate( function(error){
-        
+
         if( error ){
             // yikes
             return callback(error);
         }
 
         var e = {
-            parent: 0,
+            user_id: self.user._id,
+            contest_id: self.contest._id,
             timestamp: new Date(),
             type: self.type,
             tokens: self.getTokenCount(),
             initial_tokens: self.getTokenCount()
         };
-        
-        var tries = self.total_plays - self.token_cursor;
-        return self.contest.addUserEntry(self.user.id, e, tries, callback);
+
+        return self.contest.addEntry(e, function(error, entry){
+            if( error ) return callback(error);
+
+            // save a top level entry for analytics
+            var Entry = new Bozuko.models.Entry();
+            self.prepareAnalyticEntry( Entry );
+            Entry.timestamp = entry.timestamp;
+
+            return Entry.save( function(error){
+                return callback( error, entry );
+            });
+        });
     });
+};
+
+EntryMethod.prototype.prepareAnalyticEntry = function( Entry ){
+    var self = this;
+    Entry.contest_id = self.contest._id;
+    Entry.page_id = self.contest.page_id;
+    Entry.user_id = self.user._id;
+    Entry.type = self.type;
 };
 
 
@@ -141,7 +164,7 @@ proto.process = function( callback ){
  *
  * @returns {Boolean} If there is enough tokens
  */
-proto.ensureTokens = function(){
+EntryMethod.prototype.ensureTokens = function(){
     return this.contest.token_cursor + this.getTokenCount() < this.contest.total_plays;
 };
 
@@ -152,30 +175,35 @@ proto.ensureTokens = function(){
  *
  * @param {Callback} The Contest
  */
-proto.validate = function( callback ){
+EntryMethod.prototype.validate = function( callback ){
     var self = this;
     self.load( function( error ){
         if( error ) return callback( error );
         // check for contest
         if( !self.contest ) return callback( Bozuko.error('entry/no_contest') );
-    
+
         // check for user
         if( !self.user ) return callback( Bozuko.error('entry/no_user') );
-    
+
         // check that there is enough tokens left
         if( self.ensureTokens() === false ){
+            console.log("entry 22222");
             return callback( Bozuko.error('entry/not_enough_tokens') );
         }
-        
+
         // check for duration
         if( self.config && self.config.duration ){
             var now = new Date();
             var last = new Date();
             last.setTime( now.getTime() - self.config.duration );
             // need to check for other entries
-            var key = 'users.'+self.user.id+'entries.timestamp';
-            var selector = {};
-            selector[key] = {$gt: last};
+
+            var selector = { entries: {$elemMatch : {
+                user_id: self.user._id,
+                timestamp: {$gt : last}
+                }
+            }};
+
             return Bozuko.models.Contest.nativeFind(selector, function(error, entries){
                 if( error ) return callback( error );
                 return callback( null, entries.length ? false: true);
@@ -185,7 +213,7 @@ proto.validate = function( callback ){
     });
 };
 
-proto.load = function(callback){
+EntryMethod.prototype.load = function(callback){
     var self = this,
         force = false;
     if( arguments.length > 1 ){
@@ -202,42 +230,82 @@ proto.load = function(callback){
     return callback();
 };
 
-proto._load = function( callback ){
+EntryMethod.prototype._load = function( callback ){
     callback();
-}
+};
 
-proto.getNextEntryTime = function( callback ){
+EntryMethod.prototype.getNextEntryTime = function( lastEntry, callback ){
     var self = this;
     this.load( function(error){
         if( error ) return callback( error );
-        if( self._nextEntryTime ) callback(null, self._nextEntryTime );
+        if( self._nextEntryTime ) return callback(null, self._nextEntryTime );
         var now = new Date();
         if( !self.user ){
             return callback(null, now);
         }
         // assume we have the contest
-        var u = self.contest.users ? self.contest.users[self.user.id] : false;
-        if( !u || u.entries.length == 0) {
-            return callback(null, now);
-        }
-        // lets peak at the top entry
-        var e = u.entries[u.entries.length-1];
+        if( !lastEntry ) return callback( null, new Date() );
         // check the timestamp on this bad boy.
-        var timestamp = e.timestamp;
+        var timestamp = lastEntry.timestamp;
         timestamp.setTime( timestamp.getTime() + (self.config.duration||0));
-        var now = new Date();
+        now = new Date();
         self._nextEntryTime = timestamp > now ? timestamp : now;
         return callback(null, self._nextEntryTime);
     });
 };
 
-proto.getButtonText = function( tokens, callback ){
-    var self = this;
-    this.load( function(error){
-        if( error ) return callback( error );
-        if( !tokens ){
-            return callback(null, self.button_text.enter );
+EntryMethod.prototype.getLastEntry = function(){
+    // assume we have the contest
+    var entries = this.contest.entries;
+
+    if (!this.user) return false;
+
+    for (var i = entries.length-1; i >= 0; i--) {
+        if (entries[i].user_id == this.user.id) {
+            return entries[i];
         }
-        return callback(null, self.button_text.play );
+    }
+    return false;
+};
+
+EntryMethod.prototype.getButtonText = function( tokens, callback ){
+    var self = this;
+    if( self._buttonText ) return callback( null, self._buttonText );
+    return this.load( function(error){
+        if( error ) return callback( error );
+        var lastEntry = self.getLastEntry();
+        return self.getNextEntryTime( lastEntry, function( error, time ){
+
+            if( error ) return callback( error );
+            if( !tokens ){
+                var now = new Date();
+                if( time.getTime() >= now.getTime() ){
+                    self._buttonText = _t( self.user ? self.user.lang : 'en', 'entry/wait', relativeDate( time) );
+                }
+                else{
+                    self._buttonText =  _t( self.user ? self.user.lang : 'en', 'entry/enter');
+                }
+            }
+            else{
+                self._buttonText = _t( self.user ? self.user.lang : 'en', 'entry/play');
+            }
+            return callback( null, self._buttonText );
+        });
+    });
+};
+
+EntryMethod.prototype.getButtonEnabled = function( tokens, callback ){
+    var self = this;
+    var lastEntry = self.getLastEntry();
+    self.getNextEntryTime( lastEntry, function(error, time){
+        if( error ) return callback( error );
+        var enabled = true;
+        var now = new Date();
+        if( time > now ){
+            if( tokens == 0 ){
+                enabled = false;
+            }
+        }
+        return callback( null, enabled );
     });
 };

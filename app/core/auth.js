@@ -1,4 +1,6 @@
-var async = require('async');
+var async = require('async'),
+    ImapConnection = require('imap').ImapConnection,
+    basicAuth = require('./auth/basic');
 
 var auth = exports;
 
@@ -57,8 +59,42 @@ auth.user = function(req, res, callback) {
     if( !req.session.user ){
         return callback(Bozuko.error('bozuko/auth'));
     }
-    callback();
+    return callback();
 };
+
+var adminAuth = basicAuth(function(user,pass,cb){
+
+    // admin auth is going to be checked against our config
+    // for valid email addresses (gmail or google account),
+    // and then test email + pass against google's imap auth
+    var email = user.toLowerCase();
+    if( !~Bozuko.config.admins.indexOf(email) ){
+        return cb(new Error('Email not found'));
+    }
+    // else, lets try to validate the password
+    var conn = new ImapConnection({
+        username: email,
+        password: pass,
+        host: 'imap.gmail.com',
+        port: 993,
+        secure: true
+    });
+    return conn.connect(function(error){
+        if( error ) return cb(error);
+        return cb(null, {email:email});
+    });
+});
+
+/**
+ * Admin auth
+ */
+auth.admin = function(req, res, callback ){
+    /**
+     * TODO - add connect middleware basic auth
+     */
+    return adminAuth(req,res,callback);
+}
+
 
 auth.business = function(req,res, callback){
     if( !req.session.user ){
@@ -67,8 +103,9 @@ auth.business = function(req,res, callback){
     else if( !req.session.user.can_manage_pages ){
         return callback(Bozuko.error('bozuko/auth'));
     }
-    callback();
+    return callback();
 }
+
 
 auth.mobile = function(req, res, callback) {
 
@@ -77,8 +114,6 @@ auth.mobile = function(req, res, callback) {
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
-
-    console.log(req.session.phone);
 
     async.series([
 

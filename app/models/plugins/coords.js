@@ -21,4 +21,5 @@ var CoordsPlugin = module.exports = function(schema, opts){
     schema.virtual('location.lng', function(){
         return this.coords ? this.coords[0] : null;
     });
+    
 };

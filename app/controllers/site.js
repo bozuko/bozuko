@@ -39,6 +39,7 @@ exports.routes = {
         description :'Index page',
 
         get: function(req,res){
+            console.log('hello world bitch');
             var u = req.session.user;
             var locals = {
                 title: 'Bozuko',

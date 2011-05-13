@@ -28,6 +28,8 @@ Controller.prototype = {
             var path = route;
             if( !config.aliases ) config.aliases = [];
             if( config.alias ) config.aliases.push(config.alias);
+            
+            
 
             ['get','post','put','del','all'].forEach( function(method){
 
@@ -84,7 +86,6 @@ Controller.prototype = {
                                 type: 'undefined'
                             }
                         };
-
                     }
 
                     // change the controller to use a modified version of the
@@ -118,6 +119,10 @@ Controller.prototype = {
                     // add our controller middleware
                     if (self.filter ){
                         handler = middleware(self.filter, handler, self);
+                    }
+                    // add our access
+                    if( self.access ){
+                        handler = auth.check( self.access, handler );
                     }
                     
                     path = self._cleanPath(path);

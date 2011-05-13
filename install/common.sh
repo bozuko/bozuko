@@ -1,7 +1,5 @@
 export NODE_VER=v0.4.7
 export LIB=~/bozuko/node/lib
-export NPM_BIN=~/.npmbin
-export NPM_LIB=~/.npmlib
 
 function install_nvm() {
     echo "*** Installing nvm"
@@ -21,10 +19,4 @@ function install_node() {
     nvm use $NODE_VER
 }
 
-function patch_expresso() {
-    echo "*** Patching Expresso"
-    git clone git://github.com/andrewjstone/expresso.git
-    mv expresso/bin/expresso `which expresso`
-    rm -rf expresso
-}
 

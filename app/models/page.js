@@ -54,10 +54,10 @@ Page.method('loadContests', function(user, callback){
     self.contests = [];
     this.getActiveContests(function(error, contests){
         if( error ) return callback( error );
-        
+
         // else, we have contests!
         return async.forEach( contests,
-            
+
             function load_contest(contest, cb){
                 contest.loadGameState(user, function(error, state){
                     contest.loadEntryMethod(user, function(error, method){
@@ -66,12 +66,12 @@ Page.method('loadContests', function(user, callback){
                     cb(null);
                 });
             },
-            
+
             function return_contests(error){
                 return callback(error, self.contests);
             }
         );
-        
+
     });
 });
 
@@ -95,19 +95,19 @@ Page.method('getUserGames', function(user, callback){
         if( error ) return callback(error);
         var games = [];
         return async.forEach( contests,
-            
+
             function iterator(contest, cb){
                 contest.loadTransferObject(user, function(error){
                     games.push(contest.getGame());
                     cb(null);
                 });
             },
-            
-            function ret(error){                
+
+            function ret(error){
                 return callback( error, games );
             }
         );
-        
+
     });
 });
 
@@ -124,8 +124,8 @@ Page.method('canUserCheckin', function(user, callback){
      * However, this could get weird - what if they are on the business page
      * and want to checkin, should we allow that as long as they satisfy the global
      * page checkin duration, even if one contest checkin duration is longer? What
-     * if there are two contests with different checkin durations? 
-     * 
+     * if there are two contests with different checkin durations?
+     *
      */
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
@@ -203,7 +203,7 @@ Page.method('checkin', function(user, options, callback) {
                     }
                 }
                 var game = contest.getGame();
-                options.name = _t(user.lang, 'checkin/general_checkin_name', self.name);
+                options.name = _t(user.lang, 'checkin/contest_checkin_name', self.name);
                 options.description = _t(
                     user.lang,
                     'checkin/contest_checkin_desc',
@@ -221,41 +221,46 @@ Page.method('checkin', function(user, options, callback) {
             options.user = user;
 
             return Bozuko.models.Checkin.process(options, function(error, checkin){
-                if( error ) return error;
+                if( error ) return callback( error );
 
                 if( contests.length == 0 ){
                     return callback( null, {checkin:checkin, entries:[]} );
                 }
                 var current = 0, entries = [];
                 var count = 0;
-                return contests.forEach( function(contest){
-                    // check to make sure that the contest requires a checkin
-                    var found = false;
-                    contest.entry_config.forEach(function(entry_config){
-                        if( entry_config.type == options.service+'/checkin' ){
-                            found = true;
+                return async.forEach( contests,
+                                     
+                    function(contest, cb){
+                        // check to make sure that the contest requires a checkin
+                        var found = false;
+                        contest.entry_config.forEach(function(entry_config){
+                            if( entry_config.type == options.service+'/checkin' ){
+                                found = true;
+                            }
+                        });
+                        if( !found ){
+                            return cb(null);
                         }
-                    });
-                    if( !found ){
+
+                        // try to enter the contest
+                        var entry = Bozuko.entry(options.service+'/checkin', user, {
+                            checkin: checkin
+                        });
                         
-                    }
-                    // try to enter the contest
-                    var entry = Bozuko.entry(options.service+'/checkin', user, {
-                        checkin: checkin
-                    });
+                        return contest.enter( entry, function(error, entry){
+                            if( error ){
+                                return callback( error );
+                            }
+                            entries.push(entry);
+                            return cb(null);
+                        });
+                    },
                     
-                    contest.enter( entry, function(error, entry){
-                        console.log('entry '+(count++));
-                        if( error ){
-                            return callback( error );
-                        }
-                        entries.push(entry);
-                        if( ++current == contests.length ){
-                            return callback( null, {checkin:checkin, entries:entries});
-                        }
-                        return true;
-                    });
-                });
+                    function(error){
+                        if( error ) return callback( error );
+                        return callback( null, {checkin:checkin, entries:entries});
+                    }
+                );
             });
 
         });
@@ -271,7 +276,7 @@ Page.static('createFromServiceObject', function(place, callback){
             page.set(prop, place[prop]);
         }
     });
-    
+
     page.set('is_location', true);
     page.set('coords',[place.location.lng, place.location.lat]);
     page.service( place.service, place.id, null, place.data);
@@ -353,6 +358,7 @@ Page.static('search', function(options, callback){
                 $nearSphere: options.ll
             }
         };
+        
         serviceSearch = false;
     }
     // are we looking for bounded results
@@ -364,6 +370,7 @@ Page.static('search', function(options, callback){
             coords: {$within: {$box: options.bounds}}
         };
         bozukoSearch.type='nativeFind';
+        
         /**
          * TODO
          *
@@ -372,7 +379,7 @@ Page.static('search', function(options, callback){
          */
         serviceSearch = false;
     }
-    
+
     /**
      * This is a standard center search, we will use a service to get
      * additional results, but also do a search
@@ -380,7 +387,7 @@ Page.static('search', function(options, callback){
      */
     else {
         if( Bozuko.env() == 'development' && !options.query ){
-        
+
             var s = bozukoSearch.selector;
             bozukoSearch.selector = {
                 $or: [s, {test: true}, {featured:true}]
@@ -406,29 +413,33 @@ Page.static('search', function(options, callback){
             if( options.user ){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
-            if( page.owner_id ){
+            if( page.doc ){
                 page.registered = true;
             }
+            if (!page.owner_id && page._id) {
+                page.id = page.service('facebook').sid;
+            }
+
             // console.log(page.name, JSON.stringify({options:options.ll, page: page.coords}));
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }
     }
-    
+
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
-        
+
         if( error ) return callback(error);
-        
+
         return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
-            
+
             prepare_pages(pages, function(page){ page_ids.push(page._id);});
-            
+
             if( !serviceSearch ){
                 return callback(null, pages);
             }
-            
+
             options.center=options.ll;
 
             // use a 3rd party service to get additional results
@@ -443,7 +454,7 @@ Page.static('search', function(options, callback){
                 if( results ) results.forEach( function(place, index){
                     map[place.id] = place;
                 });
-                
+
                 return Bozuko.models.Page.findByService(service, Object.keys(map), {
                     owner_id: {
                         $exists: true

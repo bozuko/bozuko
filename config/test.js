@@ -33,14 +33,23 @@ module.exports = {
          */
         duration: {
             // 5 seconds
-            user: 1000 * 5,
+            user: 1000 * 10,
             // 5 seconds
-            page: 1000 * 5
-        }
+            page: 1000 * 10
+        },
+        distance : 100 /* feet */
     },
     
     entry : {
         token_expiration: 1000 * 60 * 60 * 24 * 1 // one day.
+    },
+    
+    contest : {
+        engine : {
+            order: {
+                chunk_size: 2
+            }
+        }
     },
     
     search: {
@@ -54,6 +63,18 @@ module.exports = {
         auth: false,
         host: 'bonobo.bozuko.com',
         port: port
+    },
+    
+    email : {
+        smtp:{
+            host: "smtp.gmail.com",
+            port: 465,
+            ssl: true,
+            use_authentication: true,
+            user: "mailer@bozuko.com",
+            pass: "7axxn7d8"
+        },
+        sender: 'Bozuko Mailer <mailer@bozuko.com>'
     },
 
     defaultService:'facebook',
