@@ -43,7 +43,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     var params = {
         'client_id' : Bozuko.config.facebook.app.id,
         'scope' : Bozuko.config.facebook.perms[scope],
-        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+(url.search.replace(/&code=.*$/i, ''))
+        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+((url.search||'').replace(/&code=.*$/i, ''))
     };
     
     console.log(params);
