@@ -56,7 +56,6 @@ var game = {
         obj.entry_method.description = game.contest.getEntryMethodDescription();
         // obj.can_play = obj.game_state.user_tokens > 0;
         obj.links = {
-            game_result: '/game/'+game.contest._id+'/result',
             page: '/page/'+game.contest.page_id,
             game: '/game/'+game.contest.id
         };
@@ -79,7 +78,6 @@ var game = {
         rules: "String",
         links: {
             login: "String",
-            game_result: "String",
             page: "String",
             game: "String"
         }

@@ -6,22 +6,36 @@ Ext.define('Bozuko.view.page.Form' ,{
     layout          :'fit',
     
     initComponent : function(){
-        
+        var me = this;
        
-        this.items = [{
+        me.items = [{
             xtype           :'tabpanel',
             activeTab       :0,
+            plain           :true,
             defaults        :{
                 autoScroll      :true,
-                bodyPadding     :10,
-                border          :false
+                bodyPadding     :10
             },
             items:[{
                 title           :'Basic Information',
                 layout          :'anchor',
+                bodyStyle           :'border-right-width: 0',
+                border          :false,
                 defaults        :{
+                    border          :false,
                     anchor          :'0'
                 },
+                dockedItems :[{
+                    width           :60,
+                    dock            :'right',
+                    xtype           :'panel',
+                    border          :false,
+                    ref             :'image',
+                    bodyStyle       :'text-align: center; padding: 10px 10px 0 0;',
+                    tpl             :[
+                        '<tpl if="image"><img src="{image}&type=square" height="50" /></tpl>'
+                    ]
+                }],
                 items: [{
                     xtype           :'textfield',
                     name            :'name',
@@ -42,48 +56,59 @@ Ext.define('Bozuko.view.page.Form' ,{
                     anchor          :'0'
                 },
                 items           :[{
-                    anchor          :'0',
                     xtype           :'textfield',
                     name            :'location.street',
                     fieldLabel      :'Street'
                 },{
-                    anchor          :'0',
                     xtype           :'textfield',
                     name            :'location.city',
                     fieldLabel      :'City'
                 },{
-                    anchor          :'0',
                     xtype           :'textfield',
                     name            :'location.state',
                     fieldLabel      :'State'
                 },{
-                    anchor          :'0',
                     xtype           :'textfield',
                     name            :'location.zip',
                     fieldLabel      :'Zip'
+                }]
+            },{
+                title           :'Business',
+                layout          :'anchor',
+                defaults        :{
+                    anchor          :'0'
+                },
+                items           :[{
+                    xtype           :'textarea',
+                    height          :60,
+                    name            :'announcement',
+                    fieldLabel      :'Announcement'
                 }]
             }]
         }];
         
     
-        this.buttons = [{
+        me.buttons = [{
             text            :'Save',
             action          :'save'
         }];
-        this.callParent();
+        me.callParent();
     },
     
     loadRecord : function( record ){
+        var me = this;
         
-        this.callParent(arguments );
+        me.callParent(arguments );
         // lets fill out the sub stuff too
-        this.record = record;
+        me.record = record;
         
         var location = record.get('location');
         var values = {};
         if( location ) Ext.Object.each( location, function(key, value){
             values['location.'+key] = value;
         });
-        this.getForm().setValues(values);
+        me.getForm().setValues(values);
+        
+        me.down('panel[ref=image]').update(record.data);
     }
 });

@@ -1,9 +1,11 @@
-Ext.define('Bozuko.model.Place', {
+Ext.define('Bozuko.model.User', {
     extend: 'Ext.data.Model',
+    
+    idProperty: '_id',
     
     proxy: {
 		type: 'rest',
-		url: '/admin/places',
+		url: '/admin/users',
 		reader: {
 			type: 'json',
 			root: 'items'
@@ -11,11 +13,9 @@ Ext.define('Bozuko.model.Place', {
 	},
     
     fields: [
-        'id',
-        'service',
-		'category',
+        '_id',
         'name',
-        'location',
+        'email',
         'image'
     ]
 });

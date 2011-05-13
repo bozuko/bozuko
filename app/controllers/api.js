@@ -26,6 +26,10 @@ exports.transfer_objects = {
     }
 };
 
+if( Bozuko.env() == 'development'){
+    exports.transfer_objects.error.def.stack = "String";
+}
+
 exports.links = {
     api: {
         get: {

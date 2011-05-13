@@ -114,12 +114,15 @@ auth.mobile = function(req, res, callback) {
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
+    
     async.series([
 
         // Verify phone type and unique id
         function(callback) {
+            console.log('in async_series');
             if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
             var result = user.verify_phone(req.session.phone);
+            console.log( 'result from user.verify_phone', result );
             if ( result === 'mismatch') {
                 return callback(Bozuko.error('auth/mobile'));
             } else if ( result === 'match') {
@@ -137,10 +140,12 @@ auth.mobile = function(req, res, callback) {
             var fn, result;
             if ((fn = auth.mobile_algorithms[req.session.mobile_version])) {
                 result = fn(user.challenge);
-                if (result === req.session.challenge_response) {
+                console.log(result);
+                if (String(result) === req.session.challenge_response) {
                     return callback(null);
                 }
             }
+            console.log('failing on challenge question');
             return callback(Bozuko.error('auth/mobile'));
         }
 
