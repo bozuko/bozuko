@@ -258,12 +258,14 @@ EntryMethod.prototype.getLastEntry = function(){
     // assume we have the contest
     var entries = this.contest.entries;
 
+    if (!this.user) return false;
+
     for (var i = entries.length-1; i >= 0; i--) {
         if (entries[i].user_id == this.user.id) {
             return entries[i];
         }
     }
-    return null;
+    return false;
 };
 
 EntryMethod.prototype.getButtonText = function( tokens, callback ){

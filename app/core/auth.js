@@ -36,7 +36,7 @@ auth.check = function(access, callback) {
 
     return function(req, res) {
         var layer;
-        
+
         async.forEachSeries(access, function(layer, cb) {
             auth[layer](req, res, cb);
         }, function(err) {
@@ -63,7 +63,7 @@ auth.user = function(req, res, callback) {
 };
 
 var adminAuth = basicAuth(function(user,pass,cb){
-    
+
     // admin auth is going to be checked against our config
     // for valid email addresses (gmail or google account),
     // and then test email + pass against google's imap auth
@@ -108,18 +108,16 @@ auth.business = function(req,res, callback){
 
 
 auth.mobile = function(req, res, callback) {
-    
-    
+
+
     var user = req.session.user;
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
-    
     async.series([
 
         // Verify phone type and unique id
         function(callback) {
-            console.log('in async_series');
             if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
             var result = user.verify_phone(req.session.phone);
             console.log( 'result from user.verify_phone', result );
@@ -128,7 +126,13 @@ auth.mobile = function(req, res, callback) {
             } else if ( result === 'match') {
                 return callback();
             } else if (result === 'new') {
-                return callback(Bozuko.error('auth/mobile'));
+                // Always add new phones. We may want to change this in the future.
+                // This could be an attack vector potentially.
+                user.phones.push(req.session.phone);
+                user.save(function(err) {
+                    if (err) return callback(err);
+                    return callback(null);
+                });
             } else {
                 console.log("Unkown result from user.verify_phone: "+result);
                 return callback(Bozuko.error('auth/mobile'));
@@ -140,8 +144,7 @@ auth.mobile = function(req, res, callback) {
             var fn, result;
             if ((fn = auth.mobile_algorithms[req.session.mobile_version])) {
                 result = fn(user.challenge);
-                console.log(result);
-                if (String(result) === req.session.challenge_response) {
+                if (String(result) === String(req.session.challenge_response)) {
                     return callback(null);
                 }
             }
