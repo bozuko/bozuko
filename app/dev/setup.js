@@ -150,6 +150,7 @@ function initUser(cb){
         }
         if( !user ){
             return Bozuko.service('facebook').user({user_id:fbid}, function(error, user){
+                console.log(user);
                 Bozuko.models.User.createFromServiceObject(user, function(error, user){
                     test_user = user;
                     cb();
@@ -171,6 +172,7 @@ function initPlace(place_id, featured, cb){
         }
         if( !place ){
             return Bozuko.service('facebook').place({place_id:place_id}, function(error, place){
+                console.log(place);
                 Bozuko.models.Page.createFromServiceObject(place, function(error, place){
                     return setupPlace(place, featured, cb);
                 });
@@ -200,6 +202,7 @@ function setupPlace(place, featured, cb){
                 contest.page_id = place._id;
                 contest.active = true;
                 contest.generateResults(function(error){
+                    console.log( 'generated results for contest');
                     cb();
                 });
             });
@@ -208,7 +211,7 @@ function setupPlace(place, featured, cb){
 }
 
 module.exports.init = function(cb){
-    
+    console.log('dev setup init');
     initUser(function(){
         initPlace( dev.places.fbid.bozuko, true, function(){
             initPlace( dev.places.fbid.tea_room, false, function(){
