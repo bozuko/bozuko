@@ -52,6 +52,12 @@ Ext.define('Bozuko.controller.Browser' ,{
             },
             'apibrowser panel[region=east] dataview':{
                 itemclick: this.onHistoryClick
+            },
+            'apibrowser button[action=updatefrombody]':{
+                click: this.updateFromBody
+            },
+            'apibrowser button[action=reloadbody]':{
+                click: this.reloadBody
             }
         });
         this.api.on('beforecall', function(){
@@ -131,6 +137,7 @@ Ext.define('Bozuko.controller.Browser' ,{
                         this.phoneIdField.setValue('');
                         this.phoneTypeField.setValue('');
                         this.challengeField.setValue('');
+                        return;
                     }
                     var phones = record.get('phones');
                     if( phones && phones.length ){
@@ -219,6 +226,18 @@ Ext.define('Bozuko.controller.Browser' ,{
         this.onMethodChange();
     },
     
+    updateFromBody : function(){
+        var response = this.getBody().response;
+        if( !response ) return;
+        this.updateForm(this.links[response.link], response.path, response.method);
+        this.getRequestForm().getForm().setValues(response.params||{});
+    },
+    
+    reloadBody : function(){
+        this.updateFromBody();
+        this.makeRequest();
+    },
+    
     onMethodChange : function(){
         
         var me = this,
@@ -284,6 +303,7 @@ Ext.define('Bozuko.controller.Browser' ,{
     updateBody : function(response){
         var me = this,
             data = response.data;
+        this.getBody().response = response;
         this.getBody().update('<pre>'+me.getJson(data)+'</pre>');
     },
     
