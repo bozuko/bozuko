@@ -421,8 +421,6 @@ Page.static('search', function(options, callback){
             if(fn) fn.call(this, page);
         }
     }
-    
-    console.log(bozukoSearch.selector);
 
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 

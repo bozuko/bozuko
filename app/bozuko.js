@@ -192,11 +192,18 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
     app.use(Bozuko.require('middleware/mobile')());
-    if (Bozuko.env() != 'test') {
+	
+	if (Bozuko.env() != 'test') {
         app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     }
+	if( Bozuko.env() == 'development' ){
+		app.use(Bozuko.require('middleware/debug')());
+	}
+	
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
+	
+	
     app.use(express.static(__dirname + '/static'));
 }
 
