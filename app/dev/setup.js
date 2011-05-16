@@ -201,6 +201,9 @@ function setupPlace(place, featured, cb){
             contest.page_id = place._id;
             contest.active = true;
             contest.free_play_pct = 50;
+            contest.prizes.forEach(function(prize){
+                prize.duration = 1000*60*60*24;
+            });
             contest.generateResults(function(error){
                 var contest = new Bozuko.models.Contest(Bozuko.dev.contests.scratch);
                 contest.page_id = place._id;
