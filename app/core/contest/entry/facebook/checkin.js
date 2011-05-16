@@ -175,7 +175,7 @@ FacebookCheckinMethod.prototype._load = function( callback ){
         }
         return page.canUserCheckin( self.user, function(error, flag, checkin, error2){
             if( error ) return callback( error );
-            if( error2 ) console.log(error2);
+            // if( error2 ) console.log(error2);
             self.can_checkin = flag;
             return callback(null);
         });
