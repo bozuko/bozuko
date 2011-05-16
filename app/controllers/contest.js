@@ -16,13 +16,17 @@ var game_result = {
         var ret = {
             win: result.prize ? true: false,
             result: result.game_result,
-            prize: result.prize,
             free_play: result.free_play
         };
-        if( result.contest ){
-            ret.game_state = Bozuko.transfer('game_state', result.contest.game_state, user);
+        
+        ret.game_state = Bozuko.transfer('game_state', result.contest.game_state, user);
+        if( result.prize ){
+            ret.prize = Bozuko.transfer('prize', result.prize, user);
         }
-        // also need to get game tokens
+        ret.links = {
+            page: '/page/'+result.contest.page_id,
+            game: '/game/'+result.contest.id
+        };
         return ret;
     },
 
@@ -31,14 +35,10 @@ var game_result = {
         result: "Mixed",
         free_play: "Boolean",
         consolation: "Boolean",
-        redemption_type: "String",
         message: "String",
         prize: "prize",
-        user_tokens: "Number",
         game_state: "game_state",
         links: {
-            facebook_checkin: "String",
-            facebook_like: "String",
             page: "String",
             game: "String"
         }
@@ -226,13 +226,24 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
-                    // lets let the contest handle finding entries, etc
                     return contest.play(req.session.user._id, function(error, result){
                         if( error ){
                             return error.send(res);
                         }
-                        return result.contest.loadGameState( req.session.user, function(error){
+                        
+                        console.log('play');
+                        
+                        return result.contest.loadTransferObject( req.session.user, function(error){
                             if( error ) return error.send(res);
+                            if( result.prize ){
+                                return result.prize.loadTransferObject(function(error, prize){
+                                    if( error ) return error.send(res);
+                                    result.prize = prize;
+                                    return res.send(
+                                        Bozuko.transfer('game_result', result, req.session.user)
+                                    );
+                                });
+                            }
                             return res.send(
                                 Bozuko.transfer('game_result', result, req.session.user)
                             );
