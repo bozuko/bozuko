@@ -28,6 +28,8 @@ exports.links = {
     }
 };
 
+exports.session = false;
+
 exports.routes = {
 
     '/facebook/:id/checkin': {

@@ -39,6 +39,8 @@ exports.links = {
     }
 };
 
+exports.session = false;
+
 exports.routes = {
     '/api' : {
         get : {
@@ -48,7 +50,7 @@ exports.routes = {
                     bozuko: "/bozuko"
                 };
                 if (req.session.user) {
-                    links.user = "/user/",
+                    links.user = "/user",
                     links.prizes = "/prizes";
                 } else {
                     links.login = "/user/login";

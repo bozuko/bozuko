@@ -241,14 +241,13 @@ Page.method('checkin', function(user, options, callback) {
                         if( !found ){
                             return cb(null);
                         }
-
                         // try to enter the contest
                         var entry = Bozuko.entry(options.service+'/checkin', user, {
                             checkin: checkin
                         });
-                        
                         return contest.enter( entry, function(error, entry){
                             if( error ){
+                                console.log('error entering contest');
                                 return callback( error );
                             }
                             entries.push(entry);
@@ -386,7 +385,7 @@ Page.static('search', function(options, callback){
      *
      */
     else {
-        if( Bozuko.env() == 'development' && !options.query ){
+        if( false && Bozuko.env() == 'development' && !options.query ){
 
             var s = bozukoSearch.selector;
             bozukoSearch.selector = {
@@ -396,10 +395,7 @@ Page.static('search', function(options, callback){
         else{
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
             console.log(distance, Bozuko.config.search.nearbyRadius);
-            bozukoSearch.selector = {
-                // only registered...
-                coords: {$near: options.ll, $maxDistance: distance}
-            };
+            bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
             bozukoSearch.type='nativeFind';
         }
@@ -425,6 +421,8 @@ Page.static('search', function(options, callback){
             if(fn) fn.call(this, page);
         }
     }
+    
+    console.log(bozukoSearch.selector);
 
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 

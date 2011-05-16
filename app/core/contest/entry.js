@@ -199,6 +199,7 @@ EntryMethod.prototype.validate = function( callback ){
             // need to check for other entries
 
             var selector = { entries: {$elemMatch : {
+                contest_id: self.contest._id,
                 user_id: self.user._id,
                 timestamp: {$gt : last}
                 }

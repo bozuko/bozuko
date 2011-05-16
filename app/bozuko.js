@@ -310,7 +310,6 @@ function initFacebookPubSub(){
         method: 'DELETE',
         callback: function(body){
             // now lets setup the new subscriptions
-            console.log('deleted?');
             http.request({
                 url: url,
                 method: 'POST',

@@ -37,13 +37,11 @@ var TransferObject = module.exports = function(name, config){
     }
 };
 
-var $ = TransferObject.prototype;
-
-$.getTitle = function(){
+TransferObject.prototype.getTitle = function(){
     return this.title || this.name;
 };
 
-$.create = function(data, user){
+TransferObject.prototype.create = function(data, user){
     try{
         return this._create ? this._create(data, user) : this.sanitize(data, null, user);
     }catch(e){
@@ -51,12 +49,12 @@ $.create = function(data, user){
     }
 };
 
-$.returnedBy = function(link){
+TransferObject.prototype.returnedBy = function(link){
     if( link && !~this.returned.indexOf(link) ) this.returned.push(link);
     return this.returned;
 };
 
-$.merge = function(a,b){
+TransferObject.prototype.merge = function(a,b){
     a = this.sanitize(a);
     b = this.sanitize(b);
     Object.keys(b).forEach(function(prop){
@@ -67,7 +65,7 @@ $.merge = function(a,b){
 
 var native_types = ['string', 'number', 'object', 'int', 'integer'];
 
-$.sanitize = function(data, current, user){
+TransferObject.prototype.sanitize = function(data, current, user){
 
     // make this conform to our def
     var self = this, ret = {};
@@ -143,7 +141,7 @@ $.sanitize = function(data, current, user){
 
 // This only validates that properties that exist in data are of the right type.
 // We should have some way to validate whether all required properties exist.
-$.validate = function(data, current) {
+TransferObject.prototype.validate = function(data, current) {
 
     var self = this, ret = true;
     if( !current ) current = this.def;
@@ -193,7 +191,7 @@ $.validate = function(data, current) {
     return ret;
 };
 
-$.addLink = function(link){
+TransferObject.prototype.addLink = function(link){
     this.links[link.name] = link;
 };
 

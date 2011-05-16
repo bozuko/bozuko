@@ -104,8 +104,10 @@ FacebookCheckinMethod.prototype.getTokenCount = function(){
     if( !this.contest || !this.user) return this.config.tokens;
     var tokens = this.config.tokens;
 
-    if( this.config.enable_like && this.user && this.user.likes( this.contest.page ) ){
-        tokens += this.config.like_tokens;
+    if( this.config.enable_like && this.user ){
+        if( this.user.likes( this.page ) ){
+            tokens += this.config.like_tokens;
+        }
     }
     return tokens;
 }
@@ -124,9 +126,9 @@ FacebookCheckinMethod.prototype.process = function( callback ){
 
     if( !self.checkin ){
         return self.validate( function(error, valid){
-            if( error ) return callback( error );
+            if( error ) return callback( error );   
             if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
-
+            
             if( self.can_checkin ){
                 return self.page.checkin( self.user, {
                     test: true,
@@ -136,7 +138,9 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                     ll: self.options.ll,
                     message: self.options.message
                 }, function(error, result){
-                    if( error ) return callback( error );
+                    if( error ){
+                        return callback( error );
+                    }
 
                     for(var i=0; i<result.entries.length; i++){
                         var entry = result.entries[i];
@@ -149,7 +153,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                     return callback( Bozuko.error('contest/no_entry_found_after_checkin') );
                 });
             }
-
+            // TODO: also look for other contests that are satisfied by this checkin?
             return EntryMethod.prototype.process.call(self, callback);
 
         });
@@ -169,8 +173,9 @@ FacebookCheckinMethod.prototype._load = function( callback ){
             self.can_checkin = true;
             return callback( null );
         }
-        return page.canUserCheckin( self.user, function(error, flag){
+        return page.canUserCheckin( self.user, function(error, flag, checkin, error2){
             if( error ) return callback( error );
+            if( error2 ) console.log(error2);
             self.can_checkin = flag;
             return callback(null);
         });
