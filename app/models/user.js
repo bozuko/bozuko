@@ -64,7 +64,6 @@ User.method('likes', function(page){
         return false;
     }
     var likes = fb.internal.likes || [];
-    console.log(JSON.stringify(likes), JSON.stringify(page));
     return ~likes.indexOf( page );
 });
 
