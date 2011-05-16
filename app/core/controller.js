@@ -18,6 +18,8 @@ Controller.prototype = {
 
         var self = this;
         var app = this.app;
+        
+        var controllerSession = (self.session !== false);
 
         Object.keys(routes).forEach(function(route){
 
@@ -29,9 +31,14 @@ Controller.prototype = {
             if( !config.aliases ) config.aliases = [];
             if( config.alias ) config.aliases.push(config.alias);
             
+            var routeSession = !!controllerSession;
+            if( config.session === false ){
+                routeSession = false;
+            }
             
-
             ['get','post','put','del','all'].forEach( function(method){
+                
+                var methodSession = !!routeSession;
 
                 if( config[method] ){
                     var handler = function(req,res){
@@ -74,7 +81,10 @@ Controller.prototype = {
                         if( methodConfig.filter ){
                             handler = middleware( methodConfig.filter, handler, self);
                         }
-
+                        
+                        if( methodConfig.session === false ){
+                            methodSession = false;
+                        }
                         // check for docs...
                         if( !self.doc.routes[route] ) self.doc.routes[route] = {};
                         var doc = self.doc.routes[route];
@@ -123,6 +133,18 @@ Controller.prototype = {
                     // add our access
                     if( self.access ){
                         handler = auth.check( self.access, handler );
+                    }
+                    
+                    if( !methodSession ){
+                        handler = middleware(function(req, res, next){
+                            var end = res.end;
+                            res.end = function(data, encoding){
+                                res.end = end;
+                                delete req.session;
+                                res.end(data, encoding);
+                            }
+                            next();
+                        }, handler, self);
                     }
                     
                     path = self._cleanPath(path);

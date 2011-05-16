@@ -50,7 +50,7 @@ exports.links = {
             access: 'user',
             doc: "Get users favorites",
             params: {
-                "center":{
+                "ll":{
                     required:true,
                     type:"String",
                     description:"The latitude, longitude of the user (see pages link documentation)"
@@ -103,6 +103,8 @@ exports.links = {
         }
     }
 };
+
+exports.session = false;
 
 exports.routes = {
 
@@ -255,7 +257,6 @@ exports.routes = {
                     // weird mongoose shit...
                     user.commit('favorites');
                     return user.save(function(error){
-                        console.log(JSON.stringify(user.favorites));
                         if(error) return error.send(res);
                         return res.send(Bozuko.transfer('favorite_response', {
                             removed: true,

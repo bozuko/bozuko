@@ -159,7 +159,9 @@ function initUser(cb){
         }
         else{
             test_user = user;
-            return cb();
+            return Bozuko.models.Checkin.remove({user_id: user._id},function(error){
+                return cb();
+            });
         }
     });
 }

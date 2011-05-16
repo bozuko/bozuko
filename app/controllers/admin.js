@@ -178,8 +178,6 @@ exports.routes = {
                 
                 return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
                     if( error ) return error.send(res);
-                    console.log(contest);
-                    console.log( req.body );
                     contest.set( req.body );
                     return contest.save( function(error){
                         if( error ) return error.send( res );
@@ -193,6 +191,57 @@ exports.routes = {
             // delete the record
             handler : function(req,res){
                 res.send({success:false, message:'not implemented'});
+            }
+        }
+    },
+    
+    '/admin/browser' : {
+        get : {
+            locals : {
+                title: 'Api Browser',
+                layout: false
+            },
+            handler : function(req, res){
+                
+                var transfer_objects = {};
+                var links = {};
+                Object.keys(Bozuko.transfers()).forEach(function(key){
+                    var transfer = Bozuko.transfer(key);
+                    transfer_objects[key] = {
+                        doc: transfer.doc,
+                        def: transfer.def
+                    }
+                });
+                Object.keys(Bozuko.links()).forEach(function(key){
+                    var link = Bozuko.link(key);
+                    
+                    var methods = {};
+                    Object.keys(link.methods).forEach(function(key){
+                        var method = link.methods[key];
+                        methods[key] = {
+                            method: method.method,
+                            access: method.access,
+                            params: method.params,
+                            returns: method.returns,
+                            doc: method.doc
+                        }
+                    });
+                    
+                    links[key] = {
+                        title: link.title,
+                        name: link.name,
+                        methods: methods
+                    };
+                });
+                
+                Bozuko.models.User.find({}, function(error, users){
+                    res.locals.transfer_objects = JSON.stringify(transfer_objects);
+                    res.locals.links = JSON.stringify(links);
+                    res.locals.users = JSON.stringify(users);
+                    
+                    res.render('admin/browser');
+                });
+                
             }
         }
     }

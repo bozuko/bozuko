@@ -125,6 +125,8 @@ var prize = {
     }
 };
 
+exports.session = false;
+
 exports.routes = {
 
     '/prizes': {
@@ -176,7 +178,7 @@ exports.routes = {
 				
 				var limit = req.param('limit') || 25;
 				var offset = req.param('offset') || 0;
-				return Bozuko.models.Prize.search(selector, {}, {limit: limit, offset: offset, sort: {timestamp: 1}}, function(error, prizes){
+				return Bozuko.models.Prize.search(selector, {}, {limit: limit, offset: offset, sort: {timestamp: -1}}, function(error, prizes){
 					if( error ) return error.send( res );
 					var ret = {
 						prizes: prizes

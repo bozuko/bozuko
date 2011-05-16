@@ -137,6 +137,8 @@ exports.transfer_objects = {
     game_prize: game_prize
 };
 
+exports.session = false;
+
 exports.links = {
     game: {
         get: {
@@ -191,7 +193,7 @@ exports.routes = {
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
                     // lets let the contest handle finding entries, etc
-                    return contest.loadGameState( req.session.user, function(error){
+                    return contest.loadTransferObject( req.session.user, function(error){
                         if( error ) return error.send(res);
                         var game = contest.getGame();
                         return res.send(
