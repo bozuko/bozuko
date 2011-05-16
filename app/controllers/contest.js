@@ -89,6 +89,7 @@ var game_state = {
 
     create : function(game_state, user){
         if( game_state.contest){
+            game_state.game_id = game_state.contest.id;
             var links = {
                 game_state: '/game/'+game_state.contest.id+'/state'
             };
@@ -104,6 +105,7 @@ var game_state = {
     },
 
     def: {
+        game_id: "String",
         user_tokens: "Number",
         next_enter_time: "String",
         button_text: "String",
