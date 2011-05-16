@@ -63,7 +63,7 @@ TransferObject.prototype.merge = function(a,b){
     return a;
 };
 
-var native_types = ['string', 'number', 'object', 'int', 'integer'];
+var native_types = ['string', 'number', 'object', 'int', 'integer', 'mixed'];
 
 TransferObject.prototype.sanitize = function(data, current, user){
 
@@ -119,6 +119,7 @@ TransferObject.prototype.sanitize = function(data, current, user){
                             break;
                         
                         case 'object':
+                        case 'mixed':
                             break;
                         
                         default:
