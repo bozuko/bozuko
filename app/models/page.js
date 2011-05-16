@@ -385,7 +385,7 @@ Page.static('search', function(options, callback){
      *
      */
     else {
-        if( false && Bozuko.env() == 'development' && !options.query ){
+        if( Bozuko.env() == 'development' && !options.query ){
 
             var s = bozukoSearch.selector;
             bozukoSearch.selector = {
