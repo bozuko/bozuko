@@ -174,7 +174,6 @@ function initPlace(place_id, featured, cb){
         }
         if( !place ){
             return Bozuko.service('facebook').place({place_id:place_id}, function(error, place){
-                console.log(place);
                 Bozuko.models.Page.createFromServiceObject(place, function(error, place){
                     return setupPlace(place, featured, cb);
                 });
@@ -199,6 +198,7 @@ function setupPlace(place, featured, cb){
             var contest = new Bozuko.models.Contest(Bozuko.dev.contests.slots);
             contest.page_id = place._id;
             contest.active = true;
+            contest.free_play_pct = 50;
             contest.generateResults(function(error){
                 var contest = new Bozuko.models.Contest(Bozuko.dev.contests.scratch);
                 contest.page_id = place._id;

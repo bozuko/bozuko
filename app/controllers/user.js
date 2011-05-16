@@ -170,8 +170,8 @@ exports.routes = {
                 var user = req.session.user;
                 user.id = user._id;
                 user.links = {
-                    facebook_login: "/user/login/facebook",
-                    facebook_logout: "/user/logout/facebook",
+                    // facebook_login: "/user/login/facebook",
+                    logout: "/user/logout",
                     favorites: "/user/favorites"
                 };
                 res.send(Bozuko.transfer('user', user));
