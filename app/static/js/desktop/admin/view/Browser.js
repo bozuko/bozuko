@@ -42,7 +42,10 @@ Ext.define('Bozuko.view.Browser',{
             html: 'Make a request and see the results here.',
             tbar: [{
                 text: 'Update Form',
-                action: 'redo'
+                action: 'updatefrombody'
+            },'->',{
+                text: 'Reload',
+                action: 'reloadbody'
             }]
         },{
             region: 'east',

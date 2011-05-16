@@ -57,13 +57,10 @@ Ext.define('Bozuko.lib.Api',{
             };
             
         params = me.buildParams(params);
-        
-        if( method == 'get' ){
+        options.params = params;
+        /*if( method == 'get' ){
             options.url+=('?'+Ext.urlEncode(params));
-        }
-        else{
-            options.params = params;
-        }
+        }*/
         this.fireEvent('beforecall', options);
         Ext.Ajax.request(options);
     },
