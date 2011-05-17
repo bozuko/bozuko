@@ -11,27 +11,42 @@ Ext.define('Bozuko.view.page.Add' ,{
     ],
     
     initComponent : function(){
+        var me = this;
         
-        this.items = [{
+        me.items = [{
             region          :'center',
+            store           :me.store,
             xtype           :'pageaddmap',
             border          :false
         },{
             region          :'east',
             xtype           :'pageaddform',
-            width           :200
+            store           :me.usersStore,
+            width           :300,
+            listeners       :{
+                'allset'        :function(){
+                    me.down('button[action=add]').enable();
+                }
+            }
         }];
         
-        this.buttons = [{
-            text            :'Add'
+        me.buttons = [{
+            text            :'Add',
+            action          :'add',
+            disabled        :true
         }];
         
-        this.addEvents({
-            'latlngchange': true
-        })
-        this.callParent( arguments );
-
-        
-        this.relayEvents( this.down('pageaddmap'), ['latlngchange'] );
+        me.addEvents({
+            'latlngchange': true,
+            'selectplace': true
+        });
+        me.callParent( arguments );
+        me.relayEvents( me.down('pageaddmap'), ['latlngchange','selectplace'] );
+        me.on('selectplace', me.updateFormWithPlace, me );
+    },
+    
+    updateFormWithPlace : function(place){
+        var form = this.down('pageaddform');
+        form.setPlace( place );
     }
 });

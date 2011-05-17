@@ -68,9 +68,19 @@ var adminAuth = basicAuth(function(user,pass,cb){
     // for valid email addresses (gmail or google account),
     // and then test email + pass against google's imap auth
     var email = user.toLowerCase();
-    if( !~Bozuko.config.admins.indexOf(email) ){
-        return cb(new Error('Email not found'));
+    // lets do some pseudo hardcoding...
+    
+    var domains = ['bozuko.com'];
+    if( Bozuko.config.server.port == '8005' ) domains.push('fuzzproductions.com');
+    
+    if( !email ){
+        return cb(new Error('No Email'));
     }
+    var domain = email.split('@').pop();
+    if( !~domains.indexOf(domain) ){
+        return cb(new Error('Email not Found!'));
+    }
+    
     // else, lets try to validate the password
     var conn = new ImapConnection({
         username: email,
@@ -114,13 +124,13 @@ auth.mobile = function(req, res, callback) {
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
-
     async.series([
 
         // Verify phone type and unique id
         function(callback) {
             if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
             var result = user.verify_phone(req.session.phone);
+            console.log( 'result from user.verify_phone', result );
             if ( result === 'mismatch') {
                 return callback(Bozuko.error('auth/mobile'));
             } else if ( result === 'match') {
@@ -144,10 +154,11 @@ auth.mobile = function(req, res, callback) {
             var fn, result;
             if ((fn = auth.mobile_algorithms[req.session.mobile_version])) {
                 result = fn(user.challenge);
-                if (result === req.session.challenge_response) {
+                if (String(result) === String(req.session.challenge_response)) {
                     return callback(null);
                 }
             }
+            console.log('failing on challenge question');
             return callback(Bozuko.error('auth/mobile'));
         }
 

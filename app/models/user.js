@@ -55,12 +55,14 @@ User.method('likes', function(page){
         try{
             page = page.service('facebook').sid;
         }catch(e){
-            callback( Bozuko.error('user/like_bad_page') );
+            console.log(e);
+            throw new Error('where is this bad page coming from');
         }
     }
     var fb = self.service('facebook');
-    if( !fb || !fb.internal ) return false;
-
+    if( !fb || !fb.internal ){
+        return false;
+    }
     var likes = fb.internal.likes || [];
     return ~likes.indexOf( page );
 });

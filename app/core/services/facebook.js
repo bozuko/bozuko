@@ -38,12 +38,15 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     }
 
     var protocol = (req.app.key?'https:':'http:');
+    console.log(url);
 
     var params = {
         'client_id' : Bozuko.config.facebook.app.id,
         'scope' : Bozuko.config.facebook.perms[scope],
-        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname
+        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+((url.search||'').replace(/[&\?]code=.*$/i, ''))
     };
+    
+    console.log(params);
 
     if( req.param('display')){
         params.display = req.param('display');
@@ -76,7 +79,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     else{
         params.client_secret = Bozuko.config.facebook.app.secret;
         params.code = code;
-
+        
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
         http.request({
@@ -122,7 +125,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                                             return;
                                         }
                                     }
-                                    res.redirect(ret || '/user');
+                                    res.redirect((ret || '/user')+'?token='+req.session.user.token);
                                 });
                             });
                         });
