@@ -16,9 +16,11 @@ var game_result = {
         var ret = {
             win: result.prize ? true: false,
             result: result.game_result,
-            free_play: result.free_play
+            prize: result.prize,
+            free_play: result.free_play,
+            consolation: result.play.consolation
         };
-        
+
         ret.game_state = Bozuko.transfer('game_state', result.contest.game_state, user);
         if( result.prize ){
             ret.prize = Bozuko.transfer('prize', result.prize, user);
@@ -230,9 +232,9 @@ exports.routes = {
                         if( error ){
                             return error.send(res);
                         }
-                        
+
                         console.log('play');
-                        
+
                         return result.contest.loadTransferObject( req.session.user, function(error){
                             if( error ) return error.send(res);
                             if( result.prize ){

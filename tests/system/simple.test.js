@@ -506,7 +506,7 @@ exports['prizes tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                test.ok( result.prizes.length === wins, 'Correct number of prizes' );
+                test.deepEqual( result.prizes.length, wins, 'Incorrect number of prizes' );
                 prizes = result.prizes;
                 test.done();
             });
