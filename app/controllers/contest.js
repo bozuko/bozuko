@@ -17,7 +17,8 @@ var game_result = {
             win: result.prize ? true: false,
             result: result.game_result,
             prize: result.prize,
-            free_play: result.free_play
+            free_play: result.free_play,
+            consolation: result.play.consolation
         };
         if( result.contest ){
             ret.game_state = Bozuko.transfer('game_state', result.contest.game_state, user);

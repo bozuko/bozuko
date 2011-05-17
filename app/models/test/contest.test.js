@@ -1,6 +1,5 @@
 var testsuite = require('./config/testsuite');
 var async = require('async');
-var util = require('util');
 var uuid = require('node-uuid');
 
 var start = new Date();
@@ -204,7 +203,6 @@ exports['audit - missing prize and play'] = function(test) {
                         {contest_id: contest._id, play_cursor: plays - 1},
                         function(err, prize) {
                             test.ok(!err);
-                            console.log("prize = "+JSON.stringify(prize));
                             test.ok(prize != null);
                             test.equal(prize.timestamp.getTime(), timestamp.getTime());
                             test.equal(prize.uuid, c.plays[plays-1].uuid);
