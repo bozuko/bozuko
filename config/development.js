@@ -20,6 +20,9 @@ module.exports = {
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access,user_likes",
             business:"email,manage_pages"
+        },
+        checkin:{
+            test: true
         }
     },
 
@@ -94,6 +97,7 @@ module.exports = {
     admins: [
         'mark.fabrizio@bozuko.com',
         'andrew.stone@bozuko.com',
-        'jacob.epstein@bozuko.com'
+        'jacob.epstein@bozuko.com',
+        'pinbo.tsai@bozuko.com'
     ]
 };

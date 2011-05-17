@@ -20,6 +20,9 @@ Ext.define('Bozuko.view.contest.Panel' ,{
             tbar            :[{
                 text            :'Create Campaign',
                 action          :'create'
+            },'->',{
+                text            :'Refresh Campaigns',
+                action          :'refresh'
             }],
             split           :true,
             height          :116,

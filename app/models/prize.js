@@ -62,7 +62,7 @@ Prize.method('redeem', function(user, callback){
             self.user = user;
             self.page = page;
             return callback(null, {
-                security_image: page.security_img,
+                security_image: page.security_img || '/images/security_image.png',
                 prize: self
             });
         });
