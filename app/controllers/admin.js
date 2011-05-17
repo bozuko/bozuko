@@ -196,6 +196,8 @@ exports.routes = {
     },
     
     '/admin/browser' : {
+        
+        aliases: ['/browser'],
         get : {
             locals : {
                 title: 'Api Browser',
