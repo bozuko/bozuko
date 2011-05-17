@@ -100,21 +100,6 @@ Ext.define('Bozuko.controller.Browser' ,{
             value: 'api'
         });
         
-        this.phoneTypeField = formPanel.add({
-            xtype:'hidden',
-            name: 'phone_type'
-        });
-        
-        this.phoneIdField = formPanel.add({
-            xtype:'hidden',
-            name: 'phone_id'
-        });
-        
-        this.challengeField = formPanel.add({
-            xtype:'hidden',
-            name: 'challenge_response'
-        });
-        
         this.usersField = formPanel.add({
             xtype:'combobox',
             editable: false,
@@ -148,6 +133,24 @@ Ext.define('Bozuko.controller.Browser' ,{
                     this.challengeField.setValue( record.get('challenge') + 5127 );
                 }
             }
+        });
+        
+        this.phoneTypeField = formPanel.add({
+            xtype:'textfield',
+            name: 'phone_type',
+            fieldLabel: 'phone_type'
+        });
+        
+        this.phoneIdField = formPanel.add({
+            xtype:'textfield',
+            name: 'phone_id',
+            fieldLabel: 'phone_id'
+        });
+        
+        this.challengeField = formPanel.add({
+            xtype:'textfield',
+            name: 'challenge_response',
+            fieldLabel: 'challenge_response'
         });
         
         this.description = formPanel.add({
