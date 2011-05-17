@@ -53,8 +53,8 @@ if( proc.isMaster ){
     }
 
     if( Bozuko.env() === 'development' ){
-        console.log('intializing development environment');
-        Bozuko.require('dev/setup').init();
+        // console.log('intializing development environment');
+        // Bozuko.require('dev/setup').init();
     }
     
 }
