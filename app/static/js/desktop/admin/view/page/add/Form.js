@@ -34,10 +34,10 @@ Ext.define('Bozuko.view.page.add.Form' ,{
             region          :'center',
             title           :'Select the Owner',
             margin          :'0 0 0 0',
+            autoScroll      :true,
             items           :[{
                 xtype           :'dataview',
                 store           :me.store,
-                autoScroll      :true,
                 overItemCls     :'list-item-over',
                 selectedItemCls :'list-item-selected',
                 itemSelector    :'.list-item',
@@ -75,7 +75,7 @@ Ext.define('Bozuko.view.page.add.Form' ,{
     },
     
     checkComplete : function(){
-        if( this.user && me.place ){
+        if( this.user && this.place ){
             this.fireEvent('allset');
         }
     }
