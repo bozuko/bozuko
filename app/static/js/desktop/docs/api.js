@@ -1,7 +1,7 @@
 Ext.onReady(function(){
     
     // lets create a tree for the left panel
-    var treePanel = new Ext.tree.TreePanel({
+    var treePanel = Ext.create('Ext.tree.TreePanel',{
         autoScroll: true,
         region: 'west',
         width: 200,
@@ -11,33 +11,30 @@ Ext.onReady(function(){
         margins: '4 0 0 4',
         title: 'API Objects',
         rootVisible: false,
-        loader: new Ext.tree.TreeLoader({
-            preloadChildren: true,
-            clearOnLoad: false
-        }),
-        root:new Ext.tree.AsyncTreeNode({
-            text: 'Docs',
-            id:'root',
-            expanded: true,
-            children:treeData
+        store: Ext.create('Ext.data.TreeStore',{
+            clearOnLoad: false,
+            root: {
+                text: 'Docs',
+                id:'root',
+                expanded: true,
+                children:treeData
+            }
         }),
         collapseFirst : false,
-        
         listeners : {
-            click : function(node, tree){
-                Ext.History.add(node.id);
-                openPage(node.id, node.text);
+            itemclick : function(view, record, tree){
+                Ext.History.add(record.get('id'));
+                openPage(record.get('id'), record.get('text'));
             }
         }
     });
     
     function onHistoryChange(token){
-        var node = treePanel.getNodeById(token);
-        openPage(node.id, node.text);
+        var record = treePanel.store.getNodeById(token);
+        openPage(record.get('id'), record.get('text') );
     }
-    Ext.History.on('change' ,onHistoryChange);
-    
-    
+    Ext.util.History.fieldId = 'x-history-field';
+    Ext.util.History.iframeId = 'x-history-frame';
     var pages = {};
     function openPage(id, name){
         var parts = id.replace(/^\//,'').split('/');
@@ -47,6 +44,7 @@ Ext.onReady(function(){
         }
         pages[id] = tabPanel.add({
             title: name,
+            // loader: loader,
             autoDestroy: true,
             iconCls: parts[0]+'Icon',
             listeners: {
@@ -56,9 +54,13 @@ Ext.onReady(function(){
             }
         });
         tabPanel.setActiveTab(pages[id]);
-        pages[id].getUpdater().update({
+        pages[id].setLoading(true);
+        Ext.Ajax.request({
             url: '/docs/api'+id,
-            callback : function(el){
+            success : function(response){
+                pages[id].update( response.responseText );
+                var el = pages[id].getEl();
+                pages[id].setLoading(false);
                 if( parts[0] != 'objects') return;
                 // lets look at the code and see if we need to make
                 // links in the "json" object
@@ -83,21 +85,26 @@ Ext.onReady(function(){
         region : 'center',
         margins : '4 4 0 0',
         activeTab : 0,
+        plain: true,
         enableTabScroll: true,
-        plugins: new Ext.ux.TabCloseMenu(),
+        plugins: [
+            Ext.create('Ext.ux.TabCloseMenu')
+        ],
         defaults: {
             cls: 'controller-page',
             padding: 10,
             closable: true,
             autoScroll: true,
-            preventBodyReset: true
+            styleHtmlContent: true
         },
         items : [{
             title: 'Welcome',
             contentEl: 'welcome',
             closable: false
         }]
-    })
+    });
+    
+    
     
     var viewport = new Ext.Viewport({
         layout : 'border',
@@ -116,5 +123,6 @@ Ext.onReady(function(){
     
     Ext.History.init(function(){
         onHistoryChange(Ext.History.getToken());
+        Ext.util.History.on('change',onHistoryChange);
     });
 });

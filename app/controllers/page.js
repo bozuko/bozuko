@@ -53,17 +53,19 @@ exports.transfer_objects = {
             // lets check for a contest
             
             var fid = page.registered ? page.service('facebook').sid : page.id;
-            // console.log(JSON.stringify(page, null, ' '));
             if( !page.registered ) delete page.id;
             page.liked = false;
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
-                facebook_checkin    :'/facebook/'+fid+'/checkin',
-                facebook_like       :'/facebook/'+fid+'/like'
+                facebook_checkin    :'/facebook/'+fid+'/checkin'
+                // facebook_like       :'/facebook/'+fid+'/like'
             };
             if( user ){
                 if( page.registered ){
-                    page.links.favorite     ='/user/favorite/'+page.id;
+                    
+                    // favorite
+                    if( ~user.favorites.indexOf( page.id ) ) page.favorite = true;
+                    page.links.favorite = '/user/favorite/'+page.id;
                 
                     if( page.service('facebook') ){
                         try{
@@ -83,22 +85,23 @@ exports.transfer_objects = {
                     }
                 }
             }
+            
+            // add registered links...
             if( page.registered ){
-
-                // add registered links...
                 page.links.page         ='/page/'+page.id,
                 page.links.share        ='/page/'+page.id+'/share';
                 page.links.feedback     ='/page/'+page.id+'/feedback';
             }
+            // non-registered links
             else{
                 page.links.recommend    ='/page/recommend/facebook/'+fid;
             }
-            var games = [];
-
+            
+            page.games = [];
             if( page.contests ) page.contests.forEach(function(contest){
-                games.push( contest.getGame() );
+                page.games.push( contest.getGame() );
             });
-            page.games = games;
+            
             return this.sanitize(page);
         }
     },
@@ -111,6 +114,7 @@ exports.transfer_objects = {
         }
     }
 };
+exports.session = false;
 
 exports.links = {
     pages: {

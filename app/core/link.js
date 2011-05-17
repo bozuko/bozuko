@@ -34,17 +34,15 @@ var Link = module.exports = function(name, config){
     });
 };
 
-var $ = Link.prototype;
-
-$.getTitle = function(){
+Link.prototype.getTitle = function(){
     return this.title || this.name;
 };
 
-$.addMethod = function(httpMethod){
+Link.prototype.addMethod = function(httpMethod){
     this.methods[httpMethod.method] = httpMethod;
 };
 
-$.associateTransferObject = function(transferObject){
+Link.prototype.associateTransferObject = function(transferObject){
     this.transferObjects.push(transferObject);
 };
 

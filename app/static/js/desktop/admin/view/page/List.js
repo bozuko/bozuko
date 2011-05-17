@@ -3,38 +3,43 @@ Ext.define('Bozuko.view.page.List' ,{
     alias: 'widget.pagelist',
     
     initComponent : function(){
-        this.html = 'Page list';
-        this.layout = 'fit';
-        this.title = 'All Businesses',
-        this.items = [{
+        var me = this;
+        
+        me.html = 'Page list';
+        me.layout = 'fit';
+        me.title = 'All Businesses',
+        me.items = [{
             xtype: 'dataview',
-            store: this.store,
+            store: me.store,
             autoScroll: true,
-            overItemCls: 'page-over',
-            selectedItemCls: 'page-selected',
+            overItemCls: 'list-item-over',
+            selectedItemCls: 'list-item-selected',
             tpl :[
-                '<div class="page-list">',
+                '<div class="bozuko-list">',
                     '<tpl for=".">',
-                        '<div class="page">',
+                        '<div class="list-item">',
                             '<img src="{image}&type=square" />',
-                            '<span class="name">{name}</span>',
-                            '<div class="address">',
+                            '<span class="title">{name}</span>',
+                            '<div class="sub">',
                                 '{location.street}<br />{location.city}, {location.state}',
                             '</div>',
                         '</div>',
                     '</tpl>',
                 '</div>'
             ],
-            itemSelector: '.page',
+            itemSelector: '.list-item',
             emptyText:'No Pages'
         }];
-        this.dockedItems = [{
+        me.dockedItems = [{
             xtype: 'toolbar',
             items: [{
                 text: 'Add Business',
                 action: 'add'
+            },'->',{
+                text: 'Reload',
+                action: 'reload'
             }]
         }]
-        this.callParent();
+        me.callParent();
     }
 });

@@ -7,7 +7,7 @@ exports.transfer_objects = {
     prize: {
         doc: "Bozuko Prize Object - state is either active, redeemed, or expired",
         def: {
-            id: "Number",
+            id: "String",
             state: "String",
             name: "String",
 			is_email: "Boolean",
@@ -32,7 +32,7 @@ exports.transfer_objects = {
 			var o = this.sanitize(prize);
 			
 			o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
-								". This prize expires "+dateFormat(this.expires, 'mmmm dd yyyy hh:MM TT');
+								". This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
 			o.win_time = prize.timestamp;
 			o.business_img = prize.page.image;
 			o.user_img = prize.user.image;
@@ -125,6 +125,8 @@ var prize = {
     }
 };
 
+exports.session = false;
+
 exports.routes = {
 
     '/prizes': {
@@ -176,7 +178,7 @@ exports.routes = {
 				
 				var limit = req.param('limit') || 25;
 				var offset = req.param('offset') || 0;
-				return Bozuko.models.Prize.search(selector, {}, {limit: limit, offset: offset, sort: {timestamp: 1}}, function(error, prizes){
+				return Bozuko.models.Prize.search(selector, {}, {limit: limit, offset: offset, sort: {timestamp: -1}}, function(error, prizes){
 					if( error ) return error.send( res );
 					var ret = {
 						prizes: prizes

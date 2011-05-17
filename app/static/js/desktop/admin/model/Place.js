@@ -1,7 +1,5 @@
-Ext.define('Bozuko.model.Page', {
+Ext.define('Bozuko.model.Place', {
     extend: 'Ext.data.Model',
-    
-    idProperty: '_id',
     
     proxy: {
 		type: 'rest',
@@ -15,6 +13,7 @@ Ext.define('Bozuko.model.Page', {
     fields: [
         'id',
         'service',
+		'category',
         'name',
         'location',
         'image'
