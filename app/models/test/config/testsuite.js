@@ -7,5 +7,3 @@ var express = require('express'),
 
 // Initialize Bozuko
 bozuko.getApp();
-//bozuko.init();
-
