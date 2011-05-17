@@ -25,6 +25,10 @@ Ext.define('Bozuko.view.contest.form.Prize' ,{
                 fieldLabel      :'Name',
                 allowBlank      :false
             },{
+                name            :'total',
+                fieldLabel      :'Total',
+                allowBlank      :false
+            },{
                 name            :'value',
                 fieldLabel      :'Value',
                 allowBlank      :false

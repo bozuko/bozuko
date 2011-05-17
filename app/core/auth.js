@@ -68,9 +68,19 @@ var adminAuth = basicAuth(function(user,pass,cb){
     // for valid email addresses (gmail or google account),
     // and then test email + pass against google's imap auth
     var email = user.toLowerCase();
-    if( !~Bozuko.config.admins.indexOf(email) ){
-        return cb(new Error('Email not found'));
+    // lets do some pseudo hardcoding...
+    
+    var domains = ['bozuko.com'];
+    if( Bozuko.config.server.port == '8005' ) domains.push('fuzzproductions.com');
+    
+    if( !email ){
+        return cb(new Error('No Email'));
     }
+    var domain = email.split('@').pop();
+    if( !~domains.indexOf(domain) ){
+        return cb(new Error('Email not Found!'));
+    }
+    
     // else, lets try to validate the password
     var conn = new ImapConnection({
         username: email,
