@@ -229,7 +229,7 @@ Page.method('checkin', function(user, options, callback) {
                 var current = 0, entries = [];
                 var count = 0;
                 return async.forEach( contests,
-                                     
+
                     function(contest, cb){
                         // check to make sure that the contest requires a checkin
                         var found = false;
@@ -254,7 +254,7 @@ Page.method('checkin', function(user, options, callback) {
                             return cb(null);
                         });
                     },
-                    
+
                     function(error){
                         if( error ) return callback( error );
                         return callback( null, {checkin:checkin, entries:entries});
@@ -319,6 +319,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
                     });
                 },
                 function contests_foreach_callback(err){
+                    if (err) return callback(err);
                     callback(null, pages);
                 }
             );
@@ -357,7 +358,7 @@ Page.static('search', function(options, callback){
                 $nearSphere: options.ll
             }
         };
-        
+
         serviceSearch = false;
     }
     // are we looking for bounded results
@@ -369,7 +370,7 @@ Page.static('search', function(options, callback){
             coords: {$within: {$box: options.bounds}}
         };
         bozukoSearch.type='nativeFind';
-        
+
         /**
          * TODO
          *
@@ -415,8 +416,7 @@ Page.static('search', function(options, callback){
             if (!page.owner_id && page._id) {
                 page.id = page.service('facebook').sid;
             }
-
-            // console.log(page.name, JSON.stringify({options:options.ll, page: page.coords}));
+             console.log(page.name, JSON.stringify({options:options.ll, page: page.coords}));
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }

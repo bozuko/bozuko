@@ -422,7 +422,8 @@ Contest.method('createPrize', function(opts, callback) {
 
     // Did we win a free_play? If so there isn't a prize.
     if (result === 'free_play') {
-        opts.game_result = Bozuko.game(this).process(false);
+        var free_spin_index = self.prizes.length;
+        opts.game_result = Bozuko.game(this).process(free_spin_index);
         opts.prize = null;
         opts.free_play = true;
         return self.savePlay(opts, callback);

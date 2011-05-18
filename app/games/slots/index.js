@@ -38,9 +38,9 @@ proto.process = function(outcome){
 
 proto.getConfig = function(){
     var theme = this.getTheme();
-    
+
     return {
         theme: theme,
         icons: this.icons
-    }
+    };
 };
