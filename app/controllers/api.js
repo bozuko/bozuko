@@ -18,6 +18,7 @@ exports.transfer_objects = {
         doc: "The generic error object",
 
         def: {
+            code: "Number",
             name: "String",
             message: "String",
             links: {
