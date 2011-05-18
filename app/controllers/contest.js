@@ -14,7 +14,7 @@ var game_result = {
 
     create : function(result, user){
         var ret = {
-            win: result.prize ? true: false,
+            win: result.play.win,
             result: result.game_result,
             prize: result.prize,
             free_play: result.free_play,
@@ -78,6 +78,7 @@ var game = {
         entry_method:'entry_method',
         game_state: 'game_state',
         prizes:['game_prize'],
+        consolation_prizes:['game_prize'],
         rules: "String",
         links: {
             login: "String",
