@@ -40,6 +40,7 @@ exports['page tests'] = {
             {url: pages_link+'/?ll=42.646261785714,-71.303897114286&token='+token},
             ok,
             function(res) {
+                print(result);
                 var result = JSON.parse(res.body);
                 var page = result.pages[0];
                 var valid = Bozuko.validate('page', page);
@@ -138,6 +139,7 @@ exports['favorite tests'] = {
 };
 
 var free_plays = 0;
+var total_free_plays = 0;
 var play_fn;
 
 exports['game tests'] = {
@@ -224,8 +226,10 @@ exports['game tests'] = {
                 function(res) {
                     var result = JSON.parse(res.body);
                     if (result.free_play) {
+                        test.ok(result.win);
                         tokens++;
                         free_plays++;
+                        total_free_plays++;
                         console.log("Congratulations, you won a free play!");
                     }
                     test.deepEqual(--tokens, result.game_state.user_tokens);
@@ -506,7 +510,8 @@ exports['prizes tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                test.deepEqual( result.prizes.length, wins, 'Incorrect number of prizes' );
+                console.log("free_plays = "+total_free_plays+", wins = "+wins);
+                test.deepEqual( result.prizes.length, wins-total_free_plays, 'Incorrect number of prizes' );
                 prizes = result.prizes;
                 test.done();
             });
@@ -613,7 +618,7 @@ exports['prizes tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                test.ok( result.prizes.length === wins-1, 'Correct number of prizes' );
+                test.ok( result.prizes.length === wins-total_free_plays-1, 'Correct number of prizes' );
                 test.done();
             });
     },
