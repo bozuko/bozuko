@@ -44,7 +44,6 @@ Ext.onReady(function(){
         }
         pages[id] = tabPanel.add({
             title: name,
-            // loader: loader,
             autoDestroy: true,
             iconCls: parts[0]+'Icon',
             listeners: {

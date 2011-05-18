@@ -11,6 +11,16 @@ exports.access = 'admin';
 
 exports.routes = {
     
+    '/dev/reset' : {
+        get : {
+            handler: function(req, res){
+                Bozuko.require('dev/setup').init(function(){
+                    res.send('reset the development environment');
+                });
+            }
+        }
+    },
+    
     '/admin' : {
         
         get : {
