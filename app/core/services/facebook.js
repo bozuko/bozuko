@@ -255,7 +255,7 @@ FacebookService.prototype.checkin = function(options, callback){
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
     
-    if( options.test ){
+    if( Bozuko.config.test_mode ){
         return callback(null, {id:134574646614657});
     }
 

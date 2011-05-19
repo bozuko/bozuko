@@ -2,9 +2,9 @@ Ext.define('Bozuko.store.Contests', {
 	extend: 'Ext.data.Store',
 	
 	requires: ['Ext.data.reader.Json'],
+	
+	model: 'Bozuko.model.Contest',
 
-    model: 'Bozuko.model.Contest',
-    
     constructor : function(){
         this.callParent(arguments);
         this.on('beforeload', this.onBeforeLoad, this);

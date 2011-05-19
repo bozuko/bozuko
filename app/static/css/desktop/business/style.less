@@ -1,0 +1,85 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+.campaigns-body {
+    
+    padding: 10px;
+    
+    h1 {
+        font-size: 20px;
+        margin-bottom: 1em;
+    }
+    
+    .campaign-list {
+    
+        .list-item{
+            
+            .background_gradient(#ffffff, #e6e6e6);
+            .border_radius(6px);
+            
+            .title {
+                font-size: 16px;
+                margin-bottom: .5em;
+            }
+            
+            .details{
+                table {
+                    th {
+                        padding-right: 10px;
+                        font-weight: bold;
+                    }
+                    td {
+                        padding: 4px;
+                    }
+                }
+            }
+            
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            
+            .buttons {
+                display: block;
+                border-top: 1px solid #ddd;
+                margin-top: 6px;
+                padding-top: 6px;
+                
+                li {
+                    display: inline;
+                    
+                    a {
+                        margin-right: 14px;
+                        display: inline-block;
+                        line-height: 28px;
+                        background-color: transparent;
+                        background-position: 0 50%;
+                        background-repeat: no-repeat;
+                        padding-left: 28px;
+                        text-decoration: none;
+                        color: #da6619;
+                        font-size: 14px;
+                    }
+                    a:hover {
+                        
+                        text-decoration: underline;
+                        color: #ac5113;
+                        
+                    }
+                    
+                    .delete {
+                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png');
+                    }
+                    .edit {
+                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-24.png');
+                    }
+                    .publish {
+                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png');
+                    }
+                    .copy {
+                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-plus-24.png');
+                    }
+                }
+            }
+        }
+    }
+}

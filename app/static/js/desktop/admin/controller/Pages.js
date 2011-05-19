@@ -25,6 +25,9 @@ Ext.define('Bozuko.controller.Pages' ,{
                 click: function(){
                     me.getPagesStore().load();
                 }
+            },
+            'pagepanel toolbar[ref=navbar] button':{
+                click: this.changePage
             }
         });
     },
@@ -159,5 +162,24 @@ Ext.define('Bozuko.controller.Pages' ,{
                 saveBtn.enable();
             }
         });
+    },
+    
+    changePage : function( btn ){
+        var toolbar = btn.up('toolbar'),
+            pagePanel = toolbar.up('pagepanel');
+            
+        toolbar.items.each(function(cmp){
+            if( cmp.xtype == 'button' && cmp.pressed ) cmp.toggle();
+        });
+        if( !btn.pressed ) btn.toggle();
+        var page = btn.page;
+        switch( page ){
+            case 'settings':
+                pagePanel.getLayout().setActiveItem( pagePanel.down('pageform') );
+                break;
+            case 'campaigns':
+                pagePanel.getLayout().setActiveItem( pagePanel.down('contestpanel') );
+                break;
+        }
     }
 });

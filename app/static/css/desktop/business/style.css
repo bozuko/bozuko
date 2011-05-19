@@ -1,0 +1,69 @@
+.campaigns-body {
+  padding: 10px;
+}
+.campaigns-body h1 {
+  font-size: 20px;
+  margin-bottom: 1em;
+}
+.campaigns-body .campaign-list .list-item {
+  background-color: #ffffff;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #e6e6e6));
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+.campaigns-body .campaign-list .list-item .title {
+  font-size: 16px;
+  margin-bottom: .5em;
+}
+.campaigns-body .campaign-list .list-item .details table th {
+  padding-right: 10px;
+  font-weight: bold;
+}
+.campaigns-body .campaign-list .list-item .details table td {
+  padding: 4px;
+}
+.campaigns-body .campaign-list .list-item .buttons {
+  display: block;
+  border-top: 1px solid #ddd;
+  margin-top: 6px;
+  padding-top: 6px;
+}
+.campaigns-body .campaign-list .list-item .buttons li {
+  display: inline;
+}
+.campaigns-body .campaign-list .list-item .buttons li a {
+  margin-right: 14px;
+  display: inline-block;
+  line-height: 28px;
+  background-color: transparent;
+  background-position: 0 50%;
+  background-repeat: no-repeat;
+  padding-left: 28px;
+  text-decoration: none;
+  color: #da6619;
+  font-size: 14px;
+}
+.campaigns-body .campaign-list .list-item .buttons li a:hover {
+  text-decoration: underline;
+  color: #ac5113;
+}
+.campaigns-body .campaign-list .list-item .buttons li .delete {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png');
+}
+.campaigns-body .campaign-list .list-item .buttons li .edit {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-24.png');
+}
+.campaigns-body .campaign-list .list-item .buttons li .publish {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png');
+}
+.campaigns-body .campaign-list .list-item .buttons li .copy {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-plus-24.png');
+}
