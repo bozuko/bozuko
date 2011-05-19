@@ -430,6 +430,8 @@ Page.static('search', function(options, callback){
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
         if( error ) return callback(error);
+        
+        console.log('found '+ pages.length +' pages');
 
         return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
             if( error ) return callback(error);
