@@ -60,7 +60,8 @@ OrderEngine.prototype.generateResults = function( ){
             results[index] = {
                 index: prize_index,
                 prize: prize._id,
-                code: get_code()
+                code: get_code(),
+                count: i
             };
         }
     });
