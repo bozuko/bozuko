@@ -334,12 +334,17 @@ Page.static('loadPagesContests', function(pages, user, callback){
  */
 Page.static('search', function(options, callback){
 
+    var limit = options.limit || 25;
+    var offset = options.offset || 0;
+    
+    var page = Math.floor(offset / limit);
+
     var bozukoSearch = {
         type:'find',
-        selector:{},
+        selector:{owner_id: {$exists: true}},
         fields: {},
         // sorting asc puts true first
-        options:{sort: {'featured':-1}}
+        options:{sort: {'featured':-1}, limit: Bozuko.config.search.nearbyLimit, offset: Bozuko.config.search.nearbyLimit * page}
     };
     var serviceSearch = {};
     if( options.query ){

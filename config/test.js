@@ -1,10 +1,14 @@
 var port = 8000 + process.getuid();
 
 module.exports = {
+    
+    test_mode: true,
+    
     db:{
         name: 'bozuko_test'+port,
         host: 'localhost'
     },
+    
     facebook: {
         app:{
             id:'215589698455936',

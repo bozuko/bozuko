@@ -131,7 +131,6 @@ FacebookCheckinMethod.prototype.process = function( callback ){
             
             if( self.can_checkin ){
                 return self.page.checkin( self.user, {
-                    test: true,
                     user: self.user,
                     contest: self.contest,
                     service: 'facebook',

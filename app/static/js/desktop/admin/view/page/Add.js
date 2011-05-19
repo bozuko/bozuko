@@ -37,8 +37,8 @@ Ext.define('Bozuko.view.page.Add' ,{
         }];
         
         me.addEvents({
-            'latlngchange': true,
-            'selectplace': true
+            'latlngchange'  :true,
+            'selectplace'   :true
         });
         me.callParent( arguments );
         me.relayEvents( me.down('pageaddmap'), ['latlngchange','selectplace'] );

@@ -61,7 +61,8 @@ exports.routes = {
                         page.checkin(
                             req.session.user,
                             {
-                                test: ~['development','test', 'load'].indexOf(Bozuko.env()),
+                            //  we are applying test via config now
+                            //  test: ~['development','test', 'load'].indexOf(Bozuko.env()),
                                 service: 'facebook', // if this is omitted, try to checkin everywhere
                                 ll: ll,
                                 message: msg

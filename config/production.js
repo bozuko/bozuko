@@ -1,8 +1,12 @@
 module.exports = {
+    
+    test_mode: false,
+    
     db:{
         name: 'bozuko',
         host: '192.168.170.232'
     },
+    
     facebook: {
         app:{
             id:'166078836756369',
@@ -14,6 +18,7 @@ module.exports = {
             business:"email,publish_checkins,publish_stream,offline_access,manage_pages"
         }
     },
+    
     foursquare: {
         app:{
             id:'E43N3RJPOS2ULW0KTUSICZRFXB21VJWH55WEXTGMJPOQLL2K',

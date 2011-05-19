@@ -4,6 +4,8 @@ var port = 6999 + process.getuid();
 if (process.env.USER === 'docs') port = 7002;
 
 module.exports = {
+    
+    test_mode: true,
 
     db:{
         name: 'bozuko_dev'+port,
@@ -20,9 +22,6 @@ module.exports = {
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access,user_likes",
             business:"email,manage_pages"
-        },
-        checkin:{
-            test: true
         }
     },
 
