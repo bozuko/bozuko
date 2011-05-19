@@ -421,49 +421,34 @@ Contest.method('savePrize', function(opts, callback) {
     }
 
     if (prize.is_email) {
-        var prop = 'prizes.'+opts.prize_index+'.email_codes_index';
-        var update = {$inc: {}};
-        update['$inc'][prop] = 1;
 
-        return Bozuko.models.Contest.findAndModify(
-            {_id: this._id},
-            [],
-            update,
-            {new: true},
-            function(err, contest) {
-                if (err) return callback(err);
-                var index = contest.prizes[opts.prize_index].email_codes_index;
-                var email_code = contest.prizes[opts.prize_index].email_codes[index];
+        var email_code = this.prizes[opts.prize_index].email_codes[opts.prize_count];
 
-                // Send the actual prize email. Don't wait for success/failure as it would
-                // delay the return of the contest result. Just fire it and log an error
-                // if it occurs. The user will have to somehow request a resend which we can do
-                // since the prize will be saved in our db.
-                //
-                // DON'T PUT A RETURN IN FRONT OF THIS CALL!!!
-                Bozuko.models.User.findOne({_id: opts.user_id}, function(err, user) {
-                    if (err) console.log("Failed to find user "+opts.user_id+". "+err);
-                    if (!user) console.log("Failed to find user "+opts.user_id);
+        // Send the actual prize email. Don't wait for success/failure as it would
+        // delay the return of the contest result. Just fire it and log an error
+        // if it occurs. The user will have to somehow request a resend which we can do
+        // since the prize will be saved in our db.
+        //
+        // DON'T PUT A RETURN IN FRONT OF THIS CALL!!!
+        Bozuko.models.User.findOne({_id: opts.user_id}, function(err, user) {
+            if (err) console.log("Failed to find user "+opts.user_id+". "+err);
+            if (!user) console.log("Failed to find user "+opts.user_id);
 
-                    var mail = Bozuko.require('util/mail');
-                    mail.send({
-                        to: user.email,
-                        subject: 'You just won a bozuko prize!',
-                        body: 'Gift Code: '+email_code+"\n\n\n"+prize.email_body
-                    }, function(err, success) {
-                        if (err) console.log("Email Err = "+err);
-                        if (err || !success) {
-                            console.log("Error sending mail to "+user.email+"for contest: "+
-                                contest._id+", prize_index: "+opts.prize_index+", code_index: "+
-                                index);
-                        }
+            var mail = Bozuko.require('util/mail');
+            mail.send({
+                to: user.email,
+                subject: 'You just won a bozuko prize!',
+                body: 'Gift Code: '+email_code+"\n\n\n"+prize.email_body
+            }, function(err, success) {
+                if (err) console.log("Email Err = "+err);
+                if (err || !success) {
+                    console.log("Error sending mail to "+user.email+"for contest: "+
+                      self._id+", prize_index: "+opts.prize_index+", code_index: "+ opts.prize_count);
+                }
+            });
+        });
 
-                    });
-                });
-
-                return _save(email_code);
-            }
-        );
+        return _save(email_code);
     }
 
     _save();
@@ -489,6 +474,7 @@ Contest.method('createPrize', function(opts, callback) {
     opts.game_result = Bozuko.game( this ).process( result ? result.index : false );
     opts.prize_index = result ? result.index : false;
     opts.prize_code = result ? result.code : false;
+    opts.prize_count = result ? result.count : false;
     opts.free_play = false;
 
     // Should we hand out a consolation prize?
