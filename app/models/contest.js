@@ -381,38 +381,94 @@ Contest.method('savePrize', function(opts, callback) {
 
     if (!prize) return callback(Bozuko.error('contest/no_prize'));
 
-    return Bozuko.models.Page.findById( self.page_id, function(error, page){
-        if( error ) return callback( error );
-        if( !page ){
-            return callback( Bozuko.error('contest/save_prize_no_page') );
-        }
-        // lets add the prize for this user
+    function _save(email_code) {
+        return Bozuko.models.Page.findById( self.page_id, function(error, page){
+            if( error ) return callback( error );
+            if( !page ){
+                return callback( Bozuko.error('contest/save_prize_no_page') );
+            }
+            // lets add the prize for this user
 
-        var expires = new Date();
-        expires.setTime( expires.getTime() + prize.duration );
-        var user_prize = new Bozuko.models.Prize({
-            contest_id: self._id,
-            page_id: self.page_id,
-            user_id: opts.user_id,
-            uuid: opts.uuid,
-            value: prize.value,
-            page_name: page.name,
-            name: prize.name,
-            timestamp: opts.timestamp,
-            status: 'active',
-            instructions: prize.instructions,
-            expires: expires,
-            play_cursor: opts.play_cursor,
-            description: prize.description,
-            redeemed: false,
-            consolation: opts.consolation
-        });
+            var expires = new Date();
+            expires.setTime( expires.getTime() + prize.duration );
+            var user_prize = new Bozuko.models.Prize({
+                contest_id: self._id,
+                page_id: self.page_id,
+                user_id: opts.user_id,
+                uuid: opts.uuid,
+                code: opts.prize_code,
+                value: prize.value,
+                page_name: page.name,
+                name: prize.name,
+                timestamp: opts.timestamp,
+                status: prize.is_email ? 'redeemed' : 'active',
+                instructions: prize.instructions,
+                expires: expires,
+                play_cursor: opts.play_cursor,
+                description: prize.description,
+                redeemed: prize.is_email ? true : false,
+                consolation: opts.consolation,
+                is_email: prize.is_email,
+                email_body: prize.email_body,
+                email_code: email_code
+            });
 
-        return user_prize.save(function(err) {
-            if (err) return callback(err);
-            return callback(null, user_prize);
+            return user_prize.save(function(err) {
+                if (err) return callback(err);
+                return callback(null, user_prize);
+            });
         });
-    });
+    }
+
+    if (prize.is_email) {
+        var prop = 'prizes.'+opts.prize_index+'.email_codes_index';
+        var update = {$inc: {}};
+        update['$inc'][prop] = 1;
+
+        return Bozuko.models.Contest.findAndModify(
+            {_id: this._id},
+            [],
+            update,
+            {new: true},
+            function(err, contest) {
+                if (err) return callback(err);
+                var index = contest.prizes[opts.prize_index].email_codes_index;
+                var email_code = contest.prizes[opts.prize_index].email_codes[index];
+
+                // Send the actual prize email. Don't wait for success/failure as it would
+                // delay the return of the contest result. Just fire it and log an error
+                // if it occurs. The user will have to somehow request a resend which we can do
+                // since the prize will be saved in our db.
+                //
+                // DON'T PUT A RETURN IN FRONT OF THIS CALL!!!
+                Bozuko.models.User.findOne({_id: opts.user_id}, function(err, user) {
+                    if (err) console.log("Failed to find user "+opts.user_id+". "+err);
+                    if (!user) console.log("Failed to find user "+opts.user_id);
+
+                    var mail = Bozuko.require('util/mail');
+                    mail.send({
+                        to: user.email,
+                        subject: 'You just won a bozuko prize!',
+                        body: 'Gift Code: '+email_code+"\n\n\n"+prize.email_body
+                    }, function(err, success) {
+                        if (err) console.log("Email Err = "+err);
+                        if (err || !success) {
+                            console.log("Error sending mail to "+user.email+"for contest: "+
+                                contest._id+", prize_index: "+opts.prize_index+", code_index: "+
+                                index);
+                        }
+
+                    });
+                });
+
+                return _save(email_code);
+            }
+        );
+    }
+
+    _save();
+
+
 });
 
 Contest.method('createPrize', function(opts, callback) {
@@ -430,8 +486,9 @@ Contest.method('createPrize', function(opts, callback) {
     }
 
     // We didn't get a free play. Did the user win?
-    opts.game_result =  Bozuko.game( this ).process( result ? result.index : false );
-    opts.prize_index =  result ? result.index : false;
+    opts.game_result = Bozuko.game( this ).process( result ? result.index : false );
+    opts.prize_index = result ? result.index : false;
+    opts.prize_code = result ? result.code : false;
     opts.free_play = false;
 
     // Should we hand out a consolation prize?

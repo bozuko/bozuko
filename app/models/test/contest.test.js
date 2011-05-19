@@ -11,7 +11,7 @@ var user = new Bozuko.models.User(
     name: 'Charlie Sheen',
     first_name: 'Charlie',
     last_name: 'Sheen',
-    email: 'cs@winning.com',
+    email: 'bozukob@gmail.com',
     token: 'dfasaa33345353453543',
     gender: 'male'
 });
@@ -48,6 +48,17 @@ contest.prizes.push({
     details: "Not good for drinking out of.",
     instructions: "Show this screen to an employee",
     total: 1
+});
+contest.prizes.push({
+    name: 'DBC $10 giftcard',
+    value: '0',
+    description: 'Gonna create some sick desynes fer you',
+    details: 'Don\'t worry, you won\'t make money off this',
+    instructions: 'Check yer email fool!',
+    total: 1,
+    is_email: true,
+    email_body: 'Give the gift code to the proprietor and watch him amaze you!',
+    email_codes: ["15h1ttyd3s1gn"]
 });
 
 var checkin = new Bozuko.models.Checkin();
@@ -261,6 +272,10 @@ exports['audit - missing play'] = function(test) {
             });
         });
     });
+};
+
+exports['wait 3 sec for mail to send'] = function(test) {
+    setTimeout(test.done, 3000);
 };
 
 function cleanup(callback) {

@@ -7,6 +7,7 @@ var Prize = module.exports = new Schema({
     page_id                 :{type:ObjectId, index:true},
     user_id                 :{type:ObjectId, index:true},
     uuid                    :{type:String},
+    code                    :{typs:String},
     value                   :{type:Number},
     name                    :{type:String},
     page_name               :{type:String},
@@ -21,6 +22,8 @@ var Prize = module.exports = new Schema({
     redeemed                :{type:Boolean},
     redeemed_time           :{type:Date},
     is_email                :{type:Boolean, default:false},
+    email_body              :{type:String},
+    email_code              :{type:String},
     consolation             :{type:Boolean, default:false}
 });
 
@@ -134,5 +137,5 @@ Prize.static('search', function(){
             });
         });
     };
-    this.find.apply( this, arguments )
+    this.find.apply( this, arguments );
 });
