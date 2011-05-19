@@ -40,7 +40,6 @@ exports['page tests'] = {
             {url: pages_link+'/?ll=42.646261785714,-71.303897114286&token='+token},
             ok,
             function(res) {
-                print(result);
                 var result = JSON.parse(res.body);
                 var page = result.pages[0];
                 var valid = Bozuko.validate('page', page);

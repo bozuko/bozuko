@@ -140,24 +140,26 @@ var emptyCollection = function(name) {
 };
 
 var add_users = function(callback) {
+    console.log('add users');
     Bozuko.service('facebook').user({user_id:user.id}, function(error, user){
-	if( error ){
-	    console.log(error.stack);
-	    return callback(error);
-	}
-	return Bozuko.models.User.createFromServiceObject(user, function(error, user){
-	    if( error ) return callback( error );
-	    user.service('facebook').auth = auth;
-            user.phones.push(assert.phone);
-            assert.challenge = user.challenge;
-
-	    user.service('facebook').internal = {likes : ['181069118581729']};
-
-	    return user.save( function(error){
-		if( error ) return callback( error );
-		return callback( null, user);
-	    });
-	});
+		if( error ){
+			console.log(error.stack);
+			return callback(error);
+		}
+		return Bozuko.models.User.createFromServiceObject(user, function(error, user){
+			if( error ) return callback( error );
+			user.service('facebook').auth = auth;
+			user.phones.push(assert.phone);
+			assert.challenge = user.challenge;
+	
+			user.service('facebook').internal = {likes : ['181069118581729']};
+	
+			return user.save( function(error){
+                if( error ) return callback( error );
+                console.log('added users');
+				return callback( null, user);
+			});
+		});
     });
 };
 
@@ -172,14 +174,16 @@ var pages = [
     // florida
     "185253393876" 		// owl watch florida
 ];
-var add_pages = function(callback) {
-    if( pages.length > 0 ){
-        add_page(pages.shift(), function(error){
+var add_pages = function(callback, i) {
+    i = i || 0;
+    if( i < pages.length ){
+        add_page(pages[i], function(error){
             profiler.mark('add page');
-            add_pages(callback);
+            add_pages(callback, i+1);
         });
     }
     else{
+        console.log('no pages');
         callback(null,'');
     }
 };
@@ -201,7 +205,7 @@ function add_page(id, callback){
                 if (user) {
                     assert.uid = ''+user._id;
                     page.owner_id = user._id;
-		    page.security_img = '/security/image.png';
+					page.security_img = '/security/image.png';
                     page.save(function(){callback(null,'');});
                 } else {
                     callback(new Error("Can't find Bobby!"));
@@ -219,12 +223,12 @@ var add_contests = function(callback) {
     end.setTime(start.getTime()+1000*60*60*24*2);
 
     var data = {
-	active: true,
+		active: true,
         start: start,
         game: 'slots',
-	game_config: {},
-	end: end,
-	total_entries: 30,
+		game_config: {},
+		end: end,
+		total_entries: 30,
         free_play_pct: 50
     };
 
