@@ -33,6 +33,19 @@ OrderEngine.prototype.generateResults = function( ){
     var ar = [];
     for( var i=0; i<totalPlays; i++) ar.push(i);
 
+    // Store all generated prize codes for this contest so we don't have dupes.
+    var codes = {'0' : true};
+
+    function letter() { return rand(0,25) + 65; }
+    function get_code() {
+        var code = '0';
+        while (codes[code]) {
+            code = String.fromCharCode(letter(), letter(), letter(), letter(), letter(), letter());
+        }
+        codes[code] = true;
+        return code;
+    }
+
     function pick_index() {
         var random = rand(0,ar.length-1);
         var index = ar[random];
@@ -46,7 +59,8 @@ OrderEngine.prototype.generateResults = function( ){
             index = pick_index();
             results[index] = {
                 index: prize_index,
-                prize: prize._id
+                prize: prize._id,
+                code: get_code()
             };
         }
     });
