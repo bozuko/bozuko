@@ -7,7 +7,7 @@ var Prize = module.exports = new Schema({
     page_id                 :{type:ObjectId, index:true},
     user_id                 :{type:ObjectId, index:true},
     uuid                    :{type:String},
-    code                    :{typs:String},
+    code                    :{type:String},
     value                   :{type:Number},
     name                    :{type:String},
     page_name               :{type:String},
