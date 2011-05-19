@@ -8,12 +8,12 @@ var http = require('http');
 
 var users = {
     a: {
-		'id': '100001848849081',
-		'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
+	'id': '100001848849081',
+	'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
     },
     b: {
-		'id': '100001863668743',
-		'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
+	'id': '100001863668743',
+	'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
     }
 };
 
@@ -92,7 +92,7 @@ assert.response = function(test, server, req, res, callback){
                     eql = expected instanceof RegExp
                         ? expected.test(actual)
                         : expected == actual;
-					test.ok(eql);
+		    test.ok(eql);
                 }
             }
 
@@ -109,28 +109,25 @@ var profiler;
 
 exports.setup = function(fn) {
 
-	if( !Bozuko.app ){
-		profiler = Bozuko.require('util/profiler').create('testsuite');
-		Bozuko.getApp().listen(Bozuko.getConfig().server.port);
-		console.log(Bozuko.getConfig().server.port);
-		async.series([
-			emptyCollection('User'),
-			emptyCollection('Page'),
-			emptyCollection('Contest'),
-			emptyCollection('Checkin'),
-			emptyCollection('Play'),
-			emptyCollection('Prize'),
-			add_users,
-			add_pages,
-			add_contests
-		], function(err, res) {
-			profiler.mark('setup complete');
-			fn();
-		});
-	}
-	else{
-		fn();
-	}
+    if( !Bozuko.app ){
+        Bozuko.getApp().listen(Bozuko.getConfig().server.port);
+    }
+    profiler = Bozuko.require('util/profiler').create('testsuite');
+    async.series([
+	emptyCollection('User'),
+	emptyCollection('Page'),
+	emptyCollection('Contest'),
+	emptyCollection('Checkin'),
+	emptyCollection('Play'),
+	emptyCollection('Prize'),
+	add_users,
+	add_pages,
+	add_contests
+    ], function(err, res) {
+        if (err) console.log("testsuite setup error");
+        profiler.mark('setup complete');
+        fn();
+    });
 };
 
 var emptyCollection = function(name) {
@@ -151,14 +148,14 @@ var add_users = function(callback) {
 	return Bozuko.models.User.createFromServiceObject(user, function(error, user){
 	    if( error ) return callback( error );
 	    user.service('facebook').auth = auth;
-        user.phones.push(assert.phone);
-        assert.challenge = user.challenge;
+            user.phones.push(assert.phone);
+            assert.challenge = user.challenge;
 
-		user.service('facebook').internal = {likes : ['181069118581729']};
+	    user.service('facebook').internal = {likes : ['181069118581729']};
 
 	    return user.save( function(error){
-			if( error ) return callback( error );
-			return callback( null, user);
+		if( error ) return callback( error );
+		return callback( null, user);
 	    });
 	});
     });
@@ -172,8 +169,8 @@ var pages = [
     // boston
     "108123539229568",	// hard rock
     "116813875003123", 	// black rose
-	// florida
-	"185253393876" 		// owl watch florida
+    // florida
+    "185253393876" 		// owl watch florida
 ];
 var add_pages = function(callback) {
     if( pages.length > 0 ){
