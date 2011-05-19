@@ -228,19 +228,13 @@ Contest.static('audit', function(callback) {
                 index++;
                 if (!play.active) return callback(null);
 
-                return Bozuko.models.Prize.findOne(
-                    {contest_id: contest._id, play_cursor: index},
-                    function(err, prize) {
-                        if (err) return callback(err);
-                        return contest.createPrize({
-                            user_id: play.user_id,
-                            play_cursor: index,
-                            timestamp: play.timestamp,
-                            uuid: play.uuid,
-                            audit: true
-                        }, callback);
-                    }
-                );
+                return contest.createPrize({
+                    user_id: play.user_id,
+                    play_cursor: index,
+                    timestamp: play.timestamp,
+                    uuid: play.uuid,
+                    audit: true
+                }, callback);
             },
             function(err) {
                 callback(err);
