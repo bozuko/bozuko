@@ -228,74 +228,27 @@ Contest.static('audit', function(callback) {
                 index++;
                 if (!play.active) return callback(null);
 
-                // Did the user win?
-                var free_play = false;
-                var result = contest.results[index];
-                if (result === 'free_play') {
-                    result = false;
-                    free_play = true;
-                }
-                var winner = result ? true : false;
-
-                function fix_play(prize) {
-                    // Prize already exists. See if the play exists.
-                    return Bozuko.models.Play.findOne(
-                        {contest_id: contest._id, play_cursor: index},
-                        function(err, p) {
-                            if (err) return callback(err);
-                            if (!p) {
-                                var game_result = Bozuko.game( contest ).process( result ? result.index : false );
-                                return contest.savePlay({
-                                   user_id: play.user_id,
-                                   play_cursor: index,
-                                   timestamp: play.timestamp,
-                                   uuid: play.uuid,
-                                   game_result: game_result,
-                                   prize: prize,
-                                   free_play: free_play
-                                   }, callback
-                                );
-                            }
-                            // We already have the play saved, so just remove the active flag.
-                            play.active = false;
-                            return contest.save(function(err) {
-                                if (err) return callback(err);
-                                return callback(null);
-                            });
-                        }
-                    );
-                }
-
-                if (winner) {
-                    // The user won so there should be a prize and play record
-                    return Bozuko.models.Prize.findOne(
-                        {contest_id: contest._id, play_cursor: index},
-                        function(err, prize) {
-                            if (err) return callback(err);
-                            if (!prize) {
-                                return contest.createPrize({
-                                    user_id: play.user_id,
-                                    play_cursor: index,
-                                    timestamp: play.timestamp,
-                                    uuid: play.uuid
-                                    }, callback);
-                            }
-                            // The prize record already exists so check the play record
-                            return fixPlay(prize);
-                        }
-                    );
-                }
-
-                // The user didn't win so there should only be a play record
-                return  fix_play(null);
+                return Bozuko.models.Prize.findOne(
+                    {contest_id: contest._id, play_cursor: index},
+                    function(err, prize) {
+                        if (err) return callback(err);
+                        return contest.createPrize({
+                            user_id: play.user_id,
+                            play_cursor: index,
+                            timestamp: play.timestamp,
+                            uuid: play.uuid,
+                            audit: true
+                        }, callback);
+                    }
+                );
+            },
+            function(err) {
+                callback(err);
+            });
         },
         function(err) {
             callback(err);
         });
-    },
-    function(err) {
-        callback(err);
-    });
     });
 });
 
@@ -463,8 +416,8 @@ Contest.method('createPrize', function(opts, callback) {
 
     // Did we win a free_play? If so there isn't a prize.
     if (result === 'free_play') {
-        var free_spin_index = self.prizes.length;
-        opts.game_result = Bozuko.game(this).process(free_spin_index);
+        var free_play_index = self.prizes.length;
+        opts.game_result = Bozuko.game(this).process(free_play_index);
         opts.prize = null;
         opts.free_play = true;
         return self.savePlay(opts, callback);
@@ -478,25 +431,28 @@ Contest.method('createPrize', function(opts, callback) {
     opts.free_play = false;
 
     // Should we hand out a consolation prize?
-    var tokens = this.getUserInfo(opts.user_id).tokens;
-    if (tokens === 0 && this.consolation_config.length != 0) {
-        return this.saveConsolation(opts, function(err, consolation_prize) {
-            if (err) return callback(err);
-
-            // The prize we are saving isn't a consolation prize although there may be one of those also.
-            opts.consolation = false;
-            return self.savePrize(opts, function(err, user_prize) {
+    // Don't worry about this for audit code, as the user's info might have changed.
+    if (!opts.audit) {
+        var tokens = this.getUserInfo(opts.user_id).tokens;
+        if (tokens === 0 && this.consolation_config.length != 0) {
+            return this.saveConsolation(opts, function(err, consolation_prize) {
                 if (err) return callback(err);
-                opts.prize = user_prize;
 
-                // If there was a consolation prize reset opts to reflect that
-                if (consolation_prize) {
-                    opts.consolation = true;
-                    opts.consolation_prize = consolation_prize;
-                }
-                return self.savePlay(opts, callback);
+                // The prize we are saving isn't a consolation prize although there may be one of those also.
+                opts.consolation = false;
+                return self.savePrize(opts, function(err, user_prize) {
+                    if (err) return callback(err);
+                    opts.prize = user_prize;
+
+                    // If there was a consolation prize reset opts to reflect that
+                    if (consolation_prize) {
+                        opts.consolation = true;
+                        opts.consolation_prize = consolation_prize;
+                    }
+                    return self.savePlay(opts, callback);
+                });
             });
-        });
+        }
     }
 
     // Is there a regular (non-consolation) prize?
@@ -561,7 +517,9 @@ Contest.method('endPlay', function(opts, callback) {
     }
     var min_expiry_date = new Date(opts.timestamp.getTime() - Bozuko.config.entry.token_expiration);
 
-    if (opts.free_play) {
+    // We don't want to touch the token_cursor etc... for an audit.
+    // We just want to recreate the prize and play records.
+    if (opts.free_play && !opts.audit) {
 
         // Need to use 2 findAndModify operations here, because mongo doesn't seem to allow
         // updating of two different arrays in the same doc.
