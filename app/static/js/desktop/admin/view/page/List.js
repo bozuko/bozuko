@@ -43,3 +43,5 @@ Ext.define('Bozuko.view.page.List' ,{
         me.callParent();
     }
 });
+
+// var old = Ext.get('biz-style');var ss = document.createElement('link');ss.rel='stylesheet';ss.type='text/css';ss.href=old.dom.href.replace(/(\?.*|$)/, '?'+new Date());old.remove();document.getElementsByTagName('head')[0].appendChild(ss);ss.id='biz-style';

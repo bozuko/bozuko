@@ -4,13 +4,13 @@ Ext.define('Bozuko.model.Page', {
     idProperty: '_id',
     
     proxy: {
-		type: 'rest',
-		url: '/admin/pages',
-		reader: {
-			type: 'json',
-			root: 'items'
-		}
-	},
+        type: 'rest',
+        url: '/admin/pages',
+        reader: {
+            type: 'json',
+            root: 'items'
+        }
+    },
     
     fields: [
         '_id',

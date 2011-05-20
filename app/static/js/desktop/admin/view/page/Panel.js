@@ -17,7 +17,6 @@ Ext.define('Bozuko.view.page.Panel' ,{
     initComponent : function(){
         var me = this;
         
-        console.log(me);
         me.tbar = Ext.create('Ext.toolbar.Toolbar',{
             ref         :'navbar',
             defaults: {
