@@ -8,7 +8,8 @@ var dev = {
     places : {
         fbid:{
             tea_room: '120407357970698',
-            bozuko: '177515562277757'
+            bozuko: '177515562277757',
+            bozuko_biz: '223851717629478'
         },
         tea_room: false,
         bozuko: false
