@@ -87,25 +87,59 @@ Ext.define('Bozuko.controller.Contests' ,{
         contestGrid.store.load();
     },
     
-    onContestItemClick : function(view, item, record, index, e){
+    onContestItemClick : function(view, record, item, index, e){
         // get the target
         var target = e.getTarget();
         if( target.tagName.toLowerCase() != 'a' ) return;
         switch( target.className ){
             case 'edit':
-                
+                this.editContest(record, view);
+                break;
+            
             case 'delete':
+                Ext.Msg.confirm(
+                    'Are you sure?',
+                    'Are you sure you want to delete this campaign?',
+                    function(btn){
+                        if( btn != 'ok' && btn != 'yes' ) return;
+                        // delete it, they said so
+                        record.store.remove(record);
+                        record.destroy({
+                            callback : function(){
+                                console.log('the campaign was destroyed');
+                            }
+                        });
+                    }
+                );
+                break;
                 
             case 'publish':
                 
             case 'copy':
                 Ext.Msg.show({
-                    title: 'Not Implemented',
+                    title: 'Not Implemented Yet',
                     msg: 'Working on it... Check back soon',
                     buttons: Ext.MessageBox.OK,
                     icon: Ext.Msg.WARNING
                 });
                 break;
         }
+    },
+    
+    editContest : function(record, view){
+        // create a new
+        var panel = view.up('pagepanel'),
+            id = record.get('_id');
+        
+        if( !panel.cards ) panel.cards = {};
+        if( !panel.cards[id] ){
+            panel.cards[id] = panel.add({
+                border: false,
+                xtype: 'contestform'
+            });
+            panel.cards[id].setRecord( record );
+            console.log(panel.cards);
+        }
+        panel.getLayout().setActiveItem(panel.cards[id]);
     }
 });

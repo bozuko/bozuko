@@ -21,7 +21,13 @@
 }
 .campaigns-body .campaign-list .list-item .title {
   font-size: 16px;
-  margin-bottom: .5em;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #ddd;
+}
+.campaigns-body .campaign-list .list-item .title .state {
+  float: right;
+  font-size: 12px;
 }
 .campaigns-body .campaign-list .list-item .details table th {
   padding-right: 10px;
@@ -65,5 +71,5 @@
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png');
 }
 .campaigns-body .campaign-list .list-item .buttons li .copy {
-  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-plus-24.png');
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png');
 }
