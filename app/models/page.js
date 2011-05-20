@@ -392,21 +392,15 @@ Page.static('search', function(options, callback){
      */
     else {
         if( Bozuko.env() == 'development' && !options.query ){
-
-            var s = bozukoSearch.selector;
-            bozukoSearch.selector = {
-                $or: [s, {test: true}, {featured:true}]
-            };
+            bozukoSearch.selector['$or'] = [{test: true}, {featured:true}];
         }
-        else{
-            var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
-            console.log(distance, Bozuko.config.search.nearbyRadius);
-            bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
-            bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
-            bozukoSearch.type='nativeFind';
-        }
+        var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
+        console.log(distance, Bozuko.config.search.nearbyRadius);
+        bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
+        bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
+        bozukoSearch.type='nativeFind';
     }
-
+    
     // utility function
     function prepare_pages(pages, user, fn){
         for(var i=0; i<pages.length; i++){

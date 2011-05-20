@@ -72,14 +72,14 @@ function win(contest, winIndex) {
                 if (!used_nums[val]) {
                     results[index] = {
                         number: val,
-                        prize: randomPrize(contest, winIndex)
+                        text: randomPrize(contest, winIndex)
                     };
                     used_nums[val] = 1;
                     done = true;
                 } else if (used_nums[val] < num_matches-1) {
                     results[index] = {
                         number: val,
-                        prize: randomPrize(contest, winIndex)
+                        text: randomPrize(contest, winIndex)
                     };
                     used_nums[val]++;
                     done = true;
