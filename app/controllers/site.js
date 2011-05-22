@@ -68,7 +68,7 @@ exports.routes = {
                 "Seattle, WA",
                 "Miami, FL"
             ];
-            res.locals.signup = fs.readFileSync(Bozuko.dir+'/content/site/mailchimp-signup.html', 'utf-8');
+            res.locals.signup = '';//fs.readFileSync(Bozuko.dir+'/content/site/mailchimp-signup.html', 'utf-8');
             res.render('site/coming-soon');
         }
     },

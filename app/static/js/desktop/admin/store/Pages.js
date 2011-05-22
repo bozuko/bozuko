@@ -1,9 +1,9 @@
 Ext.define('Bozuko.store.Pages', {
-	extend: 'Ext.data.Store',
-	
-	requires: ['Ext.data.reader.Json'],
+    extend: 'Ext.data.Store',
+    
+    requires: ['Ext.data.reader.Json'],
 
     model: 'Bozuko.model.Page',
-	
-	autoLoad: true
+    
+    autoLoad: true
 });

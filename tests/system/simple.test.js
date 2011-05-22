@@ -520,7 +520,6 @@ exports['prizes tests'] = {
         if( wins == 0 ){
             return test.done();
         }
-
         // lets check the prizes for a test query
         var prize = prizes[0];
         var query = prize.name;
