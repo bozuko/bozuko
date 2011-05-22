@@ -3,6 +3,30 @@ var async = require('async'),
     ;
 
 var locations = {
+    "MA - Fenway":[42.345826,-71.098365],
+    "MA - Back Bay-2":[42.353406,-71.072659],
+    "MA - Park Area":[42.351789,-71.068583],
+    "MA - Fleet Center":[42.364284,-71.059849],
+    "MA - Kendall":[42.362341,-71.086103],
+    "MA - Union Sq":[42.379756,-71.096349],
+    "MA - Porter Sq":[42.390905,-71.122578],
+    "MA - Harvard":[42.373336,-71.119266],
+    "MA - Coolidge":[42.342305,-71.121347],
+    "MA - Marina Bay":[42.296612,-71.02644],
+    "MA - Lexington":[42.448478,-71.229193],
+    "MA - Westford":[42.568909,-71.420521],
+    "MA - Nashua":[42.764735,-71.464701],
+    "MA - Worcester":[42.265397,-71.802101],
+    "MA - Falmouth":[41.552195,-70.616302],
+    "MA - Waterfront":[42.350808,-71.042967],
+    "MA - Newburyport":[42.813875,-70.873677],
+    "MA - Fresh Pond":[42.388209,-71.142688],
+    "MA - Drum Hill":[42.623466,-71.364005],
+    "MA - Pheasant Lane Mall":[42.701859,-71.440527],
+    "MA - Burlington Mall":[42.48183,-71.215074],
+    "MA - Natick":[42.305607,-71.397703],
+    "MA - Lowell Spinners":[42.653792,-71.316559],
+    "MA - North Shore Mall":[42.541445,-70.941811],
     "MA - Faneuil Hall":[42.360133,-71.055767],
     "MA - Back Bay":[42.34964,-71.082165],
     "MA - Davis Square":[42.396476,-71.122436],
@@ -82,7 +106,7 @@ var collect = exports.collect = function(service, city, center, callback) {
                 stats: 0,
                 errors: 0
             };
-                
+
             console.log(service+' got '+results.length+' results for '+city);
             return async.forEach(results,
                 function(page, cb) {
@@ -122,8 +146,8 @@ exports.collect_all = function(callback) {
     var fns = [];
     var errors = 0;
     var stats = 0;
-    
-    mail.send({ 
+
+    mail.send({
         to      :"info@bozuko.com",
         subject :"Bozuko Stat Collection Starting",
         body    :["Yo-",
@@ -138,11 +162,11 @@ exports.collect_all = function(callback) {
             console.log("Error sending mail");
         }
     });
-    
+
     Object.keys(locations).forEach(function(city) {
         var center = locations[city].slice(0);
         center.reverse();
-            
+
         ['facebook','foursquare'].forEach(function(service){
             fns.push(function(callback){
                 collect(service, city, center, function(error, counters){
@@ -165,9 +189,9 @@ exports.collect_all = function(callback) {
         d.setHours(0);
         d.setMinutes(0);
         d.setSeconds(0);
-        
+
         Bozuko.models.Statistic.find({timestamp:{$gt:d}}, function(error, statistics){
-            
+
             if( error ){
                 return console.log(error);
             }
@@ -187,7 +211,7 @@ exports.collect_all = function(callback) {
             var lines = [];
             statistics.forEach(function(stat){
                 if( !stat ) return;
-                        
+
                 if( !stat.daily_checkins ) stat.daily_checkins = 0;
                 var line = [];
                 fields.forEach(function(field){
@@ -205,12 +229,12 @@ exports.collect_all = function(callback) {
                 });
                 lines.push(line);
             });
-            
+
             var csv = {
                 filename: "Bozuko_Stats_"+(d.getMonth()+1)+'-'+(d.getDate())+'-'+d.getFullYear()+'.csv',
                 contents: new Buffer(lines.join('\n'),'utf-8')
             };
-            
+
             return mail.send({
                 to      :"info@bozuko.com",
                 subject :"Bozuko Stat Collection Finished",
@@ -230,7 +254,7 @@ exports.collect_all = function(callback) {
                     console.log("Error sending mail");
                 }
             });
-            
+
         });
     });
 
