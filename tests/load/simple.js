@@ -97,9 +97,13 @@ function checkin(res, callback) {
     // get a random user for checkin
     var uid = random_user_id();
     Bozuko.models.User.findById(uid, function(err, user) {
-        if (err) return callback(err);
+        if (err) {
+            user_ids_free.push(uid);
+            return callback(err);
+        }
         if (!user) {
-            return callback(new Error("Couldn\'t find user "+uid));
+            user_ids_free.push(uid);
+            return callback(new Error("Couldn't find user "+uid));
         }
         var checkin_link = page.links.facebook_checkin;
         var params = JSON.stringify({
@@ -129,16 +133,26 @@ function play(res, callback) {
     try {
         var rv = JSON.parse(res.body);
     } catch(err) {
+        user_ids_free.push(res.opaque.user_id);
         return callback(err);
     }
 
     if (res.opaque.last_op === 'checkin') {
-        if (!Bozuko.validate(['game_state'], rv)) return callback(new Error("Invalid game_state"));
-        if (rv === []) return callback(new Error("No game_states returned from entry"));
+        if (!Bozuko.validate(['game_state'], rv)) {
+            user_ids_free.push(res.opaque.user_id);
+            return callback(new Error("Invalid game_state"));
+        }
+        if (rv === []) {
+            user_ids_free.push(res.opaque.user_id);
+            return callback(new Error("No game_states returned from entry"));
+        }
 
         // This test only has one contest per page so just use the first game_state
         var state = rv[0];
-        if (state.user_tokens != 3) return callback(new Error("game_state has invalid token count"));
+        if (state.user_tokens != 3) {
+            user_ids_free.push(res.opaque.user_id);
+            return callback(new Error("game_state has invalid token count"));
+        }
         res.opaque.message = "Load Test Play";
         res.opaque.user_tokens = 3;
         res.opaque.last_op = 'play';
@@ -150,28 +164,30 @@ function play(res, callback) {
         });
     } else {
         if (res.opaque.user_tokens === 0) {
-            // This should be an error code (out of tokens)
-            if (res.statusCode === 200) return callback(new Error("Play allowed with no tokens!"));
 
             // allow reuse of this user
             user_ids_free.push(res.opaque.user_id);
+
+            // This should be an error code (out of tokens)
+            if (res.statusCode === 200) return callback(new Error("Play allowed with no tokens!"));
 
             // End the session
             return callback(null, 'done');
         }
 
         var token_ct = res.opaque.user_tokens - 1;
-        if (rv.game_state.user_tokens != token_ct) return callback(new Error(
-            "User token count incorrect: Expected: "+token_ct+", got: "+rv.user_tokens)
-        );
-
-        if (token_ct === 0) {
-            // allow reuse of this user
+        if (rv.game_state.user_tokens != token_ct) {
             user_ids_free.push(res.opaque.user_id);
-            return callback(null, 'done');
+            return callback(new Error(
+                "User token count incorrect: Expected: "+token_ct+", got: "+rv.user_tokens));
         }
 
         res.opaque.user_tokens = token_ct;
+
+        // We are about to use our last token so free up the user
+        if (token_ct === 1) {
+            user_ids_free.push(res.opaque.user_id);
+        }
 
         return callback(null, {
             path: rv.game_state.links.game_result+'/?token='+res.opaque.auth_token,
