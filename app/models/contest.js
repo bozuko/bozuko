@@ -6,6 +6,7 @@ var mongoose = require('mongoose'),
     Play = require('./embedded/contest/play'),
     ObjectId = Schema.ObjectId,
     Native = require('./plugins/native'),
+    JsonPlugin =  require('./plugins/json'),
     async = require('async'),
     ObjectID = require('mongoose/lib/mongoose/types/objectid'),
     uuid = require('node-uuid')
@@ -36,8 +37,23 @@ var Contest = module.exports = new Schema({
     winners                 :[ObjectId]
 });
 
-Contest.plugin( Native );
+Contest.ACTIVE = 'active';
+Contest.PUBLISHED = 'published';
+Contest.COMPLETE = 'complete';
+Contest.DRAFT = 'draft';
+Contest.CANCELLED = 'cancelled';
 
+Contest.plugin( Native );
+Contest.plugin( JsonPlugin );
+
+Contest.virtual('state')
+    .get(function(){
+        if( !this.active ) return Contest.DRAFT;
+        var now = new Date();
+        if( now > this.start && now < this.end ) return Contest.ACTIVE;
+        if( now < this.start ) return Contest.PUBLISHED;
+        return Contest.COMPLETE;
+    });
 /**
  * Create the results array
  *
@@ -411,7 +427,7 @@ Contest.method('createPrize', function(opts, callback) {
     // Did we win a free_play? If so there isn't a prize.
     if (result === 'free_play') {
         var free_play_index = self.prizes.length;
-        opts.game_result = Bozuko.game(this).process(free_play_index);
+        opts.game_result = Bozuko.game(this).process(free_play_index );
         opts.prize = null;
         opts.free_play = true;
         return self.savePlay(opts, callback);

@@ -155,9 +155,9 @@ exports.routes = {
                     selector = {};
                     
                 if( page_id ) selector['page_id'] = page_id;
-                return Bozuko.models.Contest.find(selector,{},{sort:{active: -1, start:-1}}, function(error, pages){
+                return Bozuko.models.Contest.find(selector,{},{sort:{active: -1, start:-1}}, function(error, contests){
                     if( error ) return error.send(res);
-                    return res.send({items:pages});
+                    return res.send({items:contests});
                 });
             }
         },

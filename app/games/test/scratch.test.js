@@ -2,7 +2,14 @@ var testsuite = require('./config/testsuite');
 
 // Mock contest
 var contest = {
-    game_config: {}
+    game_config: {},
+    prizes:[{
+        name: 'test1'
+    },{
+        name: 'test2'
+    },{
+        name: 'test3'
+    }]
 };
 
 var Scratch = require('../scratch/index.js');
@@ -19,7 +26,7 @@ exports['lose'] = function(test) {
     var lost = true;
 
     for (var i = 0; i < size; i++) {
-        val = nums[i];
+        val = nums[i].number;
         if (!used_nums[val]) {
             used_nums[val] = 1;
         } else {
@@ -40,7 +47,7 @@ exports['win'] = function(test) {
     var nums = scratch.process(1).numbers;
 
     for (var i = 0; i < size; i++) {
-        val = nums[i];
+        val = nums[i].number;
         if (!used_nums[val]) {
             used_nums[val] = 1;
         } else {

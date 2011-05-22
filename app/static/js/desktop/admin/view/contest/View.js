@@ -18,7 +18,12 @@ Ext.define('Bozuko.view.contest.View' ,{
             '<ul class="campaign-list">',
                 '<tpl for=".">',
                     '<li class="list-item">',
-                        '<h3 class="title">{[this.getTitle(values.name)]}</h1>',
+                        '<h3 class="title">',
+                            '<span class="state">',
+                                '{[this.getState(values)]}',
+                            '</span>',
+                            '{[this.getTitle(values.name)]}',
+                        '</h3>',
                         '<div class="details">',
                             '{[this.getDetails(values)]}',
                         '</div>',
@@ -52,6 +57,10 @@ Ext.define('Bozuko.view.contest.View' ,{
                             '</tbody>',
                         '</table>'
                     ].join('');
+                },
+                
+                getState : function( values ){
+                    return values.state.substr(0,1).toUpperCase()+values.state.substr(1);
                 }
             }
         );
