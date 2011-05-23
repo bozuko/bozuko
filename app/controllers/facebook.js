@@ -117,13 +117,15 @@ exports.routes = {
         }
     },
 
-    '/facebook/:id/like': {
+    '/facebook/:id/like.html': {
 
         post: {
 
             access: 'user',
 
             handler : function(req, res){
+                // ... no dice ...
+                /*
                 Bozuko.service('facebook').like({
                     user: req.session.user,
                     object_id   : req.param('id')
@@ -136,6 +138,8 @@ exports.routes = {
                         success: true
                     }));
                 });
+                */
+                
             }
         }
     },
