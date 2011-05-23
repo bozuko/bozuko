@@ -146,7 +146,7 @@ Bozuko.error = function(name, data){
         var message = this.require('errors/'+path.join('/'))[err];
 	    var code = null;
 	    if( typeof message != 'string' && message.code ){
-			code = message.code;
+                code = message.code;
 	        message = message.message;
 	    }
 	    return new BozukoError(name,message,data,code);
@@ -192,18 +192,18 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
     app.use(Bozuko.require('middleware/mobile')());
-	
+
 	if (Bozuko.env() != 'test') {
         app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     }
 	if( Bozuko.env() == 'development' ){
 		app.use(Bozuko.require('middleware/debug')());
 	}
-	
+
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
-	
-	
+
+
     app.use(express.static(__dirname + '/static'));
 }
 
@@ -314,9 +314,11 @@ function initFacebookPubSub(){
     // first we need to delete any existing subscriptions
     http.request({
         url: url,
-        method: 'DELETE',
-        callback: function(body){
+        method: 'DELETE'},
+        function(err, body){
+            if (err) console.log("Failed to delete existing facebook subscriptions");
             // now lets setup the new subscriptions
+            // Should there be other error checking for the following 2 http requests?
             http.request({
                 url: url,
                 method: 'POST',
@@ -338,7 +340,7 @@ function initFacebookPubSub(){
                 }
             });
         }
-    });
+    );
 }
 Bozuko.initStats= function(){
     var stats = Bozuko.require('util/stats');
