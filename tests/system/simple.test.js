@@ -42,6 +42,7 @@ exports['page tests'] = {
             function(res) {
                 var result = JSON.parse(res.body);
                 var page = result.pages[0];
+                console.log(page);
                 var valid = Bozuko.validate('page', page);
                 checkin_link = page.links.facebook_checkin;
                 like_link = page.links.facebook_like;

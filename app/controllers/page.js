@@ -16,6 +16,8 @@ exports.transfer_objects = {
             id: "String",
             name: "String",
             image: "String",
+            bozuko_url: "String",
+            like_url: "String",
             facebook_page: "String",
             category: "String",
             website: "String",
@@ -88,7 +90,8 @@ exports.transfer_objects = {
             
             // add registered links...
             if( page.registered ){
-                page.links.page         ='/page/'+page.id,
+                page.bozuko_url         ='/business/'+page.id;
+                page.links.page         ='/page/'+page.id;
                 page.links.share        ='/page/'+page.id+'/share';
                 page.links.feedback     ='/page/'+page.id+'/feedback';
             }
@@ -272,7 +275,6 @@ exports.routes = {
         }
     },
 
-
     '/page/:id': {
 
         get: {
@@ -289,6 +291,25 @@ exports.routes = {
                         if( error ) return error.send(res);
                         return res.send(Bozuko.transfer('page', page, req.session.user));
                     });
+                });
+            }
+        }
+    },
+    
+    '/page/:id/feedback': {
+
+        put: {
+            handler: function(req,res) {
+                var page_id = req.param('id');
+                Bozuko.models.Page.findById(page_id, function(error, page) {
+                    if( error ) return error.send(res);
+                    if( !page ) return Bozuko.error('page/does_not_exist').send(res);
+                    
+                    /**
+                     * TODO - the logic to send stuff..
+                     */
+                    return res.send( Bozuko.transfer('success_message', {success:true}));
+                    
                 });
             }
         }
