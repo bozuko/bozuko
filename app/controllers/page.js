@@ -43,7 +43,6 @@ exports.transfer_objects = {
             links: {
                 recommend: "String",
                 facebook_checkin: "String",
-                facebook_like: "String",
                 feedback: "String",
                 favorite: "String",
                 page: "String"
@@ -57,6 +56,7 @@ exports.transfer_objects = {
             var fid = page.registered ? page.service('facebook').sid : page.id;
             if( !page.registered ) delete page.id;
             page.liked = false;
+            page.like_url = burl('/facebook/'+fid+'/like.html');
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
                 facebook_checkin    :'/facebook/'+fid+'/checkin'

@@ -45,3 +45,35 @@
 .bozuko-list .list-item-selected {
   background: #d5eaf9;
 }
+.campaign-nav {
+  height: 100%;
+  border-right: 1px solid #ccc;
+  background: #e6e6e6;
+  padding-top: 20px;
+}
+.campaign-nav ul li {
+  cursor: pointer;
+  padding: 7px 4px 7px 30px;
+  background-repeat: no-repeat;
+  background-position: 4px 50%;
+}
+.campaign-nav ul .nav-item-selected {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background-color: #fff;
+  margin-right: -1px;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+.campaign-nav ul .nav-item-over {
+  background-color: #ccc;
+}
+.campaign-nav ul .contest {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-16.png');
+}
+.campaign-nav ul .prizes {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-16.png');
+}
+.campaign-nav ul .game {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-16.png');
+}

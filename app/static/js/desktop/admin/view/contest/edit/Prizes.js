@@ -35,7 +35,9 @@ Ext.define('Bozuko.view.contest.edit.Prizes' ,{
         
         me.addBtn = me.add({
             xtype           :'button',
+            scale           :'medium',
             text            :'Add Prize',
+            icon            :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png',
             handler         :me.createPrize,
             scope           :me
         });
