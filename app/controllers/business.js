@@ -1,9 +1,8 @@
 var facebook    = Bozuko.require('util/facebook'),
-    http        = Bozuko.require('util/http'),
     Page        = Bozuko.require('util/page'),
     merge       = require('connect').utils.merge,
     qs          = require('querystring'),
-    url         = require('url')    
+    url         = require('url')
 ;
 
 exports.locals = {
@@ -11,12 +10,12 @@ exports.locals = {
 };
 
 exports.routes = {
-    
-    
+
+
     '/business/login' : {
-        
+
         description :"Business login - sends user to facebook",
-        
+
         get : function(req,res){
             if( req.param('return') ){
                 req.session.login_redirect = req.param('return');
@@ -28,11 +27,11 @@ exports.routes = {
             });
         }
     },
-    
+
     '/business/login/popup' : {
-        
+
         description: "The pop up window to show after login",
-        
+
         get : {
             locals: {
                 layout: false
@@ -45,15 +44,15 @@ exports.routes = {
                 res.render('business/login/popup');
             }
         }
-        
+
     },
-    
+
     '/business/sign-up' : {
-        
+
         description :"Business registration - sends user to facebook",
-        
+
         title: "Bozuko for Business - Sign up",
-        
+
         locals:{
             html_classes:['sign-up'],
             hide_top_profile: true,
@@ -62,17 +61,17 @@ exports.routes = {
                 '/js/desktop/business/sign-up.js'
             ]
         },
-        
+
         get : function(req,res){
             // show the signup screen
             res.render('business/sign-up',{});
         }
     },
-    
+
     '/business/sign-up/account' : {
-        
+
         title: "Bozuko for Business - Sign up - Choose Account",
-        
+
         locals:{
             html_classes:['sign-up'],
             hide_top_profile: true,
@@ -84,11 +83,11 @@ exports.routes = {
                 '/css/desktop/business/sign-up.css'
             ]
         },
-        
+
         get : {
-            
+
             access: 'business',
-            
+
             handler: function(req,res){
                 // get the users businesses
                 var self = this;
@@ -104,19 +103,19 @@ exports.routes = {
                 });
             }
         },
-        
+
         post : {
             access: 'business',
-            
+
             handler: function(req,res){
                 var self = this;
-            
+
                 var id = req.param('id');
                 if( !id ){
                     req.flash('error', 'No Page Selected');
                     return res.redirect(req.url);
                 }
-                
+
                 // first, lets get the page details from facebook
                 return Bozuko.service('facebook').place({'place_id':id, user: req.session.user}, function(error, place){
                     if( !place ){
@@ -133,15 +132,15 @@ exports.routes = {
                              * TODO
                              *
                              * Allow multiple admins of a page...
-                             * 
+                             *
                              */
                             req.flash('error', 'This page is being managed by someone else. Currently, only one person can manage a page.');
                             return res.redirect(req.url);
                         }
                         else if( !page ) page = new Bozuko.models.Page();
-                        
+
                         page.service('facebook', place.id, req.session.user.service('facebook').auth, place.data);
-                        
+
                         var ignore = ['id','service','lat','lng','data'];
 
                         Object.keys(place).forEach(function(prop){
@@ -150,11 +149,11 @@ exports.routes = {
                                 page.set(prop, place[prop]);
                             }
                         });
-                        
+
                         page.set('is_location', true);
                         page.set('coords',[place.location.lng, place.location.lat]);
                         page.games = [];
-                        
+
                         page.is_location = place.location && place.location.lat ? true : false;
                         page.owner_id = req.session.user._id;
                         return page.save(function(err){
@@ -166,10 +165,10 @@ exports.routes = {
             }
         }
     },
-    
+
     '/business/admin': {
         get : {
-            
+
             locals:{
                 html_classes:['business-admin'],
                 scripts:[
@@ -192,17 +191,17 @@ exports.routes = {
                     },
                 ]
             },
-            
+
             handler: function(req, res){
                 res.render('business/admin');
             }
         }
     },
-    
+
     '/business/account' : {
-        
+
         description :"Display business account details",
-        
+
         get : function(req,res){
             console.log(req.session);
             if( !req.session.user || !req.session.user.can_manage_pages ){
@@ -212,26 +211,26 @@ exports.routes = {
                 res.redirect("/business/login?"+qs.stringify(params));
                 return;
             }
-            
+
             var locals = {
                 title : "your business account"
             };
-            
+
             Bozuko.models.Page.find({owner_id:req.session.user._id}, function(err, pages){
                 locals.pages = pages||[];
                 res.render('business/account', locals);
             });
         }
     },
-    
+
     '/business/account/add_page' : {
-        
+
         description :"Add a new page",
-        
+
         get : function(req,res){
-            
+
             var self = this;
-            
+
             Bozuko.service('facebook').get_user_pages(req.session.user, function(err, facebook_pages){
                 var locals = {
                     title : "add facebook page",
@@ -239,18 +238,18 @@ exports.routes = {
                     error : req.flash('error')
                 };
                 res.render('business/account/add_page', locals );
-                
+
             });
         },
-        
+
         post : function(req,res){
-            
+
             var self = this;
-            
+
             if( !req.session.user || !req.session.user.can_manage_pages ){
                 req.flash('error', 'You must be logged in to add a page.');
             }
-            
+
             var id = req.param('page');
             if( !id ){
                 req.flash('error', 'No Page Selected');
@@ -272,19 +271,19 @@ exports.routes = {
                          * TODO
                          *
                          * Allow multiple admins of a page...
-                         * 
+                         *
                          */
                         req.flash('error', 'This page is being managed by someone else. Currently, only one person can manage a page.');
                         res.redirect(req.url);
                         return;
                     }
                     else if( !page ) page = new Bozuko.models.Page();
-                    
+
                     page.service('facebook', data.id, req.session.user.service('facebook').auth, data);
-                    
+
                     page.name = data.name;
                     page.games = [];
-                    
+
                     page.is_location = data.location && data.location.latitude ? true : false;
                     if( page.is_location ){
                         page.lat = parseFloat(data.location.latitude);
@@ -295,18 +294,18 @@ exports.routes = {
                         // cool, we have them saved now...
                         res.redirect('/business/account/page/'+page.id+'/create_games');
                     });
-                    
+
                 });
             });
-            
+
         }
-        
+
     },
-    
+
     '/business/account/page/:id/delete' : {
         description : 'Delete a page from a business account',
         get : function(req,res){
-            
+
             var id = req.param('id');
             var locals = {
                 title:'Remove a page',
@@ -324,7 +323,7 @@ exports.routes = {
                 res.render('business/account/remove_page', locals );
             });
         },
-        
+
         post : function(req,res){
             var id = req.param('id');
             Bozuko.models.Page.findById(id, function(err, page){
@@ -344,15 +343,15 @@ exports.routes = {
                         res.redirect('/business/account');
                     });
                 }
-                
+
             });
         }
     },
-    
+
     '/business/account/page/:id/create_games' : {
         description :'Create games for the page (setup screen)',
         get : function(req,res){
-            
+
             var id = req.param('id');
             // lets grab all the games we know of
             var games = [];
@@ -364,11 +363,11 @@ exports.routes = {
                     res.redirect('/business/account');
                     return;
                 }
-                
+
                 /**
                  * TODO we should check for the parent page here
                  */
-                
+
                 // okay... lets see what games they have
                 Object.keys(Bozuko.games).forEach( function(name){
                     var game = Bozuko.games[name];
@@ -378,26 +377,26 @@ exports.routes = {
                 locals.games = games;
                 locals.title = "Create Games";
                 res.render('business/account/create_games',locals);
-                
+
             });
         }
     },
-    
+
     '/business/facebook_pages' : {
-        
+
         description :"Return an array of the pages that the user can manage",
-        
+
         get: function(req,res){
             Bozuko.service('facebook').get_user_pages(req.session.user, function(err, pages){
                 res.send(pages);
             });
         }
     },
-    
+
     '/business/facebook_page/:id' : {
-        
+
         description :"Return the details of a page",
-        
+
         get : function(req,res){
             Bozuko.service('facebook').place(req.param('id'),
                 {
