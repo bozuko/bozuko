@@ -32,7 +32,9 @@ function api(path, options, callback){
     }
     merge(params, options.params || {});
 
-    var _callback = function(response){
+    var _callback = function(err, response){
+        if (err) return callback(err);
+
         if( !response || response.meta.code != 200 ){
             return callback( Bozuko.error('foursquare/api', response.meta) );
         }
@@ -43,9 +45,9 @@ function api(path, options, callback){
         url: 'https://api.foursquare.com/v2'+path,
         params: params,
         method:options.method||'GET',
-        returnJSON: true,
-        callback: _callback
-    });
+        returnJSON: true},
+        _callback
+    );
 }
 
 /**
@@ -110,8 +112,11 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
         http.request({
             url: 'https://foursquare.com/oauth2/access_token',
             params: params,
-            returnJSON: true,
-            callback : function foursquare_callback(result){
+            returnJSON: true},
+            function (err, result){
+                if (err) {
+                    err.send(res);
+                }
 
                 if( result['access_token'] ) {
                     // grab the access token
@@ -159,9 +164,8 @@ $.login = function(req,res,scope,defaultReturn,success,failure){
                     }
                     res.send("<html><h1>Foursquare authentication failed :( </h1></html>");
                 }
-            },
-            scope : this
-        });
+            }
+        );
     }
 };
 

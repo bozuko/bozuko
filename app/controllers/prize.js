@@ -1,5 +1,4 @@
-var http = Bozuko.require('util/http'),
-    dateFormat = require('dateformat'),
+var dateFormat = require('dateformat'),
     XRegExp = Bozuko.require('util/xregexp'),
     PrizeSchema = Bozuko.models.Prize.schema;
 

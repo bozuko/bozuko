@@ -5,7 +5,7 @@ var http    = require('http'),
     merge   = require('connect').utils.merge,
     qs      = require('querystring');
 
-exports.request = function(config){
+exports.request = function(config, callback){
 
 
     if( config instanceof String){
@@ -49,6 +49,17 @@ exports.request = function(config){
         encoding = config.encoding || 'utf-8';
     }
 
+    // Set timeout to true if we don't receive a response in config.timeout ms
+    var timeout = false;
+    var callback_issued = false;
+
+    var tid = setTimeout(function() {
+        timeout = true;
+        callback_issued = true;
+        console.log("http timeout: "+method+" "+config.url);
+        return callback(Bozuko.error('http/timeout', method+" "+config.url));
+    }, config.timeout || 10000);
+
     var request = http_.request({
         host: url_parsed.host,
         agent: false,
@@ -57,36 +68,37 @@ exports.request = function(config){
         headers: headers,
         method: method
     }, function(response){
-        // console.log('HTTP '+method+' '+url_parsed.host+', '+path);
         var data = '';
         response.setEncoding('utf8');
         response.on('data', function(chunk){
             data+=chunk;
-            if( config.onData ){
-                config.onData.call(config.scope || this, chunk, request);
-            }
         });
         response.on('end', function(){
+
+            callback_issued = true;
+            // we already sent a response in the timeout callback, so just end this request
+            if (timeout) return;
+
+            clearTimeout(tid);
+
             // we should have the data
             var result = data;
             if( config.returnJSON ){
                 try{
                     result = JSON.parse(data);
                 }catch(e){
-
+                    return callback(Bozuko.error('http/json', method+" "+config.url));
                 }
             }
-            if( config.onEnd ){
-                config.onEnd.call( config.scope || this, result, request);
-            }
-            if( config.callback ){
-                config.callback.call( config.scope || this, result, request);
-            }
+            return callback(null, result);
         });
     });
 
     request.on('error', function(error) {
         console.error("util/http: "+error);
+        if (!callback_issued) {
+            return callback(Bozuko.error('http/error_event', error));
+        }
     });
 
 

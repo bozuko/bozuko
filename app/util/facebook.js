@@ -65,13 +65,16 @@ exports.graph = function(path, options, callback){
         url: url,
         method: options.method,
         params: params,
-        callback : function(result){
-            
+        returnJSON : options.returnJSON},
+        function(err, result){
+
+            if (err) return callback(err);
+
             if( result.error && callback ){
                 console.log( result.error );
                 return callback( Bozuko.error('facebook/api', result.error ));
             }
-            
+
             /**
              * If we want to debug all facebook requests it can go here..
              */
@@ -84,8 +87,6 @@ exports.graph = function(path, options, callback){
             Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
             if (callback instanceof Function) return callback.apply(this,[null, result]);
             else return console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
-        },
-        scope : options.scope,
-        returnJSON : options.returnJSON
-    });
+        }
+    );
 };

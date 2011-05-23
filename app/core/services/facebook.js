@@ -45,7 +45,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
         'scope' : Bozuko.config.facebook.perms[scope],
         'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+((url.search||'').replace(/[&\?]code=.*$/i, ''))
     };
-    
+
     console.log(params);
 
     if( req.param('display')){
@@ -79,13 +79,20 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     else{
         params.client_secret = Bozuko.config.facebook.app.secret;
         params.code = code;
-        
+
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
         http.request({
             url: 'https://graph.facebook.com/oauth/access_token',
-            params: params,
-            callback : function facebook_callback(response){
+            params: params},
+            function(err, response){
+
+                if (err) {
+                    if( failure && failure('Error retrieving access_token', req, res) === false){
+                        return false;
+                    }
+                    return err.send(res);
+                }
 
                 var result = qs.parse(response);
                 if( result['access_token'] ) {
@@ -111,7 +118,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                                 console.log("Facebook login error: "+err);
                                 return err.send(res);
                             }
-                            
+
                             return u.updateLikes( function(error){
                                 var device = req.session.device;
                                 req.session.regenerate(function(err){
@@ -138,9 +145,8 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                     }
                     res.send("<html><h1>Facebook authentication failed :( </h1></html>");
                 }
-            },
-            scope : this
-        });
+            }
+        );
     }
 };
 
@@ -247,14 +253,14 @@ FacebookService.prototype.checkin = function(options, callback){
         place           :options.place_id,
         coordinates     :JSON.stringify({latitude:options.ll[1],longitude: options.ll[0]})
     };
-    
+
     if( options.name )          params.name         = options.name;
     if( options.message )       params.message      = options.message;
     if( options.picture )       params.picture      = options.picture;
     if( options.link )          params.link         = options.link;
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
-    
+
     if( Bozuko.config.test_mode ){
         return callback(null, {id:134574646614657});
     }
@@ -440,7 +446,7 @@ FacebookService.prototype.get_user_pages = function(user, callback){
         },
         function(error, accounts){
             if( error ) return callback( error );
-            
+
             var pages = [];
             var ids = [];
             if( accounts && accounts.data ) accounts.data.forEach(function(account){
@@ -462,7 +468,7 @@ FacebookService.prototype.get_user_pages = function(user, callback){
             });
 
             pages.sort(sort_FacebookPageLocationLikes);
-            
+
 
             if( ids.length > 0 ){
                 return Bozuko.models.Page.find({'services.name':'facebook','services.sid':{$in:ids}}, function(err, bozuko_pages){
