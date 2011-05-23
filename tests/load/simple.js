@@ -20,7 +20,7 @@ var options = {
     port: 443,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 20, // req/sec
+    rate: 10, // req/sec
     time: 1800, // sec
     wait_time: 10000, // ms
     path: '/api',

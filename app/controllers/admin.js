@@ -1,5 +1,4 @@
 var facebook    = Bozuko.require('util/facebook'),
-    http        = Bozuko.require('util/http'),
     Page        = Bozuko.require('util/page'),
     qs          = require('querystring'),
     url         = require('url'),
@@ -10,7 +9,7 @@ var facebook    = Bozuko.require('util/facebook'),
 exports.access = 'admin';
 
 exports.routes = {
-    
+
     '/dev/reset' : {
         get : {
             handler: function(req, res){
@@ -20,24 +19,24 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin' : {
-        
+
         get : {
-            
+
             title: 'Bozuko Administration',
             locals:{
                 layout: false
             },
-            
+
             handler: function(req,res){
                 res.render('admin/index');
             }
         }
     },
-    
+
     '/admin/places' : {
-        
+
         get : {
             handler : function(req, res){
                 var ll = (req.param('ll') || '').split(',');
@@ -72,9 +71,9 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/users' : {
-        
+
         get : {
             handler : function(req, res){
                 Bozuko.models.User.find({},{},{sort:{name:1}}, function(error, users){
@@ -84,19 +83,19 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/addpage':{
-        
+
         post : {
             handler : function(req, res){
                 // need a facebook id and a user_id
                 var user_id = req.param('user_id'),
                     place_id = req.param('place_id');
-                    
+
                 if( !user_id || !place_id ){
                     return new Error('No user or no place').send( res );
                 }
-                
+
                 return Bozuko.service('facebook').place({place_id: place_id}, function(error, place){
                     if( error ) return error.send(res);
                     // now we want to create a new place...
@@ -112,11 +111,11 @@ exports.routes = {
                 });
             }
         }
-    
+
     },
-    
+
     '/admin/pages' : {
-        
+
         get : {
             handler : function(req, res){
                 // need to get all pages
@@ -127,9 +126,9 @@ exports.routes = {
             }
         }
     },
-    
+
     'admin/pages/:id' : {
-        
+
         /* update */
         put : {
             handler : function(req,res){
@@ -145,15 +144,15 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/contests' : {
-        
+
         get : {
             handler : function(req, res){
                 // need to get all pages
                 var page_id = req.param('page_id'),
                     selector = {};
-                    
+
                 if( page_id ) selector['page_id'] = page_id;
                 return Bozuko.models.Contest.find(selector,{},{sort:{active: -1, start:-1}}, function(error, contests){
                     if( error ) return error.send(res);
@@ -161,10 +160,10 @@ exports.routes = {
                 });
             }
         },
-        
+
         post : {
             handler : function(req, res){
-                
+
                 req.body.entry_config = [{
                     tokens: 3,
                     type: 'facebook/checkin',
@@ -180,12 +179,12 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/contests/:id' : {
-        
+
         put : {
             handler : function(req, res){
-                
+
                 return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
                     if( error ) return error.send(res);
                     contest.set( req.body );
@@ -196,7 +195,7 @@ exports.routes = {
                 });
             }
         },
-        
+
         del : {
             // delete the record
             handler : function(req,res){
@@ -204,9 +203,9 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/browser' : {
-        
+
         aliases: ['/browser'],
         get : {
             locals : {
@@ -214,7 +213,7 @@ exports.routes = {
                 layout: false
             },
             handler : function(req, res){
-                
+
                 var transfer_objects = {};
                 var links = {};
                 Object.keys(Bozuko.transfers()).forEach(function(key){
@@ -226,7 +225,7 @@ exports.routes = {
                 });
                 Object.keys(Bozuko.links()).forEach(function(key){
                     var link = Bozuko.link(key);
-                    
+
                     var methods = {};
                     Object.keys(link.methods).forEach(function(key){
                         var method = link.methods[key];
@@ -238,25 +237,25 @@ exports.routes = {
                             doc: method.doc
                         }
                     });
-                    
+
                     links[key] = {
                         title: link.title,
                         name: link.name,
                         methods: methods
                     };
                 });
-                
+
                 Bozuko.models.User.find({}, function(error, users){
                     res.locals.transfer_objects = JSON.stringify(transfer_objects);
                     res.locals.links = JSON.stringify(links);
                     res.locals.users = JSON.stringify(users);
-                    
+
                     res.render('admin/browser');
                 });
-                
+
             }
         }
     }
-    
-    
+
+
 };

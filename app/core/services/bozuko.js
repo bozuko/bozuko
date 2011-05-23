@@ -1,5 +1,4 @@
 var URL         = require('url'),
-    http        = Bozuko.require('util/http'),
     merge       = require('connect').utils.merge,
     qs          = require('querystring'),
     url         = require('url'),
