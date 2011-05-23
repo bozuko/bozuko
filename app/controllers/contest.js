@@ -5,7 +5,7 @@ var game_prize = {
         description: "String",
         total: "Number",
         available:"Number",
-        result_icon: "String"
+        result_image: "String"
     }
 };
 
@@ -53,7 +53,9 @@ var game = {
 
     create : function(game, user){
         game.config = game.contest.game_config;
+        // load the prizes up...
         var obj = this.merge(game, game.contest);
+        obj.prizes = game.getPrizes();
         obj.image = game.icon;
         obj.list_message = game.contest.getListMessage();
         obj.entry_method.description = game.contest.getEntryMethodDescription();
@@ -97,6 +99,7 @@ var game_state = {
                 game_state: '/game/'+game_state.contest.id+'/state'
             };
             if( game_state.user_tokens > 0 ){
+                game_state.button_action = 'play';
                 links.game_result = '/game/'+game_state.contest.id+'/result';
             }
             if( game_state.button_action =='enter'){
