@@ -59,7 +59,7 @@ var dev = {
                     'bar',
                     'watermelon',
                     'dollar',
-                    'cherries',
+                    'cherry',
                     'coins',
                     'horseshoe',
                     'lemon',
