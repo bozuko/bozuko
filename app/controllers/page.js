@@ -16,7 +16,7 @@ exports.transfer_objects = {
             id: "String",
             name: "String",
             image: "String",
-            bozuko_url: "String",
+            share_url: "String",
             like_url: "String",
             facebook_page: "String",
             category: "String",
@@ -91,7 +91,7 @@ exports.transfer_objects = {
 
             // add registered links...
             if( page.registered ){
-                page.bozuko_url         ='/business/'+page.id;
+                page.share_url         =burl('/business/'+page.id);
                 page.links.page         ='/page/'+page.id;
                 page.links.share        ='/page/'+page.id+'/share';
                 page.links.feedback     ='/page/'+page.id+'/feedback';
