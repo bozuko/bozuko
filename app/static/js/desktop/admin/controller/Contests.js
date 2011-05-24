@@ -16,8 +16,17 @@ Ext.define('Bozuko.controller.Contests' ,{
                 // setup our contest object
                 itemclick : this.onContestItemClick
             },
+            'contestpanel' : {
+                render : this.onContestPanelRender
+            },
             'contestform button[action=save]' : {
                 click : this.onContestSaveClick
+            },
+            'contestform button[action=back]' : {
+                click : this.onContestBackClick
+            },
+            'contestform panel[region=west] dataview' : {
+                itemclick : this.onContestNavClick
             },
             'contestpanel button[action=create]' : {
                 click : this.onCreateContestClick
@@ -48,37 +57,47 @@ Ext.define('Bozuko.controller.Contests' ,{
         
     },
     
+    onContestBackClick : function(btn){
+        var pagePanel = btn.up('pagepanel'),
+            contestPanel = pagePanel.down('contestpanel'),
+            navbar = pagePanel.down('[ref=page-navbar]');
+        
+        navbar.show();
+        pagePanel.getLayout().setActiveItem( contestPanel );
+        pagePanel.doLayout();
+    },
+    
     onContestSaveClick : function(btn){
         var contestForm = btn.up('contestform'),
-            contestWindow = contestForm.up('contesteditwindow'),
             details = contestForm.down('contestformdetails'),
+            pagePanel = btn.up('pagepanel'),
+            pageRecord = pagePanel.record,
             record = contestForm.record,
             prizes = contestForm.down('contestformprizes');
         
-        record.set('page_id', contestWindow.pageRecord.get('_id'));
+        record.set('page_id', pageRecord.get('_id'));
         record.set( details.getForm().getValues() );
         prizes.updateRecords();
         record.save({
             success : function(){
                 record.commit();
-                if( record === contestWindow.contestPanel.empty ){
-                    // need to add this record to the store and create a new empty record
-                    contestPanel.store.add( record );
-                    contestWindow.contestPanel.empty = Ext.create('Bozuko.model.Contest');
-                }
-                contestWindow.setTitle('Edit Campaign: '+record.get('name'));
             },
             callback: function(){
-                contestWindow.close();
+                
             }
         });
     },
     
-    onCreateContestClick : function(btn){
-        var contestPanel = btn.up('contestpanel');
-        
-        alert('open create window');
+    onContestPanelRender : function(panel){
+        panel.store.on('update', function(store, record, op){
+            if( op !== Ext.data.Model.COMMIT ) return;
+            var pagePanel = panel.up('pagepanel');
+            var id = record.getId();
+            if( !pagePanel.cards || !pagePanel.cards[id] ) return;
+            pagePanel.cards[id].down('[ref=edit-campaign-text]').setText( record.get('name') );
+        });
     },
+    
     
     onRefreshContestsClick : function(btn){
         var contestPanel = btn.up('contestpanel'),
@@ -116,6 +135,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             case 'publish':
                 
             case 'copy':
+            default:
                 Ext.Msg.show({
                     title: 'Not Implemented Yet',
                     msg: 'Working on it... Check back soon',
@@ -126,9 +146,24 @@ Ext.define('Bozuko.controller.Contests' ,{
         }
     },
     
-    editContest : function(record, view){
+    onContestNavClick : function(view, record){
+        var contestform = view.up('contestform');
+            cardPanel = contestform.down('panel[region=center]'),
+            type = record.get('type'),
+            panel = cardPanel.down('[ref='+type+']');
+            
+        cardPanel.getLayout().setActiveItem(panel);
+    },
+    
+    onCreateContestClick : function(btn){
+        var record = new Bozuko.model.Contest();
+        this.editContest(record, btn);
+    },
+    
+    editContest : function(record, cmp){
         // create a new
-        var panel = view.up('pagepanel'),
+        var panel = cmp.up('pagepanel'),
+            navbar = panel.down('[ref=page-navbar]'),
             id = record.get('_id');
         
         if( !panel.cards ) panel.cards = {};
@@ -138,8 +173,11 @@ Ext.define('Bozuko.controller.Contests' ,{
                 xtype: 'contestform'
             });
             panel.cards[id].setRecord( record );
-            console.log(panel.cards);
         }
+        navbar.hide();
+        
         panel.getLayout().setActiveItem(panel.cards[id]);
+        panel.doLayout();
+        
     }
 });

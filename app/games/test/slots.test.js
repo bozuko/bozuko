@@ -2,7 +2,8 @@ var testsuite = require('./config/testsuite');
 
 // Mock contest
 var contest = {
-    game_config: {}
+    game_config: {},
+    prizes:[{},{},{},{}]
 };
 
 var Slots = require('../slots/index.js');
@@ -19,6 +20,14 @@ exports['lose'] = function(test) {
 exports['win'] = function(test) {
     var result = slots.process(3);
     test.equal(result[0], 'banana');
+    test.equal(result[0], result[1]);
+    test.equal(result[1], result[2]);
+    test.done();
+};
+
+exports['free_spin'] = function(test) {
+    var result = slots.process(4);
+    test.equal(result[0], 'free_spin');
     test.equal(result[0], result[1]);
     test.equal(result[1], result[2]);
     test.done();

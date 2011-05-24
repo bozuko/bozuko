@@ -117,13 +117,15 @@ exports.routes = {
         }
     },
 
-    '/facebook/:id/like': {
+    '/facebook/:id/like.html': {
 
-        post: {
-
-            access: 'user',
+        get: {
+            
+            title : "Like a business on Facebook",
 
             handler : function(req, res){
+                // ... no dice ...
+                /*
                 Bozuko.service('facebook').like({
                     user: req.session.user,
                     object_id   : req.param('id')
@@ -135,6 +137,35 @@ exports.routes = {
                     return res.send(Bozuko.transfer('success_message', {
                         success: true
                     }));
+                });
+                */
+                // this 
+                return Bozuko.service('facebook').place({place_id: req.param('id')}, function( error, place){
+                    if( error ){
+                        res.locals.error = error;
+                        return res.render('app/facebook/like');
+                    }
+                    if( !place ){
+                        res.locals.page = null;
+                        return res.render('app/facebook/like');
+                    }
+                    res.locals.place = place;
+                    // see if we can find a Bozuko place...
+                    return Bozuko.models.Page.findByService('facebook', place.id, function(error, page){
+                        if( error ) {
+                            res.locals.error = error;
+                        }
+                        else if(page){
+                            res.locals.place.image = page.image;
+                            res.locals.place.category = page.category;
+                            res.locals.place.name = page.name;
+                        }
+                        if( res.locals.place.image.indexOf('type=large') ){
+                            res.locals.place.image = res.locals.place.image.replace(/type=large/, 'type=square');
+                        }
+                        res.locals.title = "Like "+place.name+" on Facebook!";
+                        return res.render('app/facebook/like');
+                    });
                 });
             }
         }

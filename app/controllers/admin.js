@@ -188,6 +188,7 @@ exports.routes = {
                 return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
                     if( error ) return error.send(res);
                     contest.set( req.body );
+                    // there are definitely some things we don't want to save...
                     return contest.save( function(error){
                         if( error ) return error.send( res );
                         return res.send( {items: [contest]} );

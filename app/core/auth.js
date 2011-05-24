@@ -130,7 +130,6 @@ auth.mobile = function(req, res, callback) {
         function(callback) {
             if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
             var result = user.verify_phone(req.session.phone);
-            console.log( 'result from user.verify_phone', result );
             if ( result === 'mismatch') {
                 return callback(Bozuko.error('auth/mobile'));
             } else if ( result === 'match') {
@@ -139,7 +138,7 @@ auth.mobile = function(req, res, callback) {
                 // Always add new phones. We may want to change this in the future.
                 // This could be an attack vector potentially.
                 user.phones.push(req.session.phone);
-                user.save(function(err) {
+                return user.save(function(err) {
                     if (err) return callback(err);
                     return callback(null);
                 });
