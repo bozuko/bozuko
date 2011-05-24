@@ -45,7 +45,7 @@ function win(contest, winIndex) {
     
     if( winIndex === contest.prizes.length ){
         // free spin!
-        prize = {name:'Free Spin'};
+        prize = {name:'Free Play'};
     }
     else{
         prize = contest.prizes[winIndex];

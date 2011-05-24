@@ -75,10 +75,10 @@ exports['free_spin'] = function(test) {
     var used_nums = {}, results = {};
     var val, free_spin_val;
     var nums = scratch.process(contest.prizes.length).numbers;
-
+    
     for (var i = 0; i < size; i++) {
         val = nums[i].number;
-        if( nums[i].text == 'Free Spin') free_spin_val = val;
+        if( nums[i].text == 'Free Play') free_spin_val = val;
         if (!used_nums[val]) {
             results[val] = nums[i].text;
             used_nums[val] = 1;
