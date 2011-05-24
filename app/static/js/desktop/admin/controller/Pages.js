@@ -26,7 +26,7 @@ Ext.define('Bozuko.controller.Pages' ,{
                     me.getPagesStore().load();
                 }
             },
-            'pagepanel toolbar[ref=navbar] button':{
+            'pagepanel [ref=page-navbar] button':{
                 click: this.changePage
             }
         });

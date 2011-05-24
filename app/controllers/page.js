@@ -63,6 +63,7 @@ exports.transfer_objects = {
                 // facebook_like       :'/facebook/'+fid+'/like'
             };
             if( user ){
+                page.like_url +='?token='+user.token;
                 if( page.registered ){
                     
                     // favorite
