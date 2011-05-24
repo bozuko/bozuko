@@ -1,0 +1,71 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+@import url("/css/fonts/honey-script/stylesheet.css");
+@import url("/css/fonts/arvo/stylesheet.css");
+
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: Tahoma;
+    font-size: 13px;
+}
+
+h1,h2,h3,h4,h5{
+    font-family: ArvoRegular;
+    font-weight: normal;
+}
+
+body {
+    background: #308E50 url("/images/touch/layout/bg_body.jpg") fixed 50% 0 no-repeat;
+}
+
+.logo{
+    background: transparent url("/images/touch/layout/img_logo.png") 50% 0 no-repeat;
+    height: 74px;
+    margin: 10px 0;
+    text-indent: -99999em;
+}
+
+.business {
+    text-align: center;
+    
+    table{
+        margin: 0 auto;
+        border-collapse: collapse;
+        border-spacing: 0;
+        td {
+            padding: 4px;
+            text-align: left;
+        }
+    }
+    
+    .profile-pic{
+        width: 50px;
+        border: 2px solid #fff;
+    }
+    
+    h2 {
+        margin-top: 0;
+        font-size: 20px;
+        line-height: 1.2em;
+        color: darken(@brand_color, 10%);
+        margin-bottom: 6px;
+    }
+    
+    .category {
+        color: #666;
+    }
+    
+    .like-button {
+        font-size: 15px;
+        font-family: ArvoRegular;
+        clear: both;
+        text-align: center;
+        padding-top: 10px;
+        .arrows {
+            height: 100px;
+            background: transparent url("/images/touch/layout/img_arrows2.png") 50% 0px no-repeat;
+        }
+    }
+}

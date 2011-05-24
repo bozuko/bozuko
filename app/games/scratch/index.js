@@ -32,17 +32,24 @@ proto.process = function(outcome) {
 };
 
 function randomPrize( contest, exclude ){
-    var ar = [];
-    for( var i=0; i<contest.prizes.length; i++) ar.push(i);
-    if( exclude !== undefined ) ar.splice( exclude, 1);
-    return contest.prizes[rand(0,ar.length-1)].name;
+    var ar = [], prizes = contest.prizes.slice(0);
+    if( exclude === prizes.length ) prizes.push({name:'Free Play'});
+    for( var i=0; i < prizes.length; i++) ar.push(i);
+    if( exclude !== undefined && exclude < prizes.length ) ar.splice( exclude, 1);
+    return prizes[rand(0,ar.length-1)].name;
 }
 
 function win(contest, winIndex) {
-    var ar = [];
+    var ar = [], prize;
     for (var i = 0; i < size; i++) { ar[i] = i; }
     
-    var prize = contest.prizes[winIndex];
+    if( winIndex === contest.prizes.length ){
+        // free spin!
+        prize = {name:'Free Spin'};
+    }
+    else{
+        prize = contest.prizes[winIndex];
+    }
 
     winning_number = rand(min, max);
     var results = [];

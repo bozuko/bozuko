@@ -17,6 +17,10 @@ Game.prototype = {
     
     process : function( outcome ){
         
+    },
+    
+    getPrizes : function(){
+        return this.contest.prizes;
     }
     
 };

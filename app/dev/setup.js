@@ -34,6 +34,7 @@ var dev = {
                         'cherry'    :'cherry.png',
                         'coins'     :'coins.png',
                         'dollar'    :'dollar.png',
+                        'free_spin' :'free_spin.png',
                         'doublebar' :'doublebar.png',
                         'gold'      :'gold.png',
                         'horseshoe' :'horseshoe.png',
@@ -58,13 +59,14 @@ var dev = {
                     'bar',
                     'watermelon',
                     'dollar',
-                    'cherries',
+                    'cherry',
                     'coins',
                     'horseshoe',
                     'lemon',
                     'gold',
                     'strawberry',
-                    'doublebar'
+                    'doublebar',
+                    'free_spin'
                 ]
             },
             entry_config:[{

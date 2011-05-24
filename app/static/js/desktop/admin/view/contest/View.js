@@ -3,7 +3,8 @@ Ext.define('Bozuko.view.contest.View' ,{
     extend: 'Ext.view.View',
     alias : 'widget.contestsview',
     
-    emptyText: 'You do not have any active campaigns.',
+    emptyText: 'No active campaigns.',
+    deferEmptyText: false,
     cls: 'campaigns-body',
     
     itemSelector: '.list-item',
@@ -14,7 +15,6 @@ Ext.define('Bozuko.view.contest.View' ,{
         var me = this;
         
         me.tpl = new Ext.XTemplate(
-            '<h1>Your Campaigns</h1>',
             '<ul class="campaign-list">',
                 '<tpl for=".">',
                     '<li class="list-item">',
@@ -30,16 +30,37 @@ Ext.define('Bozuko.view.contest.View' ,{
                         '<ul class="buttons">',
                             '<li><a href="javascript:;" class="edit">Edit</a></li>',
                             '<li><a href="javascript:;" class="copy">Copy</a></li>',
-                            '<li><a href="javascript:;" class="publish">Publish</a></li>',
-                            '<li><a href="javascript:;" class="delete">Delete</a></li>',
+                            '<tpl if="this.canPublish(values)">',
+                                '<li><a href="javascript:;" class="publish">Publish</a></li>',
+                            '</tpl>',
+                            '<tpl if="this.canDelete(values)">',
+                                '<li><a href="javascript:;" class="delete">Delete</a></li>',
+                            '</tpl>',
+                            '<tpl if="this.canCancel(values)">',
+                                '<li><a href="javascript:;" class="cancel">Cancel</a></li>',
+                            '</tpl>',
                         '</ul>',
                     '</li>',
                 '</tpl>',
             '</ul>',
             {
+                
+                canPublish : function(values){
+                    return ~['draft'].indexOf(values.state);
+                },
+                
+                canDelete : function(values){
+                    return ~['draft','published'].indexOf(values.state);
+                },
+                
+                canCancel : function(values){
+                    return ~['active'].indexOf(values.state);
+                },
+                
                 getTitle : function(name){
                     return name || 'Untitled Campaign';
                 },
+                
                 getDetails: function(values){
                     return [
                         '<table cellpadding="0" cellspacing="0">',

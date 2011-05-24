@@ -1,14 +1,15 @@
 @import "app/static/css/vars";
 @import "app/static/css/mixins";
 
-.campaigns-body {
-    
-    padding: 10px;
-    
+.contestpanel {
     h1 {
         font-size: 20px;
         margin-bottom: 1em;
     }
+}
+
+.campaigns-body {
+    clear: both;
     
     .campaign-list {
     
@@ -85,8 +86,20 @@
                     .copy {
                         background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png');
                     }
+                    .cancel {
+                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
+                    }
                 }
             }
         }
+    }
+}
+
+fieldset{
+    .border_radius(6px);
+    .x-fieldset-header {
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 20px;
     }
 }
