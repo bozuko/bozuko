@@ -17,7 +17,7 @@ window.fbAsyncInit = function() {
         Bozuko.remote.HTTP.request({
             url: url,
             callback : function(){
-                window.location = '//bozuko_close_webview';
+                window.location = 'bozuko://webview.close';
             }
         })
     }
