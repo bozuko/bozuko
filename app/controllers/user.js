@@ -168,13 +168,17 @@ exports.routes = {
 
             handler: function(req, res) {
                 var user = req.session.user;
-                user.id = user._id;
-                user.links = {
-                    // facebook_login: "/user/login/facebook",
-                    logout: "/user/logout",
-                    favorites: "/user/favorites"
-                };
-                res.send(Bozuko.transfer('user', user));
+                // we should update the user's likes
+                return user.updateLikes( function(error){
+                    if( error ) return error.send(res);
+                    user.id = user._id;
+                    user.links = {
+                        // facebook_login: "/user/login/facebook",
+                        logout: "/user/logout",
+                        favorites: "/user/favorites"
+                    };
+                    return res.send(Bozuko.transfer('user', user));
+                });
             }
         }
     },

@@ -1,0 +1,18 @@
+.business
+  table(cellpadding="0",cellspacing="0",border="0")
+    tr(valign="middle")
+      td
+        img.profile-pic(src=place.image, title=place.name)
+      td
+        h2!= place.name
+        .category= place.category
+  
+  .like-button
+    p Like us on Facebook below!
+    script
+      APP_ID = #{Bozuko.config.facebook.app.id};
+    script(src="https://connect.facebook.net/en_US/all.js#appId=176409089082816&amp;xfbml=1")
+    script(src="/js/touch/lib/http.js")
+    script(src="/js/touch/app/facebook/like.js")
+    .arrows
+      fb:like(href=place.data.link,send="false",width="90",show_faces="false",font="tahoma",layout="button_count")

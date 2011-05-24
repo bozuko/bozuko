@@ -1,9 +1,9 @@
-.campaigns-body {
-  padding: 10px;
-}
-.campaigns-body h1 {
+.contestpanel h1 {
   font-size: 20px;
   margin-bottom: 1em;
+}
+.campaigns-body {
+  clear: both;
 }
 .campaigns-body .campaign-list .list-item {
   background-color: #ffffff;
@@ -72,4 +72,20 @@
 }
 .campaigns-body .campaign-list .list-item .buttons li .copy {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png');
+}
+.campaigns-body .campaign-list .list-item .buttons li .cancel {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
+}
+fieldset {
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+}
+fieldset .x-fieldset-header {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 20px;
 }

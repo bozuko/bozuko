@@ -27,11 +27,13 @@ Ext.define('Bozuko.view.page.Panel' ,{
             items:[{
                 text        :'Settings',
                 page        :'settings',
+                group       :'page',
                 icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png',
                 pressed     :true
             },{
                 page        :'campaigns',
                 text        :'Campaigns',
+                group       :'page',
                 icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png'
             }]
         });

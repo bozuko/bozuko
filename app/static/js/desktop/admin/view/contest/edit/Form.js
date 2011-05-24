@@ -14,6 +14,29 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
     initComponent : function(){
         var me = this;
         
+        me.tbar = Ext.create('Ext.toolbar.Toolbar',{
+            ref         :'contestform-navbar',
+            cls         :'title-toolbar',
+            defaults: {
+                xtype: 'button',
+                scale: 'medium',
+                iconAlign: 'top'
+            },
+            items:[{
+                text        :'Back',
+                action      :'back',
+                icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-left-24.png'
+            },' ',{
+                xtype       :'tbtext',
+                ref         :'edit-label-text',
+                text        :'Edit Campaign:'
+            },{
+                xtype       :'tbtext',
+                ref         :'edit-campaign-text',
+                text        :''
+            }]
+        });
+        
         me.items = [{
             region: 'center',
             border: false,
@@ -35,13 +58,18 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         },{
             region: 'west',
             border: false,
-            width: 200,
+            width: 150,
             items: [{
                 xtype: 'dataview',
                 cls: 'campaign-nav',
                 itemSelector: '.nav-item',
+                trackOver: true,
                 overItemCls: 'nav-item-over',
                 selectedItemCls: 'nav-item-selected',
+                allowDeselect: false,
+                onContainerClick : function(){
+                    return false;
+                },
                 store: new Ext.data.Store({
                     fields: ['type', 'text'],
                     data: [
@@ -67,6 +95,15 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                     }
                 }
             }]
+        },{
+            region: 'east',
+            width: 200,
+            bodyPadding: 10,
+            border: false,
+            autoScroll: true,
+            style: 'border-left: 1px solid #ccc',
+            title: 'Campaign Details',
+            html: 'Details of the campaign'
         }];
         
         me.bbar = ['->',{
@@ -85,5 +122,9 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         this.record = record;
         this.down('contestformprizes').bindStore( record.prizes() );
         this.down('contestformdetails').getForm().loadRecord( this.record );
+        this.down('[ref=edit-campaign-text]').setText(record.get('name'));
+        if( !record.get('_id') ){
+            this.down('[ref=edit-label-text]').setText('Create Campaign');
+        }
     }
 });

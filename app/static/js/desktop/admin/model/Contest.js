@@ -35,7 +35,6 @@ Ext.define('Bozuko.model.Contest', {
         {name:'end',                type:'Date'},
         {name:'total_entries',      type:'Number'},
         {name:'total_plays',        type:'Number'},
-        {name:'results',            type:'Object'},
         {name:'play_cursor',        type:'Number',              defaultValue:-1}
     ],
     
