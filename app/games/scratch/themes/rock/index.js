@@ -14,4 +14,4 @@ Theme.prototype.images = {
     'background'    :'background.png'
 };
 
-Theme.prototype.base = burl('/games/slots/themes/'+path.basename(__dirname)+'/rock_theme' );
+Theme.prototype.base = burl('/games/scratch/themes/'+path.basename(__dirname)+'/rock_theme' );

@@ -14,4 +14,4 @@ DefaultTheme.prototype.images = {
     'background'    :'background.png'
 };
 
-DefaultTheme.prototype.base = burl('/games/slots/themes/'+path.basename(__dirname)+'/default_theme' );
+DefaultTheme.prototype.base = burl('/games/scratch/themes/'+path.basename(__dirname)+'/default_theme' );
