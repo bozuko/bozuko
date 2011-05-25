@@ -428,13 +428,6 @@ Page.static('search', function(options, callback){
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
         if( error ) return callback(error);
-<<<<<<< HEAD
-        
-=======
-
-        console.log('found '+ pages.length +' pages');
-
->>>>>>> d2e9995f8c4e845b5a626f4b82b477bcacb83ee6
         return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
