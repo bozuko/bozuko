@@ -48,7 +48,7 @@ var ServicesPlugin = module.exports = function(schema, opts){
         if( conditions ){
             merge(params, conditions);
         }
-        this[fn](params, callback);
+        return this[fn](params, callback);
     });
     
     schema.index({'services.name':1,'services.sid':1});

@@ -69,21 +69,28 @@ Ext.define('Bozuko.controller.Contests' ,{
     
     onContestSaveClick : function(btn){
         var contestForm = btn.up('contestform'),
-            details = contestForm.down('contestformdetails'),
             pagePanel = btn.up('pagepanel'),
             pageRecord = pagePanel.record,
             record = contestForm.record,
-            prizes = contestForm.down('contestformprizes');
+            details = contestForm.down('contestformdetails'),
+            prizes = contestForm.down('contestformprizes'),
+            game = contestForm.down('contestformgame');
         
+        btn.disable();
+        btn.setText('Saving...');
         record.set('page_id', pageRecord.get('_id'));
         record.set( details.getForm().getValues() );
+        record.set( game.getForm().getValues() );
+        
         prizes.updateRecords();
+        
         record.save({
             success : function(){
                 record.commit();
             },
             callback: function(){
-                
+                btn.setText('Save');
+                btn.enable();
             }
         });
     },
@@ -133,8 +140,8 @@ Ext.define('Bozuko.controller.Contests' ,{
                 break;
                 
             case 'publish':
-                
             case 'copy':
+            case 'cancel':
             default:
                 Ext.Msg.show({
                     title: 'Not Implemented Yet',

@@ -169,6 +169,7 @@ exports.routes = {
             handler: function(req, res) {
                 var user = req.session.user;
                 // we should update the user's likes
+                
                 return user.updateLikes( function(error){
                     if( error ) return error.send(res);
                     user.id = user._id;

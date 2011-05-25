@@ -4,7 +4,7 @@ if [ ! -d logs ] ; then
     mkdir -p logs
 fi
 
-if [[ "$1" == 'development' || "$1" == 'production' || "$1" == 'test' || "$1" == 'stats' ]] ; then
+if [[ "$1" == 'development' || "$1" == 'production' || "$1" == 'test' || "$1" == 'stats' || "$1" == 'load' ]] ; then
     export NODE_ENV="$1";
 else
     export NODE_ENV='development';

@@ -21,6 +21,14 @@ Game.prototype = {
     
     getPrizes : function(){
         return this.contest.prizes;
+    },
+    
+    getConfig : function(){
+        return this.config;
+    },
+    
+    getListImage: function(){
+        return this.icon;
     }
     
 };
