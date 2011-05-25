@@ -52,7 +52,7 @@ exports.transfer_objects = {
         create: function(page, user){
             // this should hopefully be a Page model object
             // lets check for a contest
-            
+
             var fid = page.registered ? page.service('facebook').sid : page.id;
             if( !page.registered ) delete page.id;
             page.liked = false;
@@ -65,11 +65,11 @@ exports.transfer_objects = {
             if( user ){
                 page.like_url +='?token='+user.token;
                 if( page.registered ){
-                    
+
                     // favorite
                     if( ~user.favorites.indexOf( page.id ) ) page.favorite = true;
                     page.links.favorite = '/user/favorite/'+page.id;
-                
+
                     if( page.service('facebook') ){
                         try{
                             page.liked = user.likes(page);
@@ -88,7 +88,7 @@ exports.transfer_objects = {
                     }
                 }
             }
-            
+
             // add registered links...
             if( page.registered ){
                 page.share_url         =burl('/business/'+page.id);
@@ -100,12 +100,12 @@ exports.transfer_objects = {
             else{
                 page.links.recommend    ='/page/recommend/facebook/'+fid;
             }
-            
+
             page.games = [];
             if( page.contests ) page.contests.forEach(function(contest){
                 page.games.push( contest.getGame() );
             });
-            
+
             return this.sanitize(page);
         }
     },
@@ -183,7 +183,7 @@ exports.links = {
             returns: "success_message"
         }
     },
-    
+
     recommend: {
         post: {
             access: 'user',
@@ -207,27 +207,27 @@ exports.routes = {
                 var service = req.param('service');
                 var query = req.param('query');
                 var favorites = req.param('favorites');
-                
+
                 if( req.param('throw_error')){
                     throw new Error('intentional error');
                 }
 
                 if( !ll) return Bozuko.error('page/pages_no_ll').send(res);
-                
-                
-                
+
+
+
                 var options = {
                     limit: parseInt(req.param('limit')) || 25,
                     offset: parseInt(req.param('offset')) || 0,
                     user: req.session.user
                 };
-                
+
                 var url_parsed = URL.parse(req.url);
                 var params = qs.parse(url_parsed.query);
-                
+
                 params['limit'] = options.limit;
                 params['offset'] = options.offset+options.limit;
-                
+
                 var next = url_parsed.pathname+'?'+qs.stringify(params);
 
                 // first, we will try center
@@ -264,7 +264,7 @@ exports.routes = {
                 return Bozuko.models.Page.search(options,
                     function(error, pages){
                         if( error )return error.send(res);
-                        
+
                         profiler.mark('search time');
                         return res.send(Bozuko.transfer('pages',{
                             pages:pages,
@@ -284,9 +284,9 @@ exports.routes = {
                 Bozuko.models.Page.findById(page_id, function(error, page) {
                     if( error ) return error.send(res);
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
-                    
+
                     page.registered=true;
-                    
+
                     // need to popuplate the page with the right stuff
                     return page.loadContests( req.session.user, function(error){
                         if( error ) return error.send(res);
@@ -327,11 +327,11 @@ exports.routes = {
             }
         }
     },
-    
+
     'page/recommend/:service/:id': {
-        
+
         post : {
-            
+
             handler : function(req,res){
                 /**
                  * TODO - add the recommendation logic
@@ -339,6 +339,6 @@ exports.routes = {
                 res.send(Bozuko.transfer('success_message', {success: true}));
             }
         }
-        
+
     }
 };
