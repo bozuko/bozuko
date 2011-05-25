@@ -35,6 +35,10 @@ Scratch.prototype.getConfig = function(){
     };
 };
 
+Scratch.prototype.getListImage = function(){
+    return this.getTheme().getListImage();
+};
+
 var min = 1,
     max = 20;
 

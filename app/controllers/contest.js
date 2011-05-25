@@ -58,7 +58,8 @@ var game = {
         obj = this.merge(obj, game);
         obj.config = game.getConfig();
         obj.prizes = game.getPrizes();
-        obj.image = game.icon;
+        obj.image = game.getListImage();
+        console.log('game:getListImage', game.getListImage());
         obj.list_message = game.contest.getListMessage();
         obj.entry_method.description = game.contest.getEntryMethodDescription();
         // obj.can_play = obj.game_state.user_tokens > 0;
