@@ -15,3 +15,4 @@ Theme.prototype.images = {
 };
 
 Theme.prototype.base = burl('/games/scratch/themes/'+path.basename(__dirname)+'/rock_theme' );
+Theme.prototype.icon = burl('/games/scratch/themes/'+path.basename(__dirname)+'/rock_icon.png' );

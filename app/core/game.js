@@ -25,6 +25,10 @@ Game.prototype = {
     
     getConfig : function(){
         return this.config;
+    },
+    
+    getListImage: function(){
+        return this.icon;
     }
     
 };
