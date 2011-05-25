@@ -14,7 +14,7 @@ var _t = Bozuko.t,
 
 var Page = module.exports = new Schema({
     // path is for creating a tree structure
-    path                :{type:String},
+    tree                :{type:String},
     category            :{type:String},
     website             :{type:String},
     phone               :{type:String},
