@@ -1,29 +1,27 @@
 var Game = Bozuko.require('core/game'),
-    burl = Bozuko.require('util/url').create;
+    burl = Bozuko.require('util/url').create,
+    inherits = require('util').inherits;
 
 var Slots = module.exports = function(){
     Game.apply(this,arguments);
-    this.config = this.config || {};
-    this.icons = this.config.icons || this.default_icons.slice();
 };
-
-Slots.prototype.__proto__ = Game.prototype;
+inherits( Slots, Game);
 
 Slots.prototype.name = "Slots";
 
 Slots.prototype.icon = burl('/games/slots/slots_icon.png');
 
-Slots.prototype.default_icons = ['seven','bar','bell','banana','monkey','cherries'];
-
 Slots.prototype.process = function(outcome){
 
     var ret = [];
     
+    var icons = this.getConfig().icons;
+    
     if( outcome === false ){
         // need random icons
-        var icons = this.icons.slice();
+        var icons2 = icons.slice();
         for(var i =0; i<3; i++){
-            ret.push( icons.splice( parseInt(Math.random()*icons.length), 1)[0] );
+            ret.push( icons2.splice( parseInt(Math.random()*icons2.length), 1)[0] );
         }
     }
 
@@ -33,7 +31,7 @@ Slots.prototype.process = function(outcome){
             icon = 'free_spin';
         }
         else{
-            icon = this.icons[outcome];
+            icon = icons[outcome];
         }
         ret = [icon,icon,icon];
     }
@@ -42,27 +40,41 @@ Slots.prototype.process = function(outcome){
 
 };
 
+Slots.prototype.getTheme = function(){
+    
+    var theme  = typeof this.config.theme == 'string'
+        ? this.config.theme
+        : (typeof this.config.theme == 'object'
+            ? this.config.theme.name
+            : 'default');
+    
+    var Theme = require('./themes/'+theme);
+    return new Theme(this);
+}
+
 Slots.prototype.getConfig = function(){
     var theme = this.getTheme();
-
     return {
-        theme: theme,
-        icons: this.icons
+        theme: {
+            name: theme.name,
+            icons: theme.icons,
+            base: theme.base
+        },
+        custom_icons: {},
+        icons: Object.keys(theme.icons)
     };
 };
 
 Slots.prototype.getImage = function(index){
-    var icon = this.icons[index];
+    var config = this.getConfig();
+    var icon = config.icons[index];
     // need to go through the
-    if( !this.config || !this.config.theme ){
-        return icon;
-    }
-    if( this.config.theme.icons[icon] ){
-        return this.config.theme.base+'/'+this.config.theme.icons[icon];
+    if( config.theme.icons[icon] ){
+        return config.theme.base+'/'+config.theme.icons[icon];
     }
     // look for a custom icon
-    if( this.config.custom_icons && this.config.custom_icons[icon] ){
-        return this.config.custom_icons[icon];
+    if( config.custom_icons && config.custom_icons[icon] ){
+        return config.custom_icons[icon];
     }
     return icon;
 };

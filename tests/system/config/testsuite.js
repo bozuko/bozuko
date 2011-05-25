@@ -226,7 +226,9 @@ var add_contests = function(callback) {
 		active: true,
         start: start,
         game: 'slots',
-		game_config: {},
+		game_config: {
+			theme: 'default'
+		},
 		end: end,
 		total_entries: 30,
         free_play_pct: 50

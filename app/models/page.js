@@ -13,7 +13,7 @@ var _t = Bozuko.t,
 
 var Page = module.exports = new Schema({
     // path is for creating a tree structure
-    path                :{type:String},
+    //path                :{type:String},
     category            :{type:String},
     website             :{type:String},
     phone               :{type:String},
@@ -427,8 +427,6 @@ Page.static('search', function(options, callback){
 
         if( error ) return callback(error);
         
-        console.log('found '+ pages.length +' pages');
-
         return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
