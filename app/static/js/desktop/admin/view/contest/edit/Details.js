@@ -6,9 +6,9 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
     requires: [],
     
     layout: 'anchor',
-    bodyPadding: 10,
     defaults: {
-        anchor          :'0'
+        anchor          :'0',
+        labelWidth      :150
     },
     
     initComponent : function(){
@@ -28,21 +28,8 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             fieldLabel      :'End Date'
         },{
             xtype           :'textfield',
-            name            :'total_entries',
-            fieldLabel      :'Total Entries'
-        },{
-            xtype           :'combo',
-            name            :'game',
-            fieldLabel      :'Game',
-            store           :Ext.create('Ext.data.Store',{
-                fields:['value', 'text'],
-                data:[
-                    {value:'slots',text:'Slots'},
-                    {value:'scratch',text:'Scratch'}
-                ]
-            }),
-            displayField    :'text',
-            valueField      :'value'
+            name            :'win_frequency',
+            fieldLabel      :'Win Frequency'
         }];
         me.callParent();
     }

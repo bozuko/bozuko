@@ -1,18 +1,39 @@
 var Game = Bozuko.require('core/game'),
     burl = Bozuko.require('util/url').create,
-    rand = Bozuko.require('util/math').rand;
+    rand = Bozuko.require('util/math').rand,
+    inherits = require('util').inherits;
 
 var Scratch = module.exports = function() {
     Game.apply(this,arguments);
-    this.config = this.config || {};
 };
 
-Scratch.prototype.__proto__ = Game.prototype;
-var proto = Scratch.prototype;
+inherits( Scratch, Game );
 
-proto.name = "Scratch";
+Scratch.prototype.name = "Scratch";
 
-proto.icon = burl('/games/scratch/scratch_icon.png');
+Scratch.prototype.icon = burl('/games/scratch/scratch_icon.png');
+
+Scratch.prototype.getTheme = function(){
+    var theme  = typeof this.config.theme == 'string'
+        ? this.config.theme
+        : (typeof this.config == 'object'
+            ? this.config.theme.name
+            : 'default');
+    
+    var Theme = require('./themes/'+theme);
+    return new Theme(this);
+};
+
+Scratch.prototype.getConfig = function(){
+    var theme = this.getTheme();
+    return {
+        theme: {
+            name: theme.name,
+            base: theme.base,
+            images: theme.images
+        }
+    };
+};
 
 var min = 1,
     max = 20;
@@ -20,7 +41,7 @@ var min = 1,
 var size = 6;
 var num_matches = 3;
 
-proto.process = function(outcome) {
+Scratch.prototype.process = function(outcome) {
     var numbers;
     if (outcome === false) {
         numbers = lose(this.contest);

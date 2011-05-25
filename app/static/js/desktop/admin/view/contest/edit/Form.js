@@ -5,7 +5,10 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
     
     requires: [
         'Bozuko.view.contest.edit.Details',
-        'Bozuko.view.contest.edit.Prizes'
+        'Bozuko.view.contest.edit.Prizes',
+        'Bozuko.view.contest.edit.Game',
+        'Bozuko.view.contest.edit.Entry',
+        'Bozuko.view.contest.edit.Preview'
     ],
     
     layout: 'border',
@@ -20,7 +23,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
             defaults: {
                 xtype: 'button',
                 scale: 'medium',
-                iconAlign: 'top'
+                iconAlign: 'left'
             },
             items:[{
                 text        :'Back',
@@ -43,6 +46,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
             layout: 'card',
             activeItem: 0,
             defaults: {
+                bodyPadding: 15,
                 border: false
             },
             items: [{
@@ -52,8 +56,11 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                 xtype           :'contestformprizes',
                 ref             :'prizes'
             },{
-                html            :'game stuff',
+                xtype           :'contestformgame',
                 ref             :'game'
+            },{
+                xtype           :'contestformentry',
+                ref             :'entry'
             }]
         },{
             region: 'west',
@@ -75,7 +82,8 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                     data: [
                         {type:'contest', text:'Contest Details'},
                         {type:'prizes', text:'Prizes'},
-                        {type:'game', text:'Game'}
+                        {type:'game', text:'Game'},
+                        {type:'entry', text:'Entries'}
                     ],
                     autoLoad: true
                 }),
@@ -98,12 +106,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         },{
             region: 'east',
             width: 200,
-            bodyPadding: 10,
-            border: false,
-            autoScroll: true,
-            style: 'border-left: 1px solid #ccc',
-            title: 'Campaign Details',
-            html: 'Details of the campaign'
+            xtype: 'contestformpreview'
         }];
         
         me.bbar = ['->',{
@@ -122,6 +125,9 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         this.record = record;
         this.down('contestformprizes').bindStore( record.prizes() );
         this.down('contestformdetails').getForm().loadRecord( this.record );
+        this.down('contestformgame').getForm().loadRecord( this.record );
+        var entry_config = this.record.get("entry_config");
+        this.down('contestformentry').getForm().setValues( entry_config && entry_config.length ? entry_config[0] : {} );
         this.down('[ref=edit-campaign-text]').setText(record.get('name'));
         if( !record.get('_id') ){
             this.down('[ref=edit-label-text]').setText('Create Campaign');

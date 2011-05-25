@@ -95,6 +95,96 @@
     }
 }
 
+
+.bozuko-list{
+    .list-item{
+        
+        cursor: pointer;
+        clear: both;
+        border-bottom: 1px solid #ccc;
+        overflow: hidden;
+        padding: 6px;
+        img {
+            height: 50px;
+            float: right;
+        }
+        
+        .title {
+            margin-top: 6px;
+            font-weight: bold !important;
+        }
+        
+        .sub {
+            font-size: .85em;
+            color: #999;
+        }
+    }
+    
+    .list-item-over {
+        background: #f3f3f3;
+    }
+    .list-item-selected {
+        background: #d5eaf9;
+    }
+}
+
+.campaign-nav {
+    
+    height: 100%;
+    border-right: 1px solid #ccc;
+    background: #e6e6e6;
+    padding-top: 20px;
+    ul {
+        
+        li {
+            cursor: pointer;
+            padding: 7px 4px 7px 30px;
+            background-repeat: no-repeat;
+            background-position: 4px 50%;
+        }
+        
+        .nav-item-over{
+            background-color: #ccc;
+        }
+        .nav-item-selected {
+            padding-top: 6px;
+            padding-bottom: 6px;
+            background-color: #fff !important;
+            margin-right: -1px;
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .contest{
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-16.png');
+        }
+        .prizes{
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-16.png');
+        }
+        .game{
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-16.png');
+        }
+        .entry{
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-plus-16.png');
+        }
+    }
+}
+
+.campaign-preview {
+    
+    border-left: 1px solid #ccc;
+    
+    .x-panel-body{
+        background: #e6e6e6;
+    }
+}
+
+.title-toolbar {
+    .x-toolbar-text {
+        font-size: 18px;
+    }
+}
+
 fieldset{
     .border_radius(6px);
     .x-fieldset-header {

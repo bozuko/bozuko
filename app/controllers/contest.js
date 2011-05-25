@@ -52,9 +52,11 @@ var game = {
     doc: "A Game Object - the game config will differ depending on the game.",
 
     create : function(game, user){
-        game.config = game.contest.game_config;
         // load the prizes up...
-        var obj = this.merge(game, game.contest);
+        var obj = {};
+        obj = this.merge(obj, game.contest);
+        obj = this.merge(obj, game);
+        obj.config = game.getConfig();
         obj.prizes = game.getPrizes();
         obj.image = game.icon;
         obj.list_message = game.contest.getListMessage();
