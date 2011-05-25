@@ -3,7 +3,9 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
     extend: 'Ext.form.Panel',
     alias : 'widget.contestformdetails',
     
-    requires: [],
+    requires: [
+        'Ext.ux.form.field.DateTime'
+    ],
     
     layout: 'anchor',
     defaults: {
@@ -19,11 +21,11 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             name            :'name',
             fieldLabel      :'Name'
         },{
-            xtype           :'datefield',
+            xtype           :'datetimefield',
             name            :'start',
             fieldLabel      :'Start Date'
         },{
-            xtype           :'datefield',
+            xtype           :'datetimefield',
             name            :'end',
             fieldLabel      :'End Date'
         },{

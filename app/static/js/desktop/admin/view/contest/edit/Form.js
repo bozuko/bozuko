@@ -8,6 +8,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         'Bozuko.view.contest.edit.Prizes',
         'Bozuko.view.contest.edit.Game',
         'Bozuko.view.contest.edit.Entry',
+        'Bozuko.view.contest.edit.Rules',
         'Bozuko.view.contest.edit.Preview'
     ],
     
@@ -61,6 +62,9 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
             },{
                 xtype           :'contestformentry',
                 ref             :'entry'
+            },{
+                xtype           :'contestformrules',
+                ref             :'rules'
             }]
         },{
             region: 'west',
@@ -83,7 +87,8 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                         {type:'contest', text:'Contest Details'},
                         {type:'prizes', text:'Prizes'},
                         {type:'game', text:'Game'},
-                        {type:'entry', text:'Entries'}
+                        {type:'entry', text:'Entries'},
+                        {type:'rules', text:'Rules'},
                     ],
                     autoLoad: true
                 }),
@@ -126,6 +131,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         this.down('contestformprizes').bindStore( record.prizes() );
         this.down('contestformdetails').getForm().loadRecord( this.record );
         this.down('contestformgame').getForm().loadRecord( this.record );
+        this.down('contestformrules').getForm().loadRecord( this.record );
         var entry_config = this.record.get("entry_config");
         this.down('contestformentry').getForm().setValues( entry_config && entry_config.length ? entry_config[0] : {} );
         this.down('[ref=edit-campaign-text]').setText(record.get('name'));

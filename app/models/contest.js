@@ -20,6 +20,7 @@ var Contest = module.exports = new Schema({
     game                    :{type:String},
     game_config             :{},
     win_frequency           :{type:Number},
+    auto_rules              :{type:Boolean, default: false},
     rules                   :{type:String},
     entry_config            :[EntryConfig],
     consolation_config      :[ConsolationConfig],

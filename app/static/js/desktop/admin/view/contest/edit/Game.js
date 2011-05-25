@@ -47,7 +47,7 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
         }];
         me.callParent();
         
-        // we have some 
+        
         
     }
 });
