@@ -307,7 +307,8 @@ function initGames(app){
                 // lets lisen on their resources folders
                 var stat = fs.statSync(themes_dir+'/'+theme);
                 if( !stat.isDirectory() ) return;
-                app.use('/games/'+name+'/themes/'+theme, express.static(themes_dir+'/theme/resources'));
+				console.log('Init theme: ', name, theme);
+                app.use('/games/'+name+'/themes/'+theme, express.static(themes_dir+'/'+theme+'/resources'));
             });
             
         }
