@@ -8,12 +8,12 @@ var _t = Bozuko.t,
     Geo = Bozuko.require('util/geo'),
     XRegExp = Bozuko.require('util/xregexp'),
     ObjectId = Schema.ObjectId,
-    async = require('async')
+    async = require('async'),
+    Profiler = Bozuko.require('util/profiler')
 ;
 
 var Page = module.exports = new Schema({
-    // path is for creating a tree structure
-    //path                :{type:String},
+    tree                :{type:String},
     category            :{type:String},
     website             :{type:String},
     phone               :{type:String},
@@ -130,6 +130,8 @@ Page.method('canUserCheckin', function(user, callback){
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
 
+//    var prof = new Profiler('/models/page/canUserCheckin');
+  //              prof.stop();
     Bozuko.models.Checkin.findOne(
         {
             $or: [{
@@ -336,7 +338,7 @@ Page.static('search', function(options, callback){
 
     var limit = options.limit || 25;
     var offset = options.offset || 0;
-    
+
     var page = Math.floor(offset / limit);
 
     var bozukoSearch = {
@@ -402,7 +404,7 @@ Page.static('search', function(options, callback){
             bozukoSearch.type='nativeFind';
         }
     }
-    
+
     // utility function
     function prepare_pages(pages, user, fn){
         for(var i=0; i<pages.length; i++){
@@ -426,7 +428,13 @@ Page.static('search', function(options, callback){
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
         if( error ) return callback(error);
+<<<<<<< HEAD
         
+=======
+
+        console.log('found '+ pages.length +' pages');
+
+>>>>>>> d2e9995f8c4e845b5a626f4b82b477bcacb83ee6
         return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
             if( error ) return callback(error);
             var page_ids = [];
