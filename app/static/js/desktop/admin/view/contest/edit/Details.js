@@ -3,12 +3,14 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
     extend: 'Ext.form.Panel',
     alias : 'widget.contestformdetails',
     
-    requires: [],
+    requires: [
+        'Ext.ux.form.field.DateTime'
+    ],
     
     layout: 'anchor',
-    bodyPadding: 10,
     defaults: {
-        anchor          :'0'
+        anchor          :'0',
+        labelWidth      :150
     },
     
     initComponent : function(){
@@ -19,30 +21,17 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             name            :'name',
             fieldLabel      :'Name'
         },{
-            xtype           :'datefield',
+            xtype           :'datetimefield',
             name            :'start',
             fieldLabel      :'Start Date'
         },{
-            xtype           :'datefield',
+            xtype           :'datetimefield',
             name            :'end',
             fieldLabel      :'End Date'
         },{
             xtype           :'textfield',
-            name            :'total_entries',
-            fieldLabel      :'Total Entries'
-        },{
-            xtype           :'combo',
-            name            :'game',
-            fieldLabel      :'Game',
-            store           :Ext.create('Ext.data.Store',{
-                fields:['value', 'text'],
-                data:[
-                    {value:'slots',text:'Slots'},
-                    {value:'scratch',text:'Scratch'}
-                ]
-            }),
-            displayField    :'text',
-            valueField      :'value'
+            name            :'win_frequency',
+            fieldLabel      :'Win Frequency'
         }];
         me.callParent();
     }

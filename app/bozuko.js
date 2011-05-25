@@ -1,16 +1,17 @@
 var fs              = require('fs');
+    existsSync    	= require('path').existsSync;
 
 // setup the global object
 Bozuko = {};
 
 Bozuko.dir = fs.realpathSync(__dirname+'/..');
 Bozuko.require = function(module){
-	try{
-		return require(Bozuko.dir+'/app/'+module);
-	}catch(e){
-		console.log('Module not found ('+module+')');
-		throw(e);
-	}
+    try{
+        return require(Bozuko.dir+'/app/'+module);
+    }catch(e){
+        console.log('Module not found ('+module+')');
+        throw(e);
+    }
 };
 
 Bozuko.require('core/error');
@@ -39,7 +40,7 @@ Bozuko.env = function(){
 };
 
 Bozuko.getConfig = function(){
-	return require(Bozuko.dir+'/config/'+this.env());
+    return require(Bozuko.dir+'/config/'+this.env());
 }
 
 Bozuko.config = Bozuko.getConfig();
@@ -81,32 +82,32 @@ Bozuko.configureApp = function(app) {
 
 Bozuko.services = {};
 Bozuko.service = function(name){
-	if( !Bozuko.services[name] ){
+    if( !Bozuko.services[name] ){
             var Service = this.require('core/services/'+(name||'facebook'));
-	    Bozuko.services[name] = new Service();
-	}
-	return Bozuko.services[name];
+        Bozuko.services[name] = new Service();
+    }
+    return Bozuko.services[name];
 };
 
 Bozuko.game = function(contest){
-	return new this.games[contest.game](contest);
+    return new this.games[contest.game](contest);
 };
 Bozuko.transfer = function(key, data, user){
-	if( !data ) return this._transferObjects[key];
-	try{
+    if( !data ) return this._transferObjects[key];
+    try{
 
-		if( Array.isArray(data) ){
-			var ret = [];
-			var self = this;
-			data.forEach( function(o){ ret.push(self._transferObjects[key].create(o, user)); } );
-			return ret;
-		}
+        if( Array.isArray(data) ){
+            var ret = [];
+            var self = this;
+            data.forEach( function(o){ ret.push(self._transferObjects[key].create(o, user)); } );
+            return ret;
+        }
         else{
-			return this._transferObjects[key].create(data, user);
-		}
-	}catch(e){
-        return Bozuko.error('bozuko/transfer', e.message);
-	}
+            return this._transferObjects[key].create(data, user);
+        }
+    }catch(e){
+        return e;
+    }
 };
 
 Bozuko.validate = function(key, data) {
@@ -138,24 +139,24 @@ Bozuko.entry = function(key, user, options){
 
 Bozuko.error = function(name, data){
 
-	var path = name.split('/');
-	var err = path.pop();
-	var BozukoError = this.require('core/error');
+    var path = name.split('/');
+    var err = path.pop();
+    var BozukoError = this.require('core/error');
 
-	try{
+    try{
         var message = this.require('errors/'+path.join('/'))[err];
-	    var code = null;
-	    if( typeof message != 'string' && message.code ){
+        var code = null;
+        if( typeof message != 'string' && message.code ){
                 code = message.code;
-	        message = message.message;
-	    }
-	    return new BozukoError(name,message,data,code);
-	}catch(e){
-		var error = new BozukoError();
-		error.name = name;
-		error.code = 500;
-		return error;
-	}
+            message = message.message;
+        }
+        return new BozukoError(name,message,data,code);
+    }catch(e){
+        var error = new BozukoError();
+        error.name = name;
+        error.code = 500;
+        return error;
+    }
 };
 
 Bozuko.t = function(){
@@ -193,12 +194,12 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/session')());
     app.use(Bozuko.require('middleware/mobile')());
 
-	if (Bozuko.env() != 'test') {
+    if (Bozuko.env() != 'test') {
         app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     }
-	if( Bozuko.env() == 'development' ){
-		app.use(Bozuko.require('middleware/debug')());
-	}
+    if( Bozuko.env() == 'development' ){
+        app.use(Bozuko.require('middleware/debug')());
+    }
 
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
     app.use(app.router);
@@ -299,6 +300,17 @@ function initGames(app){
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Bozuko.require('/games/'+file);
             app.use('/games/'+name, express.static(Bozuko.dir+'/app/games/'+name+'/resources'));
+            // check for themes
+            
+            var themes_dir = dir+'/'+name+'/themes';
+            if( existsSync(themes_dir) ) fs.readdirSync(themes_dir).forEach( function(theme){
+                // lets lisen on their resources folders
+                var stat = fs.statSync(themes_dir+'/'+theme);
+                if( !stat.isDirectory() ) return;
+				console.log('Init theme: ', name, theme);
+                app.use('/games/'+name+'/themes/'+theme, express.static(themes_dir+'/'+theme+'/resources'));
+            });
+            
         }
     });
 }

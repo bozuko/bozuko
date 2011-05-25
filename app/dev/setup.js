@@ -24,50 +24,7 @@ var dev = {
         slots:{
             game:'slots',
             game_config: {
-                theme: {
-                    name: 'default',
-                    base: burl('/games/slots/themes/default/default_theme'),
-                    icons: {
-
-                        'bell'      :'bell.png',
-                        'bar'       :'bar.png',
-                        'cherry'    :'cherry.png',
-                        'coins'     :'coins.png',
-                        'dollar'    :'dollar.png',
-                        'free_spin' :'free_spin.png',
-                        'doublebar' :'doublebar.png',
-                        'gold'      :'gold.png',
-                        'horseshoe' :'horseshoe.png',
-                        'lemon'     :'lemon.png',
-                        'raygun'    :'raygun.png',
-                        'rocket'    :'rocket.png',
-                        'seven'     :'seven.png',
-                        'shamrock'  :'shamrock.png',
-                        'strawberry':'strawberry.png',
-                        'watermelon':'watermelon.png'
-                    }
-                },
-                custom_icons: [
-
-                ],
-                icons: [
-                    'shamrock',
-                    'seven',
-                    'bell',
-                    'rocket',
-                    'raygun',
-                    'bar',
-                    'watermelon',
-                    'dollar',
-                    'cherry',
-                    'coins',
-                    'horseshoe',
-                    'lemon',
-                    'gold',
-                    'strawberry',
-                    'doublebar',
-                    'free_spin'
-                ]
+                theme: 'default'
             },
             entry_config:[{
                 type: 'facebook/checkin',
@@ -115,13 +72,7 @@ var dev = {
         'scratch':{
             game:'scratch',
             game_config: {
-                theme: {
-                    name: 'default',
-                    base: burl('/games/scratch/themes/default/default_theme'),
-                    images: {
-                        'background' : 'background.png'
-                    }
-                }
+                theme: 'default'
             },
             entry_config:[{
                 type: 'facebook/checkin',

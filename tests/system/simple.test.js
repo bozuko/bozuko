@@ -336,7 +336,7 @@ exports['game tests'] = {
                 var now = new Date();
                 // set timeout
                 var ms = date.getTime() - now.getTime();
-                var countdown = Math.round(ms/1000)+2;
+                var countdown = Math.round(ms/1000)+3;
                 var interval = setInterval( function(){
                     console.log(--countdown);
                 }, 1000);
@@ -344,7 +344,7 @@ exports['game tests'] = {
                 var timeout = setTimeout(function(){
                     clearInterval( interval );
                     test.done();
-                }, (date.getTime() - now.getTime()) + 2000);
+                }, (date.getTime() - now.getTime()) + 3000);
             });
     },
 
@@ -461,7 +461,7 @@ exports['game tests'] = {
                 var now = new Date();
                 // set timeout
                 var ms = date.getTime() - now.getTime();
-                var countdown = Math.round(ms/1000)+2;
+                var countdown = Math.round(ms/1000)+3;
                 var interval = setInterval( function(){
                     console.log(--countdown);
                 }, 1000);
@@ -469,7 +469,7 @@ exports['game tests'] = {
                 var timeout = setTimeout(function(){
                     clearInterval( interval );
                     test.done();
-                }, (date.getTime() - now.getTime()) + 2000);
+                }, (date.getTime() - now.getTime()) + 3000);
             });
     },
     'do a literal facebook checkin' : function(test) {

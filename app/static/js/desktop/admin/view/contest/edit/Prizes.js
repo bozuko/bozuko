@@ -6,7 +6,6 @@ Ext.define('Bozuko.view.contest.edit.Prizes' ,{
     requires: [
         'Bozuko.view.contest.edit.Prize'
     ],
-    bodyPadding: 10,
     autoScroll: true,
     
     initComponent : function(){

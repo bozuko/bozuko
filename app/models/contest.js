@@ -19,6 +19,8 @@ var Contest = module.exports = new Schema({
     plays                   :[Play],
     game                    :{type:String},
     game_config             :{},
+    win_frequency           :{type:Number},
+    auto_rules              :{type:Boolean, default: false},
     rules                   :{type:String},
     entry_config            :[EntryConfig],
     consolation_config      :[ConsolationConfig],
@@ -562,7 +564,8 @@ Contest.method('endPlay', function(opts, callback) {
 });
 
 Contest.method('getGame', function(){
-    return Bozuko.game( this );
+    var game = Bozuko.game( this );
+    return game;
 });
 
 Contest.method('getBestPrize', function(){
