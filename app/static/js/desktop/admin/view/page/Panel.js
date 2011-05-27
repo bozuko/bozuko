@@ -25,27 +25,27 @@ Ext.define('Bozuko.view.page.Panel' ,{
                 iconAlign: 'top'
             },
             items:[{
-                text        :'Settings',
-                page        :'settings',
-                group       :'page',
-                icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png',
-                pressed     :true
-            },{
                 page        :'campaigns',
                 text        :'Campaigns',
                 group       :'page',
+                pressed     :true,
                 icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png'
+            },{
+                text        :'Settings',
+                page        :'settings',
+                group       :'page',
+                icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png'
             }]
         });
         me.items = [{
-            xtype       :'pageform',
-            data        :me.record.data
-        },{
             xtype       :'contestpanel',
             store: Ext.create('Bozuko.store.Contests', {
                 page_id: me.record.get('_id'),
                 autoLoad: true
             })
+        },{
+            xtype       :'pageform',
+            data        :me.record.data
         }];
         me.callParent();
     }
