@@ -238,7 +238,7 @@ function add_users(count, callback) {
     async.until(
         function() { return ct === count; },
         function(cb) {
-            var user = new Bozuko.models.User({
+            var user = {
                 id: ''+ct,
                 service: 'facebook',
                 name: 'user '+ct,
@@ -247,7 +247,7 @@ function add_users(count, callback) {
                 email: 'user@'+ct+'.com',
                 token: ''+ct,
                 gender: 'trans'
-            });
+            };
             phone = {
                 type: 'iphone',
                 unique_id: ''+ct

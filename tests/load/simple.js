@@ -20,7 +20,7 @@ var options = {
     port: 443,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 10, // req/sec
+    rate: 50, // req/sec
     time: 1800, // sec
     wait_time: 10000, // ms
     path: '/api',
@@ -28,7 +28,7 @@ var options = {
     max_sessions: 1000,
     sessions: [{
 	probability: 100,
-	requests: [
+	request_generators: [
             get_pages,
             checkin,
             play,
@@ -83,6 +83,12 @@ function checkin(res, callback) {
     } catch(err) {
         return callback(err);
     }
+
+    // Ignore timeouts from facebook
+    if (res.statusCode != 200) {
+        console.log("Error: "+res.body);
+        return callback(null, 'done');
+    }
     // grab a random page
     var page = pages[Math.floor(Math.random()*pages.length)];
     if (!Bozuko.validate('page', page)) {
@@ -133,6 +139,7 @@ function play(res, callback) {
     try {
         var rv = JSON.parse(res.body);
     } catch(err) {
+        console.log("Bombed out in play bitch");
         user_ids_free.push(res.opaque.user_id);
         return callback(err);
     }
@@ -151,7 +158,7 @@ function play(res, callback) {
         var state = rv[0];
         if (state.user_tokens != 3) {
             user_ids_free.push(res.opaque.user_id);
-            return callback(new Error("game_state has invalid token count"));
+            return callback(new Error("game_state has invalid token count: ct = "+state.user_tokens));
         }
         res.opaque.message = "Load Test Play";
         res.opaque.user_tokens = 3;
