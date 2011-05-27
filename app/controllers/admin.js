@@ -120,7 +120,7 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 // need to get all pages
-                return Bozuko.models.Page.find({},{},{sort:{name:1}}, function(error, pages){
+                return Bozuko.models.Page.find({owner_id:{$exists:true}},{},{sort:{name:1}}, function(error, pages){
                     if( error ) return error.send(res);
                     return res.send({items:pages});
                 });
@@ -165,7 +165,8 @@ exports.routes = {
         post : {
             handler : function(req, res){
                 var data = req.body,
-                    prizes = data.prizes;
+                    prizes = data.prizes,
+                    consolation_prizes = data.consolation_prizes;
                     
                 delete data._id;
                 
