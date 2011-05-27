@@ -15,7 +15,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             'contestsview' : {
                 // setup our contest object
                 itemclick : this.onContestItemClick,
-                render: this.onViewRender
+                //render: this.onViewRender
             },
             'contestpanel' : {
                 render : this.onContestPanelRender
