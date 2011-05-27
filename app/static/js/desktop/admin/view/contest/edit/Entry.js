@@ -17,7 +17,7 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
         me.items = [{
             xtype           :'combo',
             name            :'type',
-            fieldLabel      :'Entry Type',
+            fieldLabel      :'Method of Entry',
             emptyText       :'Please Select the Entry Type',
             
             store           :Ext.create('Ext.data.Store',{
