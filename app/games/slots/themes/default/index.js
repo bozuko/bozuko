@@ -12,3 +12,4 @@ inherits(DefaultTheme, SlotsTheme);
 DefaultTheme.prototype.name = path.basename(__dirname);
 
 DefaultTheme.prototype.base = burl('/games/slots/themes/'+path.basename(__dirname)+'/default_theme' );
+DefaultTheme.prototype.base = burl('/games/slots/themes/'+path.basename(__dirname)+'/slots.png' );
