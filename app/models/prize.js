@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
+    burl = Bozuko.require('util/url').create,
     ObjectId = Schema.ObjectId;
 
 var Prize = module.exports = new Schema({
@@ -66,8 +67,7 @@ Prize.method('redeem', function(user, callback){
             self.user = user;
             self.page = page;
             return callback(null, {
-                duration: 60,
-                security_image: page.security_img || '/images/security_image.png',
+                security_image: page.security_img || burl('/images/security_image.png'),
                 prize: self
             });
         });

@@ -175,6 +175,8 @@ exports.routes = {
                 
                 delete data.play_cursor;
                 delete data.state;
+                delete data.total_entries;
+                delete data.total_plays;
                 
                 prizes.forEach(function(prize){
                     delete prize._id;

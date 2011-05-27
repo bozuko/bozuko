@@ -14,7 +14,8 @@ Ext.define('Bozuko.controller.Contests' ,{
             },
             'contestsview' : {
                 // setup our contest object
-                itemclick : this.onContestItemClick
+                itemclick : this.onContestItemClick,
+                render: this.onViewRender
             },
             'contestpanel' : {
                 render : this.onContestPanelRender
@@ -194,29 +195,11 @@ Ext.define('Bozuko.controller.Contests' ,{
                 break;
                 
             case 'publish':
-                var url = '/admin/contests/'+record.getId()+'/publish';
-                Ext.Ajax.request({
-                    url: url,
-                    method: 'post',
-                    callback : function(opts, success, response){
-                        if( !success ){
-                            // alert?
-                            return;
-                        }
-                        try{
-                            var result = Ext.decode( response.responseText );
-                            if( result && result.success){
-                                // need to refresh the contests..
-                                view.store.load();
-                            }
-                        }catch(e){
-                            
-                        }
-                    }
-                });
-                break;
+                
                 
             case 'copy':
+                
+                
             case 'cancel':
             default:
                 Ext.Msg.show({

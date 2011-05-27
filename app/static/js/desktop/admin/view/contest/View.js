@@ -48,7 +48,7 @@ Ext.define('Bozuko.view.contest.View' ,{
             {
                 
                 canEdit : function(values){
-                    return ~['draft', 'published'].indexOf(values.state);
+                    return true || ~['draft', 'published'].indexOf(values.state);
                 },
                 
                 canPublish : function(values){
