@@ -66,6 +66,7 @@ Prize.method('redeem', function(user, callback){
             self.user = user;
             self.page = page;
             return callback(null, {
+                duration: 60,
                 security_image: page.security_img || '/images/security_image.png',
                 prize: self
             });

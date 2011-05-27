@@ -136,7 +136,10 @@ exports.routes = {
                 return Bozuko.models.Page.findById( req.param('id'), function(error, page){
                     if( error ) return error.send( res );
                     // else, lets bind the reqest to the page
-                    page.set( req.body );
+                    var data = req.body;
+                    
+                    delete data._id;
+                    page.set( data );
                     return page.save( function(error){
                         if( error ) return error.send(res);
                         return res.send( {items: [page]} );

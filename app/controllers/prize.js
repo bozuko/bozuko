@@ -66,6 +66,7 @@ exports.transfer_objects = {
         doc: "Prize Redemption Object",
         def: {
             security_image: 'String',
+            duration: 'Number',
             prize: 'prize'
         }
     }
