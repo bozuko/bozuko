@@ -68,7 +68,7 @@ Slots.prototype.getConfig = function(){
     };
 };
 
-Scratch.prototype.getListImage = function(){
+Slots.prototype.getListImage = function(){
     return this.getTheme().getListImage();
 };
 
