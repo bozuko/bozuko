@@ -20,6 +20,10 @@ var game_result = {
             free_play: result.free_play,
             consolation: result.play.consolation
         };
+        
+        if( ret.consolation ){
+            ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize even though you lost!";
+        }
 
         ret.game_state = Bozuko.transfer('game_state', result.contest.game_state, user);
         if( result.prize ){
@@ -56,6 +60,7 @@ var game = {
         var obj = {};
         obj = this.merge(obj, game.contest);
         obj = this.merge(obj, game);
+        obj.type = game.getType();
         obj.name = game.getName();
         obj.config = game.getConfig();
         obj.prizes = game.getPrizes();
@@ -100,13 +105,14 @@ var game_state = {
         if( game_state.contest){
             game_state.game_id = game_state.contest.id;
             var links = {
-                game_state: '/game/'+game_state.contest.id+'/state'
+                game_state: '/game/'+game_state.contest.id+'/state',
+                game: '/game/'+game_state.contest.id
             };
             if( game_state.user_tokens > 0 ){
                 game_state.button_action = 'play';
                 links.game_result = '/game/'+game_state.contest.id+'/result';
             }
-            if( game_state.button_action =='enter'){
+            if( game_state.button_enabled && game_state.button_action =='enter'){
                 links.game_entry = '/game/'+game_state.contest.id+'/entry';
             }
             game_state.links = links;
@@ -124,7 +130,8 @@ var game_state = {
         links: {
             game_result: "String",
             game_entry: "String",
-            game_state: "String"
+            game_state: "String",
+            game: "String"
         }
     }
 };

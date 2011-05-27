@@ -34,6 +34,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             xtype           :'textfield',
             name            :'win_frequency',
             fieldLabel      :'Win Frequency'
+        },{
+            xtype           :'checkbox',
+            name            :'active',
+            fieldLabel      :'Active'
         }];
         me.callParent();
     }

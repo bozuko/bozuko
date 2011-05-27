@@ -31,6 +31,10 @@ Game.prototype = {
         return this.icon;
     },
     
+    getType : function(){
+        return this.type;
+    },
+    
     getName : function(){
         return this.config && this.config.name ? this.config.name : this.name;
     }
