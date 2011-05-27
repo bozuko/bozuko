@@ -164,9 +164,24 @@ exports.routes = {
 
         post : {
             handler : function(req, res){
-
-                delete req.body._id;
-                var contest = new Bozuko.models.Contest(req.body);
+                var data = req.body,
+                    prizes = data.prizes;
+                    
+                delete data._id;
+                
+                delete data.play_cursor;
+                delete data.state;
+                
+                prizes.forEach(function(prize){
+                    delete prize._id;
+                });
+                
+                // any other _id things?
+                consolation_prizes.forEach(function(prize){
+                    delete prize._id;
+                });
+                
+                var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
                     return res.send({items:[contest]});
