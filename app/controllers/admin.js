@@ -188,7 +188,6 @@ exports.routes = {
                         
                     delete data.prizes;
                     delete data.state;
-                    delete data.entry_config;
                     
                     // most definitely do not want to touch this
                     delete data.play_cursor;

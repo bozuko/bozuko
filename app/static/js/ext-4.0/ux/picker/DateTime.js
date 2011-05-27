@@ -132,7 +132,8 @@ Ext.define('Ext.ux.picker.DateTime', {
         var h = parseInt(me.hourField.getValue(), 10);
         var m = parseInt(me.minuteField.getValue(), 10);
         var a = me.ampmField.getValue() == 'AM';
-        if( !a ) h+=12;
+        if( h!= 12 && !a ) h+=12;
+        else if( h == 12 && a ) h = 24;
         me.value.setHours(  h == 24  ? 0 : h  );
         me.value.setMinutes( m );
     }

@@ -107,7 +107,7 @@ Ext.define('Bozuko.controller.Contests' ,{
         var entry_config = record.get('entry_config');
         if( entry_config && entry_config.length ){
             var values = this.getValues(entry);
-            entry_config = Ext.Object.merge( entry_config[0], this.getValues(entry) );
+            entry_config = Ext.Object.merge( entry_config[0], values );
         }
         else{
             entry_config = this.getValues(entry);
