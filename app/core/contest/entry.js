@@ -192,7 +192,6 @@ EntryMethod.prototype.validate = function( callback ){
 
         // check that there is enough tokens left
         if( self.ensureTokens() === false ){
-            console.log("entry 22222");
             return callback( Bozuko.error('entry/not_enough_tokens') );
         }
 
@@ -215,7 +214,7 @@ EntryMethod.prototype.validate = function( callback ){
                 return callback( null, entries.length ? false: true);
             });
         }
-        return callback( null );
+        return callback( null, true );
     });
 };
 

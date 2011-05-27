@@ -112,6 +112,12 @@ FacebookLikeMethod.prototype.process = function( callback ){
     return EntryMethod.prototype.process.call(self, callback);
 };
 
+FacebookLikeMethod.prototype.validate = function( callback ){
+    var self = this;
+    if( !self.user_likes ) return callback(null, false);
+    return EntryMethod.prototype.validate.call(self, callback);
+};
+
 FacebookLikeMethod.prototype._load = function( callback ){
     var self = this;
     return Bozuko.models.Page.findById( self.contest.page_id, function(error, page){
@@ -130,7 +136,7 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
     var text = '';
     this.load( function(error){
         if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
+        return self.getNextEntryTime( self.getLastEntry(), function( error, time ){
             
             if( error ) return callback( error );
             if( !tokens ){
@@ -177,7 +183,7 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
 
 FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
     var self = this;
-    self.getNextEntryTime( function(error, time){
+    self.getNextEntryTime( self.getLastEntry(), function(error, time){
         if( error ) return callback( error );
         var enabled = true;
         var now = new Date();
@@ -186,6 +192,7 @@ FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
                 enabled = false;
             }
         }
+        if( enabled && self.user && !self.user_likes ) enabled = false;
         return callback( null, enabled );
     });
 };
