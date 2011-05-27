@@ -219,7 +219,7 @@ exports.routes = {
                     
                     prizes.forEach(function(prize, i){
                         var old, doc;
-                        if( prize._id && (old = contest.prizes.id(prize._id)) ){
+                        if( prize._id && (old = contest.prizes.id(String(prize._id))) ){
                             doc = old.doc;
                             for( var p in prize ){
                                 if( prize.hasOwnProperty(p) ){
