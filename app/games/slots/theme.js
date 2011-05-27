@@ -4,6 +4,7 @@ var SlotsTheme = module.exports = function(game){
 };
 
 SlotsTheme.prototype.getListImage = function(){
+    console.log('slotsTheme::getListImage', this.icon);
     return this.icon || this.game.icon;
 };
 
