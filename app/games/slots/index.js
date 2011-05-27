@@ -68,6 +68,10 @@ Slots.prototype.getConfig = function(){
     };
 };
 
+Scratch.prototype.getListImage = function(){
+    return this.getTheme().getListImage();
+};
+
 Slots.prototype.getImage = function(index){
     var config = this.getConfig();
     var icon = config.icons[index];
