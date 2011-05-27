@@ -1,5 +1,7 @@
 var _t = Bozuko.t,
-    dateFormat = require('dateformat');
+    merge = Bozuko.require('util/merge'),
+    dateFormat = require('dateformat')
+;
 
 /**
  * Abstract class for method of entry
@@ -67,6 +69,9 @@ EntryMethod.prototype.getDescription = function(){
  */
 EntryMethod.prototype.configure = function( config ){
     var i, self = this;
+    if( config.options ){
+        merge.merge( config, config.options);
+    }
     this.config = {};
     var _defaults = function(o){
         var p = Object.getPrototypeOf(o);

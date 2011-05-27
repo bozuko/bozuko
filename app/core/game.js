@@ -11,7 +11,7 @@ var Game = module.exports = function(contest){
  */
 Game.prototype = {
     
-    name : null,
+    name : "Game",
     
     theme: 'default',
     
@@ -29,6 +29,10 @@ Game.prototype = {
     
     getListImage: function(){
         return this.icon;
+    },
+    
+    getName : function(){
+        return this.config && this.config.name ? this.config.name : this.name;
     }
     
 };

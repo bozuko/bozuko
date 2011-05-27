@@ -56,6 +56,7 @@ var game = {
         var obj = {};
         obj = this.merge(obj, game.contest);
         obj = this.merge(obj, game);
+        obj.name = game.getName();
         obj.config = game.getConfig();
         obj.prizes = game.getPrizes();
         obj.image = game.getListImage();

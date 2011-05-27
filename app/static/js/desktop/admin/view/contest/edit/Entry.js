@@ -29,11 +29,18 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
                 ]
             }),
             displayField    :'text',
-            valueField      :'value'
+            valueField      :'value',
+            
+            listeners       :{
+                scope           :me,
+                change          :me.onEntryTypeChange
+            }
+            
         },{
             xtype           :'checkbox',
-            name            :'enable_like',
-            fieldLabel      :'Additional Like Entry'
+            name            :'options.enable_like',
+            fieldLabel      :'Additional Like Entry',
+            hidden          :true
         },{
             xtype           :'textfield',
             name            :'tokens',
@@ -41,8 +48,19 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
         },{
             xtype           :'textfield',
             name            :'duration',
-            fieldLabel      :'Entry Duration (ms)'
+            fieldLabel      :'Entry Duration (ms)',
+            value           :1000 * 60 * 60
         }];
         me.callParent();
+    },
+    
+    onEntryTypeChange : function(field, value){
+        var fn = value == 'facebook/checkin' ? 'show' : 'hide';
+        this.down('[name=options.enable_like]')[fn]();
+    },
+    
+    setValues : function(values){
+        values['options.enable_like'] = values.options ? values.options.enable_like : false;
+        this.getForm().setValues(values);
     }
 });
