@@ -14,8 +14,8 @@ Ext.define('Bozuko.controller.Contests' ,{
             },
             'contestsview' : {
                 // setup our contest object
-                itemclick : this.onContestItemClick
-                //render: this.onViewRender
+                itemclick : this.onContestItemClick,
+                render: this.onContestsViewRender
             },
             'contestpanel' : {
                 render : this.onContestPanelRender
@@ -36,6 +36,13 @@ Ext.define('Bozuko.controller.Contests' ,{
                 click : this.onRefreshContestsClick
             }
         });
+    },
+    
+    onContestsViewRender : function(view){
+        // get at the store...
+        view.store.on('load', function(store){
+            this.updateCards(store, view);
+        }, this);
     },
     
     onContestDblClick : function(view, record){
@@ -131,6 +138,8 @@ Ext.define('Bozuko.controller.Contests' ,{
         record.save({
             success : function(){
                 if( isNew ){
+                    // this isn't really a phantom anymore
+                    record.phantom = false;
                     // add it to the store
                     contestsView.store.add(record);
                     // also, lets change the text
@@ -265,5 +274,19 @@ Ext.define('Bozuko.controller.Contests' ,{
         panel.getLayout().setActiveItem(panel.cards[id]);
         panel.doLayout();
         
+    },
+    
+    updateCards : function(store, view){
+        var panel = view.up('pagepanel');
+        if( !panel.cards ) return;
+        Ext.Object.each( panel.cards, function(id, card){
+            var record;
+            if( !(record = store.getById(id)) ){
+                panel.remove(card);
+            }
+            else{
+                card.setRecord(record);
+            }
+        });
     }
 });
