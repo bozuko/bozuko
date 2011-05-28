@@ -347,9 +347,14 @@ Contest.method('saveConsolation', function(opts, callback) {
             }
         );
     }
-
     // TODO: Implement (config.when === 'interval')
-
+    
+    /**
+     * MARK - I think this is being reached even if interval isn't the when...
+     * I'm going to log the config so we can see whats going on, but also
+     * return the callback so the last play doesn't get wierd.
+     */
+    return callback(null);
 });
 
 Contest.method('savePrize', function(opts, callback) {
