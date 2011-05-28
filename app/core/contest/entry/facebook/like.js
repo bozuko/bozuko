@@ -52,7 +52,7 @@ FacebookLikeMethod.prototype.defaults = {
  * Get Description - allow for formatting.
  *
  */
-EntryMethod.prototype.getDescription = function(){
+FacebookLikeMethod.prototype.getDescription = function(){
     
     // need a nice duration
     // get the number of minutes:

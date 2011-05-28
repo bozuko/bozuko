@@ -69,7 +69,6 @@ Slots.prototype.getConfig = function(){
 };
 
 Slots.prototype.getListImage = function(){
-    console.log('slots::getListImage', this.getTheme().name, this.getTheme().icon);
     return this.getTheme().getListImage();
 };
 
