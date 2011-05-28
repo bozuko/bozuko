@@ -224,7 +224,6 @@ exports.routes = {
                     
                     prizes.forEach(function(prize, i){
                         var old, doc;
-                        console.log(prize._id);
                         if( prize._id && (old = contest.prizes.id(prize._id)) ){
                             doc = old.doc;
                             for( var p in prize ){

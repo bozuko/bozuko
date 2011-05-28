@@ -112,8 +112,26 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
         });
     },
     
+    getValues : function(selector){
+        var form = this;
+        var values = {};
+        selector = selector ? selector+' field' : 'field';
+        Ext.Array.each(form.query( selector ), function(field){
+            var ns = field.getName().split('.'), cur = values;
+            
+            if( ns.length > 1 ) while( ns.length > 1 ){
+                var p = ns.shift();
+                if( !cur[p]) cur[p] = {};
+                cur = cur[p];
+            }
+            
+            cur[ns.shift()] = field.getValue();
+        });
+        return values;
+    },
+    
     updateRecord : function(){
-        var v = this.getForm().getValues();
+        var v = this.getValues();
         this.record.set(v);
     }
 });
