@@ -10,7 +10,8 @@ var mongoose = require('mongoose'),
     async = require('async'),
     ObjectID = require('mongoose/lib/mongoose/types/objectid'),
     uuid = require('node-uuid'),
-    merge = Bozuko.require('util/merge')
+    merge = Bozuko.require('util/merge'),
+    rand = Bozuko.require('util/math').rand
 ;
 
 var Contest = module.exports = new Schema({
@@ -85,7 +86,7 @@ Contest.method('publish', function(callback){
     this.prizes.forEach(function(prize){
         total_prizes += prize.total || 0;
     });
-    
+
     this.total_entries = total_prizes * this.win_frequency;
     this.active = true;
     this.generateResults( function(error, results){
@@ -348,7 +349,7 @@ Contest.method('saveConsolation', function(opts, callback) {
         );
     }
     // TODO: Implement (config.when === 'interval')
-    
+
     /**
      * MARK - I think this is being reached even if interval isn't the when...
      * I'm going to log the config so we can see whats going on, but also
@@ -356,6 +357,14 @@ Contest.method('saveConsolation', function(opts, callback) {
      */
     return callback(null);
 });
+
+
+// We generate the codes here for consolation prizes. Note that these codes can possibly have duplicates.
+// It shouldn't really matter for consolation prizes, so allow it for performance.
+function letter() { return rand(0,25) + 65; }
+function get_code() {
+    return String.fromCharCode(letter(), letter(), letter(), letter(), letter(), letter());
+}
 
 Contest.method('savePrize', function(opts, callback) {
 
@@ -389,7 +398,7 @@ Contest.method('savePrize', function(opts, callback) {
                 page_id: self.page_id,
                 user_id: opts.user_id,
                 uuid: opts.uuid,
-                code: opts.prize_code,
+                code: opts.consolation ? get_code() : opts.prize_code,
                 value: prize.value,
                 page_name: page.name,
                 name: prize.name,
