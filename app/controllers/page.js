@@ -259,7 +259,10 @@ exports.routes = {
 
                 if( query ) options.query = query;
                 if( service ) options.service = service;
-                if( favorites ) options.favorites = true;
+                if( favorites ){
+                    options.favorites = true;
+                    options.sort = {'name': 1};
+                }
                 var profiler = Profiler.create('Page::search');
                 return Bozuko.models.Page.search(options,
                     function(error, pages){
