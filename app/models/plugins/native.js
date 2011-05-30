@@ -22,8 +22,8 @@ var NativePlugin = module.exports = function NativePlugin(schema, options){
      * limit, sort, fields, skip, hint, explain, snapshot, timeout, tailable, batchSize
      */
     schema.static('nativeFind', function(){
-        var self = this;
-        var coll = this.collection;
+        var self = this,
+            coll = this.collection;
         var cb = arguments[arguments.length-1];
         arguments[arguments.length-1] = function(error, cursor){
 

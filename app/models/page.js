@@ -322,11 +322,29 @@ Page.static('loadPagesContests', function(pages, user, callback){
                 },
                 function contests_foreach_callback(err){
                     if (err) return callback(err);
-                    callback(null, pages);
+                    return callback(null, pages);
                 }
             );
         }
     );
+});
+
+/**
+ * Need to add our algorithm for finding featured items (by distance? how far is too far?)
+ */
+Page.static('getFeaturedPages', function(options, callback){
+    var find = {
+        selector: {
+            featured: true,
+            $where: function(){
+                
+            }
+        },
+        options: {
+            
+        }
+    };
+    Bozuko.models.Page.count(selector)
 });
 
 /**
@@ -351,6 +369,10 @@ Page.static('search', function(options, callback){
     var serviceSearch = {};
     if( options.query ){
         bozukoSearch.selector.name = new RegExp('^'+XRegExp.escape(options.query), "i");
+    }
+    
+    if( options.sort ){
+        bozukoSearch.options.sort = options.sort;
     }
 
     // are we looking for favorites?
@@ -393,12 +415,12 @@ Page.static('search', function(options, callback){
      *
      */
     else {
+        // we need to add featured results to the main search page
         if( Bozuko.env() == 'development' && !options.query ){
             bozukoSearch.selector['$or'] = [{test: true}, {featured:true}];
         }
         else{
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
-            console.log(distance, Bozuko.config.search.nearbyRadius);
             bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
             bozukoSearch.type='nativeFind';
@@ -419,11 +441,12 @@ Page.static('search', function(options, callback){
             if (!page.owner_id && page._id) {
                 page.id = page.service('facebook').sid;
             }
-             console.log(page.name, JSON.stringify({options:options.ll, page: page.coords}));
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }
     }
+    
+    console.log('bozukoSearch', bozukoSearch);
 
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
