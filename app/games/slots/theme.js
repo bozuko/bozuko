@@ -3,6 +3,10 @@ var SlotsTheme = module.exports = function(game){
     this.game = game;
 };
 
+SlotsTheme.prototype.getListImage = function(){
+    return this.icon || this.game.icon;
+};
+
 SlotsTheme.prototype.icons = {
     'bell'      :'bell.png',
     'bar'       :'bar.png',

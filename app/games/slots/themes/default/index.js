@@ -12,3 +12,6 @@ inherits(DefaultTheme, SlotsTheme);
 DefaultTheme.prototype.name = path.basename(__dirname);
 
 DefaultTheme.prototype.base = burl('/games/slots/themes/'+path.basename(__dirname)+'/default_theme' );
+
+// this is clearly here. why won't it show up in fuzz?
+DefaultTheme.prototype.icon = burl('/games/slots/themes/'+path.basename(__dirname)+'/slots.png' );

@@ -18,7 +18,8 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
             style           :'background-color: #f3f3f3',
             defaults        :{
                 xtype           :'textfield',
-                anchor          :'0'
+                anchor          :'0',
+                labelWidth      :150
             },
             items           :[{
                 name            :'name',
@@ -43,6 +44,43 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 fieldLabel      :'Instructions',
                 allowBlank      :false
             },{
+                name            :'duration',
+                fieldLabel      :'Redemption Period',
+                allowBlank      :false,
+                value           :1000 * 60 * 2
+            },{
+                xtype           :'checkbox',
+                name            :'is_email',
+                fieldLabel      :'Email Prize?',
+                allowBlank      :false,
+                listeners       :{
+                    scope           :me,
+                    change          :me.onEmailChange
+                }
+            },{
+                xtype           :'textarea',
+                height          :100,
+                hidden          :true,
+                name            :'email_body',
+                fieldLabel      :'Email Body',
+                allowBlank      :false
+            },{
+                xtype           :'textarea',
+                height          :80,
+                hidden          :true,
+                name            :'email_codes',
+                fieldLabel      :'Email Codes (separate with a comma)',
+                allowBlank      :false,
+                getValue        :function(){
+                    var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this);
+                    return v.split(',');
+                },
+                setValue        :function(v){
+                    
+                    if( Ext.isString(v) ) v = v.split(',');
+                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join(',')])
+                }
+            },{
                 xtype           :'container',
                 border          :false,
                 style           :'text-align:right',
@@ -63,11 +101,37 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
         
         if( me.record ) {
             me.loadRecord( record );
+            
         }
     },
     
+    onEmailChange : function(field, value){
+        var fn = value ? 'show' : 'hide';
+        Ext.Array.each( this.query('[name=email_body], [name=email_codes]'), function(cmp){
+            cmp[fn]();
+        });
+    },
+    
+    getValues : function(selector){
+        var form = this;
+        var values = {};
+        selector = selector ? selector+' field' : 'field';
+        Ext.Array.each(form.query( selector ), function(field){
+            var ns = field.getName().split('.'), cur = values;
+            
+            if( ns.length > 1 ) while( ns.length > 1 ){
+                var p = ns.shift();
+                if( !cur[p]) cur[p] = {};
+                cur = cur[p];
+            }
+            
+            cur[ns.shift()] = field.getValue();
+        });
+        return values;
+    },
+    
     updateRecord : function(){
-        var v = this.getForm().getValues();
+        var v = this.getValues();
         this.record.set(v);
     }
 });

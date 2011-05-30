@@ -1,5 +1,6 @@
 var Game = Bozuko.require('core/game'),
     burl = Bozuko.require('util/url').create,
+    path = require('path');
     inherits = require('util').inherits;
 
 var Slots = module.exports = function(){
@@ -8,6 +9,8 @@ var Slots = module.exports = function(){
 inherits( Slots, Game);
 
 Slots.prototype.name = "Slots";
+
+Slots.prototype.type = path.basename(__dirname);
 
 Slots.prototype.icon = burl('/games/slots/slots_icon.png');
 
@@ -63,6 +66,10 @@ Slots.prototype.getConfig = function(){
         custom_icons: {},
         icons: Object.keys(theme.icons)
     };
+};
+
+Slots.prototype.getListImage = function(){
+    return this.getTheme().getListImage();
 };
 
 Slots.prototype.getImage = function(index){

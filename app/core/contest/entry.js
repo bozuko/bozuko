@@ -1,5 +1,7 @@
 var _t = Bozuko.t,
-    dateFormat = require('dateformat');
+    merge = Bozuko.require('util/merge'),
+    dateFormat = require('dateformat')
+;
 
 /**
  * Abstract class for method of entry
@@ -67,6 +69,9 @@ EntryMethod.prototype.getDescription = function(){
  */
 EntryMethod.prototype.configure = function( config ){
     var i, self = this;
+    if( config.options ){
+        merge.merge( config, config.options);
+    }
     this.config = {};
     var _defaults = function(o){
         var p = Object.getPrototypeOf(o);
@@ -187,7 +192,6 @@ EntryMethod.prototype.validate = function( callback ){
 
         // check that there is enough tokens left
         if( self.ensureTokens() === false ){
-            console.log("entry 22222");
             return callback( Bozuko.error('entry/not_enough_tokens') );
         }
 
@@ -210,7 +214,7 @@ EntryMethod.prototype.validate = function( callback ){
                 return callback( null, entries.length ? false: true);
             });
         }
-        return callback( null );
+        return callback( null, true );
     });
 };
 

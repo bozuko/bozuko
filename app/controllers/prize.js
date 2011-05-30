@@ -16,6 +16,7 @@ exports.transfer_objects = {
             wrapper_message: "String",
             description: "String",
             win_time: "String",
+            redemption_duration: "Number",
             redeemed_timestamp: "String",
             expiration_timestamp: "String",
             business_img: "String",
@@ -37,6 +38,10 @@ exports.transfer_objects = {
             o.win_time = prize.timestamp;
             o.business_img = prize.page.image;
             o.user_img = prize.user.image;
+            /**
+             * TODO - pull this from the contest / prize / page
+             */
+            o.redemption_duration = 60;
             if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
             o.expiration_timestamp = prize.expires;
     
