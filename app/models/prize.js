@@ -61,6 +61,7 @@ Prize.method('redeem', function(user, callback){
     self.redeemed_time = now;
     return self.save( function(error){
         if( error ) return callback( error );
+        if (self.is_email) self.sendEmail(user);
         // okay, lets get the page and get its security image
         return Bozuko.models.Page.findById(self.page_id, function(error, page){
             if( error ) return callback( error );
@@ -71,6 +72,23 @@ Prize.method('redeem', function(user, callback){
                 prize: self
             });
         });
+    });
+});
+
+// Don't bother waiting for this. Just fire and forget. We should have a way for the user
+// to request the email to be resent.
+Prize.method('sendEmail', function(user) {
+    var self = this;
+    var mail = Bozuko.require('util/mail');
+    return mail.send({
+        to: user.email,
+        subject: 'You just won a bozuko prize!',
+        body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
+    }, function(err, success) {
+        if (err) console.log("Email Err = "+err);
+        if (err || !success) {
+            console.log("Error sending mail to "+user.email+"for prize_id"+self._id);
+        }
     });
 });
 

@@ -274,10 +274,6 @@ exports['audit - missing play'] = function(test) {
     });
 };
 
-exports['wait 3 sec for mail to send'] = function(test) {
-    setTimeout(test.done, 3000);
-};
-
 function cleanup(callback) {
     var e = emptyCollection;
     async.parallel([e('User'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize')], callback);
