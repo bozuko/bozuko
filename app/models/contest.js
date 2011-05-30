@@ -148,8 +148,9 @@ Contest.method('getEntryMethodDescription', function(){
 Contest.method('getUserInfo', function(user_id) {
     var tokens = 0;
     var lastEntry = null;
-    // how many tokens ?
+    var earliest_active_entry_time = null;
 
+    // how many tokens ?
     this.entries.forEach(function(entry){
         // check timestamp and user_id
         var now = new Date();
@@ -157,6 +158,10 @@ Contest.method('getUserInfo', function(user_id) {
             lastEntry = entry;
         }
         if( entry.user_id == String(user_id) && entry.timestamp.getTime()+Bozuko.config.entry.token_expiration > now.getTime() ){
+            if (!earliest_active_entry_time || (entry.timestamp < earliest_active_entry_time)) {
+                earliest_active_entry_time = entry.timestamp;
+            }
+
             // we should be good
             tokens += entry.tokens;
         }
@@ -164,7 +169,8 @@ Contest.method('getUserInfo', function(user_id) {
 
     return {
         tokens: tokens,
-        last_entry: lastEntry
+        last_entry: lastEntry,
+        earliest_active_entry_time: earliest_active_entry_time
     };
 });
 
@@ -324,9 +330,26 @@ Contest.method('saveConsolation', function(opts, callback) {
     var config = this.consolation_config[0];
     if (config.who === 'losers' && opts.win === true) return callback(null);
 
-    if ((config.who === 'losers' && opts.win === false && config.when === 'always') ||
-        (config.who === 'all' && config.when === 'always')) {
-        return this.savePrize(opts, callback);
+    if (config.who === 'all' && config.when === 'always') return this.savePrize(opts, callback);
+
+    // Is there a winner for the current active entries?
+    function savePrizeIfLoser() {
+        return Bozuko.models.Play.findOne({contest_id: self._id, user_id: opts.user_id, win: true,
+            free_play: false, timestamp: {$gt :opts.user_info.earliest_active_entry_time}},
+            function(err, play) {
+                if (err) return callback(err);
+
+                // We are a real loser, save the prize
+                if (!play) return self.savePrize(opts, callback);
+
+                // We won recently
+                return callback(null);
+            }
+        );
+    }
+
+    if (config.who === 'losers' && config.when === 'always') {
+        return savePrizeIfLoser();
     }
 
     if (config.when === 'once') {
@@ -336,15 +359,13 @@ Contest.method('saveConsolation', function(opts, callback) {
                 if (err) return callback(err);
                 if (prize) return callback(null);
 
-                if (config.who === 'losers' && opts.win === false) {
-                    return self.savePrize(opts, callback);
+                if (config.who === 'losers') {
+                    return savePrizeIfLoser(opts, callback);
                 }
 
                 if (config.who === 'all') {
                     return self.savePrize(opts, callback);
                 }
-
-                return callback(null);
             }
         );
     }
@@ -482,8 +503,9 @@ Contest.method('createPrize', function(opts, callback) {
     // Should we hand out a consolation prize?
     // Don't worry about this for audit code, as the user's info might have changed.
     if (!opts.audit) {
-        var tokens = this.getUserInfo(opts.user_id).tokens;
-        if (tokens === 0 && this.consolation_config.length != 0) {
+        var info = this.getUserInfo(opts.user_id);
+        if (info.tokens === 0 && this.consolation_config.length != 0) {
+            opts.user_info = info;
             return this.saveConsolation(opts, function(err, consolation_prize) {
                 if (err) return callback(err);
 
@@ -537,6 +559,8 @@ Contest.method('savePlay', function(opts, callback) {
         play.consolation = true;
         play.consolation_prize_id = opts.consolation_prize._id;
         play.consolation_prize_name = opts.consolation_prize.name;
+    } else {
+        play.consolation = false;
     }
 
     opts.play = play;
