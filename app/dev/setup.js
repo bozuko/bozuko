@@ -52,7 +52,7 @@ var dev = {
                 value: '20',
                 description: "Keep your beer cold with this Bozuko coosy",
                 instructions: "Show this screen to an employee",
-                total: 1500
+                total: 100
             }],
             consolation_prizes: [{
                 name: 'Log',
