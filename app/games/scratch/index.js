@@ -1,6 +1,7 @@
 var Game = Bozuko.require('core/game'),
     burl = Bozuko.require('util/url').create,
     rand = Bozuko.require('util/math').rand,
+    path = require('path'),
     inherits = require('util').inherits;
 
 var Scratch = module.exports = function() {
@@ -8,6 +9,8 @@ var Scratch = module.exports = function() {
 };
 
 inherits( Scratch, Game );
+
+Scratch.prototype.type = path.basename(__dirname);
 
 Scratch.prototype.name = "Scratch";
 

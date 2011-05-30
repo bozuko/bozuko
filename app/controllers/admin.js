@@ -3,7 +3,8 @@ var facebook    = Bozuko.require('util/facebook'),
     qs          = require('querystring'),
     url         = require('url'),
     spawn       = require('child_process').spawn,
-    sys         = require('sys')
+    sys         = require('sys'),
+    merge       = Bozuko.require('util/merge')
 ;
 
 exports.access = 'admin';
@@ -119,7 +120,7 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 // need to get all pages
-                return Bozuko.models.Page.find({},{},{sort:{name:1}}, function(error, pages){
+                return Bozuko.models.Page.find({owner_id:{$exists:true}},{},{sort:{name:1}}, function(error, pages){
                     if( error ) return error.send(res);
                     return res.send({items:pages});
                 });
@@ -135,7 +136,10 @@ exports.routes = {
                 return Bozuko.models.Page.findById( req.param('id'), function(error, page){
                     if( error ) return error.send( res );
                     // else, lets bind the reqest to the page
-                    page.set( req.body );
+                    var data = req.body;
+                    
+                    delete data._id;
+                    page.set( data );
                     return page.save( function(error){
                         if( error ) return error.send(res);
                         return res.send( {items: [page]} );
@@ -163,15 +167,27 @@ exports.routes = {
 
         post : {
             handler : function(req, res){
-
-                req.body.entry_config = [{
-                    tokens: 3,
-                    type: 'facebook/checkin',
-                    enable_like: true,
-                    like_tokens: 3
-                }];
-                delete req.body._id;
-                var contest = new Bozuko.models.Contest(req.body);
+                var data = req.body,
+                    prizes = data.prizes,
+                    consolation_prizes = data.consolation_prizes;
+                    
+                delete data._id;
+                
+                delete data.play_cursor;
+                delete data.state;
+                delete data.total_entries;
+                delete data.total_plays;
+                
+                prizes.forEach(function(prize){
+                    delete prize._id;
+                });
+                
+                // any other _id things?
+                consolation_prizes.forEach(function(prize){
+                    delete prize._id;
+                });
+                
+                var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
                     return res.send({items:[contest]});
@@ -187,12 +203,62 @@ exports.routes = {
 
                 return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
                     if( error ) return error.send(res);
-                    contest.set( req.body );
-                    // there are definitely some things we don't want to save...
-                    return contest.save( function(error){
-                        if( error ) return error.send( res );
-                        return res.send( {items: [contest]} );
+                    
+                    var data = req.body,
+                        prizes = data.prizes;
+                        
+                    delete data.prizes;
+                    delete data.state;
+                    
+                    // most definitely do not want to touch this
+                    delete data.play_cursor;
+                    
+                    // don't want to update this, will throw an error
+                    delete data._id;
+                    
+                    for( var p in data ){
+                        if( data.hasOwnProperty(p) ){
+                            contest.set(p, data[p] );
+                        }
+                    }
+                    
+                    prizes.forEach(function(prize, i){
+                        var old, doc;
+                        if( prize._id && (old = contest.prizes.id(prize._id)) ){
+                            doc = old.doc;
+                            for( var p in prize ){
+                                if( prize.hasOwnProperty(p) ){
+                                    doc[p] = prize[p];
+                                }
+                            }
+                            prizes[i] = doc;
+                        }
                     });
+                    
+                    // no clue why i have to do this right now...
+                    contest.prizes = [];
+                    
+                    // save existing prizes before adding and removing others
+                    return contest.save(function(error){                        
+
+                        if( error ) return error.send( res );
+                        prizes.forEach( function(prize){
+                            if( !prize._id ) delete prize._id;
+                            contest.prizes.push(prize);
+                        });
+                        
+                        return contest.save( function(error){
+                            if( error ){
+                                console.log(error);
+                                return error.send( res );
+                            }
+                            return Bozuko.models.Contest.findById( contest.id, function(error, contest){
+                                if( error ) return error.send( res );
+                                return res.send( {items: [contest]} );
+                            });
+                        });
+                    });
+                    
                 });
             }
         },
@@ -200,7 +266,32 @@ exports.routes = {
         del : {
             // delete the record
             handler : function(req,res){
-                res.send({success:false, message:'not implemented'});
+                return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
+                    if( error ) return error.send(res);
+                    if( !contest ){
+                        return res.send({success: true});
+                    }
+                    return contest.remove(function(error){
+                        if( error ) return error.send(res);
+                        // success
+                        return res.send({success: true});
+                    });
+                });
+            }
+        }
+    },
+    
+    '/admin/contests/:id/publish' : {
+        post : {
+            handler : function(req,res){
+                return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
+                    if( error ) return error.send(res);
+                    if( !contest ) return res.send({success: false});
+                    return contest.publish(function(error){
+                        if( error ) return error.send( res );
+                        return res.send({success: true});
+                    });
+                });
             }
         }
     },
@@ -257,6 +348,4 @@ exports.routes = {
             }
         }
     }
-
-
 };

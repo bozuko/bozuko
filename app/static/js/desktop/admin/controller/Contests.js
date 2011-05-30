@@ -14,7 +14,8 @@ Ext.define('Bozuko.controller.Contests' ,{
             },
             'contestsview' : {
                 // setup our contest object
-                itemclick : this.onContestItemClick
+                itemclick : this.onContestItemClick,
+                render: this.onContestsViewRender
             },
             'contestpanel' : {
                 render : this.onContestPanelRender
@@ -35,6 +36,13 @@ Ext.define('Bozuko.controller.Contests' ,{
                 click : this.onRefreshContestsClick
             }
         });
+    },
+    
+    onContestsViewRender : function(view){
+        // get at the store...
+        view.store.on('load', function(store){
+            this.updateCards(store, view);
+        }, this);
     },
     
     onContestDblClick : function(view, record){
@@ -67,26 +75,82 @@ Ext.define('Bozuko.controller.Contests' ,{
         pagePanel.doLayout();
     },
     
+    getValues : function(form, selector){
+        var values = {};
+        selector = selector ? selector+' field' : 'field';
+        Ext.Array.each(form.query( selector ), function(field){
+            var ns = field.getName().split('.'), cur = values;
+            
+            if( ns.length > 1 ) while( ns.length > 1 ){
+                var p = ns.shift();
+                if( !cur[p]) cur[p] = {};
+                cur = cur[p];
+            }
+            
+            cur[ns.shift()] = field.getValue();
+        });
+        return values;
+    },
+    
     onContestSaveClick : function(btn){
         var contestForm = btn.up('contestform'),
             pagePanel = btn.up('pagepanel'),
+            contestsView = pagePanel.down('contestsview'),
             pageRecord = pagePanel.record,
             record = contestForm.record,
             details = contestForm.down('contestformdetails'),
             prizes = contestForm.down('contestformprizes'),
+            consolation_prizes = contestForm.down('contestformconsolationprizes'),
+            entry = contestForm.down('contestformentry'),
+            rules = contestForm.down('contestformrules'),
             game = contestForm.down('contestformgame');
         
+        var isNew = !record.get('_id');
         btn.disable();
-        btn.setText('Saving...');
+        btn.setText( isNew ? 'Creating...' : 'Saving...');
         record.set('page_id', pageRecord.get('_id'));
-        record.set( details.getForm().getValues() );
-        record.set( game.getForm().getValues() );
+        record.set( this.getValues(details) );
+        record.set( this.getValues(game) );
+        record.set( this.getValues(rules) );
+        var entry_config = record.get('entry_config');
+        if( entry_config && entry_config.length ){
+            var values = this.getValues(entry);
+            entry_config = Ext.Object.merge( entry_config[0], values );
+        }
+        else{
+            entry_config = this.getValues(entry);
+        }
+        record.set( 'entry_config', [entry_config] );
+        
+        var consolation_config = record.get('consolation_config');
+        if( consolation_config && consolation_config.length ){
+            var values = this.getValues(consolation_prizes, 'fieldset');
+            consolation_config = Ext.Object.merge( consolation_config[0], values );
+        }
+        else{
+            consolation_config = this.getValues(consolation_prizes, 'fieldset');
+        }
+        record.set('consolation_config', [consolation_config]);
         
         prizes.updateRecords();
+        consolation_prizes.updateRecords();
         
         record.save({
             success : function(){
+                if( isNew ){
+                    // this isn't really a phantom anymore
+                    record.phantom = false;
+                    // add it to the store
+                    contestsView.store.add(record);
+                    // also, lets change the text
+                    contestForm.down('[ref=edit-campaign-text]').setText( record.get('name') );
+                    contestForm.down('[ref=edit-label-text]').setText( 'Edit Campaign:' );
+                    pagePanel.cards[record.get('_id')] = contestForm;
+                    delete pagePanel.cards[''];
+                }
                 record.commit();
+                prizes.removeAll();
+                prizes.updateForms();
             },
             callback: function(){
                 btn.setText('Save');
@@ -132,7 +196,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                         record.store.remove(record);
                         record.destroy({
                             callback : function(){
-                                console.log('the campaign was destroyed');
+                                // console.log('the campaign was destroyed');
                             }
                         });
                     }
@@ -140,7 +204,31 @@ Ext.define('Bozuko.controller.Contests' ,{
                 break;
                 
             case 'publish':
+                var url = '/admin/contests/'+record.getId()+'/publish';
+                Ext.Ajax.request({
+                    url: url,
+                    method: 'post',
+                    callback : function(opts, success, response){
+                        if( !success ){
+                            // alert?
+                            return;
+                        }
+                        try{
+                            var result = Ext.decode( response.responseText );
+                            if( result && result.success){
+                                // need to refresh the contests..
+                                view.store.load();
+                            }
+                        }catch(e){
+                            
+                        }
+                    }
+                });
+                break;
+                
             case 'copy':
+                
+                
             case 'cancel':
             default:
                 Ext.Msg.show({
@@ -186,5 +274,19 @@ Ext.define('Bozuko.controller.Contests' ,{
         panel.getLayout().setActiveItem(panel.cards[id]);
         panel.doLayout();
         
+    },
+    
+    updateCards : function(store, view){
+        var panel = view.up('pagepanel');
+        if( !panel.cards ) return;
+        Ext.Object.each( panel.cards, function(id, card){
+            var record;
+            if( !(record = store.getById(id)) ){
+                panel.remove(card);
+            }
+            else{
+                card.setRecord(record);
+            }
+        });
     }
 });

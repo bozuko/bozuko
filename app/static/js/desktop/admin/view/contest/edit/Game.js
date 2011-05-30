@@ -18,6 +18,8 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
             xtype           :'combo',
             name            :'game',
             fieldLabel      :'Game',
+            forceSelection  :true,
+            editable        :false,
             store           :Ext.create('Ext.data.Store',{
                 fields:['value', 'text'],
                 data:[
@@ -26,7 +28,15 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                 ]
             }),
             displayField    :'text',
-            valueField      :'value'
+            valueField      :'value',
+            listeners       :{
+                scope           :me,
+                change          :me.onGameChange
+            }
+        },{
+            xtype           :'textfield',
+            name            :'game_config.name',
+            fieldLabel      :'Custom Name (leave blank for default)'
         },{
             xtype           :'combo',
             name            :'free_play_pct',
@@ -34,12 +44,13 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
             store           :Ext.create('Ext.data.Store',{
                 fields:['value', 'text'],
                 data:[
-                    {value:'0',text:'None'},
-                    {value:'10',text:'10%'},
-                    {value:'20',text:'20%'},
-                    {value:'30',text:'30%'},
-                    {value:'40',text:'40%'},
-                    {value:'50',text:'50%'}
+                    {value:0,text:'None'},
+                    {value:10,text:'10%'},
+                    {value:20,text:'20%'},
+                    {value:30,text:'30%'},
+                    {value:40,text:'40%'},
+                    {value:50,text:'50%'},
+                    {value:60,text:'60%'}
                 ]
             }),
             displayField    :'text',
@@ -47,7 +58,65 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
         }];
         me.callParent();
         
+    },
+    
+    onGameChange : function(field, value){
+        var i = this.items.indexOf( this.down('[name=free_play_pct]') ),
+            cmp
+            ;
+            
+        while( (cmp = this.items.getAt(i+1)) ) this.remove(cmp);
+        // update with the proper config form items
+        switch( value ){
+            case 'slots':
+                this.add({
+                    xtype           :'combo',
+                    name            :'game_config.theme',
+                    fieldLabel      :'Theme',
+                    forceSelection  :true,
+                    editable        :false,
+                    store           :Ext.create('Ext.data.Store',{
+                        fields:['value', 'text'],
+                        data:[
+                            {value:'default',text:'Default'},
+                            {value:'alt',text:'Alternate'}
+                        ]
+                    }),
+                    displayField    :'text',
+                    valueField      :'value',
+                    value           :'default'
+                });
+                break;
+            
+            case 'scratch':
+                this.add({
+                    xtype           :'combo',
+                    name            :'game_config.theme',
+                    fieldLabel      :'Theme',
+                    forceSelection  :true,
+                    editable        :false,
+                    store           :Ext.create('Ext.data.Store',{
+                        fields:['value', 'text'],
+                        data:[
+                            {value:'default',text:'Default'},
+                            {value:'rock',text:'Rock'}
+                        ]
+                    }),
+                    displayField    :'text',
+                    valueField      :'value',
+                    value           :'default'
+                });
+                break;
+        }
         
-        
+        var config = this.getForm().getRecord().get('game_config');
+        var v = {};
+        for(var p in config){
+            v['game_config.'+p] = config[p];
+        }
+        this.getForm().setValues(v);
     }
+    
+    
+    
 });

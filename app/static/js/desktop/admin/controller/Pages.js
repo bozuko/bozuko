@@ -128,11 +128,29 @@ Ext.define('Bozuko.controller.Pages' ,{
         
     },
     
+    getValues : function(form, selector){
+        var values = {};
+        selector = selector ? selector+' field' : 'field';
+        Ext.Array.each(form.query( selector ), function(field){
+            var ns = field.getName().split('.'), cur = values;
+            
+            if( ns.length > 1 ) while( ns.length > 1 ){
+                var p = ns.shift();
+                if( !cur[p]) cur[p] = {};
+                cur = cur[p];
+            }
+            
+            cur[ns.shift()] = field.getValue();
+        });
+        return values;
+    },
+    
     savePage : function( form ){
         var me = this;
         // update the record...
         var saveBtn = form.down('button[action=save]');
-        var values = form.getForm().getValues();
+        var values = this.getValues(form);
+        /*
         Ext.Object.each( values, function(key, value){
             var parts = key.split('.');
             if( parts.length == 1 ) return;
@@ -144,6 +162,7 @@ Ext.define('Bozuko.controller.Pages' ,{
             }
             cur[parts.shift()] = value;
         });
+        */
         form.record.set(values);
         form.record.commit();
         saveBtn.disable();
