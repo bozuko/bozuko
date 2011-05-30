@@ -36,7 +36,6 @@ exports.get_pages = function(test) {
         {url: pages_link+'/?ll='+ll+'&limit=2'},
         ok,
         function(res) {
-            console.log(res.body);
             var result = JSON.parse(res.body);
             var page = result.pages[0];
             console.log(page.location);
