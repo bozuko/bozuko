@@ -3,8 +3,6 @@ var game_prize = {
     def: {
         name: "String",
         description: "String",
-        total: "Number",
-        available:"Number",
         result_image: "String"
     }
 };
@@ -65,7 +63,6 @@ var game = {
         obj.config = game.getConfig();
         obj.prizes = game.getPrizes();
         obj.image = game.getListImage();
-        console.log('game:getListImage', game.getListImage());
         obj.list_message = game.contest.getListMessage();
         obj.entry_method.description = game.contest.getEntryMethodDescription();
         // obj.can_play = obj.game_state.user_tokens > 0;
