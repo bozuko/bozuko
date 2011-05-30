@@ -335,7 +335,7 @@ Contest.method('saveConsolation', function(opts, callback) {
     // Is there a winner for the current active entries?
     function savePrizeIfLoser() {
         return Bozuko.models.Play.findOne({contest_id: self._id, user_id: opts.user_id, win: true,
-            timestamp: {$gt :opts.user_info.earliest_active_entry_time}},
+            free_play: false, timestamp: {$gt :opts.user_info.earliest_active_entry_time}},
             function(err, play) {
                 if (err) return callback(err);
 
