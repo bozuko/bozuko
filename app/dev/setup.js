@@ -77,14 +77,15 @@ var dev = {
             entry_config:[{
                 type: 'facebook/checkin',
                 tokens: 3,
-                duration: 1000 * 60 * 2
+                duration: 1000 * 30
             }],
             prizes: [{
                 name: 'a trip to Jamaica mon',
                 value: '2000',
                 description: "Dude - you're going to Jamaica to get Irie!",
                 instructions: "Show this screen to the top dog of the establishment",
-                total: 20
+                total: 100,
+                is_email: true
             },{
                 name: 'a trapper keeper',
                 value: '20',
