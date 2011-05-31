@@ -481,7 +481,7 @@ Page.static('search', function(options, callback){
             if( options.query ) delete bozukoSearch.selector.coords['$maxDistance'];
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
             bozukoSearch.type='nativeFind';
-            serviceSearch = false;
+            // serviceSearch = false;
         }
     }
 
