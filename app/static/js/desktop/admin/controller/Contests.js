@@ -79,14 +79,16 @@ Ext.define('Bozuko.controller.Contests' ,{
         var values = {};
         selector = selector ? selector+' field' : 'field';
         Ext.Array.each(form.query( selector ), function(field){
-            var ns = field.getName().split('.'), cur = values;
+            var name = field.getName();
+            var ns = name.split('.'), cur = values;
             
-            if( ns.length > 1 ) while( ns.length > 1 ){
-                var p = ns.shift();
-                if( !cur[p]) cur[p] = {};
-                cur = cur[p];
+            if( ns.length > 1 ){
+                while( ns.length > 1 ){
+                    var p = ns.shift();
+                    if( !cur[p]) cur[p] = {};
+                    cur = cur[p];
+                }
             }
-            
             cur[ns.shift()] = field.getValue();
         });
         return values;
@@ -120,6 +122,7 @@ Ext.define('Bozuko.controller.Contests' ,{
         else{
             entry_config = this.getValues(entry);
         }
+        console.log(entry_config);
         record.set( 'entry_config', [entry_config] );
         
         var consolation_config = record.get('consolation_config');
