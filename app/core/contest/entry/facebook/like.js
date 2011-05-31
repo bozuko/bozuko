@@ -33,6 +33,13 @@ FacebookLikeMethod.prototype.description = 'Like us on facebook to play';
 FacebookLikeMethod.prototype.icon = '';
 
 /**
+ * Icon to display.
+ *
+ * TODO - decide if we need multiple types - mobile / admin, etc.
+ */
+FacebookCheckinMethod.prototype.image = burl('/images/entry/facebook.png');
+
+/**
  * List Message String
  *
  */

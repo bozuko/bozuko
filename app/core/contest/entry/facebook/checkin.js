@@ -1,5 +1,6 @@
 var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
+    burl = Bozuko.require('util/url').create,
     dateFormat = require('dateformat');
 
 /**
@@ -33,6 +34,14 @@ FacebookCheckinMethod.prototype.description = 'Checkin to a Facebook Page with B
  * TODO - decide if we need multiple types - mobile / admin, etc.
  */
 FacebookCheckinMethod.prototype.icon = '';
+
+
+/**
+ * Icon to display.
+ *
+ * TODO - decide if we need multiple types - mobile / admin, etc.
+ */
+FacebookCheckinMethod.prototype.image = burl('/images/entry/facebook.png');
 
 /**
  * List Message String
