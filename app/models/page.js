@@ -527,6 +527,8 @@ Page.static('search', function(options, callback){
                 $nin: ids
             };
         }
+        
+        console.log(bozukoSearch);
 
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
