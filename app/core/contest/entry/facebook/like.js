@@ -37,7 +37,7 @@ FacebookLikeMethod.prototype.icon = '';
  *
  * TODO - decide if we need multiple types - mobile / admin, etc.
  */
-FacebookCheckinMethod.prototype.image = burl('/images/entry/facebook.png');
+FacebookLikeMethod.prototype.image = burl('/images/entry/facebook.png');
 
 /**
  * List Message String
@@ -203,3 +203,4 @@ FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
         return callback( null, enabled );
     });
 };
+
