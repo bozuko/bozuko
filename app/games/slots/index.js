@@ -2,7 +2,7 @@ var Game = Bozuko.require('core/game'),
     burl = Bozuko.require('util/url').create,
     path = require('path'),
     fs = require('fs'),
-    gd = require('gd/gd'),
+    gd = require('node-gd'),
     inherits = require('util').inherits
     ;
 
@@ -103,7 +103,7 @@ Slots.prototype.getImage = function(index){
 Slots.prototype.createResultImage = function(dest, icon_src){
     var x3_src = __dirname+'/resources/x3.png';
     
-    if(path.exists(dest)) return;
+    if(path.existsSync(dest)) return;
     
     gd.openPng(
         x3_src,

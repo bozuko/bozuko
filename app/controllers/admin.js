@@ -295,6 +295,21 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/contests/:id/cancel' : {
+        post : {
+            handler : function(req,res){
+                return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
+                    if( error ) return error.send(res);
+                    if( !contest ) return res.send({success: false});
+                    return contest.cancel(function(error){
+                        if( error ) return error.send( res );
+                        return res.send({success: true});
+                    });
+                });
+            }
+        }
+    },
 
     '/admin/browser' : {
 
