@@ -1,5 +1,6 @@
 var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
+    burl = Bozuko.require('util/url').create,
     dateFormat = require('dateformat');
 
 /**
