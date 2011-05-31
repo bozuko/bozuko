@@ -10,8 +10,6 @@ var _db;
 
 function getConnection(){
     if( !_db){
-        var uri = 'mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name+
-            '/?connect=replicaSet;safe=true;w=2;wtimeout=5000;fsync=true';
         mongoose.connection.on('opening', function() {
             console.log("Mongoose opening "+uri);
         });
@@ -24,8 +22,19 @@ function getConnection(){
         mongoose.connection.on('error', function(err) {
             console.log("Mongoose connection error: "+err);
         });
-        _db = mongoose.connect(uri);
-        console.log('db uri = '+uri);
+        if (Bozuko.config.db.replicaSet) {
+            var str = '';
+            for (var i = 0; i < Bozuko.config.db.hosts.length; i++) {
+                str += 'mongodb://'+Bozuko.config.db.hosts[i]+'/'+Bozuko.config.db.name;
+                if (i != Bozuko.config.db.hosts.length - 1) {
+                    str+=",";
+                }
+            };
+            _db = mongoose.connectSet(str);
+        } else {
+            var uri = 'mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name;
+            _db = mongoose.connect(uri);
+        }
     }
     return _db;
 }
