@@ -66,14 +66,14 @@ EntryMethod.prototype.getDescription = function(){
         days = hours / 24;
 
     var duration = '';
-    if( days > 1 ){
+    if( days >= 1 ){
         days = Math.floor( days );
         duration = days==1 ? 'day': (days+' days');
     }
-    else if( hours > 2 ){
+    else if( hours >= 2 ){
         duration = hours+' hours';
     }
-    else if( minutes > 1 ){
+    else if( minutes >= 1 ){
         duration = Math.ceil(minutes)+' minutes';
     }
     else{
