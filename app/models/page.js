@@ -475,11 +475,13 @@ Page.static('search', function(options, callback){
         if( Bozuko.env() == 'development' && !options.query ){
             bozukoSearch.selector['$or'] = [{test: true}, {featured:true}];
         }
-        else{
+        else {
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
             bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
+            if( options.query ) delete bozukoSearch.selector.coords['$maxDistance'];
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
             bozukoSearch.type='nativeFind';
+            // serviceSearch = false;
         }
     }
 
@@ -527,7 +529,7 @@ Page.static('search', function(options, callback){
                 $nin: ids
             };
         }
-
+        
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
@@ -537,8 +539,14 @@ Page.static('search', function(options, callback){
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
 
-                var page_ids = [];
-                prepare_pages(pages, function(page){ page_ids.push(page._id);});
+                var page_ids = [], fb_ids=[];
+                prepare_pages(pages, function(page){
+                    var fb;
+                    if( (fb = page.service('facebook')) ){
+                        fb_ids.push(fb.sid);
+                    }
+                    page_ids.push(page._id);
+                });
 
                 if( !serviceSearch ){
                     return return_pages( pages );
@@ -550,12 +558,15 @@ Page.static('search', function(options, callback){
                 // and then match against our db
                 var service = options.service || Bozuko.config.defaultService;
 
-                return Bozuko.service(service).search(options, function(error, results){
+                return Bozuko.service(service).search(options, function(error, _results){
 
                     if( error ) return callback(error);
 
-                    var map = {};
-                    if( results ) results.forEach( function(place, index){
+                    var map = {}, results = [];
+                    
+                    if( _results ) _results.forEach( function(place, index){
+                        if( ~fb_ids.indexOf(place.id) ) return;
+                        results.push(place);
                         map[place.id] = place;
                     });
 
