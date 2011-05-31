@@ -4,7 +4,8 @@ module.exports = {
 
     db:{
         name: 'bozuko_load',
-        host: '192.168.170.232'
+        replicaSet: true,
+        hosts: ['192.168.170.232', '192.168.170.233', '192.168.170.234']
     },
 
     facebook: {
