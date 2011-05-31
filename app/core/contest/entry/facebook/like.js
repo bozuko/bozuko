@@ -1,5 +1,6 @@
 var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
+    burl = Bozuko.require('util/url').create,
     dateFormat = require('dateformat');
 
 /**
@@ -31,6 +32,13 @@ FacebookLikeMethod.prototype.description = 'Like us on facebook to play';
  * TODO - decide if we need multiple types - mobile / admin, etc.
  */
 FacebookLikeMethod.prototype.icon = '';
+
+/**
+ * Icon to display.
+ *
+ * TODO - decide if we need multiple types - mobile / admin, etc.
+ */
+FacebookLikeMethod.prototype.image = burl('/images/entry/facebook.png');
 
 /**
  * List Message String
@@ -196,3 +204,4 @@ FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
         return callback( null, enabled );
     });
 };
+
