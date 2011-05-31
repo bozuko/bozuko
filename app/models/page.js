@@ -478,9 +478,10 @@ Page.static('search', function(options, callback){
         else {
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
             bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
-            // if( options.query ) delete bozukoSearch.selector.coords['$maxDistance'];
+            if( options.query ) delete bozukoSearch.selector.coords['$maxDistance'];
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
             bozukoSearch.type='nativeFind';
+            serviceSearch = false;
         }
     }
 
