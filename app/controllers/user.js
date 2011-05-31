@@ -17,6 +17,11 @@ exports.transfer_objects= {
                 logout: "String",
                 favorites: "String"
             }
+        },
+        
+        create : function(data, user){
+            data.img = data.image;
+            return this.sanitize(data);
         }
     },
 
