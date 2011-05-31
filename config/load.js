@@ -1,12 +1,12 @@
 module.exports = {
-    
+
     test_mode: true,
-    
+
     db:{
         name: 'bozuko_load',
         host: '192.168.170.232'
     },
-    
+
     facebook: {
         app:{
             id:'166078836756369',
@@ -45,7 +45,7 @@ module.exports = {
 
     server: {
         auth: false,
-        ssl: false,
+        ssl: true,
         host: 'bozuko.com',
         port: 8000
     },

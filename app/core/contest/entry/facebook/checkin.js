@@ -83,7 +83,7 @@ EntryMethod.prototype.getDescription = function(){
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
     if( this.config.enable_like )
         description+= "\nDouble your plays if you like us on Facebook!";
-    
+
     return description;
 }
 
@@ -126,9 +126,9 @@ FacebookCheckinMethod.prototype.process = function( callback ){
 
     if( !self.checkin ){
         return self.validate( function(error, valid){
-            if( error ) return callback( error );   
+            if( error ) return callback( error );
             if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
-            
+
             if( self.can_checkin ){
                 return self.page.checkin( self.user, {
                     user: self.user,
@@ -141,6 +141,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                         return callback( error );
                     }
 
+                    console.error("facebook checkin: process: result.entries.length = "+result.entries.length);
                     for(var i=0; i<result.entries.length; i++){
                         var entry = result.entries[i];
                         if( entry.type == self.type && entry.contest_id == self.contest.id ){
