@@ -165,6 +165,10 @@ Bozuko.t = function(){
 
 
 function initApplication(app){
+
+    // Handle socket errors
+    app.use(Bozuko.require('middleware/errorHandler')());
+
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/profiler')());
     }
@@ -206,6 +210,19 @@ function initApplication(app){
 
 
     app.use(express.static(__dirname + '/static'));
+
+    // listen for http server errors
+    app.on('clientError', function(err) {
+        console.error("HTTP Client Error: "+err);
+    });
+    app.on('error', function(err) {
+        console.error("HTTP Server Error: "+err);
+    });
+
+    // handle unknown errors (How can I check for ETIMEDOUT throwing a socket error?)
+    process.on('uncaughtException', function(err) {
+        console.error("UNCAUGHT EXCEPTION: "+err);
+    });
 }
 
 function initModels(){

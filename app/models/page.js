@@ -77,6 +77,7 @@ Page.method('loadContests', function(user, callback){
 });
 
 Page.method('getActiveContests', function(callback){
+    var prof = new Profiler('/models/page/getActiveContests');
     var now = new Date();
     var params = {
         page_id:this.id,
@@ -88,7 +89,10 @@ Page.method('getActiveContests', function(callback){
     if( arguments.length == 2 ){
         callback = arguments[1];
     }
-    Bozuko.models.Contest.find(params, callback);
+    Bozuko.models.Contest.find(params, function(err, contests) {
+        prof.stop();
+        callback(err, contests);
+    });
 });
 
 Page.method('getUserGames', function(user, callback){
@@ -131,8 +135,7 @@ Page.method('canUserCheckin', function(user, callback){
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
 
-//    var prof = new Profiler('/models/page/canUserCheckin');
-  //              prof.stop();
+    var prof = new Profiler('/models/page/canUserCheckin');
     Bozuko.models.Checkin.findOne(
         {
             $or: [{
@@ -146,6 +149,7 @@ Page.method('canUserCheckin', function(user, callback){
 
         },
         function(error, checkin){
+            prof.stop();
             // lets look at the last checkin
             if( error ) return callback( error );
 
@@ -288,10 +292,13 @@ Page.static('createFromServiceObject', function(place, callback){
 });
 
 Page.static('loadPagesContests', function(pages, user, callback){
+    var prof = new Profiler('/models/page/loadPagesContests/createPageMap');
     var page_map = {}, now = new Date();
     pages.forEach(function(page){
         page_map[page.id+''] = page;
     });
+    prof.stop();
+    var prof_contest_find = new Profiler('/models/page/loadPagesContests/Contest.find');
     Bozuko.models.Contest.find(
         {
             active: true,
@@ -301,14 +308,14 @@ Page.static('loadPagesContests', function(pages, user, callback){
             $where: "this.token_cursor < this.total_entries;"
         },
         function( error, contests ){
+            prof_contest_find.stop();
             if( error ) return callback(error);
 
-            var contestMap = {};
+            var prof_load = new Profiler('/models/page/loadPagesContests/load');
 
             // attach active contests to pages
             return async.forEach(contests,
                 function iterator(contest, cb){
-                    contestMap[contest._id+''] = contest;
                     var page = page_map[contest.page_id+''];
                     if( !page.contests ){
                         page.contests = [];
@@ -322,6 +329,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
                     });
                 },
                 function contests_foreach_callback(err){
+                    prof_load.stop();
                     if (err) return callback(err);
                     return callback(null, pages);
                 }
@@ -335,7 +343,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
  */
 Page.static('getFeaturedPages', function(num, options, callback){
     if( !num ) return callback( null, [] );
-    
+
     var find = {
         selector: {
             featured: true
@@ -344,26 +352,26 @@ Page.static('getFeaturedPages', function(num, options, callback){
             sort: { name: 1 }
         }
     };
-    
+
 
     return Bozuko.models.Page.count(find.selector, function(error, count){
         if( error ) return callback( error );
         if( !count ) return callback( null, [] );
-        
+
         var featured = [], pool=[], offsets=[], i;
-        
+
         for(i=0; i<count; i++) pool.push(i);
-        
+
         for(i=0; i<num && pool.length; i++){
             offsets.push(
                 pool.splice( rand(0, pool.length-1), 1)[0]
             );
         }
-        
+
         return async.forEach(
-                   
+
             offsets,
-            
+
             function iterator(offset, callback){
                 var opts = merge({}, find);
                 opts = merge(opts, {
@@ -373,16 +381,16 @@ Page.static('getFeaturedPages', function(num, options, callback){
                         skip: offset
                     }
                 });
-                
+
                 console.log(opts);
-                
+
                 return Bozuko.models.Page.find(opts.selector, {}, opts.options, function(error, page){
                     if( error ) return callback( error );
                     if( page && page.length) featured.push(page[0]);
                     return callback(null);
                 });
             },
-            
+
             function finish(error){
                 if( error ) return callback(error);
                 return callback(null, featured);
@@ -412,12 +420,12 @@ Page.static('search', function(options, callback){
         // sorting asc puts true first
         options:{limit: Bozuko.config.search.nearbyLimit, offset: Bozuko.config.search.nearbyLimit * page}
     };
-    
+
     var serviceSearch = {};
     if( options.query ){
         bozukoSearch.selector.name = new RegExp('^'+XRegExp.escape(options.query), "i");
     }
-    
+
     if( options.sort ){
         bozukoSearch.options.sort = options.sort;
     }
@@ -477,9 +485,10 @@ Page.static('search', function(options, callback){
 
     // utility functions
     function prepare_pages(pages, user, fn){
+        var prof = new Profiler('/models/page/search/prepare_pages');
         for(var i=0; i<pages.length; i++){
             var page = pages[i];
-            
+
             if( options.user ){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
@@ -492,8 +501,9 @@ Page.static('search', function(options, callback){
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }
+        prof.stop();
     }
-    
+
     function return_pages(pages){
         var count = 0;
         if( hideFeaturedPastThreshold ){
@@ -505,11 +515,11 @@ Page.static('search', function(options, callback){
         }
         callback( null, pages );
     }
-    
+
     return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.config.search.featuredResults : 0, options, function(error, featured){
-        
+
         if( error ) return callback(error);
-        
+
         if( featured.length ){
             var ids = [];
             featured.forEach(function(feature){ ids.push( feature._id ); });
@@ -517,38 +527,38 @@ Page.static('search', function(options, callback){
                 $nin: ids
             };
         }
-        
+
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
-            
+
             if( error ) return callback(error);
-            
+
             pages = featured.concat(pages);
-            
+
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
-                
+
                 var page_ids = [];
                 prepare_pages(pages, function(page){ page_ids.push(page._id);});
-    
+
                 if( !serviceSearch ){
                     return return_pages( pages );
                 }
-    
+
                 options.center=options.ll;
-    
+
                 // use a 3rd party service to get additional results
                 // and then match against our db
                 var service = options.service || Bozuko.config.defaultService;
-    
+
                 return Bozuko.service(service).search(options, function(error, results){
-    
+
                     if( error ) return callback(error);
-    
+
                     var map = {};
                     if( results ) results.forEach( function(place, index){
                         map[place.id] = place;
                     });
-    
+
                     return Bozuko.models.Page.findByService(service, Object.keys(map), {
                         owner_id: {
                             $exists: true
@@ -562,14 +572,14 @@ Page.static('search', function(options, callback){
                         pages.forEach(function(page){
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                         });
-    
+
                         if (results) {
                             results.forEach(function(result){
                                 result.registered = false;
                                 result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                             });
                         }
-    
+
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             pages = pages.concat(_pages);
                             pages = pages.concat(results);
