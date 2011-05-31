@@ -399,6 +399,7 @@ Page.static('getFeaturedPages', function(num, options, callback){
 Page.static('search', function(options, callback){
 
     var getFeatured = false,
+        hideFeaturedPastThreshold = options.hideFeaturedPastThreshold || false,
         limit = options.limit || 25,
         offset = options.offset || 0,
         page = Math.floor(offset / limit)
@@ -495,11 +496,11 @@ Page.static('search', function(options, callback){
     
     function return_pages(pages){
         var count = 0;
-        if( options.hideFeaturedPastThreshold ){
+        if( hideFeaturedPastThreshold ){
             pages.forEach(function(page){
-                if( getFeatured && (count >= Bozuko.config.search.featuredResults && page.featured)){
+                if( page.featured && (!getFeatured || ++count > Bozuko.config.search.featuredResults )){
+                    console.log('hey');
                     page.featured = false;
-                    count++;
                 }
             });
         }
