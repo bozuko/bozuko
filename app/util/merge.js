@@ -4,27 +4,75 @@
 
 var util = exports || {};
 
-util.mergeDeep = function (A, B, depth) {
-	var forever = depth == null;
-	for (var p in B) {
-		if (B[p] != null && B[p].constructor==Object && (forever || depth > 0)) {
-			A[p] = util.mergeDeep(
-				A.hasOwnProperty(p) ? A[p] : {},
-				B[p],
-				forever ? null : depth-1
-			);
-		} else {
-			A[p] = B[p];
+function merge(source, key, value){
+	if (typeof key === 'string') {
+		if (value && value.constructor === Object) {
+			if (source[key] && source[key].constructor === Object) {
+				merge(source[key], value);
+			}
+			else {
+				source[key] = clone(value);
+			}
+		}
+		else {
+			source[key] = value;
+		}
+
+		return source;
+	}
+
+	var i = 1,
+		ln = arguments.length,
+		object, property;
+
+	for (; i < ln; i++) {
+		object = arguments[i];
+
+		for (property in object) {
+			if (object.hasOwnProperty(property)) {
+				merge(source, property, object[property]);
+			}
 		}
 	}
-	return A;
+
+	return source;
 }
 
-util.merge = function(A, B) {
-	return util.mergeDeep(A, B, 0);
+function clone(item){
+	if (item === null || item === undefined) {
+		return item;
+	}
+
+	var type = toString.call(item);
+
+	// Date
+	if (type === '[object Date]') {
+		return new Date(item.getTime());
+	}
+
+	var i, j, k, _clone, key;
+
+	// Array
+	if (type === '[object Array]') {
+		i = item.length;
+
+		_clone = [];
+
+		while (i--) {
+			_clone[i] = clone(item[i]);
+		}
+	}
+	// Object
+	else if (type === '[object Object]' && item.constructor === Object) {
+		clone = {};
+
+		for (key in item) {
+			_clone[key] = clone(item[key]);
+		}
+	}
+
+	return clone || item;
 }
 
-util.mergeCopy = function(A, B, depth) {
-	var A_copy = util.mergeDeep({}, A);
-	return util.mergeDeep(A_copy, B, depth);
-}
+exports.merge = merge;
+exports.clone = clone;

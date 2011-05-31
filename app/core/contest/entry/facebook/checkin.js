@@ -81,7 +81,6 @@ EntryMethod.prototype.getDescription = function(){
     }
     var description = "Check In on Facebook\n";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-
     if( this.config.enable_like ){
         description+= "\nDouble your plays if you like us on Facebook!";
     }
