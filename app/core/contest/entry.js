@@ -71,6 +71,7 @@ EntryMethod.prototype.configure = function( config ){
     var i, self = this;
     if( config.options ){
         merge.merge( config, config.options);
+        console.log('after merge', config)
     }
     this.config = {};
     var _defaults = function(o){
@@ -84,6 +85,7 @@ EntryMethod.prototype.configure = function( config ){
     if( config.toObject ){
         config = config.toObject();
     }
+    console.log('after toObject', config);
     for( i in config ){
         this.config[i] = config[i];
     }
