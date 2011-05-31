@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
     async = require('async'),
     ObjectID = require('mongoose/lib/mongoose/types/objectid'),
     uuid = require('node-uuid'),
+    Profiler = Bozuko.require('util/profiler'),
     merge = Bozuko.require('util/merge'),
     rand = Bozuko.require('util/math').rand
 ;
@@ -105,7 +106,6 @@ Contest.method('publish', function(callback){
  * core/contest/entry.js
  */
 Contest.method('enter', function(entry, callback){
-
     var self = this;
     // get the entry_config
     var cfg = null, found=false;
@@ -116,9 +116,14 @@ Contest.method('enter', function(entry, callback){
         }
     }
     if( !found ) return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
+
+    var prof = new Profiler('/models/contest/enter');
     entry.setContest(this);
     entry.configure(cfg);
-    return entry.process( callback );
+    return entry.process( function(err, entry) {
+        prof.stop();
+        callback(err, entry);
+    });
 });
 
 Contest.method('getEngine', function(){
@@ -304,6 +309,8 @@ Contest.method('startPlay', function(user_id, callback) {
     var now = new Date();
     var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
     var _uuid = uuid();
+
+    var prof = new Profiler('/models/contest/startPlay/Contest.findAndModify');
     Bozuko.models.Contest.findAndModify(
         {_id: this._id, entries: {$elemMatch: {tokens : {$gt : 0}, timestamp : {$gt : min_expiry_date}, user_id: user_id} }},
         [],
@@ -311,6 +318,7 @@ Contest.method('startPlay', function(user_id, callback) {
             $push : {plays: {timestamp: now, active: true, uuid: _uuid, user_id: user_id}}},
         {new: true},
         function(err, contest) {
+            prof.stop();
             if (err) return callback(err);
             if (!contest) return callback(Bozuko.error("contest/no_tokens"));
             var opts = {
@@ -353,9 +361,11 @@ Contest.method('saveConsolation', function(opts, callback) {
     }
 
     if (config.when === 'once') {
+        var prof = new Profiler('/models/contest/saveConsolation/Prize.findOne');
         return Bozuko.models.Prize.findOne(
             {contest_id: this._id, user_id: opts.user_id, consolation: true},
             function(err, prize) {
+                prof.stop();
                 if (err) return callback(err);
                 if (prize) return callback(null);
 
@@ -504,6 +514,8 @@ Contest.method('createPrize', function(opts, callback) {
 
 Contest.method('savePlay', function(opts, callback) {
     var self = this;
+
+    var prof = new Profiler('/models/contest/savePlay');
     var play = new Bozuko.models.Play({
         contest_id: this._id,
         page_id: this.page_id,
@@ -532,6 +544,7 @@ Contest.method('savePlay', function(opts, callback) {
     opts.play = play;
 
     return play.save(function(err) {
+        prof.stop();
         if (err) return callback(err);
         return self.endPlay(opts, callback);
     });
@@ -540,7 +553,10 @@ Contest.method('savePlay', function(opts, callback) {
 Contest.method('endPlay', function(opts, callback) {
     var self = this;
 
+    var prof = new Profiler('/models/contest/endPlay');
+
     function handler(err, contest) {
+        prof.stop();
         if (err) return callback(err);
         var prize = opts.prize;
         if (opts.consolation && !opts.prize) {

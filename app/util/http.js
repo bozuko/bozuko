@@ -49,17 +49,7 @@ exports.request = function(config, callback){
         encoding = config.encoding || 'utf-8';
     }
 
-    // Set timeout to true if we don't receive a response in config.timeout ms
-    var timeout = false;
-    var callback_issued = false;
-
-    var tid = setTimeout(function() {
-        timeout = true;
-        callback_issued = true;
-        console.log("http timeout: "+method+" "+config.url);
-        return callback(Bozuko.error('http/timeout', method+" "+config.url));
-    }, config.timeout || 10000);
-
+    var tid;
     var request = http_.request({
         host: url_parsed.host,
         agent: false,
@@ -74,10 +64,6 @@ exports.request = function(config, callback){
             data+=chunk;
         });
         response.on('end', function(){
-
-            callback_issued = true;
-            // we already sent a response in the timeout callback, so just end this request
-            if (timeout) return;
 
             clearTimeout(tid);
 
@@ -100,6 +86,13 @@ exports.request = function(config, callback){
             return callback(Bozuko.error('http/error_event', error));
         }
     });
+
+    tid = setTimeout(function() {
+        console.log("http timeout: "+method+" "+config.url);
+        request.abort();
+        return callback(Bozuko.error('http/timeout', method+" "+config.url));
+    }, config.timeout || 10000);
+
 
 
     /**
