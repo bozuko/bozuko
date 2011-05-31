@@ -111,7 +111,7 @@ Slots.prototype.createResultImage = function(dest, icon_src){
             gd.openPng(
                 icon_src,
                 function(icon, path){
-                    icon.copyResampled(x3,5,15,0,0,50,50,icon.width,icon.height);
+                    icon.copyResampled(x3,0,15,0,0,50,50,icon.width,icon.height);
                     x3.saveAlpha(1);
                     x3.savePng(dest, 0, gd.noop);
                 }
