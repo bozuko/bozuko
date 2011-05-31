@@ -244,9 +244,7 @@ exports.routes = {
                         if( error ){
                             return error.send(res);
                         }
-
-                        console.log('play');
-
+                        
                         return result.contest.loadTransferObject( req.session.user, function(error){
                             if( error ) return error.send(res);
                             if( result.prize ){

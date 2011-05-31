@@ -37,7 +37,11 @@ Ext.define('Bozuko.view.page.Form' ,{
             },{
                 xtype           :'checkbox',
                 name            :'test',
-                fieldLabel      :'Is test page'
+                fieldLabel      :'Test page'
+            },{
+                xtype           :'checkbox',
+                name            :'featured',
+                fieldLabel      :'Featured'
             }]
         },{
             title           :'Address',
