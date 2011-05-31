@@ -20,7 +20,7 @@ var game_result = {
         };
         
         if( ret.consolation ){
-            ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize even though you lost!";
+            ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize just for playing!";
         }
 
         ret.game_state = Bozuko.transfer('game_state', result.contest.game_state, user);
