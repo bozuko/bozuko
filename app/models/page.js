@@ -13,7 +13,6 @@ var _t = Bozuko.t,
 ;
 
 var Page = module.exports = new Schema({
-    // path is for creating a tree structure
     tree                :{type:String},
     category            :{type:String},
     website             :{type:String},
@@ -77,6 +76,7 @@ Page.method('loadContests', function(user, callback){
 });
 
 Page.method('getActiveContests', function(callback){
+    var prof = new Profiler('/models/page/getActiveContests');
     var now = new Date();
     var params = {
         page_id:this.id,
@@ -88,7 +88,10 @@ Page.method('getActiveContests', function(callback){
     if( arguments.length == 2 ){
         callback = arguments[1];
     }
-    Bozuko.models.Contest.find(params, callback);
+    Bozuko.models.Contest.find(params, function(err, contests) {
+        prof.stop();
+        callback(err, contests);
+    });
 });
 
 Page.method('getUserGames', function(user, callback){
@@ -131,8 +134,7 @@ Page.method('canUserCheckin', function(user, callback){
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
 
-//    var prof = new Profiler('/models/page/canUserCheckin');
-  //              prof.stop();
+    var prof = new Profiler('/models/page/canUserCheckin');
     Bozuko.models.Checkin.findOne(
         {
             $or: [{
@@ -146,6 +148,7 @@ Page.method('canUserCheckin', function(user, callback){
 
         },
         function(error, checkin){
+            prof.stop();
             // lets look at the last checkin
             if( error ) return callback( error );
 
@@ -222,7 +225,7 @@ Page.method('checkin', function(user, options, callback) {
 
             options.page = self;
             options.user = user;
-
+            
             return Bozuko.models.Checkin.process(options, function(error, checkin){
                 if( error ) return callback( error );
 
@@ -288,10 +291,13 @@ Page.static('createFromServiceObject', function(place, callback){
 });
 
 Page.static('loadPagesContests', function(pages, user, callback){
+    var prof = new Profiler('/models/page/loadPagesContests/createPageMap');
     var page_map = {}, now = new Date();
     pages.forEach(function(page){
         page_map[page.id+''] = page;
     });
+    prof.stop();
+    var prof_contest_find = new Profiler('/models/page/loadPagesContests/Contest.find');
     Bozuko.models.Contest.find(
         {
             active: true,
@@ -301,14 +307,14 @@ Page.static('loadPagesContests', function(pages, user, callback){
             $where: "this.token_cursor < this.total_entries;"
         },
         function( error, contests ){
+            prof_contest_find.stop();
             if( error ) return callback(error);
 
-            var contestMap = {};
+            var prof_load = new Profiler('/models/page/loadPagesContests/load');
 
             // attach active contests to pages
             return async.forEach(contests,
                 function iterator(contest, cb){
-                    contestMap[contest._id+''] = contest;
                     var page = page_map[contest.page_id+''];
                     if( !page.contests ){
                         page.contests = [];
@@ -322,6 +328,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
                     });
                 },
                 function contests_foreach_callback(err){
+                    prof_load.stop();
                     if (err) return callback(err);
                     callback(null, pages);
                 }
@@ -408,6 +415,7 @@ Page.static('search', function(options, callback){
 
     // utility function
     function prepare_pages(pages, user, fn){
+        var prof = new Profiler('/models/page/search/prepare_pages');
         for(var i=0; i<pages.length; i++){
             var page = pages[i];
             // console.log(page);
@@ -424,10 +432,13 @@ Page.static('search', function(options, callback){
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }
+        prof.stop();
     }
 
+    var prof = new Profiler('/models/page/search/mongo');
     return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
+        prof.stop();
         if( error ) return callback(error);
 
         console.log('found '+ pages.length +' pages');
@@ -457,12 +468,14 @@ Page.static('search', function(options, callback){
                     map[place.id] = place;
                 });
 
+                var prof = new Profiler('/models/page/search/Page.findByService');
                 return Bozuko.models.Page.findByService(service, Object.keys(map), {
                     owner_id: {
                         $exists: true
                     },
                     _id: {$nin: page_ids}
                 }, function(error, _pages){
+
                     if( error ) return callback( error );
                     prepare_pages(_pages, function(page){
                         results.splice( results.indexOf(map[page.service(service).sid]), 1 );
@@ -477,6 +490,8 @@ Page.static('search', function(options, callback){
                             result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                         });
                     }
+
+                    prof.stop();
 
                     return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                         pages = pages.concat(_pages);

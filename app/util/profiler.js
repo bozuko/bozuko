@@ -20,6 +20,7 @@ Profiler.prototype.stop = function() {
             ticks: 1,
             total_time: time_delta,
             max_time: time_delta,
+            avg_time: time_delta,
             total_mem_rss: mem_delta,
             max_mem_rss: mem_delta
         };
@@ -27,6 +28,7 @@ Profiler.prototype.stop = function() {
         profile.ticks++;
         profile.total_time += time_delta;
         profile.max_time = time_delta > profile.max_time ? time_delta : profile.max_time;
+        profile.avg_time = profile.total_time/profile.ticks;
         profile.total_mem_rss += mem_delta;
         profile.max_mem_rss = mem_delta > profile.max_mem_rss ? mem_delta : profile.max_mem_rss;
     }
@@ -67,13 +69,15 @@ function profileString(profile) {
         '<td>'+profile.ticks+'</td>/'+
         '<td>'+profile.total_time/1000+' s</td>'+
         '<td>'+profile.max_time+' ms</td>'+
+        '<td>'+profile.avg_time+' ms</td>'+
         '<td>'+formatBytes(profile.total_mem_rss)+'</td>'+
         '<td>'+formatBytes(profile.max_mem_rss)+'</td></tr>';
 };
 
 function header() {
     return '<html><table border="1"><tr><td>name</td><td>ticks</td><td>total time</td>'
-           + '<td>max time</td><td>total memory (rss)</td><td>max memory (rss)</td></tr>';
+           + '<td>max time</td><td>avg time</td><td>total memory (rss)</td>'
+           + '<td>max memory (rss)</td></tr>';
 };
 
 function footer() {
