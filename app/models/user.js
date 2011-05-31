@@ -85,7 +85,7 @@ User.method('updateLikes', function(callback){
             self.service('facebook').internal = {};
         }
         self.service('facebook').internal.likes = likes;
-        self.service('facebook').commit('internal');
+        // self.service('facebook').commit('internal');
         self.commit('services');
         return self.save(callback);
     });

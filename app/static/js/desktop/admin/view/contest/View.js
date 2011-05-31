@@ -28,7 +28,9 @@ Ext.define('Bozuko.view.contest.View' ,{
                             '{[this.getDetails(values)]}',
                         '</div>',
                         '<ul class="buttons">',
-                            '<li><a href="javascript:;" class="edit">Edit</a></li>',
+                            '<tpl if="this.canEdit(values)">',
+                                '<li><a href="javascript:;" class="edit">Edit</a></li>',
+                            '</tpl>',
                             '<li><a href="javascript:;" class="copy">Copy</a></li>',
                             '<tpl if="this.canPublish(values)">',
                                 '<li><a href="javascript:;" class="publish">Publish</a></li>',
@@ -44,6 +46,10 @@ Ext.define('Bozuko.view.contest.View' ,{
                 '</tpl>',
             '</ul>',
             {
+                
+                canEdit : function(values){
+                    return true || ~['draft', 'published'].indexOf(values.state);
+                },
                 
                 canPublish : function(values){
                     return ~['draft'].indexOf(values.state);
@@ -68,7 +74,9 @@ Ext.define('Bozuko.view.contest.View' ,{
                                 '<tr>',
                                     '<th>Timeline:</th>',
                                     '<td>',
-                                    Ext.Date.format(values.start,'m/d/Y')+' - '+Ext.Date.format(values.end,'m/d/Y'),
+                                    Ext.isDate(values.start) && Ext.isDate(values.end)
+                                        ? Ext.Date.format(values.start,'m/d/Y')+' - '+Ext.Date.format(values.end,'m/d/Y')
+                                        : 'Unknown',
                                     '<td>',
                                 '<tr>',
                                 '<tr>',

@@ -23,12 +23,15 @@ Ext.define('Bozuko.model.Contest', {
         {name:'_id',                type:'String'},
         {name:'page_id',            type:'String'},
         {name:'name',               type:'String'},
+        {name:'win_frequency',      type:'Number'},
         {name:'engine_type',        type:'String'},
         {name:'game',               type:'String'},
         {name:'game_config',        type:'Object'},
+        {name:'auto_rules',         type:'String'},
         {name:'rules',              type:'String'},
-        {name:'entry_config',       type:'Object'},        
-        {name:'free_spins',         type:'Number'},
+        {name:'entry_config',       type:'Array'},
+        {name:'consolation_config', type:'Array'},
+        {name:'free_play_pct',      type:'Number'},
         {name:'active',             type:'Boolean'},
         {name:'state',              type:'String'},
         {name:'start',              type:'Date'},
@@ -38,7 +41,10 @@ Ext.define('Bozuko.model.Contest', {
         {name:'play_cursor',        type:'Number',              defaultValue:-1}
     ],
     
-    hasMany: {model: 'Bozuko.model.Prize', name: 'prizes', associationKey: 'prizes'},
+    hasMany: [
+        {model: 'Bozuko.model.Prize', name: 'prizes', associationKey: 'prizes'},
+        {model: 'Bozuko.model.Prize', name: 'consolation_prizes', associationKey: 'consolation_prizes'}
+    ],
     
     autoLoad: true
 });

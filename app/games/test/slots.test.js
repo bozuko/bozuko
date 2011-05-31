@@ -19,7 +19,8 @@ exports['lose'] = function(test) {
 
 exports['win'] = function(test) {
     var result = slots.process(3);
-    test.equal(result[0], 'banana');
+    var icon = slots.getConfig().icons[3];
+    test.equal(result[0], icon);
     test.equal(result[0], result[1]);
     test.equal(result[1], result[2]);
     test.done();

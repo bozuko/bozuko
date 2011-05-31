@@ -5,7 +5,12 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
     
     requires: [
         'Bozuko.view.contest.edit.Details',
-        'Bozuko.view.contest.edit.Prizes'
+        'Bozuko.view.contest.edit.Prizes',
+        'Bozuko.view.contest.edit.ConsolationPrizes',
+        'Bozuko.view.contest.edit.Game',
+        'Bozuko.view.contest.edit.Entry',
+        'Bozuko.view.contest.edit.Rules',
+        'Bozuko.view.contest.edit.Preview'
     ],
     
     layout: 'border',
@@ -20,7 +25,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
             defaults: {
                 xtype: 'button',
                 scale: 'medium',
-                iconAlign: 'top'
+                iconAlign: 'left'
             },
             items:[{
                 text        :'Back',
@@ -43,6 +48,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
             layout: 'card',
             activeItem: 0,
             defaults: {
+                bodyPadding: 15,
                 border: false
             },
             items: [{
@@ -52,13 +58,22 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                 xtype           :'contestformprizes',
                 ref             :'prizes'
             },{
-                html            :'game stuff',
+                xtype           :'contestformconsolationprizes',
+                ref             :'consolation_prizes'
+            },{
+                xtype           :'contestformgame',
                 ref             :'game'
+            },{
+                xtype           :'contestformentry',
+                ref             :'entry'
+            },{
+                xtype           :'contestformrules',
+                ref             :'rules'
             }]
         },{
             region: 'west',
             border: false,
-            width: 150,
+            width: 160,
             items: [{
                 xtype: 'dataview',
                 cls: 'campaign-nav',
@@ -73,9 +88,12 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                 store: new Ext.data.Store({
                     fields: ['type', 'text'],
                     data: [
-                        {type:'contest', text:'Contest Details'},
+                        {type:'contest', text:'Campaign Details'},
                         {type:'prizes', text:'Prizes'},
-                        {type:'game', text:'Game'}
+                        {type:'consolation_prizes', text:'Consolation Prizes'},
+                        {type:'game', text:'Game'},
+                        {type:'entry', text:'Entries'},
+                        {type:'rules', text:'Rules'},
                     ],
                     autoLoad: true
                 }),
@@ -98,12 +116,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         },{
             region: 'east',
             width: 200,
-            bodyPadding: 10,
-            border: false,
-            autoScroll: true,
-            style: 'border-left: 1px solid #ccc',
-            title: 'Campaign Details',
-            html: 'Details of the campaign'
+            xtype: 'contestformpreview'
         }];
         
         me.bbar = ['->',{
@@ -120,8 +133,19 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
     
     setRecord : function(record){
         this.record = record;
-        this.down('contestformprizes').bindStore( record.prizes() );
+        this.down('[ref=prizes]').bindStore( record.prizes() );
+        
+        var consolation_config = this.record.get('consolation_config');
+        this.down('[ref=consolation_prizes]').getForm().setValues( consolation_config && consolation_config.length ? consolation_config[0] : {} );
+        this.down('[ref=consolation_prizes]').bindStore( record.consolation_prizes() );
         this.down('contestformdetails').getForm().loadRecord( this.record );
+        this.down('contestformgame').getForm().loadRecord( this.record );
+        this.down('contestformrules').getForm().loadRecord( this.record );
+        var entry_config = this.record.get("entry_config");
+        this.down('contestformentry').setValues( entry_config && entry_config.length ? entry_config[0] : {} );
+        
+        
+        
         this.down('[ref=edit-campaign-text]').setText(record.get('name'));
         if( !record.get('_id') ){
             this.down('[ref=edit-label-text]').setText('Create Campaign');
