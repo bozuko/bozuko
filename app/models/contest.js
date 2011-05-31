@@ -97,6 +97,20 @@ Contest.method('publish', function(callback){
 });
 
 /**
+ * Cancel a contest
+ *
+ * @public
+ */
+Contest.method('cancel', function(callback){
+    var self = this;
+    self.end = new Date();
+    return self.save(function(error){
+        if( error ) return callback( error );
+        return callback( null, self );
+    });
+});
+
+/**
  * Enter a contest
  *
  * @param {Entry}
