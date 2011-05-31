@@ -1,5 +1,6 @@
 var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
+    burl = Bozuko.require('util/url').create,
     dateFormat = require('dateformat');
 
 /**
@@ -34,6 +35,14 @@ FacebookCheckinMethod.prototype.description = 'Checkin to a Facebook Page with B
  */
 FacebookCheckinMethod.prototype.icon = '';
 
+
+/**
+ * Icon to display.
+ *
+ * TODO - decide if we need multiple types - mobile / admin, etc.
+ */
+FacebookCheckinMethod.prototype.image = burl('/images/entry/facebook.png');
+
 /**
  * List Message String
  *
@@ -66,14 +75,14 @@ EntryMethod.prototype.getDescription = function(){
         days = hours / 24;
 
     var duration = '';
-    if( days > 1 ){
+    if( days >= 1 ){
         days = Math.floor( days );
         duration = days==1 ? 'day': (days+' days');
     }
-    else if( hours > 2 ){
+    else if( hours >= 2 ){
         duration = hours+' hours';
     }
-    else if( minutes > 1 ){
+    else if( minutes >= 1 ){
         duration = Math.ceil(minutes)+' minutes';
     }
     else{
