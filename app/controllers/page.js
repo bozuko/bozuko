@@ -219,7 +219,8 @@ exports.routes = {
                 var options = {
                     limit: parseInt(req.param('limit')) || 25,
                     offset: parseInt(req.param('offset')) || 0,
-                    user: req.session.user
+                    user: req.session.user,
+                    hideFeaturedPastThreshold: true
                 };
 
                 var url_parsed = URL.parse(req.url);
