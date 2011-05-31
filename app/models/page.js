@@ -493,6 +493,19 @@ Page.static('search', function(options, callback){
         }
     }
     
+    function return_pages(pages){
+        var count = 0;
+        if( options.hideFeaturedPastThreshold ){
+            pages.forEach(function(page){
+                if( getFeatured && (count >= Bozuko.config.search.featuredResults && page.featured)){
+                    page.featured = false;
+                    count++;
+                }
+            });
+        }
+        callback( null, pages );
+    }
+    
     return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.config.search.featuredResults : 0, options, function(error, featured){
         
         if( error ) return callback(error);
@@ -518,7 +531,7 @@ Page.static('search', function(options, callback){
                 prepare_pages(pages, function(page){ page_ids.push(page._id);});
     
                 if( !serviceSearch ){
-                    return callback( null, pages);
+                    return return_pages( pages );
                 }
     
                 options.center=options.ll;
@@ -560,7 +573,7 @@ Page.static('search', function(options, callback){
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             pages = pages.concat(_pages);
                             pages = pages.concat(results);
-                            return callback(null, pages);
+                            return return_pages(pages);
                         });
                     });
                 });
