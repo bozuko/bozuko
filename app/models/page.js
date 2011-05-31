@@ -9,6 +9,7 @@ var _t = Bozuko.t,
     XRegExp = Bozuko.require('util/xregexp'),
     ObjectId = Schema.ObjectId,
     async = require('async'),
+    rand = Bozuko.require('util/math').rand,
     Profiler = Bozuko.require('util/profiler')
 ;
 
@@ -225,7 +226,7 @@ Page.method('checkin', function(user, options, callback) {
 
             options.page = self;
             options.user = user;
-            
+
             return Bozuko.models.Checkin.process(options, function(error, checkin){
                 if( error ) return callback( error );
 
@@ -330,11 +331,72 @@ Page.static('loadPagesContests', function(pages, user, callback){
                 function contests_foreach_callback(err){
                     prof_load.stop();
                     if (err) return callback(err);
-                    callback(null, pages);
+                    return callback(null, pages);
                 }
             );
         }
     );
+});
+
+/**
+ * Need to add our algorithm for finding featured items (by distance? how far is too far?)
+ */
+Page.static('getFeaturedPages', function(num, options, callback){
+    if( !num ) return callback( null, [] );
+
+    var find = {
+        selector: {
+            featured: true
+        },
+        options: {
+            sort: { name: 1 }
+        }
+    };
+
+
+    return Bozuko.models.Page.count(find.selector, function(error, count){
+        if( error ) return callback( error );
+        if( !count ) return callback( null, [] );
+
+        var featured = [], pool=[], offsets=[], i;
+
+        for(i=0; i<count; i++) pool.push(i);
+
+        for(i=0; i<num && pool.length; i++){
+            offsets.push(
+                pool.splice( rand(0, pool.length-1), 1)[0]
+            );
+        }
+
+        return async.forEach(
+
+            offsets,
+
+            function iterator(offset, callback){
+                var opts = merge({}, find);
+                opts = merge(opts, {
+                    options: {
+                        sort: {'_id':1},
+                        limit: 1,
+                        skip: offset
+                    }
+                });
+
+                console.log(opts);
+
+                return Bozuko.models.Page.find(opts.selector, {}, opts.options, function(error, page){
+                    if( error ) return callback( error );
+                    if( page && page.length) featured.push(page[0]);
+                    return callback(null);
+                });
+            },
+
+            function finish(error){
+                if( error ) return callback(error);
+                return callback(null, featured);
+            }
+        );
+    });
 });
 
 /**
@@ -344,21 +406,28 @@ Page.static('loadPagesContests', function(pages, user, callback){
  */
 Page.static('search', function(options, callback){
 
-    var limit = options.limit || 25;
-    var offset = options.offset || 0;
-
-    var page = Math.floor(offset / limit);
+    var getFeatured = false,
+        hideFeaturedPastThreshold = options.hideFeaturedPastThreshold || false,
+        limit = options.limit || 25,
+        offset = options.offset || 0,
+        page = Math.floor(offset / limit)
+        ;
 
     var bozukoSearch = {
         type:'find',
         selector:{owner_id: {$exists: true}},
         fields: {},
         // sorting asc puts true first
-        options:{sort: {'featured':-1}, limit: Bozuko.config.search.nearbyLimit, offset: Bozuko.config.search.nearbyLimit * page}
+        options:{limit: Bozuko.config.search.nearbyLimit, offset: Bozuko.config.search.nearbyLimit * page}
     };
+
     var serviceSearch = {};
     if( options.query ){
         bozukoSearch.selector.name = new RegExp('^'+XRegExp.escape(options.query), "i");
+    }
+
+    if( options.sort ){
+        bozukoSearch.options.sort = options.sort;
     }
 
     // are we looking for favorites?
@@ -401,24 +470,25 @@ Page.static('search', function(options, callback){
      *
      */
     else {
+        if( !options.query && !page ) getFeatured = true;
+        // we need to add featured results to the main search page
         if( Bozuko.env() == 'development' && !options.query ){
             bozukoSearch.selector['$or'] = [{test: true}, {featured:true}];
         }
         else{
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
-            console.log(distance, Bozuko.config.search.nearbyRadius);
             bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
             bozukoSearch.type='nativeFind';
         }
     }
 
-    // utility function
+    // utility functions
     function prepare_pages(pages, user, fn){
         var prof = new Profiler('/models/page/search/prepare_pages');
         for(var i=0; i<pages.length; i++){
             var page = pages[i];
-            // console.log(page);
+
             if( options.user ){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
@@ -428,75 +498,93 @@ Page.static('search', function(options, callback){
             if (!page.owner_id && page._id) {
                 page.id = page.service('facebook').sid;
             }
-             console.log(page.name, JSON.stringify({options:options.ll, page: page.coords}));
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }
         prof.stop();
     }
 
-    var prof = new Profiler('/models/page/search/mongo');
-    return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
+    function return_pages(pages){
+        var count = 0;
+        if( hideFeaturedPastThreshold ){
+            pages.forEach(function(page){
+                if( page.featured && (!getFeatured || ++count > Bozuko.config.search.featuredResults )){
+                    page.featured = false;
+                }
+            });
+        }
+        callback( null, pages );
+    }
 
-        prof.stop();
+    return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.config.search.featuredResults : 0, options, function(error, featured){
+
         if( error ) return callback(error);
 
-        console.log('found '+ pages.length +' pages');
+        if( featured.length ){
+            var ids = [];
+            featured.forEach(function(feature){ ids.push( feature._id ); });
+            bozukoSearch.selector._id = {
+                $nin: ids
+            };
+        }
 
-        return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
+        return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
+
             if( error ) return callback(error);
-            var page_ids = [];
 
-            prepare_pages(pages, function(page){ page_ids.push(page._id);});
+            pages = featured.concat(pages);
 
-            if( !serviceSearch ){
-                return callback(null, pages);
-            }
-
-            options.center=options.ll;
-
-            // use a 3rd party service to get additional results
-            // and then match against our db
-            var service = options.service || Bozuko.config.defaultService;
-
-            return Bozuko.service(service).search(options, function(error, results){
-
+            return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
 
-                var map = {};
-                if( results ) results.forEach( function(place, index){
-                    map[place.id] = place;
-                });
+                var page_ids = [];
+                prepare_pages(pages, function(page){ page_ids.push(page._id);});
 
-                var prof = new Profiler('/models/page/search/Page.findByService');
-                return Bozuko.models.Page.findByService(service, Object.keys(map), {
-                    owner_id: {
-                        $exists: true
-                    },
-                    _id: {$nin: page_ids}
-                }, function(error, _pages){
+                if( !serviceSearch ){
+                    return return_pages( pages );
+                }
 
-                    if( error ) return callback( error );
-                    prepare_pages(_pages, function(page){
-                        results.splice( results.indexOf(map[page.service(service).sid]), 1 );
+                options.center=options.ll;
+
+                // use a 3rd party service to get additional results
+                // and then match against our db
+                var service = options.service || Bozuko.config.defaultService;
+
+                return Bozuko.service(service).search(options, function(error, results){
+
+                    if( error ) return callback(error);
+
+                    var map = {};
+                    if( results ) results.forEach( function(place, index){
+                        map[place.id] = place;
                     });
-                    pages.forEach(function(page){
-                        results.splice( results.indexOf(map[page.service(service).sid]), 1 );
-                    });
 
-                    if (results) {
-                        results.forEach(function(result){
-                            result.registered = false;
-                            result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
+                    return Bozuko.models.Page.findByService(service, Object.keys(map), {
+                        owner_id: {
+                            $exists: true
+                        },
+                        _id: {$nin: page_ids}
+                    }, function(error, _pages){
+                        if( error ) return callback( error );
+                        prepare_pages(_pages, function(page){
+                            results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                         });
-                    }
+                        pages.forEach(function(page){
+                            results.splice( results.indexOf(map[page.service(service).sid]), 1 );
+                        });
 
-                    prof.stop();
+                        if (results) {
+                            results.forEach(function(result){
+                                result.registered = false;
+                                result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
+                            });
+                        }
 
-                    return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
-                        pages = pages.concat(_pages);
-                        pages = pages.concat(results);
-                        return callback(null, pages);
+                        return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
+                            pages = pages.concat(_pages);
+                            pages = pages.concat(results);
+                            return return_pages(pages);
+                        });
                     });
                 });
             });

@@ -172,12 +172,12 @@ exports.routes = {
             locals:{
                 html_classes:['business-admin'],
                 scripts:[
-                    '/js/ext-4.0/ext-all.js',
+                    '/js/ext-4.0/lib/ext-all.js',
                     '/js/desktop/business/admin.js'
                 ],
                 styles:[
                     // '/js/ext-4.0/resources/css/ext-all.css',
-                    '/js/ext-4.0/resources/themes/templates/resources/css/bozuko-theme.css',
+                    '/js/ext-4.0/lib/resources/themes/templates/resources/css/bozuko-theme.css',
                     '/css/desktop/business/admin.css'
                 ],
                 nav:[

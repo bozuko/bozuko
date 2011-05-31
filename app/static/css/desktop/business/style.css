@@ -76,6 +76,81 @@
 .campaigns-body .campaign-list .list-item .buttons li .cancel {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
 }
+.bozuko-list .list-item {
+  cursor: pointer;
+  clear: both;
+  border-bottom: 1px solid #ccc;
+  overflow: hidden;
+  padding: 6px;
+}
+.bozuko-list .list-item img {
+  height: 50px;
+  float: right;
+}
+.bozuko-list .list-item .title {
+  margin-top: 6px;
+  font-weight: bold !important;
+}
+.bozuko-list .list-item .sub {
+  font-size: .85em;
+  color: #999;
+}
+.bozuko-list .list-item-over {
+  background: #f3f3f3;
+}
+.bozuko-list .list-item-selected {
+  background: #d5eaf9;
+}
+.campaign-nav {
+  height: 100%;
+  border-right: 1px solid #ccc;
+  background: #e6e6e6;
+  padding-top: 20px;
+}
+.campaign-nav ul li {
+  cursor: pointer;
+  padding: 7px 4px 7px 30px;
+  background-repeat: no-repeat;
+  background-position: 4px 50%;
+}
+.campaign-nav ul .nav-item-over {
+  background-color: #ccc;
+}
+.campaign-nav ul .nav-item-selected {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background-color: #fff !important;
+  margin-right: -1px;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+.campaign-nav ul .contest {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-16.png');
+}
+.campaign-nav ul .prizes {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-16.png');
+}
+.campaign-nav ul .consolation_prizes {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/star-inactive-16.png');
+}
+.campaign-nav ul .game {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-16.png');
+}
+.campaign-nav ul .entry {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-plus-16.png');
+}
+.campaign-nav ul .rules {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/paper-gavel-16.png');
+}
+.campaign-preview {
+  border-left: 1px solid #ccc;
+}
+.campaign-preview .x-panel-body {
+  background: #e6e6e6;
+}
+.title-toolbar .x-toolbar-text {
+  font-size: 18px;
+}
 fieldset {
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 6px;
@@ -88,4 +163,9 @@ fieldset .x-fieldset-header {
   font-size: 14px;
   font-weight: bold;
   line-height: 20px;
+}
+.x-datetime-picker .x-datepicker-footer .x-btn, .x-datetime-picker .x-datepicker-footer .x-field {
+  display: inline-block;
+  float: left;
+  margin: 5px 1px;
 }

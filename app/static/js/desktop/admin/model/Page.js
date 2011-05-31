@@ -13,17 +13,18 @@ Ext.define('Bozuko.model.Page', {
     },
     
     fields: [
-        '_id',
-        'name',
-        'category',
-        'website',
-        'image',
-        'twitter_id',
-        {name: 'featured', type: 'Boolean'},
-        'announcement',
-        {name:'active', type:'Boolean'},
-        {name:'location', type:'Object'},
-        {name:'coords', type:'Array'},
-        'owner_id'
+        {name:'_id',            type:'String'},
+        {name:'name',           type:'String'},
+        {name:'category',       type:'String'},
+        {name:'website',        type:'String'},
+        {name:'image',          type:'String'},
+        {name:'twitter_id',     type:'String'},
+        {name:'featured',       type:'Boolean'},
+        {name:'announcement',   type:'String'},
+        {name:'active',         type:'Boolean'},
+        {name:'location',       type:'Object'},
+        {name:'coords',         type:'Array'},
+        {name:'test',           type:'Boolean'},
+        {name:'owner_id',       type:'String'}
     ]
 });

@@ -3,8 +3,6 @@ var game_prize = {
     def: {
         name: "String",
         description: "String",
-        total: "Number",
-        available:"Number",
         result_image: "String"
     }
 };
@@ -20,6 +18,10 @@ var game_result = {
             free_play: result.free_play,
             consolation: result.play.consolation
         };
+        
+        if( ret.consolation ){
+            ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize even though you lost!";
+        }
 
         ret.game_state = Bozuko.transfer('game_state', result.contest.game_state, user);
         if( result.prize ){
@@ -52,11 +54,15 @@ var game = {
     doc: "A Game Object - the game config will differ depending on the game.",
 
     create : function(game, user){
-        game.config = game.contest.game_config;
         // load the prizes up...
-        var obj = this.merge(game, game.contest);
+        var obj = {};
+        obj = this.merge(obj, game.contest);
+        obj = this.merge(obj, game);
+        obj.type = game.getType();
+        obj.name = game.getName();
+        obj.config = game.getConfig();
         obj.prizes = game.getPrizes();
-        obj.image = game.icon;
+        obj.image = game.getListImage();
         obj.list_message = game.contest.getListMessage();
         obj.entry_method.description = game.contest.getEntryMethodDescription();
         // obj.can_play = obj.game_state.user_tokens > 0;
@@ -96,13 +102,14 @@ var game_state = {
         if( game_state.contest){
             game_state.game_id = game_state.contest.id;
             var links = {
-                game_state: '/game/'+game_state.contest.id+'/state'
+                game_state: '/game/'+game_state.contest.id+'/state',
+                game: '/game/'+game_state.contest.id
             };
             if( game_state.user_tokens > 0 ){
                 game_state.button_action = 'play';
                 links.game_result = '/game/'+game_state.contest.id+'/result';
             }
-            if( game_state.button_action =='enter'){
+            if( game_state.button_enabled && game_state.button_action =='enter'){
                 links.game_entry = '/game/'+game_state.contest.id+'/entry';
             }
             game_state.links = links;
@@ -120,7 +127,8 @@ var game_state = {
         links: {
             game_result: "String",
             game_entry: "String",
-            game_state: "String"
+            game_state: "String",
+            game: "String"
         }
     }
 };
@@ -236,9 +244,7 @@ exports.routes = {
                         if( error ){
                             return error.send(res);
                         }
-
-                        console.log('play');
-
+                        
                         return result.contest.loadTransferObject( req.session.user, function(error){
                             if( error ) return error.send(res);
                             if( result.prize ){

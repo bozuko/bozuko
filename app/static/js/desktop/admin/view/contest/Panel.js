@@ -21,7 +21,7 @@ Ext.define('Bozuko.view.contest.Panel' ,{
         },{
             xtype           :'component',
             autoEl          :{tag:'h1'},
-            html            :'Your Campaigns'
+            html            :'Campaigns'
         },{
             xtype           :'contestsview',
             store           :me.store

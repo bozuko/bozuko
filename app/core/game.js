@@ -11,7 +11,7 @@ var Game = module.exports = function(contest){
  */
 Game.prototype = {
     
-    name : null,
+    name : "Game",
     
     theme: 'default',
     
@@ -21,6 +21,22 @@ Game.prototype = {
     
     getPrizes : function(){
         return this.contest.prizes;
+    },
+    
+    getConfig : function(){
+        return this.config;
+    },
+    
+    getListImage: function(){
+        return this.icon;
+    },
+    
+    getType : function(){
+        return this.type;
+    },
+    
+    getName : function(){
+        return this.config && this.config.name ? this.config.name : this.name;
     }
     
 };

@@ -1,20 +1,26 @@
 Ext.define('Bozuko.view.contest.edit.Prizes' ,{
     
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.form.Panel',
     alias : 'widget.contestformprizes',
     
     requires: [
         'Bozuko.view.contest.edit.Prize'
     ],
-    bodyPadding: 10,
     autoScroll: true,
     
     initComponent : function(){
         
         var me = this;
         
-        // lets get the prizes
-        me.items = [];
+        me.addBtn = Ext.create('Ext.button.Button',{
+            scale           :'medium',
+            text            :'Add Prize',
+            icon            :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png',
+            handler         :me.createPrize,
+            scope           :me
+        });
+        
+        me.items = [me.addBtn];
         
         if( me.store ) me.updateForms();
         me.callParent();
@@ -24,23 +30,20 @@ Ext.define('Bozuko.view.contest.edit.Prizes' ,{
     
     bindStore : function(store){
         this.store = store;
-        this.removeAll();
+        this.clearPrizes();
         this.updateForms();
+    },
+    
+    clearPrizes : function(){
+        Ext.Array.each( this.query('contestformprize'), function(form){
+            form.ownerCt.remove(form);
+        });
     },
     
     updateForms : function(){
         var me = this;
         
         if( !me.store ) return;
-        
-        me.addBtn = me.add({
-            xtype           :'button',
-            scale           :'medium',
-            text            :'Add Prize',
-            icon            :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png',
-            handler         :me.createPrize,
-            scope           :me
-        });
         
         me.store.each( me.addPrize, me );
         me.doLayout();
