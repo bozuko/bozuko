@@ -13,6 +13,7 @@ exports.transfer_objects= {
             email: "String",
             challenge: "String",
             img: "String",
+            image: "String",
             links: {
                 logout: "String",
                 favorites: "String"

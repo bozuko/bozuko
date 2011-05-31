@@ -16,4 +16,4 @@ source ~/.bashrc
 
 # node packages
 echo "*** Installing node packages with npm"
-cd ~ && npm install connect connect-auth express jade mongodb mongoose monomi oauth qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date cluster imap node-uuid
+cd ~ && npm install connect connect-auth express jade mongodb mongoose monomi oauth qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date cluster imap node-uuid gd
