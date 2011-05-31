@@ -462,7 +462,7 @@ Page.static('search', function(options, callback){
      *
      */
     else {
-        if( !page ) getFeatured = true;
+        if( !options.query && !page ) getFeatured = true;
         // we need to add featured results to the main search page
         if( Bozuko.env() == 'development' && !options.query ){
             bozukoSearch.selector['$or'] = [{test: true}, {featured:true}];
@@ -499,7 +499,6 @@ Page.static('search', function(options, callback){
         if( hideFeaturedPastThreshold ){
             pages.forEach(function(page){
                 if( page.featured && (!getFeatured || ++count > Bozuko.config.search.featuredResults )){
-                    console.log('hey');
                     page.featured = false;
                 }
             });
