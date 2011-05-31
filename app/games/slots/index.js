@@ -6,7 +6,8 @@ var Game = Bozuko.require('core/game'),
 var Slots = module.exports = function(){
     Game.apply(this,arguments);
 };
-inherits( Slots, Game);
+
+inherits( Slots, Game );
 
 Slots.prototype.name = "Slots";
 
@@ -90,7 +91,9 @@ Slots.prototype.getPrizes = function(){
     var self = this;
     self.contest.prizes.forEach( function(prize, i){
         prize.result_image = self.getImage(i);
-        // need to 
+        /**
+         * TODO - add X3 graphically (using gd library)
+         */
     });
     return self.contest.prizes;
 };
