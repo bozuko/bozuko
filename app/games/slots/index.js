@@ -1,7 +1,10 @@
 var Game = Bozuko.require('core/game'),
     burl = Bozuko.require('util/url').create,
-    path = require('path');
-    inherits = require('util').inherits;
+    path = require('path'),
+    fs = require('fs'),
+    gd = require('gd/gd'),
+    inherits = require('util').inherits
+    ;
 
 var Slots = module.exports = function(){
     Game.apply(this,arguments);
@@ -78,13 +81,43 @@ Slots.prototype.getImage = function(index){
     var icon = config.icons[index];
     // need to go through the
     if( config.theme.icons[icon] ){
-        return config.theme.base+'/'+config.theme.icons[icon];
+        
+        var base = __dirname+'/themes/'+config.theme.name+'/resources/'+path.basename(config.theme.base);
+        
+        if( !path.existsSync( base+'/x3' ) ) fs.mkdirSync(base+'/x3', 0777);
+        
+        var png = base+'/'+config.theme.icons[icon];
+        var dest = base+'/x3/'+config.theme.icons[icon];
+        
+        this.createResultImage(dest, png);
+        
+        return config.theme.base+'/x3/'+config.theme.icons[icon];
     }
     // look for a custom icon
     if( config.custom_icons && config.custom_icons[icon] ){
         return config.custom_icons[icon];
     }
     return icon;
+};
+
+Slots.prototype.createResultImage = function(dest, icon_src){
+    var x3_src = __dirname+'/resources/x3.png';
+    
+    if(path.exists(dest)) return;
+    
+    gd.openPng(
+        x3_src,
+        function(x3, path){
+            gd.openPng(
+                icon_src,
+                function(icon, path){
+                    icon.copyResampled(x3,5,5,0,0,70,70,icon.width,icon.height);
+                    x3.saveAlpha(1);
+                    x3.savePng(dest, 2, gd.noop);
+                }
+            );
+        }
+    );
 };
 
 Slots.prototype.getPrizes = function(){
