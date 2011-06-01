@@ -20,15 +20,15 @@ var options = {
     port: 443,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 50, // req/sec
+    rate: 20, // req/sec
     time: 1800, // sec
     wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
-    max_sessions: 100,
+    max_sessions: 1000,
     sessions: [{
 	probability: 100,
-	requests: [
+	request_generators: [
             get_pages
         ]
     }]
