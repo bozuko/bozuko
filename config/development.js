@@ -24,6 +24,10 @@ module.exports = {
             business:"email,manage_pages"
         }
     },
+    
+    bozuko :{
+        facebook_id: '177515562277757'
+    },
 
     foursquare: {
         app:{

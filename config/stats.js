@@ -26,6 +26,10 @@ module.exports = {
         }
     },
     
+    bozuko :{
+        facebook_id: '177515562277757'
+    },
+    
     checkin: {
         duration: {
             // 15 minutes between any checkins per user

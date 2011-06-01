@@ -28,6 +28,10 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
+    
+    bozuko :{
+        facebook_id: '177515562277757'
+    },
 
     checkin: {
         /**
