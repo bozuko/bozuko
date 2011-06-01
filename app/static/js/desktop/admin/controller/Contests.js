@@ -122,7 +122,6 @@ Ext.define('Bozuko.controller.Contests' ,{
         else{
             entry_config = this.getValues(entry);
         }
-        console.log(entry_config);
         record.set( 'entry_config', [entry_config] );
         
         var consolation_config = record.get('consolation_config');
@@ -231,6 +230,47 @@ Ext.define('Bozuko.controller.Contests' ,{
                 
             case 'copy':
                 
+                var name = record.get('name');
+                if( name ) name+=' (Copy)';
+                else name = Ext.Date.parse(new Date(), 'Campaign m-d-Y');
+                Ext.Msg.prompt({
+                    title: 'Copy Campaign',
+                    msg: 'What would you like to name your new campaign?',
+                    fn: function(btn, text){
+                        if( btn !== 'ok') return;
+                        var copy = record.copy();
+                        copy.phantom=true;
+                        
+                        // initialize the stores
+                        copy.prizes();
+                        copy.consolation_prizes();
+                        
+                        var now = new Date();
+                            diff = copy.get('end').getTime() - copy.get('start').getTime(),
+                            start = now,
+                            end = new Date();
+                        
+                        copy.set('_id', '');
+                        end.setTime(start.getTime() + diff);
+                        copy.set('start', start);
+                        copy.set('end', end);
+                        copy.set('name', text);
+                        copy.phantom = true;
+                        // save the copy
+                        copy.save({
+                            callback : function(){
+                                view.store.load();
+                            }
+                        });
+                    },
+                    icon: Ext.Msg.INFO,
+                    prompt: true,
+                    width: 300,
+                    buttons: Ext.Msg.OKCANCEL,
+                    value: name,
+                    modal: true
+                });
+                break;
                 
             case 'cancel':
                 
