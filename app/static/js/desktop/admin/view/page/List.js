@@ -18,7 +18,7 @@ Ext.define('Bozuko.view.page.List' ,{
                 '<div class="bozuko-list">',
                     '<tpl for=".">',
                         '<div class="list-item">',
-                            '<img src="{image}&type=square" />',
+                            '<img src="{[this.getImage(values.image)]}" />',
                             '<span class="title">{name}</span>',
                             '<div class="sub">',
                                 '{location.street}<br />{location.city}, {location.state}',
