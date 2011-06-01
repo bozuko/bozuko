@@ -17,11 +17,11 @@ var user_ids_free = [];
 var options = {
     protocol: 'https',
     host: '66.228.35.144',
-    port: 443,
+    port: 8000,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 50, // req/sec
-    time: 1800, // sec
+    rate: 2, // req/sec
+    time: 3600,
     wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
@@ -48,11 +48,15 @@ function random_user_id() {
 var db_setup_start = Date.now();
 db.setup({users: options.max_sessions}, function(err) {
     var db_setup_end = Date.now();
+    if (err) {
+        console.log(new Error("db.setup: "+err));
+        Bozuko.db.conn().disconnect();
+        return;
+    }
 
     user_ids_free = db.user_ids.slice();
 
     console.log("Db setup took "+(db_setup_end - db_setup_start)+" ms");
-    if (err) console.log(new Error("db.setup: "+err));
     console.log("Running Load Test");
     load.run(options, function(err, results) {
         if (err) return console.log("Err = "+err);
@@ -86,7 +90,7 @@ function checkin(res, callback) {
 
     // Ignore timeouts from facebook
     if (res.statusCode != 200) {
-        console.log("Error: "+res.body);
+        console.log("Checkin Error: "+res.body);
         return callback(null, 'done');
     }
     // grab a random page
