@@ -5,7 +5,7 @@ exports.transfer_objects= {
             var ret = {
                 links:{
                     privacy_policy: '/bozuko/privacy_policy',
-                    terms_and_conditions: '/bozuko/terms_and_conditions',
+                    terms_of_use: '/bozuko/terms_of_use',
                     how_to_play: '/bozuko/how_to_play',
                     about: '/bozuko/about',
                     bozuko_for_business:'/bozuko/for_business'
@@ -19,7 +19,7 @@ exports.transfer_objects= {
         def:{
             links: {
                 privacy_policy: "String",
-                terms_and_conditions: "String",
+                terms_of_use: "String",
                 how_to_play: "String",
                 about: "String",
                 bozuko_for_business: "String",
@@ -56,9 +56,9 @@ exports.links = {
             returns: "content"
         }
     },
-    terms_and_conditions:{
+    terms_of_use:{
         get: {
-            doc: "Return the Privacy Policy",
+            doc: "Return the Terms of Use",
             returns: "content"
         }
     },
@@ -78,6 +78,12 @@ exports.links = {
         get: {
             doc: "Bozuko For Business",
             returns: "content"
+        }
+    },
+    bozuko_page:{
+        get: {
+            doc: "Bozuko Page - for the 'Play our Game' button",
+            returns: "page"
         }
     }
 };
@@ -113,10 +119,10 @@ exports.routes = {
         }
     },
     
-    'bozuko/terms_and_conditions': {
+    'bozuko/terms_of_use': {
         get : {
             handler : function(req, res){
-                render_page(res,'Terms and Conditions', '<p>Coming soon...</p>');
+                render_page(res,'Terms of Use', '<p>Coming soon...</p>');
             }
         }
     },

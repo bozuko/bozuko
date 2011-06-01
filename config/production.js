@@ -27,7 +27,7 @@ module.exports = {
         }
     },
     
-     bozuko :{
+    bozuko :{
         facebook_id: '177515562277757'
     },
 
