@@ -70,7 +70,7 @@ var contest_all_always = new Bozuko.models.Contest(
     start: start,
     end: end,
     free_play_pct: 0,
-    total_entries: 2,
+    total_entries: 3,
     prizes: [{
         name: 'Litter Critters',
         value: '0',
@@ -84,7 +84,7 @@ var contest_all_always = new Bozuko.models.Contest(
         description: 'Log, Log everyone loves a Log!',
         details: 'A beautiful gift for all ages',
         instructions: 'Show this screen to an employee',
-        total: 1000
+        total: 2
     }]
 });
 
@@ -188,8 +188,7 @@ exports['cleanup'] = function(test) {
 };
 
 exports['save user and page'] = function(test) {
-    async.forEach([user, page, contest_all_once, contest_all_always, contest_losers_always,
-        contest_losers_once],
+    async.forEach([user, page],
         function(model, callback) {
             model.save(callback);
         },
@@ -332,14 +331,43 @@ exports['everyone gets a consolation prize every time they run out of plays'] = 
                             function(err, plays) {
                                 test.ok(!err);
                                 test.deepEqual(2, plays.length);
-                                test.done();
+
+                                var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+                                contest_all_always.enter(entryMethod, function(err, e) {
+                                    test.ok(!err);
+                                    play3times(contest_all_always, function(err, result) {
+                                        if (err) console.log(err);
+                                        test.ok(!err);
+
+                                        // Ensure we don't get a consolation prize because we are out of them
+                                        test.ok(!result.play.consolation);
+
+                                        // ensure there are 2 consolation prizes
+                                        Bozuko.models.Prize.find(
+                                            {contest_id: contest_all_always._id, consolation: true},
+                                            function(err, prizes) {
+                                                test.ok(!err);
+                                                test.deepEqual(2, prizes.length);
+
+                                                // ensure there are 2 consolation plays
+                                                Bozuko.models.Play.find(
+                                                    {contest_id: contest_all_always._id, consolation: true},
+                                                    function(err, plays) {
+                                                        test.ok(!err);
+                                                        test.deepEqual(2, plays.length);
+                                                        test.done();
+                                                    }
+                                                );
+                                            }
+                                        );
+                                    });
+                                });
                             }
                         );
                     }
                 );
             });
         });
-
     });
 };
 
