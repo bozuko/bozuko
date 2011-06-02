@@ -74,7 +74,7 @@ module.exports = {
         auth: false,
         ssl: true,
         host: 'bozuko.com',
-        port: 80
+        port: 443
     },
 
     email : {
