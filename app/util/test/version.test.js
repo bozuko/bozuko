@@ -11,7 +11,7 @@ exports['Test Version Compare'] = function(test) {
         ['0b', '0a', 1],
         ['1.0','1', 0],
         ['1','2.0.3', -1],
-        ['1.0rc', '1.0', -1],
+        ['1.0rc23', '1.0', -1],
     ];
     comparisons.forEach( function(c){
         test.ok( version.compare(c[0], c[1]) === c[2] );

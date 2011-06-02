@@ -32,10 +32,10 @@ module.exports = {
         };
         
         var getValue = function(v){
-            var matches = v.match(/(\d+)?(([a-zA-Z]+)?([\d+])?)?$/);
+            var matches = v.match(/(\d+)?(([a-zA-Z]+)?(\d+)?)?$/);
             v = parseInt(matches[1], 10) * 10;
             if( matches[2] ){
-                var k = matches[3].substr(0,1);
+                var k = matches[3].substr(0,1).toLowerCase();
                 if( map[k] ){
                     v -= map[k];
                     if( matches[4] ){
