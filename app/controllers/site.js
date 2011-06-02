@@ -3,6 +3,7 @@ var ExtJs       = Bozuko.require('util/extjs'),
     Page        = Bozuko.require('util/page'),
     URL         = require('url'),
     fs          = require('fs'),
+    knox        = require('knox'),
     path        = require('path'),
     markdown    = require('markdown-js'),
     qs          = require('querystring')
@@ -72,6 +73,17 @@ exports.routes = {
             ];
             res.locals.signup = '';//fs.readFileSync(Bozuko.dir+'/content/site/mailchimp-signup.html', 'utf-8');
             res.render('site/coming-soon');
+        }
+    },
+    
+    '/test/knox':{
+        get : function(req, res){
+            var s3 = knox.createClient(Bozuko.config.amazon.s3);
+            console.log('got file');
+            s3.putFile( Bozuko.dir+'/app/static/favicon.ico', '/favicon.ico', function(error, response){
+                console.log(error);
+                res.send( 'test' );
+            });
         }
     },
 
