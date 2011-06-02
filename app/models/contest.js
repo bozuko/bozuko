@@ -346,13 +346,38 @@ Contest.method('startPlay', function(user_id, callback) {
     );
 });
 
+Contest.method('claimConsolation', function(opts, callback) {
+    var total = this.consolation_prizes[0].total;
+    Bozuko.models.Contest.findAndModify(
+        { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total}}}},
+        [],
+        {$inc : {'consolation_prizes.$.claimed': 1}},
+        {new: true},
+        function(err, contest) {
+            if (err) return callback(err);
+            if (!contest) {
+                opts.consolation = false;
+                return callback(null);
+            }
+            return contest.savePrize(opts, callback);
+        }
+    );
+});
+
 Contest.method('saveConsolation', function(opts, callback) {
     opts.consolation = true;
     var self = this;
     var config = this.consolation_config[0];
+
+    var consolation_prize = self.consolation_prizes[0];
+    if (consolation_prize.claimed === consolation_prize.total) {
+        opts.consolation = false;
+        return callback(null);
+    }
+
     if (config.who === 'losers' && opts.win === true) return callback(null);
 
-    if (config.who === 'all' && config.when === 'always') return this.savePrize(opts, callback);
+    if (config.who === 'all' && config.when === 'always') return this.claimConsolation(opts, callback);
 
     // Is there a winner for the current active entries?
     function savePrizeIfLoser() {
@@ -362,7 +387,7 @@ Contest.method('saveConsolation', function(opts, callback) {
                 if (err) return callback(err);
 
                 // We are a real loser, save the prize
-                if (!play) return self.savePrize(opts, callback);
+                if (!play) return self.claimConsolation(opts, callback);
 
                 // We won recently
                 return callback(null);
@@ -388,7 +413,7 @@ Contest.method('saveConsolation', function(opts, callback) {
                 }
 
                 if (config.who === 'all') {
-                    return self.savePrize(opts, callback);
+                    return self.claimConsolation(opts, callback);
                 }
             }
         );
