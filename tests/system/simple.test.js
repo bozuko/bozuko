@@ -154,18 +154,21 @@ exports['game tests'] = {
     },
 
     'like a page' : function(test){
+        
+        var url = like_link+'/?token='+token;
+        
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
         });
 
         if( !like_link ) return test.done();
 
         return assert.response(test, Bozuko.app, {
-            url: like_link+'/?token='+token,
+            url: url,
             method: 'POST',
             headers: headers,
             data: params
@@ -176,6 +179,8 @@ exports['game tests'] = {
 
 
     'attempt a game entry' : function(test) {
+        
+        var url = game_entry_link+"/?token="+token;
 
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
@@ -183,18 +188,20 @@ exports['game tests'] = {
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
 
         });
 
         assert.response(test, Bozuko.app,
-            {url: game_entry_link+"/?token="+token,
+            {url: url,
             method: 'POST',
             headers: headers,
             data: params},
             ok,
             function(res) {
+                console.log(res.body);
                 var game_states = JSON.parse(res.body);
+                console.log(game_states);
                 test.ok(Bozuko.validate(['game_state'], game_states));
                 tokens = game_states[0].user_tokens;
                 test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
@@ -205,18 +212,21 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'play 3 times' : function(test) {
+        
+        var url = link;
+        
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
             token: token,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge, {url:url})
         });
 
         var play = play_fn = function(callback) {
             assert.response(test, Bozuko.app,
                 {
-                    url: link,
+                    url: url,
                     method: 'POST',
                     headers: headers,
                     data: params
@@ -250,13 +260,7 @@ exports['game tests'] = {
     },
 
     'play again if there is a free play' : function(test) {
-        var params = JSON.stringify({
-            phone_type: phone.type,
-            phone_id: phone.unique_id,
-            mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
-        });
-
+        
         async.until(
             function() { return free_plays === 0; },
             function(callback) {
@@ -272,16 +276,19 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'play the game one too many times' : function(test) {
+        
+        var url = link+"/?token="+token;
+        
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
         });
 
         assert.response(test, Bozuko.app,
             {
-                url: link+"/?token="+token,
+                url: url,
                 method: 'POST',
                 headers: headers,
                 data: params
@@ -296,16 +303,19 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'try to checkin again, too close to the last one': function(test) {
+        
+        var url = checkin_link+"/?token="+token;
+        
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Don't let me checkin again",
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
         });
         assert.response(test, Bozuko.app,
-            {url: checkin_link+"/?token="+token,
+            {url: url,
             method: 'POST',
             headers: headers,
             data: params},
@@ -318,14 +328,17 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'get the game state again' : function(test) {
+        
+        var url = game_state_link+"/?token="+token;
+        
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
         });
         assert.response(test, Bozuko.app,
-            {url: game_state_link+"/?token="+token,
+            {url: url,
             method: 'GET'},
             ok,
             function(res) {
@@ -369,16 +382,19 @@ exports['game tests'] = {
     },
 
     'try a facebook checkin (fail, too soon)' : function(test){
+        
+        var url =  checkin_link+"/?token="+token;
+        
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Still here bitches!",
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge, {url:url})
         });
         assert.response(test, Bozuko.app,
-            {url: checkin_link+"/?token="+token,
+            {url: url,
             method: 'POST',
             headers: headers,
             data: params},
@@ -390,16 +406,18 @@ exports['game tests'] = {
     },
 
     'enter game again' : function(test){
+        var url =  game_entry_link+"/?token="+token;
+        
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Still here bitches!",
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge, {url:url})
         });
         assert.response(test, Bozuko.app,
-            {url: game_entry_link+"/?token="+token,
+            {url:url,
             method: 'POST',
             headers: headers,
             data: params},
@@ -420,16 +438,19 @@ exports['game tests'] = {
     },
 
     'try to enter again': function(test) {
+        
+        var url = game_entry_link+"/?token="+token;
+        
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Don't let me enter",
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge, {url:url})
         });
         assert.response(test, Bozuko.app,
-            {url: game_entry_link+"/?token="+token,
+            {url: url,
             method: 'POST',
             headers: headers,
             data: params},
@@ -442,14 +463,17 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'double check game entry and wait' : function(test) {
+        
+        var url = game_state_link+"/?token="+token;
+        
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
         });
         assert.response(test, Bozuko.app,
-            {url: game_state_link+"/?token="+token,
+            {url: url,
             method: 'GET'},
             ok,
             function(res) {
@@ -473,18 +497,20 @@ exports['game tests'] = {
             });
     },
     'do a literal facebook checkin' : function(test) {
+        
+        var url = checkin_link+"/?token="+token;
 
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge, {url:url})
 
         });
 
         assert.response(test, Bozuko.app,
-            {url: checkin_link+"/?token="+token,
+            {url: url,
             method: 'POST',
             headers: headers,
             data: params},
@@ -577,21 +603,22 @@ exports['prizes tests'] = {
         if( wins == 0 ){
             return test.done();
         }
-
+        
         // lets get the prize link
         var redeem_link = prizes[0].links.redeem;
+        var url = redeem_link+'/?token='+token;
 
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url: url})
         });
 
         return assert.response(test, Bozuko.app,
             {
-                url: redeem_link+'/?token='+token,
+                url: url,
                 method: 'POST',
                 headers: headers,
                 data: params
@@ -610,7 +637,7 @@ exports['prizes tests'] = {
         if( wins == 0 ){
             return test.done();
         }
-
+        
         return assert.response(test, Bozuko.app,
             {url: prizes_link+'/?token='+token+'&state=active'},
             ok,
@@ -645,18 +672,19 @@ exports['prizes tests'] = {
 
         // lets get the prize link
         var redeem_link = prizes[0].links.redeem;
+        var url = redeem_link+'/?token='+token;
 
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
+            challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
         });
 
         return assert.response(test, Bozuko.app,
             {
-                url: redeem_link+'/?token='+token,
+                url: url,
                 method: 'POST',
                 headers: headers,
                 data: params

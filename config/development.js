@@ -6,6 +6,17 @@ if (process.env.USER === 'docs') port = 7002;
 module.exports = {
     
     test_mode: true,
+    
+    client: {
+        mobile:{
+            iphone:{
+                min_version: '1.0'
+            },
+            android:{
+                min_version: '1.0'
+            }
+        }
+    },
 
     db:{
         name: 'bozuko_dev'+port,
