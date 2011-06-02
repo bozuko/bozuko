@@ -522,7 +522,7 @@ Contest.method('createPrize', function(opts, callback) {
     // Don't worry about this for audit code, as the user's info might have changed.
     if (!opts.audit) {
         var info = this.getUserInfo(opts.user_id);
-        if (info.tokens === 0 && this.consolation_config.length != 0) {
+        if (info.tokens === 0 && this.consolation_config.length != 0 && this.consolation_prizes.length != 0) {
             opts.user_info = info;
             return this.saveConsolation(opts, function(err, consolation_prize) {
                 if (err) return callback(err);
