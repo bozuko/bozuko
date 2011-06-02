@@ -6,6 +6,17 @@ module.exports = {
         name: 'bozuko_stats',
         host: 'localhost'
     },
+    
+    client: {
+        mobile:{
+            iphone:{
+                min_version: '1.0'
+            },
+            android:{
+                min_version: '1.0'
+            }
+        }
+    },
 
     facebook: {
         app:{

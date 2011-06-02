@@ -1,5 +1,6 @@
 #!/bin/bash 
 nodeunit tests/system/*.js \
          app/models/test/*.js \
+         app/util/test/*.js \
          app/core/test/*.js \
          app/games/test/*.js

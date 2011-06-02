@@ -1,6 +1,17 @@
 module.exports = {
 
     test_mode: false,
+    
+    client: {
+        mobile:{
+            iphone:{
+                min_version: '1.0'
+            },
+            android:{
+                min_version: '1.0'
+            }
+        }
+    },
 
     db:{
         name: 'bozuko',
