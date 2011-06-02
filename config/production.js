@@ -1,7 +1,7 @@
 module.exports = {
 
     test_mode: false,
-    
+
     client: {
         mobile:{
             iphone:{
@@ -37,7 +37,7 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
-    
+
     amazon : {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
@@ -45,7 +45,7 @@ module.exports = {
             bucket: 'bozuko'
         }
     },
-    
+
     bozuko :{
         facebook_id: '177515562277757'
     },
@@ -74,7 +74,7 @@ module.exports = {
         auth: false,
         ssl: true,
         host: 'bozuko.com',
-        port: 80
+        port: 443
     },
 
     email : {
