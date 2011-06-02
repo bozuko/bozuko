@@ -188,6 +188,7 @@ exports.routes = {
                 });
                 
                 var contest = new Bozuko.models.Contest(data);
+                console.log(JSON.stringify(contest));
                 return contest.save( function(error){
                     if( error ) return error.send( res );
                     return res.send({items:[contest]});
