@@ -12,7 +12,9 @@ var Prize = module.exports = new Schema({
     instructions            :{type:String},
     total                   :{type:Number},
     claimed                 :{type:Number},
-    is_email                :{type:Boolean},
+    is_email                :{type:Boolean, default: false},
     email_body              :{type:String},
-    email_codes             :[String]
+    email_codes             :[String],
+    is_barcode              :{type:Boolean, default: false},
+    barcode_images          :[String]
 });
