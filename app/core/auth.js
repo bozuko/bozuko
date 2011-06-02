@@ -154,7 +154,11 @@ auth.mobile = function(req, res, callback) {
         // Verify challenge response for the given mobile app version
         function(callback) {
             var fn, result;
-            if ((fn = auth.mobile_algorithms[req.session.mobile_version])) {
+            var version = req.session.mobile_version.split('-',2);
+            if( version.length > 1 ) version.shift();
+            version = version[0];
+            
+            if ((fn = auth.mobile_algorithms[version])) {
                 result = fn(user.challenge, req);
                 if (
                     String(result) === String(req.session.challenge_response)
