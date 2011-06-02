@@ -46,6 +46,14 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
+    
+    amazon : {
+        s3:{
+            key:'AKIAJD7BVQJST2HCCPGA',
+            secret: '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',
+            bucket: 'bozuko_dev'
+        }
+    },
 
     checkin: {
         duration: {

@@ -30,19 +30,18 @@ module.exports = function mobile() {
             req.session.phone = phone;
         }
         
-        if( req.session.mobile_version && phone.type ){
+        if( req.session.mobile_version ){
             
-            // lets check this against our
-            var key = phone.type.toLowerCase();
+            var parts = req.session.mobile_version.split('-', 2);
             
-            if( /iphone/i.test(key) ) key = 'iphone';
-            else if(/android/i.test(key) ) key = 'android';
+            if( parts.length === 1 ) parts.unshift('iphone');
             
-            var mob = Bozuko.config.client.mobile;
+            var key = parts[0],
+                version = parts[1],
+                mob = Bozuko.config.client.mobile,
+                client = mob[key] || mob['iphone'];
             
-            var client = mob[key] || mob['iphone'];
-            
-            if( version_compare(req.session.mobile_version, client.min_version) == -1 ){
+            if( version_compare(version, client.min_version) == -1 ){
                 // force an update
                 return Bozuko.error('bozuko/update').send(res);
             }
