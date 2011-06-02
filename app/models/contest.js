@@ -414,7 +414,6 @@ function get_code() {
 Contest.method('savePrize', function(opts, callback) {
     var self = this;
     var prize;
-    var email_code = null;
 
     if( opts.prize_index === false && !opts.consolation) {
         return callback(null, null);
@@ -454,12 +453,16 @@ Contest.method('savePrize', function(opts, callback) {
             description: prize.description,
             redeemed: false,
             consolation: opts.consolation,
-            is_email: prize.is_email
+            is_email: prize.is_email,
+            is_barcode: prize.is_barcode
         });
 
         if (prize.is_email) {
             user_prize.email_body = prize.email_body;
             user_prize.email_code = prize.email_codes[opts.prize_count];
+        }
+        if (prize.is_barcode) {
+            user_prize.barcode_image = prize.barcode_images[opts.prize_count];
         }
 
         return user_prize.save(function(err) {
