@@ -21,6 +21,6 @@ module.exports = {
     
     update : {
         code: 403,
-        message: "User must update the client application"
+        message: "Sorry. You must update Bozuko to continue."
     }
 };
