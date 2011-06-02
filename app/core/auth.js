@@ -71,7 +71,7 @@ var adminAuth = basicAuth(function(user,pass,cb){
     // lets do some pseudo hardcoding...
     
     var domains = ['bozuko.com'];
-    if( Bozuko.config.server.port == '8005' ) domains.push('fuzzproductions.com');
+    if( Bozuko.config.server.port == '8005' || Bozuko.config.server.port == '443' ) domains.push('fuzzproductions.com');
     
     if( !email ){
         return cb(new Error('No Email'));
