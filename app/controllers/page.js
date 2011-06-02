@@ -270,10 +270,11 @@ exports.routes = {
                         if( error )return error.send(res);
 
                         profiler.mark('search time');
-                        return res.send(Bozuko.transfer('pages',{
-                            pages:pages,
-                            next: next
-                        }, req.session.user));
+                        var ret = {
+                            pages:pages
+                        };
+                        if( pages.length ) ret.next = next;
+                        return res.send(Bozuko.transfer('pages', ret, req.session.user));
                     }
                 );
             }
