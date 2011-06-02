@@ -22,7 +22,8 @@ var req = {
             unique_id: '12412412'
         },
         mobile_version: '1.0'
-    }
+    },
+    url: '/test'
 };
 
 var res = {
@@ -43,8 +44,7 @@ exports['Add Facebook user'] = function(test) {
         req.session.user = u;
 
         // Correctly calculate the challenge response
-        req.session.challenge_response = auth.mobile_algorithms['1.0'](u.challenge);
-
+        req.session.challenge_response = auth.mobile_algorithms['1.0'](u.challenge, req);
         test.done();
     });
 };

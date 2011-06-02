@@ -176,7 +176,7 @@ exports.routes = {
 
                 var next = url_parsed.pathname+'?'+qs.stringify(params);
 
-                return Bozuko.models.Prize.search(selector, {}, {limit: limit, offset: offset, sort: {timestamp: -1}}, function(error, prizes){
+                return Bozuko.models.Prize.search(selector, {}, {limit: limit, skip: offset, sort: {timestamp: -1}}, function(error, prizes){
                     if( error ) return error.send( res );
                     var ret = {
                         prizes: prizes,

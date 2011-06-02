@@ -1,5 +1,6 @@
 var async = require('async'),
     ImapConnection = require('imap').ImapConnection,
+    crypto = require('crypto'),
     basicAuth = require('./auth/basic');
 
 var auth = exports;
@@ -15,12 +16,11 @@ var mobile_keys = {
 };
 
 auth.mobile_algorithms = {
-    '1.0': function(challenge) {
-        var result;
-        for (var i = 0; i < mobile_keys['1.0'].length; i++) {
-            result = challenge + mobile_keys['1.0'][i];
-        }
-        return result;
+    '1.0': function(challenge, req) {
+        var data = req.url+challenge;
+        var sha = crypto.createHash('sha1');
+        sha.update( data );
+        return sha.digest('hex');
     }
 };
 
@@ -36,7 +36,7 @@ auth.check = function(access, callback) {
 
     return function(req, res) {
         var layer;
-
+        
         async.forEachSeries(access, function(layer, cb) {
             auth[layer](req, res, cb);
         }, function(err) {
@@ -124,11 +124,14 @@ auth.mobile = function(req, res, callback) {
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
+    
     async.series([
 
         // Verify phone type and unique id
         function(callback) {
-            if (!req.session.phone) return callback(Bozuko.error('auth/mobile'));
+            if (!req.session.phone){
+                return callback(Bozuko.error('auth/mobile'));
+            }
             var result = user.verify_phone(req.session.phone);
             if ( result === 'mismatch') {
                 return callback(Bozuko.error('auth/mobile'));
@@ -152,8 +155,16 @@ auth.mobile = function(req, res, callback) {
         function(callback) {
             var fn, result;
             if ((fn = auth.mobile_algorithms[req.session.mobile_version])) {
-                result = fn(user.challenge);
-                if (String(result) === String(req.session.challenge_response)) {
+                result = fn(user.challenge, req);
+                if (
+                    String(result) === String(req.session.challenge_response)
+                    /**
+                     * TODO - take the following line out when we are done testing
+                     * 
+                     */
+                    || String(5127+parseInt(user.challenge)) === String(req.session.challenge_response)
+                ) {
+                    console.log( result, req.session.challenge_response);
                     return callback(null);
                 }
             }
