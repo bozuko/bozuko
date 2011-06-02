@@ -38,6 +38,14 @@ module.exports = {
         }
     },
     
+    amazon : {
+        s3:{
+            key:'AKIAJD7BVQJST2HCCPGA',
+            secret: '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',
+            bucket: 'bozuko'
+        }
+    },
+    
     bozuko :{
         facebook_id: '177515562277757'
     },
@@ -64,9 +72,9 @@ module.exports = {
 
     server: {
         auth: false,
-        ssl: false,
+        ssl: true,
         host: 'bozuko.com',
-        port: 8000
+        port: 80
     },
 
     email : {
