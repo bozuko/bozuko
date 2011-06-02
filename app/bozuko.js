@@ -4,6 +4,12 @@ var fs              = require('fs');
 // setup the global object
 Bozuko = {};
 
+// override console.error so error logs have timestamps
+var errlog = console.error;
+console.error = function(msg) {
+    errlog(new Date().toString() + " " + msg);
+};
+
 Bozuko.dir = fs.realpathSync(__dirname+'/..');
 Bozuko.require = function(module){
     try{
@@ -318,7 +324,7 @@ function initGames(app){
             Bozuko.games[name] = Bozuko.require('/games/'+file);
             app.use('/games/'+name, express.static(Bozuko.dir+'/app/games/'+name+'/resources'));
             // check for themes
-            
+
             var themes_dir = dir+'/'+name+'/themes';
             if( existsSync(themes_dir) ) fs.readdirSync(themes_dir).forEach( function(theme){
                 // lets lisen on their resources folders
@@ -327,7 +333,7 @@ function initGames(app){
 				console.log('Init theme: ', name, theme);
                 app.use('/games/'+name+'/themes/'+theme, express.static(themes_dir+'/'+theme+'/resources'));
             });
-            
+
         }
     });
 }
