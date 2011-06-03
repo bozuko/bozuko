@@ -541,7 +541,7 @@ Page.static('search', function(options, callback){
                 if( error ) return callback(error);
 
                 var page_ids = [], fb_ids=[];
-                prepare_pages(pages, function(page){
+                prepare_pages(pages, options.user, function(page){
                     var fb;
                     if( (fb = page.service('facebook')) ){
                         fb_ids.push(String(fb.sid));
@@ -578,10 +578,7 @@ Page.static('search', function(options, callback){
                         _id: {$nin: page_ids}
                     }, function(error, _pages){
                         if( error ) return callback( error );
-                        prepare_pages(_pages, function(page){
-                            results.splice( results.indexOf(map[page.service(service).sid]), 1 );
-                        });
-                        pages.forEach(function(page){
+                        prepare_pages(_pages, options.user, function(page){
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                         });
 
