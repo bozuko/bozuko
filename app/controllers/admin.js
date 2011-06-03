@@ -167,7 +167,7 @@ exports.routes = {
 
         post : {
             handler : function(req, res){
-                var data = req.body,
+                var data = filter(req.body),
                     prizes = data.prizes,
                     consolation_prizes = data.consolation_prizes;
                     
@@ -205,10 +205,15 @@ exports.routes = {
                 return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
                     if( error ) return error.send(res);
                     
-                    var data = req.body,
-                        prizes = data.prizes;
+                    var data = filter(req.body);
+                        console.log(data);
                         
+                    var prizes = data.prizes,
+                        entry_config = data.entry_config,
+                        consolation_prizes = data.consolation_prizes;
+                     
                     delete data.prizes;
+                    delete data.consolation_prizes;
                     delete data.state;
                     
                     // most definitely do not want to touch this
@@ -229,12 +234,26 @@ exports.routes = {
                             doc = old.doc;
                             for( var p in prize ){
                                 if( prize.hasOwnProperty(p) ){
-                                    doc[p] = prize[p];
+                                    doc.set(p, prize[p]);
                                 }
                             }
                             prizes[i] = doc;
                         }
                     });
+                    
+                    consolation_prizes.forEach(function(consolation_prize, i){
+                        var old, doc;
+                        if( consolation_prize._id && (old = contest.consolation_prizes.id(consolation_prize._id)) ){
+                            doc = old.doc;
+                            for( var p in consolation_prize ){
+                                if( consolation_prize.hasOwnProperty(p) ){
+                                    doc.set(p, consolation_prize[p]);
+                                }
+                            }
+                            consolation_prizes[i] = doc;
+                        }
+                    });
+                    
                     
                     // no clue why i have to do this right now...
                     contest.prizes = [];
@@ -259,7 +278,6 @@ exports.routes = {
                             });
                         });
                     });
-                    
                 });
             }
         },
@@ -365,3 +383,20 @@ exports.routes = {
         }
     }
 };
+
+function filter(data){
+    if( Array.isArray(data)){
+        data.forEach(filter);
+    }
+    else if( data && 'object' === typeof data ){
+        Object.keys(data).forEach(function(key){
+            if( ~key.indexOf('.') ){
+                delete data[key];
+            }
+            else{
+                data[key] = filter(data[key]);
+            }
+        });
+    }
+    return data;
+}
