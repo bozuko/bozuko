@@ -11,7 +11,7 @@ inherits(DefaultTheme, ScratchTheme);
 
 DefaultTheme.prototype.name = 'default';
 DefaultTheme.prototype.images = {
-    'background'    :'background.png?v2'
+    'background'    :'background-v2.png'
 };
 
 DefaultTheme.prototype.base = burl('/games/scratch/themes/'+path.basename(__dirname)+'/default_theme' );
