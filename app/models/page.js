@@ -535,7 +535,6 @@ Page.static('search', function(options, callback){
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
-
             pages = featured.concat(pages);
 
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
@@ -549,6 +548,8 @@ Page.static('search', function(options, callback){
                     }
                     page_ids.push(page._id);
                 });
+                
+                
 
                 if( !serviceSearch ){
                     return return_pages( pages );
@@ -590,13 +591,13 @@ Page.static('search', function(options, callback){
                                 result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                             });
                         }
-
+                        
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             pages = pages.concat(_pages);
                             pages = pages.concat(results);
                             
                             // sort these pages by distance...
-                            pages.sort(page_search_sort);
+                            pages.sort( page_search_sort );
                             return return_pages(pages);
                         });
                     });
