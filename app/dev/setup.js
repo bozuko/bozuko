@@ -32,7 +32,7 @@ var dev = {
                 duration: 1000 * 10
             }],
             consolation_config:[{
-                who: 'losers',
+                who: 'all',
                 when: 'always'
             }],
             prizes: [{
