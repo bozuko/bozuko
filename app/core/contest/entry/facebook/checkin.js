@@ -104,7 +104,7 @@ EntryMethod.prototype.getDescription = function(){
  *
  */
 FacebookCheckinMethod.prototype.getMaxTokens = function(){
-    return this.config.tokens + (this.config.enable_like ? this.config.like_tokens : 0);
+    return this.config.tokens + (this.config.options.enable_like ? this.config.tokens : 0);
 }
 
 /**
@@ -115,7 +115,7 @@ FacebookCheckinMethod.prototype.getTokenCount = function(){
     if( !this.contest || !this.user) return this.config.tokens;
     var tokens = this.config.tokens;
 
-    if( this.config.enable_like && this.user ){
+    if( this.config.options.enable_like && this.user ){
         if( this.user.likes( this.page ) ){
             tokens += this.config.tokens;
         }
