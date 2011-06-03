@@ -122,15 +122,17 @@ Ext.define('Bozuko.view.contest.View' ,{
             if( !gauge ) return;
             var record = me.getRecord(node);
             // else
+            var percent = (Math.max( 0, record.get('play_cursor')) / record.get('total_plays')) * 100 ;
+            console.log(percent);
             Ext.create('Ext.chart.Chart',{
-                style: 'background:#fff',
+                style: 'background:transparent',
                 width: 200,
-                height: 120,
+                height: 130,
                 renderTo: gauge,
                 animate: true,
                 store: Ext.create('Ext.data.Store',{
                     fields:['percent'],
-                    data:[{percent: record.get('play_cursor') / record.get('total_plays') * 100 }]
+                    data:[{percent: Math.max( 0, record.get('play_cursor')) / record.get('total_plays') * 100 }]
                 }),
                 insetPadding: 25,
                 flex: 1,
@@ -140,7 +142,7 @@ Ext.define('Bozuko.view.contest.View' ,{
                     minimum: 0,
                     maximum: 100,
                     steps: 10,
-                    margin: 0
+                    margin: 7
                 }],
                 series: [{
                     type: 'gauge',
