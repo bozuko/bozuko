@@ -346,6 +346,22 @@ Contest.method('startPlay', function(user_id, callback) {
     );
 });
 
+function letter(val) {
+    return val + 65;
+}
+function get_code(num) {
+    var pow;
+    var vals = new Array(5);
+    for (var i = 4; i >= 0; i--) {
+        pow = Math.pow(26,i);
+        vals[i] = Math.floor(num / pow);
+        num = num - vals[i]*pow;
+    }
+
+    return String.fromCharCode(66, letter(vals[4]), letter(vals[3]), letter(vals[2]), letter(vals[1]), letter(vals[0]));
+}
+
+// Only claim a consolation prize if there are some remaining
 Contest.method('claimConsolation', function(opts, callback) {
     var total = this.consolation_prizes[0].total;
     Bozuko.models.Contest.findAndModify(
@@ -359,6 +375,7 @@ Contest.method('claimConsolation', function(opts, callback) {
                 opts.consolation = false;
                 return callback(null);
             }
+            opts.consolation_prize_code = get_code(contest.consolation_prizes[0].claimed);
             return contest.savePrize(opts, callback);
         }
     );
@@ -428,14 +445,6 @@ Contest.method('saveConsolation', function(opts, callback) {
     return callback(null);
 });
 
-
-// We generate the codes here for consolation prizes. Note that these codes can possibly have duplicates.
-// It shouldn't really matter for consolation prizes, so allow it for performance.
-function letter() { return rand(0,25) + 65; }
-function get_code() {
-    return String.fromCharCode(letter(), letter(), letter(), letter(), letter(), letter());
-}
-
 Contest.method('savePrize', function(opts, callback) {
     var self = this;
     var prize;
@@ -466,7 +475,7 @@ Contest.method('savePrize', function(opts, callback) {
             page_id: self.page_id,
             user_id: opts.user_id,
             uuid: opts.uuid,
-            code: opts.consolation ? get_code() : opts.prize_code,
+            code: opts.consolation ? opts.consolation_prize_code : opts.prize_code,
             value: prize.value,
             page_name: page.name,
             name: prize.name,
