@@ -25,6 +25,9 @@ Ext.define('Bozuko.view.contest.View' ,{
                             '{[this.getTitle(values.name)]}',
                         '</h3>',
                         '<div class="details">',
+                            '<tpl if="this.canCancel(values)">',
+                                '<div class="gauge"></div>',
+                            '</tpl>',
                             '{[this.getDetails(values)]}',
                         '</div>',
                         '<ul class="buttons">',
@@ -109,5 +112,43 @@ Ext.define('Bozuko.view.contest.View' ,{
         
         me.callParent();
         
+        me.on('refresh', me.addGauges, me);
+    },
+    
+    addGauges : function(){
+        var me = this;
+        Ext.Array.each( me.getNodes(), function(node){
+            var gauge = Ext.fly(node).down('.gauge');
+            if( !gauge ) return;
+            var record = me.getRecord(node);
+            // else
+            Ext.create('Ext.chart.Chart',{
+                style: 'background:#fff',
+                width: 200,
+                height: 120,
+                renderTo: gauge,
+                animate: true,
+                store: Ext.create('Ext.data.Store',{
+                    fields:['percent'],
+                    data:[{percent: record.get('play_cursor') / record.get('total_plays') * 100 }]
+                }),
+                insetPadding: 25,
+                flex: 1,
+                axes: [{
+                    type: 'gauge',
+                    position: 'gauge',
+                    minimum: 0,
+                    maximum: 100,
+                    steps: 10,
+                    margin: 0
+                }],
+                series: [{
+                    type: 'gauge',
+                    field: 'percent',
+                    donut: 30,
+                    colorSet: ['#82B525', '#ddd']
+                }]
+            })
+        });
     }
 });
