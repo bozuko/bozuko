@@ -612,5 +612,6 @@ function page_search_sort(b,a){
     if( a.registered && !b.registered ) return 100;
     if( b.registered && !a.registered ) return -100;
     // okay, they are pretty equal, lets sort by _distance
+    console.log(String(a.name), a._distance, String(b.name), b._distance);
     return a._distance < b._distance ? 1 : -1;
 }
