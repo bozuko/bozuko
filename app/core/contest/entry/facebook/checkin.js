@@ -56,8 +56,9 @@ FacebookCheckinMethod.prototype.list_message = 'Facebook check-in required';
  */
 FacebookCheckinMethod.prototype.defaults = {
     duration: 1000*60*60*1,
-    enable_like: false,
-    like_tokens: 1
+    options:{
+        enable_like: false
+    }
 };
 
 
@@ -90,7 +91,7 @@ EntryMethod.prototype.getDescription = function(){
     }
     var description = "Check In on Facebook\n";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-    if( this.config.enable_like ){
+    if( this.config.options.enable_like ){
         description+= "\nDouble your plays if you like us on Facebook!";
     }
 
@@ -116,7 +117,7 @@ FacebookCheckinMethod.prototype.getTokenCount = function(){
 
     if( this.config.enable_like && this.user ){
         if( this.user.likes( this.page ) ){
-            tokens += this.config.like_tokens;
+            tokens += this.config.tokens;
         }
     }
     return tokens;
