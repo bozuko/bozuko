@@ -206,7 +206,6 @@ exports.routes = {
                     if( error ) return error.send(res);
                     
                     var data = filter(req.body);
-                        console.log(JSON.stringify(data));
                         
                     var prizes = data.prizes,
                         entry_config = data.entry_config,
@@ -215,9 +214,11 @@ exports.routes = {
                     delete data.prizes;
                     delete data.consolation_prizes;
                     delete data.state;
+                    delete data.entry_config;
                     
                     // most definitely do not want to touch this
                     delete data.play_cursor;
+                    delete data.token_cursor;
                     
                     // don't want to update this, will throw an error
                     delete data._id;
@@ -234,7 +235,7 @@ exports.routes = {
                             doc = old.doc;
                             for( var p in prize ){
                                 if( prize.hasOwnProperty(p) ){
-                                    doc.set(p, prize[p]);
+                                    doc[p] = prize[p];
                                 }
                             }
                             prizes[i] = doc;
@@ -247,16 +248,17 @@ exports.routes = {
                             doc = old.doc;
                             for( var p in consolation_prize ){
                                 if( consolation_prize.hasOwnProperty(p) ){
-                                    doc.set(p, consolation_prize[p]);
+                                    doc[p] = consolation_prize[p];
                                 }
                             }
                             consolation_prizes[i] = doc;
                         }
                     });
                     
-                    
                     // no clue why i have to do this right now...
                     contest.prizes = [];
+                    contest.consolation_prizes = [];
+                    contest.entry_config = [];
                     
                     // save existing prizes before adding and removing others
                     return contest.save(function(error){                        
@@ -265,6 +267,14 @@ exports.routes = {
                         prizes.forEach( function(prize){
                             if( !prize._id ) delete prize._id;
                             contest.prizes.push(prize);
+                        });
+                        consolation_prizes.forEach( function(prize){
+                            if( !prize._id ) delete prize._id;
+                            contest.consolation_prizes.push(prize);
+                        });
+                        
+                        entry_config.forEach( function(config){
+                            contest.entry_config.push( config );
                         });
                         
                         return contest.save( function(error){
