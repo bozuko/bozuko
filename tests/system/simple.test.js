@@ -37,7 +37,7 @@ exports['page tests'] = {
 
     'default search' : function(test) {
         assert.response(test, Bozuko.app,
-            {url: pages_link+'/?ll=42.646261785714,-71.303897114286&token='+token},
+            {url: pages_link+'/?ll=42.646261785714,-71.303897114286&query=owl&token='+token},
             ok,
             function(res) {
                 var result = JSON.parse(res.body);

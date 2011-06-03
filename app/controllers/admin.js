@@ -167,7 +167,7 @@ exports.routes = {
 
         post : {
             handler : function(req, res){
-                var data = req.body,
+                var data = filter(req.body),
                     prizes = data.prizes,
                     consolation_prizes = data.consolation_prizes;
                     
@@ -205,14 +205,20 @@ exports.routes = {
                 return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
                     if( error ) return error.send(res);
                     
-                    var data = req.body,
-                        prizes = data.prizes;
+                    var data = filter(req.body);
                         
+                    var prizes = data.prizes,
+                        entry_config = data.entry_config,
+                        consolation_prizes = data.consolation_prizes;
+                     
                     delete data.prizes;
+                    delete data.consolation_prizes;
                     delete data.state;
+                    delete data.entry_config;
                     
                     // most definitely do not want to touch this
                     delete data.play_cursor;
+                    delete data.token_cursor;
                     
                     // don't want to update this, will throw an error
                     delete data._id;
@@ -236,8 +242,23 @@ exports.routes = {
                         }
                     });
                     
+                    consolation_prizes.forEach(function(consolation_prize, i){
+                        var old, doc;
+                        if( consolation_prize._id && (old = contest.consolation_prizes.id(consolation_prize._id)) ){
+                            doc = old.doc;
+                            for( var p in consolation_prize ){
+                                if( consolation_prize.hasOwnProperty(p) ){
+                                    doc[p] = consolation_prize[p];
+                                }
+                            }
+                            consolation_prizes[i] = doc;
+                        }
+                    });
+                    
                     // no clue why i have to do this right now...
                     contest.prizes = [];
+                    contest.consolation_prizes = [];
+                    contest.entry_config = [];
                     
                     // save existing prizes before adding and removing others
                     return contest.save(function(error){                        
@@ -246,6 +267,14 @@ exports.routes = {
                         prizes.forEach( function(prize){
                             if( !prize._id ) delete prize._id;
                             contest.prizes.push(prize);
+                        });
+                        consolation_prizes.forEach( function(prize){
+                            if( !prize._id ) delete prize._id;
+                            contest.consolation_prizes.push(prize);
+                        });
+                        
+                        entry_config.forEach( function(config){
+                            contest.entry_config.push( config );
                         });
                         
                         return contest.save( function(error){
@@ -259,7 +288,6 @@ exports.routes = {
                             });
                         });
                     });
-                    
                 });
             }
         },
@@ -365,3 +393,20 @@ exports.routes = {
         }
     }
 };
+
+function filter(data){
+    if( Array.isArray(data)){
+        data.forEach(filter);
+    }
+    else if( data && 'object' === typeof data ){
+        Object.keys(data).forEach(function(key){
+            if( ~key.indexOf('.') ){
+                delete data[key];
+            }
+            else{
+                data[key] = filter(data[key]);
+            }
+        });
+    }
+    return data;
+}
