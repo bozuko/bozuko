@@ -241,9 +241,21 @@ Ext.define('Bozuko.controller.Contests' ,{
                         var copy = record.copy();
                         copy.phantom=true;
                         
-                        // initialize the stores
-                        copy.prizes();
-                        copy.consolation_prizes();
+                        // initialize the stores and delete the ids
+                        var prizes = copy.prizes();
+                        var consolations = copy.consolation_prizes();
+                        
+                        record.prizes().each(function(prize){
+                            var c = prize.copy();
+                            c.set('_id','');
+                            prizes.add(c);
+                        });
+                        
+                        record.consolation_prizes().each(function(prize){
+                            var c = prize.copy();
+                            c.set('_id','');
+                            consolations.add(c);
+                        });
                         
                         var now = new Date();
                             diff = copy.get('end').getTime() - copy.get('start').getTime(),

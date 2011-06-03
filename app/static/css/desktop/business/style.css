@@ -76,6 +76,9 @@
 .campaigns-body .campaign-list .list-item .buttons li .cancel {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
 }
+.campaigns-body .campaign-list .list-item .buttons li .reports {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-report-bar-24.png');
+}
 .bozuko-list .list-item {
   cursor: pointer;
   clear: both;

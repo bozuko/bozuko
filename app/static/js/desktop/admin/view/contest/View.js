@@ -28,6 +28,9 @@ Ext.define('Bozuko.view.contest.View' ,{
                             '{[this.getDetails(values)]}',
                         '</div>',
                         '<ul class="buttons">',
+                            '<tpl if="this.canReport(values)">',
+                                '<li><a href="javascript:;" class="reports">Reports</a></li>',
+                            '</tpl>',
                             '<tpl if="this.canEdit(values)">',
                                 '<li><a href="javascript:;" class="edit">Edit</a></li>',
                             '</tpl>',
@@ -63,6 +66,10 @@ Ext.define('Bozuko.view.contest.View' ,{
                     return ~['active'].indexOf(values.state);
                 },
                 
+                canReport : function(values){
+                    return ~['active','complete','cancelled'].indexOf(values.state);
+                },
+                
                 getTitle : function(name){
                     return name || 'Untitled Campaign';
                 },
@@ -71,6 +78,12 @@ Ext.define('Bozuko.view.contest.View' ,{
                     return [
                         '<table cellpadding="0" cellspacing="0">',
                             '<tbody>',
+                                '<tr>',
+                                    '<th>Game:</th>',
+                                    '<td>',
+                                    values.game ? values.game.substr(0,1).toUpperCase()+values.game.substr(1) : 'Unknown',
+                                    '<td>',
+                                '<tr>',
                                 '<tr>',
                                     '<th>Timeline:</th>',
                                     '<td>',
