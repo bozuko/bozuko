@@ -606,12 +606,7 @@ Page.static('search', function(options, callback){
     });
 });
 
-function page_search_sort(b,a){
-    if( a.featured && !b.featured ) return 1;
-    if( b.featured && !a.featured ) return -1;
-    if( a.registered && !b.registered ) return 1;
-    if( b.registered && !a.registered ) return -1;
+function page_search_sort(a,b){
     // okay, they are pretty equal, lets sort by _distance
-    console.log(String(a.name), a._distance, String(b.name), b._distance, b._distance - a._distance);
     return a._distance - b._distance;
 }
