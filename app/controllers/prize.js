@@ -176,13 +176,25 @@ exports.routes = {
 
                 var next = url_parsed.pathname+'?'+qs.stringify(params);
 
-                return Bozuko.models.Prize.search(selector, {}, {limit: limit, skip: offset, sort: {timestamp: -1}}, function(error, prizes){
+                return Bozuko.models.Prize.count(selector, function(error, count){
                     if( error ) return error.send( res );
-                    var ret = {
-                        prizes: prizes,
-                        next: next
-                    };
-                    return res.send( Bozuko.transfer('prizes', ret, req.session.user));
+                    
+                    if( !count ){
+                        return res.send( Bozuko.transfer('prizes', {
+                            prizes: []
+                        }, req.session.user));
+                    }
+                    
+                    var hasNext = offset+limit <= count;
+                    
+                    return Bozuko.models.Prize.search(selector, {}, {limit: limit, skip: offset, sort: {timestamp: -1}}, function(error, prizes){
+                        if( error ) return error.send( res );
+                        var ret = {
+                            prizes: prizes
+                        };
+                        if( hasNext ) ret.next = next;
+                        return res.send( Bozuko.transfer('prizes', ret, req.session.user));
+                    });
                 });
             }
         }

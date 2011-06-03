@@ -226,9 +226,9 @@ function initApplication(app){
     });
 
     // handle unknown errors (How can I check for ETIMEDOUT throwing a socket error?)
-    process.on('uncaughtException', function(err) {
-        console.error("UNCAUGHT EXCEPTION: "+err);
-    });
+//    process.on('uncaughtException', function(err) {
+  //      console.error("UNCAUGHT EXCEPTION: "+err);
+//    });
 }
 
 function initModels(){

@@ -5,6 +5,8 @@ module.exports = function mobile() {
 
         var phone = {};
         var val;
+        
+        if( !req.session ) return next();
 
         // clear old info
         ['phone','mobile_version','challenge_response'].forEach(function(key){

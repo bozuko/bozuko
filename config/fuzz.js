@@ -63,17 +63,25 @@ module.exports = {
         token_expiration: 1000 * 60 * 60 * 24 * 1 // one day.
     },
 
+    contest : {
+        engine : {
+            order: {
+                chunk_size: 2
+            }
+        }
+    },
+
     search: {
         // radius to search for "Nearby Games" in miles
         nearbyRadius: 2,
-        nearbyLimit: 4,
+        nearbyLimit: 10,
         featuredResults: 1
     },
 
     server: {
         auth: false,
         ssl: true,
-        host: 'bozuko.com',
+        host: 'api.bozuko.com',
         port: 443
     },
 
