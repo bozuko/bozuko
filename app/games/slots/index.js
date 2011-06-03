@@ -16,7 +16,7 @@ Slots.prototype.name = "Slots";
 
 Slots.prototype.type = path.basename(__dirname);
 
-Slots.prototype.icon = burl('/games/slots/slots_icon.png');
+Slots.prototype.icon = burl('/games/slots/slots_icon3.png');
 
 Slots.prototype.process = function(outcome){
 
