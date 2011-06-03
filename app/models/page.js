@@ -568,7 +568,7 @@ Page.static('search', function(options, callback){
                     if( _results ) _results.forEach( function(place, index){
                         if( ~fb_ids.indexOf(String(place.id)) ) return;
                         results.push(place);
-                        map[place.id] = place;
+                        map[String(place.id)] = place;
                     });
 
                     return Bozuko.models.Page.findByService(service, Object.keys(map), {
