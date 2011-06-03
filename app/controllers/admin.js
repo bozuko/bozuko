@@ -206,7 +206,7 @@ exports.routes = {
                     if( error ) return error.send(res);
                     
                     var data = filter(req.body);
-                        console.log(data);
+                        console.log(JSON.stringify(data));
                         
                     var prizes = data.prizes,
                         entry_config = data.entry_config,
