@@ -544,7 +544,7 @@ Page.static('search', function(options, callback){
                 prepare_pages(pages, function(page){
                     var fb;
                     if( (fb = page.service('facebook')) ){
-                        fb_ids.push(fb.sid);
+                        fb_ids.push(String(fb.sid));
                     }
                     page_ids.push(page._id);
                 });
@@ -566,7 +566,7 @@ Page.static('search', function(options, callback){
                     var map = {}, results = [];
                     
                     if( _results ) _results.forEach( function(place, index){
-                        if( ~fb_ids.indexOf(place.id) ) return;
+                        if( ~fb_ids.indexOf(String(place.id)) ) return;
                         results.push(place);
                         map[place.id] = place;
                     });
