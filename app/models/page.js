@@ -607,11 +607,11 @@ Page.static('search', function(options, callback){
 });
 
 function page_search_sort(b,a){
-    if( a.featured && !b.featured ) return 1000;
-    if( b.featured && !a.featured ) return -1000;
-    if( a.registered && !b.registered ) return 100;
-    if( b.registered && !a.registered ) return -100;
+    if( a.featured && !b.featured ) return 1;
+    if( b.featured && !a.featured ) return -1;
+    if( a.registered && !b.registered ) return 1;
+    if( b.registered && !a.registered ) return -1;
     // okay, they are pretty equal, lets sort by _distance
     console.log(String(a.name), a._distance, String(b.name), b._distance);
-    return a._distance < b._distance ? 1 : -1;
+    return b._distance - a._distance;
 }
