@@ -501,6 +501,7 @@ Page.static('search', function(options, callback){
             if (!page.owner_id && page._id) {
                 page.id = page.service('facebook').sid;
             }
+            page._distance = Geo.distance( options.ll, page.coords );
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }
@@ -585,6 +586,7 @@ Page.static('search', function(options, callback){
                         if (results) {
                             results.forEach(function(result){
                                 result.registered = false;
+                                result._distance = Geo.distance(options.ll, [result.location.lng,result.location.lat]);
                                 result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                             });
                         }
@@ -592,6 +594,9 @@ Page.static('search', function(options, callback){
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             pages = pages.concat(_pages);
                             pages = pages.concat(results);
+                            
+                            // sort these pages by distance...
+                            pages.sort(page_search_sort);
                             return return_pages(pages);
                         });
                     });
@@ -600,3 +605,12 @@ Page.static('search', function(options, callback){
         });
     });
 });
+
+function page_search_sort(b,a){
+    if( a.featured && !b.featured ) return 1000;
+    if( b.featured && !a.featured ) return -1000;
+    if( a.registered && !b.registered ) return 100;
+    if( b.registered && !a.registered ) return -100;
+    // okay, they are pretty equal, lets sort by _distance
+    return b._distance - a._distance;
+}
