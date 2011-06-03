@@ -1,6 +1,17 @@
 module.exports = {
 
     test_mode: true,
+    
+    client: {
+        mobile:{
+            iphone:{
+                min_version: '1.0'
+            },
+            android:{
+                min_version: '1.0'
+            }
+        }
+    },
 
     db:{
         name: 'bozuko_load',
@@ -24,6 +35,18 @@ module.exports = {
             id:'E43N3RJPOS2ULW0KTUSICZRFXB21VJWH55WEXTGMJPOQLL2K',
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
+    },
+    
+    amazon : {
+        s3:{
+            key:'AKIAJD7BVQJST2HCCPGA',
+            secret: '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',
+            bucket: 'bozuko_dev'
+        }
+    },
+    
+    bozuko :{
+        facebook_id: '177515562277757'
     },
 
     checkin: {

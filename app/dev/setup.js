@@ -29,10 +29,10 @@ var dev = {
             entry_config:[{
                 type: 'facebook/checkin',
                 tokens: 3,
-                duration: 1000 * 60 * 1
+                duration: 1000 * 10
             }],
             consolation_config:[{
-                who: 'losers',
+                who: 'all',
                 when: 'always'
             }],
             prizes: [{
@@ -46,7 +46,9 @@ var dev = {
                 value: '20',
                 description: "A Bozuko T-Shirt",
                 instructions: "Show this screen to an employee",
-                total: 100
+                total: 100,
+                is_barcode: true,
+                barcode_images: []
             },{
                 name: 'a coosy',
                 value: '20',
@@ -175,6 +177,12 @@ function setupPlace(place, featured, cb){
             contest.prizes.forEach(function(prize){
                 prize.duration = 1000*60*60*24;
             });
+            // Add barcode urls for t shirt
+            var barcode_prize = contest.prizes[1];
+            for (var i = 0; i < barcode_prize.total; i++) {
+                barcode_prize.barcode_images.push(burl('/images/barcode.png'));
+            };
+
             contest.generateResults(function(error){
                 var contest = new Bozuko.models.Contest(Bozuko.dev.contests.scratch);
                 contest.page_id = place._id;

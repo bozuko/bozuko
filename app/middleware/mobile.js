@@ -1,8 +1,12 @@
+var version_compare = Bozuko.require('util/version').compare;
+
 module.exports = function mobile() {
     return function mobile(req, res, next) {
 
         var phone = {};
         var val;
+        
+        if( !req.session ) return next();
 
         // clear old info
         ['phone','mobile_version','challenge_response'].forEach(function(key){
@@ -27,7 +31,24 @@ module.exports = function mobile() {
         if (phone.unique_id && phone.type) {
             req.session.phone = phone;
         }
+        
+        if( req.session.mobile_version ){
+            
+            var parts = req.session.mobile_version.split('-', 2);
+            
+            if( parts.length === 1 ) parts.unshift('iphone');
+            
+            var key = parts[0],
+                version = parts[1],
+                mob = Bozuko.config.client.mobile,
+                client = mob[key] || mob['iphone'];
+            
+            if( version_compare(version, client.min_version) == -1 ){
+                // force an update
+                return Bozuko.error('bozuko/update').send(res);
+            }
+        }
 
-        next();
+        return next();
     };
 };

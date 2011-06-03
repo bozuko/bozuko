@@ -69,23 +69,15 @@ EntryMethod.prototype.getDescription = function(){
  */
 EntryMethod.prototype.configure = function( config ){
     var i, self = this;
-    if( config.options ){
-        merge.merge( config, config.options);
-    }
     this.config = {};
-    var _defaults = function(o){
-        var p = Object.getPrototypeOf(o);
-        if( p && p.defaults ) _defaults(p);
-        for( i in o.defaults ){
-            self.config[i] = o.defaults[i];
-        }
-    };
-    _defaults(this);
+    for( var p in this.defaults ){
+        this.config[p] = this.defaults[p];
+    }
     if( config.toObject ){
         config = config.toObject();
     }
-    for( i in config ){
-        this.config[i] = config[i];
+    for( p in config ){
+        this.config[p] = config[p];
     }
 };
 

@@ -97,6 +97,20 @@ Contest.method('publish', function(callback){
 });
 
 /**
+ * Cancel a contest
+ *
+ * @public
+ */
+Contest.method('cancel', function(callback){
+    var self = this;
+    self.end = new Date();
+    return self.save(function(error){
+        if( error ) return callback( error );
+        return callback( null, self );
+    });
+});
+
+/**
  * Enter a contest
  *
  * @param {Entry}
@@ -332,13 +346,55 @@ Contest.method('startPlay', function(user_id, callback) {
     );
 });
 
+function letter(val) {
+    return val + 65;
+}
+function get_code(num) {
+    var pow;
+    var vals = new Array(5);
+    for (var i = 4; i >= 0; i--) {
+        pow = Math.pow(26,i);
+        vals[i] = Math.floor(num / pow);
+        num = num - vals[i]*pow;
+    }
+
+    return String.fromCharCode(66, letter(vals[4]), letter(vals[3]), letter(vals[2]), letter(vals[1]), letter(vals[0]));
+}
+
+// Only claim a consolation prize if there are some remaining
+Contest.method('claimConsolation', function(opts, callback) {
+    var total = this.consolation_prizes[0].total;
+    Bozuko.models.Contest.findAndModify(
+        { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total}}}},
+        [],
+        {$inc : {'consolation_prizes.$.claimed': 1}},
+        {new: true},
+        function(err, contest) {
+            if (err) return callback(err);
+            if (!contest) {
+                opts.consolation = false;
+                return callback(null);
+            }
+            opts.consolation_prize_code = get_code(contest.consolation_prizes[0].claimed);
+            return contest.savePrize(opts, callback);
+        }
+    );
+});
+
 Contest.method('saveConsolation', function(opts, callback) {
     opts.consolation = true;
     var self = this;
     var config = this.consolation_config[0];
+
+    var consolation_prize = self.consolation_prizes[0];
+    if (consolation_prize.claimed === consolation_prize.total) {
+        opts.consolation = false;
+        return callback(null);
+    }
+
     if (config.who === 'losers' && opts.win === true) return callback(null);
 
-    if (config.who === 'all' && config.when === 'always') return this.savePrize(opts, callback);
+    if (config.who === 'all' && config.when === 'always') return this.claimConsolation(opts, callback);
 
     // Is there a winner for the current active entries?
     function savePrizeIfLoser() {
@@ -348,7 +404,7 @@ Contest.method('saveConsolation', function(opts, callback) {
                 if (err) return callback(err);
 
                 // We are a real loser, save the prize
-                if (!play) return self.savePrize(opts, callback);
+                if (!play) return self.claimConsolation(opts, callback);
 
                 // We won recently
                 return callback(null);
@@ -374,7 +430,7 @@ Contest.method('saveConsolation', function(opts, callback) {
                 }
 
                 if (config.who === 'all') {
-                    return self.savePrize(opts, callback);
+                    return self.claimConsolation(opts, callback);
                 }
             }
         );
@@ -389,18 +445,9 @@ Contest.method('saveConsolation', function(opts, callback) {
     return callback(null);
 });
 
-
-// We generate the codes here for consolation prizes. Note that these codes can possibly have duplicates.
-// It shouldn't really matter for consolation prizes, so allow it for performance.
-function letter() { return rand(0,25) + 65; }
-function get_code() {
-    return String.fromCharCode(letter(), letter(), letter(), letter(), letter(), letter());
-}
-
 Contest.method('savePrize', function(opts, callback) {
     var self = this;
     var prize;
-    var email_code = null;
 
     if( opts.prize_index === false && !opts.consolation) {
         return callback(null, null);
@@ -428,7 +475,7 @@ Contest.method('savePrize', function(opts, callback) {
             page_id: self.page_id,
             user_id: opts.user_id,
             uuid: opts.uuid,
-            code: opts.consolation ? get_code() : opts.prize_code,
+            code: opts.consolation ? opts.consolation_prize_code : opts.prize_code,
             value: prize.value,
             page_name: page.name,
             name: prize.name,
@@ -440,12 +487,16 @@ Contest.method('savePrize', function(opts, callback) {
             description: prize.description,
             redeemed: false,
             consolation: opts.consolation,
-            is_email: prize.is_email
+            is_email: prize.is_email,
+            is_barcode: prize.is_barcode
         });
 
         if (prize.is_email) {
             user_prize.email_body = prize.email_body;
             user_prize.email_code = prize.email_codes[opts.prize_count];
+        }
+        if (prize.is_barcode) {
+            user_prize.barcode_image = prize.barcode_images[opts.prize_count];
         }
 
         return user_prize.save(function(err) {
@@ -480,7 +531,7 @@ Contest.method('createPrize', function(opts, callback) {
     // Don't worry about this for audit code, as the user's info might have changed.
     if (!opts.audit) {
         var info = this.getUserInfo(opts.user_id);
-        if (info.tokens === 0 && this.consolation_config.length != 0) {
+        if (info.tokens === 0 && this.consolation_config.length != 0 && this.consolation_prizes.length != 0) {
             opts.user_info = info;
             return this.saveConsolation(opts, function(err, consolation_prize) {
                 if (err) return callback(err);

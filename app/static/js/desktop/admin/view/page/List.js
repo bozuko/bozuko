@@ -14,19 +14,27 @@ Ext.define('Bozuko.view.page.List' ,{
             autoScroll: true,
             overItemCls: 'list-item-over',
             selectedItemCls: 'list-item-selected',
-            tpl :[
+            tpl :new Ext.XTemplate(
                 '<div class="bozuko-list">',
                     '<tpl for=".">',
                         '<div class="list-item">',
-                            '<img src="{image}&type=square" />',
+                            '<img src="{[this.getImage(values.image)]}" />',
                             '<span class="title">{name}</span>',
                             '<div class="sub">',
                                 '{location.street}<br />{location.city}, {location.state}',
                             '</div>',
                         '</div>',
                     '</tpl>',
-                '</div>'
-            ],
+                '</div>',
+                {
+                    getImage: function(image){
+                        if( /facebook\.com/.test(image) ){
+                            image = image.replace(/type=large/, 'type=square');
+                        }
+                        return image;
+                    }
+                }
+            ),
             itemSelector: '.list-item',
             emptyText:'No Pages'
         }];

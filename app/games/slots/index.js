@@ -2,7 +2,7 @@ var Game = Bozuko.require('core/game'),
     burl = Bozuko.require('util/url').create,
     path = require('path'),
     fs = require('fs'),
-    gd = require('gd/gd'),
+    gd = require('node-gd'),
     inherits = require('util').inherits
     ;
 
@@ -16,7 +16,7 @@ Slots.prototype.name = "Slots";
 
 Slots.prototype.type = path.basename(__dirname);
 
-Slots.prototype.icon = burl('/games/slots/slots_icon.png');
+Slots.prototype.icon = burl('/games/slots/slots_icon3.png');
 
 Slots.prototype.process = function(outcome){
 
@@ -103,7 +103,7 @@ Slots.prototype.getImage = function(index){
 Slots.prototype.createResultImage = function(dest, icon_src){
     var x3_src = __dirname+'/resources/x3.png';
     
-    if(path.exists(dest)) return;
+    if(path.existsSync(dest)) return;
     
     gd.openPng(
         x3_src,
@@ -111,7 +111,7 @@ Slots.prototype.createResultImage = function(dest, icon_src){
             gd.openPng(
                 icon_src,
                 function(icon, path){
-                    icon.copyResampled(x3,0,15,0,0,50,50,icon.width,icon.height);
+                    icon.copyResampled(x3,10,10,0,0,60,60,icon.width,icon.height);
                     x3.saveAlpha(1);
                     x3.savePng(dest, 0, gd.noop);
                 }

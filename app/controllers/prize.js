@@ -12,6 +12,8 @@ exports.transfer_objects = {
             state: "String",
             name: "String",
             is_email: "Boolean",
+            is_barcode: "Boolean",
+            barcode_image: "String",
             page_name: "String",
             wrapper_message: "String",
             description: "String",
@@ -32,7 +34,7 @@ exports.transfer_objects = {
 
         create : function( prize, user){
             var o = this.sanitize(prize);
-    
+
             o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
             ". This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
             o.win_time = prize.timestamp;
@@ -44,17 +46,17 @@ exports.transfer_objects = {
             o.redemption_duration = 60;
             if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
             o.expiration_timestamp = prize.expires;
-    
+
             o.links = {
                 prize : '/prize/'+prize.id,
                 page: '/page/'+prize.page_id,
                 user: '/user/'+prize.user_id
             };
-    
+
             if( o.state == 'active' ){
                 o.links.redeem = '/prize/'+prize.id+'/redemption';
             }
-    
+
             return this.sanitize(o, null, user);
         }
     },
@@ -162,25 +164,37 @@ exports.routes = {
                         {page_name: re}
                     ];
                 }
-                
+
                 var limit = req.param('limit') || 25;
                 var offset = req.param('offset') || 0;
-        
+
                 var url_parsed = URL.parse(req.url);
                 var params = qs.parse(url_parsed.query);
-                
+
                 params['limit'] = limit;
                 params['offset'] = offset+limit;
-                
+
                 var next = url_parsed.pathname+'?'+qs.stringify(params);
-                
-                return Bozuko.models.Prize.search(selector, {}, {limit: limit, offset: offset, sort: {timestamp: -1}}, function(error, prizes){
+
+                return Bozuko.models.Prize.count(selector, function(error, count){
                     if( error ) return error.send( res );
-                    var ret = {
-                        prizes: prizes,
-                        next: next
-                    };
-                    return res.send( Bozuko.transfer('prizes', ret, req.session.user));
+                    
+                    if( !count ){
+                        return res.send( Bozuko.transfer('prizes', {
+                            prizes: []
+                        }, req.session.user));
+                    }
+                    
+                    var hasNext = offset+limit <= count;
+                    
+                    return Bozuko.models.Prize.search(selector, {}, {limit: limit, skip: offset, sort: {timestamp: -1}}, function(error, prizes){
+                        if( error ) return error.send( res );
+                        var ret = {
+                            prizes: prizes
+                        };
+                        if( hasNext ) ret.next = next;
+                        return res.send( Bozuko.transfer('prizes', ret, req.session.user));
+                    });
                 });
             }
         }
@@ -191,17 +205,17 @@ exports.routes = {
 
         get : {
             access: 'user',
-    
+
             handler: function(req, res) {
                 var id = req.param('id');
                 var user_id = req.session.user.id;
                 var selector = {
                     _id: id
                 };
-    
+
                 return Bozuko.models.Prize.findOne(selector, function(error, prize){
                     if( error ) return error.send(res);
-        
+
                     if( !prize ){
                         return Bozuko.error('prize/not_found').send(res);
                     }
@@ -218,7 +232,7 @@ exports.routes = {
     '/prize/:id/redemption' : {
 
         post : {
-    
+
             access: 'mobile',
 
             handler: function(req,res){

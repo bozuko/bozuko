@@ -40,7 +40,7 @@ OrderEngine.prototype.generateResults = function( ){
     function get_code() {
         var code = '0';
         while (codes[code]) {
-            code = String.fromCharCode(letter(), letter(), letter(), letter(), letter(), letter());
+            code = String.fromCharCode(65, letter(), letter(), letter(), letter(), letter());
         }
         codes[code] = true;
         return code;
