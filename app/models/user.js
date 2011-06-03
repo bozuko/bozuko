@@ -81,10 +81,13 @@ User.method('updateLikes', function(callback){
         }catch(e){
             likes = [];
         }
+        var commit = true;
         if( !self.service('facebook').internal ){
             self.service('facebook').internal = {};
+            commit = false;
         }
         self.service('facebook').internal.likes = likes;
+        if( commit ) self.service('facebook').commit('internal');
         return self.save(callback);
     });
 });
