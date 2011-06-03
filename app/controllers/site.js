@@ -3,8 +3,8 @@ var ExtJs       = Bozuko.require('util/extjs'),
     Page        = Bozuko.require('util/page'),
     URL         = require('url'),
     fs          = require('fs'),
+    knox        = require('knox'),
     path        = require('path'),
-    gd          = require('gd/gd'),
     markdown    = require('markdown-js'),
     qs          = require('querystring')
     ;
@@ -75,6 +75,17 @@ exports.routes = {
             res.render('site/coming-soon');
         }
     },
+    
+    '/test/knox':{
+        get : function(req, res){
+            var s3 = knox.createClient(Bozuko.config.amazon.s3);
+            console.log('got file');
+            s3.putFile( Bozuko.dir+'/app/static/favicon.ico', '/favicon.ico', function(error, response){
+                console.log(error);
+                res.send( 'test' );
+            });
+        }
+    },
 
     '/about' : Page("About Bozuko",'site/about'),
 
@@ -85,35 +96,6 @@ exports.routes = {
         get : function(req, res, next){
             var path = 'pages/'+URL.parse(req.url).pathname.replace(/\/p\//, '');
             res.render(path,{'title' : 'Bozuko'});
-        }
-    },
-    
-    '/test/icon' : {
-        get : function(req, res){
-            var x3_src = Bozuko.dir+'/app/games/slots/resources/x3.png',
-                icon_src = Bozuko.dir+'/app/games/slots/themes/default/resources/default_theme/bell.png',
-                target_src = Bozuko.dir+'/app/games/slots/themes/default/resources/bell-x3.png'
-                ;
-            
-            if (path.exists(target_src)) fs.unlinkSync(target_src);
-            
-            // fs.mkdirSync(path.dirname(target_src), 'w');
-            
-            gd.openPng(
-                x3_src,
-                function(x3, path){
-                    gd.openPng(
-                        icon_src,
-                        function(bell, path){
-                            bell.copyResampled(x3,5,5,0,0,70,70,bell.width,bell.height);
-                            x3.saveAlpha(1);
-                            x3.savePng(target_src, 2, function(){
-                                res.redirect('/games/slots/themes/default/bell-x3.png');
-                            });
-                        }
-                    );
-                }
-            );
         }
     },
     

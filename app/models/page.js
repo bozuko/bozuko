@@ -418,7 +418,7 @@ Page.static('search', function(options, callback){
         selector:{owner_id: {$exists: true}},
         fields: {},
         // sorting asc puts true first
-        options:{limit: Bozuko.config.search.nearbyLimit, offset: Bozuko.config.search.nearbyLimit * page}
+        options:{limit: Bozuko.config.search.nearbyLimit, skip: Bozuko.config.search.nearbyLimit * page}
     };
 
     var serviceSearch = {};
@@ -472,10 +472,11 @@ Page.static('search', function(options, callback){
     else {
         if( !options.query && !page ) getFeatured = true;
         // we need to add featured results to the main search page
-        if( Bozuko.env() == 'development' && !options.query ){
+        if( Bozuko.config.test_mode && !options.query ){
             bozukoSearch.selector['$or'] = [{test: true}, {featured:true}];
+            bozukoSearch.selector['coords'] = {$near: options.ll};
         }
-        else {
+        else if( !page ){
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
             bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
             if( options.query ) delete bozukoSearch.selector.coords['$maxDistance'];
@@ -500,6 +501,7 @@ Page.static('search', function(options, callback){
             if (!page.owner_id && page._id) {
                 page.id = page.service('facebook').sid;
             }
+            page._distance = Geo.distance( options.ll, page.coords );
             page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
             if(fn) fn.call(this, page);
         }
@@ -533,20 +535,21 @@ Page.static('search', function(options, callback){
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
-
             pages = featured.concat(pages);
 
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
 
                 var page_ids = [], fb_ids=[];
-                prepare_pages(pages, function(page){
+                prepare_pages(pages, options.user, function(page){
                     var fb;
                     if( (fb = page.service('facebook')) ){
-                        fb_ids.push(fb.sid);
+                        fb_ids.push(String(fb.sid));
                     }
                     page_ids.push(page._id);
                 });
+                
+                
 
                 if( !serviceSearch ){
                     return return_pages( pages );
@@ -565,9 +568,9 @@ Page.static('search', function(options, callback){
                     var map = {}, results = [];
                     
                     if( _results ) _results.forEach( function(place, index){
-                        if( ~fb_ids.indexOf(place.id) ) return;
+                        if( ~fb_ids.indexOf(String(place.id)) ) return;
                         results.push(place);
-                        map[place.id] = place;
+                        map[String(place.id)] = place;
                     });
 
                     return Bozuko.models.Page.findByService(service, Object.keys(map), {
@@ -577,23 +580,24 @@ Page.static('search', function(options, callback){
                         _id: {$nin: page_ids}
                     }, function(error, _pages){
                         if( error ) return callback( error );
-                        prepare_pages(_pages, function(page){
-                            results.splice( results.indexOf(map[page.service(service).sid]), 1 );
-                        });
-                        pages.forEach(function(page){
+                        prepare_pages(_pages, options.user, function(page){
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                         });
 
                         if (results) {
                             results.forEach(function(result){
                                 result.registered = false;
+                                result._distance = Geo.distance(options.ll, [result.location.lng,result.location.lat]);
                                 result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                             });
                         }
-
+                        
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             pages = pages.concat(_pages);
                             pages = pages.concat(results);
+                            
+                            // sort these pages by distance...
+                            pages.sort( page_search_sort );
                             return return_pages(pages);
                         });
                     });
@@ -602,3 +606,8 @@ Page.static('search', function(options, callback){
         });
     });
 });
+
+function page_search_sort(a,b){
+    // okay, they are pretty equal, lets sort by _distance
+    return a._distance - b._distance;
+}

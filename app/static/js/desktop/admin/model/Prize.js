@@ -15,6 +15,8 @@ Ext.define('Bozuko.model.Prize', {
         {name:'image',          type:'String'},
         {name:'total',          type:'Number'},
         {name:'is_email',       type:'Boolean'},
+        {name:'is_barcode',     type:'Boolean'},
+        {name:'barcode_images', type:'Array'},
         {name:'email_body',     type:'String'},
         {name:'email_codes',    type:'Array'}
     ],

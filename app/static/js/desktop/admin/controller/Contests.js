@@ -122,7 +122,6 @@ Ext.define('Bozuko.controller.Contests' ,{
         else{
             entry_config = this.getValues(entry);
         }
-        console.log(entry_config);
         record.set( 'entry_config', [entry_config] );
         
         var consolation_config = record.get('consolation_config');
@@ -231,8 +230,77 @@ Ext.define('Bozuko.controller.Contests' ,{
                 
             case 'copy':
                 
+                var name = record.get('name');
+                if( name ) name+=' (Copy)';
+                else name = Ext.Date.parse(new Date(), 'Campaign m-d-Y');
+                Ext.Msg.prompt({
+                    title: 'Copy Campaign',
+                    msg: 'What would you like to name your new campaign?',
+                    fn: function(btn, text){
+                        if( btn !== 'ok') return;
+                        var copy = record.copy();
+                        copy.phantom=true;
+                        
+                        // initialize the stores
+                        copy.prizes();
+                        copy.consolation_prizes();
+                        
+                        var now = new Date();
+                            diff = copy.get('end').getTime() - copy.get('start').getTime(),
+                            start = now,
+                            end = new Date();
+                        
+                        copy.set('_id', '');
+                        end.setTime(start.getTime() + diff);
+                        copy.set('start', start);
+                        copy.set('end', end);
+                        copy.set('name', text);
+                        copy.set('active', false);
+                        copy.set('total_entries', 0);
+                        copy.set('total_plays', 0);
+                        copy.set('play_cursor', -1);
+                        copy.set('token_cursor', -1);
+                        copy.phantom = true;
+                        // save the copy
+                        copy.save({
+                            callback : function(){
+                                view.store.load();
+                            }
+                        });
+                    },
+                    icon: Ext.Msg.INFO,
+                    prompt: true,
+                    width: 300,
+                    buttons: Ext.Msg.OKCANCEL,
+                    value: name,
+                    modal: true
+                });
+                break;
                 
             case 'cancel':
+                
+                var url = '/admin/contests/'+record.getId()+'/cancel';
+                Ext.Ajax.request({
+                    url: url,
+                    method: 'post',
+                    callback : function(opts, success, response){
+                        if( !success ){
+                            // alert?
+                            return;
+                        }
+                        try{
+                            var result = Ext.decode( response.responseText );
+                            if( result && result.success){
+                                // need to refresh the contests..
+                                view.store.load();
+                            }
+                        }catch(e){
+                            
+                        }
+                    }
+                });
+                break;
+            
             default:
                 Ext.Msg.show({
                     title: 'Not Implemented Yet',

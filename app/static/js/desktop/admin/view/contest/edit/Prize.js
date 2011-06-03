@@ -50,6 +50,31 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 value           :1000 * 60 * 2
             },{
                 xtype           :'checkbox',
+                name            :'is_barcode',
+                fieldLabel      :'Use Barcodes',
+                allowBlank      :false,
+                listeners       :{
+                    scope           :me,
+                    change          :me.onBarcodeChange
+                }
+            },{
+                xtype           :'textarea',
+                height          :80,
+                hidden          :true,
+                name            :'barcode_images',
+                fieldLabel      :'Barcodes (one per line)',
+                allowBlank      :false,
+                getValue        :function(){
+                    var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this);
+                    return v.split('\n');
+                },
+                setValue        :function(v){
+                    
+                    if( Ext.isString(v) ) v = v.split('\n');
+                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
+                }
+            },{
+                xtype           :'checkbox',
                 name            :'is_email',
                 fieldLabel      :'Email Prize?',
                 allowBlank      :false,
@@ -69,16 +94,15 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 height          :80,
                 hidden          :true,
                 name            :'email_codes',
-                fieldLabel      :'Email Codes (separate with a comma)',
+                fieldLabel      :'Email Codes (one per line)',
                 allowBlank      :false,
                 getValue        :function(){
                     var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this);
-                    return v.split(',');
+                    return v.split('\n');
                 },
                 setValue        :function(v){
-                    
-                    if( Ext.isString(v) ) v = v.split(',');
-                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join(',')])
+                    if( Ext.isString(v) ) v = v.split('\n');
+                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
                 }
             },{
                 xtype           :'container',
@@ -108,6 +132,13 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
     onEmailChange : function(field, value){
         var fn = value ? 'show' : 'hide';
         Ext.Array.each( this.query('[name=email_body], [name=email_codes]'), function(cmp){
+            cmp[fn]();
+        });
+    },
+    
+    onBarcodeChange : function(field, value){
+        var fn = value ? 'show' : 'hide';
+        Ext.Array.each( this.query('[name=barcode_images]'), function(cmp){
             cmp[fn]();
         });
     },

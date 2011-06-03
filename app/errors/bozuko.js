@@ -17,5 +17,10 @@ module.exports = {
         message: function(){
             return "Error creating transfer object: "+this.data;
         }
+    },
+    
+    update : {
+        code: 403,
+        message: "Sorry. You must update Bozuko to continue."
     }
 };
