@@ -122,7 +122,7 @@ Ext.define('Bozuko.view.contest.View' ,{
             if( !gauge ) return;
             var record = me.getRecord(node);
             // else
-            var percent = (Math.max( 0, record.get('play_cursor')) / record.get('total_plays')) * 100 ;
+            var percent = Math.max( 0, record.get('play_cursor')) / record.get('total_plays') * 100 ;
             console.log(percent);
             Ext.create('Ext.chart.Chart',{
                 style: 'background:transparent',
@@ -132,7 +132,7 @@ Ext.define('Bozuko.view.contest.View' ,{
                 animate: true,
                 store: Ext.create('Ext.data.Store',{
                     fields:['percent'],
-                    data:[{percent: Math.max( 0, record.get('play_cursor')) / record.get('total_plays') * 100 }]
+                    data:[{percent: percent}]
                 }),
                 insetPadding: 25,
                 flex: 1,
@@ -147,10 +147,43 @@ Ext.define('Bozuko.view.contest.View' ,{
                 series: [{
                     type: 'gauge',
                     field: 'percent',
-                    donut: 30,
+                    donut: 50,
                     colorSet: ['#82B525', '#ddd']
                 }]
-            })
+            });
+            /*
+            var s = record.get('start').getTime();
+            var e = record.get('end').getTime();
+            var n = (new Date).getTime();
+            percent = Math.max( 0, (n-s) / (e-s)) * 100 ;
+            Ext.create('Ext.chart.Chart',{
+                style: 'background:transparent',
+                width: 200,
+                height: 130,
+                renderTo: gauge,
+                animate: true,
+                store: Ext.create('Ext.data.Store',{
+                    fields:['percent'],
+                    data:[{percent: percent}]
+                }),
+                insetPadding: 25,
+                flex: 1,
+                axes: [{
+                    type: 'gauge',
+                    position: 'gauge',
+                    minimum: 0,
+                    maximum: 100,
+                    steps: 10,
+                    margin: 7
+                }],
+                series: [{
+                    type: 'gauge',
+                    field: 'percent',
+                    donut: 50,
+                    colorSet: ['#82B525', '#ddd']
+                }]
+            });
+            */
         });
     }
 });
