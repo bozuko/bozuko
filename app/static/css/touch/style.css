@@ -67,3 +67,6 @@ body {
 .content-page h1 {
   text-align: center;
 }
+.fb_edge_widget_with_comment .fb_edge_comment_widget iframe.fb_ltr {
+  display: none !important;
+}
