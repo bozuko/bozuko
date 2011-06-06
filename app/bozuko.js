@@ -32,6 +32,7 @@ var self = this;
 var http            = Bozuko.require('util/http'),
     create_url      = Bozuko.require('util/url').create,
     express         = require('express'),
+	socketIO		= require('socket.io'),
     Schema          = require('mongoose').Schema,
     BozukoStore     = Bozuko.require('core/session/store'),
     Monomi          = require('monomi'),
@@ -61,6 +62,7 @@ Bozuko.getApp = function(){
         // setup our device dependent renderer
         Bozuko.require('core/view');
         Bozuko.app = app;
+		// Bozuko.socket = socketIO.listen( Bozuko.app );
     }
     return Bozuko.app;
 };

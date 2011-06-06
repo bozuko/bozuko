@@ -44,7 +44,8 @@ Ext.define('Bozuko.view.page.List' ,{
                 text: 'Add Business',
                 action: 'add'
             },'->',{
-                text: 'Reload',
+                text: 'Refresh',
+                icon: '/images/icons/famfamfam/icons/arrow_refresh.png',
                 action: 'reload'
             }]
         }]

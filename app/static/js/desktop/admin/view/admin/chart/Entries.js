@@ -31,40 +31,10 @@ Ext.define( 'Bozuko.view.admin.chart.Entries', {
         toDate: new Date(2011, 1, 7)
     }],
     series: [{
-        type: 'line',
+        type: 'column',
         axis: 'left',
         xField: 'date',
-        yField: 'visits',
-        label: {
-            display: 'none',
-            field: 'visits',
-            renderer: function(v) { return v >> 0; },
-            'text-anchor': 'middle'
-        },
-        markerConfig: {
-            radius: 5,
-            size: 5
-        }
-    },{
-        type: 'line',
-        axis: 'left',
-        xField: 'date',
-        yField: 'views',
-        label: {
-            display: 'none',
-            field: 'visits',
-            renderer: function(v) { return v >> 0; },
-            'text-anchor': 'middle'
-        },
-        markerConfig: {
-            radius: 5,
-            size: 5
-        }
-    },{
-        type: 'line',
-        axis: 'left',
-        xField: 'date',
-        yField: 'veins',
+        yField: 'entries',
         label: {
             display: 'none',
             field: 'visits',

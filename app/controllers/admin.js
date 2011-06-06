@@ -160,6 +160,11 @@ exports.routes = {
                 if( page_id ) selector['page_id'] = page_id;
                 return Bozuko.models.Contest.find(selector,{},{sort:{active: -1, start:-1}}, function(error, contests){
                     if( error ) return error.send(res);
+                    contests.sort(function(a,b){
+                        if( a.state=='active' && b.state != 'active' ) return -1;
+                        if( b.state=='active' && a.state != 'active' ) return 1;
+                        return +b.start-a.start;
+                    });
                     return res.send({items:contests});
                 });
             }
@@ -310,6 +315,52 @@ exports.routes = {
         }
     },
     
+    '/admin/winners' : {
+
+        get : {
+            handler : function(req, res){
+                // check for contest or page
+                var contest_id = req.param('contest_id'),
+                    page_id = req.param('page_id'),
+                    limit = req.param('limit') || 25,
+                    offset = req.param('offset') || 0,
+                    selector = {}
+                    ;
+                    
+                if( contest_id ) selector['contest_id'] = contest_id;
+                if( page_id ) selector['page_id'] = page_id;
+                
+                return Bozuko.models.Prize.find(selector, {}, {sort: {timestamp: -1}, limit: limit, skip: offset},function(error, prizes){
+                    if( error ) return error.send(res);
+                    
+                    var user_ids = {};
+                    prizes.forEach(function(prize){
+                        user_ids[String(prize.user_id)] = true;
+                    });
+                    // get the users
+                    return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, function(error, users){
+                        if( error ) return error.send(res);
+                        var user_map = {};
+                        users.forEach(function(user){
+                            user_map[String(user._id)] = user;
+                        });
+                        
+                        // create a winner object
+                        var winners = [];
+                        prizes.forEach(function(prize){
+                            winners.push({
+                                _id: prize.id,
+                                prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expiration_time','redeemed','consolation','is_barcode','is_email','email_code','barcode_image'),
+                                user: filter(user_map[String(prize.user_id)],'_id','name','image','email')
+                            });
+                        });
+                        return res.send({items:winners});
+                    });
+                });
+            }
+        }
+    },
+    
     '/admin/contests/:id/publish' : {
         post : {
             handler : function(req,res){
@@ -395,8 +446,17 @@ exports.routes = {
 };
 
 function filter(data){
+    
+    if( arguments.length > 1 ){
+        var tmp={};
+        [].slice.call(arguments,1).forEach(function(field){
+            tmp[field] = data[field];
+        });
+        data = tmp;
+    }
+    
     if( Array.isArray(data)){
-        data.forEach(filter);
+        data.forEach(function(item){filter(item);});
     }
     else if( data && 'object' === typeof data ){
         Object.keys(data).forEach(function(key){

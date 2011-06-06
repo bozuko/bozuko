@@ -113,18 +113,21 @@ Ext.define('Bozuko.view.contest.View' ,{
         me.callParent();
         
         me.on('refresh', me.addGauges, me);
+        me.on('destroy', me.destroyGauges, me);
     },
     
     addGauges : function(){
         var me = this;
+        me.gauges = [];
         Ext.Array.each( me.getNodes(), function(node){
             var gauge = Ext.fly(node).down('.gauge');
             if( !gauge ) return;
             var record = me.getRecord(node);
             // else
-            var percent = Math.max( 0, record.get('play_cursor')) / record.get('total_plays') * 100 ;
-            console.log(percent);
-            Ext.create('Ext.chart.Chart',{
+            var percent = Math.max( 0, record.get('play_cursor')) / record.get('total_plays') * 100;
+            if( isNaN( percent) ) return;
+            
+            me.gauges[me.gauges.length] = Ext.create('Ext.chart.Chart',{
                 style: 'background:transparent',
                 width: 200,
                 height: 130,
@@ -184,6 +187,13 @@ Ext.define('Bozuko.view.contest.View' ,{
                 }]
             });
             */
+        });
+    },
+    
+    destroyGauges : function(){
+        var me = this;
+        Ext.Array.each( me.gauges, function(gauge){
+            gauge.destroy();
         });
     }
 });
