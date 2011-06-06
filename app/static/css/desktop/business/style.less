@@ -51,55 +51,57 @@
             border: 1px solid #ccc;
             padding: 10px;
             
-            .buttons {
-                clear: both;
-                display: block;
-                border-top: 1px solid #ddd;
-                margin-top: 6px;
-                padding-top: 6px;
-                
-                li {
-                    display: inline;
-                    
-                    a {
-                        margin-right: 14px;
-                        display: inline-block;
-                        line-height: 28px;
-                        background-color: transparent;
-                        background-position: 0 50%;
-                        background-repeat: no-repeat;
-                        padding-left: 28px;
-                        text-decoration: none;
-                        color: #da6619;
-                        font-size: 14px;
-                    }
-                    a:hover {
-                        
-                        text-decoration: underline;
-                        color: #ac5113;
-                        
-                    }
-                    
-                    .delete {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png');
-                    }
-                    .edit {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-24.png');
-                    }
-                    .publish {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png');
-                    }
-                    .copy {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png');
-                    }
-                    .cancel {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
-                    }
-                    .reports {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-report-bar-24.png');
-                    }
-                }
-            }
+            
+        }
+    }
+}
+
+.buttons {
+    clear: both;
+    display: block;
+    border-top: 1px solid #ddd;
+    margin-top: 6px;
+    padding-top: 6px;
+    
+    li {
+        display: inline;
+        
+        a {
+            margin-right: 14px;
+            display: inline-block;
+            line-height: 28px;
+            background-color: transparent;
+            background-position: 0 50%;
+            background-repeat: no-repeat;
+            padding-left: 28px;
+            text-decoration: none;
+            color: #da6619;
+            font-size: 14px;
+        }
+        a:hover {
+            
+            text-decoration: underline;
+            color: #ac5113;
+            
+        }
+        
+        .delete {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png');
+        }
+        .edit {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-24.png');
+        }
+        .publish {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png');
+        }
+        .copy {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png');
+        }
+        .cancel {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
+        }
+        .reports {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-report-bar-24.png');
         }
     }
 }
@@ -136,6 +138,26 @@
         background: #d5eaf9;
     }
 }
+
+.winners-list {
+    .user-name {
+        font-size: 12px;
+        font-weight: normal;
+        margin-bottom: .4em;
+    }
+    
+    .prize-name {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: .4em;
+    }
+    
+    .prize-timestamp {
+        font-size: 12px;
+        color: #999;
+    }
+}
+
 
 .campaign-nav {
     
@@ -181,6 +203,22 @@
         }
         .rules{
             background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/paper-gavel-16.png');
+        }
+    }
+}
+
+.campaign-details {
+    padding: 10px;
+    background: transparent;
+    .details{
+        table {
+            th {
+                padding-right: 10px;
+                font-weight: bold;
+            }
+            td {
+                padding: 4px;
+            }
         }
     }
 }
