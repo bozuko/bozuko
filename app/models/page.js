@@ -549,9 +549,16 @@ Page.static('search', function(options, callback){
                     page_ids.push(page._id);
                 });
                 
-                
+                // grab the featured out of there for sorting...
+                featured = [];
+                for( var i=0; i<featured.length; i++){
+                    featured.push( pages.shift() );
+                }
 
                 if( !serviceSearch ){
+                    featured.sort(page_search_sort);
+                    pages.sort(page_search_sort);
+                    pages = featured.concat(pages);
                     return return_pages( pages );
                 }
 
@@ -594,10 +601,14 @@ Page.static('search', function(options, callback){
                         
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             pages = pages.concat(_pages);
+                            
+                            featured.sort(page_search_sort);
+                            pages.sort(page_search_sort);
+                            results.sort(page_search_sort);
+                            
+                            pages = featured.concat(pages);
                             pages = pages.concat(results);
                             
-                            // sort these pages by distance...
-                            pages.sort( page_search_sort );
                             return return_pages(pages);
                         });
                     });
