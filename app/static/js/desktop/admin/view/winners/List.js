@@ -11,8 +11,6 @@ Ext.define('Bozuko.view.winners.List' ,{
         type        :'fit'
     },
     
-    autoScroll: true,
-    
     initComponent : function(){
         var me = this;
         me.store = Ext.create('Bozuko.store.Winners');
@@ -35,6 +33,8 @@ Ext.define('Bozuko.view.winners.List' ,{
             
             emptyText: '<p>No Winners yet!</p>',
             deferEmptyText: false,
+            
+            autoScroll: true,
             
             store: me.store,
             tpl: new Ext.XTemplate(
