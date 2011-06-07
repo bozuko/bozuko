@@ -4,9 +4,9 @@ var port = 6999 + process.getuid();
 if (process.env.USER === 'docs') port = 7002;
 
 module.exports = {
-    
+
     test_mode: true,
-    
+
     client: {
         mobile:{
             iphone:{
@@ -35,7 +35,7 @@ module.exports = {
             business:"email,manage_pages"
         }
     },
-    
+
     bozuko :{
         facebook_id: '177515562277757'
     },
@@ -46,7 +46,7 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
-    
+
     amazon : {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
@@ -62,14 +62,14 @@ module.exports = {
             // 4 hours between checkins at the same place
             page: 1000 * 60 * 60 * 4
         },
-        
+
         distance : 100 /* feet */
     },
-    
+
     entry : {
         token_expiration: 1000 * 60 * 60 * 24 * 1 // one day.
     },
-    
+
     contest : {
         engine : {
             order: {
@@ -77,7 +77,7 @@ module.exports = {
             }
         }
     },
-    
+
     search: {
         // radius to search for "Nearby Games" in miles
         nearbyRadius: 2,
@@ -91,7 +91,7 @@ module.exports = {
         host: 'bonobo.bozuko.com',
         port: port
     },
-    
+
     email : {
         smtp:{
             host: "smtp.gmail.com",
@@ -116,7 +116,7 @@ module.exports = {
         'developer'     :'bluebeard',
         'guest'         :'virgil'
     },
-    
+
     admins: [
         'mark.fabrizio@bozuko.com',
         'andrew.stone@bozuko.com',

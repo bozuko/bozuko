@@ -365,7 +365,7 @@ function get_code(num) {
 Contest.method('claimConsolation', function(opts, callback) {
     var total = this.consolation_prizes[0].total;
     Bozuko.models.Contest.findAndModify(
-        { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total}}}},
+        { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total-1}}}},
         [],
         {$inc : {'consolation_prizes.$.claimed': 1}},
         {new: true},
@@ -376,6 +376,7 @@ Contest.method('claimConsolation', function(opts, callback) {
                 return callback(null);
             }
             opts.consolation_prize_code = get_code(contest.consolation_prizes[0].claimed);
+            opts.consolation_prize_count = contest.consolation_prizes[0].claimed;
             return contest.savePrize(opts, callback);
         }
     );
@@ -493,10 +494,18 @@ Contest.method('savePrize', function(opts, callback) {
 
         if (prize.is_email) {
             user_prize.email_body = prize.email_body;
-            user_prize.email_code = prize.email_codes[opts.prize_count];
+            if (opts.consolation) {
+                user_prize.email_code = prize.email_codes[opts.consolation_prize_count];
+            } else {
+                user_prize.email_code = prize.email_codes[opts.prize_count];
+            }
         }
         if (prize.is_barcode) {
-            user_prize.barcode_image = prize.barcode_images[opts.prize_count];
+            if (opts.consolation) {
+                user_prize.barcode_image = '/game/'+self._id+'/consolation_prize/0/barcode'+opts.consolation_prize_count;
+            } else {
+                user_prize.barcode_image = '/game/'+self._id+'/prize/'+opts.prize_index+'/barcode/'+opts.prize_count;
+            }
         }
 
         return user_prize.save(function(err) {
