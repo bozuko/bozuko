@@ -1,0 +1,76 @@
+var knox = require('knox'),
+    fs = require('fs'),
+    EventEmitter = require('events').EventEmitter
+;
+
+var Client = module.exports = function() {
+    this.client = knox.createClient(Bozuko.config.amazon.s3);
+};
+
+exports.createClient = function() {
+    return new Client();
+};
+
+Client.prototype.put = function(filename, path, callback) {
+    var self = this;
+    fs.readFile(filename, function(err, buf) {
+        if (err) throw err;
+
+        var req = self.client.put(path, {
+            'Content-Length': buf.length,
+            'Content-Type': 'image/png',
+            'x-amz-acl': 'private'
+        });
+
+        req.on('response', function(res) {
+            if (res.statusCode != 200) {
+                console.error('util/s3: Failed to put '+filename+' to '+path+'. status code = '+res.statusCode);
+                return callback(Bozuko.error('s3/put', path));
+            }
+
+            return callback(null);
+        });
+
+        req.on('error', function(err) {
+            console.error('util/s3: Failed to put '+filename+' to '+path+'. err = '+err);
+            return callback(Bozuko.error('s3/put', path));
+        });
+
+        req.end(buf);
+    });
+};
+
+Client.prototype.get = function(path, wstream) {
+    var req  = this.client.get(path);
+
+    function err() {
+        console.error('util/s3: Failed to get '+path);
+        return Bozuko.error('s3/get', path).send(wstream);
+    }
+
+    req.on('response', function(res) {
+        if (res.statusCode != 200) {
+            return err();
+        }
+
+        res.on('data', function(chunk) {
+            wstream.write(chunk);
+        });
+
+        res.on('end', function() {
+            wstream.end();
+        });
+
+        res.on('error', function(err) {
+            return err();
+        });
+
+    });
+
+    req.on('error', function(err) {
+        return err();
+    });
+
+    req.end();
+};
+
