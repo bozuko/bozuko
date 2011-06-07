@@ -94,7 +94,7 @@ function win(contest, winIndex) {
     }
 
     var done;
-    var used_nums = {};
+    var used_nums = {}, num_prizes = {};
     var val;
 
     // fill in other positions
@@ -105,16 +105,17 @@ function win(contest, winIndex) {
             val = rand(min, max);
             if (val != winning_number) {
                 if (!used_nums[val]) {
+                    num_prizes[val] = randomPrize(contest, winIndex);
                     results[index] = {
                         number: val,
-                        text: randomPrize(contest, winIndex)
+                        text: num_prizes[val]
                     };
                     used_nums[val] = 1;
                     done = true;
                 } else if (used_nums[val] < num_matches-1) {
                     results[index] = {
                         number: val,
-                        text: randomPrize(contest, winIndex)
+                        text: num_prizes[val]
                     };
                     used_nums[val]++;
                     done = true;
@@ -131,7 +132,7 @@ function win(contest, winIndex) {
 
 function lose(contest) {
     var results = [];
-    var used_nums = {};
+    var used_nums = {}, num_prizes={};
     var done = false;
     var val;
 
@@ -140,16 +141,17 @@ function lose(contest) {
         while (!done) {
             val = rand(min, max);
             if (!used_nums[val]) {
+                num_prizes[val] = randomPrize(contest);
                 results[i] = {
                     number: val,
-                    text: randomPrize(contest)
+                    text: num_prizes[val]
                 };
                 used_nums[val] = 1;
                 done = true;
             } else if (used_nums[val] < num_matches-1) {
                 results[i] = {
                     number: val,
-                    text: randomPrize(contest)
+                    text: num_prizes[val]
                 };
                 used_nums[val]++;
                 done = true;

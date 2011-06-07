@@ -1,7 +1,7 @@
 Ext.define('Bozuko.controller.Contests' ,{
     extend: 'Ext.app.Controller',
     
-    views: ['contest.Panel', 'contest.edit.Window'],
+    views: ['contest.Panel', 'contest.report.Panel', 'contest.edit.Form'],
     stores: ['Contests'],
     
     models: ['Contest', 'Page', 'Prize'],
@@ -24,6 +24,9 @@ Ext.define('Bozuko.controller.Contests' ,{
                 click : this.onContestSaveClick
             },
             'contestform button[action=back]' : {
+                click : this.onContestBackClick
+            },
+            'contestreportpanel button[action=back]' : {
                 click : this.onContestBackClick
             },
             'contestform panel[region=west] dataview' : {
@@ -139,6 +142,7 @@ Ext.define('Bozuko.controller.Contests' ,{
         
         record.save({
             success : function(){
+                var report;
                 if( isNew ){
                     // this isn't really a phantom anymore
                     record.phantom = false;
@@ -147,6 +151,10 @@ Ext.define('Bozuko.controller.Contests' ,{
                     // also, lets change the text
                     contestForm.down('[ref=edit-campaign-text]').setText( record.get('name') );
                     contestForm.down('[ref=edit-label-text]').setText( 'Edit Campaign:' );
+                    // check for reports...
+                    if( pagePanel.reports && (report =pagePanel.reports[record.get('_id')]) ){
+                        report.down('[ref=report-campaign-text]').setText(record.get('name'));
+                    }
                     pagePanel.cards[record.get('_id')] = contestForm;
                     delete pagePanel.cards[''];
                 }
@@ -241,9 +249,21 @@ Ext.define('Bozuko.controller.Contests' ,{
                         var copy = record.copy();
                         copy.phantom=true;
                         
-                        // initialize the stores
-                        copy.prizes();
-                        copy.consolation_prizes();
+                        // initialize the stores and delete the ids
+                        var prizes = copy.prizes();
+                        var consolations = copy.consolation_prizes();
+                        
+                        record.prizes().each(function(prize){
+                            var c = prize.copy();
+                            c.set('_id','');
+                            prizes.add(c);
+                        });
+                        
+                        record.consolation_prizes().each(function(prize){
+                            var c = prize.copy();
+                            c.set('_id','');
+                            consolations.add(c);
+                        });
                         
                         var now = new Date();
                             diff = copy.get('end').getTime() - copy.get('start').getTime(),
@@ -301,6 +321,10 @@ Ext.define('Bozuko.controller.Contests' ,{
                 });
                 break;
             
+            case 'reports':
+                this.openContest( record, view );
+                break;
+            
             default:
                 Ext.Msg.show({
                     title: 'Not Implemented Yet',
@@ -347,16 +371,44 @@ Ext.define('Bozuko.controller.Contests' ,{
         
     },
     
+    openContest : function(record, cmp){
+        // create a new
+        var panel = cmp.up('pagepanel'),
+            navbar = panel.down('[ref=page-navbar]'),
+            id = record.get('_id');
+        
+        if( !panel.reports ) panel.reports = {};
+        if( !panel.reports[id] ){
+            panel.reports[id] = panel.add({
+                border: false,
+                xtype: 'contestreportpanel'
+            });
+            panel.reports[id].setRecord( record );
+        }
+        navbar.hide();
+        
+        panel.getLayout().setActiveItem(panel.reports[id]);
+        panel.doLayout();
+    },
+    
     updateCards : function(store, view){
         var panel = view.up('pagepanel');
-        if( !panel.cards ) return;
-        Ext.Object.each( panel.cards, function(id, card){
+        if( panel.cards ) Ext.Object.each( panel.cards, function(id, card){
             var record;
             if( !(record = store.getById(id)) ){
                 panel.remove(card);
             }
             else{
                 card.setRecord(record);
+            }
+        });
+        if( panel.reports ) Ext.Object.each( panel.reports, function(id, report){
+            var record;
+            if( !(record = store.getById(id)) ){
+                panel.remove(report);
+            }
+            else{
+                report.setRecord(record);
             }
         });
     }

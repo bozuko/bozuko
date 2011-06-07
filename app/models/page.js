@@ -423,7 +423,7 @@ Page.static('search', function(options, callback){
 
     var serviceSearch = {};
     if( options.query ){
-        bozukoSearch.selector.name = new RegExp('^'+XRegExp.escape(options.query), "i");
+        bozukoSearch.selector.name = new RegExp('(^|\\s)'+XRegExp.escape(options.query), "i");
     }
 
     if( options.sort ){
@@ -436,23 +436,17 @@ Page.static('search', function(options, callback){
             return callback(Bozuko.error('bozuko/user_not_logged_in', 'Getting Favorites'));
         }
         var user = options.user;
-        bozukoSearch.selector = {
-            _id: {$in:user.favorites||[]},
-            coords: {
-                $nearSphere: options.ll
-            }
-        };
+        bozukoSearch.selector._id = {$in:user.favorites||[]};
+        bozukoSearch.selector.coords = {$nearSphere: options.ll};
 
         serviceSearch = false;
     }
     // are we looking for bounded results
     else if( options.bounds ){
 
-        bozukoSearch.selector = {
-            // only registered ?
-            owner_id: {$exists:true},
-            coords: {$within: {$box: options.bounds}}
-        };
+        bozukoSearch.selector.owner_id = {$exists:true};
+        bozukoSearch.selector.coords = {$within: {$box: options.bounds}};
+        
         bozukoSearch.type='nativeFind';
 
         /**
@@ -549,9 +543,16 @@ Page.static('search', function(options, callback){
                     page_ids.push(page._id);
                 });
                 
-                
+                // grab the featured out of there for sorting...
+                featured = [];
+                for( var i=0; i<featured.length; i++){
+                    featured.push( pages.shift() );
+                }
 
                 if( !serviceSearch ){
+                    featured.sort( sort_by('_distance') );
+                    pages.sort( sort_by('_distance') );
+                    pages = featured.concat(pages);
                     return return_pages( pages );
                 }
 
@@ -594,10 +595,14 @@ Page.static('search', function(options, callback){
                         
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             pages = pages.concat(_pages);
+                            
+                            featured.sort( sort_by('_distance') );
+                            pages.sort( sort_by('_distance') );
+                            results.sort( sort_by('_distance') );
+                            
+                            pages = featured.concat(pages);
                             pages = pages.concat(results);
                             
-                            // sort these pages by distance...
-                            pages.sort( page_search_sort );
                             return return_pages(pages);
                         });
                     });
@@ -607,7 +612,8 @@ Page.static('search', function(options, callback){
     });
 });
 
-function page_search_sort(a,b){
-    // okay, they are pretty equal, lets sort by _distance
-    return a._distance - b._distance;
+function sort_by(field, dir){
+    return function(a,b){
+        return (a[field] - b[field]) * (!!dir ? -1 : 1);
+    }
 }
