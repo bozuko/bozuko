@@ -30,6 +30,11 @@
                 }
             }
             
+            .gauge {
+                float: right;
+                margin: 0 0 0 10px;
+            }
+            
             .details{
                 table {
                     th {
@@ -46,51 +51,57 @@
             border: 1px solid #ccc;
             padding: 10px;
             
-            .buttons {
-                display: block;
-                border-top: 1px solid #ddd;
-                margin-top: 6px;
-                padding-top: 6px;
-                
-                li {
-                    display: inline;
-                    
-                    a {
-                        margin-right: 14px;
-                        display: inline-block;
-                        line-height: 28px;
-                        background-color: transparent;
-                        background-position: 0 50%;
-                        background-repeat: no-repeat;
-                        padding-left: 28px;
-                        text-decoration: none;
-                        color: #da6619;
-                        font-size: 14px;
-                    }
-                    a:hover {
-                        
-                        text-decoration: underline;
-                        color: #ac5113;
-                        
-                    }
-                    
-                    .delete {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png');
-                    }
-                    .edit {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-24.png');
-                    }
-                    .publish {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png');
-                    }
-                    .copy {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png');
-                    }
-                    .cancel {
-                        background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
-                    }
-                }
-            }
+            
+        }
+    }
+}
+
+.buttons {
+    clear: both;
+    display: block;
+    border-top: 1px solid #ddd;
+    margin-top: 6px;
+    padding-top: 6px;
+    
+    li {
+        display: inline;
+        
+        a {
+            margin-right: 14px;
+            display: inline-block;
+            line-height: 28px;
+            background-color: transparent;
+            background-position: 0 50%;
+            background-repeat: no-repeat;
+            padding-left: 28px;
+            text-decoration: none;
+            color: #da6619;
+            font-size: 14px;
+        }
+        a:hover {
+            
+            text-decoration: underline;
+            color: #ac5113;
+            
+        }
+        
+        .delete {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png');
+        }
+        .edit {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-24.png');
+        }
+        .publish {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png');
+        }
+        .copy {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png');
+        }
+        .cancel {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
+        }
+        .reports {
+            background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-report-bar-24.png');
         }
     }
 }
@@ -121,12 +132,63 @@
     }
     
     .list-item-over {
-        background: #f3f3f3;
+        background-color: #f3f3f3;
     }
     .list-item-selected {
-        background: #d5eaf9;
+        background-color: #d5eaf9;
     }
 }
+
+.winners-list {
+    .user-name {
+        font-size: 12px;
+        font-weight: normal;
+        margin-bottom: .4em;
+    }
+    
+    .prize-name {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: .4em;
+    }
+    
+    .prize-timestamp {
+        font-size: 12px;
+        color: #999;
+    }
+    /*
+    .list-item {
+        padding-left: 44px;
+        background: transparent none 6px 50% no-repeat;
+    }
+    .prize-active {
+        background-image: url("/images/assets/prizes/32/icon-active.png");
+    }
+    .prize-expired {
+        background-image: url("/images/assets/prizes/32/icon-expired.png");
+    }
+    .prize-redeemed {
+        background-image: url("/images/assets/prizes/32/icon-redeemed.png");
+    }
+    */
+    .list-item {
+        padding-left: 44px;
+        background: transparent none -12px 50% no-repeat;
+    }
+    .prize-active {
+        background-image: url("/images/assets/prizes/48/icon-active.png");
+    }
+    .prize-expired {
+        background-image: url("/images/assets/prizes/48/icon-expired.png");
+    }
+    .prize-redeemed {
+        background-image: url("/images/assets/prizes/48/icon-redeemed.png");
+    }
+    .list-item-over {
+        background-color: #f3f3f3;
+    }
+}
+
 
 .campaign-nav {
     
@@ -172,6 +234,22 @@
         }
         .rules{
             background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/paper-gavel-16.png');
+        }
+    }
+}
+
+.campaign-details {
+    padding: 10px;
+    background: transparent;
+    .details{
+        table {
+            th {
+                padding-right: 10px;
+                font-weight: bold;
+            }
+            td {
+                padding: 4px;
+            }
         }
     }
 }

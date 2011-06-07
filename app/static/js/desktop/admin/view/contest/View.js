@@ -25,9 +25,15 @@ Ext.define('Bozuko.view.contest.View' ,{
                             '{[this.getTitle(values.name)]}',
                         '</h3>',
                         '<div class="details">',
+                            '<tpl if="this.canCancel(values)">',
+                                '<div class="gauge"></div>',
+                            '</tpl>',
                             '{[this.getDetails(values)]}',
                         '</div>',
                         '<ul class="buttons">',
+                            '<tpl if="this.canReport(values)">',
+                                '<li><a href="javascript:;" class="reports">Reports</a></li>',
+                            '</tpl>',
                             '<tpl if="this.canEdit(values)">',
                                 '<li><a href="javascript:;" class="edit">Edit</a></li>',
                             '</tpl>',
@@ -63,6 +69,10 @@ Ext.define('Bozuko.view.contest.View' ,{
                     return ~['active'].indexOf(values.state);
                 },
                 
+                canReport : function(values){
+                    return ~['active','complete','cancelled'].indexOf(values.state);
+                },
+                
                 getTitle : function(name){
                     return name || 'Untitled Campaign';
                 },
@@ -71,6 +81,12 @@ Ext.define('Bozuko.view.contest.View' ,{
                     return [
                         '<table cellpadding="0" cellspacing="0">',
                             '<tbody>',
+                                '<tr>',
+                                    '<th>Game:</th>',
+                                    '<td>',
+                                    values.game ? values.game.substr(0,1).toUpperCase()+values.game.substr(1) : 'Unknown',
+                                    '<td>',
+                                '<tr>',
                                 '<tr>',
                                     '<th>Timeline:</th>',
                                     '<td>',
@@ -96,5 +112,88 @@ Ext.define('Bozuko.view.contest.View' ,{
         
         me.callParent();
         
+        me.on('refresh', me.addGauges, me);
+        me.on('destroy', me.destroyGauges, me);
+    },
+    
+    addGauges : function(){
+        var me = this;
+        me.gauges = [];
+        Ext.Array.each( me.getNodes(), function(node){
+            var gauge = Ext.fly(node).down('.gauge');
+            if( !gauge ) return;
+            var record = me.getRecord(node);
+            // else
+            var percent = Math.max( 0, record.get('play_cursor')) / record.get('total_plays') * 100;
+            if( isNaN( percent) ) return;
+            
+            me.gauges[me.gauges.length] = Ext.create('Ext.chart.Chart',{
+                style: 'background:transparent',
+                width: 200,
+                height: 130,
+                renderTo: gauge,
+                animate: true,
+                store: Ext.create('Ext.data.Store',{
+                    fields:['percent'],
+                    data:[{percent: percent}]
+                }),
+                insetPadding: 25,
+                flex: 1,
+                axes: [{
+                    type: 'gauge',
+                    position: 'gauge',
+                    minimum: 0,
+                    maximum: 100,
+                    steps: 10,
+                    margin: 7
+                }],
+                series: [{
+                    type: 'gauge',
+                    field: 'percent',
+                    donut: 50,
+                    colorSet: ['#82B525', '#ddd']
+                }]
+            });
+            /*
+            var s = record.get('start').getTime();
+            var e = record.get('end').getTime();
+            var n = (new Date).getTime();
+            percent = Math.max( 0, (n-s) / (e-s)) * 100 ;
+            Ext.create('Ext.chart.Chart',{
+                style: 'background:transparent',
+                width: 200,
+                height: 130,
+                renderTo: gauge,
+                animate: true,
+                store: Ext.create('Ext.data.Store',{
+                    fields:['percent'],
+                    data:[{percent: percent}]
+                }),
+                insetPadding: 25,
+                flex: 1,
+                axes: [{
+                    type: 'gauge',
+                    position: 'gauge',
+                    minimum: 0,
+                    maximum: 100,
+                    steps: 10,
+                    margin: 7
+                }],
+                series: [{
+                    type: 'gauge',
+                    field: 'percent',
+                    donut: 50,
+                    colorSet: ['#82B525', '#ddd']
+                }]
+            });
+            */
+        });
+    },
+    
+    destroyGauges : function(){
+        var me = this;
+        Ext.Array.each( me.gauges, function(gauge){
+            gauge.destroy();
+        });
     }
 });
