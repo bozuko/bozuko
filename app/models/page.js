@@ -423,7 +423,7 @@ Page.static('search', function(options, callback){
 
     var serviceSearch = {};
     if( options.query ){
-        bozukoSearch.selector.name = new RegExp('(^|\s)'+XRegExp.escape(options.query), "i");
+        bozukoSearch.selector.name = new RegExp('(^|\\s)'+XRegExp.escape(options.query), "i");
     }
 
     if( options.sort ){
