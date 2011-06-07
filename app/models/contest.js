@@ -388,7 +388,7 @@ Contest.method('saveConsolation', function(opts, callback) {
     var config = this.consolation_config[0];
 
     var consolation_prize = self.consolation_prizes[0];
-    if (consolation_prize.claimed === consolation_prize.total) {
+    if (consolation_prize.claimed === (consolation_prize.total-1)) {
         opts.consolation = false;
         return callback(null);
     }
