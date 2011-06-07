@@ -168,7 +168,6 @@ auth.mobile = function(req, res, callback) {
                      */
                     || String(5127+parseInt(user.challenge)) === String(req.session.challenge_response)
                 ) {
-                    console.log( result, req.session.challenge_response);
                     return callback(null);
                 }
             }

@@ -18,5 +18,13 @@ Ext.define('Bozuko.store.Winners', {
         if( !operation.params ) operation.params = {};
         operation.params['page_id'] = this.page_id;
         operation.params['contest_id'] = this.contest_id;
+    },
+    
+    startLongPolling : function(){
+        
+    },
+    
+    stopLongPolling : function(){
+        
     }
 });
