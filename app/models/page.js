@@ -436,23 +436,17 @@ Page.static('search', function(options, callback){
             return callback(Bozuko.error('bozuko/user_not_logged_in', 'Getting Favorites'));
         }
         var user = options.user;
-        bozukoSearch.selector = {
-            _id: {$in:user.favorites||[]},
-            coords: {
-                $nearSphere: options.ll
-            }
-        };
+        bozukoSearch.selector._id = {$in:user.favorites||[]};
+        bozukoSearch.selector.coords = {$nearSphere: options.ll};
 
         serviceSearch = false;
     }
     // are we looking for bounded results
     else if( options.bounds ){
 
-        bozukoSearch.selector = {
-            // only registered ?
-            owner_id: {$exists:true},
-            coords: {$within: {$box: options.bounds}}
-        };
+        bozukoSearch.selector.owner_id = {$exists:true};
+        bozukoSearch.selector.coords = {$within: {$box: options.bounds}};
+        
         bozukoSearch.type='nativeFind';
 
         /**
