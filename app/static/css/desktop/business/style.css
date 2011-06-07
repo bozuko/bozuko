@@ -104,10 +104,28 @@
   color: #999;
 }
 .bozuko-list .list-item-over {
-  background: #f3f3f3;
+  background-color: #f3f3f3;
 }
 .bozuko-list .list-item-selected {
-  background: #d5eaf9;
+  background-color: #d5eaf9;
+}
+.winners-list {
+  /*
+    .list-item {
+        padding-left: 44px;
+        background: transparent none 6px 50% no-repeat;
+    }
+    .prize-active {
+        background-image: url("/images/assets/prizes/32/icon-active.png");
+    }
+    .prize-expired {
+        background-image: url("/images/assets/prizes/32/icon-expired.png");
+    }
+    .prize-redeemed {
+        background-image: url("/images/assets/prizes/32/icon-redeemed.png");
+    }
+    */
+
 }
 .winners-list .user-name {
   font-size: 12px;
@@ -115,13 +133,29 @@
   margin-bottom: .4em;
 }
 .winners-list .prize-name {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   margin-bottom: .4em;
 }
 .winners-list .prize-timestamp {
   font-size: 12px;
   color: #999;
+}
+.winners-list .list-item {
+  padding-left: 44px;
+  background: transparent none -12px 50% no-repeat;
+}
+.winners-list .prize-active {
+  background-image: url("/images/assets/prizes/48/icon-active.png");
+}
+.winners-list .prize-expired {
+  background-image: url("/images/assets/prizes/48/icon-expired.png");
+}
+.winners-list .prize-redeemed {
+  background-image: url("/images/assets/prizes/48/icon-redeemed.png");
+}
+.winners-list .list-item-over {
+  background-color: #f3f3f3;
 }
 .campaign-nav {
   height: 100%;

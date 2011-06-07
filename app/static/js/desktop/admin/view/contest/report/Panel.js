@@ -52,7 +52,7 @@ Ext.define('Bozuko.view.contest.report.Panel' ,{
         },{
             xtype           :'winnerslist',
             region          :'east',
-            width           :300,
+            width           :330,
             margin          :'0 2 2',
             title           :'Winners List'
         }];

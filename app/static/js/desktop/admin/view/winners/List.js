@@ -27,12 +27,13 @@ Ext.define('Bozuko.view.winners.List' ,{
         me.items = [{
             xtype: 'dataview',
             
+            trackOver: true,
+            
             itemSelector: '.list-item',
-            itemOverCls : 'list-item-over',
-            itemSelectedCls : 'list-item-selected',
+            overItemCls : 'list-item-over',
+            selectedItemCls : 'list-item-selected',
             
             emptyText: '<p>No Winners yet!</p>',
-            deferEmptyText: false,
             
             autoScroll: true,
             
@@ -40,7 +41,7 @@ Ext.define('Bozuko.view.winners.List' ,{
             tpl: new Ext.XTemplate(
                 '<ul class="bozuko-list winners-list">',
                     '<tpl for=".">',
-                        '<li class="list-item">',
+                        '<li class="list-item prize-{prize.state}">',
                             '<img src="{[this.getImage(values.user.image)]}" />',
                             '<div class="user-name">{user.name}</div>',
                             '<div class="prize-name">{prize.name}</div>',
