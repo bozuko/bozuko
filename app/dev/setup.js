@@ -1,5 +1,7 @@
 var burl = Bozuko.require('util/url').create;
 
+var async = require('async');
+
 var start = new Date();
 var end = new Date();
 end.setTime(start.getTime() + 1000 * 60 * 60 * 24 * 30);
@@ -177,23 +179,39 @@ function setupPlace(place, featured, cb){
             contest.prizes.forEach(function(prize){
                 prize.duration = 1000*60*60*24;
             });
-            // Add barcode urls for t shirt
-            var barcode_prize = contest.prizes[1];
-            for (var i = 0; i < barcode_prize.total; i++) {
-                barcode_prize.barcode_images.push(burl('/images/barcode.png'));
-            };
 
             contest.generateResults(function(error){
-                var contest = new Bozuko.models.Contest(Bozuko.dev.contests.scratch);
-                contest.page_id = place._id;
-                contest.active = true;
-                contest.prizes.forEach(function(prize){
-                    prize.duration = 1000*60*60*24;
-                });
-                contest.generateResults(function(error){
-                    if( error ) console.log(error, contest.doc );
-                    cb();
-                });
+
+                // Add barcode images for slots to amazon
+                var S3 = Bozuko.require('util/s3');
+                var s3 = new S3();
+                var barcode_prize = contest.prizes[1];
+                var i = 0;
+                async.whilst(
+                    function() { return i < barcode_prize.total; },
+                    function(callback) {
+                        var path = '/game/'+contest._id+'/prize/1/barcode/'+i;
+                        i++;
+                        return s3.put(Bozuko.dir+'/app/static/images/barcode.png', path, callback);
+                    },
+                    function(err) {
+                        if (err) {
+                            console.error("dev/setup: Error adding barcode images");
+                            return cb(err);
+                        }
+
+                        var contest = new Bozuko.models.Contest(Bozuko.dev.contests.scratch);
+                        contest.page_id = place._id;
+                        contest.active = true;
+                        contest.prizes.forEach(function(prize){
+                            prize.duration = 1000*60*60*24;
+                        });
+                        contest.generateResults(function(error){
+                            if( error ) console.log(error, contest.doc );
+                            cb();
+                        });
+                    }
+                );
             });
         });
     });
@@ -209,4 +227,4 @@ module.exports.init = function(cb){
             });
         });
     });
-}
+};

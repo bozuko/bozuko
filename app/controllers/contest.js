@@ -1,3 +1,5 @@
+var S3 = Bozuko.require('util/s3');
+
 var game_prize = {
     doc: "A prize that can be won in a game",
     def: {
@@ -18,7 +20,7 @@ var game_result = {
             free_play: result.free_play,
             consolation: result.play.consolation
         };
-        
+
         if( ret.consolation ){
             ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize just for playing!";
         }
@@ -222,6 +224,29 @@ exports.routes = {
 
     },
 
+    '/game/:id/prize/:prize_index/barcode/:barcode_index': {
+        get: {
+//            access: 'mobile',
+
+            handler: function(req, res) {
+                var s3 = new S3();
+                return s3.get(req.url, res);
+            }
+        }
+
+    },
+
+    '/game/:id/consolation_prize/:prize_index/barcode/:barcode_index': {
+        get: {
+//            access: 'mobile',
+
+            handler: function(req, res) {
+                var s3 = new S3();
+                return s3.get(req.url, res);
+            }
+        }
+    },
+
     /**
      * Play a game here. The result is pulled off the generic result list generated for the contest
      * and the index from the result is used to generate the config returned to the client.
@@ -244,7 +269,7 @@ exports.routes = {
                         if( error ){
                             return error.send(res);
                         }
-                        
+
                         return result.contest.loadTransferObject( req.session.user, function(error){
                             if( error ) return error.send(res);
                             if( result.prize ){
@@ -268,7 +293,7 @@ exports.routes = {
 
     '/game/:id/entry' : {
 
-        post: {
+       post: {
 
             access: 'mobile',
 

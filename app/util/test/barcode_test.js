@@ -1,0 +1,6 @@
+var barcode = require('../barcode');
+var assert = require('assert');
+
+barcode.create_png('123456789012', 'upc', '/tmp/barcode3', function(err) {
+    assert.ok(!err);
+});
