@@ -24,11 +24,13 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             xtype           :'datetimefield',
             name            :'start',
             format          :'m/d/Y g:i:s A',
+            value           :new Date(),
             fieldLabel      :'Start Date'
         },{
             xtype           :'datetimefield',
             name            :'end',
             format          :'m/d/Y g:i:s A',
+            value           :Ext.Date.add(new Date(), Ext.Date.DAY, 14),
             fieldLabel      :'End Date'
         },{
             xtype           :'textfield',
