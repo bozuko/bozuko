@@ -1,6 +1,7 @@
 var Game = Bozuko.require('core/game'),
     burl = Bozuko.require('util/url').create,
     path = require('path'),
+    knox = require('knox'),
     fs = require('fs'),
     gd = require('node-gd'),
     inherits = require('util').inherits
@@ -61,15 +62,18 @@ Slots.prototype.getTheme = function(){
 
 Slots.prototype.getConfig = function(){
     var theme = this.getTheme();
-    return {
+    
+    var config = {
         theme: {
             name: theme.name,
             icons: theme.icons,
             base: theme.base
         },
-        custom_icons: {},
-        icons: Object.keys(theme.icons)
+        custom_icons: this.config.custom_icons || {}
     };
+    
+    config.icons = Object.keys(config.custom_icons).concat( Object.keys( config.theme.icons));
+    return config;
 };
 
 Slots.prototype.getListImage = function(){
@@ -95,12 +99,13 @@ Slots.prototype.getImage = function(index){
     }
     // look for a custom icon
     if( config.custom_icons && config.custom_icons[icon] ){
-        return config.custom_icons[icon];
+        var url = config.custom_icons[icon];
+        return url;
     }
     return icon;
 };
 
-Slots.prototype.createResultImage = function(dest, icon_src){
+Slots.prototype.createResultImage = function(dest, icon_src, callback){
     var x3_src = __dirname+'/resources/x3.png';
     
     if(path.existsSync(dest)) return;
@@ -114,6 +119,9 @@ Slots.prototype.createResultImage = function(dest, icon_src){
                     icon.copyResampled(x3,10,10,0,0,60,60,icon.width,icon.height);
                     x3.saveAlpha(1);
                     x3.savePng(dest, 0, gd.noop);
+                    if( callback ) {
+                        callback(dest);
+                    }
                 }
             );
         }
