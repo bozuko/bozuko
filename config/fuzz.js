@@ -12,13 +12,19 @@ module.exports = {
             }
         }
     },
+    
+    admin : {
+        winners_list:{
+            poll_interval: 1000
+        }
+    },
 
     db:{
         name: 'bozuko_dev8005',
         host: 'localhost'
     },
 
-   facebook: {
+    facebook: {
         app:{
             id:'215589698455936',
             secret:'659158dbd9a51f02bb9fffcf39804434',

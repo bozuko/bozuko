@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     burl = Bozuko.require('util/url').create,
+    LastUpdatedPlugin = require('./plugins/lastupdated'),
     ObjectId = Schema.ObjectId;
 
 var Prize = module.exports = new Schema({
@@ -35,6 +36,8 @@ Prize.REDEEMED = 'redeemed';
 Prize.ACTIVE = 'active';
 Prize.EXPIRED = 'expired';
 
+
+Prize.plugin(LastUpdatedPlugin);
 
 Prize.virtual('state')
     .get(function(){
@@ -104,6 +107,21 @@ Prize.method('loadTransferObject', function(callback){
             self.user = user;
             return callback( null, self );
         });
+    });
+});
+
+Prize.static('getLastUpdated', function(selector, callback){
+    var s = {};
+    selector = selector || {};
+    Object.keys(selector).forEach(function(key){
+        s[key] = selector[key];
+    });
+    s.last_updated = {$exists: true};
+    options = {sort: {last_updated:-1}, limit: 1};
+    Bozuko.models.Prize.find(s, {}, options, function(error, prizes){
+        if( error ) return callback(error);
+        if( !prizes.length ) return callback(null, null);
+        return callback( null, prizes[0] );
     });
 });
 

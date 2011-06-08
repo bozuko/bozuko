@@ -146,7 +146,7 @@ exports.routes = {
                         return res.render('app/facebook/like');
                     }
                     if( !place ){
-                        res.locals.page = null;
+                        res.locals.place = null;
                         return res.render('app/facebook/like');
                     }
                     res.locals.place = place;

@@ -17,6 +17,12 @@ module.exports = {
             }
         }
     },
+    
+    admin : {
+        winners_list:{
+            poll_interval: 1000
+        }
+    },
 
     facebook: {
         app:{

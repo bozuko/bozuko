@@ -15,6 +15,12 @@ module.exports = {
         }
     },
     
+    admin : {
+        winners_list:{
+            poll_interval: 1000
+        }
+    },
+    
     db:{
         name: 'bozuko_test'+port,
         host: 'localhost'

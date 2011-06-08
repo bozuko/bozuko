@@ -324,39 +324,89 @@ exports.routes = {
                     page_id = req.param('page_id'),
                     limit = req.param('limit') || 25,
                     offset = req.param('offset') || 0,
+                    updateOnly = req.param('updateOnly') || false;
                     selector = {}
                     ;
                     
                 if( contest_id ) selector['contest_id'] = contest_id;
                 if( page_id ) selector['page_id'] = page_id;
                 
-                return Bozuko.models.Prize.find(selector, {}, {sort: {timestamp: -1}, limit: limit, skip: offset},function(error, prizes){
-                    if( error ) return error.send(res);
+                return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
+                    if( error ) return error.send( res );
                     
-                    var user_ids = {};
-                    prizes.forEach(function(prize){
-                        user_ids[String(prize.user_id)] = true;
-                    });
-                    // get the users
-                    return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, function(error, users){
+                    return Bozuko.models.Prize.find(selector, {}, {sort: {timestamp: -1}, limit: limit, skip: offset},function(error, prizes){
                         if( error ) return error.send(res);
-                        var user_map = {};
-                        users.forEach(function(user){
-                            user_map[String(user._id)] = user;
-                        });
                         
-                        // create a winner object
-                        var winners = [];
+                        var user_ids = {};
                         prizes.forEach(function(prize){
-                            winners.push({
-                                _id: prize.id,
-                                prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expiration_time','redeemed','consolation','is_barcode','is_email','email_code','barcode_image'),
-                                user: filter(user_map[String(prize.user_id)],'_id','name','image','email')
-                            });
+                            user_ids[String(prize.user_id)] = true;
                         });
-                        return res.send({items:winners});
+                        // get the users
+                        return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, function(error, users){
+                            if( error ) return error.send(res);
+                            var user_map = {};
+                            users.forEach(function(user){
+                                user_map[String(user._id)] = user;
+                            });
+                            
+                            var winners = [];
+                            prizes.forEach(function(prize){
+                                // create a winner object
+                                winners.push({
+                                    _id: prize.id,
+                                    prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expiration_time','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
+                                    user: filter(user_map[String(prize.user_id)],'_id','name','image','email')
+                                });
+                            });
+                            return res.send({items:winners, last_updated: lastUpdated?filter(lastUpdated,'_id','last_updated'):null});
+                        });
                     });
                 });
+            }
+        },
+        
+        post : {
+            handler: function(req,res){
+                // check for contest or page
+                var contest_id = req.param('contest_id'),
+                    page_id = req.param('page_id'),
+                    previous = req.param('last_updated'),
+                    selector = {},
+                    closed = false,
+                    start = (new Date()).getTime(),
+                    /**
+                     * One minute timeouts
+                     */
+                    timeout = 60000,
+                    count = 0,
+                    interval = Bozuko.config.admin.winners_list.poll_interval = 200
+                    ;
+                    
+                if( contest_id ) selector['contest_id'] = contest_id;
+                if( page_id ) selector['page_id'] = page_id;
+                
+                if( previous ){
+                    previous.last_updated = new Date( Date.parse(previous.last_updated) );
+                }
+                
+                req.connection.addListener('close', function(){
+                    closed = true;
+                });
+                
+                var lookForUpdates = function(){
+                    var now = (new Date()).getTime();
+                    if( closed || start+timeout < now ) return res.send({test: true, last_updated: previous});
+                    
+                    return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
+                        if( error ) return error.send(res);
+                        if( !lastUpdated && !previous ) return setTimeout( lookForUpdates, interval);
+                        if( (lastUpdated && !previous) || String(lastUpdated._id) != previous._id || previous.last_updated.getTime() !== lastUpdated.last_updated.getTime() ){
+                            return res.send( {test: true, update: true, last_updated: filter(lastUpdated,'_id','last_updated')} );
+                        }
+                        return setTimeout( lookForUpdates, interval);
+                    });
+                }
+                return lookForUpdates();
             }
         }
     },
