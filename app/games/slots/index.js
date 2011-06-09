@@ -61,18 +61,27 @@ Slots.prototype.getTheme = function(){
 }
 
 Slots.prototype.getConfig = function(){
-    var theme = this.getTheme();
+    var self = this,
+        theme = this.getTheme();
+    
+    var icons = {};
+    if( self.config.custom_icons ) Object.keys(self.config.custom_icons).forEach(function(key){
+        icons[key] = self.config.custom_icons[key];
+    });
+    Object.keys(theme.icons).forEach(function(key){
+        icons[key] = theme.icons[key];
+    });
+    
     
     var config = {
         theme: {
             name: theme.name,
-            icons: theme.icons,
+            icons: icons,
             base: theme.base
-        },
-        custom_icons: this.config.custom_icons || {}
+        }
     };
     
-    config.icons = Object.keys(config.custom_icons).concat( Object.keys( config.theme.icons));
+    config.icons = Object.keys( icons );
     return config;
 };
 
@@ -83,24 +92,24 @@ Slots.prototype.getListImage = function(){
 Slots.prototype.getImage = function(index){
     var config = this.getConfig();
     var icon = config.icons[index];
-    // need to go through the
-    if( config.theme.icons[icon] ){
+    
+    var theme = this.getTheme();
+    
+    if( theme.icons[icon] ){
         
-        var base = __dirname+'/themes/'+config.theme.name+'/resources/'+path.basename(config.theme.base);
+        var base = __dirname+'/themes/'+theme.name+'/resources/'+path.basename(theme.base);
         
         if( !path.existsSync( base+'/x3' ) ) fs.mkdirSync(base+'/x3', 0777);
         
-        var png = base+'/'+config.theme.icons[icon];
-        var dest = base+'/x3/'+config.theme.icons[icon];
+        var png = base+'/'+theme.icons[icon];
+        var dest = base+'/x3/'+theme.icons[icon];
         
         this.createResultImage(dest, png);
         
-        return config.theme.base+'/x3/'+config.theme.icons[icon];
+        return theme.base+'/x3/'+theme.icons[icon];
     }
-    // look for a custom icon
-    if( config.custom_icons && config.custom_icons[icon] ){
-        var url = config.custom_icons[icon];
-        return url;
+    else{
+        return config.theme.icons[icon];
     }
     return icon;
 };
