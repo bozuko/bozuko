@@ -62,7 +62,7 @@ PubSub.prototype.cleanup = function(now){
 
 PubSub.prototype._cleanup = function(){
     var self = this,
-        threshold = Date.now();
+        threshold = new Date();
     
     threshold.setTime( threshold.getTime() - self.threshold );
     self.model.remove({timestamp: {$lt: threshold}}, function(){
@@ -102,7 +102,7 @@ PubSub.prototype.publish = function(type, content){
     var self = this;
     
     var msg = new self.model({
-        timestamp: Date.now(),
+        timestamp: new Date(),
         type: type,
         content: content
     });

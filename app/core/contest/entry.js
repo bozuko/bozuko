@@ -141,6 +141,7 @@ EntryMethod.prototype.process = function( callback ){
             Entry.timestamp = entry.timestamp;
 
             return Entry.save( function(error){
+                Bozuko.publish('contest/entry', {contest_id: self.contest._id, page_id: self.contest.page_id, user_id: self.user._id});
                 return callback( error, entry );
             });
         });
