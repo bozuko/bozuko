@@ -175,6 +175,7 @@ Contest.method('publish', function(callback){
         if( error ) return callback(error);
         return self.generateBarcodes(function(err) {
             if (err) return callback(err);
+            Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
             return callback( null, self);
         });
     });
@@ -190,6 +191,7 @@ Contest.method('cancel', function(callback){
     self.end = new Date();
     return self.save(function(error){
         if( error ) return callback( error );
+        Bozuko.publish('contest/cancel', {contest_id: self._id, page_id: self.page_id});
         return callback( null, self );
     });
 });
@@ -347,6 +349,7 @@ Contest.method('loadTransferObject', function(user, callback){
 });
 
 Contest.method('addEntry', function(entry, callback) {
+    var self = this;
     Bozuko.models.Contest.findAndModify(
         { _id: this._id, token_cursor: {$lt : this.total_plays - entry.tokens}},
         [],
