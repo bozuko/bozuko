@@ -30,7 +30,10 @@ Ext.define('Ext.ux.form.field.DateTime', {
             maxText: format(me.maxText, me.formatDate(me.maxValue)),
             listeners: {
                 scope: me,
-                select: me.onSelect
+                select: me.onSelect,
+                timechange: function(d){
+                    me.setValue(d);
+                }
             },
             keyNavConfig: {
                 esc: function() {

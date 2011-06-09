@@ -23,7 +23,6 @@ Ext.define('Bozuko.store.Winners', {
         var getResponseData = reader.getResponseData;
         reader.getResponseData = function(){
             var data = getResponseData.apply(this, arguments);
-            console.log('getResponseData', data);
             if( data && data.last_updated ){
                 me.last_updated = data.last_updated;
             }
@@ -43,7 +42,6 @@ Ext.define('Bozuko.store.Winners', {
     onLoad : function(){
         var me = this;
         me.loaded = true;
-        console.log('onLoad',me.last_updated);
         if( me.pollOnLoad ) me.startPolling();
         
     },
@@ -61,6 +59,7 @@ Ext.define('Bozuko.store.Winners', {
         me.pollRequest = Ext.Ajax.request({
             url: '/admin/winners',
             method: 'post',
+            timeout: 60000,
             jsonData: {
                 contest_id: me.contest_id,
                 page_id: me.page_id,
@@ -90,7 +89,6 @@ Ext.define('Bozuko.store.Winners', {
                     if( (new Date()).getTime() - last.getTime() < 100){
                         me.closeTries++;
                         if( me.closeTries > 3 ){
-                            console.log('whats happenin?');
                             return;
                         }
                         me.poll();

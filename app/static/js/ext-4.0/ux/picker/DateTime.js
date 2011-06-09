@@ -56,6 +56,9 @@ Ext.define('Ext.ux.picker.DateTime', {
     
     initComponent: function(){
         var me = this;
+        me.addEvents({
+            'timechange': true
+        });
         me.on('select', me._onSelect, me);
         me.callParent(arguments);
     },
@@ -107,10 +110,14 @@ Ext.define('Ext.ux.picker.DateTime', {
     
     onHourSpin : function(spinner, direction){
         this.spin(spinner, direction, 1, 12, 1);
+        this.setTimeValue();
+        this.fireEvent('timechange', this.value);
     },
     
     onMinuteSpin : function(spinner, direction){
         this.spin(spinner, direction, 0, 55, 5);
+        this.setTimeValue();
+        this.fireEvent('timechange', this.value);
     },
     
     spin : function(spinner, direction, min, max, inc){
@@ -125,9 +132,16 @@ Ext.define('Ext.ux.picker.DateTime', {
     
     onAmPmSpin : function(spinner, direction){
         spinner.setValue(spinner.getValue()=='AM'?'PM':'AM');
+        this.setTimeValue();
+        this.fireEvent('timechange', this.value);
     },
     
     _onSelect : function(e, t){
+        var me = this;
+        me.setTimeValue();
+    },
+    
+    setTimeValue: function(){
         var me = this;
         var h = parseInt(me.hourField.getValue(), 10);
         var m = parseInt(me.minuteField.getValue(), 10);
