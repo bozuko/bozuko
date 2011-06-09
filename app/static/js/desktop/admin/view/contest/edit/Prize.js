@@ -1,16 +1,16 @@
 Ext.define('Bozuko.view.contest.edit.Prize' ,{
-    
+
     extend: 'Ext.form.Panel',
     alias : 'widget.contestformprize',
-    
+
     requires: [],
     border          :false,
     autoHeight      :true,
-    
+
     initComponent : function(){
-        
+
         var me = this;
-        
+
         me.items = [{
             xtype           :'fieldset',
             title           :'Prize',
@@ -61,7 +61,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 xtype           :'textarea',
                 height          :80,
                 hidden          :true,
-                name            :'barcode_images',
+                name            :'barcodes',
                 fieldLabel      :'Barcodes (one per line)',
                 allowBlank      :false,
                 getValue        :function(){
@@ -69,7 +69,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     return v.split('\n');
                 },
                 setValue        :function(v){
-                    
+
                     if( Ext.isString(v) ) v = v.split('\n');
                     Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
                 }
@@ -120,47 +120,47 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 }
             }]
         }];
-        
+
         me.callParent();
-        
+
         if( me.record ) {
             me.loadRecord( record );
-            
+
         }
     },
-    
+
     onEmailChange : function(field, value){
         var fn = value ? 'show' : 'hide';
         Ext.Array.each( this.query('[name=email_body], [name=email_codes]'), function(cmp){
             cmp[fn]();
         });
     },
-    
+
     onBarcodeChange : function(field, value){
         var fn = value ? 'show' : 'hide';
-        Ext.Array.each( this.query('[name=barcode_images]'), function(cmp){
+        Ext.Array.each( this.query('[name=barcodes]'), function(cmp){
             cmp[fn]();
         });
     },
-    
+
     getValues : function(selector){
         var form = this;
         var values = {};
         selector = selector ? selector+' field' : 'field';
         Ext.Array.each(form.query( selector ), function(field){
             var ns = field.getName().split('.'), cur = values;
-            
+
             if( ns.length > 1 ) while( ns.length > 1 ){
                 var p = ns.shift();
                 if( !cur[p]) cur[p] = {};
                 cur = cur[p];
             }
-            
+
             cur[ns.shift()] = field.getValue();
         });
         return values;
     },
-    
+
     updateRecord : function(){
         var v = this.getValues();
         this.record.set(v);

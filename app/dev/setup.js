@@ -50,7 +50,7 @@ var dev = {
                 instructions: "Show this screen to an employee",
                 total: 100,
                 is_barcode: true,
-                barcode_images: []
+                barcodes: []
             },{
                 name: 'a coosy',
                 value: '20',
@@ -180,38 +180,32 @@ function setupPlace(place, featured, cb){
                 prize.duration = 1000*60*60*24;
             });
 
+            var barcode_prize = contest.prizes[1];
+            for (var i = 0; i < barcode_prize.total; i++) {
+                barcode_prize.barcodes.push('01234567890');
+            }
+
             contest.generateResults(function(error){
-
-                // Add barcode images for slots to amazon
-                var S3 = Bozuko.require('util/s3');
-                var s3 = new S3();
-                var barcode_prize = contest.prizes[1];
-                var i = 0;
-                async.whilst(
-                    function() { return i < barcode_prize.total; },
-                    function(callback) {
-                        var path = '/game/'+contest._id+'/prize/1/barcode/'+i;
-                        i++;
-                        return s3.put(Bozuko.dir+'/app/static/images/barcode.png', path, callback);
-                    },
-                    function(err) {
-                        if (err) {
-                            console.error("dev/setup: Error adding barcode images");
-                            return cb(err);
-                        }
-
-                        var contest = new Bozuko.models.Contest(Bozuko.dev.contests.scratch);
-                        contest.page_id = place._id;
-                        contest.active = true;
-                        contest.prizes.forEach(function(prize){
-                            prize.duration = 1000*60*60*24;
-                        });
-                        contest.generateResults(function(error){
-                            if( error ) console.log(error, contest.doc );
-                            cb();
-                        });
+                console.error("after generateResults");
+                contest.generateBarcodes(function(err) {
+                    console.error("after generateBarcodes");
+                    if (err) {
+                        console.error('dev/setupPlace: failed to generate barcodes');
+                        return cb(err);
                     }
-                );
+
+                    var contest2 = new Bozuko.models.Contest(Bozuko.dev.contests.scratch);
+                    contest2.page_id = place._id;
+                    contest2.active = true;
+                    contest2.prizes.forEach(function(prize){
+                        prize.duration = 1000*60*60*24;
+                    });
+                    contest2.generateResults(function(error){
+                        if( error ) console.error(error, contest2.doc );
+                        cb();
+                    });
+
+                });
             });
         });
     });

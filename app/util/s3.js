@@ -14,7 +14,7 @@ exports.createClient = function() {
 Client.prototype.put = function(filename, path, callback) {
     var self = this;
     fs.readFile(filename, function(err, buf) {
-        if (err) throw err;
+        if (err) return callback(err);
 
         var req = self.client.put(path, {
             'Content-Length': buf.length,
