@@ -1,8 +1,8 @@
 Ext.define('Bozuko.model.Prize', {
     extend: 'Ext.data.Model',
-    
+
     idProperty: '_id',
-    
+
     fields: [
         {name:'_id',            type:'String'},
         {name:'value',          type:'Number'},
@@ -16,10 +16,10 @@ Ext.define('Bozuko.model.Prize', {
         {name:'total',          type:'Number'},
         {name:'is_email',       type:'Boolean'},
         {name:'is_barcode',     type:'Boolean'},
-        {name:'barcode_images', type:'Array'},
+        {name:'barcodes',       type:'Array'},
         {name:'email_body',     type:'String'},
         {name:'email_codes',    type:'Array'}
     ],
-    
+
     belongsTo: 'Bozuko.model.Contest'
 });

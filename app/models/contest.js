@@ -12,7 +12,11 @@ var mongoose = require('mongoose'),
     uuid = require('node-uuid'),
     Profiler = Bozuko.require('util/profiler'),
     merge = Bozuko.require('util/merge'),
-    rand = Bozuko.require('util/math').rand
+    rand = Bozuko.require('util/math').rand,
+    S3 = Bozuko.require('util/s3'),
+    barcode = Bozuko.require('util/barcode'),
+    fs = require('fs'),
+    burl = Bozuko.require('util/url').create
 ;
 
 var Contest = module.exports = new Schema({
@@ -74,6 +78,83 @@ Contest.method('generateResults', function(callback){
     });
 });
 
+Contest.method('createAndSaveBarcodes', function(prize, cb) {
+    var self = this;
+    var s3 = new S3();
+
+    var i = 0;
+    async.whilst(
+        function() { return i < prize.prize.total; },
+        function(callback) {
+            var filename, path;
+            if (prize.is_consolation) {
+                filename = '/tmp/bc_'+self._id+'_consolation_prize_'+prize.index+'_'+i;
+                path = '/game/'+self._id+'/consolation_prize/'+prize.index+'/barcode/'+i;
+            } else {
+                filename = '/tmp/bc_'+self._id+'_prize_'+prize.index+'_'+i;
+                path = '/game/'+self._id+'/prize/'+prize.index+'/barcode/'+i;
+            }
+            // save the barcode image in /tmp
+            barcode.create_png(prize.prize.barcodes[i], prize.prize.barcode_type, filename, function(err) {
+                if (err) return callback(err);
+                // load the barcode image into s3
+                return s3.put(filename+'.png', path, function(err) {
+                    if (err) return callback(err);
+                    i++;
+                    // remove the barcode files from /tmp
+                    fs.unlink(filename+'.ps', function(err) {
+                        if (err) return callback(err);
+                        fs.unlink(filename+'.png', callback);
+                    });
+                });
+
+            });
+        },
+        function(err) {
+            if (err) {
+                console.error("contest.createAndSaveBarcodes: "+err);
+                return cb(err);
+            }
+            cb(null);
+        }
+    );
+
+});
+
+Contest.method('generateBarcodes', function(cb) {
+    var self = this;
+    var i = 0;
+    var barcode_prizes = [];
+    for (i = 0; i < this.prizes.length; i++) {
+        if (this.prizes[i].is_barcode) {
+            barcode_prizes.push({
+                index: i,
+                is_consolation: false,
+                prize: this.prizes[i]
+            });
+        }
+    }
+
+    for (i = 0; i < this.consolation_prizes.length; i++) {
+        if (this.consolation_prizes[i].is_barcode) {
+            barcode_prizes.push({
+                index: i,
+                is_consolation: true,
+                prize: this.consolation_prizes[i]
+            });
+        }
+    }
+
+    async.forEach(barcode_prizes,
+        function(prize, callback) {
+            return self.createAndSaveBarcodes(prize, callback);
+        }, function(err) {
+            if (err) return cb(err);
+            cb(null);
+        }
+    );
+});
+
 /**
  * Publish the contest
  *
@@ -92,7 +173,10 @@ Contest.method('publish', function(callback){
     this.active = true;
     this.generateResults( function(error, results){
         if( error ) return callback(error);
-        return callback( null, this);
+        self.generateBarcodes(function(err) {
+            if (err) return callback(err);
+            return callback( null, self);
+        });
     });
 });
 
@@ -502,9 +586,9 @@ Contest.method('savePrize', function(opts, callback) {
         }
         if (prize.is_barcode) {
             if (opts.consolation) {
-                user_prize.barcode_image = '/game/'+self._id+'/consolation_prize/0/barcode'+opts.consolation_prize_count;
+                user_prize.barcode_image = burl('/game/'+self._id+'/consolation_prize/0/barcode'+opts.consolation_prize_count);
             } else {
-                user_prize.barcode_image = '/game/'+self._id+'/prize/'+opts.prize_index+'/barcode/'+opts.prize_count;
+                user_prize.barcode_image = burl('/game/'+self._id+'/prize/'+opts.prize_index+'/barcode/'+opts.prize_count);
             }
         }
 
