@@ -53,7 +53,7 @@ Page.method('getContests', function(callback){
 Page.method('loadContests', function(user, callback){
     var self = this;
     self.contests = [];
-    this.getActiveContests(function(error, contests){
+    this.getActiveContests(user, function(error, contests){
         if( error ) return callback( error );
 
         // else, we have contests!
@@ -76,27 +76,45 @@ Page.method('loadContests', function(user, callback){
     });
 });
 
-Page.method('getActiveContests', function(callback){
+Page.method('getActiveContests', function(user, callback){
     var prof = new Profiler('/models/page/getActiveContests');
     var now = new Date();
-    var params = {
-        page_id:this.id,
+    
+    var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
+    var user_id = user ? user._id : false;
+    
+    var selector = {
         active: true,
+        page_id: this.id,
         start: {$lt: now},
-        end: {$gt: now},
-        $where: "this.token_cursor+1 < this.total_plays;"
+        end: {$gt: now}
     };
+    
+    var $where = {$where: "this.token_cursor+1 < this.total_plays - this.total_free_plays"};
+    if( user_id ){
+        selector.$or = [$where,{
+            entries: {
+                tokens : {$gt : 0},
+                timestamp : {$gt : min_expiry_date},
+                user_id: user_id
+            }
+        }]
+    }
+    else{
+        selector.$where = $where.$where;
+    }
+    
     if( arguments.length == 2 ){
         callback = arguments[1];
     }
-    Bozuko.models.Contest.find(params, function(err, contests) {
+    Bozuko.models.Contest.find(selector, function(err, contests) {
         prof.stop();
         callback(err, contests);
     });
 });
 
 Page.method('getUserGames', function(user, callback){
-    this.getActiveContests( function(error, contests){
+    this.getActiveContests( user, function(error, contests){
         if( error ) return callback(error);
         var games = [];
         return async.forEach( contests,
@@ -176,7 +194,7 @@ Page.method('checkin', function(user, options, callback) {
             return callback( checkinError );
         }
 
-        return self.getActiveContests(function(error, contests){
+        return self.getActiveContests(user, function(error, contests){
             if( error ) return callback(error);
 
             options.user = user;
@@ -294,48 +312,65 @@ Page.static('createFromServiceObject', function(place, callback){
 Page.static('loadPagesContests', function(pages, user, callback){
     var prof = new Profiler('/models/page/loadPagesContests/createPageMap');
     var page_map = {}, now = new Date();
+    
+    var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
+    var user_id = user ? user._id : false;
+    
     pages.forEach(function(page){
         page_map[page.id+''] = page;
     });
     prof.stop();
     var prof_contest_find = new Profiler('/models/page/loadPagesContests/Contest.find');
-    Bozuko.models.Contest.find(
-        {
-            active: true,
-            page_id: {$in: Object.keys(page_map)},
-            start: {$lt: now},
-            end: {$gt: now},
-            $where: "this.token_cursor+1 < this.total_plays"
-        },
-        function( error, contests ){
-            prof_contest_find.stop();
-            if( error ) return callback(error);
+    
+    var selector = {
+        active: true,
+        page_id: {$in: Object.keys(page_map)},
+        start: {$lt: now},
+        end: {$gt: now}
+    };
+    var $where = {$where: "this.token_cursor+1 < this.total_plays - this.total_free_plays"};
+    if( user_id ){
+        selector.$or = [$where,{
+            entries: {
+                tokens : {$gt : 0},
+                timestamp : {$gt : min_expiry_date},
+                user_id: user_id
+            }
+        }]
+    }
+    else{
+        selector.$where = $where.$where;
+    }
+    
+    Bozuko.models.Contest.find(selector, function( error, contests ){
+        prof_contest_find.stop();
+        if( error ) console.log(error);
+        if( error ) return callback(error);
 
-            var prof_load = new Profiler('/models/page/loadPagesContests/load');
+        var prof_load = new Profiler('/models/page/loadPagesContests/load');
 
-            // attach active contests to pages
-            return async.forEach(contests,
-                function iterator(contest, cb){
-                    var page = page_map[contest.page_id+''];
-                    if( !page.contests ){
-                        page.contests = [];
-                    }
-                    // load contest game state
-                    contest.loadGameState(user, function(error){
-                        contest.loadEntryMethod(user, function(error){
-                            page.contests.push(contest);
-                            cb(error);
-                        });
-                    });
-                },
-                function contests_foreach_callback(err){
-                    prof_load.stop();
-                    if (err) return callback(err);
-                    return callback(null, pages);
+        // attach active contests to pages
+        return async.forEach(contests,
+            function iterator(contest, cb){
+                var page = page_map[contest.page_id+''];
+                if( !page.contests ){
+                    page.contests = [];
                 }
-            );
-        }
-    );
+                // load contest game state
+                contest.loadGameState(user, function(error){
+                    contest.loadEntryMethod(user, function(error){
+                        page.contests.push(contest);
+                        cb(error);
+                    });
+                });
+            },
+            function contests_foreach_callback(err){
+                prof_load.stop();
+                if (err) return callback(err);
+                return callback(null, pages);
+            }
+        );
+    });
 });
 
 /**

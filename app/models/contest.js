@@ -102,9 +102,9 @@ Contest.method('createAndSaveBarcodes', function(prize, cb) {
                     if (err) return callback(err);
                     i++;
                     // remove the barcode files from /tmp
-                    fs.unlink(filename+'.ps', function(err) {
+                    return fs.unlink(filename+'.ps', function(err) {
                         if (err) return callback(err);
-                        fs.unlink(filename+'.png', callback);
+                        return fs.unlink(filename+'.png', callback);
                     });
                 });
 
@@ -115,7 +115,7 @@ Contest.method('createAndSaveBarcodes', function(prize, cb) {
                 console.error("contest.createAndSaveBarcodes: "+err);
                 return cb(err);
             }
-            cb(null);
+            return cb(null);
         }
     );
 
@@ -150,7 +150,7 @@ Contest.method('generateBarcodes', function(cb) {
             return self.createAndSaveBarcodes(prize, callback);
         }, function(err) {
             if (err) return cb(err);
-            cb(null);
+            return cb(null);
         }
     );
 });
@@ -173,7 +173,7 @@ Contest.method('publish', function(callback){
     this.active = true;
     this.generateResults( function(error, results){
         if( error ) return callback(error);
-        self.generateBarcodes(function(err) {
+        return self.generateBarcodes(function(err) {
             if (err) return callback(err);
             return callback( null, self);
         });

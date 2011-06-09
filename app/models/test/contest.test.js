@@ -30,24 +30,9 @@ var contest = new Bozuko.models.Contest(
     }],
     start: start,
     end: end,
+    win_frequency: 1,
     free_play_pct: 50,
     total_entries: 1
-});
-contest.prizes.push({
-    name: 'Wicked cool T-Shirt',
-    value: '20',
-    description: "Awesome Owl Watch T-Shirt",
-    details: "Only available in Large or Extra-large",
-    instructions: "Show this screen to an employee",
-    total: 1
-});
-contest.prizes.push({
-    name: 'Owl Watch Mug',
-    value: '10',
-    description: "Sweet travel Mug",
-    details: "Not good for drinking out of.",
-    instructions: "Show this screen to an employee",
-    total: 1
 });
 contest.prizes.push({
     name: 'DBC $10 giftcard',
@@ -100,8 +85,8 @@ exports['save checkin'] = function(test) {
 
 };
 
-exports['generate contest results'] = function(test) {
-    contest.generateResults(function(err, results) {
+exports['publish contest'] = function(test) {
+    contest.publish(function(err, results) {
         test.ok(!err);
         test.done();
     });
@@ -119,6 +104,7 @@ exports['enter contest'] = function(test) {
 exports['enter contest fail - no tokens'] = function(test) {
   var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
     contest.enter(entryMethod, function(err, e) {
+        console.log(err);
         test.ok(err);
         test.done();
     });

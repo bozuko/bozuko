@@ -162,7 +162,7 @@ EntryMethod.prototype.prepareAnalyticEntry = function( Entry ){
  * @returns {Boolean} If there is enough tokens
  */
 EntryMethod.prototype.ensureTokens = function(){
-    return this.contest.token_cursor + this.getTokenCount() < this.contest.total_plays;
+    return this.contest.token_cursor + this.getTokenCount() < this.contest.total_plays - this.contest.total_free_plays;
 };
 
 /**

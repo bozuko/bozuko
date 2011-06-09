@@ -98,7 +98,14 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 allowBlank      :false,
                 getValue        :function(){
                     var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this);
-                    return v.split('\n');
+                    var ar = v.split('\n');
+                    if( ar.length ){
+                        if( ar[0] === '' ) ar.shift();
+                        if( ar.length ){
+                            if( ar[ar.length] === '') ar.pop();
+                        }
+                    }
+                    return ar;
                 },
                 setValue        :function(v){
                     if( Ext.isString(v) ) v = v.split('\n');

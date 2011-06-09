@@ -72,7 +72,7 @@ OrderEngine.prototype.generateResults = function( ){
     }
 
     delete ar;
-
+    
     contest.results = results;
     contest.total_plays = totalPlays;
     contest.total_free_plays = freePlays;
