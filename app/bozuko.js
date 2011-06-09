@@ -52,6 +52,19 @@ Bozuko.getConfig = function(){
 
 Bozuko.config = Bozuko.getConfig();
 
+Bozuko.getConfigValue = function(key, defaultValue){
+	var parts = key.split('.');
+	var getValue = function( keys, obj ){
+		if(keys.length > 1){
+			var key = keys.shift();
+			if( typeof obj[key] === undefined ) return defaultValue;
+			return getValue(keys, obj[key]);
+		}
+		return obj[keys[0]];
+	};
+	return getValue( parts, Bozuko.getConfig());
+};
+
 Bozuko.getApp = function(){
     if( !Bozuko.app ){
         var app = Bozuko.require('core/server');
@@ -406,5 +419,17 @@ initModels();
 
 // setup out transfer objects
 initTransferObjects();
+
+var PubSub = Bozuko.require('core/pubsub');
+Bozuko.pubsub = new PubSub();
+Bozuko.publish = function(){
+	Bozuko.pubsub.publish.apply( Bozuko.pubsub, arguments );
+};
+Bozuko.subscribe = function(){
+	Bozuko.pubsub.subscribe.apply( Bozuko.pubsub, arguments );
+};
+Bozuko.unsubscribe = function(){
+	Bozuko.pubsub.unsubscribe.apply( Bozuko.pubsub, arguments );
+};
 
 module.exports = Bozuko;
