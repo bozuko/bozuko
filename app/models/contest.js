@@ -674,7 +674,7 @@ Contest.method('savePlay', function(opts, callback) {
         win: opts.win,
         free_play: opts.free_play
     });
-
+    
     if (opts.prize) {
         play.prize_id = opts.prize._id;
         play.prize_name = opts.prize.name;
@@ -691,6 +691,16 @@ Contest.method('savePlay', function(opts, callback) {
     opts.play = play;
 
     return play.save(function(err) {
+        Bozuko.publish('contest/play', play.doc );
+        if( !play.win ){
+            Bozuko.publish('contest/lose', play.doc );
+            if( play.consolation ){
+                Bozuko.publish('contest/consolation', play.doc );
+            }
+        }
+        else{
+            Bozuko.publish('contest/win', play.doc );
+        }
         prof.stop();
         if (err) return callback(err);
         return self.endPlay(opts, callback);

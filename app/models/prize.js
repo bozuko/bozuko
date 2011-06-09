@@ -72,6 +72,7 @@ Prize.method('redeem', function(user, callback){
             if( error ) return callback( error );
             self.user = user;
             self.page = page;
+            Bozuko.publish('prize/redeemed', {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
             return callback(null, {
                 security_image: page.security_img || burl('/images/security_image.png'),
                 prize: self
