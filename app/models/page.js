@@ -84,7 +84,7 @@ Page.method('getActiveContests', function(callback){
         active: true,
         start: {$lt: now},
         end: {$gt: now},
-        $where: "this.token_cursor < this.total_plays;"
+        $where: "this.token_cursor+1 < this.total_plays;"
     };
     if( arguments.length == 2 ){
         callback = arguments[1];
@@ -305,7 +305,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
             page_id: {$in: Object.keys(page_map)},
             start: {$lt: now},
             end: {$gt: now},
-            $where: "this.token_cursor < this.total_entries;"
+            $where: "this.token_cursor+1 < this.total_plays"
         },
         function( error, contests ){
             prof_contest_find.stop();

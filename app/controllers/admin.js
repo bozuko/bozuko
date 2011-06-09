@@ -395,13 +395,13 @@ exports.routes = {
                 
                 var lookForUpdates = function(){
                     var now = (new Date()).getTime();
-                    if( closed || start+timeout < now ) return res.send({test: true, last_updated: previous});
+                    if( closed || start+timeout < now ) return res.send({update: false, last_updated: previous});
                     
                     return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
                         if( error ) return error.send(res);
                         if( !lastUpdated && !previous ) return setTimeout( lookForUpdates, interval);
                         if( (lastUpdated && !previous) || String(lastUpdated._id) != previous._id || previous.last_updated.getTime() !== lastUpdated.last_updated.getTime() ){
-                            return res.send( {test: true, update: true, last_updated: filter(lastUpdated,'_id','last_updated')} );
+                            return res.send( {update: true, last_updated: filter(lastUpdated,'_id','last_updated')} );
                         }
                         return setTimeout( lookForUpdates, interval);
                     });

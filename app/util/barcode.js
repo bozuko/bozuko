@@ -17,9 +17,6 @@ exports.create_png = function(barcode, encoding, filename, callback) {
                 }
                 return callback(null);
         });
-
-
     });
-
 };
 
