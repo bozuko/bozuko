@@ -7,18 +7,31 @@ var PubSub = module.exports = function(){
     
     self.model = Bozuko.models.Message;
     self.cursor = null;
-    self.running = true;
+    self.running = false;
     self.last_timestamp = Date.now();
     self.max = 100;
-    self.pollTimeout = null;
-    self.interval = 500;
-    self.poll = function(){
-        return self._poll();
-    };
-    self._poll();
+    self.threshold = Bozuko.getConfigValue( 'pubsub.cleanup.threshold', 1000 * 60 * 60 * 2); // 2 hours
+    self.poll_timeout = null;
+    self.poll_interval = Bozuko.getConfigValue( 'pubsub.poll.interval', 500 );
+    self.cleanup_interval = Bozuko.getConfigValue( 'pubsub.cleanup.interval', 1000 * 60 * 10); // 10 minutes
+    self.cleanup_timeout = null;
+    self.start();
 };
 
 util.inherits( PubSub, events.EventEmitter );
+
+PubSub.prototype.poll = function(now){
+    var self = this;
+    
+    clearTimeout( self.poll_timeout );
+    
+    if( now ) return self._poll();
+    
+    self.poll_timeout = setTimeout(function(){
+        self._poll();
+    }, self.poll_interval);
+    return null;
+};
 
 PubSub.prototype._poll = function(){
     var self = this;
@@ -28,43 +41,84 @@ PubSub.prototype._poll = function(){
         items.forEach(function(item){
             self.onItem(item);
         });
-        if( self.running ){
-            self.pollTimeout = setTimeout(self.poll, self.interval);
-        }
-        return false;
+        return self.running ? self.poll() : false;
     });
 };
 
-PubSub.prototype.cleanup = function(){
-    
-}
 
+PubSub.prototype.cleanup = function(now){
+    var self = this;
+    
+    clearTimeout( self.cleanup_timeout );
+    
+    if( now ) return self._cleanup();
+    
+    self.cleanup_timeout = setTimeout(function(){
+        self._cleanup();
+    }, self.cleanup_interval);
+    
+    return null;
+};
+
+PubSub.prototype._cleanup = function(){
+    var self = this,
+        threshold = Date.now();
+    
+    threshold.setTime( threshold.getTime() - self.threshold );
+    self.model.remove({timestamp: {$lt: threshold}}, function(){
+        return self.running ? self.cleanup() : false;
+    });
+};
+
+PubSub.prototype.start = function(){
+    var self = this;
+    
+    if( self.running ) return;
+    self.running = true;
+    self.poll(true);
+    self.cleanup();
+};
+
+PubSub.prototype.stop = function(){
+    var self = this;
+    
+    if( !self.running ) return;
+    self.running = false;
+    clearTimeout( self.poll_timeout );
+    clearTimeout( self.cleanup_timeout );
+};
 
 PubSub.prototype.onItem = function(item){
     var self = this;
     if( !item ){
-        // wha?
-        console.log('PubSub.onItem with no item');
         return;
     }
     // get the timestamp
     self.last_timestamp = item.timestamp;
-    console.log('onItem', item);
+    self.emit( item.type, item.content );
 };
 
 PubSub.prototype.publish = function(type, content){
-    var msg = new this.model({
+    var self = this;
+    
+    var msg = new self.model({
         timestamp: Date.now(),
         type: type,
         content: content
     });
-    msg.save();
+    
+    msg.save(function(){
+        /**
+         * TODO - decide if we should just wait on this.
+         */
+        self.poll(true);
+    });
 };
 
 PubSub.prototype.subscribe = function(type, callback){
-    
+    this.on(type, callback);
 };
 
 PubSub.prototype.unsubscribe = function(type, callback){
-    
+    this.removeListener(type, callback);
 };

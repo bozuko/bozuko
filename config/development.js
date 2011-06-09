@@ -97,6 +97,16 @@ module.exports = {
         host: 'bonobo.bozuko.com',
         port: port
     },
+    
+    pubsub: {
+        poll: {
+            interval: 500
+        },
+        cleanup: {
+            threshold: 1000 * 60 * 60 * 2,
+            interval: 1000 * 60 * 10
+        }
+    },
 
     email : {
         smtp:{
