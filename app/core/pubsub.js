@@ -95,7 +95,10 @@ PubSub.prototype.onItem = function(item){
     }
     // get the timestamp
     self.last_timestamp = item.timestamp;
-    self.emit( item.type, item.content );
+    // let our wildcard listeners in on it
+    self.emit( '*', item.content, item.type, item.timestamp );
+    // tell the specific listeners whats up
+    self.emit( item.type, item.content, item.type, item.timestamp );
 };
 
 PubSub.prototype.publish = function(type, content){
@@ -116,6 +119,7 @@ PubSub.prototype.publish = function(type, content){
 };
 
 PubSub.prototype.subscribe = function(type, callback){
+    
     this.on(type, callback);
 };
 

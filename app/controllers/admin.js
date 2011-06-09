@@ -20,6 +20,53 @@ exports.routes = {
             }
         }
     },
+    
+    '/events' : {
+        get : {
+            handler: function(req, res){
+                res.contentType = 'text/html';
+                res.write([
+                    '<html><head><style>',
+                    'body{font-family: Tahoma; font-size: 12px; }',
+                    '.entries{ border-top: 1px solid #ccc; }',
+                    '.entry{ border-bottom: 1px solid #ccc; clear: both; overflow: hidden; }',
+                    '.entry-odd{ background: #f3f3f3; }',
+                    '.entry-title{ width: 200px; float: left; font-weight: bold; }',
+                    '.entry-content{ margin-left: 210px; }',
+                    '</style>',
+                    '<script type="text/javascript">',
+                    'var count=0;',
+                    'function log(msg,type,time){',
+                        'var div = document.createElement("div");',
+                        'div.className = "entry";',
+                        'if( count++ % 2) div.className+=" entry-odd";',
+                        'div.innerHTML = \'<div class="entry-title"><h3>\'+type+\'</h3><div class="date">\'+time+\'</div></div>\'',
+                        'div.innerHTML+= \'<div class="entry-content">\'+JSON.stringify(msg)+\'</div>\'',
+                        'document.getElementById("logs").insertBefore(div, document.getElementById("first").nextSibling);',
+                    '}',
+                    '</script>',
+                    '<title>Event Viewer</title>',
+                    '<body>',
+                    '<h1>Event Logger</h1>',
+                    '<div id="logs" class="entries"><div id="first"></div><div id="last"></div>',
+                    ].join('\n'));
+                
+                var logger = function(msg, type, timestamp){
+                    res.write([
+                        '<script type="text/javascript">',
+                        'log('+JSON.stringify(msg)+','+JSON.stringify(type)+','+JSON.stringify(timestamp)+')',
+                        '</script>'
+                    ].join(''));
+                };
+                
+                Bozuko.subscribe('*', logger);
+                req.connection.addListener('close', function(){
+                    Bozuko.unsubscribe('*', logger);
+                });
+                
+            }
+        }
+    },
 
     '/admin' : {
 
