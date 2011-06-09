@@ -227,7 +227,7 @@ exports.routes = {
 
     '/game/:id/prize/:prize_index/barcode/:barcode_index': {
         get: {
-            access: 'mobile',
+//            access: 'mobile',
 
             handler: function(req, res) {
                 var s3 = new S3();
@@ -239,7 +239,7 @@ exports.routes = {
 
     '/game/:id/consolation_prize/:prize_index/barcode/:barcode_index': {
         get: {
-            access: 'mobile',
+  //          access: 'mobile',
 
             handler: function(req, res) {
                 var s3 = new S3();
