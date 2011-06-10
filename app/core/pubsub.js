@@ -7,8 +7,9 @@ var PubSub = module.exports = function(){
     
     self.model = Bozuko.models.Message;
     self.cursor = null;
+    self.timestamp = new Date();
     self.running = false;
-    self.last_timestamp = Date.now();
+    self.last_id = false;
     self.max = 100;
     self.threshold = Bozuko.getConfigValue( 'pubsub.cleanup.threshold', 1000 * 60 * 60 * 2); // 2 hours
     self.poll_timeout = null;
@@ -36,9 +37,18 @@ PubSub.prototype.poll = function(now){
 PubSub.prototype._poll = function(){
     var self = this;
     
-    this.model.find({timestamp: {$gt: self.last_timestamp}}, {}, {sort: {timestamp:1}}, function(error, items){
+    var selector = {};
+    if( self.last_id ){
+        selector._id = {$gt: self.last_id};
+    }
+    else{
+        selector.timestamp = {$gt: self.timestamp};
+    }
+    
+    this.model.nativeFind(selector, {}, {sort: {_id:1}}, function(error, items){
         if( error ) return console.log(error.message, error.stack);
         items.forEach(function(item){
+            console.log(selector);
             self.onItem(item);
         });
         return self.running ? self.poll() : false;
@@ -94,11 +104,11 @@ PubSub.prototype.onItem = function(item){
         return;
     }
     // get the timestamp
-    self.last_timestamp = item.timestamp;
+    self.last_id = item._id;
     // let our wildcard listeners in on it
-    self.emit( '*', item.content, item.type, item.timestamp );
+    self.emit( '*', item.content, item.type, item.timestamp, item._id );
     // tell the specific listeners whats up
-    self.emit( item.type, item.content, item.type, item.timestamp );
+    self.emit( item.type, item.content, item.type, item.timestamp, item._id );
 };
 
 PubSub.prototype.publish = function(type, content){
@@ -116,6 +126,10 @@ PubSub.prototype.publish = function(type, content){
          */
         self.poll(true);
     });
+};
+
+PubSub.prototype.since = function(id, callback){
+    this.model.nativeFind({_id: {$gt: id}}, {}, {sort: {_id: 1}}, callback);
 };
 
 PubSub.prototype.subscribe = function(type, callback){
