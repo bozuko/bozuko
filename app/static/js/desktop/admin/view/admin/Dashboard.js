@@ -5,42 +5,53 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
     
     bodyPadding: 10,
     title:"Admin Dashboard",
-    /*
+    
     layout: {
-        type: 'vbox',
-        align: 'stretch'
+        type: 'border'
     },
-    */
+    
+    requires: [
+        'Bozuko.lib.PubSub'
+    ],
+    
     initComponent : function(){
-        
-        this.html = 'The admin dashboard';
-        
-        /*
-         // okay.. lets add a chart.
         this.items = [{
-            flex: 1,
-            layout: {
-                type: 'hbox',
-                layout: 'stretch'
-            },
-            items: [{
-                border: false,
-                html: 'pretty big'
-            },{
-                margin: 4,
-                frame: true,
-                title: 'System',
-                layout: 'fit',
-                items: [{
-                    xtype: 'profiler'
-                }]
-            }]
+            region: 'center',
+            html: 'Admin Dashboard'
         },{
-            flex: 2,
-            border: false,
-            html: 'big chart'
+            height: 200,
+            split: true,
+            title: 'Event Log',
+            region: 'south',
+            autoScroll: true,
+            collapsible: true,
+            xtype: 'grid',
+            store: Ext.create('Ext.data.Store',{
+                id: 'eventStore',
+                fields:['type','message','timestamp'],
+                data:{'items':[]},
+                sorters: [{property:'timestamp', direction: 'DESC'}],
+                proxy:{
+                    type: 'memory',
+                    reader: {
+                        type: 'json',
+                        root: 'items'
+                    }
+                }
+            }),
+            columns: [
+                {header: 'Timestamp', dataIndex: 'timestamp', width: 150},
+                {header: 'Event', dataIndex: 'type', width: 150},
+                {header: 'Message', dataIndex: 'message', renderer: JSON.stringify, flex: 1}
+            ]
         }];
-        */
         this.callParent();
+        var eventLog = Ext.data.StoreManager.lookup('eventStore');
+        Bozuko.PubSub.subscribe('*', true, function(message, type, timestamp){
+            var time = new Date();
+            time.setTime( Date.parse(timestamp) );
+            var record = eventLog.createModel({type:type,message: message, timestamp: time});
+            eventLog.insert(0,[record]);
+        });
     }
 });
