@@ -39,7 +39,6 @@ Ext.define('Bozuko.lib.PubSub',{
                 listeners:listeners
             }
         };
-        console.log(me.since);
         if( me.since ){
             options.jsonData.since = me.since;
         }

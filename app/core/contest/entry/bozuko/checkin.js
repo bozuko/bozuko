@@ -38,7 +38,7 @@ BozukoCheckinMethod.prototype.icon = '';
  * List Message String
  *
  */
-BozukoCheckinMethod.prototype.list_message = 'Facebook check-in required';
+BozukoCheckinMethod.prototype.list_message = 'Bozuko check-in required';
 
 
 /**
@@ -171,7 +171,7 @@ BozukoCheckinMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
     this.load( function(error){
         if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
+        return self.getNextEntryTime( self.getLastEntry(), function( error, time ){
             
             if( error ) return callback( error );
             if( !tokens ){
