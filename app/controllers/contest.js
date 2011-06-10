@@ -1,4 +1,5 @@
 var S3 = Bozuko.require('util/s3');
+var url = require('url');
 
 var game_prize = {
     doc: "A prize that can be won in a game",
@@ -230,7 +231,7 @@ exports.routes = {
 
             handler: function(req, res) {
                 var s3 = new S3();
-                return s3.get(req.url, res);
+                return s3.get(url.parse(req.url).pathname, res);
             }
         }
 
@@ -238,11 +239,11 @@ exports.routes = {
 
     '/game/:id/consolation_prize/:prize_index/barcode/:barcode_index': {
         get: {
-//            access: 'mobile',
+  //          access: 'mobile',
 
             handler: function(req, res) {
                 var s3 = new S3();
-                return s3.get(req.url, res);
+                return s3.get(url.parse(req.url).pathname, res);
             }
         }
     },
