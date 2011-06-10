@@ -77,6 +77,7 @@ Ext.define('Bozuko.lib.PubSub',{
                 callbacks:[callback]
             };
         }
+        me.stopListening();
         me.listen();
     },
     

@@ -52,6 +52,9 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
             time.setTime( Date.parse(timestamp) );
             var record = eventLog.createModel({type:type,message: message, timestamp: time});
             eventLog.insert(0,[record]);
+            while(eventLog.getCount() > 150 ){
+                eventLog.removeAt(150);
+            }
         });
     }
 });
