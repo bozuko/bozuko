@@ -699,7 +699,12 @@ Contest.method('savePlay', function(opts, callback) {
             }
         }
         else{
-            Bozuko.publish('contest/win', play.doc );
+            if( play.free_play ){
+                Bozuko.publish('contest/free_play', play.doc );
+            }
+            else{
+                Bozuko.publish('contest/win', play.doc );
+            }
         }
         prof.stop();
         if (err) return callback(err);
