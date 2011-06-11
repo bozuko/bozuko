@@ -1,4 +1,5 @@
 var merge = require('connect').utils.merge,
+    io = require('socket.io'),
     auth = require('./auth');
 
 function Controller(app,name,config){
@@ -9,7 +10,8 @@ function Controller(app,name,config){
     };
     this.config = config;
     merge( this, config );
-    this.route( this.routes );
+    if( this.routes ) this.route( this.routes );
+    // if( this.sockets ) this.io( this.sockets );
 }
 
 Controller.prototype = {
@@ -166,6 +168,10 @@ Controller.prototype = {
         if( !/^\//.test(path)) path = '/'+path;
         if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
         return path;
+    },
+    
+    io : function(sockets){
+        
     },
 
     forward : function(path){

@@ -10,6 +10,10 @@ Ext.application({
     controllers: ['Browser'],
     views: ['Browser'],
     
+    requires:[
+        'Bozuko.lib.PubSub'
+    ],
+    
     launch: function() {
         this.viewport = Ext.create('Ext.container.Viewport',{
             layout:'fit',

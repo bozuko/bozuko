@@ -431,5 +431,8 @@ Bozuko.subscribe = function(){
 Bozuko.unsubscribe = function(){
 	Bozuko.pubsub.unsubscribe.apply( Bozuko.pubsub, arguments );
 };
+Bozuko.since = function(date, callback){
+    Bozuko.pubsub.since(date, callback);
+}
 
 module.exports = Bozuko;
