@@ -83,7 +83,9 @@ exports.routes = {
         }
     },
     
-    '/admin/playstats' : {
+    '/admin/stats/play' : {
+        
+        alias: '/admin/playstats',
 
         get : {
 
@@ -102,6 +104,34 @@ exports.routes = {
                             res.write([
                                 'Outside Bozuko Plays:  '+outside_count,
                                 'Inside Bozuko Plays:   '+inside_count,
+                            ].join('\n'));
+                            res.end();
+                        });
+                    });
+                });
+            }
+        }
+    },
+    
+    '/admin/stats/entry' : {
+
+        get : {
+
+            title: 'Entry Stats',
+            locals:{
+                layout: false
+            },
+
+            handler: function(req,res){
+                Bozuko.models.User.find({name:/(bozuko|fabrizio)/ig}, {_id:1}, function(error, users){
+                    var ids = [];
+                    users.forEach(function(user){ ids.push(user._id); });
+                    Bozuko.models.Entry.count({user_id: {$nin: ids}}, function(error, outside_count){
+                        Bozuko.models.Entry.count({user_id: {$in: ids}}, function(error, inside_count){
+                            res.contentType = 'text/plain';
+                            res.write([
+                                'Outside Bozuko Entries:  '+outside_count,
+                                'Inside Bozuko Entries:   '+inside_count,
                             ].join('\n'));
                             res.end();
                         });
