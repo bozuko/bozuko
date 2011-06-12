@@ -308,9 +308,9 @@ Contest.method('loadGameState', function(user, callback){
 
     // Contest is over for this user
     if (state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
-	console.error("GAME OVER");
         state.game_over = true;
 	state.next_enter_time = 'Never';
+	state.button_text = 'Game Over';
         state.button_enabled = false;
         return callback(null, state);
     }
