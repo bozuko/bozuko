@@ -102,7 +102,8 @@ exports.routes = {
                             res.write([
                                 'Outside Bozuko Plays:  '+outside_count,
                                 'Inside Bozuko Plays:   '+outside_count,
-                            ]);
+                            ].join(''));
+                            res.end();
                         });
                     });
                 });
