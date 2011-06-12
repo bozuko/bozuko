@@ -127,6 +127,7 @@ var game_state = {
         button_text: "String",
         button_enabled: "Boolean",
         button_action: "String",
+        game_over: "Boolean",
         links: {
             game_result: "String",
             game_entry: "String",

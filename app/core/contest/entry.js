@@ -156,14 +156,13 @@ EntryMethod.prototype.prepareAnalyticEntry = function( Entry ){
     Entry.type = self.type;
 };
 
-
 /**
  * Test to make sure there are enough tokens left in the contest to distribute
  *
  * @returns {Boolean} If there is enough tokens
  */
 EntryMethod.prototype.ensureTokens = function(){
-    return this.contest.token_cursor + this.getTokenCount() < this.contest.total_plays - this.contest.total_free_plays;
+    return this.contest.token_cursor + this.getTokenCount() <= this.contest.total_plays - this.contest.total_free_plays;
 };
 
 /**

@@ -1,11 +1,11 @@
 Ext.define('Bozuko.controller.Contests' ,{
     extend: 'Ext.app.Controller',
-    
+
     views: ['contest.Panel', 'contest.report.Panel', 'contest.edit.Form'],
     stores: ['Contests'],
-    
+
     models: ['Contest', 'Page', 'Prize'],
-    
+
     init : function(){
         this.control({
             'contestpanel contestgrid' : {
@@ -40,18 +40,18 @@ Ext.define('Bozuko.controller.Contests' ,{
             }
         });
     },
-    
+
     onContestsViewRender : function(view){
         // get at the store...
         view.store.on('load', function(store){
             this.updateCards(store, view);
         }, this);
     },
-    
+
     onContestDblClick : function(view, record){
         var panel = view.panel.up('contestpanel'),
             pagePanel = view.panel.up('pagepanel');
-        
+
         // create a new window if necessary
         var id = record.get('_id');
         var window = panel.windows[id];
@@ -65,26 +65,26 @@ Ext.define('Bozuko.controller.Contests' ,{
         }
         window.show();
         window.focus();
-        
+
     },
-    
+
     onContestBackClick : function(btn){
         var pagePanel = btn.up('pagepanel'),
             contestPanel = pagePanel.down('contestpanel'),
             navbar = pagePanel.down('[ref=page-navbar]');
-        
+
         navbar.show();
         pagePanel.getLayout().setActiveItem( contestPanel );
         pagePanel.doLayout();
     },
-    
+
     getValues : function(form, selector){
         var values = {};
         selector = selector ? selector+' field' : 'field';
         Ext.Array.each(form.query( selector ), function(field){
             var name = field.getName();
             var ns = name.split('.'), cur = values;
-            
+
             if( ns.length > 1 ){
                 while( ns.length > 1 ){
                     var p = ns.shift();
@@ -96,7 +96,7 @@ Ext.define('Bozuko.controller.Contests' ,{
         });
         return values;
     },
-    
+
     onContestSaveClick : function(btn){
         var contestForm = btn.up('contestform'),
             pagePanel = btn.up('pagepanel'),
@@ -109,7 +109,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             entry = contestForm.down('contestformentry'),
             rules = contestForm.down('contestformrules'),
             game = contestForm.down('contestformgame');
-        
+
         var isNew = !record.get('_id');
         btn.disable();
         btn.setText( isNew ? 'Creating...' : 'Saving...');
@@ -126,7 +126,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             entry_config = this.getValues(entry);
         }
         record.set( 'entry_config', [entry_config] );
-        
+
         var consolation_config = record.get('consolation_config');
         if( consolation_config && consolation_config.length ){
             var values = this.getValues(consolation_prizes, 'fieldset');
@@ -136,10 +136,10 @@ Ext.define('Bozuko.controller.Contests' ,{
             consolation_config = this.getValues(consolation_prizes, 'fieldset');
         }
         record.set('consolation_config', [consolation_config]);
-        
+
         prizes.updateRecords();
         consolation_prizes.updateRecords();
-        
+
         record.save({
             success : function(){
                 var report;
@@ -168,7 +168,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             }
         });
     },
-    
+
     onContestPanelRender : function(panel){
         panel.store.on('update', function(store, record, op){
             if( op !== Ext.data.Model.COMMIT ) return;
@@ -178,15 +178,15 @@ Ext.define('Bozuko.controller.Contests' ,{
             pagePanel.cards[id].down('[ref=edit-campaign-text]').setText( record.get('name') );
         });
     },
-    
-    
+
+
     onRefreshContestsClick : function(btn){
         var contestPanel = btn.up('contestpanel'),
             contestGrid = contestPanel.down('contestgrid');
-        
+
         contestGrid.store.load();
     },
-    
+
     onContestItemClick : function(view, record, item, index, e){
         // get the target
         var target = e.getTarget();
@@ -195,7 +195,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             case 'edit':
                 this.editContest(record, view);
                 break;
-            
+
             case 'delete':
                 Ext.Msg.confirm(
                     'Are you sure?',
@@ -212,7 +212,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                     }
                 );
                 break;
-                
+
             case 'publish':
                 var url = '/admin/contests/'+record.getId()+'/publish';
                 Ext.Ajax.request({
@@ -230,14 +230,14 @@ Ext.define('Bozuko.controller.Contests' ,{
                                 view.store.load();
                             }
                         }catch(e){
-                            
+
                         }
                     }
                 });
                 break;
-                
+
             case 'copy':
-                
+
                 var name = record.get('name');
                 if( name ) name+=' (Copy)';
                 else name = Ext.Date.parse(new Date(), 'Campaign m-d-Y');
@@ -248,28 +248,28 @@ Ext.define('Bozuko.controller.Contests' ,{
                         if( btn !== 'ok') return;
                         var copy = record.copy();
                         copy.phantom=true;
-                        
+
                         // initialize the stores and delete the ids
                         var prizes = copy.prizes();
                         var consolations = copy.consolation_prizes();
-                        
+
                         record.prizes().each(function(prize){
                             var c = prize.copy();
                             c.set('_id','');
                             prizes.add(c);
                         });
-                        
+
                         record.consolation_prizes().each(function(prize){
                             var c = prize.copy();
                             c.set('_id','');
                             consolations.add(c);
                         });
-                        
+
                         var now = new Date();
                             diff = copy.get('end').getTime() - copy.get('start').getTime(),
                             start = now,
                             end = new Date();
-                        
+
                         copy.set('_id', '');
                         end.setTime(start.getTime() + diff);
                         copy.set('start', start);
@@ -279,7 +279,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                         copy.set('total_entries', 0);
                         copy.set('total_plays', 0);
                         copy.set('play_cursor', -1);
-                        copy.set('token_cursor', -1);
+                        copy.set('token_cursor', 0);
                         copy.phantom = true;
                         // save the copy
                         copy.save({
@@ -296,9 +296,9 @@ Ext.define('Bozuko.controller.Contests' ,{
                     modal: true
                 });
                 break;
-                
+
             case 'cancel':
-                
+
                 var url = '/admin/contests/'+record.getId()+'/cancel';
                 Ext.Ajax.request({
                     url: url,
@@ -315,16 +315,16 @@ Ext.define('Bozuko.controller.Contests' ,{
                                 view.store.load();
                             }
                         }catch(e){
-                            
+
                         }
                     }
                 });
                 break;
-            
+
             case 'reports':
                 this.openContest( record, view );
                 break;
-            
+
             default:
                 Ext.Msg.show({
                     title: 'Not Implemented Yet',
@@ -335,27 +335,27 @@ Ext.define('Bozuko.controller.Contests' ,{
                 break;
         }
     },
-    
+
     onContestNavClick : function(view, record){
         var contestform = view.up('contestform');
             cardPanel = contestform.down('panel[region=center]'),
             type = record.get('type'),
             panel = cardPanel.down('[ref='+type+']');
-            
+
         cardPanel.getLayout().setActiveItem(panel);
     },
-    
+
     onCreateContestClick : function(btn){
         var record = new Bozuko.model.Contest();
         this.editContest(record, btn);
     },
-    
+
     editContest : function(record, cmp){
         // create a new
         var panel = cmp.up('pagepanel'),
             navbar = panel.down('[ref=page-navbar]'),
             id = record.get('_id');
-        
+
         if( !panel.cards ) panel.cards = {};
         if( !panel.cards[id] ){
             panel.cards[id] = panel.add({
@@ -365,18 +365,18 @@ Ext.define('Bozuko.controller.Contests' ,{
             panel.cards[id].setRecord( record );
         }
         navbar.hide();
-        
+
         panel.getLayout().setActiveItem(panel.cards[id]);
         panel.doLayout();
-        
+
     },
-    
+
     openContest : function(record, cmp){
         // create a new
         var panel = cmp.up('pagepanel'),
             navbar = panel.down('[ref=page-navbar]'),
             id = record.get('_id');
-        
+
         if( !panel.reports ) panel.reports = {};
         if( !panel.reports[id] ){
             panel.reports[id] = panel.add({
@@ -386,11 +386,11 @@ Ext.define('Bozuko.controller.Contests' ,{
             panel.reports[id].setRecord( record );
         }
         navbar.hide();
-        
+
         panel.getLayout().setActiveItem(panel.reports[id]);
         panel.doLayout();
     },
-    
+
     updateCards : function(store, view){
         var panel = view.up('pagepanel');
         if( panel.cards ) Ext.Object.each( panel.cards, function(id, card){

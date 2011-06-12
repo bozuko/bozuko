@@ -79,18 +79,18 @@ Page.method('loadContests', function(user, callback){
 Page.method('getActiveContests', function(user, callback){
     var prof = new Profiler('/models/page/getActiveContests');
     var now = new Date();
-    
+
     var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
     var user_id = user ? user._id : false;
-    
+
     var selector = {
         active: true,
         page_id: this.id,
         start: {$lt: now},
         end: {$gt: now}
     };
-    
-    var $where = {$where: "this.token_cursor+1 < this.total_plays - this.total_free_plays"};
+
+    var $where = {$where: "this.token_cursor < this.total_plays - this.total_free_plays"};
     if( user_id ){
         selector.$or = [$where,{
             entries: {
@@ -103,7 +103,7 @@ Page.method('getActiveContests', function(user, callback){
     else{
         selector.$where = $where.$where;
     }
-    
+
     if( arguments.length == 2 ){
         callback = arguments[1];
     }
@@ -312,23 +312,23 @@ Page.static('createFromServiceObject', function(place, callback){
 Page.static('loadPagesContests', function(pages, user, callback){
     var prof = new Profiler('/models/page/loadPagesContests/createPageMap');
     var page_map = {}, now = new Date();
-    
+
     var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
     var user_id = user ? user._id : false;
-    
+
     pages.forEach(function(page){
         page_map[page.id+''] = page;
     });
     prof.stop();
     var prof_contest_find = new Profiler('/models/page/loadPagesContests/Contest.find');
-    
+
     var selector = {
         active: true,
         page_id: {$in: Object.keys(page_map)},
         start: {$lt: now},
         end: {$gt: now}
     };
-    var $where = {$where: "this.token_cursor+1 < this.total_plays - this.total_free_plays"};
+    var $where = {$where: "this.token_cursor < this.total_plays - this.total_free_plays"};
     if( user_id ){
         selector.$or = [$where,{
             entries: {
@@ -341,7 +341,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
     else{
         selector.$where = $where.$where;
     }
-    
+
     Bozuko.models.Contest.find(selector, function( error, contests ){
         prof_contest_find.stop();
         if( error ) console.log(error);
@@ -481,7 +481,7 @@ Page.static('search', function(options, callback){
 
         bozukoSearch.selector.owner_id = {$exists:true};
         bozukoSearch.selector.coords = {$within: {$box: options.bounds}};
-        
+
         bozukoSearch.type='nativeFind';
 
         /**
@@ -560,7 +560,7 @@ Page.static('search', function(options, callback){
                 $nin: ids
             };
         }
-        
+
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
@@ -577,7 +577,7 @@ Page.static('search', function(options, callback){
                     }
                     page_ids.push(page._id);
                 });
-                
+
                 // grab the featured out of there for sorting...
                 featured = [];
                 for( var i=0; i<featured.length; i++){
@@ -602,7 +602,7 @@ Page.static('search', function(options, callback){
                     if( error ) return callback(error);
 
                     var map = {}, results = [];
-                    
+
                     if( _results ) _results.forEach( function(place, index){
                         if( ~fb_ids.indexOf(String(place.id)) ) return;
                         results.push(place);
@@ -627,17 +627,17 @@ Page.static('search', function(options, callback){
                                 result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
                             });
                         }
-                        
+
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             pages = pages.concat(_pages);
-                            
+
                             featured.sort( sort_by('_distance') );
                             pages.sort( sort_by('_distance') );
                             results.sort( sort_by('_distance') );
-                            
+
                             pages = featured.concat(pages);
                             pages = pages.concat(results);
-                            
+
                             return return_pages(pages);
                         });
                     });
