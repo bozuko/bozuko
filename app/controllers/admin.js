@@ -101,8 +101,8 @@ exports.routes = {
                             res.contentType = 'text/plain';
                             res.write([
                                 'Outside Bozuko Plays:  '+outside_count,
-                                'Inside Bozuko Plays:   '+outside_count,
-                            ].join(''));
+                                'Inside Bozuko Plays:   '+inside_count,
+                            ].join('\n'));
                             res.end();
                         });
                     });
