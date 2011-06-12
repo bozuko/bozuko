@@ -85,7 +85,7 @@ Page.method('getActiveContests', function(user, callback){
 
     var selector = {
         active: true,
-        page_id: this.id,
+        page_id: this._id,
         start: {$lt: now},
         end: {$gt: now}
     };
@@ -94,11 +94,13 @@ Page.method('getActiveContests', function(user, callback){
     if( user_id ){
         selector.$or = [$where,{
             entries: {
-                tokens : {$gt : 0},
-                timestamp : {$gt : min_expiry_date},
-                user_id: user_id
+                $elemMatch: {
+                    tokens : {$gt : 0},
+                    timestamp : {$gt : min_expiry_date},
+                    user_id: user_id
+                }
             }
-        }]
+        }];
     }
     else{
         selector.$where = $where.$where;
@@ -107,7 +109,7 @@ Page.method('getActiveContests', function(user, callback){
     if( arguments.length == 2 ){
         callback = arguments[1];
     }
-    Bozuko.models.Contest.find(selector, function(err, contests) {
+    Bozuko.models.Contest.nativeFind(selector, function(err, contests) {
         prof.stop();
         callback(err, contests);
     });
@@ -316,15 +318,18 @@ Page.static('loadPagesContests', function(pages, user, callback){
     var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
     var user_id = user ? user._id : false;
 
+    var page_ids = [];
     pages.forEach(function(page){
-        page_map[page.id+''] = page;
+        // page_ids can't be strings, so we can't just use Object.keys on the map
+        page_ids.push(page._id);
+        page_map[page._id+''] = page;
     });
     prof.stop();
     var prof_contest_find = new Profiler('/models/page/loadPagesContests/Contest.find');
 
     var selector = {
         active: true,
-        page_id: {$in: Object.keys(page_map)},
+        page_id: {$in: page_ids},
         start: {$lt: now},
         end: {$gt: now}
     };
@@ -332,17 +337,19 @@ Page.static('loadPagesContests', function(pages, user, callback){
     if( user_id ){
         selector.$or = [$where,{
             entries: {
-                tokens : {$gt : 0},
-                timestamp : {$gt : min_expiry_date},
-                user_id: user_id
+                $elemMatch: {
+                    tokens : {$gt : 0},
+                    timestamp : {$gt : min_expiry_date},
+                    user_id: user_id
+                }
             }
-        }]
+        }];
     }
     else{
         selector.$where = $where.$where;
     }
 
-    Bozuko.models.Contest.find(selector, function( error, contests ){
+    Bozuko.models.Contest.nativeFind(selector, function( error, contests ){
         prof_contest_find.stop();
         if( error ) console.log(error);
         if( error ) return callback(error);

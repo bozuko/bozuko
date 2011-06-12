@@ -102,9 +102,11 @@ Prize.method('loadTransferObject', function(callback){
     var self = this;
     return Bozuko.models.Page.findById(self.page_id, function(error, page){
         if( error ) return callback( error );
+        console.log("prize:loadTransferObject: page = "+JSON.stringify(page));
         self.page = page;
         return Bozuko.models.User.findById(self.user_id, function(error, user){
             if( error )  return callback( error );
+            console.log("prize:loadTransferObject: user = "+JSON.stringify(user));
             self.user = user;
             return callback( null, self );
         });
