@@ -20,53 +20,6 @@ exports.routes = {
             }
         }
     },
-    
-    '/events' : {
-        get : {
-            handler: function(req, res){
-                res.contentType = 'text/html';
-                res.write([
-                    '<html><head><style>',
-                    'body{font-family: Tahoma; font-size: 12px; }',
-                    '.entries{ border-top: 1px solid #ccc; }',
-                    '.entry{ border-bottom: 1px solid #ccc; clear: both; overflow: hidden; }',
-                    '.entry-odd{ background: #f3f3f3; }',
-                    '.entry-title{ width: 200px; float: left; font-weight: bold; }',
-                    '.entry-content{ margin-left: 210px; }',
-                    '</style>',
-                    '<script type="text/javascript">',
-                    'var count=0;',
-                    'function log(msg,type,time){',
-                        'var div = document.createElement("div");',
-                        'div.className = "entry";',
-                        'if( count++ % 2) div.className+=" entry-odd";',
-                        'div.innerHTML = \'<div class="entry-title"><h3>\'+type+\'</h3><div class="date">\'+time+\'</div></div>\'',
-                        'div.innerHTML+= \'<div class="entry-content">\'+JSON.stringify(msg)+\'</div>\'',
-                        'document.getElementById("logs").insertBefore(div, document.getElementById("first").nextSibling);',
-                    '}',
-                    '</script>',
-                    '<title>Event Viewer</title>',
-                    '<body>',
-                    '<h1>Event Logger</h1>',
-                    '<div id="logs" class="entries"><div id="first"></div><div id="last"></div>',
-                    ].join('\n'));
-                
-                var logger = function(msg, type, timestamp){
-                    res.write([
-                        '<script type="text/javascript">',
-                        'log('+JSON.stringify(msg)+','+JSON.stringify(type)+','+JSON.stringify(timestamp)+')',
-                        '</script>'
-                    ].join(''));
-                };
-                
-                Bozuko.subscribe('*', logger);
-                req.connection.addListener('close', function(){
-                    Bozuko.unsubscribe('*', logger);
-                });
-                
-            }
-        }
-    },
 
     '/admin' : {
 
@@ -467,51 +420,6 @@ exports.routes = {
                         });
                     });
                 });
-            }
-        },
-        
-        post : {
-            handler: function(req,res){
-                // check for contest or page
-                var contest_id = req.param('contest_id'),
-                    page_id = req.param('page_id'),
-                    previous = req.param('last_updated'),
-                    selector = {},
-                    closed = false,
-                    start = (new Date()).getTime(),
-                    /**
-                     * One minute timeouts
-                     */
-                    timeout = 60000,
-                    count = 0,
-                    interval = Bozuko.config.admin.winners_list.poll_interval = 200
-                    ;
-                    
-                if( contest_id ) selector['contest_id'] = contest_id;
-                if( page_id ) selector['page_id'] = page_id;
-                
-                if( previous ){
-                    previous.last_updated = new Date( Date.parse(previous.last_updated) );
-                }
-                
-                req.connection.addListener('close', function(){
-                    closed = true;
-                });
-                
-                var lookForUpdates = function(){
-                    var now = (new Date()).getTime();
-                    if( closed || start+timeout < now ) return res.send({update: false, last_updated: previous});
-                    
-                    return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
-                        if( error ) return error.send(res);
-                        if( !lastUpdated && !previous ) return setTimeout( lookForUpdates, interval);
-                        if( (lastUpdated && !previous) || String(lastUpdated._id) != previous._id || previous.last_updated.getTime() !== lastUpdated.last_updated.getTime() ){
-                            return res.send( {update: true, last_updated: filter(lastUpdated,'_id','last_updated')} );
-                        }
-                        return setTimeout( lookForUpdates, interval);
-                    });
-                }
-                return lookForUpdates();
             }
         }
     },
