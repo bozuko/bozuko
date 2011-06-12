@@ -42,7 +42,7 @@ var Contest = module.exports = new Schema({
     total_plays             :{type:Number},
     results                 :{},
     play_cursor             :{type:Number, default: -1},
-    token_cursor            :{type:Number, default: -1},
+    token_cursor            :{type:Number, default: 0},
     winners                 :[ObjectId]
 });
 
@@ -281,7 +281,7 @@ Contest.method('getUserInfo', function(user_id) {
 
 Contest.method('loadGameState', function(user, callback){
 
-    var self =this;
+    var self = this;
 
     // we need to create an entry to see whats up...
     var config = this.entry_config[0];
@@ -295,7 +295,8 @@ Contest.method('loadGameState', function(user, callback){
         button_text: '',
         button_enabled: true,
         button_action: 'enter',
-        contest: self
+        contest: self,
+        game_over: false
     };
 
     var lastEntry = null;
@@ -303,6 +304,15 @@ Contest.method('loadGameState', function(user, callback){
         var info = this.getUserInfo(user._id);
         state.user_tokens = info.tokens;
         lastEntry = info.last_entry;
+    }
+
+    // Contest is over for this user
+    if (state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
+        state.game_over = true;
+	state.next_enter_time = 'Never';
+	state.button_text = 'Game Over';
+        state.button_enabled = false;
+        return callback(null, state);
     }
 
     entryMethod.getButtonText( state.user_tokens, function(error, text){
@@ -351,7 +361,7 @@ Contest.method('loadTransferObject', function(user, callback){
 Contest.method('addEntry', function(entry, callback) {
     var self = this;
     Bozuko.models.Contest.findAndModify(
-        { _id: this._id, token_cursor: {$lt : this.total_plays - entry.tokens}},
+        { _id: this._id, token_cursor: {$lte : this.total_plays - this.total_free_plays - entry.tokens}},
         [],
         {$inc : {'token_cursor': entry.tokens}, $push : {'entries' : entry}},
         {new: true},
@@ -674,7 +684,7 @@ Contest.method('savePlay', function(opts, callback) {
         win: opts.win,
         free_play: opts.free_play
     });
-    
+
     if (opts.prize) {
         play.prize_id = opts.prize._id;
         play.prize_name = opts.prize.name;
@@ -734,7 +744,7 @@ Contest.method('endPlay', function(opts, callback) {
     }
     var min_expiry_date = new Date(opts.timestamp.getTime() - Bozuko.config.entry.token_expiration);
 
-    // We don't want to touch the token_cursor etc... for an audit.
+    // We don't want to touch the entries.$.tokens for an audit.
     // We just want to recreate the prize and play records.
     if (opts.free_play && !opts.audit) {
 
@@ -744,7 +754,7 @@ Contest.method('endPlay', function(opts, callback) {
         return Bozuko.models.Contest.findAndModify(
             {_id: this._id, entries: {$elemMatch: {timestamp : {$gt : min_expiry_date}, user_id: opts.user_id}} },
             [],
-            {$inc: {'entries.$.tokens': 1, token_cursor: 1}},
+            {$inc: {'entries.$.tokens': 1}},
             {new: true},
             function(err, contest) {
                 return Bozuko.models.Contest.findAndModify(
