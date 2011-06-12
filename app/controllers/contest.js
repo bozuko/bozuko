@@ -283,6 +283,7 @@ exports.routes = {
                                     );
                                 });
                             }
+
                             return res.send(
                                 Bozuko.transfer('game_result', result, req.session.user)
                             );
