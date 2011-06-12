@@ -178,41 +178,56 @@ exports.routes = {
                     res.send(messages);
                 };
                 
+                var seen = [];
+                
                 var onItem = function(msg, type, timestamp, _id){
-                    var filters = body.listeners[type];
-                    
-                    var add = true;
-                    
-                    if( Array.isArray(filters) ){
+                    var all_filters = [body.listeners[type],body.listeners['*']],
                         add = false;
-                        for( var i=0; i<filters.length && !add; i++){
-                            var filter = filters[i];
-                            
-                            if( filter === true ){
-                                add=true;
-                                break;
-                            }
-                            
-                            var keys = Object.keys(filter),
-                                length = keys.length,
-                                match = 0;
+                    
+                    console.log(seen);
+                    if( ~seen.indexOf(String(_id)) ){
+                        return;
+                    }
+                    seen.push(String(_id));
+                    // i don't think there will be more than 20 distinct listeners per event...
+                    if( seen.length > 20 ) seen.shift();
+                    
+                    for(var i = 0; i<all_filters.length && !add; i++ ){
+                        var filters = all_filters[i];
+                        if( !filters ) continue;
+                        if( filters === true ){
+                            add = true;
+                            continue;
+                        }
+                        if( Array.isArray(filters) ){
+                            for( var i=0; i<filters.length && !add; i++){
+                                var filter = filters[i];
                                 
-                            for(var i=0; i<length && !add; i++){
-                                var key = keys[i];
-                                if( msg[key] && String(msg[key]) === String(filter[key]) ){
-                                    match++;
+                                if( filter === true ){
+                                    add=true;
+                                    break;
                                 }
-                                if( match === length ){
-                                    add = true;
+                                
+                                var keys = Object.keys(filter),
+                                    length = keys.length,
+                                    match = 0;
+                                    
+                                for(var i=0; i<length && !add; i++){
+                                    var key = keys[i];
+                                    if( msg[key] && String(msg[key]) === String(filter[key]) ){
+                                        match++;
+                                    }
+                                    if( match === length ){
+                                        add = true;
+                                    }
                                 }
-                            }
-                        };
+                            };
+                        }
                     }
                     if( add ){
                         if( !messages.length ){
                             setTimeout(send, buffer);
                         }
-                        console.log('add _id', _id);
                         messages.push({
                             type: type,
                             message: msg,
@@ -223,7 +238,10 @@ exports.routes = {
                 };
                 
                 var subscribe = function(){
-                    // events should be an object
+                    // well, if its listening for everything, than just return everything, don't bother with individual listeners
+                    if( body.listeners['*'] && body.listeners['*'] === true || (Array.isArray(body.listeners['*']) && ~body.listeners['*'].indexOf(true)) ){
+                        body.listeners = {'*':[true]};
+                    }
                     for( var event in body.listeners ){
                         
                         // distinct callbacks - we need to create a separate
@@ -231,7 +249,6 @@ exports.routes = {
                         var listener = function(msg, type, timestamp, _id){
                             onItem(msg, type, timestamp, _id);
                         };
-                        
                         Bozuko.subscribe(event, listener);
                         if( !listeners[event] ) listeners[event] = [];
                         listeners[event].push(listener);

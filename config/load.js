@@ -60,7 +60,9 @@ module.exports = {
             // Allow unlimited checkins
             user: 0,
             page: 0
-        }
+        },
+        
+        distance : 400 /* feet */
     },
 
     entry : {

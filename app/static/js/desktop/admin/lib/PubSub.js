@@ -9,6 +9,7 @@ Ext.define('Bozuko.lib.PubSub',{
     constructor : function(){
         this.listening = false;
         this.listeners = {};
+        this.canceled = [];
         this.fails = 0;
     },
     
@@ -17,15 +18,24 @@ Ext.define('Bozuko.lib.PubSub',{
         this.request();
     },
     
+    cancelRequest : function(){
+        
+        if( this.activeRequest && this.activeRequest.xhr  ){
+            this.canceled.push(this.activeRequest.id);
+            this.activeRequest.xhr.abort();
+        }
+    },
+    
     stopListening : function(){
         this.listening = false;
-        if( this.activeRequest && this.activeRequest.xhr  ) this.activeRequest.xhr.abort();
+        this.cancelRequest();
     },
     
     request : function(){
         var me = this;
         
         if( !me.listening ) return;
+        
         var listeners = me.getListeners();
         if( !listeners || !Ext.Object.getKeys(listeners).length ) return;
         
@@ -34,7 +44,7 @@ Ext.define('Bozuko.lib.PubSub',{
             url:'/listen',
             method:'post',
             callback: me.handleResponse,
-            scope: me,
+            self: me,
             jsonData:{
                 listeners:listeners
             }
@@ -42,7 +52,7 @@ Ext.define('Bozuko.lib.PubSub',{
         if( me.since ){
             options.jsonData.since = me.since;
         }
-        if( me.activeRequest && me.activeRequest.xhr ) me.activeRequest.xhr.abort();
+        me.cancelRequest();
         me.activeRequest = Ext.Ajax.request(options);
     },
     
@@ -77,7 +87,6 @@ Ext.define('Bozuko.lib.PubSub',{
                 callbacks:[callback]
             };
         }
-        me.stopListening();
         me.listen();
     },
     
@@ -107,9 +116,13 @@ Ext.define('Bozuko.lib.PubSub',{
     },
     
     handleResponse : function(options, success, response){
-        var me = this;
+        var me = options.self;
         // forget it
         if( !me.listening ) return;
+        if( ~me.canceled.indexOf(response.requestId) ){
+            me.canceled.splice( me.canceled.indexOf(response.requestId), 1);
+            return;
+        }
         if( success ){
             try{
                 var data = Ext.decode( response.responseText );
@@ -143,15 +156,15 @@ Ext.define('Bozuko.lib.PubSub',{
             event = item.type,
             message = item.message,
             timestamp = item.timestamp,
-            filters = me.listeners[item.event],
+            filters = me.listeners[event],
             star_filters = me.listeners['*'];
-            
+        
         if( !filters && !star_filters ){
             return;
         }
-        Ext.Array.each([filters, star_filters], function(filters){
-            if( !filters ) return;
-            Ext.Object.each( filters, function(key, filter){
+        Ext.Array.each([filters, star_filters], function(fs){
+            if( !fs ) return;
+            Ext.Object.each( fs, function(key, filter){
                 // lets see if this object satisfies the conditions
                 var satisfied = false;
                 if( filter.conditions === true ){

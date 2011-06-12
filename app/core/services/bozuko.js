@@ -86,13 +86,15 @@ BozukoService.prototype.checkin = function(options, callback){
     if( !options || !options.place_id || !options.ll || !options.user ){
         return callback(Bozuko.error('facebook/no_lat_lng_user_place'));
     }
+    
+    console.log(options.place_id);
     // we just need to find the place and compare distance
     return Bozuko.models.Page.findById( options.place_id, function(error, page){
         if( error ) return callback( error );
         if( !page ) return callback( Bozuko.error('page/not_found') );
         // get the distance now
         var d = Geo.distance( options.ll, page.coords, 'mi' );
-        if( d > Bozuko.config.checkin.distance / 5280 ){
+        if( d > Bozuko.cfg('config.checkin.distance', 600) / 5280 ){
             // too far...
             return callback( Bozuko.error( 'checkin/too_far') );
         }

@@ -48,7 +48,6 @@ PubSub.prototype._poll = function(){
     this.model.nativeFind(selector, {}, {sort: {_id:1}}, function(error, items){
         if( error ) return console.log(error.message, error.stack);
         items.forEach(function(item){
-            console.log(selector);
             self.onItem(item);
         });
         return self.running ? self.poll() : false;

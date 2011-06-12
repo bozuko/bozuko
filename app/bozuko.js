@@ -65,6 +65,8 @@ Bozuko.getConfigValue = function(key, defaultValue){
 	return getValue( parts, Bozuko.getConfig());
 };
 
+Bozuko.cfg = Bozuko.getConfigValue;
+
 Bozuko.getApp = function(){
     if( !Bozuko.app ){
         var app = Bozuko.require('core/server');

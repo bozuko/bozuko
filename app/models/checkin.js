@@ -27,9 +27,9 @@ Checkin.static('process', function(options, callback){
         return callback( Bozuko.error('checkin/no_page'));
     }
     if( options.service ){
-        if( options.server != 'bozuko' ) options.place_id = String( options.page.service( options.service ).sid );
-        else options.place_id = options.page.id;
-
+        if( options.service != 'bozuko' ) options.place_id = String( options.page.service( options.service ).sid );
+        else options.place_id = options.page._id;
+        
         var prof = new Profiler('/models/checkin/process');
         Bozuko.service( options.service ).checkin( options, function(error, result){
             if( error ) return callback( error );

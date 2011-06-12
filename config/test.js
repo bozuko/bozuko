@@ -70,7 +70,7 @@ module.exports = {
             // 5 seconds
             page: 1000 * 10
         },
-        distance : 100 /* feet */
+        distance : 400 /* feet */
     },
     
     entry : {

@@ -3,7 +3,7 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
     extend: 'Ext.panel.Panel',
     alias : 'widget.admindashboard',
     
-    bodyPadding: 10,
+    bodyPadding: 0,
     title:"Admin Dashboard",
     
     layout: {
@@ -17,10 +17,13 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
     initComponent : function(){
         this.items = [{
             region: 'center',
-            html: 'Admin Dashboard'
+            html: 'Admin Dashboard',
+            bodyPadding: 10,
+            border: false
         },{
             height: 200,
             split: true,
+            border: '1 0 0 0',
             title: 'Event Log',
             region: 'south',
             autoScroll: true,

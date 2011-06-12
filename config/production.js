@@ -62,7 +62,9 @@ module.exports = {
             user: 1000 * 60 * 15,
             // 4 hours between checkins at the same place
             page: 1000 * 60 * 60 * 4
-        }
+        },
+        
+        distance : 400 /* feet */
     },
 
     entry : {
