@@ -82,6 +82,33 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/playstats' : {
+
+        get : {
+
+            title: 'Play Stats',
+            locals:{
+                layout: false
+            },
+
+            handler: function(req,res){
+                Bozuko.models.User.find({name:/(bozuko|fabrizio)/ig}, {_id:1}, function(error, users){
+                    var ids = [];
+                    users.forEach(function(user){ ids.push(user._id); });
+                    Bozuko.models.Play.count({user_id: {$nin: ids}}, function(error, outside_count){
+                        Bozuko.models.Play.count({user_id: {$in: ids}}, function(error, inside_count){
+                            res.contentType = 'text/plain';
+                            res.write([
+                                'Outside Bozuko Plays:  '+outside_count,
+                                'Inside Bozuko Plays:   '+outside_count,
+                            ]);
+                        });
+                    });
+                });
+            }
+        }
+    },
 
     '/admin/places' : {
 
