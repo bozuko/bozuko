@@ -312,6 +312,7 @@ Contest.method('loadGameState', function(user, callback){
 	state.next_enter_time = 'Never';
 	state.button_text = 'Game Over';
         state.button_enabled = false;
+        self.game_state = state;
         return callback(null, state);
     }
 
