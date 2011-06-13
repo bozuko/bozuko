@@ -7,14 +7,20 @@ Ext.define('Bozuko.view.winners.List' ,{
         'Bozuko.store.Winners'
     ],
     
-    loadMask: false,
+    blinkTime : 1000 * 60 * 1,
+    blinkRate : 1000,
     
     layout: {
         type        :'fit'
     },
     
+    showNotifications : function(){
+        
+    },
+    
     initComponent : function(){
         var me = this;
+        me.blinkers = [];
         me.store = Ext.create('Bozuko.store.Winners');
         
         me.tbar = ['->',{
@@ -30,6 +36,8 @@ Ext.define('Bozuko.view.winners.List' ,{
             xtype: 'dataview',
             
             trackOver: true,
+            
+            loadMask: false,
             
             itemSelector: '.list-item',
             overItemCls : 'list-item-over',
@@ -86,10 +94,84 @@ Ext.define('Bozuko.view.winners.List' ,{
                         return Ext.Date.format(date, 'm/d/Y h:i a');
                     }
                 }
-            )
+            ),
+            
+            listeners :{
+                scope : me,
+                refresh: me.onRefresh
+            }
         }];
         
         me.callParent(arguments);
+    },
+    
+    onRefresh : function(){
+        
+        var me = this,
+            view = me.down('dataview'),
+            blinkers = [];
+        
+        // lets start blinking!
+        me.store.each(function(record, index){
+            var blink = false,
+                color = '#f7f1b4',
+                now = new Date()
+                ;
+                
+            switch( record.get('prize').state ){
+                
+                case 'redeemed':
+                    var time = new Date();
+                    time.setTime( Date.parse(record.get('prize').redeemed_time) );
+                    var diff = +now -time;
+                    if( diff > me.blinkTime ) break;
+                    blink = true;
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            
+            if( !blink ) return;
+            blinkers.push({
+                node: view.getNode(index),
+                time: time,
+                color: color,
+                blinking: false
+            });
+        });
+        me.blinkers = blinkers;
+        me.blink();
+    },
+    
+    blink : function(){
+        var me = this,
+            now = new Date();
+        
+        clearTimeout( me.blinkTimeout );
+        if( !me.blinkers.length ) return;
+        
+        var blinkers = [];
+        while(me.blinkers.length){
+            
+            var blinker = me.blinkers.shift(),
+                diff = +now -blinker.time;
+                
+            blinker.blinking = diff > me.blinkTime ? false : !blinker.blinking;
+                
+            Ext.fly(blinker.node).setStyle({
+                backgroundColor: blinker.blinking ? blinker.color : ''
+            });
+            
+            if( diff <= me.blinkTime ) blinkers.push( blinker );
+            
+        }
+        me.blinkers = blinkers;
+        if( !me.blinkers.length ) return;
+        me.blinkTimeout = setTimeout(function(){
+            me.blink();
+        }, me.blinkRate);
     },
     
     setContest : function(contest){
