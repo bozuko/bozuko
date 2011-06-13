@@ -42,7 +42,7 @@ Ext.define('Bozuko.view.winners.List' ,{
                 '<ul class="bozuko-list winners-list">',
                     '<tpl for=".">',
                         '<li class="list-item prize-{prize.state}">',
-                            '<tpl if="!this.isPageSpecific()">',
+                            '<tpl if="!this.isContestSpecific() && !this.isPageSpecific()">',
                                 '<div class="page-name">',
                                     '{page.name}',
                                 '</div>',
