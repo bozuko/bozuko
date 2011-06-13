@@ -114,7 +114,7 @@ Ext.define('Bozuko.view.winners.List' ,{
         // lets start blinking!
         me.store.each(function(record, index){
             var blink = false,
-                color = '#f7f1b4',
+                color = '#9effc0',
                 now = new Date()
                 ;
                 
