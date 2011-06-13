@@ -124,7 +124,7 @@ Ext.define('Bozuko.view.contest.View' ,{
             if( !gauge ) return;
             var record = me.getRecord(node);
             // else
-            var percent = Math.max( 0, record.get('play_cursor')) / record.get('total_plays') * 100;
+            var percent = Math.max( 0, record.get('play_cursor')+1) / record.get('total_plays') * 100;
             if( isNaN( percent) ) percent = 0;
             
             me.gauges[me.gauges.length] = Ext.create('Ext.chart.Chart',{

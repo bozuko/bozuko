@@ -42,6 +42,8 @@ Ext.define('Bozuko.controller.Contests' ,{
     },
 
     onContestsViewRender : function(view){
+        var p = view.up('contestpanel');
+        p.down('winnerslist').setPage(p.up('pagepanel').record);
         // get at the store...
         view.store.on('load', function(store){
             this.updateCards(store, view);
