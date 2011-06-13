@@ -17,36 +17,54 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
     initComponent : function(){
         this.items = [{
             region: 'center',
-            html: 'Admin Dashboard',
-            bodyPadding: 10,
-            border: false
-        },{
-            height: 200,
-            split: true,
-            border: '1 0 0 0',
-            title: 'Event Log',
-            region: 'south',
-            autoScroll: true,
-            collapsible: true,
-            xtype: 'grid',
-            store: Ext.create('Ext.data.Store',{
-                id: 'eventStore',
-                fields:['type','message','timestamp'],
-                data:{'items':[]},
-                sorters: [{property:'timestamp', direction: 'DESC'}],
-                proxy:{
-                    type: 'memory',
-                    reader: {
-                        type: 'json',
-                        root: 'items'
+            layout: 'border',
+            ref: 'admindashboard',
+            border: false,
+            items:[{
+                region: 'center',
+                html: 'Admin Dashboard',
+                border: false,
+                bodyPadding: 10
+            },{
+                height: 200,
+                split: true,
+                border: '1 0 0 0',
+                title: 'Event Log',
+                region: 'south',
+                autoScroll: true,
+                collapsible: true,
+                xtype: 'grid',
+                store: Ext.create('Ext.data.Store',{
+                    id: 'eventStore',
+                    fields:['type','message','timestamp'],
+                    data:{'items':[]},
+                    sorters: [{property:'timestamp', direction: 'DESC'}],
+                    proxy:{
+                        type: 'memory',
+                        reader: {
+                            type: 'json',
+                            root: 'items'
+                        }
                     }
+                }),
+                columns: [
+                    {header: 'Timestamp', dataIndex: 'timestamp', width: 150},
+                    {header: 'Event', dataIndex: 'type', width: 150},
+                    {header: 'Message', dataIndex: 'message', renderer: JSON.stringify, flex: 1}
+                ]
+            }]
+        },{
+            region: 'east',
+            width: 250,
+            split: true,
+            border: false,
+            title: 'All Winners',
+            xtype: 'winnerslist',
+            listeners: {
+                render: function(){
+                    this.store.load();
                 }
-            }),
-            columns: [
-                {header: 'Timestamp', dataIndex: 'timestamp', width: 150},
-                {header: 'Event', dataIndex: 'type', width: 150},
-                {header: 'Message', dataIndex: 'message', renderer: JSON.stringify, flex: 1}
-            ]
+            }
         }];
         this.callParent();
         var eventLog = Ext.data.StoreManager.lookup('eventStore');

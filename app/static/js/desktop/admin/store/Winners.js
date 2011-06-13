@@ -34,6 +34,8 @@ Ext.define('Bozuko.store.Winners', {
         if( me.page_id ) selector.page_id = me.page_id;
         if( me.contest_id ) selector.contest_id = me.contest_id;
         
+        if( !me.page_id && !me.contest_id ) selector = true;
+        
         var reload = function(){
             me.load();
         };
