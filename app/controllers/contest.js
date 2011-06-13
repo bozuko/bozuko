@@ -320,9 +320,7 @@ exports.routes = {
                     parts.reverse();
                     parts[0] = parseFloat( parts[0] );
                     parts[1] = parseFloat( parts[1] );
-                    /**
-                     * TODO - create and process and entry
-                     */
+                    
                     var config = contest.entry_config[0];
                     var entry = Bozuko.entry( config.type, req.session.user, {ll:parts} );
                     return contest.enter( entry, function(error, entry){

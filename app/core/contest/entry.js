@@ -131,6 +131,7 @@ EntryMethod.prototype.process = function( callback ){
             tokens: self.getTokenCount(),
             initial_tokens: self.getTokenCount()
         };
+        
 
         return self.contest.addEntry(e, function(error, entry){
             if( error ) return callback(error);
