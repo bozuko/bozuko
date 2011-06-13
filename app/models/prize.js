@@ -13,7 +13,7 @@ var Prize = module.exports = new Schema({
     value                   :{type:Number},
     name                    :{type:String},
     page_name               :{type:String},
-    timestamp               :{type:Date},
+    timestamp               :{type:Date, index: true},
     image                   :{type:String},
     message                 :{type:String},
     expires                 :{type:Date},
