@@ -7,6 +7,8 @@ Ext.define('Bozuko.view.winners.List' ,{
         'Bozuko.store.Winners'
     ],
     
+    loadMask: false,
+    
     layout: {
         type        :'fit'
     },

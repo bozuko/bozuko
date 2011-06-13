@@ -194,6 +194,13 @@ exports.links = {
     game_state: {
         get : {
             access: 'user',
+            params: {
+                ll: {
+                    required: true,
+                    type: 'String',
+                    description: "Latitude and Longitude in the form of lat,lng"
+                }
+            },
             returns: 'game_state'
         }
     }
