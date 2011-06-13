@@ -42,19 +42,35 @@ Ext.define('Bozuko.view.winners.List' ,{
                 '<ul class="bozuko-list winners-list">',
                     '<tpl for=".">',
                         '<li class="list-item prize-{prize.state}">',
-                            '<tpl if="!this.pageSpecific()">',
+                            '<tpl if="!this.isPageSpecific()">',
                                 '<div class="page-name">',
-                                    // '{page.name}',
+                                    '{page.name}',
                                 '</div>',
                             '</tpl>',
-                            '<img src="{[this.getImage(values.user.image)]}" />',
-                            '<div class="user-name">{user.name}</div>',
-                            '<div class="prize-name">{prize.name}</div>',
-                            '<div class="prize-timestamp">{[this.getFormattedDate(values.prize.timestamp)]}</div>',
+                            '<tpl if="!this.isContestSpecific()">',
+                                '<div class="contest-name">',
+                                    '{contest.name}',
+                                '</div>',
+                            '</tpl>',
+                            '<div class="winner-body">',
+                                '<img src="{[this.getImage(values.user.image)]}" />',
+                                '<div class="user-name">{user.name}</div>',
+                                '<div class="prize-name">{prize.name}</div>',
+                                '<div class="prize-timestamp">{[this.getFormattedDate(values.prize.timestamp)]}</div>',
+                            '</div>',
                         '</li>',
                     '</tpl>',
                 '</ul>',
                 {
+                    
+                    isPageSpecific : function(){
+                        return !!me.store.page_id;
+                    },
+                    
+                    isContestSpecific : function(){
+                        return !!me.store.contest_id;
+                    },
+                    
                     getImage: function(image){
                         if( /facebook\.com/.test(image) ){
                             image = image.replace(/type=large/, 'type=square');

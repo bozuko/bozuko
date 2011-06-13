@@ -127,6 +127,22 @@
     */
 
 }
+.winners-list .list-item {
+  padding: 0;
+}
+.winners-list .page-name {
+  background: #e6e6e6;
+  text-align: left;
+  padding: .2em 6px;
+  font-weight: bold;
+}
+.winners-list .contest-name {
+  background: #e6e6e6;
+  text-align: left;
+  font-size: 1em;
+  padding: .2em 6px;
+  font-weight: normal;
+}
 .winners-list .user-name {
   font-size: 12px;
   font-weight: normal;
@@ -141,20 +157,20 @@
   font-size: 12px;
   color: #999;
 }
-.winners-list .list-item {
-  padding-left: 44px;
+.winners-list .winner-body {
+  padding: 6px 6px 6px 44px;
   background: transparent none -12px 50% no-repeat;
 }
-.winners-list .prize-active {
+.winners-list .prize-active .winner-body {
   background-image: url("/images/assets/prizes/48/icon-active.png");
 }
-.winners-list .prize-expired {
+.winners-list .prize-expired .winner-body {
   background-image: url("/images/assets/prizes/48/icon-expired.png");
 }
-.winners-list .prize-redeemed {
+.winners-list .prize-redeemed .winner-body {
   background-image: url("/images/assets/prizes/48/icon-redeemed.png");
 }
-.winners-list .list-item-over {
+.winners-list .list-item-over .winner-body {
   background-color: #f3f3f3;
 }
 .campaign-nav {

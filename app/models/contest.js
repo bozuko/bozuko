@@ -21,6 +21,7 @@ var mongoose = require('mongoose'),
 
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
+    name                    :{type:String},
     engine_type             :{type:String, default:'order'},
     entries                 :[],
     plays                   :[Play],
