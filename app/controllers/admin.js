@@ -417,14 +417,14 @@ exports.routes = {
                             });
                             
                             // get the pages
-                            return Bozuko.models.Page.find({_id: {$in: Object.keys(page_ids)}}, function(error, pages){
+                            return Bozuko.models.Page.find({_id: {$in: Object.keys(page_ids)}}, {name: 1, image: 1}, function(error, pages){
                                 
                                 var page_map = {};
                                 pages.forEach(function(page){
                                     page_map[String(page._id)] = page;
                                 });
                                 // get the contests
-                                return Bozuko.models.Contest.find({_id: {$in: Object.keys(contest_ids)}}, function(error, contests){
+                                return Bozuko.models.Contest.find({_id: {$in: Object.keys(contest_ids)}}, {name: 1}, function(error, contests){
                                     
                                     var contest_map = {};
                                     contests.forEach(function(contest){
