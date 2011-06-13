@@ -170,8 +170,17 @@ exports.links = {
     game_result: {
         post: {
             access: 'mobile',
+            
             doc: "Retrieve a result for the given game." +
                 "The user must have tokens credited to their account in order for this to work",
+                
+            params: {
+                ll: {
+                    required: true,
+                    type: 'String',
+                    description: "Latitude and Longitude in the form of lat,lng"
+                }
+            },
             returns: "game_result"
 
         }
