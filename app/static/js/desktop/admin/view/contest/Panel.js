@@ -35,7 +35,7 @@ Ext.define('Bozuko.view.contest.Panel' ,{
             xtype           :'winnerslist',
             split           :true,
             width           :330,
-            margin          :'2 2 2 2',
+            margin          :'2 2 2 0',
             title           :'Winners List'
         }];
         me.callParent();
