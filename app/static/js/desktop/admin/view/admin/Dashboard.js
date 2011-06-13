@@ -57,7 +57,8 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
             region: 'east',
             width: 250,
             split: true,
-            border: false,
+            border: true,
+            margin: '2 2 2 0',
             title: 'All Winners',
             xtype: 'winnerslist',
             listeners: {
