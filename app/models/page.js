@@ -606,7 +606,16 @@ Page.static('search', function(options, callback){
 
                 return Bozuko.service(service).search(options, function(error, _results){
 
-                    if( error ) return callback(error);
+                    if( error ){
+                        
+                        console.error( error );
+                        
+                        featured.sort( sort_by('_distance') );
+                        pages.sort( sort_by('_distance') );
+                        pages = featured.concat(pages);
+                        return return_pages( pages );
+                        // return callback(error);
+                    }
 
                     var map = {}, results = [];
 
