@@ -1,3 +1,5 @@
+var content = Bozuko.require('util/content');
+
 exports.transfer_objects= {
     bozuko: {
         doc: "Bozuko Meta Object",
@@ -114,7 +116,8 @@ exports.routes = {
     'bozuko/privacy_policy': {
         get : {
             handler : function(req, res){
-                render_page(res,'Privacy Policy','<p>Coming soon...</p>');
+                
+                render_page(res,'Privacy Policy', content.get('app/privacy.md', '<p>Coming soon...</p>') );
             }
         }
     },
