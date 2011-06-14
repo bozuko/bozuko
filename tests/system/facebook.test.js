@@ -37,7 +37,6 @@ exports['POST /facebook/:id/checkin No User'] = function(test) {
 			headers:  {'Content-Type': 'application/json; charset=utf-8'}
 		},
 		function(res) {
-			console.log(res.body);
 			var result = JSON.parse(res.body);
 			test.done();
 		});
