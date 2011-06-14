@@ -173,7 +173,6 @@ Bozuko.error = function(name, data){
                 code = message.code;
             message = message.message;
         }
-        console.error(name+": "+message);
         return new BozukoError(name,message,data,code);
     }catch(e){
         var error = new BozukoError();
