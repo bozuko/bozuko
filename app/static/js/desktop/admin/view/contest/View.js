@@ -165,7 +165,7 @@ Ext.define('Bozuko.view.contest.View' ,{
     
     destroyGauges : function(){
         var me = this;
-        Ext.Array.each( me.gauges, function(gauge){
+        Ext.Object.each( me.gauges, function(key, gauge){
             gauge.destroy();
         });
     }

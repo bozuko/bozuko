@@ -72,7 +72,7 @@ Ext.define('Bozuko.controller.Contests' ,{
         // now we need to get the gauge
         if( !view.gauges || !view.gauges[id] ) return;
         var percent = (msg.play_cursor + 1) / contest.get('total_plays');
-        view.gauges[id].setValue( percent * 100 );
+        view.gauges[id].store.loadData( [{percent: percent * 100}], false );
     },
 
     onContestDblClick : function(view, record){
