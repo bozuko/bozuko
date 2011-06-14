@@ -94,7 +94,7 @@ BozukoService.prototype.checkin = function(options, callback){
         if( !page ) return callback( Bozuko.error('page/not_found') );
         // get the distance now
         var d = Geo.distance( options.ll, page.coords, 'mi' );
-        if( d > Bozuko.cfg('config.checkin.distance', 600) / 5280 ){
+        if( d > Bozuko.cfg('checkin.distance', 600) / 5280 ){
             // too far...
             return callback( Bozuko.error( 'checkin/too_far') );
         }
