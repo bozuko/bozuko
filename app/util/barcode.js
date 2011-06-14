@@ -1,7 +1,7 @@
 var exec = require('child_process').exec;
 
 exports.create_png = function(barcode, encoding, filename, callback) {
-    exec('barcode -b '+barcode+' -e '+encoding+' -o '+filename+'.ps'+' -u pt'+' -g 240x140 -E', function(err, stdout, stderr) {
+    exec('barcode -b '+barcode+' -e '+encoding+' -o '+filename+'.ps'+' -u pt'+' -g 260x100 -E', function(err, stdout, stderr) {
         if (stderr.length != 0) console.error(stderr);
         if (err) {
             console.error(err);
