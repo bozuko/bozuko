@@ -16,6 +16,6 @@ var Prize = module.exports = new Schema({
     email_body              :{type:String},
     email_codes             :[String],
     is_barcode              :{type:Boolean, default: false},
-    barcode_type            :{type:String, default: 'upc'},
+    barcode_type            :{type:String, default: '39'},
     barcodes                :[String]
 });
