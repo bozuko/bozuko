@@ -60,7 +60,7 @@ Contest.virtual('state')
     .get(function(){
         if( !this.active ) return Contest.DRAFT;
         var now = new Date();
-        if( this.play_cursor >= this.total_plays ) return Contest.COMPLETE;
+        if( this.play_cursor+1 >= this.total_plays ) return Contest.COMPLETE;
         if( now > this.start && now < this.end ) return Contest.ACTIVE;
         if( now < this.start ) return Contest.PUBLISHED;
         return Contest.COMPLETE;
