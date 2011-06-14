@@ -283,6 +283,9 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
+                    if( !contest.active ){
+                        return Bozuko.error('contest/cancelled').send(res);
+                    }
                     return contest.play(req.session.user._id, function(error, result){
                         if( error ){
                             return error.send(res);
@@ -323,6 +326,9 @@ exports.routes = {
                     }
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
+                    }
+                    if( !contest.active ){
+                        return Bozuko.error('contest/cancelled').send(res);
                     }
                     // we need to process the entry
                     var ll = req.param('ll');

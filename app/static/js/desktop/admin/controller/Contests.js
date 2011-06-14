@@ -5,6 +5,10 @@ Ext.define('Bozuko.controller.Contests' ,{
     stores: ['Contests'],
 
     models: ['Contest', 'Page', 'Prize'],
+    
+    requires:[
+        'Bozuko.lib.PubSub'
+    ],
 
     init : function(){
         this.control({
@@ -42,12 +46,30 @@ Ext.define('Bozuko.controller.Contests' ,{
     },
 
     onContestsViewRender : function(view){
-        var p = view.up('contestpanel');
+        var me = this,
+            p = view.up('contestpanel');
+            
         p.down('winnerslist').setPage(p.up('pagepanel').record);
+        
         // get at the store...
         view.store.on('load', function(store){
             this.updateCards(store, view);
         }, this);
+        
+        var listener = function(msg){
+            me.onContestPlay(view, msg);
+        };
+        
+        Bozuko.PubSub.subscribe('contest/play', {page_id: p.up('pagepanel').record.get('_id')}, listener);
+        view.on('destroy', function(){
+            Bozuko.PubSub.unsubscribe('contest/play', {page_id: p.up('pagepanel').record.get('_id')}, listener);
+        });
+    },
+    
+    onContestPlay : function(view, msg){
+        var id = msg.contest_id;
+        var contest = view.store.getById(id);
+        console.log(contest);
     },
 
     onContestDblClick : function(view, record){
