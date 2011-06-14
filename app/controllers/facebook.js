@@ -122,6 +122,10 @@ exports.routes = {
         get: {
             
             title : "Like a business on Facebook",
+            
+            locals:{
+                classes:['like']
+            },
 
             handler : function(req, res){
                 // ... no dice ...
