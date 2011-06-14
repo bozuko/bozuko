@@ -20,6 +20,7 @@ exports.transfer_objects = {
         def: {
             code: "Number",
             name: "String",
+            title: "String",
             message: "String",
             links: {
             }
