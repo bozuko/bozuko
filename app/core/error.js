@@ -17,7 +17,7 @@ var proto = BozukoError.prototype;
 
 Error.prototype.code = 500;
 Error.prototype.name = 'default';
-Error.prototype.name = 'Uh-oh!';
+Error.prototype.title = 'Uh-oh!';
 
 MongooseError.prototype.name='database';
 
@@ -30,8 +30,8 @@ proto.generateMessage = function(fn){
 };
 
 Error.prototype.send = function(res){
-    console.error('send '+name+": "+message);
     Bozuko.publish('error/send', this);
+    console.error('send '+this.name+": "+this.message);
     return res.send( this.toTransfer(), this.code );
 };
 
