@@ -66,7 +66,7 @@ FacebookCheckinMethod.prototype.defaults = {
  * Get Description - allow for formatting.
  *
  */
-EntryMethod.prototype.getDescription = function(){
+FacebookCheckinMethod.prototype.getDescription = function(){
 
     // need a nice duration
     // get the number of minutes:

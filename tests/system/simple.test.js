@@ -42,14 +42,13 @@ exports['page tests'] = {
             function(res) {
                 var result = JSON.parse(res.body);
                 var page = result.pages[0];
-                console.log(page);
                 var valid = Bozuko.validate('page', page);
                 checkin_link = page.links.facebook_checkin;
                 like_link = page.links.facebook_like;
                 game_state_link = page.games[0].game_state.links.game_state;
                 game_entry_link = page.games[0].game_state.links.game_entry;
+                
                 // check for list_message
-
                 test.ok( page.games[0].list_message != null, 'No list message');
                 favorite_link = page.links.favorite;
                 test.done();
@@ -148,6 +147,7 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
+                console.log(result);
                 // test.ok(result.button_text == 'Check in to Play', 'Button text is wrong');
                 test.done();
             });
@@ -199,13 +199,25 @@ exports['game tests'] = {
             data: params},
             ok,
             function(res) {
-                console.log(res.body);
                 var game_states = JSON.parse(res.body);
-                console.log(game_states);
                 test.ok(Bozuko.validate(['game_state'], game_states));
                 tokens = game_states[0].user_tokens;
                 test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
                 link = game_states[0].links.game_result;
+                test.done();
+            });
+    },
+    
+    'get the game state ' : function(test) {
+        
+        var url = game_state_link+"/?token="+token;
+
+        assert.response(test, Bozuko.app,
+            {url: url,
+            headers: headers},
+            ok,
+            function(res) {
+                var game_state = JSON.parse(res.body);
                 test.done();
             });
     },

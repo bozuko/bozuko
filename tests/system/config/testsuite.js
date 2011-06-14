@@ -170,7 +170,7 @@ var pages = [
     "111730305528832", 	// dunks
     // boston
     "108123539229568",	// hard rock
-    "116813875003123", 	// black rose
+    //"75568770316", 		// black rose
     // florida
     "185253393876" 		// owl watch florida
 ];
@@ -243,11 +243,11 @@ var add_contests = function(callback) {
 			function iterator(page,cb){
 				data.page_id = ''+page._id;
 				var contest = new Bozuko.models.Contest(data);
+				contest.win_frequency = 1;
 				contest.entry_config.push({
 					type: 'facebook/checkin',
 					tokens: 3,
 					enable_like: false,
-					like_tokens: 1,
 					duration: 1000 * 5
 				});
 				contest.prizes.push({
@@ -276,7 +276,7 @@ var add_contests = function(callback) {
 					duration: 1000*60*60,
 					total: 20
 				});
-				contest.save(function(error){
+				contest.publish(function(error){
 					if( error ) return cb(error);
 					return Bozuko.models.Contest.findById(contest.id,function(error, contest){
 						if( error ) return cb(error);

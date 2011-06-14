@@ -3,6 +3,10 @@ Ext.define('Bozuko.view.contest.View' ,{
     extend: 'Ext.view.View',
     alias : 'widget.contestsview',
     
+    requires : [
+        'Bozuko.lib.PubSub'
+    ],
+    
     emptyText: 'No active campaigns.',
     deferEmptyText: false,
     cls: 'campaigns-body',
@@ -114,20 +118,21 @@ Ext.define('Bozuko.view.contest.View' ,{
         
         me.on('refresh', me.addGauges, me);
         me.on('destroy', me.destroyGauges, me);
+        
     },
     
     addGauges : function(){
         var me = this;
-        me.gauges = [];
+        me.gauges = {};
         Ext.Array.each( me.getNodes(), function(node){
             var gauge = Ext.fly(node).down('.gauge');
             if( !gauge ) return;
             var record = me.getRecord(node);
             // else
-            var percent = Math.max( 0, record.get('play_cursor')) / record.get('total_plays') * 100;
+            var percent = Math.max( 0, record.get('play_cursor')+1) / record.get('total_plays') * 100;
             if( isNaN( percent) ) percent = 0;
             
-            me.gauges[me.gauges.length] = Ext.create('Ext.chart.Chart',{
+            me.gauges[record.get('_id')] = Ext.create('Ext.chart.Chart',{
                 animate: true,
                 style: 'background:transparent',
                 width: 200,
@@ -155,45 +160,12 @@ Ext.define('Bozuko.view.contest.View' ,{
                     colorSet: ['#82B525', '#ddd']
                 }]
             });
-            /*
-            var s = record.get('start').getTime();
-            var e = record.get('end').getTime();
-            var n = (new Date).getTime();
-            percent = Math.max( 0, (n-s) / (e-s)) * 100 ;
-            Ext.create('Ext.chart.Chart',{
-                style: 'background:transparent',
-                width: 200,
-                height: 130,
-                renderTo: gauge,
-                animate: true,
-                store: Ext.create('Ext.data.Store',{
-                    fields:['percent'],
-                    data:[{percent: percent}]
-                }),
-                insetPadding: 25,
-                flex: 1,
-                axes: [{
-                    type: 'gauge',
-                    position: 'gauge',
-                    minimum: 0,
-                    maximum: 100,
-                    steps: 10,
-                    margin: 7
-                }],
-                series: [{
-                    type: 'gauge',
-                    field: 'percent',
-                    donut: 50,
-                    colorSet: ['#82B525', '#ddd']
-                }]
-            });
-            */
         });
     },
     
     destroyGauges : function(){
         var me = this;
-        Ext.Array.each( me.gauges, function(gauge){
+        Ext.Object.each( me.gauges, function(key, gauge){
             gauge.destroy();
         });
     }
