@@ -343,6 +343,7 @@ exports.routes = {
                 /**
                  * TODO - add the recommendation logic
                  */
+                Bozuko.publish('page/recommend', {message:req.param('message'), service:req.param('service')});
                 res.send(Bozuko.transfer('success_message', {success: true}));
             }
         }
