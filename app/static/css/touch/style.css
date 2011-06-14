@@ -4,7 +4,7 @@
 html, body {
   padding: 0;
   margin: 0;
-  font-family: Tahoma;
+  font-family: Tahoma, Helvitica, Arial;
   font-size: 13px;
 }
 h1,
@@ -15,11 +15,15 @@ h5 {
   font-family: ArvoRegular;
   font-weight: normal;
 }
-body {
-  background: #308e50 url("/images/touch/layout/bg_body.jpg") fixed 50% 0 no-repeat;
+html {
+  background-color: #d5f0de;
+  background-attachment: fixed;
+}
+html.like {
+  background: #308e50 url("/images/touch/layout/bg_body.jpg") no-repeat fixed 50% 0;
 }
 .logo {
-  background: transparent url("/images/touch/layout/img_logo.png") 50% 0 no-repeat;
+  background: transparent url("/images/touch/layout/img_logo.png") no-repeat 50% 0;
   height: 74px;
   margin: 10px 0;
   text-indent: -99999em;
