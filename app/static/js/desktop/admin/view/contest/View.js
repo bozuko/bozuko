@@ -29,7 +29,7 @@ Ext.define('Bozuko.view.contest.View' ,{
                             '{[this.getTitle(values.name)]}',
                         '</h3>',
                         '<div class="details">',
-                            '<tpl if="this.canCancel(values)">',
+                            '<tpl if="this.canReport(values)">',
                                 '<div class="gauge"></div>',
                             '</tpl>',
                             '{[this.getDetails(values)]}',
