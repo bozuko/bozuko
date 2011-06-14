@@ -283,6 +283,7 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
+                    Bozuko.publish('game/play', {not_active: !contest.active});
                     if( !contest.active ){
                         return Bozuko.error('contest/cancelled').send(res);
                     }
@@ -327,6 +328,7 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
+                    Bozuko.publish('game/entry', {not_active: !contest.active});
                     if( !contest.active ){
                         return Bozuko.error('contest/cancelled').send(res);
                     }
