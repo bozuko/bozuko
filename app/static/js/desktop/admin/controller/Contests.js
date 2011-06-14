@@ -60,9 +60,11 @@ Ext.define('Bozuko.controller.Contests' ,{
             me.onContestPlay(view, msg);
         };
         
-        Bozuko.PubSub.subscribe('contest/play', {page_id: p.up('pagepanel').record.get('_id')}, listener);
+        var page_id = p.up('pagepanel').record.get('_id');
+        
+        Bozuko.PubSub.subscribe('contest/play', {page_id: page_id}, listener);
         view.on('destroy', function(){
-            Bozuko.PubSub.unsubscribe('contest/play', {page_id: p.up('pagepanel').record.get('_id')}, listener);
+            Bozuko.PubSub.unsubscribe('contest/play', {page_id: page_id}, listener);
         });
     },
     
