@@ -20,7 +20,7 @@ BozukoCheckinMethod.prototype.__proto__ = EntryMethod.prototype;
 /**
  * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
  */
-BozukoCheckinMethod.prototype.name = 'Facebook Checkin';
+BozukoCheckinMethod.prototype.name = 'Bozuko Checkin';
 
 /**
  * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
@@ -54,7 +54,7 @@ BozukoCheckinMethod.prototype.defaults = {
  * Get Description - allow for formatting.
  *
  */
-EntryMethod.prototype.getDescription = function(){
+BozukoCheckinMethod.prototype.getDescription = function(){
     
     // need a nice duration
     // get the number of minutes:
