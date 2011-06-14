@@ -109,7 +109,7 @@ Page.method('getActiveContests', function(user, callback){
     if( arguments.length == 2 ){
         callback = arguments[1];
     }
-    Bozuko.models.Contest.nativeFind(selector, function(err, contests) {
+    Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function(err, contests) {
         prof.stop();
         callback(err, contests);
     });
@@ -349,7 +349,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
         selector.$where = $where.$where;
     }
 
-    Bozuko.models.Contest.nativeFind(selector, function( error, contests ){
+    Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function( error, contests ){
         prof_contest_find.stop();
         if( error ) console.log(error);
         if( error ) return callback(error);

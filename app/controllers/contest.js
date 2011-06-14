@@ -170,8 +170,17 @@ exports.links = {
     game_result: {
         post: {
             access: 'mobile',
+            
             doc: "Retrieve a result for the given game." +
                 "The user must have tokens credited to their account in order for this to work",
+                
+            params: {
+                ll: {
+                    required: true,
+                    type: 'String',
+                    description: "Latitude and Longitude in the form of lat,lng"
+                }
+            },
             returns: "game_result"
 
         }
@@ -194,6 +203,13 @@ exports.links = {
     game_state: {
         get : {
             access: 'user',
+            params: {
+                ll: {
+                    required: true,
+                    type: 'String',
+                    description: "Latitude and Longitude in the form of lat,lng"
+                }
+            },
             returns: 'game_state'
         }
     }
@@ -267,6 +283,9 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
+                    if( contest.state !== contest.schema.ACTIVE ){
+                        return Bozuko.error('contest/inactive').send(res);
+                    }
                     return contest.play(req.session.user._id, function(error, result){
                         if( error ){
                             return error.send(res);
@@ -308,6 +327,9 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
+                    if( contest.state !== contest.schema.ACTIVE ){
+                        return Bozuko.error('contest/inactive').send(res);
+                    }
                     // we need to process the entry
                     var ll = req.param('ll');
                     if( !ll ){
@@ -320,9 +342,7 @@ exports.routes = {
                     parts.reverse();
                     parts[0] = parseFloat( parts[0] );
                     parts[1] = parseFloat( parts[1] );
-                    /**
-                     * TODO - create and process and entry
-                     */
+                    
                     var config = contest.entry_config[0];
                     var entry = Bozuko.entry( config.type, req.session.user, {ll:parts} );
                     return contest.enter( entry, function(error, entry){

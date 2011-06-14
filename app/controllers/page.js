@@ -311,6 +311,8 @@ exports.routes = {
                     if( error ) return error.send(res);
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
                     
+                    Bozuko.publish('page/feedback', {message:req.param('message')});
+                    
                     /**
                      * TODO - the logic to send stuff..
                      */

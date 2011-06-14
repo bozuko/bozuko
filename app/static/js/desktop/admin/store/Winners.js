@@ -11,6 +11,8 @@ Ext.define('Bozuko.store.Winners', {
 
     constructor : function(){
         var me = this;
+        me.last = {};
+        me.listening = false;
         
         me.callParent(arguments);
         me.on('beforeload', me.onBeforeLoad, me);
@@ -27,10 +29,13 @@ Ext.define('Bozuko.store.Winners', {
         operation.params['contest_id'] = me.contest_id;
     },
     
+    
     startListening : function(){
         var me = this,
             selector = {};
-            
+        
+        if( me.listening && me.last && me.last.page_id == me.page_id && me.last.contest_id == me.contest_id ) return;
+        
         if( me.page_id ) selector.page_id = me.page_id;
         if( me.contest_id ) selector.contest_id = me.contest_id;
         
@@ -40,8 +45,9 @@ Ext.define('Bozuko.store.Winners', {
             me.load();
         };
         
-        Bozuko.PubSub.subscribe('prize/redeemed', selector, reload)
-        Bozuko.PubSub.subscribe('contest/win', selector, reload)
-        Bozuko.PubSub.subscribe('contest/consolation', selector, reload)
+        Bozuko.PubSub.subscribe('prize/redeemed', selector, reload);
+        Bozuko.PubSub.subscribe('contest/win', selector, reload);
+        Bozuko.PubSub.subscribe('contest/consolation', selector, reload);
+        me.listening = true;
     }
 });
