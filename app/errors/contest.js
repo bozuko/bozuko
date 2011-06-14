@@ -8,6 +8,8 @@ module.exports = {
     },
 
     no_tokens           :"User does not have any tokens to play this game",
+    
+    inactive : "Sorry, this game is currently not available.",
 
     invalid_entry_type  : function(){
         return "Invalid entry type ["+this.data.entry.type+"] for contest ["+this.data.contest._id+"]";
