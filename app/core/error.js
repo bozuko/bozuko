@@ -29,7 +29,7 @@ proto.generateMessage = function(fn){
 };
 
 Error.prototype.send = function(res){
-    console.error('send '+name+": "+message);
+    console.error('send '+this.name+": "+this.message);
     Bozuko.publish('error/send', this);
     return res.send( this.toTransfer(), this.code );
 };
@@ -39,4 +39,4 @@ Error.prototype.send = function(res){
 String.prototype.send = function(res){
     var error = new Error(this);
     return error.send(res);
-}
+};
