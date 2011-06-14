@@ -17,6 +17,7 @@ var proto = BozukoError.prototype;
 
 Error.prototype.code = 500;
 Error.prototype.name = 'default';
+Error.prototype.name = 'Uh-oh!';
 
 MongooseError.prototype.name='database';
 
