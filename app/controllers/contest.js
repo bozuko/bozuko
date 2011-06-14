@@ -283,8 +283,7 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
-                    Bozuko.publish('game/play', {not_active: !contest.active});
-                    if( !contest.active ){
+                    if( contest.state !== Bozuko.models.Contest.ACTIVE ){
                         return Bozuko.error('contest/cancelled').send(res);
                     }
                     return contest.play(req.session.user._id, function(error, result){
@@ -328,8 +327,7 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
-                    Bozuko.publish('game/entry', {not_active: !contest.active});
-                    if( !contest.active ){
+                    if( contest.state !== Bozuko.models.Contest.ACTIVE ){
                         return Bozuko.error('contest/cancelled').send(res);
                     }
                     // we need to process the entry
