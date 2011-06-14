@@ -56,8 +56,8 @@ This policy was last modified on June 14, 2011
 
 If there are any questions regarding this privacy policy you may contact us using the information below. 
 
-http://bozuko.com
-5 Cushing St
-Medford, MA 02155
-USA
-support@bozuko.com
+[https://www.bozuko.com](https://www.bozuko.com)  
+5 Cushing St  
+Medford, MA 02155  
+USA  
+[privacy@bozuko.com](mailto:privacy@bozuko.com)  
