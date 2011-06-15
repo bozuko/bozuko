@@ -170,13 +170,13 @@ Bozuko.error = function(name, data){
         var message = this.require('errors/'+path.join('/'))[err];
         var code = null;
 		var title = null;
+		if( message.title ){
+			title = message.title;
+		}
         if( typeof message != 'string' && message.code ){
             code = message.code;
             message = message.message;
         }
-		if( typeof message != 'string' && message.title ){
-			
-		}
         return new BozukoError(name,message,data,code,title);
     }catch(e){
         var error = new BozukoError();
