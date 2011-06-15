@@ -25,7 +25,36 @@ Bozuko.views.winners.List = Ext.extend(Ext.List, {
                 remoteFilter: true
             })
         });
+        this.tmpStore = new Ext.data.Store({
+            model: "Winner",
+            autoLoad: false,
+            remoteFilter: true
+        });
         Bozuko.views.winners.List.superclass.initComponent.apply(this, arguments);
+    },
+    
+    updateStore : function(){
+        var me = this;
+        
+        me.tmpStore.load({
+            scope : me,
+            callback : function(records){
+                console.log(records);
+                var j =0;
+                Ext.Array.each( records, function(record, i){
+                    var r = me.store.getById( record.getId() );
+                    if( r ){
+                        r.set( record.data );
+                        r.commit();
+                    }
+                    else{
+                        me.store.insert(j++, record);
+                    }
+                });
+                if( j > 0 ) me.onRefresh();
+                while( me.store.getCount() > 100 ) me.store.removeAt(100);
+            }
+        });
     }
     
 });

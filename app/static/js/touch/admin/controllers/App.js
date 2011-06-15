@@ -8,7 +8,7 @@ Ext.regController("App", {
         });
         
         var cb = function(){
-            me.viewport.down('app-winners-list').store.load();
+            me.viewport.down('app-winners-list').updateStore();
         };
         
         Bozuko.PubSub.subscribe('contest/win', true, cb);
