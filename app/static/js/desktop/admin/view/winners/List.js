@@ -22,6 +22,7 @@ Ext.define('Bozuko.view.winners.List' ,{
         var me = this;
         me.blinkers = [];
         me.store = Ext.create('Bozuko.store.Winners');
+        me.tmpStore = Ext.create('Bozuko.store.Winners',{autoLoad: false});
         
         me.tbar = ['->',{
             text: 'Refresh',
@@ -96,6 +97,29 @@ Ext.define('Bozuko.view.winners.List' ,{
         }];
         
         me.callParent(arguments);
+    },
+    
+    updateStore : function(){
+        var me = this;
+        
+        me.tmpStore.load({
+            scope : me,
+            callback : function(records){
+                var j =0;
+                Ext.Array.each( records, function(record, i){
+                    var r = me.store.getById( record.getId() );
+                    if( r ){
+                        r.set( record.data );
+                        r.commit();
+                    }
+                    else{
+                        me.store.insert(j++, record);
+                    }
+                });
+                if( j > 0 ) me.onRefresh();
+                while( me.store.getCount() > 100 ) me.store.removeAt(100);
+            }
+        });
     },
     
     onRefresh : function(){
