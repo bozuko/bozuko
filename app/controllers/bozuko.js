@@ -187,7 +187,7 @@ exports.routes = {
                     var all_filters = [body.listeners[type],body.listeners['*']],
                         add = false;
                     
-                    console.log(seen);
+                    
                     if( ~seen.indexOf(String(_id)) ){
                         return;
                     }

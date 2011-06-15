@@ -31,6 +31,7 @@ exports.routes = {
             },
 
             handler: function(req,res){
+                if( req.device == 'touch' ) res.locals.layout = false;
                 res.render('admin/index');
             }
         }

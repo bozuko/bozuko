@@ -38,9 +38,15 @@ module.exports = {
         code: 404,
         message : "User: " + this.data + "  has not entered this contest"
     },
-    no_plays : "There are no plays left in the contest",
+    no_plays : {
+        title: "No Plays",
+        message: "This game has no plays left"
+    },
 
-    invalid_entry : "Error validating the entry",
+    invalid_entry : {
+        title: "Uh-oh...",
+        message: "There was a problem entering you in this game. Please try again."
+    },
 
     db_update: "Failed to Update the record in the database",
 
