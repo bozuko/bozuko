@@ -1,10 +1,13 @@
 module.exports = {
     auth: {
         code: 401,
-        message: "Unauthorized action - must have a valid user session."
+        title: "Please Login",
+        message: "You must be logged in to do that!",
+        detail: "Unauthorized action - must have a valid user session."
     },
     
     lang_not_enough_args: "Translation needs at least 2 arguments",
+    
     lang_bad_path: function(){
         return "Translation had a bad path ["+this.data+"]";
     },
@@ -21,6 +24,7 @@ module.exports = {
     
     update : {
         code: 403,
-        message: "Sorry. You must update Bozuko to continue."
+        title: "Bozuko Update",
+        message: "A new version of Bozuko is available. You must update to continue."
     }
 };

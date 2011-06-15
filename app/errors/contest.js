@@ -3,13 +3,20 @@ module.exports = {
     not_found           :{
         code                :404,
         message             :function(){
-            return "Contest not found ("+this.data+")";
+            return "Game not found ("+this.data+")";
         }
     },
 
-    no_tokens           :"User does not have any tokens to play this game",
+    no_tokens : {
+        detail: "User does not have any tokens to play this game",
+        title: "No more plays",
+        message: "You do not have any plays left for this game"
+    },
     
-    inactive : "Sorry, this game is currently not available.",
+    inactive : {
+        title: "Gave over",
+        message: "Sorry, this game has ended :("
+    },
 
     invalid_entry_type  : function(){
         return "Invalid entry type ["+this.data.entry.type+"] for contest ["+this.data.contest._id+"]";

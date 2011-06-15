@@ -169,11 +169,15 @@ Bozuko.error = function(name, data){
     try{
         var message = this.require('errors/'+path.join('/'))[err];
         var code = null;
+		var title = null;
         if( typeof message != 'string' && message.code ){
-                code = message.code;
+            code = message.code;
             message = message.message;
         }
-        return new BozukoError(name,message,data,code);
+		if( typeof message != 'string' && message.title ){
+			
+		}
+        return new BozukoError(name,message,data,code,title);
     }catch(e){
         var error = new BozukoError();
         error.name = name;

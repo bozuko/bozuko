@@ -1,10 +1,14 @@
 module.exports = {
     user: {
         code: 401,
-        message: "Unauthorized action - must have a valid user session."
+        title: "Please Login",
+        message: "You must be logged in to do that!",
+        detail: "Unauthorized action - must have a valid user session."
     },
     mobile: {
         code: 400,
-        message: "Phone is not authorized to use bozuko"
+        detail: "Phone is not authorized to use bozuko",
+        title: "Unauthorized Phone",
+        message: "This phone is not authorized to use Bozuko"
     }
 };

@@ -1,11 +1,12 @@
 var MongooseError   = require('mongoose').Error;
 
-var BozukoError = module.exports = function(name,message,data,code){
+var BozukoError = module.exports = function(name,message,data,code,title){
     Error.call(this);
     Error.captureStackTrace(this, arguments.callee);
     this.name = name;
     this.data = data;
     if( code ) this.code = code;
+    if( title ) this.title = title;
     if( message instanceof Function)
         this.generateMessage(message);
     else
