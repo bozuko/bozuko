@@ -10,15 +10,21 @@ module.exports = {
     },
     too_many_attempts_per_page: {
         code: 403,
-        message: "Checkin occurred too soon after the last checkin for this page"
+        title: "Checkin Error",
+        message: "You are checkin in at this place too often.",
+        detail: "Checkin occurred too soon after the last checkin for this page"
     },
     too_many_attempts_per_user: {
         code: 403,
-        message: "Checkin occurred too soon after the last checkin for this user"
+        title: "Woah there...",
+        message: "You are trying to checkin too often. Wait a little bit",
+        detail: "Checkin occurred too soon after the last checkin for this user"
     },
     too_far: {
         code: 500,
-        message: "User is too far away to checkin to this location."
+        title: "So far away...",
+        message: "You are too far away from this place to checkin. ",
+        detail: "User is too far away to checkin to this location."
     }
 
 };
