@@ -8,7 +8,8 @@ Ext.define('Bozuko.view.winners.List' ,{
     ],
     
     blinkTime : 1000 * 60 * 1,
-    blinkRate : 1000,
+    blinkRate : 800,
+    blinkCls : 'winner-blink',
     
     layout: {
         type        :'fit'
@@ -20,6 +21,7 @@ Ext.define('Bozuko.view.winners.List' ,{
     
     initComponent : function(){
         var me = this;
+        me.blinkState = false;
         me.blinkers = [];
         me.store = Ext.create('Bozuko.store.Winners');
         me.tmpStore = Ext.create('Bozuko.store.Winners',{autoLoad: false});
@@ -116,7 +118,7 @@ Ext.define('Bozuko.view.winners.List' ,{
                         me.store.insert(j++, record);
                     }
                 });
-                if( j > 0 ) me.onRefresh();
+                me.onRefresh();
                 while( me.store.getCount() > 100 ) me.store.removeAt(100);
             }
         });
@@ -131,7 +133,6 @@ Ext.define('Bozuko.view.winners.List' ,{
         // lets start blinking!
         me.store.each(function(record, index){
             var blink = false,
-                color = '#9effc0',
                 now = new Date()
                 ;
                 
@@ -149,12 +150,10 @@ Ext.define('Bozuko.view.winners.List' ,{
                     break;
             }
             
-            
             if( !blink ) return;
             blinkers.push({
                 node: view.getNode(index),
                 time: time,
-                color: color,
                 blinking: false
             });
         });
@@ -169,19 +168,20 @@ Ext.define('Bozuko.view.winners.List' ,{
         clearTimeout( me.blinkTimeout );
         if( !me.blinkers.length ) return;
         
+        me.blinkState = !me.blinkState;
+        
         var blinkers = [];
         while(me.blinkers.length){
             
             var blinker = me.blinkers.shift(),
                 diff = +now -blinker.time;
                 
-            blinker.blinking = diff > me.blinkTime ? false : !blinker.blinking;
+            blinker.blinking = diff < me.blinkTime;
                 
-            Ext.fly(blinker.node).setStyle({
-                backgroundColor: blinker.blinking ? blinker.color : ''
-            });
+            var fn = blinker.blinking && me.blinkState ? 'addCls' : 'removeCls';
+            Ext.fly(blinker.node)[fn](me.blinkCls);
             
-            if( diff <= me.blinkTime ) blinkers.push( blinker );
+            if( blinker.blinking ) blinkers.push( blinker );
             
         }
         me.blinkers = blinkers;

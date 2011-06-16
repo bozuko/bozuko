@@ -178,6 +178,9 @@
 .winners-list .list-item-over .winner-body {
   background-color: #f3f3f3;
 }
+.winners-list .winner-blink {
+  background-color: #b7ffd0;
+}
 .campaign-nav {
   height: 100%;
   border-right: 1px solid #ccc;

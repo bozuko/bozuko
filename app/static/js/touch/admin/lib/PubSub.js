@@ -70,7 +70,6 @@ Bozuko.lib.PubSub = Ext.extend( Object, {
     
     subscribe : function(event, filter, callback){
         
-        console.log(event, filter, callback);
         var me = this;
         
         if( !me.listeners[event] ) me.listeners[event] = {};
