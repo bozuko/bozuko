@@ -24,10 +24,10 @@ Bozuko.views.winners.List = Ext.extend(Ext.List, {
             getDate : function(data){
                 var time = new Date();
                 if( data.prize.state == 'redeemed' ){
-                    time.setTime( Date.parse(data.prize.redeemed_time) );
+                    time = Date.parseDate( data.prize.redeemed_time, 'c' );
                 }
                 else{
-                    time.setTime( Date.parse(data.prize.expires) );
+                    time = Date.parseDate( data.prize.expires, 'c' );
                 }
                 return time.format('m/d/Y h:i a');
             },
