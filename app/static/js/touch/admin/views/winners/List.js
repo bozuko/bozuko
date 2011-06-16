@@ -95,8 +95,7 @@ Bozuko.views.winners.List = Ext.extend(Ext.List, {
             switch( record.get('prize').state ){
                 
                 case 'redeemed':
-                    var time = new Date();
-                    time.setTime( Date.parse(record.get('prize').redeemed_time) );
+                    var time = Date.parseDate(record.get('prize').redeemed_time, 'c')
                     var diff = +now -time;
                     if( diff > me.blinkTime ) break;
                     blink = true;
