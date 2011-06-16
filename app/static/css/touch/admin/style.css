@@ -1,0 +1,40 @@
+.winners-list .winner {
+  padding-right: 48px;
+  background-position: 100% 50%;
+  background-repeat: no-repeat;
+}
+.winners-list .winner h4 {
+  color: #666;
+  margin-bottom: .4em;
+  font-size: 0.8em;
+}
+.winners-list .winner .date {
+  clear: both;
+  color: #666;
+  padding-top: .4em;
+  font-size: .8em;
+}
+.winners-list .winner .expires {
+  color: red;
+}
+.winners-list .winner .redeemed {
+  color: green;
+}
+.winners-list .x-item-selected .winner h4 {
+  color: #ccc;
+}
+.winners-list .x-item-selected .winner .date {
+  color: #ccc;
+}
+.winners-list .prize-active {
+  background-image: url("/images/assets/prizes/48/icon-active.png");
+}
+.winners-list .prize-expired {
+  background-image: url("/images/assets/prizes/48/icon-expired.png");
+}
+.winners-list .prize-redeemed {
+  background-image: url("/images/assets/prizes/48/icon-redeemed.png");
+}
+.winners-list .winner-blink {
+  background-color: #b7ffd0;
+}

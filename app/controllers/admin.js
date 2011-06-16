@@ -393,7 +393,7 @@ exports.routes = {
                 return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
                     if( error ) return error.send( res );
                     
-                    return Bozuko.models.Prize.find(selector, {}, {sort: {timestamp: -1}, limit: limit, skip: offset},function(error, prizes){
+                    return Bozuko.models.Prize.find(selector, {}, {sort: {last_updated: -1}, limit: limit, skip: offset},function(error, prizes){
                         if( error ) return error.send(res);
                         
                         var user_ids = {};
@@ -437,7 +437,7 @@ exports.routes = {
                                         // create a winner object
                                         winners.push({
                                             _id: prize.id,
-                                            prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expiration_time','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
+                                            prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
                                             user: filter(user_map[String(prize.user_id)],'_id','name','image','email'),
                                             page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
                                             contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
