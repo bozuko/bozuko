@@ -402,13 +402,11 @@ Page.static('getFeaturedPages', function(num, options, callback){
 
         var featured = [], pool=[], offsets=[], i, index = rand(0, count-1);
         
-        console.log('featured count', count, 'random', index);
-
         for(i=0; i<count; i++) pool.push(i);
 
-        for(i=0; i<num && pool.length; i++){
+        for(i=0; i<num; i++){
             offsets.push(
-                pool.splice( index, 1)[0]
+                pool.splice(index, 1)[0]
             );
         }
 
