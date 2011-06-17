@@ -559,10 +559,10 @@ Page.static('search', function(options, callback){
     return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.cfg('search.featuredResults',1) : 0, options, function(error, featured){
 
         if( error ) return callback(error);
+        var featured_ids = [];
 
         if( featured.length ){
-            var ids = [];
-            featured.forEach(function(feature){ ids.push( feature._id ); });
+            featured.forEach(function(feature){ featured_ids.push( feature._id ); });
             bozukoSearch.selector._id = {
                 $nin: ids
             };
@@ -583,7 +583,7 @@ Page.static('search', function(options, callback){
                         fb_ids.push(String(fb.sid));
                     }
                     page_ids.push(page._id);
-                    page.featured = false;
+                    if( !featured_ids.indexOf( page._id ) ) page.featured = false;
                 });
 
                 // grab the featured out of there for sorting...
@@ -634,7 +634,7 @@ Page.static('search', function(options, callback){
                     }, function(error, _pages){
                         if( error ) return callback( error );
                         prepare_pages(_pages, options.user, function(page){
-                            page.featured = false;
+                            if( !featured_ids.indexOf( page._id ) ) page.featured = false;
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                         });
 
