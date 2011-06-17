@@ -38,7 +38,7 @@ module.exports = {
     },
     
     bozuko :{
-        facebook_id: '177515562277757'
+        facebook_id: '223851717629478'
     },
 
     foursquare: {
