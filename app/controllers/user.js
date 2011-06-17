@@ -21,7 +21,7 @@ exports.transfer_objects= {
         },
         
         create : function(data, user){
-            data.img = data.image;
+            data.img = data.image.replace(/type=large/, 'type=square');
             return this.sanitize(data);
         }
     },

@@ -538,7 +538,7 @@ Page.static('search', function(options, callback){
                 page.id = page.service('facebook').sid;
             }
             page._distance = Geo.distance( options.ll, page.coords );
-            page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
+            page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords), page.coords);
             if(fn) fn.call(this, page);
         }
         prof.stop();
@@ -640,7 +640,7 @@ Page.static('search', function(options, callback){
                             results.forEach(function(result){
                                 result.registered = false;
                                 result._distance = Geo.distance(options.ll, [result.location.lng,result.location.lat]);
-                                result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
+                                result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]), [result.location.lng,result.location.lat] );
                             });
                         }
 

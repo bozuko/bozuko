@@ -12,25 +12,17 @@ Ext.define('Bozuko.view.page.List' ,{
             xtype: 'dataview',
             store: me.store,
             autoScroll: true,
+            cls: 'bozuko-list',
             
             trackOver: true,
+            itemOverCls: 'x-item-over',
             
-            overItemCls: 'list-item-over',
-            selectedItemCls: 'list-item-selected',
-            itemSelector: '.list-item',
-            
-            tpl :new Ext.XTemplate(
-                '<ul class="bozuko-list">',
-                    '<tpl for=".">',
-                        '<li class="list-item">',
-                            '<img src="{[this.getImage(values.image)]}" />',
-                            '<span class="title">{name}</span>',
-                            '<div class="sub">',
-                                '{location.street}<br />{location.city}, {location.state}',
-                            '</div>',
-                        '</li>',
-                    '</tpl>',
-                '</ul>',
+            itemTpl :new Ext.XTemplate(
+                '<img src="{[this.getImage(values.image)]}" />',
+                '<span class="title">{name}</span>',
+                '<div class="sub">',
+                    '{location.street}<br />{location.city}, {location.state}',
+                '</div>',
                 {
                     getImage: function(image){
                         if( /facebook\.com/.test(image) ){

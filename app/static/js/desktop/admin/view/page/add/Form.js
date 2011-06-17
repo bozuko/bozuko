@@ -27,7 +27,7 @@ Ext.define('Bozuko.view.page.add.Form' ,{
                     '<div>{category}</div>',
                 '</tpl>',
                 '<tpl if="!name">',
-                    '<h3>Please select a place from the map</h3>',
+                    '<h3>Find a place or page in the left panel</h3>',
                 '</tpl>'
             ]
         },{
