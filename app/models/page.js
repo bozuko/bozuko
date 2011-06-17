@@ -400,13 +400,15 @@ Page.static('getFeaturedPages', function(num, options, callback){
         if( error ) return callback( error );
         if( !count ) return callback( null, [] );
 
-        var featured = [], pool=[], offsets=[], i;
+        var featured = [], pool=[], offsets=[], i, index = rand(0, pool.length-1);
+        
+        console.log('featured count', count, 'random', index);
 
         for(i=0; i<count; i++) pool.push(i);
 
         for(i=0; i<num && pool.length; i++){
             offsets.push(
-                pool.splice( rand(0, pool.length-1), 1)[0]
+                pool.splice( index, 1)[0]
             );
         }
 
@@ -424,9 +426,7 @@ Page.static('getFeaturedPages', function(num, options, callback){
                     }
                 });
 
-                console.log(opts);
-
-                return Bozuko.models.Page.find(opts.selector, {}, opts.options, function(error, page){
+                return Bozuko.models.Page.find(opts.selector, {results: 0, plays: 0}, opts.options, function(error, page){
                     if( error ) return callback( error );
                     if( page && page.length) featured.push(page[0]);
                     return callback(null);
