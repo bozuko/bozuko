@@ -99,14 +99,25 @@ exports.routes = {
 
         get : {
             handler : function(req, res){
-                var ll = (req.param('ll') || '').split(',');
-                if( ll.length !== 2 ){
-                    new Error('Invalid ll').send(res);
+                var options = {};
+                if( req.param('ll') ){
+                    var ll = (req.param('ll') || '').split(',');
+                    if( ll.length !== 2 ){
+                        new Error('Invalid ll').send(res);
+                    }
+                    ll.reverse();
+                    options.ll = ll;
                 }
-                ll.reverse();
-                return Bozuko.service('facebook').search({
-                    center: ll
-                }, function(error, places){
+                if( req.param('filter') ){
+                    var filter = JSON.parse( req.param('filter') );
+                    if( Array.isArray(filter) ) filter.forEach( function(f){
+                        options[f.property] = f.value;
+                    });
+                }
+                if( Object.keys( options ).length === 0 ){
+                    return res.send( {items:[]} );
+                }
+                return Bozuko.service('facebook').search(options, function(error, places){
                     if( error ) return error.send( res );
                     // get rid of the ones we already have...
                     var ids = [];
@@ -539,7 +550,7 @@ exports.routes = {
 
 function filter(data){
     
-    if( arguments.length > 1 ){
+    if( arguments.length > 1 && data){
         var tmp={};
         [].slice.call(arguments,1).forEach(function(field){
             tmp[field] = data[field];

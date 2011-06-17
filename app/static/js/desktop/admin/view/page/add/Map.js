@@ -17,7 +17,6 @@ Ext.define('Bozuko.view.page.add.Map' ,{
         
         me.addEvents({
             'centerchange': true,
-            
             'selectplace': true
         });
         
@@ -28,8 +27,8 @@ Ext.define('Bozuko.view.page.add.Map' ,{
             items: [{
                 xtype           :'textfield',
                 name            :'search',
-                fieldLabel      :'Find a Facebook Place',
-                labelWidth      :160,
+                fieldLabel      :'Search by Location',
+                labelWidth      :180,
                 enableKeyEvents :true,
                 border          :'0 0 1 0',
                 anchor          :'0',

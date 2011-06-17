@@ -67,7 +67,7 @@ FacebookCheckinMethod.prototype.defaults = {
  *
  */
 FacebookCheckinMethod.prototype.getDescription = function(){
-
+    var self = this;
     // need a nice duration
     // get the number of minutes:
     var seconds = this.config.duration / 1000,
@@ -93,6 +93,9 @@ FacebookCheckinMethod.prototype.getDescription = function(){
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
     if( this.config.options.enable_like ){
         description+= "\nDouble your plays if you like us on Facebook!";
+        if( !this.user || (this.page && !this.user.likes( this.page )) ){
+            description+="\nHit back and scroll down to like us."
+        }
     }
 
     return description;
