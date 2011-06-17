@@ -564,7 +564,7 @@ Page.static('search', function(options, callback){
         if( featured.length ){
             featured.forEach(function(feature){ featured_ids.push( feature._id ); });
             bozukoSearch.selector._id = {
-                $nin: ids
+                $nin: featured_ids
             };
         }
 
