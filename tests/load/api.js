@@ -1,6 +1,6 @@
 var async = require('async');
 var assert = require('assert');
-var load = require('../../../load/load');
+var load = require('load');
 var express = require('express');
 var db = require('./util/db');
 var qs = require('querystring');

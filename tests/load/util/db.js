@@ -1,6 +1,7 @@
 var async = require('async');
 var assert = require('assert');
 var mongoose = require('mongoose');
+var inspect = require('util').inspect;
 
 var page_ids = exports.page_ids = [];
     user_ids = exports.user_ids = [];
@@ -16,10 +17,10 @@ var pages = [{
         '105728236128280',
         '109143555771546',
         '108123539229568',
-        '116813875003123',
+        '75568770316',
         '152621531418375',
         '149312245095433',
-        '146168375414762',
+        '117344094964029',
         '140282292684587',
         '102579459803606',
         '120265658025516',
@@ -46,7 +47,7 @@ var pages = [{
         '22508827207',
         '168706466483369',
         '149122355114343',
-        '151940091484739',
+        '110294802394810',
         '116180175069680',
         '202365499775032',
         '117955551564981',
@@ -121,6 +122,7 @@ exports.random_city = function() {
 var user_ct;
 
 var cleanup = exports.cleanup = function(callback) {
+    console.log("Cleanup");
     async.series([
 	emptyCollection('User'),
 	emptyCollection('Page'),
@@ -132,26 +134,38 @@ var cleanup = exports.cleanup = function(callback) {
 };
 
 exports.setup = function(options, callback) {
+    console.log("options = "+inspect(options));
     user_ct = options.users;
+    function create() {
+        async.forEachSeries([
+            {
+                fn: add_users,
+                val: options.users
+            },{
+                fn: add_pages,
+                val: pages
+            },
+            {
+                fn:  add_contests,
+                val: options
+            }],
+            function(obj, callback) {
+                obj.fn(obj.val, callback);
+            },
+            function(err) {
+                callback(err);
+            }
+        );
+    }
+
     mongoose.connection.on('open', function() {
-        cleanup(function(err) {
-            if (err) return callback(err);
-            async.forEachSeries([
-                {
-                    fn: add_users,
-                    val: options.users
-                },{
-                    fn: add_pages,
-                    val: pages
-                }],
-                function(obj, callback) {
-                    obj.fn(obj.val, callback);
-                },
-                function(err) {
-                    callback(err);
-                }
-            );
-        });
+        if (options.drop_collections) {
+         return cleanup(function(err) {
+                if (err) return callback(err);
+                return create();
+            });
+        }
+        return create();
     });
 };
 
@@ -177,9 +191,8 @@ function add_pages(pages, callback) {
                         if (!page) return cb(new Error("page "+sid+" not created"));
                         page.owner_id = user_ids[Math.floor(Math.random()*user_ct)];
                         return page.save(function(err) {
-                            if (err) return cb(err);
                             page_ids.push(page._id);
-                            add_contest(page._id, cb);
+                            return cb(err);
                         });
                     });
                 });
@@ -195,42 +208,57 @@ function add_pages(pages, callback) {
     );
 }
 
-function add_contest(page_id, callback) {
-    var contest = new Bozuko.models.Contest({
-        page_id: page_id,
-        game: 'slots',
-        game_config: {
-            icons: ['seven','bar','bozuko','banana','monkey','cherries']
+function add_contests(options, callback) {
+    var ct = 0;
+    var page_ct = 0;
+    console.log("options.contests = "+options.contests);
+    async.until(
+        function() { return ct === options.contests; },
+        function(cb) {
+            var contest = new Bozuko.models.Contest({
+                page_id: page_ids[page_ct],
+                game: 'slots',
+                game_config: {
+                    icons: ['seven','bar','bozuko','banana','monkey','cherries']
+                },
+                entry_config: [{
+                    type: "facebook/checkin",
+                    tokens: options.plays_per_entry,
+                    // allow unlimited checkins
+                    duration: 0
+                }],
+                start: new Date(),
+                end: new Date(2013, 9, 2),
+                total_entries: options.entries,
+                active: true,
+                free_play_pct: options.free_play_pct
+            });
+            contest.prizes.push({
+                name: 'Best Prize Ever',
+                value: '10',
+                description: "Can\'t tell you what it is",
+                details: "You Wish",
+                instructions: "Figure it out and use it",
+                total: options.prizes
+            });
+            contest.save(function(err) {
+                if (err) return callback(err);
+                contest_ids.push(contest._id);
+                contest.generateResults(function(err) {
+                    ct++;
+                    if (page_ct === page_ids.length - 1) {
+                        page_ct = 0;
+                    } else {
+                        page_ct++;
+                    }
+                    return cb(err);
+                });
+            });
         },
-        entry_config: [{
-            type: "facebook/checkin",
-            tokens: 3,
-            // allow unlimited checkins
-            duration: 0
-        }],
-        start: new Date(),
-        end: new Date(2013, 9, 2),
-        total_entries: 1000000,
-        total_plays: 3000000,
-        active: true,
-        play_cursor: -1,
-        token_cursor: -1
-    });
-    contest.prizes.push({
-        name: 'Owl Watch Mug',
-        value: '10',
-        description: "Sweet travel Mug",
-        details: "Not good for drinking out of.",
-        instructions: "Show this screen to an employee",
-        total: 10
-    });
-    contest.save(function(err) {
-        if (err) return callback(err);
-        contest_ids.push(contest._id);
-        contest.generateResults(function(err) {
-            return callback(err);
-        });
-    });
+        function(err) {
+            callback(err);
+        }
+    );
 }
 
 function add_users(count, callback) {
