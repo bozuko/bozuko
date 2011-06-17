@@ -61,6 +61,7 @@ FacebookLikeMethod.prototype.defaults = {
  *
  */
 FacebookLikeMethod.prototype.getDescription = function(){
+    var self = this;
     
     // need a nice duration
     // get the number of minutes:
@@ -86,9 +87,9 @@ FacebookLikeMethod.prototype.getDescription = function(){
     var description = "Like us on Facebook\n";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
         
-        if( !self.user || !self.user_likes ){
+        //if( !self.user || !self.user_likes ){
             description+="\n\nHit back and scroll down to like us."
-        }
+        //}
     
     return description;
 }
