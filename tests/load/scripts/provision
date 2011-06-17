@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+var db = require('../util/db');
+var inspect = require('util').inspect;
+
+process.env.NODE_ENV = 'load';
+var Bozuko = require('../../../app/bozuko');
+
+var valid_args = ['--contests', '--user', '--entries', '--prizes', '--plays_per_entry',
+    '--free_play_pct', '--drop_collections'];
+
+var defaults = {
+    contests: 100,
+    users: 1000,
+    entries: 2000,
+    prizes: 500,
+    plays_per_entry: 3,
+    free_play_pct: 30
+};
+
+var opts = Object.create(defaults);
+
+function isEven(num) {
+    if ((num / 2) == (Math.floor(num / 2))) return true;
+    return false;
+}
+
+function parse_args() {
+    var curArg;
+    for (var i = 2; i < process.argv.length; i++) {
+        if (isEven(i)) {
+            // parse arg type
+            if (valid_args.indexOf(process.argv[i]) != -1) {
+                curArg = process.argv[i].slice(2);
+            } else {
+                throw new Error("Invalid argument: "+process.argv[i]);
+            }
+        } else {
+            // get arg value
+            opts[curArg] = process.argv[i];
+        }
+    }
+}
+
+(function run() {
+     console.log("Provisioning DB");
+     parse_args();
+     var db_setup_start = Date.now();
+     var t = setInterval(function() {
+         process.stdout.write('.');
+     }, 1000);
+     db.setup(opts, function(err) {
+         clearInterval(t);
+         var db_setup_end = Date.now();
+         console.log("DB setup took "+(db_setup_end - db_setup_start)+" ms");
+         Bozuko.db.conn().disconnect();
+         process.exit();
+     });
+})();

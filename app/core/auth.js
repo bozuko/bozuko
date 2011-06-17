@@ -6,14 +6,10 @@ var async = require('async'),
 var auth = exports;
 
 /*
- * Mobile app version security keys and algorithms
+ * Mobile app version algorithms
  *
- * There should be a matching key and algorithm embedded in the mobile app for each version
+ * There should be an algorithm embedded in the mobile app for each version
  */
-
-var mobile_keys = {
-    '1.0': [647, 321, 984, 1281, 519, 5127]
-};
 
 auth.mobile_algorithms = {
     '1.0': function(challenge, req) {
@@ -36,7 +32,7 @@ auth.check = function(access, callback) {
 
     return function(req, res) {
         var layer;
-        
+
         async.forEachSeries(access, function(layer, cb) {
             auth[layer](req, res, cb);
         }, function(err) {
@@ -69,10 +65,10 @@ var adminAuth = basicAuth(function(user,pass,cb){
     // and then test email + pass against google's imap auth
     var email = user.toLowerCase();
     // lets do some pseudo hardcoding...
-    
+
     var domains = ['bozuko.com'];
     if( Bozuko.config.server.port == '8005' || Bozuko.config.server.port == '443' ) domains.push('fuzzproductions.com');
-    
+
     if( !email ){
         return cb(new Error('No Email'));
     }
@@ -80,7 +76,7 @@ var adminAuth = basicAuth(function(user,pass,cb){
     if( !~domains.indexOf(domain) ){
         return cb(new Error('Email not Found!'));
     }
-    
+
     // else, lets try to validate the password
     var conn = new ImapConnection({
         username: email,
@@ -124,7 +120,7 @@ auth.mobile = function(req, res, callback) {
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
-    
+
     async.series([
 
         // Verify phone type and unique id
@@ -157,14 +153,14 @@ auth.mobile = function(req, res, callback) {
             var version = req.session.mobile_version.split('-',2);
             if( version.length > 1 ) version.shift();
             version = version[0];
-            
+
             if ((fn = auth.mobile_algorithms[version])) {
                 result = fn(user.challenge, req);
                 if (
                     String(result) === String(req.session.challenge_response)
                     /**
                      * TODO - take the following line out when we are done testing
-                     * 
+                     *
                      */
                     || String(5127+parseInt(user.challenge)) === String(req.session.challenge_response)
                 ) {

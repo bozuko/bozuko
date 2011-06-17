@@ -1,3 +1,7 @@
+/*
+ * Complete all contests that exist in the db. They should have previously been created
+ * with scripts/provision.
+ */
 var async = require('async');
 var assert = require('assert');
 var load = require('load');
@@ -13,6 +17,9 @@ var Bozuko = require('../../app/bozuko');
 var auth = Bozuko.require('core/auth');
 
 var user_ids_free = [];
+var end_of_game_errors = ['entry/no_tokens', 'entry/not_enough_tokens', 'contest/no_tokens',
+    'contest/inactive','contest/no_plays', 'contest/invalid_entry'];
+var end_of_game_ct = 0;
 
 var options = {
     protocol: 'https',
@@ -20,8 +27,8 @@ var options = {
     port: 8000,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 2, // req/sec
-    time: 3600,
+    rate: 10, // req/sec
+    time: 24*60*60, // 1 day
     wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
@@ -33,10 +40,31 @@ var options = {
             checkin,
             play,
             play,
+            play,
             play
         ]
     }]
 };
+
+Bozuko.models.User.find({}, {_id: 1}, function(err, docs) {
+    docs.forEach(function(doc) {
+        user_ids_free.push(doc._id);
+    });
+    console.log("Running Load Test");
+    load.run(options, function(err, results) {
+        if (err) {
+            // close the mongoose connection so the process exits
+            Bozuko.db.conn().disconnect();
+            return console.error("Err = "+err);
+        }
+        console.log("\nresults = "+require('util').inspect(results));
+        console.log("\ncomplete games = "+end_of_game_ct);
+
+        // close the mongoose connection so the process exits
+        Bozuko.db.conn().disconnect();
+    });
+
+});
 
 function random_user_id() {
     var index = Math.floor(Math.random()*user_ids_free.length);
@@ -44,37 +72,6 @@ function random_user_id() {
     user_ids_free.splice(index, 1);
     return uid;
 }
-
-var db_config = {
-    users: 1000,
-    contests: 100,
-    entries: 100000,
-    prizes: 1000,
-    plays_per_entry: 3,
-    free_play_pct: 0
-};
-
-var db_setup_start = Date.now();
-db.setup(db_config, function(err) {
-    var db_setup_end = Date.now();
-    if (err) {
-        console.error(new Error("db.setup: "+err));
-        Bozuko.db.conn().disconnect();
-        return;
-    }
-
-    user_ids_free = db.user_ids.slice();
-
-    console.log("Db setup took "+(db_setup_end - db_setup_start)+" ms");
-    console.log("Running Load Test");
-    load.run(options, function(err, results) {
-        if (err) return console.error("Err = "+err);
-        console.log("results = "+require('util').inspect(results));
-
-        // close the mongoose connection so the process exits
-        Bozuko.db.conn().disconnect();
-    });
-});
 
 function get_pages(res, callback) {
     var city = db.random_city();
@@ -125,9 +122,11 @@ function checkin(res, callback) {
             return callback(new Error("Couldn't find user "+uid));
         }
         var checkin_link = page.links.facebook_checkin;
+
         var req = {
             url: checkin_link+'/?token='+user.token
         };
+
         var params = {
             ll: ''+city.lat+','+city.lng,
             message: "Load test checkin",
@@ -151,16 +150,21 @@ function checkin(res, callback) {
 }
 
 function play(res, callback) {
-    if (res.statusCode != 200)  {
-        user_ids_free.push(res.opaque.user._id);
-        return callback(new Error(rv));
-    }
     try {
         var rv = JSON.parse(res.body);
     } catch(err) {
         console.error("Bombed out in play bitch");
         user_ids_free.push(res.opaque.user._id);
         return callback(err);
+    }
+
+    if (res.statusCode != 200)  {
+        user_ids_free.push(res.opaque.user._id);
+        if (end_of_game_errors.indexOf(rv.body.name) != -1) {
+            end_of_game_ct++;
+            return callback(null, 'done');
+        }
+        return callback(new Error(rv));
     }
 
     if (res.opaque.last_op === 'checkin') {
@@ -173,15 +177,12 @@ function play(res, callback) {
             return callback(new Error("No game_states returned from entry"));
         }
 
-        // This test only has one contest per page so just use the first game_state
+        // Exhaust the first game first
         var state = rv[0];
-        if (state.user_tokens != 3) {
-            user_ids_free.push(res.opaque.user._id);
-            return callback(new Error("game_state has invalid token count: ct = "+state.user_tokens));
-        }
         res.opaque.message = "Load Test Play";
-        res.opaque.user_tokens = 3;
+        res.opaque.user_tokens = state.user_tokens;
         res.opaque.last_op = 'play';
+
         var req = {
             url: state.links.game_result+'/?token='+res.opaque.user.token
         };
@@ -194,30 +195,16 @@ function play(res, callback) {
             opaque: res.opaque
         });
     } else {
-        if (res.opaque.user_tokens === 0) {
-
-            // allow reuse of this user
-            user_ids_free.push(res.opaque.user_id);
-
-            // This should be an error code (out of tokens)
-            if (res.statusCode === 200) return callback(new Error("Play allowed with no tokens!"));
-
-            // End the session
+        if (rv.game_state.user_tokens === 0) {
+            user_ids_free.push(res.opaque.user._id);
             return callback(null, 'done');
         }
 
-        var token_ct = res.opaque.user_tokens - 1;
-        if (rv.game_state.user_tokens != token_ct) {
-            user_ids_free.push(res.opaque.user_id);
-            return callback(new Error(
-                "User token count incorrect: Expected: "+token_ct+", got: "+rv.user_tokens));
-        }
-
-        res.opaque.user_tokens = token_ct;
-
-        // We are about to use our last token so free up the user
-        if (token_ct === 1) {
-            user_ids_free.push(res.opaque.user._id);
+        if (res.opaque.user_tokens === rv.game_state.user_tokens) {
+            // free play - add a request generator for it
+            options.sessions[0].request_generators.push(play);
+        } else {
+            res.opaque.user_tokens = rv.game_state.user_tokens;
         }
 
         var req = {
