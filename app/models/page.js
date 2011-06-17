@@ -583,6 +583,7 @@ Page.static('search', function(options, callback){
                         fb_ids.push(String(fb.sid));
                     }
                     page_ids.push(page._id);
+                    page.featured = false;
                 });
 
                 // grab the featured out of there for sorting...
@@ -633,6 +634,7 @@ Page.static('search', function(options, callback){
                     }, function(error, _pages){
                         if( error ) return callback( error );
                         prepare_pages(_pages, options.user, function(page){
+                            page.featured = false;
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                         });
 
