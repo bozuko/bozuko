@@ -55,7 +55,8 @@ Ext.define('Bozuko.controller.Pages' ,{
                 title: 'Add a Business Page',
                 width: 800,
                 height: 600,
-                store: me.getPlacesStore(),
+                placesStore: me.getPlacesStore(),
+                pagesStore: Ext.create('Bozuko.store.Places'),
                 usersStore: Ext.create('Bozuko.store.Users'),
                 listeners: {
                     close : function(){

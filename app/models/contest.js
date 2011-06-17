@@ -16,7 +16,8 @@ var mongoose = require('mongoose'),
     S3 = Bozuko.require('util/s3'),
     barcode = Bozuko.require('util/barcode'),
     fs = require('fs'),
-    burl = Bozuko.require('util/url').create
+    burl = Bozuko.require('util/url').create,
+    inspect = require('util').inspect
 ;
 
 var Contest = module.exports = new Schema({
@@ -346,7 +347,10 @@ Contest.method('loadEntryMethod', function(user, callback){
     entryMethod.configure(config);
 
     self.entry_method = entryMethod;
-    callback( null, entryMethod );
+    self.entry_method.load( function(error){
+        if( error ) return callback(error);
+        return callback(null, entryMethod);
+    });
 
 });
 
@@ -464,6 +468,7 @@ function get_code(num) {
 // Only claim a consolation prize if there are some remaining
 Contest.method('claimConsolation', function(opts, callback) {
     var total = this.consolation_prizes[0].total;
+    console.error("\n\nclaimConsolation: totalConsolationPrizes = "+total);
     Bozuko.models.Contest.findAndModify(
         { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total-1}}}},
         [],
@@ -472,11 +477,14 @@ Contest.method('claimConsolation', function(opts, callback) {
         function(err, contest) {
             if (err) return callback(err);
             if (!contest) {
+                console.error("claimConsolation: no matching contest");
                 opts.consolation = false;
                 return callback(null);
             }
             opts.consolation_prize_code = get_code(contest.consolation_prizes[0].claimed);
             opts.consolation_prize_count = contest.consolation_prizes[0].claimed;
+            console.error("claimConsolation: opts.consolation_prize_code = "+opts.consolation_prize_code);
+            console.error("claimConsolation: opts.consolation_prize_count = "+opts.consolation_prize_count);
             return contest.savePrize(opts, callback);
         }
     );
@@ -487,8 +495,11 @@ Contest.method('saveConsolation', function(opts, callback) {
     var self = this;
     var config = this.consolation_config[0];
 
+    console.error("\n\n saveConsolation: opts = \n"+inspect(opts)+"\n");
+
     var consolation_prize = self.consolation_prizes[0];
     if (consolation_prize.claimed === (consolation_prize.total-1)) {
+        console.error("saveConsolation: consolation_prize.claimed === consolation_prize.total -1 === "+consolation_prize.claimed);
         opts.consolation = false;
         return callback(null);
     }
@@ -538,6 +549,7 @@ Contest.method('saveConsolation', function(opts, callback) {
     }
     // TODO: Implement (config.when === 'interval')
 
+    console.log("\n\nNO MAN'S LAND\n\n");
     /**
      * MARK - I think this is being reached even if interval isn't the when...
      * I'm going to log the config so we can see whats going on, but also
@@ -556,6 +568,7 @@ Contest.method('savePrize', function(opts, callback) {
 
     if (opts.consolation) {
         prize = self.consolation_prizes[0];
+        console.error("\n\nsavePrize: prize = "+inspect(prize));
     } else {
         prize = self.prizes[opts.prize_index];
     }
@@ -608,6 +621,7 @@ Contest.method('savePrize', function(opts, callback) {
             }
         }
 
+        console.error("savePrize: about to save prize. consolation = "+inspect(user_prize));
         return user_prize.save(function(err) {
             if (err) return callback(err);
             return callback(null, user_prize);

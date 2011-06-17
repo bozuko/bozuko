@@ -173,9 +173,9 @@ Bozuko.error = function(name, data){
 		if( message.title ){
 			title = message.title;
 		}
-        if( typeof message != 'string' && message.code ){
-            code = message.code;
-            message = message.message;
+        if( typeof message != 'string' ){
+            if( message.code ) code = message.code;
+			message = message.message;
         }
         return new BozukoError(name,message,data,code,title);
     }catch(e){

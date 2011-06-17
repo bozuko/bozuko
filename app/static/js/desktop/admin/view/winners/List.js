@@ -23,6 +23,7 @@ Ext.define('Bozuko.view.winners.List' ,{
         var me = this;
         me.blinkState = false;
         me.blinkers = [];
+        me.blinking = false;
         me.store = Ext.create('Bozuko.store.Winners');
         me.tmpStore = Ext.create('Bozuko.store.Winners',{autoLoad: false});
         
@@ -37,36 +38,28 @@ Ext.define('Bozuko.view.winners.List' ,{
         // going to create a view within this panel.
         me.items = [{
             xtype: 'dataview',
+            cls: 'bozuko-list winners-list',
             
             trackOver: true,
-            
-            loadMask: false,
-            
-            itemSelector: '.list-item',
-            overItemCls : 'list-item-over',
-            selectedItemCls : 'list-item-selected',
+            overItemCls : 'x-item-over',
             
             emptyText: '<p>No Winners yet!</p>',
             
             autoScroll: true,
             
             store: me.store,
-            tpl: new Ext.XTemplate(
-                '<ul class="bozuko-list winners-list">',
-                    '<tpl for=".">',
-                        '<li class="list-item prize-{prize.state}">',
-                            '<div class="contest-name">',
-                                '<strong>{page.name}</strong> - {contest.name}',
-                            '</div>',
-                            '<div class="winner-body">',
-                                '<img src="{[this.getImage(values.user.image)]}" />',
-                                '<div class="user-name">{user.name}</div>',
-                                '<div class="prize-name">{prize.name}</div>',
-                                '<div class="prize-timestamp">{[this.getFormattedDate(values.prize.timestamp)]}</div>',
-                            '</div>',
-                        '</li>',
-                    '</tpl>',
-                '</ul>',
+            itemTpl: new Ext.XTemplate(
+                '<div class="prize-{prize.state}">',
+                    '<div class="contest-name">',
+                        '<strong>{page.name}</strong> - {contest.name}',
+                    '</div>',
+                    '<div class="winner-body">',
+                        '<img src="{[this.getImage(values.user.image)]}" />',
+                        '<div class="user-name">{user.name}</div>',
+                        '<div class="prize-name">{prize.name}</div>',
+                        '<div class="prize-timestamp">{[this.getFormattedDate(values.prize.timestamp)]}</div>',
+                    '</div>',
+                '</div>',
                 {
                     
                     isPageSpecific : function(){
@@ -158,7 +151,7 @@ Ext.define('Bozuko.view.winners.List' ,{
             });
         });
         me.blinkers = blinkers;
-        me.blink();
+        if( !me.blinking ) me.blink();
     },
     
     blink : function(){
@@ -185,7 +178,11 @@ Ext.define('Bozuko.view.winners.List' ,{
             
         }
         me.blinkers = blinkers;
-        if( !me.blinkers.length ) return;
+        if( !me.blinkers.length ){
+            me.blinking = false;
+            return;
+        }
+        me.blinking = true;
         me.blinkTimeout = setTimeout(function(){
             me.blink();
         }, me.blinkRate);

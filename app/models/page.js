@@ -384,6 +384,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
  * Need to add our algorithm for finding featured items (by distance? how far is too far?)
  */
 Page.static('getFeaturedPages', function(num, options, callback){
+    
     if( !num ) return callback( null, [] );
 
     var find = {
@@ -401,12 +402,13 @@ Page.static('getFeaturedPages', function(num, options, callback){
         if( !count ) return callback( null, [] );
 
         var featured = [], pool=[], offsets=[], i;
-
+        
         for(i=0; i<count; i++) pool.push(i);
 
         for(i=0; i<num && pool.length; i++){
+            var index = rand(0, pool.length-1);
             offsets.push(
-                pool.splice( rand(0, pool.length-1), 1)[0]
+                pool.splice(index, 1)[0]
             );
         }
 
@@ -424,9 +426,7 @@ Page.static('getFeaturedPages', function(num, options, callback){
                     }
                 });
 
-                console.log(opts);
-
-                return Bozuko.models.Page.find(opts.selector, {}, opts.options, function(error, page){
+                return Bozuko.models.Page.find(opts.selector, {results: 0, plays: 0}, opts.options, function(error, page){
                     if( error ) return callback( error );
                     if( page && page.length) featured.push(page[0]);
                     return callback(null);
@@ -538,7 +538,7 @@ Page.static('search', function(options, callback){
                 page.id = page.service('facebook').sid;
             }
             page._distance = Geo.distance( options.ll, page.coords );
-            page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords));
+            page.distance = Geo.formatDistance( Geo.distance(options.ll, page.coords), page.coords);
             if(fn) fn.call(this, page);
         }
         prof.stop();
@@ -556,15 +556,15 @@ Page.static('search', function(options, callback){
         callback( null, pages );
     }
 
-    return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.config.search.featuredResults : 0, options, function(error, featured){
+    return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.cfg('search.featuredResults',1) : 0, options, function(error, featured){
 
         if( error ) return callback(error);
+        var featured_ids = [];
 
         if( featured.length ){
-            var ids = [];
-            featured.forEach(function(feature){ ids.push( feature._id ); });
+            featured.forEach(function(feature){ featured_ids.push( feature._id ); });
             bozukoSearch.selector._id = {
-                $nin: ids
+                $nin: featured_ids
             };
         }
 
@@ -583,6 +583,7 @@ Page.static('search', function(options, callback){
                         fb_ids.push(String(fb.sid));
                     }
                     page_ids.push(page._id);
+                    if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                 });
 
                 // grab the featured out of there for sorting...
@@ -633,6 +634,7 @@ Page.static('search', function(options, callback){
                     }, function(error, _pages){
                         if( error ) return callback( error );
                         prepare_pages(_pages, options.user, function(page){
+                            if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
                         });
 
@@ -640,7 +642,7 @@ Page.static('search', function(options, callback){
                             results.forEach(function(result){
                                 result.registered = false;
                                 result._distance = Geo.distance(options.ll, [result.location.lng,result.location.lat]);
-                                result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]));
+                                result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]), [result.location.lng,result.location.lat] );
                             });
                         }
 

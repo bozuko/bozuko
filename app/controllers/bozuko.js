@@ -260,6 +260,7 @@ exports.routes = {
                 
                 req.connection.addListener('timeout', unsubscribe);
                 req.connection.addListener('end', unsubscribe);
+                req.connection.addListener('close', unsubscribe);
                 req.connection.addListener('error', unsubscribe);
                 
                 if( req.body.since ){
