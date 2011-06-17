@@ -31,7 +31,6 @@ module.exports = {
     },
     
     formatDistance: function(d, ll, unit){
-        console.log(arguments);
         if( ll && ll[0] == 0 && ll[1] == 0 ){
             return '';
         }
