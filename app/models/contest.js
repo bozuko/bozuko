@@ -347,7 +347,10 @@ Contest.method('loadEntryMethod', function(user, callback){
     entryMethod.configure(config);
 
     self.entry_method = entryMethod;
-    callback( null, entryMethod );
+    self.entry_method.load( function(error){
+        if( error ) return callback(error);
+        return callback(null, entryMethod);
+    });
 
 });
 
