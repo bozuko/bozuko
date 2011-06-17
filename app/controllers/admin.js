@@ -550,7 +550,7 @@ exports.routes = {
 
 function filter(data){
     
-    if( arguments.length > 1 ){
+    if( arguments.length > 1 && data){
         var tmp={};
         [].slice.call(arguments,1).forEach(function(field){
             tmp[field] = data[field];
