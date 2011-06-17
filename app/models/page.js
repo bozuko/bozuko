@@ -400,7 +400,7 @@ Page.static('getFeaturedPages', function(num, options, callback){
         if( error ) return callback( error );
         if( !count ) return callback( null, [] );
 
-        var featured = [], pool=[], offsets=[], i, index = rand(0, pool.length-1);
+        var featured = [], pool=[], offsets=[], i, index = rand(0, count-1);
         
         console.log('featured count', count, 'random', index);
 
