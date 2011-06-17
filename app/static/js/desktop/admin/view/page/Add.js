@@ -7,6 +7,7 @@ Ext.define('Bozuko.view.page.Add' ,{
     
     requires        :[
         'Bozuko.view.page.add.Map',
+        'Bozuko.view.page.add.Pages',
         'Bozuko.view.page.add.Form'
     ],
     
@@ -15,9 +16,18 @@ Ext.define('Bozuko.view.page.Add' ,{
         
         me.items = [{
             region          :'center',
-            store           :me.store,
-            xtype           :'pageaddmap',
-            border          :false
+            xtype           :'tabpanel',
+            activeTab       :0,
+            items: [{
+                title           :'By Location',
+                store           :me.placesStore,
+                xtype           :'pageaddmap',
+                border          :false
+            },{
+                xtype           :'pageaddlist',
+                title           :'By Page',
+                store           :me.pagesStore
+            }]
         },{
             region          :'east',
             xtype           :'pageaddform',
@@ -42,6 +52,7 @@ Ext.define('Bozuko.view.page.Add' ,{
         });
         me.callParent( arguments );
         me.relayEvents( me.down('pageaddmap'), ['latlngchange','selectplace'] );
+        me.relayEvents( me.down('pageaddlist'), ['selectplace'] );
         me.on('selectplace', me.updateFormWithPlace, me );
     },
     

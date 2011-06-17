@@ -16,6 +16,8 @@ Ext.define('Bozuko.model.Place', {
         'category',
         'name',
         'location',
-        'image'
+        'image',
+		'data',
+		'website'
     ]
 });

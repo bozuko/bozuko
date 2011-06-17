@@ -20,9 +20,11 @@ Ext.define('Bozuko.view.page.Panel' ,{
         me.tbar = Ext.create('Ext.toolbar.Toolbar',{
             ref         :'page-navbar',
             defaults: {
+                
                 xtype: 'button',
                 scale: 'medium',
-                iconAlign: 'top'
+                cls:'x-btn-text-icon',
+                iconAlign: 'left'
             },
             items:[{
                 page        :'campaigns',

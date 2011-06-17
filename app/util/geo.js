@@ -30,7 +30,11 @@ module.exports = {
         return d;
     },
     
-    formatDistance: function(d, unit){
+    formatDistance: function(d, ll, unit){
+        console.log(arguments);
+        if( ll && ll[0] == 0 && ll[1] == 0 ){
+            return '';
+        }
         if( unit == 'km' ) return d;
         // less that 40 feet is basically there.
         if( d < 40/5280 ){

@@ -39,7 +39,7 @@ exports.transfer_objects = {
             ". This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
             o.win_time = prize.timestamp;
             o.business_img = prize.page.image;
-            o.user_img = prize.user.image;
+            o.user_img = prize.user.image.replace(/type=large/, 'type=square');
             /**
              * TODO - pull this from the contest / prize / page
              */

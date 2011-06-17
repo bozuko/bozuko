@@ -84,29 +84,29 @@
 .buttons li .reports {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-report-bar-24.png');
 }
-.bozuko-list .list-item {
+.bozuko-list .x-dataview-item {
   cursor: pointer;
   clear: both;
   border-bottom: 1px solid #ccc;
   overflow: hidden;
   padding: 6px;
 }
-.bozuko-list .list-item img {
+.bozuko-list .x-dataview-item img {
   height: 50px;
   float: right;
 }
-.bozuko-list .list-item .title {
+.bozuko-list .x-dataview-item .title {
   margin-top: 6px;
   font-weight: bold !important;
 }
-.bozuko-list .list-item .sub {
+.bozuko-list .x-dataview-item .sub {
   font-size: .85em;
   color: #999;
 }
-.bozuko-list .list-item-over {
+.bozuko-list .x-item-over {
   background-color: #f3f3f3;
 }
-.bozuko-list .list-item-selected {
+.bozuko-list .x-item-selected {
   background-color: #d5eaf9;
 }
 .winners-list {
@@ -130,7 +130,7 @@
     */
 
 }
-.winners-list .list-item {
+.winners-list .x-dataview-item {
   background-color: #fff;
   padding: 0;
 }
@@ -174,9 +174,6 @@
 }
 .winners-list .prize-redeemed .winner-body {
   background-image: url("/images/assets/prizes/48/icon-redeemed.png");
-}
-.winners-list .list-item-over .winner-body {
-  background-color: #f3f3f3;
 }
 .winners-list .winner-blink {
   background-color: #b7ffd0;
