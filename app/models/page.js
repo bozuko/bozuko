@@ -400,11 +400,12 @@ Page.static('getFeaturedPages', function(num, options, callback){
         if( error ) return callback( error );
         if( !count ) return callback( null, [] );
 
-        var featured = [], pool=[], offsets=[], i, index = rand(0, count-1);
+        var featured = [], pool=[], offsets=[], i;
         
         for(i=0; i<count; i++) pool.push(i);
 
-        for(i=0; i<num; i++){
+        for(i=0; i<num && pool.length; i++){
+            var index = rand(0, pool.length-1);
             offsets.push(
                 pool.splice(index, 1)[0]
             );
