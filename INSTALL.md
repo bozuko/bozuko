@@ -17,7 +17,8 @@ Run the following as root to setup a brand new image
     emacs /etc/default/dhcpcd 
 
 Comment out SET_HOSTNAME
-    #SET_HOSTNAME='yes'
+
+     #SET_HOSTNAME='yes'
 
 
 ##### Install git
