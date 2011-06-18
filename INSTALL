@@ -4,8 +4,8 @@ Run the following as root to setup a brand new image
 ###### Install emacs
     apt-get install emacs
 
-###### Create bozuko user
-     adduser bozuko 
+###### Create proper user (bozuko, api, etc...)
+     adduser <user> 
 
 
 ###### Set the hostname
@@ -36,10 +36,10 @@ http://help.github.com/linux-key-setup/
 
 
 ##### Clone the bozuko repo and install all dependencies that require root privileges
-    BOZ_DIR=~bozuko/bozuko
+    BOZ_DIR=~<username>/bozuko
     git clone git@github.com:bozuko/bozuko.git $BOZ_DIR
-    chown -hR bozuko:bozuko $BOZ_DIR
-    cd ~bozuko/bozuko/install
+    chown -hR <username>:<username> $BOZ_DIR
+    cd $BOZ_DIR/install
 
 ######## If this is an appserver run the following
      ./install_privileged.sh
