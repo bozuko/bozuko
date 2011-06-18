@@ -10,23 +10,11 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
 apt-get update
 apt-get upgrade
 
-# install nginx
-if [[ "$1" != 'db' ]] ; then
-    wget http://nginx.org/download/nginx-1.0.0.tar.gz
-    wget https://nodeload.github.com/agentzh/chunkin-nginx-module/tarball/v0.21
-    tar xvzf nginx-1.0.0.tar.gz 
-    tar xvzf v0.21
-    cd nginx-1.0.0
-    ./configure --add-module=../agentzh-chunkin-nginx-module-847b3de --without-http_rewrite_module --with-http_ssl_module
-    make && make install
-    cp config/nginx.conf /usr/local/nginx/conf/
-fi
-
 # install mongodb
 apt-get install -y mongodb-10gen
 
 # install essential libraries and build tools
-apt-get install -y build-essential libssl-dev libgd-xpm-dev
+apt-get install -y build-essential libssl-dev libgd2-xpm-dev g++
 
 # install useful tools and utilities
 apt-get install -y emacs vim js2-mode

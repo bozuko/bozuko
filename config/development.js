@@ -6,6 +6,12 @@ if (process.env.USER === 'docs') port = 7002;
 module.exports = {
 
     test_mode: true,
+    controllers: {
+        except: [
+            'site',
+            'business'
+        ]
+    },
 
     client: {
         mobile:{

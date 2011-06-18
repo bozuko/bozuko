@@ -322,6 +322,14 @@ function initTransferObjects(){
     });
 }
 
+function useController(name){
+	var cfg = Bozuko.getConfig();
+	if(!cfg.controllers) return true;
+	if( cfg.controllers.only && !~cfg.controllers.only.indexOf(name) ) return false;
+	if( cfg.controllers.except && ~cfg.controllers.except.indexOf(name) ) return false;
+	return true;
+}
+
 function initControllers(app){
     Bozuko.controllers = {};
     fs.readdirSync(__dirname + '/controllers').forEach( function(file){
@@ -329,6 +337,7 @@ function initControllers(app){
         if( !/js$/.test(file) ) return;
 
         var name = file.replace(/\..*?$/, '');
+		if( !useController(name) ) return;
         var Name = name.charAt(0).toUpperCase()+name.slice(1);
         Bozuko.controllers[Name] = Controller.create(app,name,Bozuko.require('controllers/'+name));
     });
