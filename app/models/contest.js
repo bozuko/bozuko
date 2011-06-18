@@ -258,6 +258,8 @@ Contest.method('getUserInfo', function(user_id) {
     var lastEntry = null;
     var earliest_active_entry_time = null;
 
+    var prof = new Profiler('/models/contest/getUserInfo');
+
     // how many tokens ?
     this.entries.forEach(function(entry){
         // check timestamp and user_id
@@ -275,6 +277,7 @@ Contest.method('getUserInfo', function(user_id) {
         }
     });
 
+    prof.stop();
     return {
         tokens: tokens,
         last_entry: lastEntry,
