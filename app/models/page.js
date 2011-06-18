@@ -384,7 +384,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
  * Need to add our algorithm for finding featured items (by distance? how far is too far?)
  */
 Page.static('getFeaturedPages', function(num, options, callback){
-    
+
     if( !num ) return callback( null, [] );
 
     var find = {
@@ -402,7 +402,7 @@ Page.static('getFeaturedPages', function(num, options, callback){
         if( !count ) return callback( null, [] );
 
         var featured = [], pool=[], offsets=[], i;
-        
+
         for(i=0; i<count; i++) pool.push(i);
 
         for(i=0; i<num && pool.length; i++){
@@ -608,9 +608,9 @@ Page.static('search', function(options, callback){
                 return Bozuko.service(service).search(options, function(error, _results){
 
                     if( error ){
-                        
+
                         console.error( error );
-                        
+
                         featured.sort( sort_by('_distance') );
                         pages.sort( sort_by('_distance') );
                         pages = featured.concat(pages);
