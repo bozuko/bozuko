@@ -1,14 +1,14 @@
 ## PRE_INSTALL
 Run the following as root to setup a brand new image
 
-###### Install emacs
+##### Install emacs
     apt-get install emacs
 
-###### Create proper user (bozuko, api, etc...)
+##### Create proper user (bozuko, api, etc...)
      adduser <user> 
 
 
-###### Set the hostname
+##### Set the hostname
     echo "HOSTNAME" > /etc/hostname
     hostname -F /etc/hostname
 
@@ -20,7 +20,7 @@ Comment out SET_HOSTNAME
     #SET_HOSTNAME='yes'
 
 
-#####Install git
+##### Install git
     apt-get install git
 
 ##### Generate ssh keys for root
@@ -41,10 +41,10 @@ http://help.github.com/linux-key-setup/
     chown -hR <username>:<username> $BOZ_DIR
     cd $BOZ_DIR/install
 
-####### If this is an appserver run the following
+###### If this is an appserver run the following
      ./install_privileged.sh
 
-####### if this is a db server run the following
+###### if this is a db server run the following
     ./install_privileged.sh db
 
 If this is not a DB server then you want to install node.
