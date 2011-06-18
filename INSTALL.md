@@ -56,3 +56,4 @@ Run the folllowing as user bozuko to install bozuko and it's dependencies.
 
     cd ~/bozuko/install
     ./install.sh
+    . ~/.bashrc
