@@ -41,10 +41,10 @@ http://help.github.com/linux-key-setup/
     chown -hR <username>:<username> $BOZ_DIR
     cd $BOZ_DIR/install
 
-######## If this is an appserver run the following
+####### If this is an appserver run the following
      ./install_privileged.sh
 
-######## if this is a db server run the following
+####### if this is a db server run the following
     ./install_privileged.sh db
 
 If this is not a DB server then you want to install node.
