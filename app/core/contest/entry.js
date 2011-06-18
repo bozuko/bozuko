@@ -123,25 +123,14 @@ EntryMethod.prototype.process = function( callback ){
             return callback(error);
         }
 
-        var e = {
-            user_id: self.user._id,
-            contest_id: self.contest._id,
-            timestamp: new Date(),
-            type: self.type,
-            tokens: self.getTokenCount(),
-            initial_tokens: self.getTokenCount()
-        };
-        
-
-        return self.contest.addEntry(e, function(error, entry){
+        var now = new Date();
+        return self.contest.addEntry(self.getTokenCount(), function(error){
             if( error ) return callback(error);
 
-            // save a top level entry for analytics
-            var Entry = new Bozuko.models.Entry();
-            self.prepareAnalyticEntry( Entry );
-            Entry.timestamp = entry.timestamp;
+            var entry = new Bozuko.models.Entry();
+            self.loadEntry(entry, now);
 
-            return Entry.save( function(error){
+            return entry.save( function(error){
                 Bozuko.publish('contest/entry', {contest_id: self.contest._id, page_id: self.contest.page_id, user_id: self.user._id});
                 return callback( error, entry );
             });
@@ -149,12 +138,15 @@ EntryMethod.prototype.process = function( callback ){
     });
 };
 
-EntryMethod.prototype.prepareAnalyticEntry = function( Entry ){
+EntryMethod.prototype.loadEntry = function( entry, timestamp ){
     var self = this;
-    Entry.contest_id = self.contest._id;
-    Entry.page_id = self.contest.page_id;
-    Entry.user_id = self.user._id;
-    Entry.type = self.type;
+    entry.contest_id = self.contest._id;
+    entry.page_id = self.contest.page_id;
+    entry.user_id = self.user._id;
+    entry.type = self.type;
+    entry.tokens = self.getTokenCount();
+    entry.initial_tokens = self.getTokenCount();
+    entry.timestamp = timestamp;
 };
 
 /**

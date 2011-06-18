@@ -9,5 +9,7 @@ var Entry = module.exports = new Schema({
     user_id                 :{type:ObjectId, index: true},
     type                    :{type:String},
     action_id               :{type:ObjectId},
-    timestamp               :{type:Date, default: Date.now}
+    timestamp               :{type:Date, default: Date.now},
+    tokens                  :{type:Number},
+    initial_tokens          :{type:Number}
 });
