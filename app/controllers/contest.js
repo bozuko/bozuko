@@ -170,10 +170,10 @@ exports.links = {
     game_result: {
         post: {
             access: 'mobile',
-            
+
             doc: "Retrieve a result for the given game." +
                 "The user must have tokens credited to their account in order for this to work",
-                
+
             params: {
                 ll: {
                     required: true,
@@ -342,7 +342,7 @@ exports.routes = {
                     parts.reverse();
                     parts[0] = parseFloat( parts[0] );
                     parts[1] = parseFloat( parts[1] );
-                    
+
                     var config = contest.entry_config[0];
                     var entry = Bozuko.entry( config.type, req.session.user, {ll:parts} );
                     return contest.enter( entry, function(error, entry){
@@ -384,9 +384,9 @@ exports.routes = {
                     if( !contest ){
                         return Bozuko.error('contest/unknown', req.params.id).send(res);
                     }
-                    // lets let the contest handle finding entries, etc
-                    return contest.loadGameState(req.session.user, function(error){
-                        res.send( Bozuko.transfer('game_state', contest.game_state, req.session.user) );
+                    var user = req.session.user;
+                    return contest.loadGameState(user, function(error){
+                        return res.send( Bozuko.transfer('game_state', contest.game_state, user) );
                     });
                 });
             }

@@ -155,9 +155,13 @@ exports['play fail - no tokens'] = function(test) {
         Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
             test.ok(!err);
             test.deepEqual(c.play_cursor+0, play_cursor);
-            test.deepEqual(c.entries[0].tokens+0, 0);
             test.equal(c.plays[play_cursor].active, false);
-            test.done();
+
+            Bozuko.models.Entry.findOne({contest_id: contest._id, user_id: user._id, tokens: 0}, function(err, e) {
+                test.ok(!err);
+                test.ok(e);
+                test.done();
+            });
         });
     });
 };
