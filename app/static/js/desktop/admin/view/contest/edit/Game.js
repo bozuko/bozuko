@@ -62,7 +62,8 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
     
     onGameChange : function(field, value){
         var i = this.items.indexOf( this.down('[name=free_play_pct]') ),
-            cmp
+            cmp,
+            me = this
             ;
             
         while( (cmp = this.items.getAt(i+1)) ) this.remove(cmp);
@@ -99,12 +100,27 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                         fields:['value', 'text'],
                         data:[
                             {value:'default',text:'Default'},
-                            {value:'rock',text:'Rock'}
+                            {value:'rock',text:'Rock'},
+                            {value:'custom',text:'Custom'}
                         ]
                     }),
                     displayField    :'text',
                     valueField      :'value',
-                    value           :'default'
+                    value           :'default',
+                    listeners       :{
+                        scope           :me,
+                        change          :function(field, value){
+                            var fn = 'custom' === value ? 'show' : 'hide';
+                            var bg = me.down('textfield[name=game_config.custom_background]');
+                            bg[fn]();
+                            bg[fn==='show'?'enable':'disable']();
+                        }
+                    }
+                },{
+                    xtype           :'textfield',
+                    name            :'game_config.custom_background',
+                    fieldLabel      :'Custom Background',
+                    hidden          :true
                 });
                 break;
         }
