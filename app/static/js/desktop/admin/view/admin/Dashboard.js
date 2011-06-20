@@ -11,7 +11,8 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
     },
     
     requires: [
-        'Bozuko.lib.PubSub'
+        'Bozuko.lib.PubSub',
+        'Bozuko.store.Reports'
     ],
     
     initComponent : function(){
@@ -22,9 +23,55 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
             border: false,
             items:[{
                 region: 'center',
-                html: 'Admin Dashboard',
+                xtype: 'chart',
                 border: false,
-                bodyPadding: 10
+                animate: true,
+                store: Ext.create('Bozuko.store.Reports'),
+                axes: [{
+                    type        :'Time',
+                    position    :'bottom',
+                    fields      :['date'],
+                    title       :'Day',
+                    dateFormat  :'M d',
+                    groupBy     :'year,month,day',
+                    constrain   :true,
+                    fromDate    :Ext.Date.add(new Date(), Ext.Date.MONTH, -1),
+                    toDate      :new Date()
+                },{
+                    type        :'Numeric',
+                    position    :'left',
+                    fields      :['count'],
+                    title       :'Entries',
+                    grid        :true
+                }],
+                series: [{
+                    title: 'Count',
+                    type: 'line',
+                    highlight: {
+                        size: 7,
+                        radius: 7
+                    },
+                    tips: {
+                        trackMouse: true,
+                        width: 120,
+                        height: 40,
+                        renderer: function(storeItem, item) {
+                            this.setTitle(Ext.Date.format(storeItem.get('date'), 'M d'));
+                            this.update( storeItem.get('count')+' Entries' );
+                        }
+                    },
+                    fill: true,
+                    axis: 'left',
+                    xField: 'date',
+                    yField: 'count',
+                    display: 'over',
+                    markerCfg: {
+                        type: 'cross',
+                        size: 4,
+                        radius: 4,
+                        'stroke-width': 0
+                    }
+                }]
             },{
                 height: 200,
                 split: true,

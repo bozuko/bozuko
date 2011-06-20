@@ -8,7 +8,6 @@ module.exports = {
     test_mode: true,
     controllers: {
         except: [
-            'site',
             'business'
         ]
     },

@@ -59,7 +59,7 @@ var NativePlugin = module.exports = function NativePlugin(schema, options){
             var model = new self();
 
             if (!doc) return cb(null);
-            model.init(doc, function(err) {
+            return model.init(doc, function(err) {
                 if (err) return cb(err);
                 return cb(null, model);
             });
