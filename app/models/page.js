@@ -581,6 +581,7 @@ Page.static('search', function(options, callback){
                     if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                 });
 
+
                 if( !serviceSearch ){
                     pages.sort( sort_by('_distance') );
                     pages.sort( 'featured' );

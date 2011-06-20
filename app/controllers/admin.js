@@ -545,6 +545,49 @@ exports.routes = {
 
             }
         }
+    },
+    
+    '/admin/report' : {
+        
+        get : {
+            handler : function(req, res){
+                // build a report
+                var type = req.param('type') || 'entries';
+                return Bozuko.models.Entry.collection.mapReduce(
+                    
+                    function map(){
+                        var ts = this.timestamp;
+                        var timestamp = Date.UTC(ts.getFullYear(), ts.getMonth(), ts.getDate(), 0, 0, 0, 0);
+                        emit( timestamp, {timestamp: new Date(timestamp), count: 1} );
+                    },
+                    
+                    function reduce(key, values){
+                        var count = 0;
+                        values.forEach( function(value){
+                            count += value.count;
+                        });
+                        return {timestamp: values[0].timestamp, count: count};
+                    },
+                    
+                    {
+                        out: {'inline':1}
+                    },
+                    
+                    function(error, results){
+                        var items = [];
+                        results.forEach( function(result){
+                            items.push({
+                                _id: result._id,
+                                date: result.value.timestamp,
+                                count: result.value.count
+                            });
+                        });
+                        res.send({items:items});
+                    }
+                );
+            }
+        }
+        
     }
 };
 

@@ -39,6 +39,15 @@ Ext.define('Bozuko.view.contest.report.Panel' ,{
                 text        :''
             }]
         });
+        /*
+        me.chartStore = Ext.create('Ext.data.Store', {
+            fields: ['timestamp', 'count'],
+            proxy: {
+                type: 'rest',
+                url: '/admin/entry'
+            }
+        });
+        */
         
         me.items = [{
             xtype           :'contestdetails',
@@ -47,8 +56,8 @@ Ext.define('Bozuko.view.contest.report.Panel' ,{
             border          :false
         },{
             region          :'center',
-            html            :'Main Report',
-            border          :false
+            border          :false,
+            html            :'Report Panel'
         },{
             xtype           :'winnerslist',
             region          :'east',
