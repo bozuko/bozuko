@@ -106,7 +106,7 @@ exports.routes = {
                         new Error('Invalid ll').send(res);
                     }
                     ll.reverse();
-                    options.ll = ll;
+                    options.center = ll;
                 }
                 if( req.param('filter') ){
                     var filter = JSON.parse( req.param('filter') );
@@ -553,6 +553,8 @@ exports.routes = {
             handler : function(req, res){
                 // build a report
                 var type = req.param('type') || 'entries';
+                var monthago = new Date();
+                monthago.setTime( +monthago +(1000*60*60*24*30*-1) );
                 return Bozuko.models.Entry.collection.mapReduce(
                     
                     function map(){
@@ -570,17 +572,26 @@ exports.routes = {
                     },
                     
                     {
-                        out: {'inline':1}
+                        out: {'inline':1},
+                        query: {timestamp: {$gt: monthago}}
                     },
                     
                     function(error, results){
-                        var items = [];
+                        var items = [], lastDate;
                         results.forEach( function(result){
+                            while( lastDate && (lastDate += (1000*60*60*24)) < +result.value.timestamp ){
+                                items.push({
+                                    _id: lastDate,
+                                    date: new Date( lastDate ),
+                                    count: 0
+                                });
+                            }
                             items.push({
                                 _id: result._id,
                                 date: result.value.timestamp,
                                 count: result.value.count
                             });
+                            lastDate = +result.value.timestamp;
                         });
                         res.send({items:items});
                     }

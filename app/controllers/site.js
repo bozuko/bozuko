@@ -1,7 +1,7 @@
 
 exports.locals = {
     layout: 'site/layout',
-    title: 'Site'
+    title: 'Bozuko'
 };
 
 exports.routes = {

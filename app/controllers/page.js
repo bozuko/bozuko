@@ -313,9 +313,13 @@ exports.routes = {
                     
                     Bozuko.publish('page/feedback', {message:req.param('message')});
                     
-                    /**
-                     * TODO - the logic to send stuff..
-                     */
+                    var feedback = new Bozuko.models.Feedback({
+                        user_id: req.session.user.id,
+                        page_id: page_id,
+                        message: req.param('message')
+                    });
+                    feedback.sav
+                    
                     return res.send( Bozuko.transfer('success_message', {success:true}));
                     
                 });
