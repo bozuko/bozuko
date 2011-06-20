@@ -578,7 +578,7 @@ exports.routes = {
                         results.forEach( function(result){
                             items.push({
                                 _id: result._id,
-                                timestamp: result.value.timestamp,
+                                date: result.value.timestamp,
                                 count: result.value.count
                             });
                         });
