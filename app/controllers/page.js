@@ -2,7 +2,8 @@ var async = require('async'),
     qs = require('querystring'),
     URL = require('url'),
     burl = Bozuko.require('util/url').create,
-    Profiler = Bozuko.require('util/profiler');
+    Profiler = Bozuko.require('util/profiler')
+;
 
 var requestCount = 0;
 
@@ -53,6 +54,7 @@ exports.transfer_objects = {
             // this should hopefully be a Page model object
             // lets check for a contest
 
+            var prof = new Profiler('/controllers/page/create_page');
             var fid = page.registered ? page.service('facebook').sid : page.id;
             if( !page.registered ) delete page.id;
             page.liked = false;
@@ -106,6 +108,7 @@ exports.transfer_objects = {
                 page.games.push( contest.getGame() );
             });
 
+            prof.stop();
             return this.sanitize(page);
         }
     },
@@ -264,12 +267,11 @@ exports.routes = {
                     options.favorites = true;
                     options.sort = {'name': 1};
                 }
-                var profiler = Profiler.create('Page::search');
+
                 return Bozuko.models.Page.search(options,
                     function(error, pages){
                         if( error )return error.send(res);
 
-                        profiler.mark('search time');
                         var ret = {
                             pages:pages
                         };
@@ -301,7 +303,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/page/:id/feedback': {
 
         put: {
@@ -310,14 +312,14 @@ exports.routes = {
                 Bozuko.models.Page.findById(page_id, function(error, page) {
                     if( error ) return error.send(res);
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
-                    
+
                     Bozuko.publish('page/feedback', {message:req.param('message')});
-                    
+
                     /**
                      * TODO - the logic to send stuff..
                      */
                     return res.send( Bozuko.transfer('success_message', {success:true}));
-                    
+
                 });
             }
         }

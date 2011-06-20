@@ -1,8 +1,8 @@
 var mongoose = require('mongoose'),
     Coords = require('./plugins/coords'),
     Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId,
-    Profiler = Bozuko.require('util/profiler');
+    ObjectId = Schema.ObjectId
+;
 
 var Checkin = module.exports = new Schema({
     user_id                 :{type:ObjectId},
@@ -29,8 +29,7 @@ Checkin.static('process', function(options, callback){
     if( options.service ){
         if( options.service != 'bozuko' ) options.place_id = String( options.page.service( options.service ).sid );
         else options.place_id = options.page._id;
-        
-        var prof = new Profiler('/models/checkin/process');
+
         Bozuko.service( options.service ).checkin( options, function(error, result){
             if( error ) return callback( error );
             // okay, good so far, let's create a checkin object
@@ -46,7 +45,6 @@ Checkin.static('process', function(options, callback){
             checkin.set('data', result);
 
             return checkin.save( function(error){
-                prof.stop();
                 if( error ) return callback( error );
                 return callback( null, checkin );
             });

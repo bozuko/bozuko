@@ -1,5 +1,7 @@
 var fs              = require('fs');
-    existsSync    	= require('path').existsSync;
+    existsSync    	= require('path').existsSync,
+    Profiler = require('./util/profiler')
+;
 
 // setup the global object
 Bozuko = {};
@@ -32,7 +34,7 @@ var self = this;
 var http            = Bozuko.require('util/http'),
     create_url      = Bozuko.require('util/url').create,
     express         = require('express'),
-	socketIO		= require('socket.io'),
+    socketIO	    = require('socket.io'),
     Schema          = require('mongoose').Schema,
     BozukoStore     = Bozuko.require('core/session/store'),
     Monomi          = require('monomi'),
@@ -118,15 +120,19 @@ Bozuko.game = function(contest){
 Bozuko.transfer = function(key, data, user){
     if( !data ) return this._transferObjects[key];
     try{
-
         if( Array.isArray(data) ){
+            var prof = new Profiler('/bozuko/transfer/array');
             var ret = [];
             var self = this;
             data.forEach( function(o){ ret.push(self._transferObjects[key].create(o, user)); } );
+            prof.stop();
             return ret;
         }
         else{
-            return this._transferObjects[key].create(data, user);
+            var prof = new Profiler('/bozuko/transfer/object');
+            var ret = this._transferObjects[key].create(data, user);
+            prof.stop();
+            return ret;
         }
     }catch(e){
         return e;
@@ -135,12 +141,18 @@ Bozuko.transfer = function(key, data, user){
 
 Bozuko.validate = function(key, data) {
     if( !data ) return false;
-    return this._transferObjects[key].validate(data);
+    var prof = new Profiler('/bozuko/validate');
+    var ret = this._transferObjects[key].validate(data);
+    prof.stop();
+    return ret;
 };
 
 Bozuko.sanitize = function(key, data){
     if( !data ) return false;
-    return this.transfer(key, data);
+    var prof = new Profiler('/bozuko/sanitize');
+    var ret = this.transfer(key, data);
+    prof.stop();
+    return ret;
 };
 
 Bozuko.transfers = function(){
@@ -448,6 +460,6 @@ Bozuko.unsubscribe = function(){
 };
 Bozuko.since = function(date, callback){
     Bozuko.pubsub.since(date, callback);
-}
+};
 
 module.exports = Bozuko;
