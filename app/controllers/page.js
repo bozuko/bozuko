@@ -1,6 +1,7 @@
 var async = require('async'),
     qs = require('querystring'),
     URL = require('url'),
+    mailer = Bozuko.require('util/mail'),
     burl = Bozuko.require('util/url').create,
     Profiler = Bozuko.require('util/profiler');
 
@@ -310,17 +311,34 @@ exports.routes = {
                 Bozuko.models.Page.findById(page_id, function(error, page) {
                     if( error ) return error.send(res);
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
+                    var message = req.param('message');
                     
                     Bozuko.publish('page/feedback', {message:req.param('message')});
                     
                     var feedback = new Bozuko.models.Feedback({
                         user_id: req.session.user.id,
                         page_id: page_id,
-                        message: req.param('message')
+                        message: message
                     });
-                    feedback.sav
-                    
-                    return res.send( Bozuko.transfer('success_message', {success:true}));
+                    return feedback.save( function(error){
+                        if( error ) return error.send( res );
+                        return mailer.send({
+                            to: 'feedback@bozuko.com',
+                            subject: "New Feedback from a Bozuko User!",
+                            body: [
+                                req.session.user.name+' ('+req.session.user.email+')' +
+                                ' just submitted the following feedback for '+page.name+' ('+page.service('facebook').data.link+'):',
+                                '',
+                                message,
+                                '',
+                                '',
+                                '--',
+                                '- The Bozuko Mailer (please do not reply to this email)'
+                            ].join("\n")
+                        }, function(error){
+                            return res.send( Bozuko.transfer('success_message', {success:true}));
+                        });
+                    });
                     
                 });
             }
