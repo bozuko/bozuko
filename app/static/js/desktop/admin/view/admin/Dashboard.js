@@ -11,7 +11,8 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
     },
     
     requires: [
-        'Bozuko.lib.PubSub'
+        'Bozuko.lib.PubSub',
+        'Bozuko.store.Reports'
     ],
     
     initComponent : function(){
@@ -22,9 +23,53 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
             border: false,
             items:[{
                 region: 'center',
-                html: 'Admin Dashboard',
+                xtype: 'chart',
                 border: false,
-                bodyPadding: 10
+                animate: true,
+                store: Ext.create('Bozuko.store.Reports'),
+                axes: [{
+                    type        :'Time',
+                    position    :'bottom',
+                    fields      :'timestamp',
+                    title       :'Day',
+                    dateFormat  :'M d',
+                    groupBy     :'year,month,day',
+                    aggregateOp :'sum'
+                },{
+                    type        :'Numeric',
+                    position    :'left',
+                    fields      :['count'],
+                    title       :'Entries',
+                    grid        :true
+                }],
+                series: [{
+                    title: 'Count',
+                    type: 'line',
+                    highlight: {
+                        size: 7,
+                        radius: 7
+                    },
+                    smooth      :3,
+                    tips: {
+                        trackMouse: true,
+                        width: 120,
+                        height: 30,
+                        renderer: function(storeItem, item) {
+                            this.setTitle(storeItem.get('count')+' Entries');
+                        }
+                    },
+                    fill: true,
+                    axis: 'left',
+                    xField: 'timestamp',
+                    yField: 'count',
+                    display: 'over',
+                    markerCfg: {
+                        type: 'cross',
+                        size: 4,
+                        radius: 4,
+                        'stroke-width': 0
+                    }
+                }]
             },{
                 height: 200,
                 split: true,

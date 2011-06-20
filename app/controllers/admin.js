@@ -574,14 +574,15 @@ exports.routes = {
                     },
                     
                     function(error, results){
-                        var json = [];
+                        var items = [];
                         results.forEach( function(result){
-                            json.push({
+                            items.push({
+                                _id: result._id,
                                 timestamp: result.value.timestamp,
                                 count: result.value.count
                             });
                         });
-                        res.send(json);
+                        res.send({items:items});
                     }
                 );
             }
