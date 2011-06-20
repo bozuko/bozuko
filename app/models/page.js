@@ -581,17 +581,9 @@ Page.static('search', function(options, callback){
                     if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                 });
 
-                // grab the featured out of there for sorting...
-                featured = [];
-
-                for( var i=0; i<featured.length; i++){
-                    featured.push( pages.shift() );
-                }
-
                 if( !serviceSearch ){
-                    featured.sort( sort_by('_distance') );
                     pages.sort( sort_by('_distance') );
-                    pages = featured.concat(pages);
+                    pages.sort( 'featured' );
                     return return_pages( pages );
                 }
 
@@ -606,10 +598,7 @@ Page.static('search', function(options, callback){
                     if( error ){
 
                         console.error( error );
-
-                        featured.sort( sort_by('_distance') );
                         pages.sort( sort_by('_distance') );
-                        pages = featured.concat(pages);
                         return return_pages( pages );
                         // return callback(error);
                     }
@@ -651,12 +640,12 @@ Page.static('search', function(options, callback){
                             var prof = new Profiler('/models/page/search/loadPagesContests');
                             pages = pages.concat(_pages);
 
-                            featured.sort( sort_by('_distance') );
                             pages.sort( sort_by('_distance') );
+                            pages.sort( sort_by('featured') );
                             results.sort( sort_by('_distance') );
 
-                            pages = featured.concat(pages);
                             pages = pages.concat(results);
+
                             prof.stop();
 
                             return return_pages(pages);
@@ -670,6 +659,13 @@ Page.static('search', function(options, callback){
 
 function sort_by(field, dir){
     return function(a,b){
+        switch( typeof a[field]){
+            case 'number':
+                return (a[field] - b[field]) * (!!dir ? -1 : 1);
+            case 'boolean':
+                var ax = a[field] ? 0 : 1, bx = b[field] ? 0 : 1;
+                return (ax - bx) * (!!dir ? -1 : 1);
+        }
         return (a[field] - b[field]) * (!!dir ? -1 : 1);
-    }
+    };
 }
