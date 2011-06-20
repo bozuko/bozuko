@@ -1,3 +1,5 @@
+var Profiler = Bozuko.require('util/profiler');
+
 exports.transfer_objects= {
     user: {
 
@@ -19,7 +21,7 @@ exports.transfer_objects= {
                 favorites: "String"
             }
         },
-        
+
         create : function(data, user){
             data.image = data.image.replace(/type=large/, 'type=square');
             data.img = data.image;
@@ -176,7 +178,7 @@ exports.routes = {
             handler: function(req, res) {
                 var user = req.session.user;
                 // we should update the user's likes
-                
+
                 return user.updateLikes( function(error){
                     if( error ) return error.send(res);
                     user.id = user._id;
@@ -219,11 +221,15 @@ exports.routes = {
                 var user = req.session.user;
                 var favorites = user.favorites;
                 var found = false;
+
+                var prof = new Profiler('/controllers/user/favorite/put');
                 if( favorites ) for(var i=0; i<favorites.length && found == false; i++){
                     if( favorites[i]+'' == id ){
                         found = i;
+                        break;
                     }
                 }
+                prof.stop();
                 if( found !== false ){
                     return Bozuko.error('user/favorite_exists').send(res);
                 }
@@ -253,11 +259,14 @@ exports.routes = {
                 var favorites = user.favorites;
                 var found = false;
 
+                var prof = new Profiler('/controllers/user/favorite/del');
                 if( favorites ) for(var i=0; i<favorites.length && found === false; i++){
                     if( favorites[i]+'' == id ){
                         found = i;
+                        break;
                     }
                 }
+                prof.stop();
                 if( found === false ){
                     return Bozuko.error('user/favorite_does_not_exist').send(res);
                 }
@@ -287,11 +296,14 @@ exports.routes = {
                 var favorites = user.favorites;
                 var found = false;
 
+                var prof = new Profiler('/controllers/user/favorite/post');
                 if( favorites ) for(var i=0; i<favorites.length && found === false; i++){
                     if( favorites[i]+'' == id ){
                         found = i;
+                        break;
                     }
                 }
+                prof.stop();
 
                 // lets make sure the page exists
                 return Bozuko.models.Page.findById(id, function(error, page){

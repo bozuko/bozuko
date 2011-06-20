@@ -1,6 +1,7 @@
 var fs              = require('fs'),
     path            = require('path'),
-    markdown        = require('markdown-js')
+    markdown        = require('markdown-js'),
+    Profiler        = require('../util/profiler')
     ;
 
 /**
@@ -15,7 +16,7 @@ var TransferObject = module.exports = function(name, config){
     this.title = config.title;
     this.links = {};
     this.returned = [];
-    
+
     // check for .md documentation
     var filename = Bozuko.dir+'/content/docs/api/transfers/'+this.name+'.md';
     if( path.existsSync(filename) ){
@@ -70,7 +71,7 @@ TransferObject.prototype.sanitize = function(data, current, user){
     // make this conform to our def
     var self = this, ret = {};
     if( !current ) current = this.def;
-    
+
     if( typeof current == 'string' ){
         // this _should be_ another transfer object
         ret = data ? Bozuko.transfer(current, data, user) : null;
@@ -81,14 +82,18 @@ TransferObject.prototype.sanitize = function(data, current, user){
         if( !(data instanceof Array) ){
             data = [];
         }
+        var prof = new Profiler('/core/transfer/sanitize/array');
         data.forEach(function(v,k){
             ret[k] = self.sanitize(v,current[0],user);
         });
+        prof.stop();
     }
     else{
         if( !(data instanceof Object || typeof data == 'object') ){
             data = {};
         }
+        // Only profile the object because sanitize is called recursively
+        var prof = new Profiler('/core/transfer/sanitize/object');
         Object.keys(current).forEach(function(key){
             if( data[key] !== undefined ){
                 // Cast the value to the proper type.
@@ -113,15 +118,15 @@ TransferObject.prototype.sanitize = function(data, current, user){
                         case 'number':
                             v = parseFloat(v);
                             break;
-                        
+
                         case 'boolean':
                             v = Boolean(v);
                             break;
-                        
+
                         case 'object':
                         case 'mixed':
                             break;
-                        
+
                         default:
                             v  = Bozuko.transfer(c, v, user);
 
@@ -136,7 +141,9 @@ TransferObject.prototype.sanitize = function(data, current, user){
                 }
             }
         });
+        prof.stop();
     }
+
     return ret;
 };
 
@@ -146,8 +153,8 @@ TransferObject.prototype.validate = function(data, current) {
 
     var self = this, ret = true;
     if( !current ) current = this.def;
-    
-    
+
+
     if( typeof current == 'string' ){
         // this _should be_ another transfer object
         ret = Bozuko.validate(current, data);
@@ -157,21 +164,24 @@ TransferObject.prototype.validate = function(data, current) {
         if( !(data instanceof Array) ){
             return false;
         }
+        var prof = new Profiler('/core/transfer/validate/array');
         data.forEach(function(v,k){
             if (!self.validate(v,current[0])) {
                 ret = false;
             }
         });
+        prof.stop();
     }
     else{
         if( !(data instanceof Object || typeof data == 'object') ){
             return false;
         }
+        var prof = new Profiler('/core/transfer/validate/object');
         Object.keys(current).forEach(function(key){
             if( data[key] ){
                 var v = data[key];
                 var c = current[key];
-                
+
                 if (typeof c != 'string' ) {
                     if (!self.validate(v, c)) {
                         ret = false;
@@ -185,9 +195,10 @@ TransferObject.prototype.validate = function(data, current) {
                     console.log("typeof c = "+typeof c);
                     console.log("typeof v = "+typeof v);
                     ret = false;
-                } 
+                }
             }
         });
+        prof.stop();
     }
     return ret;
 };

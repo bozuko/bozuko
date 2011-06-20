@@ -73,7 +73,9 @@ Contest.virtual('state')
 Contest.method('generateResults', function(callback){
     var self = this;
 
+    var prof = new Profiler('/models/contest/generateResults');
     self.getEngine().generateResults(this);
+    prof.stop();
     this.save(function(error){
         if( error ) return callback(error);
         return callback(null, self.results);
@@ -219,11 +221,9 @@ Contest.method('enter', function(entry, callback){
     }
     if( !found ) return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
 
-    var prof = new Profiler('/models/contest/enter');
     entry.setContest(this);
     entry.configure(cfg);
     return entry.process( function(err, entry) {
-        prof.stop();
         callback(err, entry);
     });
 });
@@ -253,7 +253,6 @@ Contest.method('getEntryMethodDescription', function(){
 });
 
 Contest.method('getUserInfo', function(user_id, callback) {
-    var prof = new Profiler('/models/contest/getUserInfo');
 
     var min_expiry_date = new Date(new Date().getTime() - Bozuko.config.entry.token_expiration);
     Bozuko.models.Entry.find(
@@ -264,6 +263,8 @@ Contest.method('getUserInfo', function(user_id, callback) {
             var last_entry = null;
             var earliest_active_entry_time = null;
             var last_entry_time = null;
+
+            var prof = new Profiler('/models/contest/getUserInfo');
 
             entries.forEach(function(entry) {
                 if (!earliest_active_entry_time || (entry.timestamp < earliest_active_entry_time)) {
@@ -278,6 +279,8 @@ Contest.method('getUserInfo', function(user_id, callback) {
                 tokens += entry.tokens;
             });
 
+            prof.stop();
+
             return callback(null, {
                 tokens: tokens,
                 last_entry: last_entry,
@@ -285,8 +288,6 @@ Contest.method('getUserInfo', function(user_id, callback) {
             });
         }
     );
-
-    prof.stop();
 
 });
 
@@ -440,8 +441,6 @@ Contest.method('startPlay', function(user_id, callback) {
     var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
     var _uuid = uuid();
 
-    var prof = new Profiler('/models/contest/startPlay/Contest.findAndModify');
-
     return Bozuko.models.Entry.findAndModify(
         {contest_id: this._id, user_id: user_id, timestamp: {$gt :min_expiry_date}, tokens: {$gt : 0}},
         [],
@@ -459,7 +458,6 @@ Contest.method('startPlay', function(user_id, callback) {
                     $push : {plays: {timestamp: now, active: true, uuid: _uuid, user_id: user_id}}},
                 {new: true},
                 function(err, contest) {
-                    prof.stop();
                     if (err) return callback(err);
                     if (!contest) return callback(Bozuko.error("contest/no_tokens"));
                     var opts = {
@@ -479,6 +477,7 @@ function letter(val) {
     return val + 65;
 }
 function get_code(num) {
+    var prof = new Profiler('/models/contest/get_code');
     var pow;
     var vals = new Array(5);
     for (var i = 4; i >= 0; i--) {
@@ -487,13 +486,15 @@ function get_code(num) {
         num = num - vals[i]*pow;
     }
 
-    return String.fromCharCode(66, letter(vals[4]), letter(vals[3]), letter(vals[2]), letter(vals[1]), letter(vals[0]));
+    var code = String.fromCharCode(66, letter(vals[4]), letter(vals[3]), letter(vals[2]), letter(vals[1]), letter(vals[0]));
+    prof.stop();
+    return code;
 }
 
 // Only claim a consolation prize if there are some remaining
 Contest.method('claimConsolation', function(opts, callback) {
     var total = this.consolation_prizes[0].total;
-    console.error("\n\nclaimConsolation: totalConsolationPrizes = "+total);
+
     Bozuko.models.Contest.findAndModify(
         { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total-1}}}},
         [],
@@ -519,8 +520,6 @@ Contest.method('saveConsolation', function(opts, callback) {
     opts.consolation = true;
     var self = this;
     var config = this.consolation_config[0];
-
-    console.error("\n\n saveConsolation: opts = \n"+inspect(opts)+"\n");
 
     var consolation_prize = self.consolation_prizes[0];
     if (consolation_prize.claimed === (consolation_prize.total-1)) {
@@ -554,11 +553,9 @@ Contest.method('saveConsolation', function(opts, callback) {
     }
 
     if (config.when === 'once') {
-        var prof = new Profiler('/models/contest/saveConsolation/Prize.findOne');
         return Bozuko.models.Prize.findOne(
             {contest_id: this._id, user_id: opts.user_id, consolation: true},
             function(err, prize) {
-                prof.stop();
                 if (err) return callback(err);
                 if (prize) return callback(null);
 
@@ -725,7 +722,6 @@ Contest.method('createPrize', function(opts, callback) {
 Contest.method('savePlay', function(opts, callback) {
     var self = this;
 
-    var prof = new Profiler('/models/contest/savePlay');
     var play = new Bozuko.models.Play({
         contest_id: this._id,
         page_id: this.page_id,
@@ -769,7 +765,6 @@ Contest.method('savePlay', function(opts, callback) {
                 Bozuko.publish('contest/win', play.doc );
             }
         }
-        prof.stop();
         if (err) return callback(err);
         return self.endPlay(opts, callback);
     });
@@ -778,10 +773,8 @@ Contest.method('savePlay', function(opts, callback) {
 Contest.method('endPlay', function(opts, callback) {
     var self = this;
 
-    var prof = new Profiler('/models/contest/endPlay');
 
     function handler(err, contest) {
-        prof.stop();
         if (err) return callback(err);
         var prize = opts.prize;
         if (opts.consolation && !opts.prize) {
