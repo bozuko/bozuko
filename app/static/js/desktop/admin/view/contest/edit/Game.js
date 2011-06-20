@@ -112,14 +112,23 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                         change          :function(field, value){
                             var fn = 'custom' === value ? 'show' : 'hide';
                             var bg = me.down('textfield[name=game_config.custom_background]');
-                            bg[fn]();
-                            bg[fn==='show'?'enable':'disable']();
+                            var icon = me.down('textfield[name=game_config.custom_icon]');
+                            Ext.Array.each([bg,icon], function(field){
+                                field[fn]();
+                                field[fn==='show'?'enable':'disable']();
+                            });
+                            
                         }
                     }
                 },{
                     xtype           :'textfield',
                     name            :'game_config.custom_background',
                     fieldLabel      :'Custom Background',
+                    hidden          :true
+                },{
+                    xtype           :'textfield',
+                    name            :'game_config.custom_icon',
+                    fieldLabel      :'Custom Icon',
                     hidden          :true
                 });
                 break;
