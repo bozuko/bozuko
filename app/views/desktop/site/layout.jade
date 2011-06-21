@@ -20,39 +20,26 @@ html(class=locals.html_classes?html_classes.join(' '):'')
           h1.logo
             a(href="/", title="Bozuko - Go to Home Page") bozuko
           
-          - if( !locals.hide_top_profile)
-            - if( user )
-              .profile
-                img(src="https://graph.facebook.com/"+user.service('facebook').sid+"/picture?type=square",alt=user.name)
-                | Hi #{user.first_name}!
-                - if( user.can_manage_pages)
-                  a(href="/business/admin") Business Dashboard
-                  | 
-                a(href="/logout") Logout
-                
-            - else
-              .profile
-                a.fb_button.fb_button_medium(href="/user/login?return=/")
-                  span.fb_button_text Login
-            
-            - if( locals.nav )
-              ul.nav
-                - each item, i in locals.nav
-                  - if( item instanceof Function )
-                    - item = item.call(this,locals);
-                    
-                  - var item_classes = [];
+          - if( locals.nav )
+            ul.nav
+              - each item, i in locals.nav
+                - if( item instanceof Function )
+                  - item = item.call(this,locals);
                   
-                  - if( i==0 )
-                    - item_classes.push('first')
-                    
-                  - if( i==nav.length-1 )
-                    - item_classes.push('last')
-                    
-                  - if( req.url == item.link )
-                    - item_classes.push('active')
-                  li
-                    a(href=item.link,class=item_classes.join(' '))!= item.text
+                - var item_classes = [];
+                
+                - if( i==0 )
+                  - item_classes.push('first')
+                  
+                - if( i==nav.length-1 )
+                  - item_classes.push('last')
+                  
+                - if( req.url == item.link )
+                  - item_classes.push('active')
+                li
+                  a(href=item.link,class=item_classes.join(' '))
+                    span
+                      em!= item.text
           
       .bd
         .page-width
@@ -62,17 +49,11 @@ html(class=locals.html_classes?html_classes.join(' '):'')
       .ft
         .page-width
         
-      - if (locals.tmpls)
-        .templates
-          - each tmpl, key in tmpls
-            script(type="text/extjs-tmpl", id=key)= tmpl
+    - if (locals.tmpls)
+      .templates
+        - each tmpl, key in tmpls
+          script(type="text/extjs-tmpl", id=key)= tmpl
         
-    #fb-root
-    // script(src="http://connect.facebook.net/en_US/all.js")
-    // script(type="text/javascript",src="/js/desktop/core.js")
-    
     - if (locals.scripts)
       - each script in scripts
         script(type="text/javascript",src=script)
-        
-    //script(src="http://j.maxmind.com/app/geoip.js")

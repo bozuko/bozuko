@@ -415,9 +415,10 @@ Ext.define('Bozuko.controller.Contests' ,{
             panel.reports[id].setRecord( record );
         }
         navbar.hide();
-
-        panel.getLayout().setActiveItem(panel.reports[id]);
-        panel.doLayout();
+        setTimeout(function(){
+            panel.getLayout().setActiveItem(panel.reports[id]);
+            panel.doLayout();
+        },500);
     },
 
     updateCards : function(store, view){
