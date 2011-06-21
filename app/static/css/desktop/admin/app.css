@@ -1,15 +1,17 @@
 #header {
-  background: #111111 url("/images/desktop/site/bg_hd.png") repeat-x 0 100%;
+  background-color: #666666;
+  background-image: -moz-linear-gradient(top, #666666, #000000);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #666666), color-stop(1, #000000)) !important;
 }
 #header .title {
-  height: 100px;
+  height: 105px;
   background: url("/images/desktop/site/img_logo.png") no-repeat 10px 10px;
   position: relative;
 }
 #header .title span {
   position: absolute;
-  bottom: 14px;
-  left: 90px;
+  bottom: 4px;
+  left: 130px;
   color: #fff;
   line-height: 20px;
   font-weight: bold;

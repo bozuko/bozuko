@@ -331,7 +331,6 @@ exports.routes = {
                                 '',
                                 message,
                                 '',
-                                '',
                                 '--',
                                 '- The Bozuko Mailer (please do not reply to this email)'
                             ].join("\n")

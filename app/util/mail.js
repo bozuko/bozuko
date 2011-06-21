@@ -2,8 +2,6 @@ var nm = require('nodemailer');
 
 nm.SMTP = Bozuko.config.email.smtp;
 
-console.log(nm.EmailMessage);
-
 var EmailMessage = module.exports = function(params){
     nm.EmailMessage.apply(this, arguments);
     if( !this.sender ){
