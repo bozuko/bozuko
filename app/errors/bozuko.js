@@ -26,5 +26,10 @@ module.exports = {
         code: 403,
         title: "Bozuko Update",
         message: "A new version of Bozuko is available. You must update to continue."
+    },
+    
+    not_implemented: {
+        title: "Not Implemented",
+        message: "This feature has not been implemented yet :( Check back soon!"
     }
 };
