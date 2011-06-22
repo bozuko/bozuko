@@ -64,7 +64,7 @@ exports.transfer_objects = {
                 facebook_checkin    :'/facebook/'+fid+'/checkin'
                 // facebook_like       :'/facebook/'+fid+'/like'
             };
-            page.is_place = !page.location  || (!page.location.lat && !page.location.lng );
+            page.is_place = page.location  && page.location.lat && page.location.lng;
             if( user ){
                 page.like_url +='?token='+user.token;
                 if( page.registered ){
