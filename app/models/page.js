@@ -89,28 +89,54 @@ Page.method('getActiveContests', function(user, callback){
         end: {$gt: now}
     };
 
-    var $where = {$where: "this.token_cursor < this.total_plays - this.total_free_plays"};
-    if( user_id ){
-        selector.$or = [$where,{
-            entries: {
-                $elemMatch: {
-                    tokens : {$gt : 0},
-                    timestamp : {$gt : min_expiry_date},
-                    user_id: user_id
-                }
-            }
-        }];
-    }
-    else{
-        selector.$where = $where.$where;
-    }
-
-    if( arguments.length == 2 ){
-        callback = arguments[1];
-    }
     Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function(err, contests) {
-        callback(err, contests);
-    });
+        if (err) return callback(err);
+
+        var exhausted_contests = {};
+        var exhausted_contest_ids = [];
+        var contest;
+        for (var i = 0; i < contests.length; i++) {
+            contest = contests[i];
+
+            // Is contest exhausted?
+            if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
+                exhausted_contests[String(contest._id)] = contest;
+                exhausted_contest_ids.push(contest._id);
+                contests.splice(i, 1);
+            }
+        }
+
+        if (!user_id) return callback(null, contests);
+
+        // Find user entries that still have tokens for exhausted contests.
+        // That means the contest is active for this user, but not users without tokens.
+        // This is really only needed at the end of contests.
+        if (exhausted_contest_ids.length) return Bozuko.models.Entry.nativeFind(
+            {
+                user_id: user_id,
+                contest_id: {$in: exhausted_contest_ids},
+                timestamp : {$gt: min_expiry_date},
+                tokens : {$gt: 0}
+            }, {contest_id: 1},
+            function(err, entries) {
+                if (err) return callback(err);
+                if (!entries) return callback(null, contests);
+
+                var contest_ids = {};
+
+                // Add any exhausted contests with valid entries for this user back on the active list
+                // There shouldn't be more than 1 or 2 entries to search
+                for (var i = 0; i < entries.length; i++) {
+                    var cid = entries[i].contest_id;
+                    if (!contest_ids[cid]) {
+                        contest_ids[cid] = true;
+                        contests.push(exhausted_contests[String(cid)]);
+                    }
+                }
+
+        });
+
+        return callback(null, contests);
 });
 
 Page.method('getUserGames', function(user, callback){
@@ -197,7 +223,6 @@ Page.method('checkin', function(user, options, callback) {
 
             options.user = user;
             options.link = 'http://bozuko.com';
-            //options.picture = 'http://bozuko.com/images/bozuko-chest-check.png';
             options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
 
             // okay, lets try to give them entries on all open contests
@@ -247,7 +272,7 @@ Page.method('checkin', function(user, options, callback) {
                 if( error ) return callback( error );
 
                 if( contests.length == 0 ){
-                    return callback( null, {checkin:checkin, entries:[]} );
+                    return callback( null, {checkin:checkin, entries:[], contests: contests} );
                 }
                 var current = 0, entries = [];
                 var count = 0;
@@ -274,13 +299,13 @@ Page.method('checkin', function(user, options, callback) {
                                 return callback( error );
                             }
                             entries.push(entry);
-                            return cb(null);
+                            return contest.loadGameState(user, cb);
                         });
                     },
 
                     function(error){
                         if( error ) return callback( error );
-                        return callback( null, {checkin:checkin, entries:entries});
+                        return callback( null, {checkin:checkin, entries:entries, contests:contests});
                     }
                 );
             });
@@ -328,43 +353,91 @@ Page.static('loadPagesContests', function(pages, user, callback){
         start: {$lt: now},
         end: {$gt: now}
     };
-    var $where = {$where: "this.token_cursor < this.total_plays - this.total_free_plays"};
-    if( user_id ){
-        selector.$or = [$where,{
-            entries: {
-                $elemMatch: {
-                    tokens : {$gt : 0},
-                    timestamp : {$gt : min_expiry_date},
-                    user_id: user_id
-                }
-            }
-        }];
-    }
-    else{
-        selector.$where = $where.$where;
-    }
 
     Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function( error, contests ){
-        if( error ) console.log(error);
-        if( error ) return callback(error);
+
+        var exhausted_contests = {};
+        var exhausted_contest_ids = [];
 
         // attach active contests to pages
         return async.forEach(contests,
-            function iterator(contest, cb){
+            function (contest, cb){
                 var page = page_map[contest.page_id+''];
                 if( !page.contests ){
                     page.contests = [];
                 }
+
+                // Is contest exhausted?
+                if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
+                    exhausted_contests[String(contest._id)] = contest;
+                    exhausted_contest_ids.push(contest._id);
+                    return cb(null);
+                }
+
                 // load contest game state
                 contest.loadGameState(user, function(error){
+                    if (error) return cb(error);
                     contest.loadEntryMethod(user, function(error){
                         page.contests.push(contest);
                         cb(error);
                     });
                 });
             },
-            function contests_foreach_callback(err){
+            function (err){
                 if (err) return callback(err);
+                if (!user_id) return callback(null, pages);
+
+                // Find user entries that still have tokens for exhausted contests.
+                // That means the contest is active for this user, but not users without tokens.
+                // This is really only needed at the end of contests.
+                if (exhausted_contest_ids.length) return Bozuko.models.Entry.nativeFind(
+                    {
+                        user_id: user_id,
+                        contest_id: {$in: exhausted_contest_ids},
+                        timestamp : {$gt: min_expiry_date},
+                        tokens : {$gt: 0}
+                    }, {contest_id: 1},
+                    function(err, entries) {
+                        if (err) return callback(err);
+                        if (!entries) return callback(null, pages);
+
+                        var contest_ids = {};
+
+                        var prof = new Profiler('/models/page/loadPagesContests/exhuasted_entries');
+                        for (var i = 0; i < entries.length; i++) {
+                            var cid = entries[i].contest_id;
+                            if (!contest_ids[cid]) {
+                                contest_ids[cid] = true;
+                            }
+                        }
+                        prof.stop();
+
+                        // Add any exhausted contests with valid entries for this user to the appropriate page
+                        // There shouldn't be more than a handful of entries to search
+
+                        var page, contest;
+                        async.forEach(
+                            Object.keys(contest_ids),
+                            function(cid, cb) {
+                                contest = exhausted_contests[String(cid)];
+                                page = page_map[contest.page_id+''];
+                                contest.loadGameState(user, function(error){
+                                    if (error) return cb(error);
+                                    contest.loadEntryMethod(user, function(error){
+                                        if (error) return cb(error);
+                                        page.contests.push(contest);
+                                        cb(null);
+                                    });
+                                });
+                            },
+                            function(err) {
+                                if (err) return callback(err);
+                                return callback(null, pages);
+                            }
+                        );
+                    }
+                );
+
                 return callback(null, pages);
             }
         );
@@ -515,6 +588,7 @@ Page.static('search', function(options, callback){
 
     // utility functions
     function prepare_pages(pages, user, fn){
+        console.error("prepare_pages");
         var prof = new Profiler('/models/page/search/prepare_pages');
         for(var i=0; i<pages.length; i++){
             var page = pages[i];
@@ -523,6 +597,7 @@ Page.static('search', function(options, callback){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
             if( page.doc ){
+                console.error("page.registered = true");
                 page.registered = true;
             }
             if (!page.owner_id && page._id) {
@@ -628,6 +703,7 @@ Page.static('search', function(options, callback){
 
                         if (results) {
                             var prof = new Profiler('/models/page/search/geoformat_results');
+                            console.error("search: results.length = "+results.length);
                             results.forEach(function(result){
                                 result.registered = false;
                                 result._distance = Geo.distance(options.ll, [result.location.lng,result.location.lat]);

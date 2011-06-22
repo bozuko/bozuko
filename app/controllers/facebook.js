@@ -72,26 +72,12 @@ exports.routes = {
                                     return error.send(res);
                                 }
 
-                                var checkin = result.checkin;
-                                var entries = result.entries;
-
-                                return checkin.getPage(function(error, page){
-
-                                    if( error ){
-                                        return error.send(res);
-                                    }
-
-                                    return page.getUserGames(req.session.user, function(error, games){
-                                        if( error ){
-                                            return error.send(res);
-                                        }
-                                        var states = [];
-                                        games.forEach(function(game){
-                                            states.push( Bozuko.transfer('game_state', game.contest.game_state, req.session.user));
-                                        });
-                                        return res.send(states);
-                                    });
+                                var contests = result.contests;
+                                var states = [];
+                                contests.forEach(function(contest){
+                                    states.push( Bozuko.transfer('game_state', contest.game_state, req.session.user));
                                 });
+                                return res.send(states);
                             }
                         );
                     };
@@ -120,9 +106,9 @@ exports.routes = {
     '/facebook/:id/like.html': {
 
         get: {
-            
+
             title : "Like a business on Facebook",
-            
+
             locals:{
                 classes:['like']
             },
@@ -143,7 +129,7 @@ exports.routes = {
                     }));
                 });
                 */
-                // this 
+                // this
                 return Bozuko.service('facebook').place({place_id: req.param('id')}, function( error, place){
                     if( error ){
                         res.locals.error = error;
