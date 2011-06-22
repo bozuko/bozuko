@@ -134,9 +134,11 @@ Page.method('getActiveContests', function(user, callback){
                     }
                 }
 
-        });
+            }
+        );
 
         return callback(null, contests);
+    });
 });
 
 Page.method('getUserGames', function(user, callback){
