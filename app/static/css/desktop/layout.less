@@ -10,6 +10,7 @@ html{
 }
 
 .page-width {
+    position: relative;
     width: 850px;
     margin: 0 auto;
     background-color: transparent;
@@ -18,7 +19,7 @@ html{
 .hd {
     overflow: hidden;
     background: #fff url("/images/desktop/site/bg_header.png") repeat-x 0 0;
-    padding-bottom: 12px;
+    padding-bottom: 9px;
     
     h1.logo {
         margin: 0;
@@ -119,32 +120,211 @@ html{
     .bd{
         .page-width{
             width: auto;
-        }
-    }
-}
-
-.hero {
-    clear: both;
-    .city {
-        background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
-        .border-top {
-            background: transparent url("/images/desktop/site/bg_shadow-line-bottom-shadow.png") repeat-x 0 0;
-            .border-bottom {
-                background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
-                height: 345px;
-                .panels {
-                    position: relative;
-                    z-index: 3px;
-                    height: 365px;
-                    margin-left: 2px;
-                    top: -28px;
-                    background: transparent url("/images/desktop/site/img_panels-with-shadow.png") no-repeat 50% 0;
+            
+            .hero {
+                clear: both;
+                .city {
+                    background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
+                    .border-top {
+                        background: transparent url("/images/desktop/site/bg_shadow-line-bottom-shadow.png") repeat-x 0 0;
+                        .border-bottom {
+                            background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
+                            height: 347px;
+                            .panels {
+                                position: relative;
+                                z-index: 3px;
+                                height: 370px;
+                                margin-left: 2px;
+                                top: -28px;
+                                background: transparent url("/images/desktop/site/img_panels-with-shadow.png") no-repeat 50% 0;
+                                h1 {
+                                    display: none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            .middle{
+                position: relative;
+                
+                .phone-ct{
+                    position: absolute;
+                    top: -45px;
+                    right: 0;
+                    width: 246px;
+                    height: 503px;
+                    background: url("/images/desktop/site/img_bozuko-iphone.png") no-repeat 0 0;
+                }
+                
+                .who-we-are {
+                    
+                    background: url("/images/desktop/site/bg_dark-gray.png") repeat-x 0 0;
+                    
+                    
+                    .white-gradient {
+                        background: url("/images/desktop/site/bg_gradient-radial-white-long.png") no-repeat 50% 100%;
+                        height: 256px;
+                        min-width: 850px;
+                    }
+                    
+                    h2.instant-win-headline {
+                        text-indent: -99999em;
+                        background: transparent url("/images/desktop/site/txt_instant-win-headline.png") no-repeat 0 50%;
+                        height: 120px;
+                        margin-bottom: 0;
+                    }
+                    
+                    p {
+                        margin: 0;
+                        font-size: 15px;
+                        line-height: 1.4em;
+                        font-family: Tahoma;
+                        color: #fff;
+                    }
+                    
+                    .bottom {
+                        padding-top: 10px;
+                        .download {
+                            margin-right: 10px;
+                            img {
+                                margin-top: 6px;
+                                height: 39px;
+                            }
+                        }
+                        a.how-to-play{
+                            float: right;
+                            display: block;
+                            cursor: pointer;
+                            width: 184px;
+                            height: 39px;
+                            margin-top: 4px;
+                            text-indent: -99999em;
+                            background: transparent url("/images/desktop/site/btn_how-to-play-green.png") no-repeat 0 0;
+                        }
+                        a.how-to-play:hover{
+                            background-position: 0 -39px;
+                        }
+                    }
+                    
+                    
+                }
+                
+                .businesses {
+                    background: #fff url("/images/desktop/site/bg_who-we-are.png") repeat-x 0 100%;
+                    .rewards {
+                        min-width: 850px;
+                        background: transparent url("/images/desktop/site/bg_rewards.png") no-repeat 50% 100%;
+                    }
+                    .content {
+                        height: 200px;
+                        position: relative;
+                        .bottom{
+                            position: relative;
+                            bottom: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            
+                            a.learn-more{
+                                position: absolute;
+                                bottom: 18px;
+                                right: 0;
+                                display: block;
+                                cursor: pointer;
+                                width: 184px;
+                                height: 39px;
+                                text-indent: -99999em;
+                                background: transparent url("/images/desktop/site/btn_learn-more-orange.png") no-repeat 0 0;
+                            }
+                            a.learn-more:hover{
+                                background-position: 0 -39px;
+                            }
+                        }
+                    }
+                }
+                
+                .page-width {
+                    
+                    width: 850px;
+                    margin: 0 auto;
+                    
+                    .content {
+                        padding-right: 275px;
+                    }
+                }
+                
+                .border-bottom {
+                    background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
+                    margin-top: -6px;
+                    height: 8px;
                 }
             }
         }
     }
+
 }
 
+
+.ft {
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        margin-top: 1.5em;
+    }
+    li {
+        list-style: none;
+        margin: 0 0 .5em;
+        padding: 0;
+        
+        a {
+            color: #666;
+            text-decoration: none;
+        }
+        a:hover{
+            color: @dark_color;
+        }
+    }
+    .downloadUnit {
+        .content{
+            padding-right: 10px;
+        }
+        text-align: center;
+        h3 {
+            color: @orange;
+            margin: 1em 0;
+            text-transform: uppercase;
+            font-family: ArvoRegular;
+            font-weight: normal;
+        }
+    }
+    
+    .social {
+        a {
+            display: block;
+            cursor: pointer;
+            padding-left: 38px;
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            line-height: 32px;
+        }
+        .facebook {
+            background-image: url("/images/desktop/site/icon_facebook.png");
+        }
+        .twitter {
+            background-image: url("/images/desktop/site/icon_twitter.png");
+        }
+    }
+}
+
+.copyright {
+    clear: both;
+    font-size: 11px;
+    color: #999;
+    text-align: left;
+}
 
 #places {
     .place {

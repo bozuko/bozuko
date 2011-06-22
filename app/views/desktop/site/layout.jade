@@ -3,8 +3,12 @@ html(class=locals.html_classes?html_classes.join(' '):'')
   head
   
     title= title
+    meta(name='description', content='Bozuko is the most exciting way to win prizes at your favorite places. Download and play today!')
+    meta(name="google-site-verification",content="HCG8QvNiMF-A93y538WBwu-r3dpkPYAIyfE72RpF7Cs")
+    
     link(rel='stylesheet', href='/css/desktop/style.css')
     link(rel='stylesheet', href='/css/desktop/layout.css')
+    
     -if( locals.styles )
       - each style in styles
         link(rel='stylesheet', type='text/css', href=style);
@@ -48,6 +52,54 @@ html(class=locals.html_classes?html_classes.join(' '):'')
         
       .ft
         .page-width
+          .line
+            .unit.size1of4
+              ul
+                li
+                  a(href="/") Home 
+                li
+                  a(href="#") How to Play 
+                li
+                  a(href="#") Bozuko for Business 
+                li
+                  a(href="#") Contact 
+                li
+                  a(href="http://getsatisfaction.com/bozuko", onclick="feedback_widget.show(); return false;") Feedback &amp; Support
+            
+            .unit.size1of4
+              ul
+                li
+                  a(href="http://blog.bozuko.com") Blog
+                li
+                  a(href="#") FAQ
+                li
+                  a(href="#") Terms of Service
+                li
+                  a(href="#") Privacy Policy
+            
+            .unit.size1of4
+              ul.social
+                li
+                  a.facebook(href="http://www.facebook.com/pages/Bozuko/223851717629478") Facebook
+                  
+                li
+                  a.twitter(href="http://twitter.com/BozukoBiz") Twitter
+            
+            .unit.size1of4.lastUnit.downloadUnit
+              .content
+                h3 Download
+                ul.download
+                  li
+                    a.download.app-store(href="#", title="Download for iPhone")
+                      img(src="/images/desktop/site/icon_app-store.png", title="Download for iPhone")
+                  
+                  li  
+                    a.download.android-market(href="#", title="Download for Android")
+                      img(src="/images/desktop/site/icon_android-market.png", title="Download for Android")
+      
+      .copyright
+        .page-width
+          &copy; 2011 Bozuko, Inc.
         
     - if (locals.tmpls)
       .templates
@@ -57,3 +109,15 @@ html(class=locals.html_classes?html_classes.join(' '):'')
     - if (locals.scripts)
       - each script in scripts
         script(type="text/javascript",src=script)
+        
+    script(type="text/javascript",charset="utf-8",src="https://s3.amazonaws.com/getsatisfaction.com/javascripts/feedback-v2.js")
+    script(type="text/javascript",charset="utf-8")
+      var feedback_widget_options = {};
+    
+      feedback_widget_options.display = "overlay";  
+      feedback_widget_options.company = "bozuko";
+      feedback_widget_options.placement = "hidden";
+      feedback_widget_options.color = "#308e50";
+      feedback_widget_options.style = "question";
+      
+      var feedback_widget = new GSFN.feedback_widget(feedback_widget_options);

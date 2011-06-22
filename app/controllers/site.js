@@ -11,7 +11,10 @@ exports.locals = {
     },{
         link: '#',
         text: 'Bozuko for Business'
-    }]
+    }],
+    scripts:[
+        '/js/desktop/get-satisfaction.js'
+    ]
 };
 
 exports.routes = {
