@@ -394,12 +394,11 @@ FacebookService.prototype.like = function(options, callback){
  *
  * @option {User}           user            The user (required)
  * @option {String}         message         The message for the wall post
- * @option {Number}         place_id        The service specific id
  *
  * @return {null}
  */
 FacebookService.prototype.post = function(options, callback){
-    if( !options || !options.object_id || !options.user ){
+    if( !options || !options.user || !options.user.service('facebook') ){
         return callback(Bozuko.error('facebook/no_page_id_user'));
     }
     var params = {};
@@ -416,7 +415,7 @@ FacebookService.prototype.post = function(options, callback){
         return callback(null, {result:123123123});
     }
 
-    return facebook.graph('/'+options.object_id+'/feed',{
+    return facebook.graph('/feed',{
         user: options.user,
         params: params,
         method:'post'
