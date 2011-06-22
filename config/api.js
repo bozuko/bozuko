@@ -27,7 +27,7 @@ module.exports = {
     },
 
     db:{
-        name: 'bozuko',
+        name: 'bozuko_production',
         host: 'localhost'
     },
 
