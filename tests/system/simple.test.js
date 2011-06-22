@@ -625,6 +625,7 @@ exports['prizes tests'] = {
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
+            message: 'Holy Crap!',
             challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url: url})
         });
 
