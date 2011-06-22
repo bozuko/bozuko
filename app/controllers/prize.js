@@ -239,6 +239,8 @@ exports.routes = {
                 // redeem the prize
                 return Bozuko.models.Prize.findById(req.param('id'), function(error, prize){
                     if( error ) return error.send(res);
+                    
+                    console.log( req.body );
 
                     return prize.redeem(req.session.user, function(error, redemption){
                     if( error ) return error.send(res);
