@@ -271,7 +271,12 @@ FacebookService.prototype.checkin = function(options, callback){
         method:'post'
     },function(error, result){
         // check the result..
-        if( error ) return callback( error );
+        if( error ){
+            if( /too far away to check in/.test(error.message) ){
+                return callback( Bozuko.error('checkin/too_far') );
+            }
+            return callback( error );
+        }
         return callback(null, result);
     });
 };
