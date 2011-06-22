@@ -4,7 +4,9 @@ var facebook    = Bozuko.require('util/facebook'),
     url         = require('url'),
     spawn       = require('child_process').spawn,
     sys         = require('sys'),
-    merge       = Bozuko.require('util/merge')
+    merge       = Bozuko.require('util/merge'),
+    Report      = Bozuko.require('core/report'),
+    DateUtil    = Bozuko.require('util/date')
 ;
 
 exports.access = 'admin';
@@ -547,55 +549,40 @@ exports.routes = {
         }
     },
     
+    '/admin/report-test':{
+        get : {
+            handler : function(req, res){
+                Report.run('counts', {
+                    model: 'Entry',
+                    type: 'filter',
+                    field: 'hour',
+                    mapFn: function(){
+                        emit( this.timestamp.getHours(), {hour: this.timestamp.getHours(), count:1, avg: 1, min: 1, max: 1});
+                    },
+                    reduceFn :function(key, values){
+                        var min = 0, max = 0, avg = 0;
+                    },
+                    // from: DateUtil.add( new Date(), DateUtil.DAY, -80),
+                    interval: 'Date'
+                }, function(error, results){
+                    if( error ) error.send( res );
+                    return res.send( results );
+                });
+            }
+        }
+    },
+    
     '/admin/report' : {
         
         get : {
             handler : function(req, res){
-                // build a report
-                var type = req.param('type') || 'entries';
-                var monthago = new Date();
-                monthago.setTime( +monthago +(1000*60*60*24*30*-1) );
-                return Bozuko.models.Entry.collection.mapReduce(
-                    
-                    function map(){
-                        var ts = this.timestamp;
-                        var timestamp = Date.UTC(ts.getFullYear(), ts.getMonth(), ts.getDate(), 0, 0, 0, 0);
-                        emit( timestamp, {timestamp: new Date(timestamp), count: 1} );
-                    },
-                    
-                    function reduce(key, values){
-                        var count = 0;
-                        values.forEach( function(value){
-                            count += value.count;
-                        });
-                        return {timestamp: values[0].timestamp, count: count};
-                    },
-                    
-                    {
-                        out: {'inline':1},
-                        query: {timestamp: {$gt: monthago}}
-                    },
-                    
-                    function(error, results){
-                        var items = [], lastDate;
-                        results.forEach( function(result){
-                            while( lastDate && (lastDate += (1000*60*60*24)) < +result.value.timestamp ){
-                                items.push({
-                                    _id: lastDate,
-                                    date: new Date( lastDate ),
-                                    count: 0
-                                });
-                            }
-                            items.push({
-                                _id: result._id,
-                                date: result.value.timestamp,
-                                count: result.value.count
-                            });
-                            lastDate = +result.value.timestamp;
-                        });
-                        res.send({items:items});
-                    }
-                );
+                return Report.run('counts', {
+                    model: req.param('model') || 'Entry',
+                    from: DateUtil.add( new Date(), DateUtil.DAY, -30 )
+                }, function(error, results){
+                    if( error ) return error.send( res );
+                    return res.send( {items: results} );
+                });
             }
         }
         

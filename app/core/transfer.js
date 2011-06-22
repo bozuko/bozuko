@@ -66,13 +66,12 @@ TransferObject.prototype.merge = function(a,b){
 var native_types = ['string', 'number', 'object', 'int', 'integer', 'mixed'];
 
 TransferObject.prototype.sanitize = function(data, current, user){
-
     // make this conform to our def
     var self = this, ret = {};
     if( !current ) current = this.def;
     
     if( typeof current == 'string' ){
-        // this _should be_ another transfer object
+        // this _should_be_ another transfer object
         ret = data ? Bozuko.transfer(current, data, user) : null;
     }
 

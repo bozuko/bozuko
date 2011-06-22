@@ -18,6 +18,7 @@ Ext.define('Bozuko.view.page.Add' ,{
             region          :'center',
             xtype           :'tabpanel',
             activeTab       :0,
+            border          :false,
             items: [{
                 title           :'By Location',
                 store           :me.placesStore,
@@ -26,7 +27,8 @@ Ext.define('Bozuko.view.page.Add' ,{
             },{
                 xtype           :'pageaddlist',
                 title           :'By Page',
-                store           :me.pagesStore
+                store           :me.pagesStore,
+                border          :false
             }]
         },{
             region          :'east',

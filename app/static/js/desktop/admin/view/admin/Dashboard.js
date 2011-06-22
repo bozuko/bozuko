@@ -30,7 +30,7 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
                 axes: [{
                     type        :'Time',
                     position    :'bottom',
-                    fields      :['date'],
+                    fields      :['timestamp'],
                     title       :'Day',
                     dateFormat  :'M d',
                     groupBy     :'year,month,day'
@@ -49,13 +49,13 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
                         width: 80,
                         height: 40,
                         renderer: function(storeItem, item) {
-                            this.setTitle(Ext.Date.format(storeItem.get('date'), 'M d'));
+                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'), 'M d'));
                             this.update( storeItem.get('count')+' Entries' );
                         }
                     },
                     fill: true,
                     axis: 'left',
-                    xField: 'date',
+                    xField: 'timestamp',
                     yField: 'count',
                     smooth: true,
                     display: 'over',
