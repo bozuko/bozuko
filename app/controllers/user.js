@@ -161,11 +161,7 @@ exports.routes = {
         get : {
 
             handler: function(req,res){
-                req.session.destroy(function(){
-                    Bozuko.transfer('success_message', {success:true}, null, function(error, result){
-                        return res.send( error || result );
-                    });
-                });
+                return res.send( {success: true, title: "Logout", message: "You have been logged out"} );
             }
         }
     },
