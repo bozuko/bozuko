@@ -411,14 +411,12 @@ Contest.static('audit', function(callback) {
 
         return async.forEachSeries(contests, function(contest, callback) {
 
-            var index = -1;
             return async.forEachSeries(contest.plays, function(play, callback) {
-                index++;
                 if (!play.active) return callback(null);
 
                 return contest.getResult({
                     user_id: play.user_id,
-                    play_cursor: index,
+                    play_cursor: play.cursor,
                     timestamp: play.timestamp,
                     uuid: play.uuid,
                     audit: true
@@ -460,7 +458,7 @@ Contest.method('startPlay', function(user_id, callback) {
                 {_id: self._id},
                [],
                 {$inc : {play_cursor: 1},
-                    $push : {plays: {timestamp: now, active: true, uuid: _uuid, user_id: user_id}}},
+                    $push : {plays: {timestamp: now, active: false, uuid: _uuid, user_id: user_id}}},
                 {new: true, fields: {plays: 0, results: 0}},
                 function(err, contest) {
                     prof.stop();
@@ -473,7 +471,19 @@ Contest.method('startPlay', function(user_id, callback) {
                         uuid: _uuid
                     };
 
-                    return contest.getResult(opts, callback);
+                    // Need to record the play cursor and set the play to active.
+                    // Man, I wish this could be done in one update to contest...
+                    return Bozuko.models.Contest.findAndModify(
+                        {_id: self._id, 'plays.uuid': _uuid},
+                        [],
+                        {$set : {'plays.$.active': true, 'plays.$.cursor': contest.play_cursor}},
+                        {new: true, fields: {plays: 0, results: 0}},
+                        function(err, contest) {
+                            if (err) return callback(err);
+                            if (!contest) return callback(Bozuko.error("contest/play_not_found"));
+                            return contest.getResult(opts, callback);
+                        }
+                    );
                 }
             );
         }
