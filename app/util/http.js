@@ -145,8 +145,7 @@ exports.stream = function stream( _url, res, options, callback ){
             'last-modified',
             'cache-control',
             'expires',
-            'date',
-            'content-length'
+            'date'
         ]
         .forEach(function(header){
             if( headers[header] ) res.header(header, headers[header] );
