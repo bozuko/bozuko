@@ -106,7 +106,8 @@ exports.links = {
     logout: {
         get: {
             access: 'user',
-            doc: "Logout of Bozuko"
+            doc: "Logout of Bozuko",
+            returns: 'success_message'
         }
     }
 };
@@ -161,7 +162,9 @@ exports.routes = {
 
             handler: function(req,res){
                 req.session.destroy(function(){
-                    res.redirect('/');
+                    Bozuko.transfer('success_message', {success:true}, null, function(error, result){
+                        return res.send( error || result );
+                    });
                 });
             }
         }
