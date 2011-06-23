@@ -131,7 +131,8 @@ exports.stream = function stream( _url, res, options, callback ){
             host: parsed.hostname,
             port: parsed.port || (ssl ? 443 :80),
             path: parsed.pathname + (parsed.search||'')
-        };
+        },
+        buffer='';
         
     
     return require(ssl ? 'https' : 'http').get( opts, function(response){
@@ -145,6 +146,7 @@ exports.stream = function stream( _url, res, options, callback ){
             'last-modified',
             'cache-control',
             'expires',
+            'content-length',
             'date'
         ]
         .forEach(function(header){
@@ -152,10 +154,20 @@ exports.stream = function stream( _url, res, options, callback ){
         });
         
         response.on('data', function(chunk){
-            res.write(chunk);
+            if( options.buffered ){
+                buffer += chunk.toString();
+            }
+            else{
+                res.write(chunk);
+            }
         });
         response.on('end', function(){
-            res.end();
+            if( options.buffered ){
+                res.send( new Buffer(buffer) );
+            }
+            else{
+                res.end();
+            }
             if( callback ) callback();
         });
         return true;
