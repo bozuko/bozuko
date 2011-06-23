@@ -72,7 +72,6 @@ Slots.prototype.getConfig = function(){
         icons[key] = theme.icons[key];
     });
     
-    
     var config = {
         theme: {
             name: theme.name,

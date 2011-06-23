@@ -1,6 +1,6 @@
 module.exports = {
 
-    test_mode: true,
+    test_mode: false,
     
     controllers: {
         except: [
@@ -27,7 +27,7 @@ module.exports = {
     },
 
     db:{
-        name: 'bozuko_dev8005',
+        name: 'bozuko_production',
         host: 'localhost'
     },
 

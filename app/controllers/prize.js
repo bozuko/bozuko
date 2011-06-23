@@ -1,6 +1,7 @@
 var dateFormat = require('dateformat'),
     XRegExp = Bozuko.require('util/xregexp'),
     URL = require('url'),
+    burl = Bozuko.require('util/url').create,
     qs = require('querystring'),
     PrizeSchema = Bozuko.models.Prize.schema;
 
@@ -242,12 +243,53 @@ exports.routes = {
                 // redeem the prize
                 return Bozuko.models.Prize.findById(req.param('id'), function(error, prize){
                     if( error ) return error.send(res);
-
+                    
                     return prize.redeem(req.session.user, function(error, redemption){
-                    if( error ) return error.send(res);
-                        // send the redemption object
-                        return Bozuko.transfer('redemption_object', redemption, function(error, result){
+
+                        if( error ) return error.send(res);
+                    
+                        var message = req.param('message');
+                        if( !message || !Bozuko.cfg('test_mode', true) ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error,result){
                             res.send( error || result );
+                        });
+                        
+                        // brag to friends
+                        if( /share\s+with\s+friend/i.test(message) ) message = '';
+                        // build our options
+                        var options = {
+                            user: req.session.user,
+                            message: message,
+                            link: 'http://bozuko.com',
+                            picture: burl('/page/'+prize.page_id+'/image')
+                        };
+                        
+                        // get the page
+                        return Bozuko.models.Page.findById( prize.page_id, function(error, page){
+                           
+                            // get the contest
+                            Bozuko.models.Contest.findById( prize.contest_id, function(error, contest){
+                                
+                                if( !page || !contest ) return res.send( Bozuko.transfer('redemption_object', redemption) );
+                                
+                                // finish up the options
+                                
+                                var a = /^(a|an|the)\s/i.test(String(prize.name)) ? '' : (String(prize.name).match(/^[aeiou]/i) ? 'an ' : 'a ');
+                                options.name = req.session.user.name+' just won '+a+prize.name+'!';
+                                options.description = 'You could too! Play Bozuko at '+page.name+' for your chance to win!';
+                                
+                                return Bozuko.service('facebook').post(options, function(error){
+                                    
+                                    // if there is an error, we don't need to frighten the user,
+                                    // lets just log it and move on.
+                                    
+                                    // send the redemption object
+                                    return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                                        res.send( error || result );
+                                    });
+                                });
+                                
+                            });
+                            
                         });
                     });
                 });

@@ -1,4 +1,5 @@
-var fs              = require('fs');
+var fs              = require('fs'),
+	async			= require('async'),
     existsSync    	= require('path').existsSync,
     Profiler = require('./util/profiler')
 ;

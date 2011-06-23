@@ -26,8 +26,8 @@ Ext.define('Bozuko.view.page.add.Map' ,{
             border          :false,
             items: [{
                 xtype           :'textfield',
-                name            :'search',
-                fieldLabel      :'Search by Location',
+                name            :'location',
+                fieldLabel      :'Location',
                 labelWidth      :180,
                 enableKeyEvents :true,
                 border          :'0 0 1 0',
@@ -54,7 +54,7 @@ Ext.define('Bozuko.view.page.add.Map' ,{
         var me = this;
         
         me.callParent( arguments );
-        me.searchField = this.down('textfield');
+        me.searchField = this.down('textfield[name=location]');
         me.geocoder = new google.maps.Geocoder();
         
         me.searchField.setValue('boston, ma');

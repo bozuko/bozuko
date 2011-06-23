@@ -43,7 +43,9 @@ exports.transfer_objects= {
     success_message:{
         doc:"Generic success message",
         def:{
-            success: "Boolean"
+            success: "Boolean",
+            title: "String",
+            message: "String"
         }
     }
 };
