@@ -67,7 +67,7 @@ exports.transfer_objects = {
             };
             page.is_place = page.location  && page.location.lat && page.location.lng;
             if( page.registered ){
-                page.image = burl('/page/'+page.id+'/image?v6');
+                // page.image = burl('/page/'+page.id+'/image?v6');
             }
             if( user ){
                 page.like_url +='?token='+user.token;
