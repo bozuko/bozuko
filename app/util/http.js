@@ -152,29 +152,13 @@ exports.stream = function stream( _url, res, options, callback ){
             'cache-control',
             'expires',
             'content-length',
-            'date'
+            'date',
+            'connection'
         ]
         .forEach(function(header){
             if( headers[header] ) res.header(header, headers[header] );
         });
         
-        response.on('data', function(chunk){
-            if( options.buffered ){
-                buffer += chunk.toString();
-            }
-            else{
-                res.write(chunk, 'binary');
-            }
-        });
-        response.on('end', function(){
-            if( options.buffered ){
-                res.send( new Buffer(buffer) );
-            }
-            else{
-                res.end();
-            }
-            if( callback ) callback();
-        });
-        return true;
+        return response.pipe( res );
     });
 };
