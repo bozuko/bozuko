@@ -40,6 +40,7 @@ var TransferObject = module.exports = function(name, config){
 };
 
 TransferObject.ticks = 0;
+TransferObject.tickLimit = 10;
 
 TransferObject.prototype.getTitle = function(){
     return this.title || this.name;
@@ -59,8 +60,6 @@ TransferObject.prototype.returnedBy = function(link){
 };
 
 TransferObject.prototype.merge = function(a,b){
-    a = this.sanitize(a);
-    b = this.sanitize(b);
     Object.keys(b).forEach(function(prop){
         a[prop] = b[prop];
     });
@@ -91,13 +90,18 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
         ret = [];
         return async.forEachSeries( data,
             function iterator(item, next){
-                (TransferObject.ticks++ % 5 == 0 ? async.nextTick : TransferObject.now )(function(){
-                    ret.push( self.sanitize(item,current[0],user) );
-                    next();
+                (TransferObject.ticks++ % TransferObject.tickLimit == 0 ? async.nextTick : TransferObject.now )(function(){
+                    self.sanitize(item, current[0], user, function(error, result){
+                        if( error ) return next(error);
+                        ret.push(result);
+                        return next();
+                    });
                 });
             },
             function cb(error){
                 if( error ) return callback( error );
+                console.log('cb array');
+                console.log(ret);
                 return callback(null, ret);
             }
         );
@@ -110,60 +114,62 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
         
         return async.forEachSeries( Object.keys(current),
             function iterator(key, next){
-                if( data[key] !== undefined ){
-                    
-                    // Cast the value to the proper type.
-                    var v = data[key];
-                    var c = current[key];
-    
-                    if( c instanceof String || typeof c == 'string' ){
-                        // check type
-    
-                        switch(c.toLowerCase()){
-    
-                            case 'string':
-                                v = String(v);
-                                break;
-    
-                            case 'int':
-                            case 'integer':
-                                v = parseInt(v);
-                                break;
-    
-                            case 'float':
-                            case 'number':
-                                v = parseFloat(v);
-                                break;
-    
-                            case 'boolean':
-                                v = Boolean(v);
-                                break;
-    
-                            case 'object':
-                            case 'mixed':
-                                break;
-    
-                            default:
-                                return Bozuko.transfer(c, v, user, function(error, value){
-                                    if( error ) return next(error);
-                                    ret[key] = value;
-                                    return next();
-                                });
+                (TransferObject.ticks++ % TransferObject.tickLimit == 0 ? async.nextTick : TransferObject.now )(function(){
+                    if( data[key] !== undefined ){
+                        
+                        // Cast the value to the proper type.
+                        var v = data[key];
+                        var c = current[key];
+        
+                        if( c instanceof String || typeof c == 'string' ){
+                            // check type
+        
+                            switch(c.toLowerCase()){
+        
+                                case 'string':
+                                    v = String(v);
+                                    break;
+        
+                                case 'int':
+                                case 'integer':
+                                    v = parseInt(v);
+                                    break;
+        
+                                case 'float':
+                                case 'number':
+                                    v = parseFloat(v);
+                                    break;
+        
+                                case 'boolean':
+                                    v = Boolean(v);
+                                    break;
+        
+                                case 'object':
+                                case 'mixed':
+                                    break;
+        
+                                default:
+                                    return Bozuko.transfer(c, v, user, function(error, value){
+                                        if( error ) return next(error);
+                                        ret[key] = value;
+                                        return next();
+                                    });
+                            }
                         }
+                        else if(c instanceof Number){
+                            v = parseFloat(v);
+                        }
+                        else if(c instanceof Object || typeof c == 'object'){
+                            return self.sanitize(v, c, user, function(error, value){
+                                if( error ) return next(error);
+                                ret[key] = value;
+                                return next();
+                            });
+                        }
+                        ret[key] = v;
                     }
-                    else if(c instanceof Number){
-                        v = parseFloat(v);
-                    }
-                    else if(c instanceof Object || typeof c == 'object'){
-                        return self.sanitize(v, c, user, function(error, value){
-                            if( error ) return next(error);
-                            ret[key] = value;
-                            return next();
-                        });
-                    }
-                    ret[key] = v;
-                }
-                return next();
+                    return next();
+                });
             },
             
             function cb(error){
