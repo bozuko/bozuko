@@ -163,6 +163,13 @@ exports.stream = function stream( _url, res, options, callback ){
 
 exports.redirect = function redirect( _url, res){
     
+    this.getRedirect( _url, function( redirect_url ){
+        return res.redirect( redirect_url );
+    });
+}
+
+exports.getRedirect = function getRedirect( _url, callback ){
+    
     var last = _url,
         parsed = url.parse(String(_url)),
         ssl = /^https/.test(String(_url)),
@@ -173,14 +180,13 @@ exports.redirect = function redirect( _url, res){
             method: 'HEAD'
         };
         
-    console.log(opts);
     
     var req = require(ssl ? 'https' : 'http').request( opts, function(response){
         var headers = response.headers || {};
         if( headers.location ){
-            return redirect( headers.location, res);
+            return getRedirect( headers.location, callback );
         }
-        return res.redirect( String(_url) );
+        return callback( String(_url) );
     });
     req.end();
 }
