@@ -1,4 +1,5 @@
-var fs              = require('fs');
+var fs              = require('fs'),
+	async			= require('async'),
     existsSync    	= require('path').existsSync,
     Profiler = require('./util/profiler')
 ;
@@ -117,25 +118,34 @@ Bozuko.service = function(name){
 Bozuko.game = function(contest){
     return new this.games[contest.game](contest);
 };
-Bozuko.transfer = function(key, data, user){
+Bozuko.transfer = function(key, data, user, callback){
     if( !data ) return this._transferObjects[key];
     try{
         if( Array.isArray(data) ){
-            var prof = new Profiler('/bozuko/transfer/array');
             var ret = [];
             var self = this;
-            data.forEach( function(o){ ret.push(self._transferObjects[key].create(o, user)); } );
-            prof.stop();
-            return ret;
+			return async.forEachSeries( data,
+				function iterator(o, next){
+					return self._transferObjects[key].create(o, user, function( error, result){
+						if( error ) return next(error);
+						ret.push(result);
+						return next();
+					});
+				},
+				function cb(error){
+					if( error ) return callback( error );
+					return callback( null, ret );
+				}
+			);
         }
         else{
-            var prof = new Profiler('/bozuko/transfer/object');
-            var ret = this._transferObjects[key].create(data, user);
-            prof.stop();
-            return ret;
+            return this._transferObjects[key].create(data, user, function(error, result){
+				if( error ) return callback( error );
+				return callback( null, result );
+			});
         }
     }catch(e){
-        return e;
+        return callback(e);
     }
 };
 

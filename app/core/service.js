@@ -5,8 +5,6 @@ var Service = module.exports = function(){
     
 };
 
-var $ = Service.prototype;
-
 /**
  * Login function
  *
@@ -19,7 +17,7 @@ var $ = Service.prototype;
  *
  * @returns {null}  
  */
-$.login = function(req,res,scope,defaultReturn,success,failure){};
+Service.prototype.login = function(req,res,scope,defaultReturn,success,failure){};
 
 /**
  * Location based search
@@ -54,7 +52,7 @@ $.login = function(req,res,scope,defaultReturn,success,failure){};
  *
  * @return {null}
  */
-$.search = function(options, callback){};
+Service.prototype.search = function(options, callback){};
 
 
 /**
@@ -74,7 +72,7 @@ $.search = function(options, callback){};
  *
  * @return {null}
  */
-$.checkin = function(place_id, user, callback){};
+Service.prototype.checkin = function(place_id, user, callback){};
 
 
 /**
@@ -94,7 +92,26 @@ $.checkin = function(place_id, user, callback){};
  *
  * @return {null}
  */
-$.like = function(options, callback){}
+Service.prototype.like = function(options, callback){}
+
+/**
+ * Post to feed
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ * @param {Object}          options         Post specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @option {User}           user            The user (required)
+ * @option {String}         message         The message for the wall post
+ * @option {Number}         place_id        The service specific id
+ *
+ * @return {null}
+ */
+Service.prototype.post = function(options, callback){ return callback( Bozuko.error('bozuko/not_implemented') ); }
 
 
 /**
@@ -119,7 +136,7 @@ $.like = function(options, callback){}
  *
  * @return {null}
  */
-$.place = function(place_id, fields, callback){};
+Service.prototype.place = function(place_id, fields, callback){};
 
 /**
  * Get any places that this user is an administrator for
@@ -134,7 +151,7 @@ $.place = function(place_id, fields, callback){};
  *
  * @return {null}
  */
-$.get_user_pages = function(user, callback){};
+Service.prototype.get_user_pages = function(user, callback){};
 
 
 /**
@@ -166,7 +183,7 @@ $.get_user_pages = function(user, callback){};
  *
  * @return {Object}         place           The sanitized object / objects
  */
-$._sanitizePlace = function(place){};
+Service.prototype._sanitizePlace = function(place){};
 
 /**
  * Sanitize a place
@@ -175,7 +192,7 @@ $._sanitizePlace = function(place){};
  *
  * @return {Mixed}          places/place    The sanitized object / objects
  */
-$.sanitizePlace = $.sanitizePlaces = function(place){
+Service.prototype.sanitizePlace = Service.prototype.sanitizePlaces = function(place){
     if( !Array.isArray(place) ) return this._sanitizePlace(place);
     var ret = [];
     var self = this;
@@ -183,7 +200,7 @@ $.sanitizePlace = $.sanitizePlaces = function(place){
     return ret;
 };
 
-$._sanitizeUser = function(user){};
+Service.prototype._sanitizeUser = function(user){};
 
 /**
  * Sanitize a place
@@ -192,7 +209,7 @@ $._sanitizeUser = function(user){};
  *
  * @return {Mixed}          places/place    The sanitized object / objects
  */
-$.sanitizeUser = $.sanitizeUser = function(user){
+Service.prototype.sanitizeUser = Service.prototype.sanitizeUser = function(user){
     if( !Array.isArray(user) ) return this._sanitizeUser(user);
     var ret = [];
     var self = this;

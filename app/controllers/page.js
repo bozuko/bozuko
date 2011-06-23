@@ -1,6 +1,7 @@
 var async = require('async'),
     qs = require('querystring'),
     URL = require('url'),
+    mailer = Bozuko.require('util/mail'),
     burl = Bozuko.require('util/url').create,
     Profiler = Bozuko.require('util/profiler')
 ;
@@ -28,6 +29,7 @@ exports.transfer_objects = {
             registered: "Boolean",
             announcement: "String",
             distance: "String",
+            is_place: "Boolean",
             location: {
                 street: "String",
                 city: "String",
@@ -50,7 +52,7 @@ exports.transfer_objects = {
             }
         },
 
-        create: function(page, user){
+        create: function(page, user, callback){
             // this should hopefully be a Page model object
             // lets check for a contest
 
@@ -58,12 +60,14 @@ exports.transfer_objects = {
             var fid = page.registered ? page.service('facebook').sid : page.id;
             if( !page.registered ) delete page.id;
             page.liked = false;
+            page.image = page.image + (page.image.indexOf('?')?'&':'?')+'return_ssl_resources=1';
             page.like_url = burl('/facebook/'+fid+'/like.html');
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
                 facebook_checkin    :'/facebook/'+fid+'/checkin'
                 // facebook_like       :'/facebook/'+fid+'/like'
             };
+            page.is_place = page.location  && page.location.lat && page.location.lng;
             if( user ){
                 page.like_url +='?token='+user.token;
                 if( page.registered ){
@@ -109,7 +113,7 @@ exports.transfer_objects = {
             });
 
             prof.stop();
-            return this.sanitize(page);
+            return this.sanitize(page, null, user, callback);
         }
     },
 
@@ -276,7 +280,9 @@ exports.routes = {
                             pages:pages
                         };
                         if( pages.length ) ret.next = next;
-                        return res.send(Bozuko.transfer('pages', ret, req.session.user));
+                        return Bozuko.transfer('pages', ret, req.session.user, function(error, result){
+                            res.send( error || result );
+                        });
                     }
                 );
             }
@@ -297,7 +303,9 @@ exports.routes = {
                     // need to popuplate the page with the right stuff
                     return page.loadContests( req.session.user, function(error){
                         if( error ) return error.send(res);
-                        return res.send(Bozuko.transfer('page', page, req.session.user));
+                        return Bozuko.transfer('page', page, req.session.user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
@@ -313,13 +321,35 @@ exports.routes = {
                     if( error ) return error.send(res);
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
 
+                    var message = req.param('message');
+                    
                     Bozuko.publish('page/feedback', {message:req.param('message')});
-
-                    /**
-                     * TODO - the logic to send stuff..
-                     */
-                    return res.send( Bozuko.transfer('success_message', {success:true}));
-
+                    
+                    var feedback = new Bozuko.models.Feedback({
+                        user_id: req.session.user.id,
+                        page_id: page_id,
+                        message: message
+                    });
+                    return feedback.save( function(error){
+                        if( error ) return error.send( res );
+                        return mailer.send({
+                            to: 'feedback@bozuko.com',
+                            subject: "New Feedback from a Bozuko User!",
+                            body: [
+                                req.session.user.name+' ('+req.session.user.email+')' +
+                                ' just submitted the following feedback for '+page.name+' ('+page.service('facebook').data.link+'):',
+                                '',
+                                message,
+                                '',
+                                '--',
+                                '- The Bozuko Mailer (please do not reply to this email)'
+                            ].join("\n")
+                        }, function(error){
+                            return Bozuko.transfer('success_message', {success:true}, null, function(error, result){
+                                res.send( error || result );
+                            });
+                        });
+                    });
                 });
             }
         }
@@ -346,7 +376,9 @@ exports.routes = {
                  * TODO - add the recommendation logic
                  */
                 Bozuko.publish('page/recommend', {message:req.param('message'), service:req.param('service')});
-                res.send(Bozuko.transfer('success_message', {success: true}));
+                Bozuko.transfer('success_message', {success: true}, null, function(error, result){
+                    res.send( error || result );
+                });
             }
         }
 

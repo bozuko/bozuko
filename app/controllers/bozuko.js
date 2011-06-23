@@ -5,7 +5,7 @@ var content = Bozuko.require('util/content'),
 exports.transfer_objects= {
     bozuko: {
         doc: "Bozuko Meta Object",
-        create: function(obj){
+        create: function(obj, user, callback){
             var ret = {
                 links:{
                     privacy_policy: '/bozuko/privacy_policy',
@@ -18,7 +18,8 @@ exports.transfer_objects= {
             if( obj.page ){
                 ret.links.bozuko_page = '/page/'+obj.page.id;
             }
-            return ret;
+            // delete obj.page;
+            return callback(null, ret);
         },
         def:{
             links: {
@@ -42,7 +43,9 @@ exports.transfer_objects= {
     success_message:{
         doc:"Generic success message",
         def:{
-            success: "Boolean"
+            success: "Boolean",
+            title: "String",
+            message: "String"
         }
     }
 };
@@ -109,7 +112,9 @@ exports.routes = {
                 // we need to find the bozuko page...
                 Bozuko.models.Page.findByService('facebook', Bozuko.config.bozuko.facebook_id, function(error, page){
                     if( error ) return error.send(res);
-                    return res.send(Bozuko.transfer('bozuko',{page: page}));
+                    return Bozuko.transfer('bozuko',{page: page}, null, function(error, result){
+                        res.send( error || result );
+                    });
                 });
             }
         }
