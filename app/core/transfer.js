@@ -100,8 +100,6 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
             },
             function cb(error){
                 if( error ) return callback( error );
-                console.log('cb array');
-                console.log(ret);
                 return callback(null, ret);
             }
         );
