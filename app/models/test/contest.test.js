@@ -189,7 +189,7 @@ exports['audit - missing prize and play'] = function(test) {
             {_id: contest._id},
             [],
             {$inc: {play_cursor: 1},
-             $push: {plays: {timestamp: timestamp, active: true, uuid: _uuid, user_id: user._id}},
+             $push: {plays: {timestamp: timestamp, active: true, uuid: _uuid, user_id: user._id, cursor: plays-1}},
              $set: {results: results}},
             {new: true},
           function(err, c) {
@@ -204,7 +204,7 @@ exports['audit - missing prize and play'] = function(test) {
                         {contest_id: contest._id, uuid: _uuid},
                         function(err, prize) {
                             test.ok(!err);
-                            test.ok(prize);
+                            test.ok(prize != null);
                             test.equal(prize.timestamp.getTime(), timestamp.getTime());
                             Bozuko.models.Play.findOne(
                                 {contest_id: contest._id, uuid: _uuid},
