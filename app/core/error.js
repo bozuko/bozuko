@@ -22,8 +22,9 @@ Error.prototype.title = 'Uh-oh!';
 
 MongooseError.prototype.name='database';
 
-Error.prototype.toTransfer = function(){
-    return Bozuko.transfer('error', this);
+Error.prototype.toTransfer = function(callback){
+    console.log('hi');
+    return Bozuko.transfer('error', this, null, callback);
 };
 
 proto.generateMessage = function(fn){
@@ -34,7 +35,10 @@ Error.prototype.send = function(res){
     console.error('send '+this.name+": "+this.message);
     Bozuko.publish('error/send', this);
     console.error('send '+this.name+": "+this.message);
-    return res.send( this.toTransfer(), this.code );
+    var code = this.code;
+    this.toTransfer(function(error, result){
+        res.send(error || result, code);
+    });
 };
 
 // sometimes the native mongo drivers return Strings instead of errors,

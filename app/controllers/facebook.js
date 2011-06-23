@@ -1,3 +1,4 @@
+var async = require('async');
 
 exports.links = {
     facebook_checkin: {
@@ -74,10 +75,20 @@ exports.routes = {
 
                                 var contests = result.contests;
                                 var states = [];
-                                contests.forEach(function(contest){
-                                    states.push( Bozuko.transfer('game_state', contest.game_state, req.session.user));
-                                });
-                                return res.send(states);
+                                
+                                return async.forEachSeries(contests,
+                                    function iterator(contest, next){
+                                        Bozuko.transfer('game_state', contest.game_state, req.session.user, function(error, result){
+                                            if( error ) return next(error);
+                                            states.push(result);
+                                            return next();
+                                        });
+                                    },
+                                    function cb(error){
+                                        if( error ) return callback( error );
+                                        return res.send( states );
+                                    }
+                                );
                             }
                         );
                     };
