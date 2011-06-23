@@ -22,10 +22,13 @@ exports.transfer_objects= {
             }
         },
 
-        create : function(data, user){
+        create : function(data, user, callback){
             data.image = data.image.replace(/type=large/, 'type=square');
             data.img = data.image;
-            return this.sanitize(data);
+            return this.sanitize(data, null, user, function(error, result){
+                if( error ) return callback(error);
+                return callback(null, result);
+            });
         }
     },
 
@@ -187,7 +190,9 @@ exports.routes = {
                         logout: "/user/logout",
                         favorites: "/user/favorites"
                     };
-                    return res.send(Bozuko.transfer('user', user));
+                    return Bozuko.transfer('user', user, user, function(error, result){
+                        res.send( error || result );
+                    });
                 });
             }
         }
@@ -242,10 +247,12 @@ exports.routes = {
                     user.favorites.push(id);
                     return user.save(function(error){
                         if(error) return error.send(res);
-                        return res.send(Bozuko.transfer('favorite_response', {
+                        return Bozuko.transfer('favorite_response', {
                             added: true,
                             page_id: id
-                        }));
+                        }, user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
@@ -279,10 +286,12 @@ exports.routes = {
                     user.commit('favorites');
                     return user.save(function(error){
                         if(error) return error.send(res);
-                        return res.send(Bozuko.transfer('favorite_response', {
+                        return Bozuko.transfer('favorite_response', {
                             removed: true,
                             page_id: id
-                        }));
+                        }, user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
@@ -323,7 +332,9 @@ exports.routes = {
                     }
                     return user.save(function(error){
                         if(error) return error.send(res);
-                        return res.send(Bozuko.transfer('favorite_response', ret));
+                        return Bozuko.transfer('favorite_response', ret, user, function(error, result){
+                            return res.send( error || result );
+                        });
                     });
                 });
             }

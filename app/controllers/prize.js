@@ -32,32 +32,32 @@ exports.transfer_objects = {
             }
         },
 
-        create : function( prize, user){
-            var o = this.sanitize(prize);
-
-            o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
-            ". This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
-            o.win_time = prize.timestamp;
-            o.business_img = prize.page.image;
-            o.user_img = prize.user.image.replace(/type=large/, 'type=square');
-            /**
-             * TODO - pull this from the contest / prize / page
-             */
-            o.redemption_duration = 60;
-            if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
-            o.expiration_timestamp = prize.expires;
-
-            o.links = {
-                prize : '/prize/'+prize.id,
-                page: '/page/'+prize.page_id,
-                user: '/user/'+prize.user_id
-            };
-
-            if( o.state == 'active' ){
-                o.links.redeem = '/prize/'+prize.id+'/redemption';
-            }
-
-            return this.sanitize(o, null, user);
+        create : function( prize, user, callback){
+            this.sanitize(prize, null, user, function(error, o){
+                if( error ) return callback( error );
+                o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
+                    ". This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
+                o.win_time = prize.timestamp;
+                o.business_img = prize.page.image;
+                o.user_img = prize.user.image.replace(/type=large/, 'type=square');
+                /**
+                 * TODO - pull this from the contest / prize / page
+                 */
+                o.redemption_duration = 60;
+                if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
+                o.expiration_timestamp = prize.expires;
+    
+                o.links = {
+                    prize : '/prize/'+prize.id,
+                    page: '/page/'+prize.page_id,
+                    user: '/user/'+prize.user_id
+                };
+    
+                if( o.state == 'active' ){
+                    o.links.redeem = '/prize/'+prize.id+'/redemption';
+                }
+                return callback(null, o);
+            });
         }
     },
 
@@ -193,7 +193,9 @@ exports.routes = {
                             prizes: prizes
                         };
                         if( hasNext ) ret.next = next;
-                        return res.send( Bozuko.transfer('prizes', ret, req.session.user));
+                        return Bozuko.transfer('prizes', ret, req.session.user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
@@ -221,8 +223,9 @@ exports.routes = {
                     }
                     return prize.loadTransferObject( function(error, prize){
                         if( error ) return error.send(res);
-                        var ret = Bozuko.transfer('prize', prize, req.session.user);
-                        return res.send(ret);
+                        return Bozuko.transfer('prize', prize, req.session.user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
@@ -243,7 +246,9 @@ exports.routes = {
                     return prize.redeem(req.session.user, function(error, redemption){
                     if( error ) return error.send(res);
                         // send the redemption object
-                        return res.send( Bozuko.transfer('redemption_object', redemption) );
+                        return Bozuko.transfer('redemption_object', redemption, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
