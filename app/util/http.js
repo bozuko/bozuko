@@ -6,8 +6,7 @@ var http    = require('http'),
     qs      = require('querystring');
 
 exports.request = function(config, callback){
-
-
+    
     if( config instanceof String){
         config = {url:config};
     }
@@ -58,6 +57,7 @@ exports.request = function(config, callback){
         headers: headers,
         method: method
     }, function(response){
+        
         var data = '';
         response.setEncoding('utf8');
         response.on('data', function(chunk){
@@ -116,4 +116,49 @@ exports.request = function(config, callback){
 
     request.end(body,encoding);
 
+};
+
+exports.stream = function stream( _url, res, options, callback ){
+    if( undefined === callback && 'function' === typeof options){
+        callback = options;
+        options = {};
+    }
+    options = options || {};
+    
+    var parsed = url.parse(String(_url)),
+        ssl = /^https/.test(String(_url)),
+        opts = {
+            host: parsed.hostname,
+            port: parsed.port || (ssl ? 443 :80),
+            path: parsed.pathname + (parsed.search||'')
+        };
+        
+    
+    return require(ssl ? 'https' : 'http').get( opts, function(response){
+        var headers = response.headers || {};
+        if( headers.location ){
+            return stream( headers.location, res, options, callback );
+        }
+        // duplicate header
+        [
+            'content-type',
+            'last-modified',
+            'cache-control',
+            'expires',
+            'date',
+            'content-length'
+        ]
+        .forEach(function(header){
+            if( headers[header] ) res.header(header, headers[header] );
+        });
+        
+        response.on('data', function(chunk){
+            res.write(chunk);
+        });
+        response.on('end', function(){
+            res.end();
+            if( callback ) callback();
+        });
+        return true;
+    });
 };
