@@ -13,7 +13,7 @@ var game_prize = {
 var game_result = {
     doc: "Bozuko Game Result",
 
-    create : function(result, user){
+    create : function(result, user, callback){
         var ret = {
             win: result.play.win,
             result: result.game_result,
@@ -25,16 +25,22 @@ var game_result = {
         if( ret.consolation ){
             ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize just for playing!";
         }
-
-        ret.game_state = Bozuko.transfer('game_state', result.contest.game_state, user);
-        if( result.prize ){
-            ret.prize = Bozuko.transfer('prize', result.prize, user);
-        }
+        
         ret.links = {
             page: '/page/'+result.contest.page_id,
             game: '/game/'+result.contest.id
         };
-        return ret;
+
+        return Bozuko.transfer('game_state', result.contest.game_state, user, function( error, result){
+            if( error ) return callback( error );
+            ret.game_state = result;
+            if( result.prize ) return Bozuko.transfer('prize', result.prize, user, function(error, result){
+                if( error ) return callback( error );
+                ret.prize = result;
+                return callback( null, ret );
+            });
+            return callback( null, ret);
+        });
     },
 
     def:{
@@ -56,7 +62,7 @@ var game = {
 
     doc: "A Game Object - the game config will differ depending on the game.",
 
-    create : function(game, user){
+    create : function(game, user, callback){
         // load the prizes up...
         var obj = {};
         obj = this.merge(obj, game.contest);
@@ -73,7 +79,7 @@ var game = {
             page: '/page/'+game.contest.page_id,
             game: '/game/'+game.contest.id
         };
-        return this.sanitize(obj, null, user);
+        return this.sanitize(obj, null, user, callback);
     },
 
     def:{
@@ -101,7 +107,7 @@ var game = {
 
 var game_state = {
 
-    create : function(game_state, user){
+    create : function(game_state, user, callback){
         if( game_state.contest){
             game_state.game_id = game_state.contest.id;
             var links = {
@@ -117,7 +123,7 @@ var game_state = {
             }
             game_state.links = links;
         }
-        return this.sanitize(game_state);
+        return this.sanitize(game_state, null, user, callback);
     },
 
     def: {
@@ -232,9 +238,9 @@ exports.routes = {
                     return contest.loadTransferObject( req.session.user, function(error){
                         if( error ) return error.send(res);
                         var game = contest.getGame();
-                        return res.send(
-                            Bozuko.transfer('game', game, req.session.user)
-                        );
+                        return Bozuko.transfer('game', game, req.session.user, function(error, result){
+                            return res.send( error || result );                            
+                        });
                     });
                 });
             }
@@ -297,15 +303,15 @@ exports.routes = {
                                 return result.prize.loadTransferObject(function(error, prize){
                                     if( error ) return error.send(res);
                                     result.prize = prize;
-                                    return res.send(
-                                        Bozuko.transfer('game_result', result, req.session.user)
-                                    );
+                                    return Bozuko.transfer('game_result', result, req.session.user, function(error, result){
+                                        return res.send( error || result );
+                                    });
                                 });
                             }
 
-                            return res.send(
-                                Bozuko.transfer('game_result', result, req.session.user)
-                            );
+                            return Bozuko.transfer('game_result', result, req.session.user, function(error, result){
+                                return res.send( error || result );
+                            });
                         });
                     });
                 });
@@ -363,7 +369,9 @@ exports.routes = {
                                 games.forEach( function(game){
                                     states.push(game.contest.game_state);
                                 });
-                                return res.send( Bozuko.transfer('game_state', states, req.session.user) );
+                                return Bozuko.transfer('game_state', states, req.session.user, function(error, result){
+                                    res.send( error || result );
+                                });
                             });
                         });
                     });
@@ -386,7 +394,9 @@ exports.routes = {
                     }
                     var user = req.session.user;
                     return contest.loadGameState(user, function(error){
-                        return res.send( Bozuko.transfer('game_state', contest.game_state, user) );
+                        return Bozuko.transfer('game_state', contest.game_state, user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }

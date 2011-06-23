@@ -50,7 +50,7 @@ exports.transfer_objects = {
             }
         },
 
-        create: function(page, user){
+        create: function(page, user, callback){
             // this should hopefully be a Page model object
             // lets check for a contest
 
@@ -58,6 +58,7 @@ exports.transfer_objects = {
             var fid = page.registered ? page.service('facebook').sid : page.id;
             if( !page.registered ) delete page.id;
             page.liked = false;
+            page.image = page.image + (page.image.indexOf('?')?'&':'?')+'return_ssl_resources=1';
             page.like_url = burl('/facebook/'+fid+'/like.html');
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
@@ -109,7 +110,7 @@ exports.transfer_objects = {
             });
 
             prof.stop();
-            return this.sanitize(page);
+            return this.sanitize(page, null, user, callback);
         }
     },
 
@@ -276,7 +277,9 @@ exports.routes = {
                             pages:pages
                         };
                         if( pages.length ) ret.next = next;
-                        return res.send(Bozuko.transfer('pages', ret, req.session.user));
+                        return Bozuko.transfer('pages', ret, req.session.user, function(error, result){
+                            res.send( error || result );
+                        });
                     }
                 );
             }
@@ -297,7 +300,9 @@ exports.routes = {
                     // need to popuplate the page with the right stuff
                     return page.loadContests( req.session.user, function(error){
                         if( error ) return error.send(res);
-                        return res.send(Bozuko.transfer('page', page, req.session.user));
+                        return Bozuko.transfer('page', page, req.session.user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
@@ -318,7 +323,9 @@ exports.routes = {
                     /**
                      * TODO - the logic to send stuff..
                      */
-                    return res.send( Bozuko.transfer('success_message', {success:true}));
+                    return Bozuko.transfer('success_message', {success:true}, null, function(error, result){
+                        res.send( error || result );
+                    });
 
                 });
             }
@@ -346,7 +353,9 @@ exports.routes = {
                  * TODO - add the recommendation logic
                  */
                 Bozuko.publish('page/recommend', {message:req.param('message'), service:req.param('service')});
-                res.send(Bozuko.transfer('success_message', {success: true}));
+                Bozuko.transfer('success_message', {success: true}, null, function(error, result){
+                    res.send( error || result );
+                });
             }
         }
 
