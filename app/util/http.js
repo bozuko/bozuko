@@ -117,7 +117,11 @@ exports.request = function(config, callback){
     request.end(body,encoding);
 
 };
-
+/**
+ *
+ *  Buffered option is not working yet...
+ *
+ */
 exports.stream = function stream( _url, res, options, callback ){
     if( undefined === callback && 'function' === typeof options){
         callback = options;
