@@ -590,7 +590,6 @@ Page.static('search', function(options, callback){
 
     // utility functions
     function prepare_pages(pages, user, fn){
-        console.error("prepare_pages");
         var prof = new Profiler('/models/page/search/prepare_pages');
         for(var i=0; i<pages.length; i++){
             var page = pages[i];
@@ -599,7 +598,6 @@ Page.static('search', function(options, callback){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
             if( page.doc ){
-                console.error("page.registered = true");
                 page.registered = true;
             }
             if (!page.owner_id && page._id) {
@@ -705,7 +703,6 @@ Page.static('search', function(options, callback){
 
                         if (results) {
                             var prof = new Profiler('/models/page/search/geoformat_results');
-                            console.error("search: results.length = "+results.length);
                             results.forEach(function(result){
                                 result.registered = false;
                                 result._distance = Geo.distance(options.ll, [result.location.lng,result.location.lat]);

@@ -380,13 +380,17 @@ Contest.method('loadTransferObject', function(user, callback){
 });
 
 Contest.method('addEntry', function(tokens, callback) {
+
+    var prof = new Profiler('/models/contest/addEntry');
+
     var self = this;
     Bozuko.models.Contest.findAndModify(
         { _id: this._id, token_cursor: {$lte : this.total_plays - this.total_free_plays - tokens}},
         [],
         {$inc : {'token_cursor': tokens}},
-        {new: true},
+        {new: true, fields: {plays: 0, results: 0}},
         function(err, contest) {
+            prof.stop();
             if (err) return callback(err);
             if (!contest) {
                 return callback(Bozuko.error('entry/not_enough_tokens'));
@@ -412,7 +416,7 @@ Contest.static('audit', function(callback) {
                 index++;
                 if (!play.active) return callback(null);
 
-                return contest.createPrize({
+                return contest.getResult({
                     user_id: play.user_id,
                     play_cursor: index,
                     timestamp: play.timestamp,
@@ -451,13 +455,15 @@ Contest.method('startPlay', function(user_id, callback) {
             if (!entry) return callback(Bozuko.error("contest/no_tokens"));
             // If we crash here the user will lose a token. Don't worry about it now.
 
+            var prof = new Profiler('/models/contest/startPlay/Contest.findAndModify');
             return Bozuko.models.Contest.findAndModify(
                 {_id: self._id},
-                [],
+               [],
                 {$inc : {play_cursor: 1},
                     $push : {plays: {timestamp: now, active: true, uuid: _uuid, user_id: user_id}}},
-                {new: true},
+                {new: true, fields: {plays: 0, results: 0}},
                 function(err, contest) {
+                    prof.stop();
                     if (err) return callback(err);
                     if (!contest) return callback(Bozuko.error("contest/no_tokens"));
                     var opts = {
@@ -466,11 +472,33 @@ Contest.method('startPlay', function(user_id, callback) {
                         timestamp: now,
                         uuid: _uuid
                     };
-                    return contest.createPrize(opts, callback);
+
+                    return contest.getResult(opts, callback);
                 }
             );
         }
     );
+});
+
+Contest.method('getResult', function(opts, callback) {
+    var self = this;
+    var result_field = 'results.'+opts.play_cursor;
+    var filter = {};
+    filter[result_field] = 1;
+
+    var prof = new Profiler('/models/contest/getResult');
+    return Bozuko.models.Contest.findOne({_id: this._id}, filter, function(err, contest) {
+        prof.stop();
+        if (err) return callback(err);
+        if (!contest) {
+            console.error('getResult: couldnt find contest result');
+            opts.results = {};
+            return self.createPrize(opts, callback);
+        }
+        opts.results = contest.results;
+        return self.createPrize(opts, callback);
+    });
+
 });
 
 function letter(val) {
@@ -495,22 +523,21 @@ function get_code(num) {
 Contest.method('claimConsolation', function(opts, callback) {
     var total = this.consolation_prizes[0].total;
 
+    var prof = new Profiler('/models/contest/claimConsolation');
     Bozuko.models.Contest.findAndModify(
         { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total-1}}}},
         [],
         {$inc : {'consolation_prizes.$.claimed': 1}},
-        {new: true},
+        {new: true, fields: {plays: 0, results:0}},
         function(err, contest) {
+            prof.stop();
             if (err) return callback(err);
             if (!contest) {
-                console.error("claimConsolation: no matching contest");
                 opts.consolation = false;
                 return callback(null);
             }
             opts.consolation_prize_code = get_code(contest.consolation_prizes[0].claimed);
             opts.consolation_prize_count = contest.consolation_prizes[0].claimed;
-            console.error("claimConsolation: opts.consolation_prize_code = "+opts.consolation_prize_code);
-            console.error("claimConsolation: opts.consolation_prize_count = "+opts.consolation_prize_count);
             return contest.savePrize(opts, callback);
         }
     );
@@ -523,7 +550,6 @@ Contest.method('saveConsolation', function(opts, callback) {
 
     var consolation_prize = self.consolation_prizes[0];
     if (consolation_prize.claimed === (consolation_prize.total-1)) {
-        console.error("saveConsolation: consolation_prize.claimed === consolation_prize.total -1 === "+consolation_prize.claimed);
         opts.consolation = false;
         return callback(null);
     }
@@ -590,14 +616,15 @@ Contest.method('savePrize', function(opts, callback) {
 
     if (opts.consolation) {
         prize = self.consolation_prizes[0];
-        console.error("\n\nsavePrize: prize = "+inspect(prize));
     } else {
         prize = self.prizes[opts.prize_index];
     }
 
     if (!prize) return callback(Bozuko.error('contest/no_prize'));
 
+    var prof = new Profiler('/models/contest/savePrize/find page');
     return Bozuko.models.Page.findById( self.page_id, function(error, page){
+        prof.stop();
         if( error ) return callback( error );
         if( !page ){
             return callback( Bozuko.error('contest/save_prize_no_page') );
@@ -643,7 +670,6 @@ Contest.method('savePrize', function(opts, callback) {
             }
         }
 
-        console.error("savePrize: about to save prize. consolation = "+inspect(user_prize));
         return user_prize.save(function(err) {
             if (err) return callback(err);
             return callback(null, user_prize);
@@ -653,7 +679,7 @@ Contest.method('savePrize', function(opts, callback) {
 
 Contest.method('createPrize', function(opts, callback) {
     var self = this;
-    var result = this.results[opts.play_cursor];
+    var result = opts.results[opts.play_cursor];
     opts.win = result ? true : false;
 
     // Did we win a free_play? If so there isn't a prize.
@@ -794,12 +820,14 @@ Contest.method('endPlay', function(opts, callback) {
     // We just want to recreate the prize and play records.
     if (opts.free_play && !opts.audit) {
 
+        var prof = new Profiler('/models/contest/endPlay/Entry.findAndModify');
         return Bozuko.models.Entry.findAndModify(
             {contest_id: this._id, user_id: opts.user_id, timestamp: {$gt :min_expiry_date}},
             [],
             {$inc: {tokens: 1}},
             {new: true},
             function(err, entry) {
+                prof.stop();
                 if (err) return callback(err);
                 // There isn't an active entry to give a token to. Log it and don't give out a free play.
                 if (!entry) {
@@ -808,23 +836,31 @@ Contest.method('endPlay', function(opts, callback) {
                     opts.free_play = false;
                     opts.win = false;
                 }
+                var prof2 = new Profiler('/models/contest/endPlay/Contest.findAndModify');
                 return Bozuko.models.Contest.findAndModify(
                     {_id: self._id, 'plays.uuid': opts.uuid},
                     [],
-                    {$set: {'plays.$.active' : false}},
-                    {new: true},
-                    handler
+                    {$pull: {plays: {uuid: opts.uuid}}},
+                    {new: true, fields: {plays: 0, results:0}},
+                    function(err, contest) {
+                        prof2.stop();
+                        handler(err, contest);
+                    }
                 );
             }
         );
     }
 
+    var prof = new Profiler('/models/contest/endPlay/Contest.findAndModify2');
     return Bozuko.models.Contest.findAndModify(
-        {_id: this._id, plays: {$elemMatch : {timestamp: opts.timestamp, uuid: opts.uuid}}},
+        {_id: this._id, 'plays.uuid': opts.uuid},
         [],
-        {$set: {'plays.$.active' : false}},
-        {new: true},
-        handler
+        {$pull: {plays: {uuid: opts.uuid}}},
+        {new: true, fields: {plays: 0, results:0}},
+        function(err, contest) {
+            prof.stop();
+            handler(err, contest);
+        }
     );
 
 });
