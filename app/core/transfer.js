@@ -74,7 +74,9 @@ TransferObject.prototype.sanitize = function(data, current, user){
 
     if( typeof current == 'string' ){
         // this _should be_ another transfer object
+        var prof = new Profiler('/core/transfer/sanitize/transfer/'+current);
         ret = data ? Bozuko.transfer(current, data, user) : null;
+        prof.stop();
     }
 
     else if( current instanceof Array ){
@@ -128,8 +130,9 @@ TransferObject.prototype.sanitize = function(data, current, user){
                             break;
 
                         default:
+                            var prof = new Profiler('/core/transfer/sanitize/transfer_default/'+c);
                             v  = Bozuko.transfer(c, v, user);
-
+                            prof.stop();
                     }
                     ret[key] = v;
                 }
