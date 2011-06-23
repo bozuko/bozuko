@@ -36,7 +36,6 @@ var options = {
     sessions: [{
 	probability: 100,
 	request_generators: [
-            get_pages,
             checkin,
             play,
             play,
@@ -73,42 +72,13 @@ function random_user_id() {
     return uid;
 }
 
-function get_pages(res, callback) {
-    var city = db.random_city();
-    try {
-        var pages_link = JSON.parse(res.body).links.pages;
-    } catch(err) {
-        return callback(err);
-    }
-    return callback(null, {
-        path: pages_link+'/?ll='+city.lat+','+city.lng,
-        method: 'GET',
-        opaque: city
-    });
-}
-
 function checkin(res, callback) {
-    try {
-        var pages = JSON.parse(res.body).pages;
-    } catch(err) {
-        return callback(err);
-    }
 
-    // Ignore timeouts from facebook
-    if (res.statusCode != 200) {
-        console.error("Checkin Error: "+res.body);
-        return callback(null, 'done');
-    }
-    // grab a random page
-    var page = pages[Math.floor(Math.random()*pages.length)];
-    if (!Bozuko.validate('page', page)) {
-        return callback(new Error("Failed to validate page"));
-    }
-
-    // we only want to pick pages that have games
-    if (!page.registered) return callback(null, 'done');
-
-    var city = res.opaque;
+    var city = {
+        lat: 42.396404637936,
+        lng: -71.121946652025,
+        id: "117689721590676"
+    };
 
     // get a random user for checkin
     var uid = random_user_id();
@@ -121,10 +91,9 @@ function checkin(res, callback) {
             user_ids_free.push(uid);
             return callback(new Error("Couldn't find user "+uid));
         }
-        var checkin_link = page.links.facebook_checkin;
 
         var req = {
-            url: checkin_link+'/?token='+user.token
+            url: '/facebook/'+city.id+'/checkin/?token='+user.token
         };
 
         var params = {
