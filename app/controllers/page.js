@@ -361,8 +361,8 @@ exports.routes = {
                     if( type ){
                         url = url.replace(/type=[a-zA-Z0-9]+/, 'type='+type);
                     }
-                    // return http.stream( url, res, {buffered: false} );
-                    return res.redirect( url );
+                    return http.stream( url, res, {buffered: false} );
+                    //return res.redirect( url );
                 });
                 
                 

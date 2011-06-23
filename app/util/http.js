@@ -141,6 +141,7 @@ exports.stream = function stream( _url, res, options, callback ){
     
     return require(ssl ? 'https' : 'http').get( opts, function(response){
         var headers = response.headers || {};
+        console.log(headers);
         if( headers.location ){
             return stream( headers.location, res, options, callback );
         }
@@ -162,7 +163,7 @@ exports.stream = function stream( _url, res, options, callback ){
                 buffer += chunk.toString();
             }
             else{
-                res.write(chunk);
+                res.write(chunk, 'binary');
             }
         });
         response.on('end', function(){
