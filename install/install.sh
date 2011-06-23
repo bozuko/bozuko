@@ -17,3 +17,9 @@ source ~/.bashrc
 # node packages
 echo "*** Installing node packages with npm"
 cd ~ && npm install connect connect-auth express jade mongodb mongoose monomi oauth qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date cluster imap node-uuid node-gd knox
+
+#install commando
+git clone git@github.com:bozuko/commando.git
+npm install commando
+rm -rf commando
+cp config/commando.conf ~/.commando
