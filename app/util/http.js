@@ -160,3 +160,27 @@ exports.stream = function stream( _url, res, options, callback ){
         return response.pipe( res );
     });
 };
+
+exports.redirect = function redirect( _url, res){
+    
+    var last = _url,
+        parsed = url.parse(String(_url)),
+        ssl = /^https/.test(String(_url)),
+        opts = {
+            host: parsed.hostname,
+            port: parsed.port || (ssl ? 443 :80),
+            path: parsed.pathname + (parsed.search||''),
+            method: 'HEAD'
+        };
+        
+    console.log(opts);
+    
+    var req = require(ssl ? 'https' : 'http').request( opts, function(response){
+        var headers = response.headers || {};
+        if( headers.location ){
+            return redirect( headers.location, res);
+        }
+        return res.redirect( String(_url) );
+    });
+    req.end();
+}

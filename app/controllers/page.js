@@ -67,7 +67,7 @@ exports.transfer_objects = {
             };
             page.is_place = page.location  && page.location.lat && page.location.lng;
             if( page.registered ){
-                // page.image = burl('/page/'+page.id+'/image?v6');
+                page.image = burl('/page/'+page.id+'/image?v7');
             }
             if( user ){
                 page.like_url +='?token='+user.token;
@@ -361,8 +361,9 @@ exports.routes = {
                     if( type ){
                         url = url.replace(/type=[a-zA-Z0-9]+/, 'type='+type);
                     }
-                    return http.stream( url, res, {buffered: false} );
-                    //return res.redirect( url );
+                    // return http.stream( url, res, {buffered: false} );
+                    // return res.redirect( url );
+                    return http.redirect( url, res );
                 });
                 
                 
