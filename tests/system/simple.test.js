@@ -201,6 +201,7 @@ exports['game tests'] = {
             function(res) {
                 var game_states = JSON.parse(res.body);
                 test.ok(Bozuko.validate(['game_state'], game_states));
+                console.log(game_states);
                 tokens = game_states[0].user_tokens;
                 test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
                 link = game_states[0].links.game_result;
@@ -627,6 +628,7 @@ exports['prizes tests'] = {
             phone_type: phone.type,
             phone_id: phone.unique_id,
             mobile_version: '1.0',
+            message: 'Holy Crap!',
             challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url: url})
         });
 
