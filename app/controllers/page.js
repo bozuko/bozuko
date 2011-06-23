@@ -359,7 +359,7 @@ exports.routes = {
                     var url = page.image,
                         type = req.param('type');
                     if( type ){
-                        url = url.replace(/type=[a-zA-Z0-9]/, 'type='+type);
+                        url = url.replace(/type=[a-zA-Z0-9]+/, 'type='+type);
                     }
                     return http.stream( url, res );
                 });
