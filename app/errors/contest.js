@@ -12,7 +12,7 @@ module.exports = {
         title: "No more plays",
         message: "You do not have any plays left for this game"
     },
-    
+
     inactive : {
         title: "Gave over",
         message: "Sorry, this game has ended :("
@@ -33,6 +33,7 @@ module.exports = {
     email_prize_update : function() {
         return "Failed to update prize ["+this.data.prize_index+"] for contest ["+this.data.contest._id+"]";
     },
+
 
     unknown_user :{
         code: 404,
@@ -57,5 +58,10 @@ module.exports = {
     entry_not_found : {
         code: 404,
         message: "Error entering contest - entry was not found"
+    },
+
+    play_not_found: {
+        code: 404,
+        message: "Error playing contest"
     }
 };

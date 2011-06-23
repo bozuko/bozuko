@@ -271,7 +271,12 @@ FacebookService.prototype.checkin = function(options, callback){
         method:'post'
     },function(error, result){
         // check the result..
-        if( error ) return callback( error );
+        if( error ){
+            if( /too far away to check in/.test(error.message) ){
+                return callback( Bozuko.error('checkin/too_far') );
+            }
+            return callback( error );
+        }
         return callback(null, result);
     });
 };
@@ -380,6 +385,50 @@ FacebookService.prototype.like = function(options, callback){
         return callback(null, result);
     });
 };
+
+/**
+ * Post to feed
+ *
+ * The callback will be passed 2 arguments
+ *
+ *      error
+ *      data
+ *
+ * @param {Object}          options         Post specific options
+ * @param {Function}        callback        Callback Function
+ *
+ * @option {User}           user            The user (required)
+ * @option {String}         message         The message for the wall post
+ *
+ * @return {null}
+ */
+FacebookService.prototype.post = function(options, callback){
+    if( !options || !options.user || !options.user.service('facebook') ){
+        return callback(Bozuko.error('facebook/no_page_id_user'));
+    }
+    var params = {};
+
+    if( options.message )       params.message      = options.message;
+    if( options.picture )       params.picture      = options.picture;
+    if( options.link )          params.link         = options.link;
+    if( options.name )          params.name         = options.name;
+    if( options.caption )       params.caption      = options.caption;
+    if( options.description )   params.description  = options.description;
+    if( options.actions )       params.actions      = JSON.stringify(options.actions);
+
+    if( options.test ){
+        return callback(null, {result:123123123});
+    }
+
+    return facebook.graph('/feed',{
+        user: options.user,
+        params: params,
+        method:'post'
+    },function(error, result){
+        if( error ) return callback( error );
+        return callback(null, result);
+    });
+}
 
 /**
  * Get full info about a place by id
