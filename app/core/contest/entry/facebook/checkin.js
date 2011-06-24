@@ -126,6 +126,15 @@ FacebookCheckinMethod.prototype.getTokenCount = function(){
     return tokens;
 }
 
+FacebookCheckinMethod.prototype.validate = function( callback ){
+    var self = this;
+    EntryMethod.prototype.validate.call(self, function(error, valid){
+        if( error || !valid ) return callback( error, valid );
+        
+        // we need to know how far away this cat is...
+    });
+};
+
 /**
  * Perform all necessary actions accociated with this entry method (eg, checkin, check for location, etc)
  *
@@ -191,7 +200,12 @@ FacebookCheckinMethod.prototype._load = function( callback ){
             if( error ) return callback( error );
             // if( error2 ) console.log(error2);
             self.can_checkin = flag;
-            return callback(null);
+            if( self.can_checkin ) return callback(null);
+            return Bozuko.models.Checkin.find({page_id: self.page._id},{},{sort: {timestamp: -1}, limit: 1}, function(error, checkin){
+                if( error ) return callback( error );
+                self.last_checkin_here = checkin;
+                return callback( null );
+            });
         });
     });
 };

@@ -330,21 +330,13 @@ exports.routes = {
                     if( contest.state !== contest.schema.ACTIVE ){
                         return Bozuko.error('contest/inactive').send(res);
                     }
-                    // we need to process the entry
-                    var ll = req.param('ll');
-                    if( !ll ){
-                        return Bozuko.error('contest/game_entry_requires_ll', req.params.id).send(res);
-                    }
-                    var parts = ll.split(',');
-                    if( parts.length != 2 ){
-                        return Bozuko.error('contest/game_entry_requires_ll', req.params.id).send(res);
-                    }
-                    parts.reverse();
-                    parts[0] = parseFloat( parts[0] );
-                    parts[1] = parseFloat( parts[1] );
                     
+                    if( !req.session.location ){
+                        return Bozuko.error('contest/game_entry_requires_ll', req.params.id).send(res);
+                    }
+                    // we need to process the entry
                     var config = contest.entry_config[0];
-                    var entry = Bozuko.entry( config.type, req.session.user, {ll:parts} );
+                    var entry = Bozuko.entry( config.type, req.session.user, {ll: req.session.location} );
                     return contest.enter( entry, function(error, entry){
                         if( error ) return error.send(res);
 
