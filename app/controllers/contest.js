@@ -39,15 +39,21 @@ var game_result = {
             if( result.prize ) return Bozuko.transfer('prize', result.prize, user, function(error, prize){
                 if( error ) return callback( error );
                 ret.prize = prize;
+                /*
                 return self.sanitize( ret, null, user, function(error, ret){
                     if( error ) return callback( error );
                     return callback( null, ret );
                 });
+                */
+                return callback( null, ret);
             });
+            /*
             return self.sanitize( ret, null, user, function(error, ret){
                 if( error ) return callback( error );
                 return callback( null, ret );
             });
+            */
+            return callback( null, ret);
         });
     },
 
