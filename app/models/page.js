@@ -575,12 +575,13 @@ Page.static('search', function(options, callback){
         if( !options.query && !page ) getFeatured = true;
         // we need to add featured results to the main search page
         if( Bozuko.config.test_mode && !options.query ){
-            bozukoSearch.selector['$or'] = [{test: true}, {featured:true}];
+            bozukoSearch.selector.test = true;
             bozukoSearch.selector['coords'] = {$near: options.ll};
         }
         else if( !page ){
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
-            bozukoSearch.selector.coords = {$near: options.ll, $maxDistance: distance};
+            console.log(distance);
+            bozukoSearch.selector.coords = {$nearSphere: options.ll, $maxDistance: distance};
             if( options.query ) delete bozukoSearch.selector.coords['$maxDistance'];
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
             bozukoSearch.type='nativeFind';
