@@ -34,6 +34,7 @@ exports.transfer_objects = {
         },
 
         create : function( prize, user, callback){
+            var self = this;
             this.sanitize(prize, null, user, function(error, o){
                 if( error ) return callback( error );
                 o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
@@ -57,7 +58,10 @@ exports.transfer_objects = {
                 if( o.state == 'active' ){
                     o.links.redeem = '/prize/'+prize.id+'/redemption';
                 }
-                return callback(null, o);
+                return self.sanitize(o, null, user, function(error, result){
+                    if( error ) return callback( error );
+                    return callback(null, result);
+                });
             });
         }
     },
@@ -201,6 +205,7 @@ exports.routes = {
                         };
                         if( hasNext ) ret.next = next;
                         return Bozuko.transfer('prizes', ret, req.session.user, function(error, result){
+                            console.log(result);
                             res.send( error || result );
                         });
                     });

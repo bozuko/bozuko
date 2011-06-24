@@ -114,11 +114,10 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
             function iterator(key, next){
                 (TransferObject.ticks++ % TransferObject.tickLimit == 0 ? async.nextTick : TransferObject.now )(function(){
                     if( data[key] !== undefined ){
-                        
                         // Cast the value to the proper type.
                         var v = data[key];
                         var c = current[key];
-        
+                        
                         if( c instanceof String || typeof c == 'string' ){
                             // check type
         
@@ -158,6 +157,7 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
                             v = parseFloat(v);
                         }
                         else if(c instanceof Object || typeof c == 'object'){
+                            
                             return self.sanitize(v, c, user, function(error, value){
                                 if( error ) return next(error);
                                 ret[key] = value;
