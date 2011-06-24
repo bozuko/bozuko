@@ -6,8 +6,7 @@ var http    = require('http'),
     qs      = require('querystring');
 
 exports.request = function(config, callback){
-
-
+    
     if( config instanceof String){
         config = {url:config};
     }
@@ -58,6 +57,7 @@ exports.request = function(config, callback){
         headers: headers,
         method: method
     }, function(response){
+        
         var data = '';
         response.setEncoding('utf8');
         response.on('data', function(chunk){
@@ -117,3 +117,76 @@ exports.request = function(config, callback){
     request.end(body,encoding);
 
 };
+/**
+ *
+ *  Buffered option is not working yet...
+ *
+ */
+exports.stream = function stream( _url, res, options, callback ){
+    if( undefined === callback && 'function' === typeof options){
+        callback = options;
+        options = {};
+    }
+    options = options || {};
+    
+    var parsed = url.parse(String(_url)),
+        ssl = /^https/.test(String(_url)),
+        opts = {
+            host: parsed.hostname,
+            port: parsed.port || (ssl ? 443 :80),
+            path: parsed.pathname + (parsed.search||'')
+        },
+        buffer='';
+        
+    
+    return require(ssl ? 'https' : 'http').get( opts, function(response){
+        var headers = response.headers || {};
+        console.log(headers);
+        if( headers.location ){
+            return stream( headers.location, res, options, callback );
+        }
+        // duplicate header
+        [
+            'content-type',
+            'last-modified',
+            'cache-control',
+            'expires',
+            'date',
+        ]
+        .forEach(function(header){
+            if( headers[header] ) res.header(header, headers[header] );
+        });
+        
+        return response.pipe( res );
+    });
+};
+
+exports.redirect = function redirect( _url, res){
+    
+    this.getRedirect( _url, function( redirect_url ){
+        return res.redirect( redirect_url );
+    });
+}
+
+exports.getRedirect = function getRedirect( _url, callback ){
+    
+    var last = _url,
+        parsed = url.parse(String(_url)),
+        ssl = /^https/.test(String(_url)),
+        opts = {
+            host: parsed.hostname,
+            port: parsed.port || (ssl ? 443 :80),
+            path: parsed.pathname + (parsed.search||''),
+            method: 'HEAD'
+        };
+        
+    
+    var req = require(ssl ? 'https' : 'http').request( opts, function(response){
+        var headers = response.headers || {};
+        if( headers.location ){
+            return getRedirect( headers.location, callback );
+        }
+        return callback( String(_url) );
+    });
+    req.end();
+}

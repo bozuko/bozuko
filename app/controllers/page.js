@@ -1,5 +1,6 @@
 var async = require('async'),
     qs = require('querystring'),
+    http = Bozuko.require('util/http'),
     URL = require('url'),
     mailer = Bozuko.require('util/mail'),
     burl = Bozuko.require('util/url').create,
@@ -68,6 +69,9 @@ exports.transfer_objects = {
                 // facebook_like       :'/facebook/'+fid+'/like'
             };
             page.is_place = page.location  && page.location.lat && page.location.lng;
+            if( page.registered ){
+                // page.image = burl('/page/'+page.id+'/image?version=8');
+            }
             if( user ){
                 page.like_url +='?token='+user.token;
                 if( page.registered ){
@@ -361,8 +365,17 @@ exports.routes = {
             handler : function(req,res){
                 Bozuko.models.Page.findById(req.param('id'), function(error, page) {
                     if( error ) return error.send(res);
-                    return res.redirect( page.image );
+                    var url = page.image,
+                        type = req.param('type');
+                    if( type ){
+                        url = url.replace(/type=[a-zA-Z0-9]+/, 'type='+type);
+                    }
+                    // return http.stream( url, res, {buffered: false} );
+                    // return res.redirect( url );
+                    return http.redirect( url, res );
                 });
+                
+                
             }
         }
     },
