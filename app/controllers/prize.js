@@ -265,7 +265,7 @@ exports.routes = {
                             
                         if( share == 'false' ) share = false;
                             
-                        if( (!share && !message) || Bozuko.cfg('test_mode', true) ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                        if( (!share) || Bozuko.cfg('test_mode', true) ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                             res.send( error || result );
                         });
                         
