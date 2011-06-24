@@ -7,13 +7,10 @@ module.exports = function location() {
         
         // we need to process the entry
         var ll = req.param('ll');
-        if( !ll ){
-            return next();
-        }
+        if( !ll ) return next();
         var parts = ll.split(',');
-        if( parts.length != 2 ){
-            return next();
-        }
+        if( parts.length != 2 ) return next();
+        
         parts.reverse();
         parts[0] = parseFloat( parts[0] );
         parts[1] = parseFloat( parts[1] );

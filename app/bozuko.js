@@ -246,7 +246,7 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/device')());
     app.use(Bozuko.require('middleware/session')());
     app.use(Bozuko.require('middleware/mobile')());
-	app.use(Bozuko.require('middleware/location')());
+	// app.use(Bozuko.require('middleware/location')());
 
     if (Bozuko.env() != 'test') {
         app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
