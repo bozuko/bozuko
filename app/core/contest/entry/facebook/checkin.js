@@ -1,7 +1,9 @@
 var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
     burl = Bozuko.require('util/url').create,
-    dateFormat = require('dateformat');
+    dateFormat = require('dateformat'),
+    Profiler = Bozuko.require('util/profiler')
+;
 
 /**
  * Facebook Checkin
@@ -165,7 +167,8 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                         return callback( error );
                     }
 
-                    console.error("facebook checkin: process: result.entries.length = "+result.entries.length);
+                    var prof = new Profiler('core/contest/entry/facebook/checkin/process');
+
                     for(var i=0; i<result.entries.length; i++){
                         var entry = result.entries[i];
                         if( entry.type == self.type && entry.contest_id == self.contest.id ){
@@ -173,6 +176,8 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                             return callback( null, entry );
                         }
                     }
+
+                    prof.stop();
 
                     return callback( Bozuko.error('contest/no_entry_found_after_checkin') );
                 });
@@ -215,7 +220,7 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
     this.load( function(error){
         if( error ) return callback( error );
-        return self.getNextEntryTime( self.getLastEntry(), function( error, time ){
+        return self.getNextEntryTime( function( error, time ){
 
             if( error ) return callback( error );
             if( !tokens ){

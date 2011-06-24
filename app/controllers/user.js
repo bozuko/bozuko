@@ -1,3 +1,5 @@
+var Profiler = Bozuko.require('util/profiler');
+
 exports.transfer_objects= {
     user: {
 
@@ -19,11 +21,14 @@ exports.transfer_objects= {
                 favorites: "String"
             }
         },
-        
-        create : function(data, user){
+
+        create : function(data, user, callback){
             data.image = data.image.replace(/type=large/, 'type=square');
             data.img = data.image;
-            return this.sanitize(data);
+            return this.sanitize(data, null, user, function(error, result){
+                if( error ) return callback(error);
+                return callback(null, result);
+            });
         }
     },
 
@@ -175,7 +180,7 @@ exports.routes = {
             handler: function(req, res) {
                 var user = req.session.user;
                 // we should update the user's likes
-                
+
                 return user.updateLikes( function(error){
                     if( error ) return error.send(res);
                     user.id = user._id;
@@ -184,7 +189,9 @@ exports.routes = {
                         logout: "/user/logout",
                         favorites: "/user/favorites"
                     };
-                    return res.send(Bozuko.transfer('user', user));
+                    return Bozuko.transfer('user', user, user, function(error, result){
+                        res.send( error || result );
+                    });
                 });
             }
         }
@@ -218,11 +225,15 @@ exports.routes = {
                 var user = req.session.user;
                 var favorites = user.favorites;
                 var found = false;
+
+                var prof = new Profiler('/controllers/user/favorite/put');
                 if( favorites ) for(var i=0; i<favorites.length && found == false; i++){
                     if( favorites[i]+'' == id ){
                         found = i;
+                        break;
                     }
                 }
+                prof.stop();
                 if( found !== false ){
                     return Bozuko.error('user/favorite_exists').send(res);
                 }
@@ -235,10 +246,12 @@ exports.routes = {
                     user.favorites.push(id);
                     return user.save(function(error){
                         if(error) return error.send(res);
-                        return res.send(Bozuko.transfer('favorite_response', {
+                        return Bozuko.transfer('favorite_response', {
                             added: true,
                             page_id: id
-                        }));
+                        }, user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
@@ -252,11 +265,14 @@ exports.routes = {
                 var favorites = user.favorites;
                 var found = false;
 
+                var prof = new Profiler('/controllers/user/favorite/del');
                 if( favorites ) for(var i=0; i<favorites.length && found === false; i++){
                     if( favorites[i]+'' == id ){
                         found = i;
+                        break;
                     }
                 }
+                prof.stop();
                 if( found === false ){
                     return Bozuko.error('user/favorite_does_not_exist').send(res);
                 }
@@ -269,10 +285,12 @@ exports.routes = {
                     user.commit('favorites');
                     return user.save(function(error){
                         if(error) return error.send(res);
-                        return res.send(Bozuko.transfer('favorite_response', {
+                        return Bozuko.transfer('favorite_response', {
                             removed: true,
                             page_id: id
-                        }));
+                        }, user, function(error, result){
+                            res.send( error || result );
+                        });
                     });
                 });
             }
@@ -286,11 +304,14 @@ exports.routes = {
                 var favorites = user.favorites;
                 var found = false;
 
+                var prof = new Profiler('/controllers/user/favorite/post');
                 if( favorites ) for(var i=0; i<favorites.length && found === false; i++){
                     if( favorites[i]+'' == id ){
                         found = i;
+                        break;
                     }
                 }
+                prof.stop();
 
                 // lets make sure the page exists
                 return Bozuko.models.Page.findById(id, function(error, page){
@@ -310,7 +331,9 @@ exports.routes = {
                     }
                     return user.save(function(error){
                         if(error) return error.send(res);
-                        return res.send(Bozuko.transfer('favorite_response', ret));
+                        return Bozuko.transfer('favorite_response', ret, user, function(error, result){
+                            return res.send( error || result );
+                        });
                     });
                 });
             }

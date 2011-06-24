@@ -62,14 +62,14 @@ FacebookLikeMethod.prototype.defaults = {
  */
 FacebookLikeMethod.prototype.getDescription = function(){
     var self = this;
-    
+
     // need a nice duration
     // get the number of minutes:
     var seconds = this.config.duration / 1000,
         minutes = seconds / 60,
         hours = minutes / 60,
         days = hours / 24;
-        
+
     var duration = '';
     if( days > 1 ){
         days = Math.floor( days );
@@ -86,11 +86,11 @@ FacebookLikeMethod.prototype.getDescription = function(){
     }
     var description = "Like us on Facebook\n";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-        
+
         if( !self.user || (self.page && !self.user.likes(self.page))){
             description+="\n\nHit back and scroll down to like us."
         }
-    
+
     return description;
 }
 
@@ -149,8 +149,8 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
     var text = '';
     this.load( function(error){
         if( error ) return callback( error );
-        return self.getNextEntryTime( self.getLastEntry(), function( error, time ){
-            
+        return self.getNextEntryTime( function( error, time ){
+
             if( error ) return callback( error );
             if( !tokens ){
                 var now = new Date();
@@ -191,12 +191,12 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
             return callback( null, text);
         });
     });
-    
+
 };
 
 FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
     var self = this;
-    self.getNextEntryTime( self.getLastEntry(), function(error, time){
+    self.getNextEntryTime( function(error, time){
         if( error ) return callback( error );
         var enabled = true;
         var now = new Date();

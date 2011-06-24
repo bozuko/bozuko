@@ -1,3 +1,4 @@
+var async = require('async');
 
 exports.links = {
     facebook_checkin: {
@@ -72,26 +73,22 @@ exports.routes = {
                                     return error.send(res);
                                 }
 
-                                var checkin = result.checkin;
-                                var entries = result.entries;
-
-                                return checkin.getPage(function(error, page){
-
-                                    if( error ){
-                                        return error.send(res);
-                                    }
-
-                                    return page.getUserGames(req.session.user, function(error, games){
-                                        if( error ){
-                                            return error.send(res);
-                                        }
-                                        var states = [];
-                                        games.forEach(function(game){
-                                            states.push( Bozuko.transfer('game_state', game.contest.game_state, req.session.user));
+                                var contests = result.contests;
+                                var states = [];
+                                
+                                return async.forEachSeries(contests,
+                                    function iterator(contest, next){
+                                        Bozuko.transfer('game_state', contest.game_state, req.session.user, function(error, result){
+                                            if( error ) return next(error);
+                                            states.push(result);
+                                            return next();
                                         });
-                                        return res.send(states);
-                                    });
-                                });
+                                    },
+                                    function cb(error){
+                                        if( error ) return callback( error );
+                                        return res.send( states );
+                                    }
+                                );
                             }
                         );
                     };
@@ -120,9 +117,9 @@ exports.routes = {
     '/facebook/:id/like.html': {
 
         get: {
-            
+
             title : "Like a business on Facebook",
-            
+
             locals:{
                 classes:['like']
             },
@@ -143,7 +140,7 @@ exports.routes = {
                     }));
                 });
                 */
-                // this 
+                // this
                 return Bozuko.service('facebook').place({place_id: req.param('id')}, function( error, place){
                     if( error ){
                         res.locals.error = error;

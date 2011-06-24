@@ -1,6 +1,8 @@
 var fs              = require('fs'),
     path            = require('path'),
-    markdown        = require('markdown-js')
+    async           = require('async'),
+    markdown        = require('markdown-js'),
+    Profiler        = require('../util/profiler')
     ;
 
 /**
@@ -15,7 +17,7 @@ var TransferObject = module.exports = function(name, config){
     this.title = config.title;
     this.links = {};
     this.returned = [];
-    
+
     // check for .md documentation
     var filename = Bozuko.dir+'/content/docs/api/transfers/'+this.name+'.md';
     if( path.existsSync(filename) ){
@@ -37,13 +39,16 @@ var TransferObject = module.exports = function(name, config){
     }
 };
 
+TransferObject.ticks = 0;
+TransferObject.tickLimit = 10;
+
 TransferObject.prototype.getTitle = function(){
     return this.title || this.name;
 };
 
-TransferObject.prototype.create = function(data, user){
+TransferObject.prototype.create = function(data, user, callback){
     try{
-        return this._create ? this._create(data, user) : this.sanitize(data, null, user);
+        return this._create ? this._create(data, user, callback) : this.sanitize(data, null, user, callback);
     }catch(e){
         throw e;
     }
@@ -55,8 +60,6 @@ TransferObject.prototype.returnedBy = function(link){
 };
 
 TransferObject.prototype.merge = function(a,b){
-    a = this.sanitize(a);
-    b = this.sanitize(b);
     Object.keys(b).forEach(function(prop){
         a[prop] = b[prop];
     });
@@ -65,78 +68,114 @@ TransferObject.prototype.merge = function(a,b){
 
 var native_types = ['string', 'number', 'object', 'int', 'integer', 'mixed'];
 
-TransferObject.prototype.sanitize = function(data, current, user){
+TransferObject.now = function(fn){ return fn(); };
+
+TransferObject.prototype.sanitize = function(data, current, user, callback){
+    
     // make this conform to our def
     var self = this, ret = {};
     if( !current ) current = this.def;
-    
+
     if( typeof current == 'string' ){
-        // this _should_be_ another transfer object
-        ret = data ? Bozuko.transfer(current, data, user) : null;
+        // this _should be_ another transfer object
+        return Bozuko.transfer(current, data, user, callback);
     }
 
     else if( current instanceof Array ){
-        ret = [];
+        
         if( !(data instanceof Array) ){
             data = [];
         }
-        data.forEach(function(v,k){
-            ret[k] = self.sanitize(v,current[0],user);
-        });
+        
+        ret = [];
+        return async.forEachSeries( data,
+            function iterator(item, next){
+                (TransferObject.ticks++ % TransferObject.tickLimit == 0 ? async.nextTick : TransferObject.now )(function(){
+                    self.sanitize(item, current[0], user, function(error, result){
+                        if( error ) return next(error);
+                        ret.push(result);
+                        return next();
+                    });
+                });
+            },
+            function cb(error){
+                if( error ) return callback( error );
+                return callback(null, ret);
+            }
+        );
+        
     }
     else{
         if( !(data instanceof Object || typeof data == 'object') ){
             data = {};
         }
-        Object.keys(current).forEach(function(key){
-            if( data[key] !== undefined ){
-                // Cast the value to the proper type.
-                var v = data[key];
-                var c = current[key];
-
-                if( c instanceof String || typeof c == 'string' ){
-                    // check type
-
-                    switch(c.toLowerCase()){
-
-                        case 'string':
-                            v = String(v);
-                            break;
-
-                        case 'int':
-                        case 'integer':
-                            v = parseInt(v);
-                            break;
-
-                        case 'float':
-                        case 'number':
+        
+        return async.forEachSeries( Object.keys(current),
+            function iterator(key, next){
+                (TransferObject.ticks++ % TransferObject.tickLimit == 0 ? async.nextTick : TransferObject.now )(function(){
+                    if( data[key] !== undefined ){
+                        
+                        // Cast the value to the proper type.
+                        var v = data[key];
+                        var c = current[key];
+        
+                        if( c instanceof String || typeof c == 'string' ){
+                            // check type
+        
+                            switch(c.toLowerCase()){
+        
+                                case 'string':
+                                    v = String(v);
+                                    break;
+        
+                                case 'int':
+                                case 'integer':
+                                    v = parseInt(v);
+                                    break;
+        
+                                case 'float':
+                                case 'number':
+                                    v = parseFloat(v);
+                                    break;
+        
+                                case 'boolean':
+                                    v = Boolean(v);
+                                    break;
+        
+                                case 'object':
+                                case 'mixed':
+                                    break;
+        
+                                default:
+                                    return Bozuko.transfer(c, v, user, function(error, value){
+                                        if( error ) return next(error);
+                                        ret[key] = value;
+                                        return next();
+                                    });
+                            }
+                        }
+                        else if(c instanceof Number){
                             v = parseFloat(v);
-                            break;
-                        
-                        case 'boolean':
-                            v = Boolean(v);
-                            break;
-                        
-                        case 'object':
-                        case 'mixed':
-                            break;
-                        
-                        default:
-                            v  = Bozuko.transfer(c, v, user);
-
+                        }
+                        else if(c instanceof Object || typeof c == 'object'){
+                            return self.sanitize(v, c, user, function(error, value){
+                                if( error ) return next(error);
+                                ret[key] = value;
+                                return next();
+                            });
+                        }
+                        ret[key] = v;
                     }
-                    ret[key] = v;
-                }
-                else if(c instanceof Number ){
-                    v = parseFloat(v);
-                }
-                else if(c instanceof Object || typeof c == 'object'){
-                    ret[key] = self.sanitize(v,c,user);
-                }
+                    return next();
+                });
+            },
+            
+            function cb(error){
+                if( error ) return callback(error);
+                return callback( null, ret );
             }
-        });
+        );
     }
-    return ret;
 };
 
 // This only validates that properties that exist in data are of the right type.
@@ -145,8 +184,8 @@ TransferObject.prototype.validate = function(data, current) {
 
     var self = this, ret = true;
     if( !current ) current = this.def;
-    
-    
+
+
     if( typeof current == 'string' ){
         // this _should be_ another transfer object
         ret = Bozuko.validate(current, data);
@@ -156,21 +195,24 @@ TransferObject.prototype.validate = function(data, current) {
         if( !(data instanceof Array) ){
             return false;
         }
+        var prof = new Profiler('/core/transfer/validate/array');
         data.forEach(function(v,k){
             if (!self.validate(v,current[0])) {
                 ret = false;
             }
         });
+        prof.stop();
     }
     else{
         if( !(data instanceof Object || typeof data == 'object') ){
             return false;
         }
+        var prof = new Profiler('/core/transfer/validate/object');
         Object.keys(current).forEach(function(key){
             if( data[key] ){
                 var v = data[key];
                 var c = current[key];
-                
+
                 if (typeof c != 'string' ) {
                     if (!self.validate(v, c)) {
                         ret = false;
@@ -184,9 +226,10 @@ TransferObject.prototype.validate = function(data, current) {
                     console.log("typeof c = "+typeof c);
                     console.log("typeof v = "+typeof v);
                     ret = false;
-                } 
+                }
             }
         });
+        prof.stop();
     }
     return ret;
 };

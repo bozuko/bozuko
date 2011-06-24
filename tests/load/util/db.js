@@ -143,7 +143,7 @@ exports.setup = function(options, callback) {
                 val: options.users
             },{
                 fn: add_pages,
-                val: pages
+                val: options.pages || pages
             },
             {
                 fn:  add_contests,
@@ -213,7 +213,7 @@ function add_contests(options, callback) {
     var page_ct = 0;
     console.log("options.contests = "+options.contests);
     async.until(
-        function() { return ct === options.contests; },
+        function() { return ct == options.contests; },
         function(cb) {
             var contest = new Bozuko.models.Contest({
                 page_id: page_ids[page_ct],
@@ -242,10 +242,14 @@ function add_contests(options, callback) {
                 total: options.prizes
             });
             contest.save(function(err) {
-                if (err) return callback(err);
+                if (err) {
+                    console.log("error!!!!!");
+                    return callback(err);
+                }
                 contest_ids.push(contest._id);
                 contest.generateResults(function(err) {
                     ct++;
+                    console.log("ct = "+ct);
                     if (page_ct === page_ids.length - 1) {
                         page_ct = 0;
                     } else {
