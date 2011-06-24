@@ -15,6 +15,6 @@ DateUtil.add = function( date, interval, amount ){
 
 DateUtil.create = function(args){
     if( !Array.isArray(args) ) args = [].slice.apply(arguments);
-    while( args.length < 7 ) args.push(0);
-    return new Date( args[0], args[1], args[2] || 1, args[3], args[4], args[5], args[6] );
+    while( args.length < 7 ) args.push( args.length == 4 ? 12 : 0);
+    return new Date( Date.UTC(args[0], args[1], args[2] || 1, args[3], args[4], args[5], args[6]) );
 }

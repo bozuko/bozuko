@@ -5,10 +5,14 @@ Ext.application({
     name: 'Bozuko',
     appFolder: '/js/desktop/admin',
     
-    
     autoCreateViewport: true,
 
     controllers: ['Pages', 'Contests'],
+    
+    requires:[
+        'Ext.chart.theme.Base',
+        'Ext.chart.series.Series'
+    ],
     
     launch: function() {
         
