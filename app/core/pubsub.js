@@ -4,7 +4,7 @@ var events = require('events'),
 
 var PubSub = module.exports = function(){
     var self = this;
-    
+    events.EventEmitter.apply(this);
     self.model = Bozuko.models.Message;
     self.cursor = null;
     self.timestamp = new Date();
