@@ -77,7 +77,6 @@ Page.method('loadContests', function(user, callback){
 });
 
 Page.method('getActiveContests', function(user, callback){
-    var prof = new Profiler('/models/page/getActiveContests');
     var now = new Date();
 
     var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
@@ -90,28 +89,55 @@ Page.method('getActiveContests', function(user, callback){
         end: {$gt: now}
     };
 
-    var $where = {$where: "this.token_cursor < this.total_plays - this.total_free_plays"};
-    if( user_id ){
-        selector.$or = [$where,{
-            entries: {
-                $elemMatch: {
-                    tokens : {$gt : 0},
-                    timestamp : {$gt : min_expiry_date},
-                    user_id: user_id
-                }
-            }
-        }];
-    }
-    else{
-        selector.$where = $where.$where;
-    }
-
-    if( arguments.length == 2 ){
-        callback = arguments[1];
-    }
     Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function(err, contests) {
-        prof.stop();
-        callback(err, contests);
+        if (err) return callback(err);
+
+        var exhausted_contests = {};
+        var exhausted_contest_ids = [];
+        var contest;
+        for (var i = 0; i < contests.length; i++) {
+            contest = contests[i];
+
+            // Is contest exhausted?
+            if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
+                exhausted_contests[String(contest._id)] = contest;
+                exhausted_contest_ids.push(contest._id);
+                contests.splice(i, 1);
+            }
+        }
+
+        if (!user_id) return callback(null, contests);
+
+        // Find user entries that still have tokens for exhausted contests.
+        // That means the contest is active for this user, but not users without tokens.
+        // This is really only needed at the end of contests.
+        if (exhausted_contest_ids.length) return Bozuko.models.Entry.nativeFind(
+            {
+                user_id: user_id,
+                contest_id: {$in: exhausted_contest_ids},
+                timestamp : {$gt: min_expiry_date},
+                tokens : {$gt: 0}
+            }, {contest_id: 1},
+            function(err, entries) {
+                if (err) return callback(err);
+                if (!entries) return callback(null, contests);
+
+                var contest_ids = {};
+
+                // Add any exhausted contests with valid entries for this user back on the active list
+                // There shouldn't be more than 1 or 2 entries to search
+                for (var i = 0; i < entries.length; i++) {
+                    var cid = entries[i].contest_id;
+                    if (!contest_ids[cid]) {
+                        contest_ids[cid] = true;
+                        contests.push(exhausted_contests[String(cid)]);
+                    }
+                }
+
+            }
+        );
+
+        return callback(null, contests);
     });
 });
 
@@ -155,7 +181,6 @@ Page.method('canUserCheckin', function(user, callback){
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
 
-    var prof = new Profiler('/models/page/canUserCheckin');
     Bozuko.models.Checkin.findOne(
         {
             $or: [{
@@ -169,7 +194,6 @@ Page.method('canUserCheckin', function(user, callback){
 
         },
         function(error, checkin){
-            prof.stop();
             // lets look at the last checkin
             if( error ) return callback( error );
 
@@ -201,7 +225,6 @@ Page.method('checkin', function(user, options, callback) {
 
             options.user = user;
             options.link = 'http://bozuko.com';
-            //options.picture = 'http://bozuko.com/images/bozuko-chest-check.png';
             options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
 
             // okay, lets try to give them entries on all open contests
@@ -251,7 +274,7 @@ Page.method('checkin', function(user, options, callback) {
                 if( error ) return callback( error );
 
                 if( contests.length == 0 ){
-                    return callback( null, {checkin:checkin, entries:[]} );
+                    return callback( null, {checkin:checkin, entries:[], contests: contests} );
                 }
                 var current = 0, entries = [];
                 var count = 0;
@@ -278,13 +301,13 @@ Page.method('checkin', function(user, options, callback) {
                                 return callback( error );
                             }
                             entries.push(entry);
-                            return cb(null);
+                            return contest.loadGameState(user, cb);
                         });
                     },
 
                     function(error){
                         if( error ) return callback( error );
-                        return callback( null, {checkin:checkin, entries:entries});
+                        return callback( null, {checkin:checkin, entries:entries, contests:contests});
                     }
                 );
             });
@@ -325,7 +348,6 @@ Page.static('loadPagesContests', function(pages, user, callback){
         page_map[page._id+''] = page;
     });
     prof.stop();
-    var prof_contest_find = new Profiler('/models/page/loadPagesContests/Contest.find');
 
     var selector = {
         active: true,
@@ -333,47 +355,91 @@ Page.static('loadPagesContests', function(pages, user, callback){
         start: {$lt: now},
         end: {$gt: now}
     };
-    var $where = {$where: "this.token_cursor < this.total_plays - this.total_free_plays"};
-    if( user_id ){
-        selector.$or = [$where,{
-            entries: {
-                $elemMatch: {
-                    tokens : {$gt : 0},
-                    timestamp : {$gt : min_expiry_date},
-                    user_id: user_id
-                }
-            }
-        }];
-    }
-    else{
-        selector.$where = $where.$where;
-    }
 
     Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function( error, contests ){
-        prof_contest_find.stop();
-        if( error ) console.log(error);
-        if( error ) return callback(error);
 
-        var prof_load = new Profiler('/models/page/loadPagesContests/load');
+        var exhausted_contests = {};
+        var exhausted_contest_ids = [];
 
         // attach active contests to pages
         return async.forEach(contests,
-            function iterator(contest, cb){
+            function (contest, cb){
                 var page = page_map[contest.page_id+''];
                 if( !page.contests ){
                     page.contests = [];
                 }
+
+                // Is contest exhausted?
+                if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
+                    exhausted_contests[String(contest._id)] = contest;
+                    exhausted_contest_ids.push(contest._id);
+                    return cb(null);
+                }
+
                 // load contest game state
                 contest.loadGameState(user, function(error){
+                    if (error) return cb(error);
                     contest.loadEntryMethod(user, function(error){
                         page.contests.push(contest);
                         cb(error);
                     });
                 });
             },
-            function contests_foreach_callback(err){
-                prof_load.stop();
+            function (err){
                 if (err) return callback(err);
+                if (!user_id) return callback(null, pages);
+
+                // Find user entries that still have tokens for exhausted contests.
+                // That means the contest is active for this user, but not users without tokens.
+                // This is really only needed at the end of contests.
+                if (exhausted_contest_ids.length) return Bozuko.models.Entry.nativeFind(
+                    {
+                        user_id: user_id,
+                        contest_id: {$in: exhausted_contest_ids},
+                        timestamp : {$gt: min_expiry_date},
+                        tokens : {$gt: 0}
+                    }, {contest_id: 1},
+                    function(err, entries) {
+                        if (err) return callback(err);
+                        if (!entries) return callback(null, pages);
+
+                        var contest_ids = {};
+
+                        var prof = new Profiler('/models/page/loadPagesContests/exhuasted_entries');
+                        for (var i = 0; i < entries.length; i++) {
+                            var cid = entries[i].contest_id;
+                            if (!contest_ids[cid]) {
+                                contest_ids[cid] = true;
+                            }
+                        }
+                        prof.stop();
+
+                        // Add any exhausted contests with valid entries for this user to the appropriate page
+                        // There shouldn't be more than a handful of entries to search
+
+                        var page, contest;
+                        async.forEach(
+                            Object.keys(contest_ids),
+                            function(cid, cb) {
+                                contest = exhausted_contests[String(cid)];
+                                page = page_map[contest.page_id+''];
+                                contest.loadGameState(user, function(error){
+                                    if (error) return cb(error);
+                                    contest.loadEntryMethod(user, function(error){
+                                        if (error) return cb(error);
+                                        page.contests.push(contest);
+                                        cb(null);
+                                    });
+                                });
+                            },
+                            function(err) {
+                                if (err) return callback(err);
+                                return callback(null, pages);
+                            }
+                        );
+                    }
+                );
+
                 return callback(null, pages);
             }
         );
@@ -384,7 +450,7 @@ Page.static('loadPagesContests', function(pages, user, callback){
  * Need to add our algorithm for finding featured items (by distance? how far is too far?)
  */
 Page.static('getFeaturedPages', function(num, options, callback){
-    
+
     if( !num ) return callback( null, [] );
 
     var find = {
@@ -402,7 +468,7 @@ Page.static('getFeaturedPages', function(num, options, callback){
         if( !count ) return callback( null, [] );
 
         var featured = [], pool=[], offsets=[], i;
-        
+
         for(i=0; i<count; i++) pool.push(i);
 
         for(i=0; i<num && pool.length; i++){
@@ -545,6 +611,7 @@ Page.static('search', function(options, callback){
     }
 
     function return_pages(pages){
+        var prof = new Profiler('/models/page/search/return_pages');
         var count = 0;
         if( hideFeaturedPastThreshold ){
             pages.forEach(function(page){
@@ -553,6 +620,7 @@ Page.static('search', function(options, callback){
                 }
             });
         }
+        prof.stop();
         callback( null, pages );
     }
 
@@ -561,12 +629,14 @@ Page.static('search', function(options, callback){
         if( error ) return callback(error);
         var featured_ids = [];
 
+        var prof = new Profiler('/models/page/search/build_featured_selector');
         if( featured.length ){
             featured.forEach(function(feature){ featured_ids.push( feature._id ); });
             bozukoSearch.selector._id = {
                 $nin: featured_ids
             };
         }
+        prof.stop();
 
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
@@ -602,13 +672,14 @@ Page.static('search', function(options, callback){
                 return Bozuko.service(service).search(options, function(error, _results){
 
                     if( error ){
-                        
+
                         console.error( error );
                         pages.sort( sort_by('_distance') );
                         return return_pages( pages );
                         // return callback(error);
                     }
 
+                    var prof = new Profiler('/models/page/search/build_results');
                     var map = {}, results = [];
 
                     if( _results ) _results.forEach( function(place, index){
@@ -616,6 +687,7 @@ Page.static('search', function(options, callback){
                         results.push(place);
                         map[String(place.id)] = place;
                     });
+                    prof.stop();
 
                     return Bozuko.models.Page.findByService(service, Object.keys(map), {
                         owner_id: {
@@ -630,22 +702,28 @@ Page.static('search', function(options, callback){
                         });
 
                         if (results) {
+                            var prof = new Profiler('/models/page/search/geoformat_results');
                             results.forEach(function(result){
                                 result.registered = false;
                                 result._distance = Geo.distance(options.ll, [result.location.lng,result.location.lat]);
                                 result.distance = Geo.formatDistance( Geo.distance(options.ll, [result.location.lng,result.location.lat]), [result.location.lng,result.location.lat] );
                             });
+                            prof.stop();
                         }
 
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
+
+                            var prof = new Profiler('/models/page/search/loadPagesContests');
                             pages = pages.concat(_pages);
-                            
+
                             pages.sort( sort_by('_distance') );
                             pages.sort( sort_by('featured') );
                             results.sort( sort_by('_distance') );
-                            
+
                             pages = pages.concat(results);
-                            
+
+                            prof.stop();
+
                             return return_pages(pages);
                         });
                     });
@@ -665,5 +743,5 @@ function sort_by(field, dir){
                 return (ax - bx) * (!!dir ? -1 : 1);
         }
         return (a[field] - b[field]) * (!!dir ? -1 : 1);
-    }
+    };
 }

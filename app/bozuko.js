@@ -1,5 +1,8 @@
-var fs              = require('fs');
-    existsSync    	= require('path').existsSync;
+var fs              = require('fs'),
+	async			= require('async'),
+    existsSync    	= require('path').existsSync,
+    Profiler = require('./util/profiler')
+;
 
 // setup the global object
 Bozuko = {};
@@ -32,7 +35,7 @@ var self = this;
 var http            = Bozuko.require('util/http'),
     create_url      = Bozuko.require('util/url').create,
     express         = require('express'),
-	socketIO		= require('socket.io'),
+    socketIO	    = require('socket.io'),
     Schema          = require('mongoose').Schema,
     BozukoStore     = Bozuko.require('core/session/store'),
     Monomi          = require('monomi'),
@@ -115,32 +118,51 @@ Bozuko.service = function(name){
 Bozuko.game = function(contest){
     return new this.games[contest.game](contest);
 };
-Bozuko.transfer = function(key, data, user){
+Bozuko.transfer = function(key, data, user, callback){
     if( !data ) return this._transferObjects[key];
     try{
-
         if( Array.isArray(data) ){
             var ret = [];
             var self = this;
-            data.forEach( function(o){ ret.push(self._transferObjects[key].create(o, user)); } );
-            return ret;
+			return async.forEachSeries( data,
+				function iterator(o, next){
+					return self._transferObjects[key].create(o, user, function( error, result){
+						if( error ) return next(error);
+						ret.push(result);
+						return next();
+					});
+				},
+				function cb(error){
+					if( error ) return callback( error );
+					return callback( null, ret );
+				}
+			);
         }
         else{
-            return this._transferObjects[key].create(data, user);
+            return this._transferObjects[key].create(data, user, function(error, result){
+				if( error ) return callback( error );
+				return callback( null, result );
+			});
         }
     }catch(e){
-        return e;
+        return callback(e);
     }
 };
 
 Bozuko.validate = function(key, data) {
     if( !data ) return false;
-    return this._transferObjects[key].validate(data);
+    var prof = new Profiler('/bozuko/validate');
+    var ret = this._transferObjects[key].validate(data);
+    prof.stop();
+    return ret;
 };
 
 Bozuko.sanitize = function(key, data){
     if( !data ) return false;
-    return this.transfer(key, data);
+    var prof = new Profiler('/bozuko/sanitize');
+    var ret = this.transfer(key, data);
+    prof.stop();
+    return ret;
 };
 
 Bozuko.transfers = function(){
@@ -449,6 +471,6 @@ Bozuko.unsubscribe = function(){
 };
 Bozuko.since = function(date, callback){
     Bozuko.pubsub.since(date, callback);
-}
+};
 
 module.exports = Bozuko;

@@ -37,7 +37,7 @@ function parse_args() {
             }
         } else {
             // get arg value
-            opts[curArg] = process.argv[i];
+            opts[curArg] = parseInt(process.argv[i]);
         }
     }
 }
@@ -45,6 +45,15 @@ function parse_args() {
 (function run() {
      console.log("Provisioning DB");
      parse_args();
+     if (opts.contests === 1) {
+         // just add blue shirt cafe
+         opts.pages = [{
+             lat: 42.396404637936,
+             lng: -71.121946652025,
+             ids: ["117689721590676"]
+         }];
+     }
+
      var db_setup_start = Date.now();
      var t = setInterval(function() {
          process.stdout.write('.');

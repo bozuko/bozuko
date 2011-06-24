@@ -47,7 +47,7 @@ exports['page tests'] = {
                 like_link = page.links.facebook_like;
                 game_state_link = page.games[0].game_state.links.game_state;
                 game_entry_link = page.games[0].game_state.links.game_entry;
-                
+
                 // check for list_message
                 test.ok( page.games[0].list_message != null, 'No list message');
                 favorite_link = page.links.favorite;
@@ -154,9 +154,9 @@ exports['game tests'] = {
     },
 
     'like a page' : function(test){
-        
+
         var url = like_link+'/?token='+token;
-        
+
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             phone_type: phone.type,
@@ -179,7 +179,7 @@ exports['game tests'] = {
 
 
     'attempt a game entry' : function(test) {
-        
+
         var url = game_entry_link+"/?token="+token;
 
         var params = JSON.stringify({
@@ -201,15 +201,16 @@ exports['game tests'] = {
             function(res) {
                 var game_states = JSON.parse(res.body);
                 test.ok(Bozuko.validate(['game_state'], game_states));
+                console.log(game_states);
                 tokens = game_states[0].user_tokens;
                 test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
                 link = game_states[0].links.game_result;
                 test.done();
             });
     },
-    
+
     'get the game state ' : function(test) {
-        
+
         var url = game_state_link+"/?token="+token;
 
         assert.response(test, Bozuko.app,
@@ -224,9 +225,9 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'play 3 times' : function(test) {
-        
+
         var url = link;
-        
+
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
@@ -272,7 +273,7 @@ exports['game tests'] = {
     },
 
     'play again if there is a free play' : function(test) {
-        
+
         async.until(
             function() { return free_plays === 0; },
             function(callback) {
@@ -288,9 +289,9 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'play the game one too many times' : function(test) {
-        
+
         var url = link+"/?token="+token;
-        
+
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
@@ -315,9 +316,9 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'try to checkin again, too close to the last one': function(test) {
-        
+
         var url = checkin_link+"/?token="+token;
-        
+
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Don't let me checkin again",
@@ -340,9 +341,9 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'get the game state again' : function(test) {
-        
+
         var url = game_state_link+"/?token="+token;
-        
+
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
@@ -394,9 +395,9 @@ exports['game tests'] = {
     },
 
     'try a facebook checkin (fail, too soon)' : function(test){
-        
+
         var url =  checkin_link+"/?token="+token;
-        
+
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Still here bitches!",
@@ -419,7 +420,7 @@ exports['game tests'] = {
 
     'enter game again' : function(test){
         var url =  game_entry_link+"/?token="+token;
-        
+
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Still here bitches!",
@@ -450,9 +451,10 @@ exports['game tests'] = {
     },
 
     'try to enter again': function(test) {
-        
+
+        console.log("\n\nFree plays = "+free_plays);
         var url = game_entry_link+"/?token="+token;
-        
+
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Don't let me enter",
@@ -468,6 +470,7 @@ exports['game tests'] = {
             data: params},
             {status: 500, headers: {'Content-Type': 'application/json; charset=utf-8'}},
             function(res) {
+		console.log(res);
                 var facebook_checkin_result = JSON.parse(res.body);
                 test.done();
             });
@@ -475,9 +478,9 @@ exports['game tests'] = {
 
     // Play the slots game and check the result
     'double check game entry and wait' : function(test) {
-        
+
         var url = game_state_link+"/?token="+token;
-        
+
         var params = JSON.stringify({
             phone_type: phone.type,
             phone_id: phone.unique_id,
@@ -509,7 +512,7 @@ exports['game tests'] = {
             });
     },
     'do a literal facebook checkin' : function(test) {
-        
+
         var url = checkin_link+"/?token="+token;
 
         var params = JSON.stringify({
@@ -615,7 +618,7 @@ exports['prizes tests'] = {
         if( wins == 0 ){
             return test.done();
         }
-        
+
         // lets get the prize link
         var redeem_link = prizes[0].links.redeem;
         var url = redeem_link+'/?token='+token;
@@ -650,7 +653,7 @@ exports['prizes tests'] = {
         if( wins == 0 ){
             return test.done();
         }
-        
+
         return assert.response(test, Bozuko.app,
             {url: prizes_link+'/?token='+token+'&state=active'},
             ok,

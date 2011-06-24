@@ -129,9 +129,7 @@ exports['play  3 times'] = function(test) {
         test.deepEqual(results[2].play.play_cursor+0, 2);
 
         Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
-            test.equal(c.plays[0].active, false);
-            test.equal(c.plays[1].active, false);
-            test.equal(c.plays[2].active, false);
+            test.equal(c.plays.length, 0);
             test.done();
         });
     });
@@ -155,9 +153,13 @@ exports['play fail - no tokens'] = function(test) {
         Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
             test.ok(!err);
             test.deepEqual(c.play_cursor+0, play_cursor);
-            test.deepEqual(c.entries[0].tokens+0, 0);
-            test.equal(c.plays[play_cursor].active, false);
-            test.done();
+            test.equal(c.plays.length, 0);
+
+            Bozuko.models.Entry.findOne({contest_id: contest._id, user_id: user._id, tokens: 0}, function(err, e) {
+                test.ok(!err);
+                test.ok(e);
+                test.done();
+            });
         });
     });
 };
@@ -175,41 +177,41 @@ exports['audit - missing prize and play'] = function(test) {
         var results = c.results;
         results[plays - 1] = {
             index: 0,
-            prize: '4dcc0c766982a2fb72000005'
+            prize: '4dcc0c766982a2fb72000005',
+            code: "ABCDEF",
+            count: 1
         };
+
+        var _uuid = uuid();
 
         // Add a fake active_play to the user's record for the contest.
         return Bozuko.models.Contest.findAndModify(
             {_id: contest._id},
             [],
             {$inc: {play_cursor: 1},
-             $push: {plays: {timestamp: timestamp, active: true, uuid: uuid(), user_id: user._id}},
+             $push: {plays: {timestamp: timestamp, active: true, uuid: _uuid, user_id: user._id, cursor: plays-1}},
              $set: {results: results}},
             {new: true},
           function(err, c) {
             test.ok(!err);
-            test.equal(c.plays.length, plays);
-            test.equal(c.plays[plays-1].active, true);
+            test.equal(c.plays.length, 1);
             Bozuko.models.Contest.audit(function(err) {
                 test.ok(!err);
                 Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
                     test.ok(!err);
-                    test.equal(c.plays.length, plays);
-                    test.equal(c.plays[plays-1].active, false);
+                    test.equal(c.plays.length, 0);
                     Bozuko.models.Prize.findOne(
-                        {contest_id: contest._id, play_cursor: plays - 1},
+                        {contest_id: contest._id, uuid: _uuid},
                         function(err, prize) {
                             test.ok(!err);
                             test.ok(prize != null);
                             test.equal(prize.timestamp.getTime(), timestamp.getTime());
-                            test.equal(prize.uuid, c.plays[plays-1].uuid);
                             Bozuko.models.Play.findOne(
-                                {contest_id: contest._id, play_cursor: plays - 1},
+                                {contest_id: contest._id, uuid: _uuid},
                                 function(err, play) {
                                     test.ok(!err);
                                     test.ok(play);
                                     test.equal(play.timestamp.getTime(), timestamp.getTime());
-                                    test.equal(play.uuid, c.plays[plays-1].uuid);
                                     test.done();
                                 }
                             );
@@ -224,33 +226,32 @@ exports['audit - missing prize and play'] = function(test) {
 exports['audit - missing play'] = function(test) {
 
     var timestamp = new Date();
-    var plays = free_play ? 6 : 5;
+
+    var _uuid = uuid();
 
     Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
         test.ok(!err);
 
         // Add a fake active_play to the user's record for the contest.
         // The play_cursor is longer than the results array, but it doesn't matter for the test.
-        c.plays.push({timestamp: timestamp, active: true, uuid: uuid(), user_id: user._id});
+        c.plays.push({timestamp: timestamp, active: true, uuid: _uuid, user_id: user._id});
         c.play_cursor++;
 
         c.save(function(err) {
             test.ok(!err);
-            test.equal(c.plays.length, plays);
-            test.equal(c.plays[plays-1].active, true);
+            test.equal(c.plays.length, 1);
+            test.equal(c.plays[0].active, true);
             Bozuko.models.Contest.audit(function(err) {
                 test.ok(!err);
                 Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
                     test.ok(!err);
-                    test.equal(c.plays.length, plays);
-                    test.equal(c.plays[plays-1].active, false);
+                    test.equal(c.plays.length, 0);
                     Bozuko.models.Play.findOne(
-                        {contest_id: contest._id, play_cursor: plays-1},
+                        {contest_id: contest._id, uuid: _uuid},
                         function(err, play) {
                             test.ok(!err);
                             test.ok(play);
                             test.equal(play.timestamp.getTime(), timestamp.getTime());
-                            test.equal(play.uuid, c.plays[plays-1].uuid);
                             test.done();
                         }
                     );
