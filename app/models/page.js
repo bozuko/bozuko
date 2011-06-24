@@ -63,8 +63,8 @@ Page.method('loadContests', function(user, callback){
                 contest.loadGameState(user, function(error, state){
                     contest.loadEntryMethod(user, function(error, method){
                         self.contests.push(contest);
+                        cb(null);
                     });
-                    cb(null);
                 });
             },
 
@@ -91,13 +91,16 @@ Page.method('getActiveContests', function(user, callback){
 
     Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function(err, contests) {
         if (err) return callback(err);
-
+        
+        
         var exhausted_contests = {};
         var exhausted_contest_ids = [];
         var contest;
+        
         for (var i = 0; i < contests.length; i++) {
             contest = contests[i];
-
+            
+            
             // Is contest exhausted?
             if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
                 exhausted_contests[String(contest._id)] = contest;
@@ -105,7 +108,7 @@ Page.method('getActiveContests', function(user, callback){
                 contests.splice(i, 1);
             }
         }
-
+       
         if (!user_id) return callback(null, contests);
 
         // Find user entries that still have tokens for exhausted contests.
@@ -133,9 +136,12 @@ Page.method('getActiveContests', function(user, callback){
                         contests.push(exhausted_contests[String(cid)]);
                     }
                 }
+                
+                return callback( null, contests);
 
             }
         );
+        
 
         return callback(null, contests);
     });

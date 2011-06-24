@@ -307,6 +307,7 @@ exports.routes = {
                     // need to popuplate the page with the right stuff
                     return page.loadContests( req.session.user, function(error){
                         if( error ) return error.send(res);
+                        console.log(page.contests);
                         return Bozuko.transfer('page', page, req.session.user, function(error, result){
                             res.send( error || result );
                         });
