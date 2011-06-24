@@ -16,6 +16,8 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
     ],
     
     initComponent : function(){
+        var me = this;
+        
         this.items = [{
             region: 'center',
             layout: 'border',
@@ -108,6 +110,9 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
             eventLog.insert(0,[record]);
             while(eventLog.getCount() > 150 ){
                 eventLog.removeAt(150);
+            }
+            if( type == 'contest/entry' ){
+                me.down('chart').store.load();
             }
         });
     }
