@@ -248,7 +248,7 @@ exports.routes = {
                         if( !message || !Bozuko.cfg('test_mode', true) ) return res.send( Bozuko.transfer('redemption_object', redemption) );
                         
                         // brag to friends
-                        if( /share\s+with\s+friend/i.test(message) ) message = '';
+                        if( /share\s+with\s+your\s+friends/i.test(message) ) message = '';
                         // build our options
                         var options = {
                             user: req.session.user,
