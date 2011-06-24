@@ -111,7 +111,8 @@ exports.links = {
     logout: {
         get: {
             access: 'user',
-            doc: "Logout of Bozuko"
+            doc: "Logout of Bozuko",
+            returns: 'success_message'
         }
     }
 };
@@ -165,9 +166,7 @@ exports.routes = {
         get : {
 
             handler: function(req,res){
-                req.session.destroy(function(){
-                    res.redirect('/');
-                });
+                return res.send( {success: true, title: "Logout", message: "You have been logged out"} );
             }
         }
     },

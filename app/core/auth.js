@@ -11,13 +11,16 @@ var auth = exports;
  * There should be an algorithm embedded in the mobile app for each version
  */
 
+function hashme(challenge, req) {
+    var data = req.url+challenge;
+    var sha = crypto.createHash('sha1');
+    sha.update( data );
+    return sha.digest('hex');
+}
+
 auth.mobile_algorithms = {
-    '1.0': function(challenge, req) {
-        var data = req.url+challenge;
-        var sha = crypto.createHash('sha1');
-        sha.update( data );
-        return sha.digest('hex');
-    }
+    '1.0': hashme,
+    '1.1': hashme
 };
 
 auth.login = function(req,res,scope,defaultReturn,success,failure){
