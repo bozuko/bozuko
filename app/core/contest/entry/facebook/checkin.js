@@ -125,7 +125,7 @@ FacebookCheckinMethod.prototype.getTokenCount = function(){
     }
     return tokens;
 }
-
+/*
 FacebookCheckinMethod.prototype.validate = function( callback ){
     var self = this;
     EntryMethod.prototype.validate.call(self, function(error, valid){
@@ -134,6 +134,7 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
         // we need to know how far away this cat is...
     });
 };
+*/
 
 /**
  * Perform all necessary actions accociated with this entry method (eg, checkin, check for location, etc)
