@@ -245,7 +245,7 @@ exports.routes = {
                         if( error ) return error.send(res);
                     
                         var message = req.param('message');
-                        if( !message || !Bozuko.cfg('test_mode', true) ) return res.send( Bozuko.transfer('redemption_object', redemption) );
+                        if( !message || Bozuko.cfg('test_mode', true) ) return res.send( Bozuko.transfer('redemption_object', redemption) );
                         
                         // brag to friends
                         if( /share\s+with\s+your\s+friends/i.test(message) ) message = '';
