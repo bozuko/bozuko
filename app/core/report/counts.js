@@ -12,7 +12,7 @@ CountsReport.mapFunctionTmpl = {
     
     time: (function(){
         var ts = this.FIELDNAME;
-        var timestamp = Date.UTC(ts.getFullYear(), 0, 0, 0, 0, 0, 0);
+        var timestamp = Date.UTC(ts.getFullYear(), 0, 0, 12, 0, 0, 0);
         emit( timestamp, {timestamp: new Date(timestamp), count: 1} );
     }).toString(),
     
@@ -34,7 +34,7 @@ CountsReport.getMapFunction = function getMapFunction(type, field, interval){
     if( ~index ){
         for(var i = 0; i < index+1; i++ ){
             str = 'ts.get'+intervals[i]+'()';
-            fn = fn.replace(/0/, str);
+            fn = fn.replace(/(0|12)/, str);
         }
     }
     return fn;
@@ -70,7 +70,7 @@ CountsReport.prototype.run = function run(callback){
             CountsReport.getMapFunction('time', this.options.field || 'timestamp', this.options.interval || 'Date') :
             CountsReport.getMapFunction('filter', this.options.field )
         );
-            
+    
     var reduceFn = this.options.reduceFn || CountsReport.getReduceFunction( field );
     
     var options = {};
@@ -130,12 +130,11 @@ CountsReport.prototype.run = function run(callback){
                 }
                 var start = DateUtil.create(startArgs),
                     end = DateUtil.create(endArgs);
-                    
                 
                 var tmp = items.slice(), i=0;
                 items = [];
                 
-                for(var cur = +start; cur < +end && i < tmp.length; cur +=  DateUtil.DAY ){
+                for(var cur = +start; cur <= +end && i < tmp.length; cur +=  DateUtil.DAY ){
                     if( cur < tmp[i]._id ){
                         // add a blank
                         var blank = {_id: cur, count: 0};

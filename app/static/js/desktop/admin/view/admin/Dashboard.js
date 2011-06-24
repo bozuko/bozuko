@@ -28,18 +28,18 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
                 animate: true,
                 store: Ext.create('Bozuko.store.Reports'),
                 axes: [{
-                    type        :'Time',
-                    position    :'bottom',
-                    fields      :['timestamp'],
-                    title       :'Day',
-                    dateFormat  :'M d',
-                    groupBy     :'year,month,day'
-                },{
                     type        :'Numeric',
                     position    :'left',
                     fields      :['count'],
                     title       :'Entries',
                     grid        :true
+                },{
+                    type        :'Time',
+                    position    :'bottom',
+                    fields      :'timestamp',
+                    title       :'Day',
+                    dateFormat  :'M d',
+                    groupBy     :'year,month,day'
                 }],
                 series: [{
                     title: 'Count',
@@ -53,18 +53,9 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
                             this.update( storeItem.get('count')+' Entries' );
                         }
                     },
-                    fill: true,
                     axis: 'left',
                     xField: 'timestamp',
-                    yField: 'count',
-                    smooth: true,
-                    display: 'over',
-                    markerCfg: {
-                        type: 'cross',
-                        size: 4,
-                        radius: 4,
-                        'stroke-width': 0
-                    }
+                    yField: 'count'
                 }]
             },{
                 height: 200,
