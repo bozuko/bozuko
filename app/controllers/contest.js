@@ -31,12 +31,12 @@ var game_result = {
             game: '/game/'+result.contest.id
         };
 
-        return Bozuko.transfer('game_state', result.contest.game_state, user, function( error, result){
+        return Bozuko.transfer('game_state', result.contest.game_state, user, function( error, game_state){
             if( error ) return callback( error );
-            ret.game_state = result;
-            if( result.prize ) return Bozuko.transfer('prize', result.prize, user, function(error, result){
+            ret.game_state = game_state;
+            if( result.prize ) return Bozuko.transfer('prize', result.prize, user, function(error, prize){
                 if( error ) return callback( error );
-                ret.prize = result;
+                ret.prize = prize;
                 return callback( null, ret );
             });
             return callback( null, ret);
