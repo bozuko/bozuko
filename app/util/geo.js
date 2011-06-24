@@ -9,6 +9,8 @@ if (typeof(Number.prototype.toRad) === "undefined") {
 }
 
 module.exports = {
+  
+    
     
     earth:{
         radius:{
