@@ -111,6 +111,10 @@ exports.links = {
                 message : {
                     type: "String",
                     description: "The user entered message"
+                },
+                share : {
+                    type: "Boolean",
+                    description: "Share this redemption."
                 }
             },
             returns: "redemption_object"
@@ -244,8 +248,11 @@ exports.routes = {
                     return prize.redeem(req.session.user, function(error, redemption){
                         if( error ) return error.send(res);
                     
-                        var message = req.param('message');
-                        if( !message || Bozuko.cfg('test_mode', true) ) return res.send( Bozuko.transfer('redemption_object', redemption) );
+                        var message = req.param('message'),
+                            share = req.param('share')
+                            ;
+                            
+                        if( (!share && !message) || Bozuko.cfg('test_mode', true) ) return res.send( Bozuko.transfer('redemption_object', redemption) );
                         
                         // brag to friends
                         if( /share\s+with\s+your\s+friends/i.test(message) ) message = '';
