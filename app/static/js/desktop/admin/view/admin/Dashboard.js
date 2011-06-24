@@ -49,7 +49,7 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
                         width: 80,
                         height: 40,
                         renderer: function(storeItem, item) {
-                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'), 'M d'));
+                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'), 'D M d'));
                             this.update( storeItem.get('count')+' Entries' );
                         }
                     },
