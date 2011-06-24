@@ -185,9 +185,11 @@ exports.routes = {
                     if( error ) return error.send( res );
                     
                     if( !count ){
-                        return res.send( Bozuko.transfer('prizes', {
+                        return Bozuko.transfer('prizes', {
                             prizes: []
-                        }, req.session.user));
+                        }, req.session.user, function(error, result){
+                            res.send( error || result );
+                        });
                     }
                     
                     var hasNext = offset+limit <= count;
