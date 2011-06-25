@@ -17,7 +17,6 @@ var PubSub = module.exports = function(){
     self.cleanup_interval = Bozuko.getConfigValue( 'pubsub.cleanup.interval', 1000 * 60 * 10); // 10 minutes
     self.cleanup_timeout = null;
     self.start();
-    self.setMaxListeners(0);
 };
 
 util.inherits( PubSub, events.EventEmitter );
