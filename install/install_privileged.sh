@@ -28,6 +28,5 @@ echo "ClientAliveCountMax 4" >> /etc/ssh/sshd_config
 
 
 # tweak kernel for servers
-echo "*		 soft    nofile          50000" >> /etc/security/limits.conf
-echo "* 	 hard	 nofile		 50000" >> /etc/security/limits.conf
-
+echo "*		 soft    nofile          64535" >> /etc/security/limits.conf
+echo "* 	 hard	 nofile		 64535" >> /etc/security/limits.conf
