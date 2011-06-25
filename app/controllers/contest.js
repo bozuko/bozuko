@@ -333,6 +333,11 @@ exports.routes = {
             access: 'mobile',
 
             handler : function(req,res){
+                var send = res.send;
+                res.send = function(){
+                    console.error( require('util').inspect(arguments) );
+                    send.apply(res, arguments);
+                };
                 return Bozuko.models.Contest.findById(req.params.id, function(error, contest){
                     if( error ){
                         return error.send(res);

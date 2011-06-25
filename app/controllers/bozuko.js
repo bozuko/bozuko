@@ -181,6 +181,10 @@ exports.routes = {
                             Bozuko.unsubscribe(event, listener);
                         });
                     }
+                    req.connection.removeListener('timeout', unsubscribe);
+                    req.connection.removeListener('end', unsubscribe);
+                    req.connection.removeListener('close', unsubscribe);
+                    req.connection.removeListener('error', unsubscribe);
                     prof.stop();
                 };
 
