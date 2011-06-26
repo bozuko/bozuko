@@ -9,6 +9,12 @@ This page will use **api** as the example user and **db1** as the hostname
 #### Create proper user (bozuko, api, etc...)
      adduser api 
 
+#### Give the user sudo privileges
+
+Add the user to the sudo group by editing /etc/group
+
+    sudo:x:37:api
+
 #### Set the hostname
     echo db1 > /etc/hostname
     hostname -F /etc/hostname
@@ -54,6 +60,10 @@ Add the following to /etc/network/interfaces. Use the address and netmask from t
 Restart networking for the changes to take effect.
 
     /etc/init.d/networking restart
+
+### Lock Down SSH
+
+Edit /etc/sshd
     
 
 ## User Install
