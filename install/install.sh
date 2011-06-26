@@ -22,4 +22,4 @@ cd ~ && npm install connect connect-auth express jade mongodb mongoose monomi oa
 git clone git@github.com:bozuko/commando.git
 npm install commando
 rm -rf commando
-cp config/commando.conf ~/.commando
+cp ~/bozuko/install/config/commando.conf ~/.commando
