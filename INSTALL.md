@@ -64,8 +64,20 @@ Restart networking for the changes to take effect.
 
 ### Lock Down SSH
 
-Edit /etc/sshd
+Setup ssh keys for login on your local machine and install them as authorized keys for the appropriate user.
+Follow the instructions on the [Security](https://github.com/bozuko/bozuko/wiki/Security) wiki page.
+
+Edit **/etc/ssh/sshd_config** for the following operations.
+
+Disable Root Login
     
+    PermitRootLogin no
+
+Disable Password Authentication. If you do this without configuring ssh keys you won't be able to login. 
+New keys can be added later via sudo from the user account.
+
+    PasswordAuthentication no
+
 
 ## User Install
 
