@@ -78,6 +78,9 @@ New keys can be added later via sudo from the user account.
 
     PasswordAuthentication no
 
+Restart ssh for the changes to take effect.
+
+    restart ssh
 
 ## User Install
 
