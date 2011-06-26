@@ -45,6 +45,7 @@ http://help.github.com/linux-key-setup/
 #### Setup static networking for the private IP 
 
 Add the following /etc/network/interfaces. Use the address you added from the Linode "Remote Access" Tab.
+
     auto eth0:0
     iface eth0:0 inet static
     address X.X.X.X
