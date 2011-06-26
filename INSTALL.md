@@ -44,12 +44,12 @@ http://help.github.com/linux-key-setup/
 
 #### Setup static networking for the private IP 
 
-Add the following to /etc/network/interfaces. Use the address from the Linode "Remote Access" Tab.
+Add the following to /etc/network/interfaces. Use the address and netmask from the Linode "Remote Access" Tab.
 
     auto eth0:0
     iface eth0:0 inet static
     address X.X.X.X
-    netmask 255.255.255.0
+    netmask Y.Y.Y.Y
 
 Restart networking for the changes to take effect.
     /etc/init.d/networking restart
