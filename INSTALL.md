@@ -42,6 +42,17 @@ http://help.github.com/linux-key-setup/
     cd $BOZ_DIR/install
     ./install_privileged.sh
 
+#### Setup static networking for the private IP 
+
+Add the following /etc/network/interfaces. Use the address you added from the Linode "Remote Access" Tab.
+    auto eth0:0
+    iface eth0:0 inet static
+    address X.X.X.X
+    netmask 255.255.255.0
+
+Restart networking for the changes to take effect.
+    /etc/init.d/networking restart
+    
 
 ## User Install
 
