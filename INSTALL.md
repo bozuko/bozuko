@@ -92,10 +92,12 @@ Login as the appropriate user and run the following commands
 
 
 #### Generate ssh keys for your user. **Always use a password!**
-    ssh-keygen -t rsa -C "api@db1.bozuko.com"
+    
+    ssh-keygen -t rsa -b 4096 -C "api@db1.bozuko.com"
 
 #### Add the key to the bozuko github account.
-     cat ~/.ssh/id_rsa.pub
+    
+    cat ~/.ssh/id_rsa.pub
 
 ####Install bozuko
 
