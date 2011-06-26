@@ -20,6 +20,7 @@ Add the user to the sudo group by editing /etc/group
     hostname -F /etc/hostname
 
 Open /etc/hosts and add the hostname to the end of the localhost line
+
     127.0.0.1 localhost db1 db1.bozuko.com
 
 #### Prevent DHCP from setting the hostname
