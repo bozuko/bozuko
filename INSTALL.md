@@ -34,7 +34,7 @@ Comment out SET_HOSTNAME
     apt-get install git
 
 #### Generate ssh keys for root. **Always use a password!**
-    ssh-keygen -t rsa -C "root@db1.bozuko.com"
+    ssh-keygen -t rsa -C -b 4096 "root@db1.bozuko.com"
 
 #### Add key to bozuko github account
 Copy the **public** key and add it to the github bozuko account 
