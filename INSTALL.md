@@ -52,6 +52,7 @@ Add the following to /etc/network/interfaces. Use the address and netmask from t
     netmask Y.Y.Y.Y
 
 Restart networking for the changes to take effect.
+
     /etc/init.d/networking restart
     
 
