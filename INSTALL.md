@@ -31,11 +31,9 @@ Comment out SET_HOSTNAME
 
 #### Add key to bozuko github account
 Copy the **public** key and add it to the github bozuko account 
-with read-only permissions via the web interface
 http://help.github.com/linux-key-setup/
 
     cat ~/.ssh/id_rsa.pub
-
 
 #### Clone the bozuko repo and install all dependencies that require root privileges
     BOZ_DIR=~api/bozuko
@@ -48,6 +46,15 @@ http://help.github.com/linux-key-setup/
 ## User Install
 
 Login as the appropriate user and run the following commands
+
+
+#### Generate ssh keys for your user. **Always use a password!**
+    ssh-keygen -t rsa -C "api@db1.bozuko.com"
+
+#### Add the key to the bozuko and commando repos.
+     cat ~/.ssh/id_rsa.pub
+
+####Install bozuko
 
     cd ~/bozuko/install
     ./install.sh
