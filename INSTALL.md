@@ -118,9 +118,9 @@ If this server is not a DB, config server or arbiter you should uninstall mongod
 
 #### Configure mongodb to start in replica set mode
 
-Add a *--replSet* parameter to mongod in **/etc/init/mongodb.conf**
+Add *--replSet* and --nohttpinterface parameters to mongod in **/etc/init/mongodb.conf**
 
-    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet production 
+    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet production --nohttpinterface
 
 Restart mongodb ensuring it re-reads it's config
 
