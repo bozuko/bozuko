@@ -120,9 +120,9 @@ If this server is not a DB, config server or arbiter you should uninstall mongod
 
 Add *--replSet* and *--nohttpinterface* parameters to mongod in **/etc/init/mongodb.conf** 
 
-Also bind on **private** IP and localhost.
+Also bind on **private** IP and localhost. Ensure the --bind_ip argument doesn't have any spaces!
 
-    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet production --nohttpinterface --bind_ip '127.0.0.1, X.X.X.X'
+    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet production --nohttpinterface --bind_ip '127.0.0.1,X.X.X.X'
 
 Restart mongodb ensuring it re-reads it's config
 
