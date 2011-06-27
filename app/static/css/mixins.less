@@ -22,6 +22,13 @@
     -khtml-opacity:@op/100;
     opacity:@op/100;
 }
+.unselectable(){
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
 
 .background_gradient(@from: #ccc, @to: #fff) {
     background-color: @from;
@@ -41,6 +48,13 @@
     border-left: 1px solid @sides;
     border-right: 1px solid @sides;
     border-bottom: 1px solid @bottom;
+}
+
+.transition( @obj:all, @time:.5s, @easing:linear) {
+    transition: @obj @time @easing;
+    -moz-transition: @obj @time @easing;
+    -o-transition: @obj @time @easing;
+    -webkit-transition: @obj @time @easing;
 }
 
 .multi_rounded_corners(@topLeft: 5px, @topRight: 5px, @bottomRight: 5px, @bottomLeft: 5px) {

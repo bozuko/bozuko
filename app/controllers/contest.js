@@ -74,6 +74,7 @@ var game = {
         var obj = {};
         obj = this.merge(obj, game.contest);
         obj = this.merge(obj, game);
+        obj.id = game.id;
         obj.type = game.getType();
         obj.name = game.getName();
         obj.config = game.getConfig();

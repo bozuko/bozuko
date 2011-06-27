@@ -46,9 +46,11 @@ html(class=locals.html_classes?html_classes.join(' '):'')
                       em!= item.text
           
       .bd
+        .top-line
         .page-width
           .wrap
             .content!= body
+        .bottom-line
         
       .ft
         .page-width
@@ -58,7 +60,7 @@ html(class=locals.html_classes?html_classes.join(' '):'')
                 li
                   a(href="/") Home 
                 li
-                  a(href="#") How to Play 
+                  a(href="/how-to-play") How to Play 
                 li
                   a(href="#") Bozuko for Business 
                 li
@@ -121,3 +123,16 @@ html(class=locals.html_classes?html_classes.join(' '):'')
       feedback_widget_options.style = "question";
       
       var feedback_widget = new GSFN.feedback_widget(feedback_widget_options);
+    
+    - if( !Bozuko.config.test_mode )
+      script(type="text/javascript")
+  
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-22885354-1']);
+        _gaq.push(['_trackPageview']);
+      
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();

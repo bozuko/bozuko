@@ -1,8 +1,14 @@
 @import "app/static/css/vars";
 @import "app/static/css/mixins";
 
+@page_width: 860px;
+
 html{
     background-color: #fff;
+    min-height: 100%;
+}
+body{
+    min-height: 100%;
 }
 
 .page {
@@ -11,7 +17,7 @@ html{
 
 .page-width {
     position: relative;
-    width: 850px;
+    width: @page_width;
     margin: 0 auto;
     background-color: transparent;
 }
@@ -116,6 +122,33 @@ html{
     }
 }
 
+.bd{
+    position: relative;
+    padding: 5px 0;
+    min-height: 200px;
+    background: #fff url("/images/desktop/site/bg_who-we-are.png") repeat-x 0 100%;
+    
+    .top-line {
+        z-index: 3;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: transparent url("/images/desktop/site/bg_shadow-line-bottom-shadow.png") repeat-x 0 0;
+    }
+    .bottom-line {
+        z-index: 3;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 0;
+    }
+}
+
+
 .site-home{
     .bd{
         .page-width{
@@ -125,21 +158,18 @@ html{
                 clear: both;
                 .city {
                     background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
-                    .border-top {
-                        background: transparent url("/images/desktop/site/bg_shadow-line-bottom-shadow.png") repeat-x 0 0;
-                        .border-bottom {
-                            background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
-                            height: 347px;
-                            .panels {
-                                position: relative;
-                                z-index: 3px;
-                                height: 370px;
-                                margin-left: 2px;
-                                top: -28px;
-                                background: transparent url("/images/desktop/site/img_panels-with-shadow.png") no-repeat 50% 0;
-                                h1 {
-                                    display: none;
-                                }
+                    .border-bottom {
+                        background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
+                        height: 347px;
+                        .panels {
+                            position: relative;
+                            z-index: 4;
+                            height: 370px;
+                            margin-left: 2px;
+                            top: -28px;
+                            background: transparent url("/images/desktop/site/img_panels-with-shadow.png") no-repeat 50% 0;
+                            h1 {
+                                display: none;
                             }
                         }
                     }
@@ -212,7 +242,7 @@ html{
                 }
                 
                 .businesses {
-                    background: #fff url("/images/desktop/site/bg_who-we-are.png") repeat-x 0 100%;
+                    
                     .rewards {
                         min-width: 850px;
                         background: transparent url("/images/desktop/site/bg_rewards.png") no-repeat 50% 100%;
@@ -267,6 +297,243 @@ html{
 }
 
 
+.site-how-to-play{
+    .bd{
+        .page-width{
+            width: auto;
+            
+            .hero {
+                .city {
+                    background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
+                    
+                    .border-bottom {
+                        
+                        .page-width {
+                            margin: 0 auto;
+                            width: @page_width;
+                            height: 342px;
+                            position: relative;
+                            z-index: 4;
+                            
+                            .iphone {
+                                width: 395px;
+                                position: absolute;
+                                bottom: 0px;
+                                right: -30px;
+                                height: 375px;
+                                
+                                .frame {
+                                    position: absolute;
+                                    z-index: 2;
+                                    top: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 100%;
+                                    background: transparent url("/images/desktop/site/how-to/bg_iphone-frame.png") no-repeat 0 100%;
+                                }
+                                
+                                .top {
+                                    background: transparent url("/images/desktop/site/how-to/bg_iphone-top.png") no-repeat 0 0;
+                                    position: absolute;
+                                    width: 209px;
+                                    height: 13px;
+                                    top: 92px;
+                                    left: 91px;
+                                }
+                                .screenshots {
+                                    position: absolute;
+                                    width: 209px;
+                                    height: 270px;
+                                    background: #000;
+                                    top: 105px;
+                                    left: 91px;
+                                    overflow: hidden;
+                                    
+                                    .scroller {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        height: 270px;
+                                        img {
+                                            
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                            
+                            .content {
+                                z-index: 2;
+                                position: absolute;
+                                top: 50px;
+                                left: 70px;
+                                width: 437px;
+                                height: 235px;
+                                background: transparent url("/images/desktop/site/how-to/bg_text-area.png") no-repeat 0 0;
+                                
+                                .padding {
+                                    position: relative;
+                                    top: 10px;
+                                    height: 210px;
+                                    width: 420px;
+                                    h3 {
+                                        position: relative;
+                                        margin: 0;
+                                        padding: 0;
+                                        line-height: 53px;
+                                        .number {
+                                            display: block;
+                                            position: absolute;
+                                            left: -70px;
+                                            top: 0px;
+                                            width: 54px;
+                                            height: 53px;
+                                            text-align: center;
+                                            font-size: 30px;
+                                            font-family: "ArvoBold";
+                                            color: #fff;
+                                            background: transparent url("/images/desktop/site/how-to/bg_orange-circle.png") no-repeat 0 0;
+                                        }
+                                        .title {
+                                            color: #333;
+                                            font-size: 23px;
+                                            font-family: ArvoRegular;
+                                            font-weight: normal;
+                                        }
+                                    }
+                                    .slides {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                        overflow: hidden;
+                                    }
+                                    .slide {
+                                        padding: 10px 20px 20px 90px;
+                                        display: none;
+                                        
+                                        p {
+                                            margin-top: 0;
+                                        }
+                                    }
+                                    .slide-active {
+                                        display: block;
+                                    }
+                                    .scroller {
+                                        
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                    }
+                                }
+                                
+                                .nav-arrow {
+                                    text-indent: -9999em;
+                                    position: absolute;
+                                    top: 90px;
+                                    z-index: 4;
+                                    width: 24px;
+                                    height: 33px;
+                                    background-repeat: no-repeat;
+                                    .unselectable();
+                                    .opacity(80);
+                                    background-image: url("/images/desktop/site/how-to/bg_arrows.png");
+                                    display: block;
+                                    cursor: pointer;
+                                }
+                                .nav-arrow-next {
+                                    right: -30px;
+                                    background-position: -23px -33px;
+                                }
+                                .nav-arrow-next:hover {
+                                    background-position: -23px -66px;
+                                }
+                                .nav-arrow-next:active {
+                                    background-position: -23px -66px;
+                                    .opacity(100);
+                                }
+                                .nav-arrow-prev {
+                                    left: -36px;
+                                    background-position: 0 -33px;
+                                }
+                                .nav-arrow-prev:hover {
+                                    background-position: 0px -66px;
+                                }
+                                .nav-arrow-prev:active {
+                                    .opacity(100);
+                                    background-position: 0px -66px;
+                                }
+                                .nav-arrow-hover {
+                                    
+                                }
+                                .nav-arrow-inactive{
+                                    background-position: 0px 0px;
+                                    .opacity( 50 );
+                                    display: none;
+                                }
+                                .nav-arrow-next.nav-arrow-inactive{
+                                    background-position: 0px -33px;
+                                    .opacity( 50 );
+                                    display: none;
+                                }
+                            }
+                            
+                            .characters {
+                                position: absolute;
+                                z-index: 3;
+                                top: 210px;
+                                left: 30px;
+                                width: 103px;
+                                height: 111px;
+                                background: transparent url("/images/desktop/site/how-to/img_characters.png") no-repeat 0 0;
+                            }
+                            
+                            .nav {
+                                position: absolute;
+                                bottom: 25px;
+                                left: 70px;
+                                width: 430px;
+                                text-align: center;
+                                
+                                a {
+                                    display: inline-block;
+                                    text-indent: -99999em;
+                                    width: 15px;
+                                    height: 15px;
+                                    margin: 0 1px;
+                                    text-decoration: none;
+                                    background: transparent url("/images/desktop/site/how-to/img_bullet-inactive.png") no-repeat 0 0;
+                                }
+                                
+                                a.active {
+                                    background: transparent url("/images/desktop/site/how-to/img_bullet-active.png") no-repeat 0 0;
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            }
+            
+            .faq {
+                .page-width {
+                    width: @page_width;
+                    min-height: 100px;
+                    
+                    h2 {
+                        color: @orange;
+                        font-size: 22px;
+                        margin: .5em 0;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+
 .ft {
     ul {
         list-style: none;
@@ -280,11 +547,14 @@ html{
         padding: 0;
         
         a {
+            display: block;
             color: #666;
             text-decoration: none;
+            .transition(color, .25s);
         }
         a:hover{
-            color: @dark_color;
+            color: @orange;
+            
         }
     }
     .downloadUnit {
@@ -294,10 +564,13 @@ html{
         text-align: center;
         h3 {
             color: @orange;
-            margin: 1em 0;
+            margin: 1em 0 0;
             text-transform: uppercase;
             font-family: ArvoRegular;
             font-weight: normal;
+        }
+        ul.download{
+            margin-top: .6em;
         }
     }
     

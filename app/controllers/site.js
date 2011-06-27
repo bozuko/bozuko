@@ -6,7 +6,7 @@ exports.locals = {
         link: '/',
         text: 'Home'
     },{
-        link: '#',
+        link: '/how-to-play',
         text: 'How to Play'
     },{
         link: '#',
@@ -29,6 +29,23 @@ exports.routes = {
             
             handler: function(req, res) {
                 res.render('site/index');
+            }
+        }
+    },
+    '/how-to-play' : {
+        get : {
+            
+            title: 'How to Play Bozuko',
+            locals: {
+                html_classes: ['site-how-to-play'],
+                head_scripts: [
+                    'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
+                    '/js/desktop/site/how-to.js'
+                ]
+            },
+            
+            handler: function(req, res) {
+                res.render('site/how-to-play');
             }
         }
     }
