@@ -159,8 +159,9 @@ You must configure your replica set inside the mongo shell on the proposed maste
                     "t" : 1309134090000,
                     "i" : 1
                 },
-                "optimeDate" : ISODate("2011-06-27T00:21:30Z"),                                                  "self" : true
-                                                                                                             },
+                "optimeDate" : ISODate("2011-06-27T00:21:30Z"),
+                "self" : true
+            },
             {
                 "_id" : 1,
                 "name" : "Y.Y.Y.Y",
@@ -176,7 +177,7 @@ You must configure your replica set inside the mongo shell on the proposed maste
              },
              {
                   "_id" : 2,
-                  "name" : "66.228.43.224",
+                  "name" : "Z.Z.Z.Z",
                   "health" : 1,
                   "state" : 7,
                   "stateStr" : "ARBITER",
