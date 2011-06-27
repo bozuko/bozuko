@@ -4,10 +4,14 @@ if [ ! -d logs ] ; then
     mkdir -p logs
 fi
 
-if [[ "$1" == 'development' || "$1" == 'production' || "$1" == 'test' || "$1" == 'stats' || "$1" == 'load' ]] ; then
+if [[ "$1" == 'development' || "$1" == 'api' || "$1" == 'test' || "$1" == 'stats' || "$1" == 'load' || "$1" == 'playground' ]] ; then
     export NODE_ENV="$1";
 else
     export NODE_ENV='development';
 fi
 
-nohup node server.js >> ./logs/bozuko.log &
+if [[ "$1" == 'playground' || "$1" == 'api' ]]; then 
+    sudo -E env PATH=$PATH NODE_ENV=$1 nohup node server.js >> ./logs/$1/bozuko.log &
+else
+    nohup node server.js >> ./logs/$NODE_ENV/bozuko.log &
+fi
