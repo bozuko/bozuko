@@ -69,6 +69,7 @@ First you need to create a .ssh directory for the user since he hasn't logged in
     mkdir ~api/.ssh && chown -hR api:api ~api/.ssh
 
 Setup ssh keys for login on your local machine and install them as authorized keys for the appropriate user.
+
 Follow the instructions on the [Security](https://github.com/bozuko/bozuko/wiki/Security) wiki page.
 
 Edit **/etc/ssh/sshd_config** for the following operations.
