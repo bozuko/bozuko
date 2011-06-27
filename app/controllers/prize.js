@@ -10,6 +10,8 @@ exports.transfer_objects = {
         doc: "Bozuko Prize Object - state is either active, redeemed, or expired",
         def: {
             id: "String",
+            game_id: "String",
+            page_id: "String",
             state: "String",
             name: "String",
             is_email: "Boolean",
@@ -37,6 +39,8 @@ exports.transfer_objects = {
             var self = this;
             this.sanitize(prize, null, user, function(error, o){
                 if( error ) return callback( error );
+                o.page_id = prize.page_id;
+                o.game_id = prize.contest_id;
                 o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
                     ". This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
                 o.win_time = prize.timestamp;
