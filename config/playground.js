@@ -1,7 +1,7 @@
 module.exports = {
 
     test_mode: false,
-    
+
     client: {
         mobile:{
             iphone:{
@@ -12,7 +12,7 @@ module.exports = {
             }
         }
     },
-    
+
     admin : {
         winners_list:{
             poll_interval: 1000
@@ -21,7 +21,8 @@ module.exports = {
 
     db:{
         name: 'bozuko_playground',
-        host: 'localhost'
+        replicaSet: true,
+        hosts: ['192.168.175.164', '192.168.175.163', '192.168.174.86']
     },
 
     facebook: {
@@ -36,7 +37,7 @@ module.exports = {
             business:"email,manage_pages"
         }
     },
-    
+
     bozuko :{
         facebook_id: '223851717629478'
     },
@@ -47,7 +48,7 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
-    
+
     amazon : {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
@@ -63,7 +64,7 @@ module.exports = {
             // 4 hours between checkins at the same place
             page: 1000 * 60 * 60 * 4
         },
-        
+
         distance : 400 /* feet */
     },
 
@@ -92,7 +93,7 @@ module.exports = {
         host: 'playground.bozuko.com',
         port: 443
     },
-    
+
     pubsub: {
         poll: {
             interval: 500
