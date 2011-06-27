@@ -196,6 +196,10 @@ You must configure your replica set inside the mongo shell on the proposed maste
          "ok" : 1
      }
 
-#### Ensure that the bozuko config is correct for the dbs. 
+#### Ensure that the bozuko config is correct for the dbs. Change it and push to github.
 
-See the (api config)[https://github.com/bozuko/bozuko/blob/master/config/api.js] for an example.
+See the [api config](https://github.com/bozuko/bozuko/blob/master/config/api.js) for an example.
+
+## Run bozuko as the given user on the app server
+
+    ./run_bozuko api
