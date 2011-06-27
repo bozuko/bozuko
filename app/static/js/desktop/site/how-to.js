@@ -44,7 +44,7 @@ jQuery( function($){
             
         var text = $('h3 .title', slides[index]).text();
         
-        var a = $('<a href="javascript:;">&bull;</a>')
+        var a = $('<a href="javascript:;"><span>&bull;</span></a>')
             .attr('title', (index+1)+'. '+ text)
             .appendTo(nav)
             .click( function(){
@@ -69,9 +69,13 @@ jQuery( function($){
                     $(this).removeClass('nav-arrow-hover');
                 }
             )
-            .click(function(){self[action]()});
+            .click(function(){
+                if(
+                   (action === 'next' && active < count-1) || 
+                   (action === 'prev' && active > 0)
+                ) self[action]();
+            });
     });
-    console.log(self);
     self.prevBtn.addClass('nav-arrow-inactive');
     
     /*

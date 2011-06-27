@@ -150,10 +150,12 @@ body{
 
 
 .site-home{
+    .top-line {
+        display: none;
+    }
     .bd{
         .page-width{
             width: auto;
-            
             .hero {
                 clear: both;
                 .city {
@@ -161,6 +163,13 @@ body{
                     .border-bottom {
                         background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
                         height: 347px;
+                        
+                        .top-line {
+                            display: block;
+                            z-index: 3;
+                            top: -5px;
+                        }
+                        
                         .panels {
                             position: relative;
                             z-index: 4;
@@ -178,6 +187,7 @@ body{
             
             .middle{
                 position: relative;
+                z-index: 5;
                 
                 .phone-ct{
                     position: absolute;
@@ -298,15 +308,23 @@ body{
 
 
 .site-how-to-play{
+    .top-line {
+        display: none;
+    }
     .bd{
         .page-width{
             width: auto;
-            
             .hero {
                 .city {
                     background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
                     
                     .border-bottom {
+                        
+                        .top-line {
+                            display: block;
+                            z-index: 3;
+                            top: -5px;
+                        }
                         
                         .page-width {
                             margin: 0 auto;
@@ -316,6 +334,7 @@ body{
                             z-index: 4;
                             
                             .iphone {
+                                z-index: 4;
                                 width: 395px;
                                 position: absolute;
                                 bottom: 0px;
@@ -324,7 +343,7 @@ body{
                                 
                                 .frame {
                                     position: absolute;
-                                    z-index: 2;
+                                    z-index: 10;
                                     top: 0;
                                     left: 0;
                                     width: 100%;
@@ -363,7 +382,7 @@ body{
                             }
                             
                             .content {
-                                z-index: 2;
+                                z-index: 4;
                                 position: absolute;
                                 top: 50px;
                                 left: 70px;
@@ -411,6 +430,8 @@ body{
                                     }
                                     .slide {
                                         padding: 10px 20px 20px 90px;
+                                        width: 310px;
+                                        height: 180px;
                                         display: none;
                                         
                                         p {
@@ -444,44 +465,56 @@ body{
                                 }
                                 .nav-arrow-next {
                                     right: -30px;
-                                    background-position: -23px -33px;
+                                    background-position: -23px -66px;
                                 }
                                 .nav-arrow-next:hover {
-                                    background-position: -23px -66px;
+                                    background-position: -23px -33px;
                                 }
                                 .nav-arrow-next:active {
-                                    background-position: -23px -66px;
+                                    background-position: -23px -33px;
                                     .opacity(100);
                                 }
                                 .nav-arrow-prev {
                                     left: -36px;
-                                    background-position: 0 -33px;
+                                    background-position: 0 -66px;
                                 }
                                 .nav-arrow-prev:hover {
-                                    background-position: 0px -66px;
+                                    background-position: 0px -33px;
                                 }
                                 .nav-arrow-prev:active {
                                     .opacity(100);
-                                    background-position: 0px -66px;
+                                    background-position: 0px -33px;
                                 }
                                 .nav-arrow-hover {
                                     
                                 }
                                 .nav-arrow-inactive{
                                     background-position: 0px 0px;
-                                    .opacity( 50 );
-                                    display: none;
+                                    cursor: default;
+                                    .opacity( 40 );
+                                }
+                                .nav-arrow-inactive:hover{
+                                    background-position: 0px 0px ;
+                                    .opacity( 40 );
+                                }
+                                .nav-arrow-inactive:active{
+                                    background-position: 0px 0px ;
+                                    .opacity( 40 );
                                 }
                                 .nav-arrow-next.nav-arrow-inactive{
-                                    background-position: 0px -33px;
-                                    .opacity( 50 );
-                                    display: none;
+                                    background-position: -23px 0px;
+                                }
+                                .nav-arrow-next.nav-arrow-inactive{
+                                    background-position: -23px 0px;
+                                }
+                                .nav-arrow-next.nav-arrow-inactive{
+                                    background-position: -23px 0px;
                                 }
                             }
                             
                             .characters {
                                 position: absolute;
-                                z-index: 3;
+                                z-index: 5;
                                 top: 210px;
                                 left: 30px;
                                 width: 103px;
@@ -491,6 +524,8 @@ body{
                             
                             .nav {
                                 position: absolute;
+                                zoom: 1;
+                                z-index: 10;
                                 bottom: 25px;
                                 left: 70px;
                                 width: 430px;
@@ -498,12 +533,16 @@ body{
                                 
                                 a {
                                     display: inline-block;
-                                    text-indent: -99999em;
+                                    zoom: 1;
                                     width: 15px;
                                     height: 15px;
                                     margin: 0 1px;
                                     text-decoration: none;
                                     background: transparent url("/images/desktop/site/how-to/img_bullet-inactive.png") no-repeat 0 0;
+                                    
+                                    span{
+                                        display: none;
+                                    }
                                 }
                                 
                                 a.active {
