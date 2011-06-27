@@ -28,7 +28,8 @@ module.exports = {
 
     db:{
         name: 'bozuko_production',
-        host: 'localhost'
+        replicaSet: true,
+	hosts: ['192.168.175.159', '192.168.175.161', '192.168.175.154']
     },
 
     facebook: {

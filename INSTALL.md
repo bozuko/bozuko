@@ -119,9 +119,10 @@ If this server is not a DB, config server or arbiter you should uninstall mongod
 #### Configure mongodb to start in replica set mode
 
 Add *--replSet* and *--nohttpinterface* parameters to mongod in **/etc/init/mongodb.conf** 
-Also bind on private IP and localhost.
 
-    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet production --nohttpinterface --bind_ip '127.0.0.1, X.X.X.X'
+Also bind on **private** IP and localhost. Ensure the --bind_ip argument doesn't have any spaces!
+
+    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet production --nohttpinterface --bind_ip '127.0.0.1,X.X.X.X'
 
 Restart mongodb ensuring it re-reads it's config
 
@@ -194,3 +195,11 @@ You must configure your replica set inside the mongo shell on the proposed maste
           ], 
          "ok" : 1
      }
+
+#### Ensure that the bozuko config is correct for the dbs. Change it and push to github.
+
+See the [api config](https://github.com/bozuko/bozuko/blob/master/config/api.js) for an example.
+
+## Run bozuko as the given user on the app server
+
+    ./run_bozuko api
