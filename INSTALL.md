@@ -11,7 +11,7 @@ This page will use **api** as the example user and **db1** as the hostname
 
 #### Give the user sudo privileges
 
-Add the user to the sudo group by editing /etc/group
+Add the user to the sudo group by editing **/etc/group**
 
     sudo:x:37:api
 
@@ -51,7 +51,7 @@ http://help.github.com/linux-key-setup/
 
 #### Setup static networking for the private IP 
 
-Add the following to /etc/network/interfaces. Use the address and netmask from the Linode "Remote Access" Tab.
+Add the following to **/etc/network/interfaces**. Use the address and netmask from the Linode "Remote Access" Tab.
 
     auto eth0:0
     iface eth0:0 inet static
@@ -104,3 +104,90 @@ Login as the appropriate user and run the following commands
     cd ~/bozuko/install
     ./install.sh
     . ~/.bashrc
+
+
+## DB configuration
+
+All DB configruation should be done as root. The replica set name is **production** in this example.
+
+If this server is not a DB, config server or arbiter you should uninstall mongodb. 
+
+    apt-get remove mongodb
+
+
+#### Configure mongodb to start in replica set mode
+
+Add a *--replSet* parameter to mongod in **/etc/init/mongodb.conf**
+
+    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet production 
+
+Restart mongodb ensuring it re-reads it's config
+
+    stop mongodb
+    start mongodb
+
+#### Configure the replica set on the proposed master
+
+Use only **Private IPs** to configure your replSet. Use the primary application server as an arbiter.
+
+You must configure your replica set inside the mongo shell on the proposed master. Wait a second to get the response from rs.initiate().
+
+    mongo
+    > Config = {
+    ... _id: 'production', members: [
+    ... {_id: 0, host: 'X.X.X.X'},
+    ... {_id: 1, host: 'Y.Y.Y.Y'},
+    ... {_id: 2, host: 'Z.Z.Z.Z', arbiterOnly: true}]}
+
+    > rs.initiate(Config)
+ 
+ Wait a minute and keep checking the status. You should see a Primary, Secondary and Arbiter.
+
+    production:PRIMARY> rs.status()
+    {
+        "set" : "production",
+        "date" : ISODate("2011-06-27T00:28:24Z"),
+        "myState" : 1,
+        "members" : [
+            {
+                "_id" : 0,
+                "name" : "X.X.X.X",
+                "health" : 1,
+                "state" : 1,
+                "stateStr" : "PRIMARY",
+                "optime" : {
+                    "t" : 1309134090000,
+                    "i" : 1
+                },
+                "optimeDate" : ISODate("2011-06-27T00:21:30Z"),                                                  "self" : true
+                                                                                                             },
+            {
+                "_id" : 1,
+                "name" : "Y.Y.Y.Y",
+                "health" : 1,
+                "state" : 2,
+                "stateStr" : "SECONDARY",
+                "uptime" : 396,
+                "optime" : {
+                    "t" : 1309134090000,
+                    "i" : 1                                                                                      },
+                "optimeDate" : ISODate("2011-06-27T00:21:30Z"),
+                "lastHeartbeat" : ISODate("2011-06-27T00:28:23Z"),
+             },
+             {
+                  "_id" : 2,
+                  "name" : "66.228.43.224",
+                  "health" : 1,
+                  "state" : 7,
+                  "stateStr" : "ARBITER",
+                  "uptime" : 396,
+                  "optime" : {
+                      "t" : 0,
+                      "i" : 0
+                  },
+                  "optimeDate" : ISODate("1970-01-01T00:00:00Z"),
+                  "lastHeartbeat" : ISODate("2011-06-27T00:28:22Z")
+              }
+          ], 
+         "ok" : 1
+     }
