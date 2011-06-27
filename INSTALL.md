@@ -195,3 +195,7 @@ You must configure your replica set inside the mongo shell on the proposed maste
           ], 
          "ok" : 1
      }
+
+#### Ensure that the bozuko config is correct for the dbs. 
+
+See the (api config)[https://github.com/bozuko/bozuko/blob/master/config/api.js] for an example.
