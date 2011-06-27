@@ -337,7 +337,11 @@ exports.routes = {
                     });
                     return feedback.save( function(error){
                         if( error ) return error.send( res );
-                        return mailer.send({
+                        
+                        /**
+                         * Async process
+                         */
+                        mailer.send({
                             to: 'feedback@bozuko.com',
                             subject: "New Feedback from a Bozuko User!",
                             body: [
@@ -350,9 +354,13 @@ exports.routes = {
                                 '- The Bozuko Mailer (please do not reply to this email)'
                             ].join("\n")
                         }, function(error){
-                            return Bozuko.transfer('success_message', {success:true}, null, function(error, result){
-                                res.send( error || result );
-                            });
+                            if( error ){
+                                console.error('Error sending feedback! ['+feedback._id+']');
+                            }
+                        });
+                        
+                        return Bozuko.transfer('success_message', {success:true}, null, function(error, result){
+                            res.send( error || result );
                         });
                     });
                 });

@@ -9,6 +9,12 @@ body {
 p {
   margin: 1em 0;
 }
+a:hover {
+  transition: color 0.5s easeOut;
+  -moz-transition: color 0.5s easeOut;
+  -o-transition: color 0.5s easeOut;
+  -webkit-transition: color 0.5s easeOut;
+}
 h1, .h1 {
   color: #03a250;
 }

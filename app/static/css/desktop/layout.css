@@ -1,12 +1,16 @@
 html {
   background-color: #fff;
+  min-height: 100%;
+}
+body {
+  min-height: 100%;
 }
 .page {
   width: auto;
 }
 .page-width {
   position: relative;
-  width: 850px;
+  width: 860px;
   margin: 0 auto;
   background-color: transparent;
 }
@@ -89,6 +93,30 @@ html {
 .hd .nav li a.last:hover span em, .hd .nav li a.last.active span em {
   background-position: 100% -52px;
 }
+.bd {
+  position: relative;
+  padding: 5px 0;
+  min-height: 200px;
+  background: #ffffff url("/images/desktop/site/bg_who-we-are.png") repeat-x 0 100%;
+}
+.bd .top-line {
+  z-index: 3;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: transparent url("/images/desktop/site/bg_shadow-line-bottom-shadow.png") repeat-x 0 0;
+}
+.bd .bottom-line {
+  z-index: 3;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 0;
+}
 .site-home .bd .page-width {
   width: auto;
 }
@@ -98,22 +126,19 @@ html {
 .site-home .bd .page-width .hero .city {
   background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
 }
-.site-home .bd .page-width .hero .city .border-top {
-  background: transparent url("/images/desktop/site/bg_shadow-line-bottom-shadow.png") repeat-x 0 0;
-}
-.site-home .bd .page-width .hero .city .border-top .border-bottom {
+.site-home .bd .page-width .hero .city .border-bottom {
   background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
   height: 347px;
 }
-.site-home .bd .page-width .hero .city .border-top .border-bottom .panels {
+.site-home .bd .page-width .hero .city .border-bottom .panels {
   position: relative;
-  z-index: 3px;
+  z-index: 4;
   height: 370px;
   margin-left: 2px;
   top: -28px;
   background: transparent url("/images/desktop/site/img_panels-with-shadow.png") no-repeat 50% 0;
 }
-.site-home .bd .page-width .hero .city .border-top .border-bottom .panels h1 {
+.site-home .bd .page-width .hero .city .border-bottom .panels h1 {
   display: none;
 }
 .site-home .bd .page-width .middle {
@@ -171,9 +196,6 @@ html {
 .site-home .bd .page-width .middle .who-we-are .bottom a.how-to-play:hover {
   background-position: 0 -39px;
 }
-.site-home .bd .page-width .middle .businesses {
-  background: #ffffff url("/images/desktop/site/bg_who-we-are.png") repeat-x 0 100%;
-}
 .site-home .bd .page-width .middle .businesses .rewards {
   min-width: 850px;
   background: transparent url("/images/desktop/site/bg_rewards.png") no-repeat 50% 100%;
@@ -215,6 +237,218 @@ html {
   margin-top: -6px;
   height: 8px;
 }
+.site-how-to-play .bd .page-width {
+  width: auto;
+}
+.site-how-to-play .bd .page-width .hero .city {
+  background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width {
+  margin: 0 auto;
+  width: 860px;
+  height: 342px;
+  position: relative;
+  z-index: 4;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .iphone {
+  width: 395px;
+  position: absolute;
+  bottom: 0px;
+  right: -30px;
+  height: 375px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .iphone .frame {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent url("/images/desktop/site/how-to/bg_iphone-frame.png") no-repeat 0 100%;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .iphone .top {
+  background: transparent url("/images/desktop/site/how-to/bg_iphone-top.png") no-repeat 0 0;
+  position: absolute;
+  width: 209px;
+  height: 13px;
+  top: 92px;
+  left: 91px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .iphone .screenshots {
+  position: absolute;
+  width: 209px;
+  height: 270px;
+  background: #000;
+  top: 105px;
+  left: 91px;
+  overflow: hidden;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .iphone .screenshots .scroller {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 270px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content {
+  z-index: 2;
+  position: absolute;
+  top: 50px;
+  left: 70px;
+  width: 437px;
+  height: 235px;
+  background: transparent url("/images/desktop/site/how-to/bg_text-area.png") no-repeat 0 0;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding {
+  position: relative;
+  top: 10px;
+  height: 210px;
+  width: 420px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding h3 {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  line-height: 53px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding h3 .number {
+  display: block;
+  position: absolute;
+  left: -70px;
+  top: 0px;
+  width: 54px;
+  height: 53px;
+  text-align: center;
+  font-size: 30px;
+  font-family: "ArvoBold";
+  color: #fff;
+  background: transparent url("/images/desktop/site/how-to/bg_orange-circle.png") no-repeat 0 0;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding h3 .title {
+  color: #333;
+  font-size: 23px;
+  font-family: ArvoRegular;
+  font-weight: normal;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding .slides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding .slide {
+  padding: 10px 20px 20px 90px;
+  display: none;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding .slide p {
+  margin-top: 0;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding .slide-active {
+  display: block;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding .scroller {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow {
+  text-indent: -9999em;
+  position: absolute;
+  top: 90px;
+  z-index: 4;
+  width: 24px;
+  height: 33px;
+  background-repeat: no-repeat;
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -moz-opacity: 0.8;
+  -khtml-opacity: 0.8;
+  opacity: 0.8;
+  background-image: url("/images/desktop/site/how-to/bg_arrows.png");
+  display: block;
+  cursor: pointer;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow-next {
+  right: -30px;
+  background-position: -23px -33px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow-next:hover {
+  background-position: -23px -66px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow-next:active {
+  background-position: -23px -66px;
+  -moz-opacity: 1;
+  -khtml-opacity: 1;
+  opacity: 1;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow-prev {
+  left: -36px;
+  background-position: 0 -33px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow-prev:hover {
+  background-position: 0px -66px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow-prev:active {
+  -moz-opacity: 1;
+  -khtml-opacity: 1;
+  opacity: 1;
+  background-position: 0px -66px;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow-inactive {
+  background-position: 0px 0px;
+  -moz-opacity: 0.5;
+  -khtml-opacity: 0.5;
+  opacity: 0.5;
+  display: none;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow-next.nav-arrow-inactive {
+  background-position: 0px -33px;
+  -moz-opacity: 0.5;
+  -khtml-opacity: 0.5;
+  opacity: 0.5;
+  display: none;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .characters {
+  position: absolute;
+  z-index: 3;
+  top: 210px;
+  left: 30px;
+  width: 103px;
+  height: 111px;
+  background: transparent url("/images/desktop/site/how-to/img_characters.png") no-repeat 0 0;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .nav {
+  position: absolute;
+  bottom: 25px;
+  left: 70px;
+  width: 430px;
+  text-align: center;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .nav a {
+  display: inline-block;
+  text-indent: -99999em;
+  width: 15px;
+  height: 15px;
+  margin: 0 1px;
+  text-decoration: none;
+  background: transparent url("/images/desktop/site/how-to/img_bullet-inactive.png") no-repeat 0 0;
+}
+.site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .nav a.active {
+  background: transparent url("/images/desktop/site/how-to/img_bullet-active.png") no-repeat 0 0;
+}
+.site-how-to-play .bd .page-width .faq .page-width {
+  width: 860px;
+  min-height: 100px;
+}
+.site-how-to-play .bd .page-width .faq .page-width h2 {
+  color: #ff6600;
+  font-size: 22px;
+  margin: .5em 0;
+}
 .ft ul {
   list-style: none;
   margin: 0;
@@ -227,11 +461,16 @@ html {
   padding: 0;
 }
 .ft li a {
+  display: block;
   color: #666;
   text-decoration: none;
+  transition: color 0.25s linear;
+  -moz-transition: color 0.25s linear;
+  -o-transition: color 0.25s linear;
+  -webkit-transition: color 0.25s linear;
 }
 .ft li a:hover {
-  color: #006b37;
+  color: #ff6600;
 }
 .ft .downloadUnit {
   text-align: center;
@@ -241,10 +480,13 @@ html {
 }
 .ft .downloadUnit h3 {
   color: #ff6600;
-  margin: 1em 0;
+  margin: 1em 0 0;
   text-transform: uppercase;
   font-family: ArvoRegular;
   font-weight: normal;
+}
+.ft .downloadUnit ul.download {
+  margin-top: .6em;
 }
 .ft .social a {
   display: block;
