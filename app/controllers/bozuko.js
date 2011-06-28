@@ -124,7 +124,7 @@ exports.routes = {
         get : {
             handler : function(req, res){
 
-                render_page(res,'Privacy Policy', content.get('app/privacy.md', '<p>Coming soon...</p>') );
+                render_page(res,'Privacy Policy', content.get('site/privacy.md', '<p>Coming soon...</p>') );
             }
         }
     },

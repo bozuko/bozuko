@@ -89,7 +89,7 @@ Page.method('getActiveContests', function(user, callback){
         end: {$gt: now}
     };
 
-    Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function(err, contests) {
+    Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, {sort: {start: -1}}, function(err, contests) {
         if (err) return callback(err);
         
         

@@ -259,7 +259,7 @@ function initApplication(app){
     app.use(app.router);
 
 
-    app.use(express.static(__dirname + '/static'));
+    app.use(express.static(__dirname + '/static',{maxAge: 1000 * 60 * 60 * 24 * 2}));
 
     // listen for http server errors
     app.on('clientError', function(err) {
@@ -363,6 +363,7 @@ function initControllers(app){
 		if( !useController(name) ) return;
         var Name = name.charAt(0).toUpperCase()+name.slice(1);
         Bozuko.controllers[Name] = Controller.create(app,name,Bozuko.require('controllers/'+name));
+        Bozuko.controllers[Name].init();
     });
 }
 
