@@ -5,6 +5,7 @@ var merge = require('connect').utils.merge,
 function Controller(app,name,config){
     this.app = app;
     this.name = name;
+    this.refs = {};
     this.doc = {
         routes : {}
     };
@@ -40,7 +41,8 @@ Controller.prototype = {
             
             ['get','post','put','del','all'].forEach( function(method){
                 
-                var methodSession = !!routeSession;
+                var methodSession = !!routeSession,
+                    ref = false;
 
                 if( config[method] ){
                     var handler = function(req,res){
@@ -67,6 +69,10 @@ Controller.prototype = {
                         }
                         else if( methodConfig.handler ){
                             handler = methodConfig.handler;
+                        }
+                        
+                        if( methodConfig.ref ){
+                            ref = methodConfig.ref;
                         }
 
                         if( methodConfig.access ){
@@ -149,6 +155,10 @@ Controller.prototype = {
                         }, handler, self);
                     }
                     
+                    if( ref ){
+                        self.refs[ref] = handler;
+                    }
+                    
                     path = self._cleanPath(path);
                     app[method](path, function(req,res){
                         handler.apply(self,arguments);
@@ -176,6 +186,10 @@ Controller.prototype = {
 
     forward : function(path){
 
+    },
+    
+    init : function(){
+        // empty override
     }
 
 };
