@@ -10,6 +10,13 @@ h3, .h3, h5, .h5 {
     
 }
 
+a {
+    color: @brand_color;
+}
+a:hover{
+    color: @dark_color;
+}
+
 .hd{
     a, a:visited{
         color: #ccc;
@@ -22,6 +29,11 @@ p {
 
 a:hover{
     .transition(color);
+}
+
+h1,h2,h3,h4,h5,h6{
+    padding-top: .2em;
+    line-height: 1.2em;
 }
 
 h1, .h1{color:#03a250;}
@@ -44,6 +56,32 @@ h2 {
     text-transform: uppercase;
     line-height: 1.2em;
     margin-bottom: 1em;
+}
+
+ol {
+    margin-left: 20px;
+    list-style: decimal outside;
+    li {
+        list-style: inherit;
+        ol {
+            list-style: lower-alpha;
+            li{
+                list-style: inherit;
+            }
+        }
+    }
+}
+
+ul li {
+    margin-left: 20px;
+    list-style: circle;
+}
+
+strong {
+    font-weight: bold;
+}
+em {
+    font-style: italic;
 }
 
 .button, button {

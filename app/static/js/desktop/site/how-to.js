@@ -59,7 +59,7 @@ jQuery( function($){
     // add next / previous arrows
     $.each(['next', 'prev'], function(index, action){
         var str = action == 'next' ? '&gt;' : '&lt;';
-        self[action+'Btn'] = $('<a class="nav-arrow nav-arrow-'+action+'">'+str+'</a>')
+        self[action+'Btn'] = $('<a class="nav-arrow nav-arrow-'+action+'"><span>'+str+'</span></a>')
             .appendTo(slide_ct)
             .hover(
                 function over(){

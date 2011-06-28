@@ -3,6 +3,12 @@ body {
   font-size: 14px;
   line-height: 1.4em;
 }
+a {
+  color: #00a24f;
+}
+a:hover {
+  color: #006b37;
+}
 .hd a, .hd a:visited {
   color: #ccc;
 }
@@ -10,10 +16,19 @@ p {
   margin: 1em 0;
 }
 a:hover {
-  transition: color 0.5s easeOut;
-  -moz-transition: color 0.5s easeOut;
-  -o-transition: color 0.5s easeOut;
-  -webkit-transition: color 0.5s easeOut;
+  transition: color 0.5s linear;
+  -moz-transition: color 0.5s linear;
+  -o-transition: color 0.5s linear;
+  -webkit-transition: color 0.5s linear;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding-top: .2em;
+  line-height: 1.2em;
 }
 h1, .h1 {
   color: #03a250;
@@ -47,6 +62,29 @@ h2 {
   text-transform: uppercase;
   line-height: 1.2em;
   margin-bottom: 1em;
+}
+ol {
+  margin-left: 20px;
+  list-style: decimal outside;
+}
+ol li {
+  list-style: inherit;
+}
+ol li ol {
+  list-style: lower-alpha;
+}
+ol li ol li {
+  list-style: inherit;
+}
+ul li {
+  margin-left: 20px;
+  list-style: circle;
+}
+strong {
+  font-weight: bold;
+}
+em {
+  font-style: italic;
 }
 .button, button {
   padding: 2px 4px;

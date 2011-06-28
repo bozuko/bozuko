@@ -29,6 +29,7 @@ body{
     
     h1.logo {
         margin: 0;
+        padding: 0;
         float: left;
         zoom: 1;
         
@@ -82,6 +83,7 @@ body{
                         white-space: nowrap;
                         padding: 0 12px;
                         display: block;
+                        font-style: normal;
                     }
                 }
             }
@@ -162,7 +164,7 @@ body{
                     background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
                     .border-bottom {
                         background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
-                        height: 347px;
+                        height: 342px;
                         
                         .top-line {
                             display: block;
@@ -174,7 +176,7 @@ body{
                             position: relative;
                             z-index: 4;
                             height: 370px;
-                            margin-left: 2px;
+                            margin-left: -2px;
                             top: -28px;
                             background: transparent url("/images/desktop/site/img_panels-with-shadow.png") no-repeat 50% 0;
                             h1 {
@@ -450,64 +452,85 @@ body{
                                 }
                                 
                                 .nav-arrow {
-                                    text-indent: -9999em;
                                     position: absolute;
-                                    top: 90px;
+                                    top: 80px;
                                     z-index: 4;
-                                    width: 24px;
-                                    height: 33px;
                                     background-repeat: no-repeat;
                                     .unselectable();
-                                    .opacity(80);
-                                    background-image: url("/images/desktop/site/how-to/bg_arrows.png");
                                     display: block;
                                     cursor: pointer;
+                                    width: 30px;
+                                    height: 60px;
+                                    background: url("/images/desktop/site/how-to/bg_white-circle.png") no-repeat 0 0 scroll;
+                                    span {
+                                        .unselectable();
+                                        display: block;
+                                        cursor: pointer;
+                                        position: absolute;
+                                        background-image: url("/images/desktop/site/how-to/bg_arrows.png");
+                                        width: 24px;
+                                        height: 33px;
+                                        top: 30px;
+                                        margin-top: -20px;
+                                        left: 0px;
+                                        text-indent: -9999em;
+                                    }
                                 }
                                 .nav-arrow-next {
-                                    right: -30px;
+                                    right: -21px;
+                                    background-position: 100% 0;
+                                    span{
+                                        background-position: -23px -33px;
+                                    }
+                                }
+                                .nav-arrow-next:hover span{
                                     background-position: -23px -66px;
                                 }
-                                .nav-arrow-next:hover {
-                                    background-position: -23px -33px;
-                                }
-                                .nav-arrow-next:active {
-                                    background-position: -23px -33px;
+                                .nav-arrow-next:active span {
+                                    background-position: -23px -66px;
                                     .opacity(100);
                                 }
                                 .nav-arrow-prev {
-                                    left: -36px;
-                                    background-position: 0 -66px;
+                                    left: -30px;
+                                    span {
+                                        left: 6px;
+                                        background-position: 0 -33px;
+                                    }
                                 }
-                                .nav-arrow-prev:hover {
-                                    background-position: 0px -33px;
+                                .nav-arrow-prev:hover span {
+                                    background-position: 0px -66px;
                                 }
-                                .nav-arrow-prev:active {
+                                .nav-arrow-prev:active span {
                                     .opacity(100);
-                                    background-position: 0px -33px;
+                                    background-position: 0px -66px;
                                 }
-                                .nav-arrow-hover {
+                                .nav-arrow-hover span {
                                     
                                 }
+                                
                                 .nav-arrow-inactive{
-                                    background-position: 0px 0px;
                                     cursor: default;
-                                    .opacity( 40 );
+                                    span {
+                                        background-position: 0px 0px;
+                                        cursor: default;
+                                        .opacity( 40 );
+                                    }
                                 }
-                                .nav-arrow-inactive:hover{
+                                .nav-arrow-inactive:hover span{
                                     background-position: 0px 0px ;
                                     .opacity( 40 );
                                 }
-                                .nav-arrow-inactive:active{
+                                .nav-arrow-inactive:active span{
                                     background-position: 0px 0px ;
                                     .opacity( 40 );
                                 }
-                                .nav-arrow-next.nav-arrow-inactive{
+                                .nav-arrow-next.nav-arrow-inactive span{
                                     background-position: -23px 0px;
                                 }
-                                .nav-arrow-next.nav-arrow-inactive{
+                                .nav-arrow-next.nav-arrow-inactive span{
                                     background-position: -23px 0px;
                                 }
-                                .nav-arrow-next.nav-arrow-inactive{
+                                .nav-arrow-next.nav-arrow-inactive span{
                                     background-position: -23px 0px;
                                 }
                             }
@@ -569,7 +592,266 @@ body{
             }
         }
     }
+}
 
+.site-b4b{
+    .bd{
+        .page-width{
+            width: auto;
+            .b4b-top {
+                width: @page_width;
+                margin: 0 auto;
+                position: relative;
+                background: transparent url("/images/desktop/site/b4b/img_phones.png") no-repeat 0 50%;
+                
+                h2.tag {
+                    text-indent: -9999em;
+                    background: transparent url("/images/desktop/site/b4b/img_tag.png") no-repeat 100% 50%;
+                    margin: 0;
+                    padding: 0;
+                    height: 344px;
+                }
+                
+                a.blog {
+                    display: block;
+                    position: absolute;
+                    bottom: 1px;
+                    right: 0;
+                    width: 119px;
+                    height: 39px;
+                    text-indent: -99999em;
+                    background: transparent url("/images/desktop/site/b4b/btn_blog.png") no-repeat 0 -41px;
+                }
+                a.blog:hover{
+                    background-position: 0 -1px;
+                }
+            }
+            .b4b-middle {
+                padding-top: 4px;
+                position: relative;
+                z-index: 4;
+                
+                .top-border {
+                    position: absolute;
+                    left: 0;
+                    top: -8px;
+                    height: 12px;
+                    width: 100%;
+                    background: transparent url("/images/desktop/site/b4b/bg_shadow-mid.png") repeat-x 0 0;
+                }
+                
+                .content{
+                    background: transparent url("/images/desktop/site/b4b/bg_dark-gray.png") repeat-x 0 0;
+                    
+                    .blocks{
+                        width: @page_width;
+                        margin: 0 auto;
+                        height: 376px;
+                        position: relative;
+                        
+                        .divet {
+                            position: absolute;
+                            background: transparent url("/images/desktop/site/b4b/bg_divet.png") repeat-x 0 0;
+                            width: 37px;
+                            height: 18px;
+                            bottom: 0px;
+                            left: 250px;
+                        }
+                        
+                        .block {
+                            width: @page_width / 3;
+                            float: left;
+                            
+                            .block-content {
+                                padding-top: 20px;
+                                text-align: center;
+                                p {
+                                    text-align: left;
+                                    padding: 0 20px 0 10px;
+                                    color: #fff;
+                                    font-size: 14px;
+                                    line-height: 1.5em;
+                                }
+                            }
+                        }
+                        .first-block {
+                            .block-content {
+                                text-align: left;
+                            }
+                        }
+                        
+                        .last-block{
+                            .block-content {
+                                text-align: right;
+                                img {
+                                    margin-right: -18px;
+                                }
+                                p {
+                                    padding-left: 20px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            .b4b-bottom {
+                width: @page_width;
+                margin: 0 auto;
+                position: relative;
+                
+                a.get-started{
+                    z-index: 2;
+                    position: absolute;
+                    top: -16px;
+                    right: 0;
+                    display: block;
+                    cursor: pointer;
+                    height: 70px;
+                    width: 201px;
+                    background: transparent url("/images/desktop/site/b4b/btn_get-started.png") no-repeat 0 0;
+                    
+                    span {
+                        display: none;
+                    }
+                }
+                
+                a.get-started:hover{
+                    background-position: 0 -72px;
+                }
+                
+                ul.tabs {
+                    display: block;
+                    list-style: none;
+                    overflow: hidden;
+                    margin: 20px 0 10px 0;
+                    padding: 0;
+                    _height: 40px;
+                    
+                    li {
+                        display: block;
+                        list-style: none;
+                        float: left;
+                        margin-right: 4px;
+                        
+                        a {
+                            .transition(color, .25s);
+                            display: block;
+                            white-space: nowrap;
+                            width: 117px;
+                            text-align: center;
+                            line-height: 40px;
+                            text-decoration: none;
+                            height: 40px;
+                            color: @orange;
+                            font-family: ArvoRegular;
+                            font-size: 16px;
+                        }
+                        a:hover {
+                            color: #000;
+                        }
+                    }
+                    
+                    li.active{
+                        a {
+                            color: #000;
+                            background: transparent url("/images/desktop/site/b4b/bg_biz-nav.png") no-repeat 0 0;
+                        }
+                    }
+                }
+            }
+            
+            .slides {
+                width: 100%;
+                min-height: 200px;
+                overflow: hidden;
+                position: relative;
+                .scroller {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    .slide {
+                        overflow: hidden;
+                        display: none;
+                        
+                        .slide-content {
+                            padding: 20px 0px;
+                        }
+                        
+                        img {
+                            float: right;
+                            margin: 0 0 0 30px;
+                        }
+                        
+                        p {
+                            padding-top: 1em;
+                            font-size: 15px;
+                            line-height: 1.5em;
+                        }
+                    }
+                    
+                    .slide-active {
+                        display: block;
+                    }
+                }
+            }
+            
+            .nav-arrow {
+                position: absolute;
+                top: 50%;
+                .unselectable();
+                z-index: 20;
+                display: block;
+                cursor: pointer;
+                background-image: url("/images/desktop/site/how-to/bg_arrows.png");
+                width: 24px;
+                height: 33px;
+                margin-top: -16px;
+                text-indent: -9999em;
+            }
+            .nav-arrow-prev {
+                left: -60px;
+                background-position: 0 -33px;
+            }
+            .nav-arrow-prev:hover {
+                background-position: 0 -66px;
+            }
+            .nav-arrow-next{
+                right: -60px;
+                background-position: -23px -33px;
+            }
+            .nav-arrow-next:hover {
+                background-position: -23px -66px;
+            }
+        }
+    }
+}
+
+.cityscape{
+    .bd{
+        background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
+        .page-width{
+            width: auto;
+            .wrap {
+                width: @page_width;
+                margin: 0 auto;
+                height: 340px;
+                h1{
+                    color: #fff;
+                    font-size: 50px;
+                    text-shadow: 2px 2px 2px #333;
+                }
+                
+            }
+        }
+    }
+}
+
+.legal{
+    .bd {
+        font-size: .9em;
+        padding-bottom: 2em;
+    }
 }
 
 
@@ -579,21 +861,22 @@ body{
         margin: 0;
         padding: 0;
         margin-top: 1.5em;
-    }
-    li {
-        list-style: none;
-        margin: 0 0 .5em;
-        padding: 0;
         
-        a {
-            display: block;
-            color: #666;
-            text-decoration: none;
-            .transition(color, .25s);
-        }
-        a:hover{
-            color: @orange;
+        li {
+            list-style: none;
+            margin: 0 0 .5em;
+            padding: 0;
             
+            a {
+                display: block;
+                color: #666;
+                text-decoration: none;
+                .transition(color, .25s);
+            }
+            a:hover{
+                color: @orange;
+                
+            }
         }
     }
     .downloadUnit {
