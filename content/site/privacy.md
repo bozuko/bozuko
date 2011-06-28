@@ -23,7 +23,7 @@ Policy addresses our privacy practices relating to general use of the Site, as w
 
 1. Information Bozuko Collects.
   
-   Bozuko collects the following types of information from users of the Site:
+    Bozuko collects the following types of information from users of the Site:
 
     1. Personal Information: Personally identifiable information (“Personal Information”) is information that can be
     used to identify or contact you, such as your name, email address, mailing address, telephone number or similar
