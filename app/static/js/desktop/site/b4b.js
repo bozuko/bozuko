@@ -34,7 +34,12 @@ jQuery( function($){
         
         $('img', slides[index]).each(function(j, img){
             imgs++;
-            img.onload = setHeight;
+            var i = new Image();
+            i.onload = function(){
+                setHeight();
+                delete i;
+            };
+            i.src = img.src;
         });
         
         $(tab).click(function(){

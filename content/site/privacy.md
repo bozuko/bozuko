@@ -8,7 +8,7 @@ Last Revised June 28, 2011
 ### OUR COMMITMENT TO PRIVACY
 
 This Privacy Policy (“Privacy Policy”) sets forth the information privacy practices of Bozuko, Inc. (“Bozuko”, “we” or “us”)
-for www.Bozuko.com (the “Site”). Except where otherwise expressly indicated in this Privacy Policy or on the Site, this
+for www.bozuko.com (the “Site”). Except where otherwise expressly indicated in this Privacy Policy or on the Site, this
 Privacy Policy applies only to information collected on the Site and does not apply to information collected outside of the
 Site. This Privacy Policy also does not apply to content, business information, ideas, concepts or inventions that you send
 to Bozuko by email. Please refer to our <Terms of Use> for our policy with respect to such information. If you want to
@@ -23,7 +23,7 @@ Policy addresses our privacy practices relating to general use of the Site, as w
 
 1. Information Bozuko Collects.
   
-   Bozuko collects the following types of information from users of the Site:
+    Bozuko collects the following types of information from users of the Site:
 
     1. Personal Information: Personally identifiable information (“Personal Information”) is information that can be
     used to identify or contact you, such as your name, email address, mailing address, telephone number or similar
@@ -113,7 +113,7 @@ Bozuko respects the privacy of your Personal Information. If you tell Bozuko tha
 information used as a basis for further contact with you, Bozuko will respect your wishes.
 
 You may instruct Bozuko to stop sending you materials (e.g., e-mail messages, newsletters) by sending an email with
-your email address and your opt-out instructions to [questions@bozuko.com][] or, if available, following the unsubscribe
+your email address and your opt-out instructions to [questions@bozuko.com] or, if available, following the unsubscribe
 instructions provided in those materials. Bozuko may, however, continue to contact you to provide service to your
 account. Please note that if you use more than one name or e-mail address when communicating with Bozuko or
 participating on the Site, you may continue to receive communications from Bozuko to any name and/or e-mail address
@@ -164,6 +164,6 @@ No Rights of Third Parties. This Privacy Policy does not create rights enforceab
 ### QUESTIONS ABOUT OUR PRIVACY POLICY
 
 If you have questions or concerns about this Privacy Policy or Bozuko generally, please feel free to contact us at
-[questions@bozuko.com][].
+[questions@bozuko.com].
 
 Copyright © 2011 Bozuko, Inc. All rights reserved.

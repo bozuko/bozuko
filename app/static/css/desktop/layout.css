@@ -37,7 +37,7 @@ body {
 .hd .nav {
   float: right;
   display: block;
-  margin: 24px 0 0;
+  margin: 26px 0 0;
   padding: 0 8px 0 0;
   list-style: none;
 }
@@ -119,11 +119,17 @@ body {
   height: 8px;
   background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 0;
 }
+.bd .wrap {
+  padding-bottom: 20px;
+}
 .site-home .top-line {
   display: none;
 }
 .site-home .bd .page-width {
   width: auto;
+}
+.site-home .bd .page-width .wrap {
+  padding-bottom: 0;
 }
 .site-home .bd .page-width .hero {
   clear: both;
@@ -254,6 +260,9 @@ body {
 .site-how-to-play .bd .page-width {
   width: auto;
 }
+.site-how-to-play .bd .page-width .wrap {
+  padding-bottom: 0;
+}
 .site-how-to-play .bd .page-width .hero .city {
   background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
 }
@@ -358,13 +367,15 @@ body {
   overflow: hidden;
 }
 .site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding .slide {
-  padding: 10px 20px 20px 90px;
+  padding: 5px 20px 20px 90px;
   width: 310px;
-  height: 180px;
+  height: 185px;
   display: none;
 }
 .site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding .slide p {
-  margin-top: 0;
+  margin-top: .8em;
+  line-height: 1.6em;
+  padding-right: 10px;
 }
 .site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .padding .slide-active {
   display: block;
@@ -376,7 +387,7 @@ body {
 }
 .site-how-to-play .bd .page-width .hero .city .border-bottom .page-width .content .nav-arrow {
   position: absolute;
-  top: 80px;
+  top: 90px;
   z-index: 4;
   background-repeat: no-repeat;
   -moz-user-select: -moz-none;
@@ -514,6 +525,9 @@ body {
 }
 .site-b4b .bd .page-width {
   width: auto;
+}
+.site-b4b .bd .page-width .wrap {
+  padding-bottom: 0;
 }
 .site-b4b .bd .page-width .b4b-top {
   width: 860px;
@@ -727,12 +741,19 @@ body {
 .cityscape .bd .page-width .wrap {
   width: 860px;
   margin: 0 auto;
-  height: 340px;
+  height: 320px;
 }
 .cityscape .bd .page-width .wrap h1 {
+  margin-top: 0;
+  padding-top: .4em;
   color: #fff;
   font-size: 50px;
   text-shadow: 2px 2px 2px #333;
+}
+.cityscape .bd .page-width .wrap p {
+  padding-top: 120px;
+  color: #fff;
+  font-size: 16px;
 }
 .legal .bd {
   font-size: .9em;
@@ -870,4 +891,11 @@ ul.facebook_pages .is_place .page_wrap {
   background-position: 99% 50%;
   background-repeat: no-repeat;
   padding-right: 45px;
+}
+.twtr-tweet {
+  padding: 4px 0;
+}
+.twtr-tweet .twtr-tweet-text em {
+  margin-top: 6px;
+  text-align: right;
 }
