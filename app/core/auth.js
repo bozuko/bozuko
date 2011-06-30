@@ -34,7 +34,7 @@ auth.check = function(access, callback) {
     }
 
     return function(req, res) {
-        var layer;
+        var layer, args = arguments;
 
         async.forEachSeries(access, function(layer, cb) {
             auth[layer](req, res, cb);
@@ -44,7 +44,7 @@ auth.check = function(access, callback) {
                 return err.send(res);
             }
               // Authorization Succeeded
-            return callback(req,res);
+            return callback.apply(this,args);
         });
     };
 };

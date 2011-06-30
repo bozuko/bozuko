@@ -31,5 +31,10 @@ module.exports = {
     not_implemented: {
         title: "Not Implemented",
         message: "This feature has not been implemented yet :( Check back soon!"
+    },
+    
+    unauthorized_request: {
+        title: "Unauthorized request",
+        message: "You are not allowed to do that!"
     }
 };

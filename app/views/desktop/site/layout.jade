@@ -3,8 +3,10 @@ html(class=locals.html_classes?html_classes.join(' '):'')
   head
   
     title= title
-    meta(name='description', content='Bozuko is the most exciting way to win prizes at your favorite places. Download and play today!')
-    meta(name="google-site-verification",content="HCG8QvNiMF-A93y538WBwu-r3dpkPYAIyfE72RpF7Cs")
+    
+    - if( locals.meta )
+      - each content, name in meta
+        meta(name=name, content=content)
     
     link(rel='stylesheet', href='/css/desktop/style.css')
     link(rel='stylesheet', href='/css/desktop/layout.css')
@@ -64,7 +66,7 @@ html(class=locals.html_classes?html_classes.join(' '):'')
                 li
                   a(href="/bozuko-for-business") Bozuko for Business 
                 li
-                  a(href="#") Contact 
+                  a(href="/contact") Contact 
                 li
                   a(href="http://getsatisfaction.com/bozuko", onclick="feedback_widget.show(); return false;") Feedback &amp; Support
             
@@ -73,7 +75,7 @@ html(class=locals.html_classes?html_classes.join(' '):'')
                 li
                   a(href="http://blog.bozuko.com") Blog
                 li
-                  a(href="#") FAQ
+                  a(href="/about") About
                 li
                   a(href="/terms-of-use") Terms of Use
                 li

@@ -44,9 +44,10 @@ h5, .h5{color:#03a250;}
 h6, .h6{font-style: italic; color:#03a250;}
 
 h1 {
-    font-size: 200%;
+    font-size: 250%;
     font-family: ArvoRegular;
     color: #333;
+    margin-top: .4em;
     margin-bottom: 1em;
 }
 h2 {
@@ -72,6 +73,9 @@ ol {
     }
 }
 
+ul {
+    margin: 1em 0;
+}
 ul li {
     margin-left: 20px;
     list-style: circle;
@@ -99,9 +103,8 @@ em {
     border: 1px solid darken(@brand_color, 20%);
     padding: 6px 14px;
     font-size: 20px;
-    font-family: PTSansBold;
+    font-family: ArvoRegular;
     text-decoration: none;
-    margin: 6px;
 }
 
 .big-button:hover{
@@ -124,4 +127,67 @@ em {
 
 .big-button-disabled:active{
     .background_gradient(@brand_color, @dark_color);
+}
+
+.field-wrap {
+    overflow: hidden;
+    clear: both;
+    margin-bottom: 10px;
+    label {
+        float: left;
+        width: 100px;
+        line-height: 24px;
+        font-weight: bold;
+    }
+    .field {
+        margin-left: 120px;
+        position: relative;
+        input {
+            width: 440px;
+            padding: 2px 6px;
+            font-size: 14px;
+            line-height: 24px;
+            .border_radius(6px);
+            border: 1px solid #aaa;
+        }
+        textarea {
+            width: 440px;
+            padding: 5px 6px;
+            height: 77px;
+            font-size: 14px;
+            .border_radius(6px);
+            border: 1px solid #aaa;
+        }
+    }
+}
+.buttons {
+    margin-left: 120px;
+    width: 456px;
+    clear: both;
+    text-align: right;
+    input {
+        padding: 4px 8px;
+    }
+}
+
+ul.errors {
+    li {
+        margin-left: 25px;
+        list-style: disc;
+        color: darkred;
+    }
+}
+
+.info {
+    margin: 10px 0;
+    padding-left: 32px;
+    padding-top: 4px;
+    min-height: 32px;
+    _height: 32px;
+    background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png") no-repeat 0px 0px;
+    font-weight: bold;
+    p {
+        margin: 0;
+        padding: 0;
+    }
 }
