@@ -1,0 +1,19 @@
+!!! 5
+html
+  
+  head
+    title= title
+    link(rel='stylesheet',type='text/css',href='/js/ext-4.0/lib/resources/css/ext-all.css')
+    // link(rel='stylesheet',type='text/css',href='/js/ext-4.0/lib/resources/themes/templates/resources/css/bozuko-theme.css')
+    link(rel='stylesheet',type='text/css',href='/css/desktop/admin/app.css')
+    link#biz-style(rel='stylesheet',type='text/css',href='/css/desktop/business/style.css')
+    script(type='text/javascript',src='/js/ext-4.0/lib/ext-all-debug.js')
+    script(type='text/javascript',src='/js/desktop/commando/commando.js')
+    
+  body
+  
+    #header
+      .title
+        span Administrator
+        
+      .logged-in Logged in as #{req.session.remoteUser.email}
