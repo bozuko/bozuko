@@ -1,0 +1,23 @@
+h1 Bozuko Beta Agreement
+
+.beta-agreement
+
+  .top
+    .business
+      img(src=page.image.replace(/type=large/, 'type=square'));
+      h4!= page.name
+      
+    .user
+      img(src=user.image.replace(/type=large/, 'type=square'));
+      h4!= user.name
+  
+  .terms
+    != content
+    
+  form.agree(method="post")
+    
+    input(type="hidden",name="agree",value="1")
+    input(type="hidden",name="page_id",value=page.id)
+    input.big-button(type="submit", value="I Agree", style="float:right; margin-left: 10px;")
+    
+    p You must agree to the terms above to participate in the Bozuko Beta Program.

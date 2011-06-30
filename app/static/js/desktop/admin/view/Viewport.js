@@ -1,7 +1,11 @@
-Ext.define('Bozuko.view.Viewport' ,{
+Ext.define('Admin.view.Viewport' ,{
     extend: 'Ext.container.Viewport',
     title : 'Admin Container',
-    requires: ['Bozuko.view.admin.Dashboard', 'Bozuko.view.page.List', 'Ext.ux.tab.plugin.CloseMenu'],
+    requires: [
+        'Admin.view.admin.Dashboard',
+        'Admin.view.page.List',
+        'Ext.ux.tab.plugin.CloseMenu'
+    ],
     
     layout: 'border',
     border: false,

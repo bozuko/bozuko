@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.page.List' ,{
+Ext.define('Admin.view.page.List' ,{
     extend: 'Ext.panel.Panel',
     alias: 'widget.pagelist',
     

@@ -1,8 +1,9 @@
 Ext.Loader.setConfig({enabled:true});
 Ext.Loader.setPath('Ext.ux', '/js/ext-4.0/ux');
+Ext.Loader.setPath('Bozuko', '/js/desktop/Bozuko');
 Ext.application({
     
-    name: 'Bozuko',
+    name: 'Browser',
     appFolder: '/js/desktop/admin',
     
     autoCreateViewport: false,
@@ -10,9 +11,6 @@ Ext.application({
     controllers: ['Browser'],
     views: ['Browser'],
     
-    requires:[
-        'Bozuko.lib.PubSub'
-    ],
     
     launch: function() {
         this.viewport = Ext.create('Ext.container.Viewport',{

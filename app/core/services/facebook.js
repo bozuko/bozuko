@@ -38,16 +38,14 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     }
 
     var protocol = (req.app.key?'https:':'http:');
-    console.log(url);
-
+    
     var params = {
         'client_id' : Bozuko.config.facebook.app.id,
         'scope' : Bozuko.config.facebook.perms[scope],
         'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+((url.search||'').replace(/[&\?]code=.*$/i, ''))
     };
 
-    console.log(params);
-
+    
     if( req.param('display')){
         params.display = req.param('display');
         req.session.display = req.param('display');

@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.page.Add' ,{
+Ext.define('Admin.view.page.Add' ,{
     
     extend          :'Ext.window.Window',
     alias           :'widget.pageadd',
@@ -6,9 +6,9 @@ Ext.define('Bozuko.view.page.Add' ,{
     layout          :'border',
     
     requires        :[
-        'Bozuko.view.page.add.Map',
-        'Bozuko.view.page.add.Pages',
-        'Bozuko.view.page.add.Form'
+        'Admin.view.page.add.Map',
+        'Admin.view.page.add.Pages',
+        'Admin.view.page.add.Form'
     ],
     
     initComponent : function(){

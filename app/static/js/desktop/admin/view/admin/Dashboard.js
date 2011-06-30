@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.admin.Dashboard' ,{
+Ext.define('Admin.view.admin.Dashboard' ,{
     
     extend: 'Ext.panel.Panel',
     alias : 'widget.admindashboard',
@@ -12,7 +12,8 @@ Ext.define('Bozuko.view.admin.Dashboard' ,{
     
     requires: [
         'Bozuko.lib.PubSub',
-        'Bozuko.store.Reports'
+        'Bozuko.store.Reports',
+        'Bozuko.view.winners.List'
     ],
     
     initComponent : function(){

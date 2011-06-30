@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.page.add.Map' ,{
+Ext.define('Admin.view.page.add.Map' ,{
     
     extend          :'Ext.panel.Panel',
     alias           :'widget.pageaddmap',

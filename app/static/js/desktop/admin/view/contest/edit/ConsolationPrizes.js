@@ -1,6 +1,6 @@
-Ext.define('Bozuko.view.contest.edit.ConsolationPrizes' ,{
+Ext.define('Admin.view.contest.edit.ConsolationPrizes' ,{
     
-    extend: 'Bozuko.view.contest.edit.Prizes',
+    extend: 'Admin.view.contest.edit.Prizes',
     alias : 'widget.contestformconsolationprizes',
     
     initComponent : function(){

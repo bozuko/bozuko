@@ -24,26 +24,21 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
           h1.logo
             a(href=locals.home_link||'/', title=locals.home_title||"Bozuko - Go to Home Page") bozuko
           
-          - if( locals.nav && locals.nav.length )
-            ul.nav
-              - each item, i in locals.nav
-                - if( item instanceof Function )
-                  - item = item.call(this,locals);
-                  
-                - var item_classes = [];
+          h3.tagline beta
+          
+          .right-side
+            - if(!locals.user || !locals.user.beta_agreement.signed )
+              h2 Beta Program
+            
+            - else
+              .user-profile Logged in as #{user.name}, 
+                a(href="/beta/logout") Logout
                 
-                - if( i==0 )
-                  - item_classes.push('first')
-                  
-                - if( i==nav.length-1 )
-                  - item_classes.push('last')
-                  
-                - if( req.url == item.link )
-                  - item_classes.push('active')
-                li
-                  a(href=item.link,class=item_classes.join(' '))
-                    span
-                      em!= item.text
+              -if( locals.page )
+                .page-info
+                  img(src=page.image.replace(/type=large/, 'type=square'))
+                  h3= page.name                  
+                
           
       .bd
         .top-line
@@ -75,7 +70,9 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
                 li
                   a(href="/about") About
                 li
-                  a(href="/terms-of-use") Terms of Use
+                  a(href="/beta/terms-of-use") Beta Terms of Use
+                li
+                  a(href="/terms-of-use") Site Terms of Use
                 li
                   a(href="/privacy-policy") Privacy Policy
             

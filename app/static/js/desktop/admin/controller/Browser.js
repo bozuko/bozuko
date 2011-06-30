@@ -1,4 +1,4 @@
-Ext.define('Bozuko.controller.Browser' ,{
+Ext.define('Browser.controller.Browser' ,{
     extend: 'Ext.app.Controller',
     
     requires:[

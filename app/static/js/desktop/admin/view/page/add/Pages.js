@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.page.add.Pages' ,{
+Ext.define('Admin.view.page.add.Pages' ,{
     
     extend          :'Ext.panel.Panel',
     alias           :'widget.pageaddlist',

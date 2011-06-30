@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.contest.edit.Preview', {
+Ext.define('Admin.view.contest.edit.Preview', {
     
     extend: 'Ext.panel.Panel',
     alias: 'widget.contestformpreview',

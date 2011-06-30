@@ -1,16 +1,16 @@
-Ext.define('Bozuko.view.contest.edit.Form' ,{
+Ext.define('Admin.view.contest.edit.Form' ,{
     
     extend: 'Ext.panel.Panel',
     alias : 'widget.contestform',
     
     requires: [
-        'Bozuko.view.contest.edit.Details',
-        'Bozuko.view.contest.edit.Prizes',
-        'Bozuko.view.contest.edit.ConsolationPrizes',
-        'Bozuko.view.contest.edit.Game',
-        'Bozuko.view.contest.edit.Entry',
-        'Bozuko.view.contest.edit.Rules',
-        'Bozuko.view.contest.edit.Preview'
+        'Admin.view.contest.edit.Details',
+        'Admin.view.contest.edit.Prizes',
+        'Admin.view.contest.edit.ConsolationPrizes',
+        'Admin.view.contest.edit.Game',
+        'Admin.view.contest.edit.Entry',
+        'Admin.view.contest.edit.Rules',
+        'Admin.view.contest.edit.Preview'
     ],
     
     layout: 'border',
