@@ -34,6 +34,8 @@ var proc = cluster( './app' )
 
 if( proc.isMaster ){
 
+    Bozuko.isMaster = true;
+
     if( env === 'stats'){
         Bozuko.initStats();
     }
