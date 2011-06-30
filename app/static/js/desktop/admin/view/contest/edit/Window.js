@@ -1,9 +1,9 @@
-Ext.define('Bozuko.view.contest.edit.Window' ,{
+Ext.define('Admin.view.contest.edit.Window' ,{
     
     extend: 'Ext.window.Window',
     alias : 'widget.contesteditwindow',
     
-    requires: ['Bozuko.view.contest.edit.Form'],
+    requires: ['Admin.view.contest.edit.Form'],
     
     layout: {
         type        :'fit'

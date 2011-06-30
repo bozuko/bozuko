@@ -1,4 +1,4 @@
-Ext.define( 'Bozuko.view.admin.chart.Profiler', {
+Ext.define( 'Admin.view.admin.chart.Profiler', {
     extend: 'Ext.chart.Chart',
     alias: 'widget.profiler',
     

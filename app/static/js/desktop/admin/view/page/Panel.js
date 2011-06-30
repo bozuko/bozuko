@@ -1,11 +1,11 @@
-Ext.define('Bozuko.view.page.Panel' ,{
+Ext.define('Admin.view.page.Panel' ,{
     
     extend: 'Ext.panel.Panel',
     alias : 'widget.pagepanel',
     
     requires: [
-        'Bozuko.view.page.Form',
-        'Bozuko.view.contest.Panel'
+        'Admin.view.page.Form',
+        'Admin.view.contest.Panel'
     ],
     
     layout: 'card',

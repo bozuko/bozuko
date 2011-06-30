@@ -27,7 +27,7 @@ p {
     margin: 1em 0;
 }
 
-a:hover{
+a{
     .transition(color);
 }
 
@@ -97,6 +97,7 @@ em {
 .big-button {
     cursor: pointer;
     display: inline-block;
+    .transition(none);
     .border_radius(4px);
     .background_gradient(@brand_color, @dark_color);
     color: #fff;
@@ -108,10 +109,12 @@ em {
 }
 
 .big-button:hover{
+    color: #fff;
     .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
 }
 
 .big-button:active{
+    color: #fff;
     .background_gradient(@dark_color, @brand_color);
 }
 

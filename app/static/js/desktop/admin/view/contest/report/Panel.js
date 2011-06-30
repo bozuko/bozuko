@@ -1,10 +1,10 @@
-Ext.define('Bozuko.view.contest.report.Panel' ,{
+Ext.define('Admin.view.contest.report.Panel' ,{
     
     extend: 'Ext.panel.Panel',
     alias : 'widget.contestreportpanel',
     
     requires: [
-        'Bozuko.view.contest.report.Details',
+        'Admin.view.contest.report.Details',
         'Bozuko.view.winners.List'
     ],
     

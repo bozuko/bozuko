@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.contest.Grid' ,{
+Ext.define('Admin.view.contest.Grid' ,{
     
     extend: 'Ext.grid.Panel',
     alias : 'widget.contestgrid',

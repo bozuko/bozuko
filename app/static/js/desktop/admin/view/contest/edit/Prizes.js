@@ -1,10 +1,10 @@
-Ext.define('Bozuko.view.contest.edit.Prizes' ,{
+Ext.define('Admin.view.contest.edit.Prizes' ,{
     
     extend: 'Ext.form.Panel',
     alias : 'widget.contestformprizes',
     
     requires: [
-        'Bozuko.view.contest.edit.Prize'
+        'Admin.view.contest.edit.Prize'
     ],
     autoScroll: true,
     

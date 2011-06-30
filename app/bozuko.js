@@ -363,7 +363,6 @@ function initControllers(app){
 		if( !useController(name) ) return;
         var Name = name.charAt(0).toUpperCase()+name.slice(1);
         Bozuko.controllers[Name] = Controller.create(app,name,Bozuko.require('controllers/'+name));
-        Bozuko.controllers[Name].init();
     });
 }
 

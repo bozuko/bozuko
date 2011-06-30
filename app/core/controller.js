@@ -14,7 +14,9 @@ function Controller(app,name,config){
     };
     this.config = config;
     merge( this, config );
+    this.beforeRoute();
     if( this.routes ) this.route( this.routes );
+    this.afterRoute();
     // if( this.sockets ) this.io( this.sockets );
 }
 
@@ -38,22 +40,27 @@ function merge(a,b,target){
             return;
         }
         
-        if( ~['req','app','res'].indexOf(key) ) return;
-        
-        if( a[key] === undefined ){
-            a[key] = b[key];
-            return;
-        }
         // get the types
         var a_type = getType(a[key]),
-            b_type = getType(b[key]);
-            
-        if( a_type !== b_type || a_type !== 'object' ){
-            a[key] = b[key];
+            b_type = getType(b[key]),
+            value = b[key]
+            ;
+        
+        if( b_type === 'array' ) value = value.slice(0);
+        
+        if( a[key] === undefined ){
+            a[key] = value;
             return;
         }
         
-        merge(a[key],b[key]);
+        if( a_type !== b_type || b_type !== 'object'){
+            a[key] = value;
+            return;
+        }
+        
+        if( ~['req','app','res'].indexOf(key) ) return;
+        
+        merge(a[key], value);
     });
     
     return a;
@@ -157,7 +164,7 @@ Controller.prototype = {
                         var _render = res.render;
                         res.locals = {};
                         for(var i in _locals){
-                            res.locals[i] = _locals[i];
+                            res.locals[i] = Array.isArray(_locals[i]) ? _locals[i].slice(0) : _locals[i];
                         }
                         res.render = function(){
                             var args = Array.prototype.slice.call(arguments, 0);
@@ -172,7 +179,8 @@ Controller.prototype = {
                             }
                             locals['req'] = req;
                             // combine any locals that were provided
-                            args[1] = merge( locals, args[1] || {} );
+                            args[1] = merge( merge({}, locals), args[1] || {} );
+                            console.log(args);
                             return _render.apply(res, args);
                         }
                         $handler.apply(self,arguments);
@@ -232,7 +240,11 @@ Controller.prototype = {
 
     },
     
-    init : function(){
+    beforeRoute : function(){
+        
+    },
+    
+    afterRoute : function(){
         // empty override
     }
 

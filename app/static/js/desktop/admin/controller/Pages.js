@@ -1,10 +1,20 @@
-Ext.define('Bozuko.controller.Pages' ,{
-    extend: 'Ext.app.Controller',
+Ext.define('Admin.controller.Pages' ,{
+    extend: 'Bozuko.app.Controller',
     
-    views: ['page.Panel','page.Add'],
-    stores: ['Pages', 'Places', 'Users'],
+    views: [
+        'page.Panel',
+        'page.Add'
+    ],
+    stores: [
+        'Bozuko.store.Pages',
+        'Bozuko.store.Places',
+        'Bozuko.store.Users'
+    ],
     
-    models: ['Page', 'User'],
+    models: [
+        'Bozuko.model.Page',
+        'Bozuko.model.User'
+    ],
     
     refs : [
         {ref: 'pageData', selector: 'pagelist dataview'},
@@ -51,7 +61,7 @@ Ext.define('Bozuko.controller.Pages' ,{
         // open the add window
         var me = this;
         if( !this._addWindow ){
-            this._addWindow = Ext.create( 'Bozuko.view.page.Add', {
+            this._addWindow = Ext.create( 'Admin.view.page.Add', {
                 title: 'Add a Business Page',
                 width: 800,
                 height: 600,
@@ -100,7 +110,7 @@ Ext.define('Bozuko.controller.Pages' ,{
             me = this;
         if( !this._tabs[id] ){
             var copy = record.copy();
-            var panel = Ext.create('Bozuko.view.page.Panel', {
+            var panel = Ext.create('Admin.view.page.Panel', {
                 record: copy,
                 closable: true,
                 page_id: id,

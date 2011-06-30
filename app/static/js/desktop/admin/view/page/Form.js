@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.page.Form' ,{
+Ext.define('Admin.view.page.Form' ,{
     
     extend          :'Ext.form.Panel',
     alias           :'widget.pageform',

@@ -1,15 +1,20 @@
 Ext.Loader.setConfig({enabled:true});
 Ext.Loader.setPath('Ext.ux', '/js/ext-4.0/ux');
+Ext.Loader.setPath('Bozuko', '/js/desktop/Bozuko');
 Ext.application({
     
-    name: 'Bozuko',
+    name: 'Admin',
     appFolder: '/js/desktop/admin',
     
     autoCreateViewport: true,
 
-    controllers: ['Pages', 'Contests'],
+    controllers: [
+        'Pages',
+        'Contests'
+    ],
     
     requires:[
+        'Bozuko.lib.Router',
         'Ext.chart.theme.Base',
         'Ext.chart.series.Series'
     ],

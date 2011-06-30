@@ -8,9 +8,10 @@ exports.locals = {
     layout: 'site/layout',
     title: 'Bozuko',
     meta: {
+        'charset':'utf-8',
+        'author':'Bozuko Inc.',
         'google-site-verification': 'HCG8QvNiMF-A93y538WBwu-r3dpkPYAIyfE72RpF7Cs',
         'description': 'Bozuko is the most exciting way to win prizes at your favorite places. Download and play today!',
-        'robots' : 'noindex,nofollow',
         'keywords':[
             'instant win',
             'games',
@@ -33,13 +34,23 @@ exports.locals = {
         text: 'Bozuko for Business'
     }],
     scripts:[
+    ],
+    styles:[
+        '/css/desktop/style.css',
+        '/css/desktop/layout.css',
     ]
 };
 
-exports.init = function(){
+exports.beforeRoute = function(){
+    if( Bozuko.cfg('test_mode',true) ){
+        this.locals.meta.robots = 'noindex,nofollow';
+    }
+};
+
+exports.afterRoute = function(){
     var self = this,
         app = self.app;
-        
+    
     app.use(function(req,res){
         self.refs.notFound(req,res);
     });

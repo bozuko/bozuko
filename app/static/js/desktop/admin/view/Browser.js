@@ -1,4 +1,4 @@
-Ext.define('Bozuko.view.Browser',{
+Ext.define('Browser.view.Browser',{
     
     extend: 'Ext.panel.Panel',
     alias: 'widget.apibrowser',

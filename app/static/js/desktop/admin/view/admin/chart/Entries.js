@@ -1,4 +1,4 @@
-Ext.define( 'Bozuko.view.admin.chart.Entries', {
+Ext.define( 'Admin.view.admin.chart.Entries', {
     extend: 'Ext.chart.Chart',
     alias: 'widget.entries',
     

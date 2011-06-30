@@ -1,9 +1,11 @@
-Ext.define('Bozuko.view.contest.Panel' ,{
+Ext.define('Admin.view.contest.Panel' ,{
     
     extend: 'Ext.panel.Panel',
     alias : 'widget.contestpanel',
     
-    requires: ['Bozuko.view.contest.View'],
+    requires: [
+        'Admin.view.contest.View'
+    ],
     layout: 'border',
     
     initComponent : function(){

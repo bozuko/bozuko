@@ -1,10 +1,22 @@
-Ext.define('Bozuko.controller.Contests' ,{
-    extend: 'Ext.app.Controller',
+Ext.define('Admin.controller.Contests' ,{
+    
+    extend: 'Bozuko.app.Controller',
 
-    views: ['contest.Panel', 'contest.report.Panel', 'contest.edit.Form'],
-    stores: ['Contests'],
+    views: [
+        'contest.Panel',
+        'contest.report.Panel',
+        'contest.edit.Form'
+    ],
+    
+    stores: [
+        'Bozuko.store.Contests'
+    ],
 
-    models: ['Contest', 'Page', 'Prize'],
+    models: [
+        'Bozuko.model.Contest',
+        'Bozuko.model.Page',
+        'Bozuko.model.Prize'
+    ],
     
     requires:[
         'Bozuko.lib.PubSub'
