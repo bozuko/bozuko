@@ -1,1 +1,8 @@
-h1 Page Not Found!
+h1 Page Not Found
+
+- if( locals.err )
+  h4!= err.name
+  p= err.message
+  pre= err.stack
+  
+#characters

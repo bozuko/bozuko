@@ -1,4 +1,5 @@
 [questions@bozuko.com]: mailto:questions@bozuko.com
+[Privacy Policy]: /privacy "Privacy Policy"
 
 # Bozuko Terms of Use
 
@@ -74,14 +75,14 @@ registration information to keep it complete, correct and accurate.
     You are responsible for maintaining the confidentiality of your registration information including your Bozuko
 username and password and Facebook username and password. You are entirely responsible for any and all
 activities that occur under your username(s) and password(s), whether or not authorized by you. You agree to
-immediately notify Bozuko at [questions@bozuko.com][] of any unauthorized use of your Bozuko username or
+immediately notify Bozuko at [questions@bozuko.com] of any unauthorized use of your Bozuko username or
 password.
 
 3. **Privacy Policy**
 
     Any personally identifiable information that you submit through the Site will be treated in accordance with our
 <Privacy Policy>. Unless you have provided consent, we will not disclose any personally identifiable information
-about you except as described in our <Privacy Policy> or unless we are required to do so by law or in the good faith
+about you except as described in our [Privacy Policy] or unless we are required to do so by law or in the good faith
 belief that such disclosure is (i) necessary to conform with applicable laws or comply with legal process, enforce
 these Terms of Use or protect and defend Bozuko’s rights or property or (ii) made in connection with the sale of all
 or substantially all of the equity and/or assets of Bozuko or the Site in order to facilitate the continued operation of
@@ -199,7 +200,7 @@ discretion, to immediately take any or all of the actions set forth in clauses (
 notice or warning to you.
 
     A Registered User may delete his/her registration information at any time by sending an email (including username
-and password) to [questions@bozuko.com][]. Bozuko may, in its sole discretion, terminate a Registered User if he/
+and password) to [questions@bozuko.com]. Bozuko may, in its sole discretion, terminate a Registered User if he/
 she has been inactive for a period of twelve (12) months. A Registered User will be defined as inactive if she/he
 has not logged into any Site or she/he has not called Bozuko’s customer service or contacted Bozuko in any other
 manner.
@@ -240,7 +241,7 @@ same force and effect as a signed agreement.
 
     Under California Civil Code Section 1789.3, California residents are entitled to the following specific consumer
 rights information: the provider of this web site is Bozuko, Inc. To file a complaint regarding this web site or to
-receive further information regarding use of this web site, please contact us at [questions@bozuko.com][]. You also
+receive further information regarding use of this web site, please contact us at [questions@bozuko.com]. You also
 may contact the Complaint Assistance Unit of the Division of Consumer Services of the Department of Consumer
 Affairs in writing at 400 R Street, Suite 1080, Sacramento, California 95814, or by telephone at 916.445.1254 or
 800.952.5210.

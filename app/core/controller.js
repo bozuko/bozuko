@@ -1,6 +1,9 @@
-var merge = require('connect').utils.merge,
-    io = require('socket.io'),
-    auth = require('./auth');
+var
+    // merge = require('connect').utils.merge,
+    http = require('http'),
+    auth = require('./auth')
+    // io = require('socket.io')
+    ;
 
 function Controller(app,name,config){
     this.app = app;
@@ -13,6 +16,47 @@ function Controller(app,name,config){
     merge( this, config );
     if( this.routes ) this.route( this.routes );
     // if( this.sockets ) this.io( this.sockets );
+}
+
+
+var class2type = {}, toString = Object.prototype.toString;
+"Boolean Number String Function Array Date RegExp Object".split(" ").forEach( function(name, i) {
+	class2type[ "[object " + name + "]" ] = name.toLowerCase();
+});
+
+function getType(o){
+    return class2type[toString.call(o)] || 'object';
+}
+
+function merge(a,b,target){
+    if( target && target === true ) target = {};
+    target = target || a;
+    if( getType(a) != 'object' || getType(b) != 'object') return target;
+    if( !b ) return target;
+    Object.keys(b).forEach(function (key){
+        if( !b.hasOwnProperty(key) ){
+            return;
+        }
+        
+        if( ~['req','app','res'].indexOf(key) ) return;
+        
+        if( a[key] === undefined ){
+            a[key] = b[key];
+            return;
+        }
+        // get the types
+        var a_type = getType(a[key]),
+            b_type = getType(b[key]);
+            
+        if( a_type !== b_type || a_type !== 'object' ){
+            a[key] = b[key];
+            return;
+        }
+        
+        merge(a[key],b[key]);
+    });
+    
+    return a;
 }
 
 Controller.prototype = {
@@ -131,7 +175,7 @@ Controller.prototype = {
                             args[1] = merge( locals, args[1] || {} );
                             return _render.apply(res, args);
                         }
-                        $handler(req,res);
+                        $handler.apply(self,arguments);
                     };
                     
                     // add our controller middleware
@@ -201,8 +245,9 @@ function createController(app,name,config){
 
 function middleware(fn, old, scope){
     return function(req, res){
+        var args = arguments;
         fn.call(scope, req, res, function(){
-            return old.call(scope,req,res);
+            return old.apply(scope,args);
         });
     };
 }
