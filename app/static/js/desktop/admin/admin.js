@@ -5,9 +5,8 @@ Ext.application({
     
     name: 'Admin',
     appFolder: '/js/desktop/admin',
-    
-    autoCreateViewport: true,
 
+    autoCreateViewport: true,
     controllers: [
         'Pages',
         'Contests'
@@ -18,18 +17,18 @@ Ext.application({
         'Ext.chart.theme.Base',
         'Ext.chart.series.Series'
     ],
-    
+
     launch: function() {
-        
+
         // setup our application wide controller stuff
         this.control({
             'button[text=Logout]': {
                 click: this.logout
             }
         }, null, this);
-        
+
     },
-    
+
     logout : function(){
         var self = this;
         if( !this._window ) this._window = Ext.create('Ext.window.Window',{
@@ -45,8 +44,8 @@ Ext.application({
                 }
             }
         });
-        
+
         this._window.show();
-        
+
     }
 });

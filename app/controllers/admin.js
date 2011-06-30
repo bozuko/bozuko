@@ -38,9 +38,9 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/stats/play' : {
-        
+
         alias: '/admin/playstats',
 
         get : {
@@ -68,7 +68,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/stats/entry' : {
 
         get : {
@@ -209,7 +209,7 @@ exports.routes = {
                     if( error ) return error.send( res );
                     // else, lets bind the reqest to the page
                     var data = req.body;
-                    
+
                     delete data._id;
                     page.set( data );
                     return page.save( function(error){
@@ -247,23 +247,23 @@ exports.routes = {
                 var data = filter(req.body),
                     prizes = data.prizes,
                     consolation_prizes = data.consolation_prizes;
-                    
+
                 delete data._id;
-                
+
                 delete data.play_cursor;
                 delete data.state;
                 delete data.total_entries;
                 delete data.total_plays;
-                
+
                 prizes.forEach(function(prize){
                     delete prize._id;
                 });
-                
+
                 // any other _id things?
                 consolation_prizes.forEach(function(prize){
                     delete prize._id;
                 });
-                
+
                 var contest = new Bozuko.models.Contest(data);
                 console.log(JSON.stringify(contest));
                 return contest.save( function(error){
@@ -281,31 +281,31 @@ exports.routes = {
 
                 return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
                     if( error ) return error.send(res);
-                    
+
                     var data = filter(req.body);
-                        
+
                     var prizes = data.prizes,
                         entry_config = data.entry_config,
                         consolation_prizes = data.consolation_prizes;
-                     
+
                     delete data.prizes;
                     delete data.consolation_prizes;
                     delete data.state;
                     delete data.entry_config;
-                    
+
                     // most definitely do not want to touch this
                     delete data.play_cursor;
                     delete data.token_cursor;
-                    
+
                     // don't want to update this, will throw an error
                     delete data._id;
-                    
+
                     for( var p in data ){
                         if( data.hasOwnProperty(p) ){
                             contest.set(p, data[p] );
                         }
                     }
-                    
+
                     prizes.forEach(function(prize, i){
                         var old, doc;
                         if( prize._id && (old = contest.prizes.id(prize._id)) ){
@@ -318,7 +318,7 @@ exports.routes = {
                             prizes[i] = doc;
                         }
                     });
-                    
+
                     consolation_prizes.forEach(function(consolation_prize, i){
                         var old, doc;
                         if( consolation_prize._id && (old = contest.consolation_prizes.id(consolation_prize._id)) ){
@@ -331,14 +331,14 @@ exports.routes = {
                             consolation_prizes[i] = doc;
                         }
                     });
-                    
+
                     // no clue why i have to do this right now...
                     contest.prizes = [];
                     contest.consolation_prizes = [];
                     contest.entry_config = [];
-                    
+
                     // save existing prizes before adding and removing others
-                    return contest.save(function(error){                        
+                    return contest.save(function(error){
 
                         if( error ) return error.send( res );
                         prizes.forEach( function(prize){
@@ -349,11 +349,11 @@ exports.routes = {
                             if( !prize._id ) delete prize._id;
                             contest.consolation_prizes.push(prize);
                         });
-                        
+
                         entry_config.forEach( function(config){
                             contest.entry_config.push( config );
                         });
-                        
+
                         return contest.save( function(error){
                             if( error ){
                                 console.log(error);
@@ -386,7 +386,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/winners' : {
 
         get : {
@@ -399,16 +399,16 @@ exports.routes = {
                     updateOnly = req.param('updateOnly') || false;
                     selector = {}
                     ;
-                    
+
                 if( contest_id ) selector['contest_id'] = contest_id;
                 if( page_id ) selector['page_id'] = page_id;
-                
+
                 return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
                     if( error ) return error.send( res );
-                    
+
                     return Bozuko.models.Prize.find(selector, {}, {sort: {last_updated: -1}, limit: limit, skip: offset},function(error, prizes){
                         if( error ) return error.send(res);
-                        
+
                         var user_ids = {};
                         prizes.forEach(function(prize){
                             user_ids[String(prize.user_id)] = true;
@@ -421,7 +421,7 @@ exports.routes = {
                         prizes.forEach(function(prize){
                             contest_ids[String(prize.contest_id)] = true;
                         });
-                        
+
                         // get the users
                         return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, function(error, users){
                             if( error ) return error.send(res);
@@ -429,22 +429,22 @@ exports.routes = {
                             users.forEach(function(user){
                                 user_map[String(user._id)] = user;
                             });
-                            
+
                             // get the pages
                             return Bozuko.models.Page.find({_id: {$in: Object.keys(page_ids)}}, {name: 1, image: 1}, function(error, pages){
-                                
+
                                 var page_map = {};
                                 pages.forEach(function(page){
                                     page_map[String(page._id)] = page;
                                 });
                                 // get the contests
                                 return Bozuko.models.Contest.find({_id: {$in: Object.keys(contest_ids)}}, {name: 1}, function(error, contests){
-                                    
+
                                     var contest_map = {};
                                     contests.forEach(function(contest){
                                         contest_map[String(contest._id)] = contest;
                                     });
-                            
+
                                     var winners = [];
                                     prizes.forEach(function(prize){
                                         // create a winner object
@@ -465,7 +465,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/contests/:id/publish' : {
         post : {
             handler : function(req,res){
@@ -480,7 +480,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/contests/:id/cancel' : {
         post : {
             handler : function(req,res){
@@ -548,7 +548,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/report-test':{
         get : {
             handler : function(req, res){
@@ -571,9 +571,9 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/report' : {
-        
+
         get : {
             handler : function(req, res){
                 return Report.run('counts', {
@@ -585,12 +585,12 @@ exports.routes = {
                 });
             }
         }
-        
+
     }
 };
 
 function filter(data){
-    
+
     if( arguments.length > 1 && data){
         var tmp={};
         [].slice.call(arguments,1).forEach(function(field){
@@ -598,7 +598,7 @@ function filter(data){
         });
         data = tmp;
     }
-    
+
     if( Array.isArray(data)){
         data.forEach(function(item){filter(item);});
     }
