@@ -147,7 +147,6 @@ em {
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00a24f), color-stop(1, #006b37)) !important;
 }
 .field-wrap {
-  overflow: hidden;
   clear: both;
   margin-bottom: 10px;
 }
@@ -186,6 +185,22 @@ em {
   border-radius: 6px;
   background-clip: padding-box;
   border: 1px solid #aaa;
+}
+.field-wrap .field input, .field-wrap .field textarea, .field-wrap .field select {
+  border: 1px solid #cccccc;
+  background: #f9f9f9;
+  transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  -webkit-transition: all 0.2s ease-out;
+  outline: none;
+}
+.field-wrap .field input:focus, .field-wrap .field textarea:focus, .field-wrap .field select:focus {
+  -moz-box-shadow: 0 0 5px #00a24f;
+  -webkit-box-shadow: 0 0 5px #00a24f;
+  box-shadow: 0 0 5px #00a24f;
+  background: #ffffff;
+  border-color: #00a24f;
 }
 .buttons {
   margin-left: 120px;

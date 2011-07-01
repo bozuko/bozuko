@@ -1,6 +1,8 @@
 var Content = Bozuko.require('util/content'),
     validator = require('validator'),
     mailer = Bozuko.require('util/mail'),
+    indexOf = Bozuko.require('util/functions').indexOf,
+    filter = Bozuko.require('util/functions').filter,
     crypto = require('crypto');
 
 exports.locals = {
@@ -46,21 +48,23 @@ exports.routes = {
                     else{
                         req.session.page_id = false;
                     }
+
                     return res.render('beta/welcome');
                 }
                 
                 var selector = {};
-                if( req.param('page_id') ) selector._id = page_id;
-                else{ req.session.page_id = false; }
-                
+                if( req.param('page_id') ){
+                    selector._id = page_id;
+                }
+                else{
+                    req.session.page_id = false;
+                }
                 return user.getManagedPages(selector, function(error, pages){
                     if( error ) throw error;
                     
                     if( !pages.length ){
                         return res.render('beta/welcome');
                     }
-                    
-                    console.log('pages.length:'+pages.length);
                     
                     var signed = false,
                         page;
@@ -83,7 +87,8 @@ exports.routes = {
                     );
                     res.locals.styles.unshift(
                         '/js/ext-4.0/lib/resources/css/ext-all-gray.css',
-                        '/js/desktop/business/style.css'
+                        '/css/desktop/business/style.css',
+                        '/css/desktop/admin/app.css'
                     );
                     return res.render('beta/index');
                 });
@@ -149,16 +154,23 @@ exports.routes = {
                     if( req.session.page_id ){
                         selector._id = req.session.page_id;
                     }
-                    console.log(selector);
                     return Bozuko.models.Page.findOne(selector,function(error, page){
                         if( error ) throw error;
                         if( !page ){
-                            return res.render('beta/no-page');
+                            return res.render('/beta/no-page');
+                        }
+                        if( page.beta_agreement.signed ){
+                            req.session.page_id = page.id;
+                            
+                            return page.addAdmin( user, function(error){
+                                if( error ) throw error;
+                                return res.redirect('/beta/page/'+page.id);
+                            });
                         }
                         res.locals.page = page; 
                         res.locals.user = user;
                         res.locals.content = Content.get('beta/terms.md', 'Beta Terms of Use');
-                        return res.render('beta/agreement');
+                        return res.render('/beta/agreement');
                     });
                 });
             }
@@ -166,11 +178,8 @@ exports.routes = {
         
         post : {
             handler : function(req, res){
-                /**
-                 * TODO - get page_id from request and then make
-                 * the user the owner before saving.
-                 */
                 var user = req.session.user,
+                    i=0, found,
                     page_id = req.param('page_id')
                     ;
                 if( !req.session.user ) throw Bozuko.error('bozuko/auth');
@@ -196,19 +205,14 @@ exports.routes = {
                         if( !isAdmin ){
                             throw new Error("You are not a manager");
                         }
-                        
-                        page.admins.push( user.id );
                         page.beta_agreement = {
                             signed: true,
                             signed_by: user.id,
                             signed_date: new Date()
                         };
-                        page.save(function(error){
+                        page.addAdmin( user, function(error){
                             if( error ) throw error;
-                            return req.session.user.save(function(error){
-                                if( error ) throw error;
-                                return res.redirect('/beta/page/'+page.id);
-                            });
+                            return res.redirect('/beta/page/'+page.id);
                         });
                     });
                 });
@@ -220,6 +224,92 @@ exports.routes = {
             handler : function(req, res){
                 res.locals.content = Content.get('beta/terms.md', 'Beta Terms of Use');
                 res.render('site/content');
+            }
+        }
+    },
+    
+    '/admin/winners' : {
+
+        get : {
+            handler : function(req, res){
+                // check for contest or page
+                var contest_id = req.param('contest_id'),
+                    page_id = req.param('page_id'),
+                    limit = req.param('limit') || 25,
+                    offset = req.param('offset') || 0,
+                    updateOnly = req.param('updateOnly') || false,
+                    user = req.session.user,
+                    selector = {page_id: {$in: user.manages}}
+                    ;
+                    
+                console.log(selector);
+
+                if( contest_id ){
+                    selector['contest_id'] = contest_id;
+                }
+                if( page_id && ~indexOf(user.manages, page_id) ){
+                    selector['page_id'] = page_id;
+                }
+
+                return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
+                    if( error ) return error.send( res );
+
+                    return Bozuko.models.Prize.find(selector, {}, {sort: {last_updated: -1}, limit: limit, skip: offset},function(error, prizes){
+                        if( error ) return error.send(res);
+
+                        var user_ids = {};
+                        prizes.forEach(function(prize){
+                            user_ids[String(prize.user_id)] = true;
+                        });
+                        var page_ids = {};
+                        prizes.forEach(function(prize){
+                            page_ids[String(prize.page_id)] = true;
+                        });
+                        var contest_ids = {};
+                        prizes.forEach(function(prize){
+                            contest_ids[String(prize.contest_id)] = true;
+                        });
+
+                        // get the users
+                        return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, function(error, users){
+                            if( error ) return error.send(res);
+                            var user_map = {};
+                            users.forEach(function(user){
+                                user_map[String(user._id)] = user;
+                            });
+
+                            // get the pages
+                            return Bozuko.models.Page.find({_id: {$in: Object.keys(page_ids)}}, {name: 1, image: 1}, function(error, pages){
+
+                                var page_map = {};
+                                pages.forEach(function(page){
+                                    page_map[String(page._id)] = page;
+                                });
+                                // get the contests
+                                return Bozuko.models.Contest.find({_id: {$in: Object.keys(contest_ids)}}, {name: 1}, function(error, contests){
+
+                                    var contest_map = {};
+                                    contests.forEach(function(contest){
+                                        contest_map[String(contest._id)] = contest;
+                                    });
+
+                                    var winners = [];
+                                    prizes.forEach(function(prize){
+                                        // create a winner object
+                                        winners.push({
+                                            _id: prize.id,
+                                            prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
+                                            user: filter(user_map[String(prize.user_id)],'_id','name','image','email'),
+                                            page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
+                                            contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
+                                        });
+                                    });
+                                    return res.send({items:winners, last_updated: lastUpdated?filter(lastUpdated,'_id','last_updated'):null});
+                                });
+                            });
+                        });
+                    });
+                });
             }
         }
     }

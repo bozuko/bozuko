@@ -133,6 +133,13 @@ body * {
   position: relative;
 }
 .beta-loading .loading-box {
+  background: #f3f3f3;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
   display: block;
   z-index: 100;
   position: absolute;

@@ -40,7 +40,7 @@ Ext.define('Mycroft.view.mongodb.Dashboard', {
                 position: 'bottom',
                 fields: ['date'],
                 title: 'Time',
-                dateFormat: 'Y-m-d h:m:s',
+                dateFormat: 'h:m:s',
                 groupBy: 'year,month,day,hour,minute,second',
                 aggregateOp: 'sum'
             }],
@@ -79,8 +79,8 @@ Ext.define('Mycroft.view.mongodb.Dashboard', {
                 console.log("records = "+JSON.stringify(records[0].raw));
                 store.add({
                     _id: records[0].raw._id,
-                    storageSize: records[0].raw.storageSize/1000000,
-                    dataSize: records[0].raw.dataSize/1000000,
+                    storageSize: records[0].raw.storageSize,
+                    dataSize: records[0].raw.dataSize,
                     date: records[0].raw.date
                 });
                 console.log("store.count = "+store.count());

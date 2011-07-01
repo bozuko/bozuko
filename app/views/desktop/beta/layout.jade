@@ -27,7 +27,7 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
           h3.tagline beta
           
           .right-side
-            - if(!locals.user || !locals.page)
+            - if(!locals.user)
               h2 Beta Program
             
             - else
@@ -70,7 +70,7 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
                 li
                   a(href="/about") About
                 li
-                  a(href="/beta/terms-of-use") Beta Terms of Use
+                  a(href="/beta/terms-of-use") Beta Agreement
                 li
                   a(href="/terms-of-use") Site Terms of Use
                 li

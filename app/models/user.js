@@ -21,7 +21,8 @@ var User = module.exports = new Schema({
     email               :{type:String, index: true},
     sign_up_date        :{type:Date, default: Date.now},
     favorites           :[ObjectId],
-    can_manage_pages    :{type:Boolean}
+    can_manage_pages    :{type:Boolean},
+    manages             :[ObjectId]
 });
 
 User.plugin(Services);
