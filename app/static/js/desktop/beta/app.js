@@ -14,10 +14,14 @@ Ext.application({
     ],
     
     requires:[
-        'Beta.view.App'
+        'Beta.view.App',
+        'Bozuko.lib.Router'
     ],
     
     launch : function(){
+        
+        Bozuko.Router.setBasePath('/beta');
+        
         Ext.fly('beta')
             .removeCls('beta-loading')
             .update('');

@@ -115,8 +115,8 @@ Ext.define('Admin.controller.Contests' ,{
             navbar = pagePanel.down('[ref=page-navbar]');
 
         navbar.show();
+        pagePanel.doComponentLayout();
         pagePanel.getLayout().setActiveItem( contestPanel );
-        pagePanel.doLayout();
     },
 
     getValues : function(form, selector){
@@ -405,11 +405,9 @@ Ext.define('Admin.controller.Contests' ,{
             });
             panel.cards[id].setRecord( record );
         }
-        navbar.hide();
-
+        navbar.hide();        
         panel.getLayout().setActiveItem(panel.cards[id]);
-        panel.doLayout();
-
+        panel.doComponentLayout();
     },
 
     openContest : function(record, cmp){
@@ -427,10 +425,8 @@ Ext.define('Admin.controller.Contests' ,{
             panel.reports[id].setRecord( record );
         }
         navbar.hide();
-        setTimeout(function(){
-            panel.getLayout().setActiveItem(panel.reports[id]);
-            panel.doLayout();
-        },500);
+        panel.getLayout().setActiveItem(panel.reports[id]);
+        panel.doComponentLayout();
     },
 
     updateCards : function(store, view){

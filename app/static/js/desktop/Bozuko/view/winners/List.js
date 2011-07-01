@@ -24,7 +24,7 @@ Ext.define('Bozuko.view.winners.List' ,{
         me.blinkState = false;
         me.blinkers = [];
         me.blinking = false;
-        me.store = Ext.create('Bozuko.store.Winners');
+        me.store = Ext.create('Bozuko.store.Winners', {autoLoad: true});
         me.tmpStore = Ext.create('Bozuko.store.Winners',{autoLoad: false});
         
         me.tbar = ['->',{

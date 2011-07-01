@@ -88,7 +88,7 @@ exports.routes = {
                     '/js/desktop/site/how-to.js'
                 ],
                 meta: {
-                    'description' : 'Playing Bozuko is fun and easy. Learn about how to find Bozuko Places and play their games for a chance to win prizes instantly!'
+                    'description' : 'Play Bozuko! The games are always fun and easy to play. Spin a slot machine or try your luck at a scratch ticket for your chance to win!'
                 }
             },
 

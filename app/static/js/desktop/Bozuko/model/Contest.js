@@ -4,7 +4,8 @@ Ext.define('Bozuko.model.Contest', {
     idProperty: '_id',
     
     requires:[
-        'Ext.ux.data.writer.JsonDeep'
+        'Ext.ux.data.writer.JsonDeep',
+        'Bozuko.lib.Router'
     ],
     
     proxy: {

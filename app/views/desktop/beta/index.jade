@@ -1,3 +1,10 @@
 #beta.beta-loading
   .loading-box
     span Loading Bozuko Beta...
+    
+script
+  if( Bozuko === undefined ) Bozuko = {};
+  Bozuko.user_id = '#{user.id}';
+  Bozuko.page_id = '#{page.id}';
+  Bozuko.user_pages = !{JSON.stringify(user.manages)};
+  
