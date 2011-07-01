@@ -22,7 +22,7 @@ module.exports = {
             }
         }
     },
-    
+
     admin : {
         winners_list:{
             poll_interval: 1000
@@ -102,7 +102,7 @@ module.exports = {
         host: 'bonobo.bozuko.com',
         port: port
     },
-    
+
     pubsub: {
         poll: {
             interval: 500

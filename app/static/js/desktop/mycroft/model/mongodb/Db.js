@@ -1,11 +1,11 @@
-Ext.define('Commando.model.mongodb.Db', {
+Ext.define('Mycroft.model.mongodb.Db', {
     extend: 'Ext.data.Model',
 
-    idProperty: 'date',
+    idProperty: '_id',
 
     proxy: {
         type: 'rest',
-        url: '/commando/mongodb/db',
+        url: '/mycroft/mongodb/db',
         reader: {
             type: 'json',
             root: 'db_stats'
@@ -13,6 +13,7 @@ Ext.define('Commando.model.mongodb.Db', {
     },
 
     fields: [
+        {name:'_id',                  type: 'String'},
         {name:'date',                 type:'Date'},
         {name:'db',                   type:'String'},
         {name:'objects',              type:'Number'},
