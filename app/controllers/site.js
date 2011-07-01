@@ -243,7 +243,8 @@ exports.routes = {
                     to: 'info@bozuko.com',
                     reply_to: email,
                     subject: "New Bozuko Business Inquiry",
-                    body: name+' <'+email+'> sent the following message:\n\n'+message
+                    body: name+' <'+email+'> would like to find out more.'+'\n'+
+                      company+'\n'+city+', '+state+'\n'+zip+'\n'+country
                 });
                 req.flash('info', 'Your message is on its way!');
                 return res.redirect('/business-contact');
