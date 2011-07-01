@@ -4,7 +4,8 @@ var facebook    = Bozuko.require('util/facebook'),
     url         = require('url'),
     spawn       = require('child_process').spawn,
     sys         = require('sys'),
-    merge       = Bozuko.require('util/merge'),
+    filter      = Bozuko.require('util/functions').filter
+    merge       = Bozuko.require('util/functions').merge,
     Report      = Bozuko.require('core/report'),
     DateUtil    = Bozuko.require('util/date')
 ;
@@ -388,6 +389,8 @@ exports.routes = {
     },
 
     '/admin/winners' : {
+        
+        access: 'business',
 
         get : {
             handler : function(req, res){
@@ -396,12 +399,14 @@ exports.routes = {
                     page_id = req.param('page_id'),
                     limit = req.param('limit') || 25,
                     offset = req.param('offset') || 0,
-                    updateOnly = req.param('updateOnly') || false;
+                    updateOnly = req.param('updateOnly') || false,
                     selector = {}
                     ;
 
                 if( contest_id ) selector['contest_id'] = contest_id;
                 if( page_id ) selector['page_id'] = page_id;
+                
+                
 
                 return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
                     if( error ) return error.send( res );
@@ -588,29 +593,3 @@ exports.routes = {
 
     }
 };
-
-function filter(data){
-
-    if( arguments.length > 1 && data){
-        var tmp={};
-        [].slice.call(arguments,1).forEach(function(field){
-            tmp[field] = data[field];
-        });
-        data = tmp;
-    }
-
-    if( Array.isArray(data)){
-        data.forEach(function(item){filter(item);});
-    }
-    else if( data && 'object' === typeof data ){
-        Object.keys(data).forEach(function(key){
-            if( ~key.indexOf('.') ){
-                delete data[key];
-            }
-            else{
-                data[key] = filter(data[key]);
-            }
-        });
-    }
-    return data;
-}

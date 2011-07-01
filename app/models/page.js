@@ -8,6 +8,7 @@ var _t = Bozuko.t,
     Geo = Bozuko.require('util/geo'),
     XRegExp = Bozuko.require('util/xregexp'),
     ObjectId = Schema.ObjectId,
+    indexOf = Bozuko.require('util/functions').indexOf,
     async = require('async'),
     rand = Bozuko.require('util/math').rand,
     Profiler = Bozuko.require('util/profiler')
@@ -56,6 +57,24 @@ Page.method('getOwner', function(callback){
 
 Page.method('isAdmin', function(user, callback){
     callback( null, ~this.admins.indexOf(user._id) );
+});
+
+Page.method('addAdmin', function(user, callback){
+    var page = this;
+    async.forEach([
+        function add_page_admin(cb){
+            if( !~indexOf( page.admins, user._id ) ){
+                page.admins.push( user._id );
+                page.save(cb);
+            }
+        },
+        function add_user_manages(cb){
+            if( !~indexOf( user.manages, page._id ) ){
+                user.manages.push( page._id );
+                user.save(cb);
+            }
+        }
+    ], callback )
 });
 
 Page.method('getContests', function(callback){
