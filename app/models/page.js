@@ -36,14 +36,26 @@ var Page = module.exports = new Schema({
         zip                 :String,
         country             :String
     },
-    owner_id            :{type:ObjectId, index: true}
+    owner_id            :{type:ObjectId, index: true},
+    admins              :[ObjectId],
+    beta_agreement      :{
+        signed              :{type:Boolean, default: false},
+        signed_by           :{type:ObjectId},
+        signed_date         :{type:Date}
+    }
 });
+
+Page.index({admins: 1});
 
 Page.plugin(Services);
 Page.plugin(Coords);
 
 Page.method('getOwner', function(callback){
     Bozuko.models.User.findById( this.owner_id, callback );
+});
+
+Page.method('isAdmin', function(user, callback){
+    callback( null, ~this.admins.indexOf(user._id) );
 });
 
 Page.method('getContests', function(callback){

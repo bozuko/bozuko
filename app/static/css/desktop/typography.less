@@ -99,10 +99,10 @@ em {
     display: inline-block;
     .transition(none);
     .border_radius(4px);
-    .background_gradient(@brand_color, @dark_color);
+    border: 1px solid @dark_color;
+    .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
     color: #fff;
-    border: 1px solid darken(@brand_color, 20%);
-    padding: 6px 14px;
+    padding: 8px 14px;
     font-size: 20px;
     font-family: ArvoRegular;
     text-decoration: none;
@@ -110,7 +110,7 @@ em {
 
 .big-button:hover{
     color: #fff;
-    .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
+    .background_gradient(@brand_color, @dark_color);
 }
 
 .big-button:active{

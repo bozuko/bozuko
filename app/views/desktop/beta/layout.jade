@@ -27,7 +27,7 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
           h3.tagline beta
           
           .right-side
-            - if(!locals.user || !locals.user.beta_agreement.signed )
+            - if(!locals.user || !locals.page)
               h2 Beta Program
             
             - else

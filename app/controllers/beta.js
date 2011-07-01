@@ -36,27 +36,55 @@ exports.routes = {
     '/beta/(page/:page_id)?' : {
         get : {
             handler : function(req, res){
-                var user = req.session.user;
+                var user = req.session.user,
+                    page_id = req.param('page_id');
                 
-                if( !user || !user.beta_agreement.signed ){
+                if( !user ){
                     if( req.param('page_id') ){
-                        req.session.page_id = req.param('page_id');
+                        req.session.page_id = page_id;
+                    }
+                    else{
+                        req.session.page_id = false;
                     }
                     return res.render('beta/welcome');
                 }
                 
-                return Bozuko.models.Page.findOne({owner_id: user.id}, function(error, page){
+                var selector = {};
+                if( req.param('page_id') ) selector._id = page_id;
+                else{ req.session.page_id = false; }
+                
+                return user.getManagedPages(selector, function(error, pages){
                     if( error ) throw error;
-                    if( !page ){
-                        return res.render('beta/no-page');
+                    
+                    if( !pages.length ){
+                        return res.render('beta/welcome');
                     }
+                    
+                    console.log('pages.length:'+pages.length);
+                    
+                    var signed = false,
+                        page;
+                        
+                    while( !signed && pages.length ){
+                        page = pages.pop();
+                        signed = page.beta_agreement.signed;
+                    }
+                    if( !signed ){
+                        req.session.page_id = page.id;
+                        // use the last page...
+                        return res.render('beta/welcome');
+                    }
+                    
                     res.locals.user = user;
                     res.locals.page = page;
                     res.locals.scripts.unshift(
                         '/js/ext-4.0/lib/ext-all.js',
                         '/js/desktop/beta/app.js'
                     );
-                    res.locals.styles.unshift('/js/ext-4.0/lib/resources/css/ext-all-gray.css');
+                    res.locals.styles.unshift(
+                        '/js/ext-4.0/lib/resources/css/ext-all-gray.css',
+                        '/js/desktop/business/style.css'
+                    );
                     return res.render('beta/index');
                 });
             }
@@ -84,11 +112,19 @@ exports.routes = {
     '/beta/login/redirect' :{
         get : {
             handler : function(req, res){
-                var user = req.session.user;
+                var user = req.session.user,
+                    page_id = req.session.page_id;
                 if( !user ) throw Bozuko.error('bozuko/auth');
                 
-                if( user.beta_agreement.signed ) return res.redirect('/beta');
-                return redirect('/beta/agreement');
+                if( !page_id ) return res.redirect('/beta/agreement');
+                return Bozuko.models.Page.findById( page_id, function(error, page){
+                    if( error ) throw error;
+                    if( !page || !page.beta_agreement.signed ){
+                        return res.redirect('/beta/agreement');
+                    }
+                    return res.redirect('/beta');
+                    
+                });
             }
         }
     },
@@ -100,8 +136,6 @@ exports.routes = {
                 var user = req.session.user;
                 if( !user ) throw Bozuko.error('bozuko/auth');
                 
-                if( user.beta_agreement.signed ) return res.redirect('/beta/terms-of-use');
-                
                 // find out which page this dude manages
                 return Bozuko.service('facebook').get_user_pages(user, function(error, pages){
                     if( error ){
@@ -111,7 +145,13 @@ exports.routes = {
                     pages.forEach(function(page){
                         ids.push(page.id);
                     });
-                    return Bozuko.models.Page.findOne({'services.name':'facebook', 'services.sid':{$in:ids}},function(error, page){
+                    var selector = {'services.name':'facebook', 'services.sid':{$in:ids}};
+                    if( req.session.page_id ){
+                        selector._id = req.session.page_id;
+                    }
+                    console.log(selector);
+                    return Bozuko.models.Page.findOne(selector,function(error, page){
+                        if( error ) throw error;
                         if( !page ){
                             return res.render('beta/no-page');
                         }
@@ -147,6 +187,7 @@ exports.routes = {
                         }
                         var ids = [],
                             isAdmin = false;
+                            
                         pages.forEach(function(page){
                             ids.push(String(page.id));
                         });
@@ -155,13 +196,18 @@ exports.routes = {
                         if( !isAdmin ){
                             throw new Error("You are not a manager");
                         }
-                        page.owner_id = user.id;
+                        
+                        page.admins.push( user.id );
+                        page.beta_agreement = {
+                            signed: true,
+                            signed_by: user.id,
+                            signed_date: new Date()
+                        };
                         page.save(function(error){
                             if( error ) throw error;
-                            req.session.user.beta_agreement.signed = true;
                             return req.session.user.save(function(error){
                                 if( error ) throw error;
-                                return res.redirect('/beta');
+                                return res.redirect('/beta/page/'+page.id);
                             });
                         });
                     });

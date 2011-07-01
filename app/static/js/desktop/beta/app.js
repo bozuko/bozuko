@@ -1,6 +1,6 @@
 Ext.Loader.setConfig({enabled:true});
 Ext.Loader.setPath('Ext.ux', '/js/ext-4.0/ux');
-Ext.Loader.setPath('Bozuko', '/js/desktop/lib');
+Ext.Loader.setPath('Bozuko', '/js/desktop/Bozuko');
 
 Ext.application({
     
@@ -23,9 +23,6 @@ Ext.application({
             .update('');
         
         this.view = new Beta.view.App({
-            title: 'Beta',
-            autoHeight: true,
-            html: 'Beta Panel',
             renderTo: 'beta'
         });
     }

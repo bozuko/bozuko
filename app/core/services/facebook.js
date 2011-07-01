@@ -57,7 +57,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
     if( !code && !error_reason ){
         // we need to send this person to facebook to get the code...
-        res.redirect('https://graph.facebook.com/oauth/authorize?'+qs.stringify(params));
+        return res.redirect('https://graph.facebook.com/oauth/authorize?'+qs.stringify(params));
     }
     else if( error_reason ){
         /**
@@ -68,11 +68,11 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
         if( failure ){
             if( failure(error_reason, req, res) === false ){
-                return;
+                return null;
             }
         }
 
-        res.redirect(ret);
+        return res.redirect(ret);
     }
     else{
         params.client_secret = Bozuko.config.facebook.app.secret;
@@ -80,7 +80,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
-        http.request({
+        return http.request({
             url: 'https://graph.facebook.com/oauth/access_token',
             params: params},
             function(err, response){
@@ -98,7 +98,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                     var token = result['access_token'];
 
                     // lets get the user details now...
-                    facebook.graph('/me', {
+                    return facebook.graph('/me', {
                         params:{
                             access_token : token
                         }
@@ -118,30 +118,25 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                             }
 
                             return u.updateLikes( function(error){
-                                var device = req.session.device;
-                                req.session.regenerate(function(err){
-                                    //res.clearCookie('fbs_'+Bozuko.config.facebook.app.id);
-                                    req.session.userJustLoggedIn = true;
-                                    req.session.user = u;
-                                    req.session.device = device;
-
-                                    if( success ){
-                                        if( success(u,req,res) === false ){
-                                            return;
-                                        }
+                                req.session.userJustLoggedIn = true;
+                                req.session.user = u;
+                                
+                                if( success ){
+                                    if( success(u,req,res) === false ){
+                                        return null;
                                     }
-                                    res.redirect((ret || '/user')+'?token='+req.session.user.token);
-                                });
+                                }
+                                return res.redirect((ret || '/user')+'?token='+req.session.user.token);
                             });
                         });
                     });
                 } else {
                     if( failure ){
                         if( failure('Authentication Failed', req, res) === false ){
-                            return;
+                            return null;
                         }
                     }
-                    res.send("<html><h1>Facebook authentication failed :( </h1></html>");
+                    return res.send("<html><h1>Facebook authentication failed :( </h1></html>");
                 }
             }
         );
