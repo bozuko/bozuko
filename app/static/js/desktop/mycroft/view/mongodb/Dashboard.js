@@ -12,8 +12,9 @@ Ext.define('Mycroft.view.mongodb.Dashboard', {
     initComponent: function() {
 
         var tmpStore = Ext.create('Mycroft.store.mongodb.Dbs', {autoLoad: false});
+        var now = new Date();
 
-        var store = Ext.create('Mycroft.store.mongodb.Dbs'),
+        var store = Ext.create('Mycroft.store.mongodb.Dbs', {autoLoad: true}),
         yFields = ['dataSize', 'storageSize'];
         this.items = [{
             xtype: 'chart',
@@ -38,10 +39,14 @@ Ext.define('Mycroft.view.mongodb.Dashboard', {
             },{
                 type: 'Time',
                 position: 'bottom',
-                fields: ['date'],
+                fields: 'date',
                 title: 'Time',
-                dateFormat: 'h:m:s',
-                groupBy: 'year,month,day,hour,minute,second',
+                dateFormat: 'i:s',
+                groupBy: 'minute,second',
+//                constrain: true,
+                majorTickSteps: 100,
+                fromDate: now,
+  //              toDate: new Date(now.getTime() + 120000),
                 aggregateOp: 'sum'
             }],
             series: [{
@@ -72,17 +77,19 @@ Ext.define('Mycroft.view.mongodb.Dashboard', {
 
         console.log("store.count = "+store.count());
 
+        var ct = 0;
         setInterval(function() {
             tmpStore.load(function(records, operation, success) {
                 console.log("success = "+success);
                 if (!success) return console.error("Failed to load collection stats");
-                console.log("records = "+JSON.stringify(records[0].raw));
-                store.add({
-                    _id: records[0].raw._id,
-                    storageSize: records[0].raw.storageSize,
-                    dataSize: records[0].raw.dataSize,
-                    date: records[0].raw.date
-                });
+                console.log("records = "+records[0].raw);
+                if (ct) {
+                    store.add(records[0].raw);
+                } else {
+                    store.load();
+                    ct++;
+                }
+
                 console.log("store.count = "+store.count());
             });
 
