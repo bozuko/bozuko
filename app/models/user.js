@@ -4,7 +4,8 @@ var mongoose = require('mongoose'),
     Services = require('./plugins/services'),
     crypto = require('crypto'),
     Phone = require('./embedded/user/phone'),
-    async = require('async')
+    async = require('async'),
+    merge = Bozuko.require('util/object').merge
     ;
 
 var User = module.exports = new Schema({
@@ -20,10 +21,7 @@ var User = module.exports = new Schema({
     email               :{type:String, index: true},
     sign_up_date        :{type:Date, default: Date.now},
     favorites           :[ObjectId],
-    can_manage_pages    :{type:Boolean},
-    beta_agreement      :{
-        signed              :{type:Boolean, default: false}
-    }
+    can_manage_pages    :{type:Boolean}
 });
 
 User.plugin(Services);
@@ -36,6 +34,20 @@ User.pre('save', function(next) {
         return create_token(this, 1, next);
     }
     return next();
+});
+
+User.method('canManage', function(page, callback){
+    var self = this;
+    if( typeof page === 'object' && page.isAdmin && typeof page.isAdmin === 'function' ){
+        return page.isAdmin( this, callback );
+    }
+    if( typeof page === 'string' ){
+        return Bozuko.models.Page.findOne({admins: self._id, _id: page}, function(error, page){
+            if( error ) return callback( error );
+            return callback( null, page ? true : false );
+        });
+    }
+    return callback( new Error('page parameter is invalid - must be a Page model, or a string id'));
 });
 
 User.method('like', function(page, callback){
@@ -187,6 +199,30 @@ User.method('verify_phone', function(phone) {
         if(mismatch) return 'mismatch';
         if(found) return 'match';
         return 'new';
+});
+
+User.method('getManagedPages', function(){
+    // callback is the last argument
+    var self = this,
+        args = [].slice.apply(arguments),
+        fnArgs = [], arg,
+        param, params = ['selector', 'fields', 'options'],
+        selector = {admins:self._id},
+        callback = args.pop();
+    
+    while( args.length && (arg = args.shift()) && params.length && (param = params.shift()) ){
+        
+        switch( param ){
+            case 'selector':
+                fnArgs.push( merge( selector, arg) );
+                console.log(fnArgs);
+                break;
+            default:
+                fnArgs.push( arg );
+        }
+    }
+    fnArgs.push( callback );
+    Bozuko.models.Page.find.apply( Bozuko.models.Page, fnArgs );
 });
 
 

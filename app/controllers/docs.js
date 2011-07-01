@@ -3,6 +3,8 @@ var fs          = require('fs'),
     markdown    = require('markdown-js'),
     util        = require('util'),
     docify      = Bozuko.require('util/docs').docify;
+    
+exports.access = 'admin';
 
 exports.routes = {
 

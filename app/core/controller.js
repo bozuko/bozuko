@@ -1,9 +1,11 @@
 var
-    // merge = require('connect').utils.merge,
+    merge = Bozuko.require('util/object').merge,
     http = require('http'),
     auth = require('./auth')
     // io = require('socket.io')
     ;
+
+var ignores = ['req','res'];
 
 function Controller(app,name,config){
     this.app = app;
@@ -13,57 +15,12 @@ function Controller(app,name,config){
         routes : {}
     };
     this.config = config;
-    merge( this, config );
+    merge( this, config, ignores );
+	this.init();
     this.beforeRoute();
     if( this.routes ) this.route( this.routes );
     this.afterRoute();
     // if( this.sockets ) this.io( this.sockets );
-}
-
-
-var class2type = {}, toString = Object.prototype.toString;
-"Boolean Number String Function Array Date RegExp Object".split(" ").forEach( function(name, i) {
-	class2type[ "[object " + name + "]" ] = name.toLowerCase();
-});
-
-function getType(o){
-    return class2type[toString.call(o)] || 'object';
-}
-
-function merge(a,b,target){
-    if( target && target === true ) target = {};
-    target = target || a;
-    if( getType(a) != 'object' || getType(b) != 'object') return target;
-    if( !b ) return target;
-    Object.keys(b).forEach(function (key){
-        if( !b.hasOwnProperty(key) ){
-            return;
-        }
-        
-        // get the types
-        var a_type = getType(a[key]),
-            b_type = getType(b[key]),
-            value = b[key]
-            ;
-        
-        if( b_type === 'array' ) value = value.slice(0);
-        
-        if( a[key] === undefined ){
-            a[key] = value;
-            return;
-        }
-        
-        if( a_type !== b_type || b_type !== 'object'){
-            a[key] = value;
-            return;
-        }
-        
-        if( ~['req','app','res'].indexOf(key) ) return;
-        
-        merge(a[key], value);
-    });
-    
-    return a;
 }
 
 Controller.prototype = {
@@ -99,8 +56,8 @@ Controller.prototype = {
                     var handler = function(req,res){
                         res.send("Handler is not configured yet :(");
                     };
-                    var _locals = merge({}, self.locals || {});
-                    merge(_locals, config.locals || {});
+                    var _locals = merge({}, self.locals || {}, ignores);
+                    merge(_locals, config.locals || {}, ignores);
                     if( config.title ) _locals.title = config.title;
                     if( config[method] instanceof Function ){
                         handler = config[method];
@@ -179,8 +136,7 @@ Controller.prototype = {
                             }
                             locals['req'] = req;
                             // combine any locals that were provided
-                            args[1] = merge( merge({}, locals), args[1] || {} );
-                            console.log(args);
+                            args[1] = merge( merge({}, locals), args[1] || {}, ignores );
                             return _render.apply(res, args);
                         }
                         $handler.apply(self,arguments);
@@ -239,6 +195,10 @@ Controller.prototype = {
     forward : function(path){
 
     },
+	
+	init : function(){
+		
+	},
     
     beforeRoute : function(){
         

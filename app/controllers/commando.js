@@ -1,11 +1,15 @@
+var master;
+
 exports.access = 'admin';
 
-var commando = require('commando');
-var master = commando.master;
-var options = require(process.env.HOME + '/.commando');
-options.nolisten = true;
-options.noAlert = true;
-commando.start(options);
+exports.beforeRoute = function(){
+    var commando = require('commando');
+    var options = require(process.env.HOME + '/.commando');
+    options.nolisten = true;
+    options.noAlert = true;
+    commando.start(options);
+    master = commando.master;
+};
 
 exports.routes = {
 
@@ -26,6 +30,7 @@ exports.routes = {
     '/commando/mongodb/collections': {
         get : {
             handler: function(req, res) {
+                
                 Object.keys(master.nodes).forEach(function(host) {
                     var collection_stats = master.nodes[host].data.mongodb.collection_stats;
                     res.send(JSON.stringify({collections: collection_stats}));
