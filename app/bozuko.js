@@ -252,7 +252,7 @@ function initApplication(app){
         app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     }
     if( Bozuko.env() == 'development' ){
-        app.use(Bozuko.require('middleware/debug')());
+        // app.use(Bozuko.require('middleware/debug')());
     }
 
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
