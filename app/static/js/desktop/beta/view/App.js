@@ -15,10 +15,11 @@ Ext.define('Beta.view.App', {
             border: false,
             items:[{
                 region          :'east',
+                collapsible     :true,
+                frame           :false,
                 title           :"Winners List - All Campaigns",
                 xtype           :'winnerslist',
                 width           :250,
-                style           :'border-left-width: 1px; border-right-width: 1px;',
                 border          :false
             },{
                 region          :'center',
