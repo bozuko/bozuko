@@ -1,15 +1,12 @@
 exports.access = 'admin';
 
-var commando = require('commando');
-var master = commando.master;
-var options = require(process.env.HOME + '/.commando');
-options.nolisten = true;
-options.noAlert = true;
-commando.start(options);
+var mycroft = require('commando').mycroft;
+var options = require(process.env.HOME + '/.commando').mycroft;
+mycroft.start(options);
 
 exports.routes = {
 
-    '/commando/mongodb' : {
+    '/mycroft/mongodb' : {
         get : {
 
             title: 'MongoDB Monitor',
@@ -23,23 +20,12 @@ exports.routes = {
         }
     },
 
-    '/commando/mongodb/collections': {
+    '/mycroft/mongodb/db': {
         get : {
             handler: function(req, res) {
-                Object.keys(master.nodes).forEach(function(host) {
-                    var collection_stats = master.nodes[host].data.mongodb.collection_stats;
-                    res.send(JSON.stringify({collections: collection_stats}));
-                });
-            }
-        }
-    },
-
-    '/commando/mongodb/db': {
-        get : {
-            handler: function(req, res) {
-                var keys = Object.keys(master.nodes);
+                var keys = Object.keys(mycroft.nodes);
                 for (var i = 0; i < keys.length; i++) {
-                    var node = master.nodes[keys[i]];
+                    var node = mycroft.nodes[keys[i]];
                     if (node.data && node.data.mongodb) {
                         var db_stats = node.data.mongodb.db_stats;
                         return res.send(JSON.stringify({db_stats: db_stats}));
