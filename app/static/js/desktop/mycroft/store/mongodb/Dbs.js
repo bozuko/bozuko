@@ -5,5 +5,5 @@ Ext.define('Mycroft.store.mongodb.Dbs', {
 
     model: 'Mycroft.model.mongodb.Db',
 
-    autoLoad: false
+    autoLoad: true
 });
