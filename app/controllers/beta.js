@@ -119,16 +119,18 @@ exports.routes = {
             handler : function(req, res){
                 var user = req.session.user,
                     page_id = req.session.page_id;
-                if( !user ) throw Bozuko.error('bozuko/auth');
                 
-                if( !page_id ) return res.redirect('/beta/agreement');
+                if( !user ) throw Bozuko.error('bozuko/auth');
+                if( !page_id ){
+                    return res.redirect('/beta/agreement');
+                }
+                
                 return Bozuko.models.Page.findById( page_id, function(error, page){
                     if( error ) throw error;
                     if( !page || !page.beta_agreement.signed ){
                         return res.redirect('/beta/agreement');
                     }
                     return res.redirect('/beta');
-                    
                 });
             }
         }
@@ -161,7 +163,6 @@ exports.routes = {
                         }
                         if( page.beta_agreement.signed ){
                             req.session.page_id = page.id;
-                            
                             return page.addAdmin( user, function(error){
                                 if( error ) throw error;
                                 return res.redirect('/beta/page/'+page.id);

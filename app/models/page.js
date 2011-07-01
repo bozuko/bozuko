@@ -61,20 +61,24 @@ Page.method('isAdmin', function(user, callback){
 
 Page.method('addAdmin', function(user, callback){
     var page = this;
-    async.forEach([
+    async.parallel([
         function add_page_admin(cb){
             if( !~indexOf( page.admins, user._id ) ){
                 page.admins.push( user._id );
-                page.save(cb);
+                return page.save(cb);
             }
+            return cb();
         },
         function add_user_manages(cb){
             if( !~indexOf( user.manages, page._id ) ){
                 user.manages.push( page._id );
-                user.save(cb);
+                return user.save(cb);
             }
+            return cb();
         }
-    ], callback )
+    ], function(error){
+        callback();
+    })
 });
 
 Page.method('getContests', function(callback){
