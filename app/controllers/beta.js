@@ -229,7 +229,7 @@ exports.routes = {
         }
     },
     
-    '/admin/winners' : {
+    '/beta/winners' : {
 
         get : {
             handler : function(req, res){
