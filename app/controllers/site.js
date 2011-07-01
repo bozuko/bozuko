@@ -37,7 +37,7 @@ exports.locals = {
     ],
     styles:[
         '/css/desktop/style.css',
-        '/css/desktop/layout.css',
+        '/css/desktop/layout.css'
     ]
 };
 
@@ -50,11 +50,11 @@ exports.beforeRoute = function(){
 exports.afterRoute = function(){
     var self = this,
         app = self.app;
-    
+
     app.use(function(req,res){
         self.refs.notFound(req,res);
     });
-    
+
     app.error(function(err,req,res,next){
         return self.refs.notFound(req,res,next,err);
     });
@@ -63,15 +63,15 @@ exports.afterRoute = function(){
 exports.routes = {
     '/' : {
         get : {
-            
+
             title: 'Bozuko - Instant Win Games at your Favorite Places',
             locals: {
                 html_classes: ['site-home'],
                 head_scripts: [
-                    
+
                 ]
             },
-            
+
             handler: function(req, res) {
                 res.render('site/index');
             }
@@ -79,7 +79,7 @@ exports.routes = {
     },
     '/how-to-play' : {
         get : {
-            
+
             title: 'How to Play Bozuko',
             locals: {
                 html_classes: ['site-how-to-play'],
@@ -91,7 +91,7 @@ exports.routes = {
                     'description' : 'Playing Bozuko is fun and easy. Learn about how to find Bozuko Places and play their games for a chance to win prizes instantly!'
                 }
             },
-            
+
             handler: function(req, res) {
                 res.render('site/how-to-play');
             }
@@ -99,7 +99,7 @@ exports.routes = {
     },
     '/bozuko-for-business' : {
         get : {
-            
+
             title: 'Bozuko for Business',
             locals: {
                 html_classes: ['site-b4b'],
@@ -108,7 +108,7 @@ exports.routes = {
                     '/js/desktop/site/b4b.js'
                 ]
             },
-            
+
             handler: function(req, res) {
                 res.render('site/bozuko-for-business');
             }
@@ -116,27 +116,27 @@ exports.routes = {
     },
     '/contact' : {
         get : {
-            
+
             title: 'Bozuko - Contact us',
-            
+
             locals: {
                 html_classes: ['contact'],
                 head_scripts: [
                     'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'
                 ]
             },
-            
+
             handler: function(req, res){
                 res.locals.token = getToken(req.session, true);
                 var info = req.flash('info');
                 res.locals.info = info.length ? info[0] : false;
                 res.render('site/contact');
             }
-            
+
         },
-        
+
         post : {
-            
+
             handler: function(req, res){
                 // check the form...
                 var name = req.param('name'),
@@ -145,7 +145,7 @@ exports.routes = {
                     token = getToken(req.session),
                     success = true
                     ;
-                
+
                 if( !req.param(token) ){
                     throw Bozuko.error('bozuko/unauthorized_request');
                 }
@@ -156,14 +156,14 @@ exports.routes = {
                 }catch(e){
                     res.locals.token = getToken(req.session, true);
                     res.locals.errors = [e.message];
-                    
+
                     res.locals.name = name;
                     res.locals.email = email;
                     res.locals.message = message;
-                    
+
                     return res.render('site/contact');
                 }
-                
+
                 // send an email...
                 mailer.send({
                     to: 'info@bozuko.com',
@@ -176,17 +176,91 @@ exports.routes = {
             }
         }
     },
+    '/business-contact': {
+        get : {
+
+            title: 'Bozuko - Contact us',
+
+            locals: {
+                html_classes: ['business-contact'],
+                head_scripts: [
+                    'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'
+                ]
+            },
+
+            handler: function(req, res){
+                res.locals.token = getToken(req.session, true);
+                var info = req.flash('info');
+                res.locals.info = info.length ? info[0] : false;
+                res.render('site/business-contact');
+            }
+
+        },
+
+        post : {
+
+            handler: function(req, res){
+                // check the form...
+                var name = req.param('name'),
+                    email = req.param('email'),
+                    company = req.param('company'),
+                    city = req.param('city'),
+                    state = req.param('state'),
+                    zip = req.param('zip'),
+                    country = req.param('country'),
+
+                    token = getToken(req.session),
+                    success = true
+                    ;
+
+                if( !req.param(token) ){
+                    throw Bozuko.error('bozuko/unauthorized_request');
+                }
+                try{
+                    validator.check(name, 'Please enter your name').notEmpty();
+                    validator.check(email, 'Please enter a valid email address').isEmail();
+                    validator.check(company, 'Please enter your Company Name').notEmpty();
+                    validator.check(city, 'Please enter your city').notEmpty();
+                    validator.check(state, 'Please enter your state').notEmpty();
+                    validator.check(zip, 'Please enter a valid postal(zip) code').len(4,5).isInt();
+                }catch(e){
+                    res.locals.token = getToken(req.session, true);
+                    res.locals.errors = [e.message];
+
+                    res.locals.name = name;
+                    res.locals.email = email;
+                    res.locals.company = company;
+                    res.locals.city = city;
+                    res.locals.state = state;
+                    res.locals.zip = zip;
+                    res.locals.country = country;
+
+                    return res.render('site/business-contact');
+                }
+
+                // send an email...
+                mailer.send({
+                    to: 'info@bozuko.com',
+                    reply_to: email,
+                    subject: "New Bozuko Business Inquiry",
+                    body: name+' <'+email+'> sent the following message:\n\n'+message
+                });
+                req.flash('info', 'Your message is on its way!');
+                return res.redirect('/business-contact');
+            }
+        }
+    },
     '/p/:id' : {
         get : {
-            
+
             title: 'Bozuko - Business Listing',
             locals: {
                 html_classes: ['site-business-page'],
                 head_scripts: [
-                    
+
                 ]
             },
-            
+
             handler: function(req, res) {
                 return Bozuko.models.Page.findById( req.param('id'), function(error, page){
                     if( error || !page ){
@@ -206,15 +280,15 @@ exports.routes = {
     '/404' : {
         get : {
             ref: 'notFound',
-            
+
             title :'Bozuko - Page not found',
-            
+
             locals: {
                 html_classes: [
                     'cityscape'
                 ]
             },
-            
+
             handler: function(req, res, next, err){
                 if(err){
                     res.locals.err = err;
@@ -228,47 +302,47 @@ exports.routes = {
     '/about' : {
         get : {
             title :'Bozuko - About',
-            
+
             locals: {
                 content: Content.get('site/about.md')
             },
-            
+
             handler: function(req, res){
                 res.locals.content = Content.get('site/about.md');
                 return res.render('site/content', 404);
             }
         }
     },
-    
+
     '/privacy-policy' : {
         get : {
             title :'Bozuko - Privacy Policy',
-            
+
             locals: {
                 html_classes: [
                     'legal'
                 ],
                 content: Content.get('site/privacy.md')
             },
-            
+
             handler: function(req, res){
                 res.locals.content = Content.get('site/privacy.md');
                 return res.render('site/content', 404);
             }
         }
     },
-    
+
     '/terms-of-use' : {
         get : {
             title :'Bozuko - Terms of Use',
-            
+
             locals: {
                 html_classes: [
                     'legal'
                 ],
                 content: Content.get('site/terms.md')
             },
-            
+
             handler: function(req, res){
                 res.locals.content = Content.get('site/terms.md');
                 return res.render('site/content', 404);
