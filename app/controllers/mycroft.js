@@ -1,10 +1,11 @@
-var master;
-
 exports.access = 'admin';
 
 var mycroft = require('commando').mycroft;
 var options = require(process.env.HOME + '/.commando').mycroft;
-mycroft.start(options);
+
+exports.init = function() {
+    mycroft.start(options);
+};
 
 exports.routes = {
 
@@ -30,9 +31,11 @@ exports.routes = {
                     var node = mycroft.nodes[keys[i]];
                     if (node.data && node.data.mongodb) {
                         var db_stats = node.data.mongodb.db_stats;
+                        console.error("db_stats = "+JSON.stringify(db_stats));
                         return res.send(JSON.stringify({db_stats: db_stats}));
                     }
                 };
+                console.error("db_stats is Empty!");
                 return res.send(JSON.stringify({db_stats: []}));
             }
         }
