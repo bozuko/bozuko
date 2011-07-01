@@ -624,7 +624,7 @@ body {
 .site-b4b .bd .page-width .b4b-bottom a.get-started {
   z-index: 2;
   position: absolute;
-  top: 0px;
+  top: 6px;
   right: 0;
   display: block;
   cursor: pointer;
