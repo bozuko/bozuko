@@ -1,11 +1,16 @@
 Ext.define('Bozuko.model.Winner', {
+    
     extend: 'Ext.data.Model',
     
     idProperty: '_id',
     
+    requires: [
+        'Bozuko.lib.Router'
+    ],
+    
     proxy: {
         type: 'rest',
-        url: '/admin/winners',
+        url: '/winners',
         reader: {
             type: 'json',
             root: 'items'
@@ -20,4 +25,6 @@ Ext.define('Bozuko.model.Winner', {
         {name:'page',               type:'Object'},
         {name:'user',               type:'Object'}
     ]
+}, function(){
+    this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });

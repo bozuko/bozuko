@@ -1,0 +1,121 @@
+.sidebar(style="float:right; width: 250px; padding-top: 20px;")
+  script(type="text/javascript",src="/twitter/widget.js")
+  script(type="text/javascript")
+    /*
+    new TWTR.Widget({
+      version: 2,
+      type: 'profile',
+      rpp: 4,
+      interval: 6000,
+      width: 250,
+      height: 200,
+      theme: {
+        shell: {
+          background: 'transparent',
+          color: '#3d3d3d'
+        },
+        tweets: {
+          background: 'transparent',
+          color: '#3d3d3d',
+          links: '#359b59'
+        }
+      },
+      features: {
+        scrollbar: false,
+        loop: false,
+        live: false,
+        hashtags: true,
+        timestamp: true,
+        avatars: false,
+        behavior: 'all'
+      }
+    }).render().setUser('BozukoBiz').start();
+    */
+    new TWTR.Widget({
+      version: 2,
+      type: 'profile',
+      rpp: 3,
+      interval: 6000,
+      width: 250,
+      height: 300,
+      theme: {
+        shell: {
+          //background: '#5ad174',
+          background: '#b6b6b6',
+          color: '#333'
+        },
+        tweets: {
+          background: '#f8f8f8',
+          color: '#525252',
+          links: '#2ac462'
+        }
+      },
+      features: {
+        scrollbar: false,
+        loop: false,
+        live: false,
+        hashtags: true,
+        timestamp: true,
+        avatars: false,
+        behavior: 'all'
+      }
+    }).render().setUser('bozukobiz').start();
+
+div(style="float:left; width: 600px;")
+  h1 Contact Bozuko
+  
+  p
+    | Bozuko is currently invitation only.  
+    | To stay up to date on our progress and be informed when we are coming to your 
+    | neighborhood, please join our mailing list.
+    |   
+    
+  - if( locals.errors )
+    ul.errors
+      - each error in locals.errors
+        li!= error
+        
+  - if( locals.info )
+    .info
+      p!= info
+  
+  form(method="post")
+    input(type="hidden",name=token,value="1")
+    .field-wrap
+      label(for="name") Name
+      .field
+        input#name(name="name",value=locals.name)
+    
+    .field-wrap
+      label(for="email") Email
+      .field
+        input#email(name="email",value=locals.email)
+
+    .field-wrap
+      label(for="company") Company Name
+      .field
+        input#company(name="company", value=locals.company)
+
+    .field-wrap
+      label(for="city") City
+      .field
+        input#city(name="city", value=locals.city)
+
+    .field-wrap
+      label(for="state") State
+      .field
+        input#state(name="state", value=locals.state)
+
+    .field-wrap
+      label(for="zip") Postal Code
+      .field
+        input#zip(name="zip", value=locals.zip)
+
+    .field-wrap
+      label(for="country") Country
+      .field
+        input#country(name="country", value=locals.country)
+
+    .buttons
+      input.big-button(type="submit", value="Send")
+.clear(style="clear:both;")

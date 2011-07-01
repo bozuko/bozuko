@@ -24,6 +24,11 @@ Ext.define('Admin.view.page.Form' ,{
             },
             items: [{
                 xtype           :'textfield',
+                readOnly        :true,
+                name            :'betalink',
+                fieldLabel      :'Beta Link'
+            },{
+                xtype           :'textfield',
                 name            :'name',
                 fieldLabel      :'Name'
             },{
@@ -104,6 +109,7 @@ Ext.define('Admin.view.page.Form' ,{
         if( location ) Ext.Object.each( location, function(key, value){
             values['location.'+key] = value;
         });
+        values.betalink = window.location.protocol+'//'+window.location.host+'/beta/page/'+record.get('_id');
         me.getForm().setValues(values);
     }
 });

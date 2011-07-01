@@ -194,10 +194,11 @@ body {
   padding-top: 10px;
 }
 .site-home .bd .page-width .middle .who-we-are .bottom .download {
+  vertical-align: top;
   margin-right: 10px;
 }
 .site-home .bd .page-width .middle .who-we-are .bottom .download img {
-  margin-top: 6px;
+  margin-top: 4px;
   height: 39px;
 }
 .site-home .bd .page-width .middle .who-we-are .bottom a.how-to-play {
@@ -617,10 +618,13 @@ body {
   margin: 0 auto;
   position: relative;
 }
+.site-b4b .bd .page-width .b4b-bottom h1 {
+  margin: 0;
+}
 .site-b4b .bd .page-width .b4b-bottom a.get-started {
   z-index: 2;
   position: absolute;
-  top: -16px;
+  top: 0px;
   right: 0;
   display: block;
   cursor: pointer;
@@ -647,6 +651,7 @@ body {
   list-style: none;
   float: left;
   margin-right: 4px;
+  margin-left: 0;
 }
 .site-b4b .bd .page-width .b4b-bottom ul.tabs li a {
   transition: color 0.25s linear;

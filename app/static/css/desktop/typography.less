@@ -133,7 +133,6 @@ em {
 }
 
 .field-wrap {
-    overflow: hidden;
     clear: both;
     margin-bottom: 10px;
     label {
@@ -161,6 +160,19 @@ em {
             .border_radius(6px);
             border: 1px solid #aaa;
         }
+        
+        input, textarea, select {
+            border:1px solid #cccccc;
+            background: #f9f9f9;
+            .transition(all, 0.2s, ease-out);
+            outline:none;
+        }
+        input:focus, textarea:focus, select:focus{
+            .box_shadow(0,0,5px,@brand_color);
+            background:#ffffff;
+            border-color: @brand_color;
+        }
+        
     }
 }
 .buttons {

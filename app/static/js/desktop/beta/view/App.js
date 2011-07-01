@@ -15,13 +15,16 @@ Ext.define('Beta.view.App', {
             border: false,
             items:[{
                 region          :'east',
+                title           :"Winners List - All Campaigns",
                 xtype           :'winnerslist',
                 width           :250,
+                style           :'border-left-width: 1px; border-right-width: 1px;',
                 border          :false
             },{
                 region          :'center',
                 html            :'hello',
-                bodyPadding     :10
+                bodyPadding     :10,
+                border          :false
             }]
         });
         
