@@ -7,6 +7,7 @@ var Content = Bozuko.require('util/content'),
 exports.locals = {
     layout: 'site/layout',
     title: 'Bozuko',
+    device: 'desktop',
     meta: {
         'charset':'utf-8',
         'author':'Bozuko Inc.',

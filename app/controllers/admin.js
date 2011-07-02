@@ -584,6 +584,11 @@ exports.routes = {
                     from: DateUtil.add( new Date(), DateUtil.DAY, -30 )
                 }, function(error, results){
                     if( error ) return error.send( res );
+                    // lets pimp these results for the reports
+                    var max = 0, i=0;
+                    results.forEach(function(result){
+                        //result.count = (Math.random() * (i++)) + 20;
+                    });
                     return res.send( {items: results} );
                 });
             }
