@@ -223,7 +223,7 @@ exports.routes = {
                     validator.check(company, 'Please enter your Company Name').notEmpty();
                     validator.check(city, 'Please enter your city').notEmpty();
                     validator.check(state, 'Please enter your state').notEmpty();
-                    validator.check(zip, 'Please enter a valid postal(zip) code').len(4,5).isInt();
+                    validator.check(zip, 'Please enter a valid postal(zip) code').len(4,5);
                 }catch(e){
                     res.locals.token = getToken(req.session, true);
                     res.locals.errors = [e.message];
