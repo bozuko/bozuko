@@ -35,7 +35,8 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                     position    :'left',
                     fields      :['count'],
                     title       :'Entries',
-                    grid        :true
+                    grid        :true,
+                    minimum     :0
                 },{
                     type        :'Time',
                     position    :'bottom',

@@ -61,9 +61,22 @@ body * {
   font-size: 22px;
   line-height: 50px;
 }
+.beta-app body {
+  overflow: hidden;
+}
+.beta-app .ft {
+  display: none;
+}
+.beta-app .page-width {
+  width: 960px;
+}
+.beta-app .copyright {
+  padding: 5px 0;
+}
 .bd .wrap {
   min-height: 300px;
   font-size: 12px;
+  padding-bottom: 0;
 }
 .bd ol li ol li ol li {
   list-style: lower-roman;
@@ -71,6 +84,10 @@ body * {
 .ft {
   font-size: 14px;
   font-family: Tahoma;
+}
+.beta-panel {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
 }
 .beta-agreement .top {
   overflow: hidden;
