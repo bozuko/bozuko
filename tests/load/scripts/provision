@@ -3,10 +3,10 @@
 var db = require('../util/db');
 var inspect = require('util').inspect;
 
-process.env.NODE_ENV = 'load';
+process.env.NODE_ENV = 'development';
 var Bozuko = require('../../../app/bozuko');
 
-var valid_args = ['--contests', '--user', '--entries', '--prizes', '--plays_per_entry',
+var valid_args = ['--contests', '--users', '--entries', '--prizes', '--plays_per_entry',
     '--free_play_pct', '--drop_collections'];
 
 var defaults = {
