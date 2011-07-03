@@ -6,8 +6,8 @@
 Effective June 28, 2011  
 Last Revised June 28, 2011
 
-Welcome to www.Bozuko.com (the ìSiteî). The Site is owned and operated by Bozuko, Inc. (ìBozukoî, ìweî
-or ìusî) and is made available to you under the following terms and conditions (these ìTerms of Useî). You affirm
+Welcome to www.Bozuko.com (the ‚ÄúSite‚Äù). The Site is owned and operated by Bozuko, Inc. (‚ÄúBozuko‚Äù, ‚Äúwe‚Äù
+or ‚Äúus‚Äù) and is made available to you under the following terms and conditions (these ‚ÄúTerms of Use‚Äù). You affirm
 that you are fully able and competent to enter into, abide by and comply with these Terms of Use. If you are an
 individual acting as a representative of a corporation or other legal entity which wishes to use the Site, then you
 represent and agree that you have the authority to accept these Terms of Use and our <Privacy Policy> on behalf
@@ -19,11 +19,11 @@ place of you.
 
     Subject to these Terms of Use, Bozuko hereby grants you a non-exclusive, non-transferable right to (i) access the
 Site, (ii) access the products, services, software and other materials, including without limitation, any new feature
-added from time to time and made available through the Site (collectively, the ìServicesî) and (iii) download, print
+added from time to time and made available through the Site (collectively, the ‚ÄúServices‚Äù) and (iii) download, print
 and use one copy of the information, materials and content to which you may have access as part of or through
-your use of the Services (collectively, ìContentî) for your personal noncommercial use only; provided, however,
+your use of the Services (collectively, ‚ÄúContent‚Äù) for your personal noncommercial use only; provided, however,
 that any copy of the Content that you make shall retain all copyright and other proprietary notices contained
-therein and any other reproduction of the Content in any form or by any means without Bozukoís written
+therein and any other reproduction of the Content in any form or by any means without Bozuko‚Äôs written
 permission is forbidden. Unauthorized access to the Site or to the telecommunications or computer facilities used
 to deliver the Site is a breach of these Terms of Use and a violation of law.
 
@@ -36,7 +36,7 @@ the terms and conditions in these Terms of Use will control.
 
     You understand and acknowledge that anything you submit to the Site is routed through the Site's servers and
 the Internet and that you are solely responsible for information or communications that you submit via the Site,
-the consequences of posting the information or communications and your reliance on Bozukoís or other usersí
+the consequences of posting the information or communications and your reliance on Bozuko‚Äôs or other users‚Äô
 information or communications available via the Site. You make those disclosures via the Site at your own risk.
 
      Except as specifically permitted in this Agreement, you shall not, directly or indirectly, (i) transfer, sell, sublicense,
@@ -56,9 +56,9 @@ by Bozuko.
 
 2. **Registration**
 
-    Certain of the Services are intended only for our customers who register for the Services and Site (ìRegistered
-Usersî) and Bozuko reserves the right to limit certain Services to Registered Users (collectively, ìRegistered
-User Servicesî). Your use of the Registered User Services is subject to additional terms and conditions and your
+    Certain of the Services are intended only for our customers who register for the Services and Site (‚ÄúRegistered
+Users‚Äù) and Bozuko reserves the right to limit certain Services to Registered Users (collectively, ‚ÄúRegistered
+User Services‚Äù). Your use of the Registered User Services is subject to additional terms and conditions and your
 continued use of the Registered User Services constitutes acceptance of these additional terms and conditions.
 
     As part of the registration process or as part of your continued use of any Registered User Services, you may be
@@ -84,13 +84,13 @@ password.
 <Privacy Policy>. Unless you have provided consent, we will not disclose any personally identifiable information
 about you except as described in our [Privacy Policy] or unless we are required to do so by law or in the good faith
 belief that such disclosure is (i) necessary to conform with applicable laws or comply with legal process, enforce
-these Terms of Use or protect and defend Bozukoís rights or property or (ii) made in connection with the sale of all
+these Terms of Use or protect and defend Bozuko‚Äôs rights or property or (ii) made in connection with the sale of all
 or substantially all of the equity and/or assets of Bozuko or the Site in order to facilitate the continued operation of
 the Site.
 
 4. **Trademarks**
     
-    Bozuko and Bozukoís logo and other product and service names of Bozuko are trademarks of Bozuko, Inc.
+    Bozuko and Bozuko‚Äôs logo and other product and service names of Bozuko are trademarks of Bozuko, Inc.
 
 5. **Submissions**
 
@@ -164,14 +164,14 @@ may not apply to you.
 8. **Indemnification**
 
     You agree to indemnify, defend and hold harmless Bozuko and its subsidiaries, affiliates, shareholders, directors,
-officers, employees and agents, from any claim, demand, liability, expense or loss, including reasonable attorneysí
+officers, employees and agents, from any claim, demand, liability, expense or loss, including reasonable attorneys‚Äô
 fees, due to or arising out of, or in any way connected with your use of or access to the Site or your violation of
 these Terms of Use.
 
 9. **Modifications**
 
     Bozuko may modify these Terms of Use from time to time. When Bozuko posts modifications to these Terms,
-Bozuko will revise the ìLast Revisedî date at the top of this web page. Upon any material modification to these
+Bozuko will revise the ‚ÄúLast Revised‚Äù date at the top of this web page. Upon any material modification to these
 Terms, we will notify you by prominently posting notice of the changes on the Site. The modified Terms of Use will
 be effective immediately upon posting on the Site. Your continued use of the Site after the posting of the modified
 Terms of Use on the Site constitutes your agreement to abide and be bound by the modified Terms of Use. If you
@@ -202,7 +202,7 @@ notice or warning to you.
     A Registered User may delete his/her registration information at any time by sending an email (including username
 and password) to [questions@bozuko.com]. Bozuko may, in its sole discretion, terminate a Registered User if he/
 she has been inactive for a period of twelve (12) months. A Registered User will be defined as inactive if she/he
-has not logged into any Site or she/he has not called Bozukoís customer service or contacted Bozuko in any other
+has not logged into any Site or she/he has not called Bozuko‚Äôs customer service or contacted Bozuko in any other
 manner.
 
 11. **Governing Law**
@@ -218,7 +218,7 @@ TRIAL BY JURY IN ANY SUIT OR PROCEEDING ARISING UNDER OR RELATING TO THESE TERMS
     These Terms of Use do not and shall not be construed     to create any partnership, joint venture, employer-
 employee, agency or franchisor-franchisee relationship between the parties hereto. These Terms of Use will
 bind and inure to the benefit of each party's successors and permitted assigns. You may not assign, transfer or
-sublicense any of your rights or obligations under these Terms of Use without Bozukoís prior express written
+sublicense any of your rights or obligations under these Terms of Use without Bozuko‚Äôs prior express written
 consent. No waiver by either party of any breach or default hereunder will be deemed to be a waiver of any
 preceding or subsequent breach or default. If any part of these Terms of Use is found by a court of competent
 jurisdiction to be invalid or unenforceable, it will be replaced with language reflecting the original purpose in a
@@ -252,4 +252,4 @@ Affairs in writing at 400 R Street, Suite 1080, Sacramento, California 95814, or
 list-style: lower-alpha;.
 
 
-Copyright © 2011 Bozuko, Inc. All rights reserved.
+Copyright ¬© 2011 Bozuko, Inc. All rights reserved.
