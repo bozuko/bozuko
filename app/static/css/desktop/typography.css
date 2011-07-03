@@ -152,16 +152,16 @@ em {
 }
 .field-wrap label {
   float: left;
-  width: 100px;
+  width: 120px;
   line-height: 24px;
   font-weight: bold;
 }
 .field-wrap .field {
-  margin-left: 120px;
+  margin-left: 140px;
   position: relative;
 }
 .field-wrap .field input {
-  width: 440px;
+  width: 400px;
   padding: 2px 6px;
   font-size: 14px;
   line-height: 24px;
@@ -174,7 +174,7 @@ em {
   border: 1px solid #aaa;
 }
 .field-wrap .field textarea {
-  width: 440px;
+  width: 400px;
   padding: 5px 6px;
   height: 77px;
   font-size: 14px;

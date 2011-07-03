@@ -3,8 +3,11 @@ Ext.define('Beta.view.App', {
     extend: 'Ext.panel.Panel',
     
     requires: [
-        'Bozuko.view.winners.List'
+        'Bozuko.view.winners.List',
+        'Beta.view.page.Dashboard'
     ],
+    
+    cls: 'beta-panel',
     
     initComponent : function(){
         var me = this;
@@ -23,8 +26,7 @@ Ext.define('Beta.view.App', {
                 border          :false
             },{
                 region          :'center',
-                html            :'hello',
-                bodyPadding     :10,
+                xtype           :'pagedashboard',
                 border          :false
             }]
         });

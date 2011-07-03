@@ -27,11 +27,10 @@ Ext.define('Bozuko.view.winners.List' ,{
         me.store = Ext.create('Bozuko.store.Winners', {autoLoad: true});
         me.tmpStore = Ext.create('Bozuko.store.Winners',{autoLoad: false});
         
-        me.tbar = ['->',{
-            text: 'Refresh',
-            icon: '/images/icons/famfamfam/icons/arrow_refresh.png',
+        me.tools = [{
+            type: 'refresh',
             handler: function(){
-                if( me.store ) me.store.load();
+                if(me.store) me.store.load();
             }
         }];
         
