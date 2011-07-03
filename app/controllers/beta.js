@@ -315,7 +315,250 @@ exports.routes = {
                 });
             }
         }
+    },
+    
+    '/beta/report' : {
+
+        get : {
+            handler : function(req, res){
+                
+                var user = req.session.user,
+                    query = {
+                        page_id: {$in: user.manages}
+                    };
+                
+                return Report.run('counts', {
+                    query: query,
+                    model: req.param('model') || 'Entry',
+                    from: DateUtil.add( new Date(), DateUtil.DAY, -30 )
+                }, function(error, results){
+                    if( error ) return error.send( res );
+                    // lets pimp these results for the reports
+                    var max = 0, i=0;
+                    results.forEach(function(result){
+                        //result.count = (Math.random() * (i++)) + 20;
+                    });
+                    return res.send( {items: results} );
+                });
+            }
+        }
+    },
+    
+    '/beta/pages' : {
+        
+        alias : '/beta/pages/:id',
+
+        get : {
+            handler : function(req, res){
+                // need to get all pages
+                var selector = {};
+                selector._id = {$in: req.session.user.manages};
+                if( req.param('id') ){
+                    selector._id = req.param('id');
+                }
+                return Bozuko.models.Page.find(selector,{},{sort:{name:1}}, function(error, pages){
+                    if( error ) return error.send(res);
+                    return res.send({items:pages});
+                });
+            }
+        },
+        
+        /* update */
+        put : {
+            handler : function(req,res){
+                var user = req.session.user;
+                
+                if( !indexOf(user.manages, req.param('id')) ){
+                    return Bozuko.error('bozuko/auth').send(res);
+                }
+                return Bozuko.models.Page.findById( req.param('id'), function(error, page){
+                    if( error ) return error.send( res );
+                    // else, lets bind the reqest to the page
+                    var data = req.body;
+                    
+                    delete data._id;
+                    page.set( data );
+                    /**
+                     * need to filter out non-updatabile fields
+                     */
+                    // filter(data)
+                    return page.save( function(error){
+                        if( error ) return error.send(res);
+                        return res.send( {items: [page]} );
+                    });
+                })
+            }
+        }
+    },
+    
+    '/beta/contests' : {
+        
+        alias : '/beta/contests/:id',
+        /* Read */
+        get : {
+            handler : function(req, res){
+                // need to get all pages
+                var page_id = req.param('page_id'),
+                    id = req.param('id'),
+                    selector = {};
+
+                if( page_id ) selector['page_id'] = page_id;
+                if( id ) selector['_id'] = id;
+                
+                return Bozuko.models.Contest.find(selector,{},{sort:{active: -1, start:-1}}, function(error, contests){
+                    if( error ) return error.send(res);
+                    contests.sort(function(a,b){
+                        if( a.state=='active' && b.state != 'active' ) return -1;
+                        if( b.state=='active' && a.state != 'active' ) return 1;
+                        return +b.start-a.start;
+                    });
+                    return res.send({items:contests});
+                });
+            }
+        },
+        /* Create */
+        post : {
+            handler : function(req, res){
+                var data = filter(req.body),
+                    prizes = data.prizes,
+                    consolation_prizes = data.consolation_prizes;
+
+                delete data._id;
+
+                delete data.play_cursor;
+                delete data.state;
+                delete data.total_entries;
+                delete data.total_plays;
+
+                prizes.forEach(function(prize){
+                    delete prize._id;
+                });
+
+                // any other _id things?
+                consolation_prizes.forEach(function(prize){
+                    delete prize._id;
+                });
+
+                var contest = new Bozuko.models.Contest(data);
+                console.log(JSON.stringify(contest));
+                return contest.save( function(error){
+                    if( error ) return error.send( res );
+                    return res.send({items:[contest]});
+                });
+            }
+        },
+        /* Update */
+        put : {
+            handler : function(req, res){
+
+                return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
+                    if( error ) return error.send(res);
+
+                    var data = filter(req.body);
+
+                    var prizes = data.prizes,
+                        entry_config = data.entry_config,
+                        consolation_prizes = data.consolation_prizes;
+
+                    delete data.prizes;
+                    delete data.consolation_prizes;
+                    delete data.state;
+                    delete data.entry_config;
+
+                    // most definitely do not want to touch this
+                    delete data.play_cursor;
+                    delete data.token_cursor;
+
+                    // don't want to update this, will throw an error
+                    delete data._id;
+
+                    for( var p in data ){
+                        if( data.hasOwnProperty(p) ){
+                            contest.set(p, data[p] );
+                        }
+                    }
+
+                    prizes.forEach(function(prize, i){
+                        var old, doc;
+                        if( prize._id && (old = contest.prizes.id(prize._id)) ){
+                            doc = old.doc;
+                            for( var p in prize ){
+                                if( prize.hasOwnProperty(p) ){
+                                    doc[p] = prize[p];
+                                }
+                            }
+                            prizes[i] = doc;
+                        }
+                    });
+
+                    consolation_prizes.forEach(function(consolation_prize, i){
+                        var old, doc;
+                        if( consolation_prize._id && (old = contest.consolation_prizes.id(consolation_prize._id)) ){
+                            doc = old.doc;
+                            for( var p in consolation_prize ){
+                                if( consolation_prize.hasOwnProperty(p) ){
+                                    doc[p] = consolation_prize[p];
+                                }
+                            }
+                            consolation_prizes[i] = doc;
+                        }
+                    });
+
+                    // no clue why i have to do this right now...
+                    contest.prizes = [];
+                    contest.consolation_prizes = [];
+                    contest.entry_config = [];
+
+                    // save existing prizes before adding and removing others
+                    return contest.save(function(error){
+
+                        if( error ) return error.send( res );
+                        prizes.forEach( function(prize){
+                            if( !prize._id ) delete prize._id;
+                            contest.prizes.push(prize);
+                        });
+                        consolation_prizes.forEach( function(prize){
+                            if( !prize._id ) delete prize._id;
+                            contest.consolation_prizes.push(prize);
+                        });
+
+                        entry_config.forEach( function(config){
+                            contest.entry_config.push( config );
+                        });
+
+                        return contest.save( function(error){
+                            if( error ){
+                                console.log(error);
+                                return error.send( res );
+                            }
+                            return Bozuko.models.Contest.findById( contest.id, function(error, contest){
+                                if( error ) return error.send( res );
+                                return res.send( {items: [contest]} );
+                            });
+                        });
+                    });
+                });
+            }
+        },
+        /* Delete */
+        del : {
+            // delete the record
+            handler : function(req,res){
+                return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
+                    if( error ) return error.send(res);
+                    if( !contest ){
+                        return res.send({success: true});
+                    }
+                    return contest.remove(function(error){
+                        if( error ) return error.send(res);
+                        // success
+                        return res.send({success: true});
+                    });
+                });
+            }
+        }
     }
+    
 };
 
 function getToken(session, forceNew){

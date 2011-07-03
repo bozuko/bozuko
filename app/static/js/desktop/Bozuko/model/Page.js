@@ -1,11 +1,11 @@
 Ext.define('Bozuko.model.Page', {
-    extend: 'Ext.data.Model',
+    extend: 'Bozuko.lib.data.Model',
     
     idProperty: '_id',
     
     proxy: {
         type: 'rest',
-        url: '/admin/pages',
+        url: '/pages',
         reader: {
             type: 'json',
             root: 'items'
@@ -27,4 +27,6 @@ Ext.define('Bozuko.model.Page', {
         {name:'test',           type:'Boolean'},
         {name:'owner_id',       type:'String'}
     ]
+}, function(){
+    this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });

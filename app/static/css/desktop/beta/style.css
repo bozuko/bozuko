@@ -54,12 +54,14 @@ body * {
   float: right;
   height: 50px;
   margin-left: 20px;
+  background: #fff;
+  padding: 4px;
 }
 .hd .right-side .page-info h3 {
   color: #fff;
   font-family: ArvoRegular;
   font-size: 22px;
-  line-height: 50px;
+  line-height: 45px;
 }
 .beta-app body {
   overflow: hidden;
@@ -76,7 +78,7 @@ body * {
 .bd .wrap {
   min-height: 300px;
   font-size: 12px;
-  padding-bottom: 0;
+  padding-bottom: 0px;
 }
 .bd ol li ol li ol li {
   list-style: lower-roman;
@@ -88,6 +90,24 @@ body * {
 .beta-panel {
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
+}
+.campaign-list table {
+  width: 100%;
+}
+.campaign-list table thead th {
+  padding: 4px 6px;
+  background: #f3f3f3;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+}
+.campaign-list table tbody td {
+  padding: 4px 6px;
+}
+.campaign-list table tbody h3 {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
 }
 .beta-agreement .top {
   overflow: hidden;

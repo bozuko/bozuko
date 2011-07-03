@@ -1,6 +1,6 @@
 Ext.define('Admin.controller.Contests' ,{
     
-    extend: 'Bozuko.app.Controller',
+    extend: 'Bozuko.lib.app.Controller',
 
     views: [
         'contest.Panel',
