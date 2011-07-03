@@ -6,25 +6,25 @@ var load = require('load');
 
 var inspect = require('util').inspect;
 
-process.env.NODE_ENV='playground';
+process.env.NODE_ENV='development';
 var Bozuko = require('../../app/bozuko');
 
 var auth = Bozuko.require('core/auth');
 
 var free_users = [];
 
-var end_of_game_errors = ['entry/no_tokens', 'entry/not_enough_tokens', 'contest/no_tokens',
+var benign_errors = ['entry/no_tokens', 'entry/not_enough_tokens', 'contest/no_tokens',
     'contest/inactive','contest/no_plays', 'contest/invalid_entry'];
 var end_of_game_ct = 0;
 
 var options = {
     protocol: 'https',
-    host: 'playground.bozuko.com',
-    port: 443,
+    host: 'localhost',
+    port: 8000,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 20, // req/sec
-    time: 60*60, // 1 day
+    rate: 5, // req/sec
+    time: 120*60, // 2 hrs
     wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
@@ -99,8 +99,11 @@ function checkin(res, callback) {
 }
 
 function play(res, callback) {
+    var rv;
     try {
-        var rv = JSON.parse(res.body);
+        console.log("res.statusCode = "+res.statusCode);
+        console.log("body = "+res.body);
+        rv = JSON.parse(res.body);
     } catch(err) {
         console.error("Bombed out in play bitch");
         free_users.push(res.opaque.uid);
@@ -121,13 +124,16 @@ function play(res, callback) {
             free_users.push(res.opaque.uid);
             return callback(new Error("Invalid game_state"));
         }
-        if (rv === []) {
+        if (rv.length === 0) {
             free_users.push(res.opaque.uid);
             return callback(new Error("No game_states returned from entry"));
         }
 
+        console.log("rv = "+rv);
+        console.log("typeof rv = "+typeof rv);
         // Exhaust the first game first
         var state = rv[0];
+        console.log("state = "+JSON.stringify(state));
         res.opaque.message = "Load Test Play";
         res.opaque.user_tokens = state.user_tokens;
         res.opaque.last_op = 'play';

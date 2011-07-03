@@ -121,18 +121,6 @@ exports.random_city = function() {
 
 var user_ct;
 
-var cleanup = exports.cleanup = function(callback) {
-    console.log("Cleanup");
-    async.series([
-	emptyCollection('User'),
-	emptyCollection('Page'),
-	emptyCollection('Contest'),
-	emptyCollection('Checkin'),
-	emptyCollection('Play'),
-	emptyCollection('Prize')
-    ], callback);
-};
-
 exports.setup = function(options, callback) {
     console.log("options = "+inspect(options));
     user_ct = options.users;
@@ -159,12 +147,6 @@ exports.setup = function(options, callback) {
     }
 
     mongoose.connection.on('open', function() {
-        if (options.drop_collections) {
-         return cleanup(function(err) {
-                if (err) return callback(err);
-                return create();
-            });
-        }
         return create();
     });
 };
@@ -238,6 +220,7 @@ function add_contests(options, callback) {
                 value: '10',
                 description: "Can\'t tell you what it is",
                 details: "You Wish",
+                duration: "600000",
                 instructions: "Figure it out and use it",
                 total: options.prizes
             });
@@ -270,28 +253,33 @@ function add_users(count, callback) {
     async.until(
         function() { return ct === count; },
         function(cb) {
-            var user = {
-                id: ''+ct,
-                service: 'facebook',
-                name: 'user '+ct,
-                first_name: 'user',
-                last_name:  ''+ct,
-                email: 'user@'+ct+'.com',
-                token: ''+ct,
-                gender: 'trans'
-            };
-            phone = {
+
+            var u = new Bozuko.models.User();
+            u.name = 'user '+ct;
+            u.first_name = 'user';
+            u.last_name =  ''+ct;
+            u.email = 'user@'+ct+'.com';
+            u.token = ''+ct;
+            u.challenge = ct;
+            u.image = "http://graph.facebook.com/557924168/picture?type=large";
+            u.gender = 'trans';
+            u.phones = [{
                 type: 'iphone',
-                unique_id: ''+ct
-            };
-            Bozuko.models.User.addOrModify(user, phone, function(err, u) {
+                unique_id:''+ct
+            }];
+
+            u.service('facebook', ''+ct, u.token, "somedata");
+
+            return u.save(function(err) {
                 if (err) return cb(err);
                 user_ids.push(u._id);
                 ct++;
                 cb();
             });
+
         },
         function(err) {
+            console.log("err = "+err);
             callback(err);
         }
     );
