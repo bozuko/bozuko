@@ -161,7 +161,7 @@ em {
   position: relative;
 }
 .field-wrap .field input {
-  width: 400px;
+  width: 420px;
   padding: 2px 6px;
   font-size: 14px;
   line-height: 24px;
@@ -174,7 +174,7 @@ em {
   border: 1px solid #aaa;
 }
 .field-wrap .field textarea {
-  width: 400px;
+  width: 420px;
   padding: 5px 6px;
   height: 77px;
   font-size: 14px;
