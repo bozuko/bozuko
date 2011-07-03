@@ -134,8 +134,8 @@ CountsReport.prototype.run = function run(callback){
                 var tmp = items.slice(), i=0;
                 items = [];
                 
-                for(var cur = +start; cur <= +end && i < tmp.length; cur +=  DateUtil.DAY ){
-                    if( cur < tmp[i]._id ){
+                for(var cur = +start; cur <= +end; cur +=  DateUtil.DAY ){
+                    if( !tmp.length || cur < tmp[i]._id ){
                         // add a blank
                         var blank = {_id: cur, count: 0};
                         blank[field] = new Date(cur);

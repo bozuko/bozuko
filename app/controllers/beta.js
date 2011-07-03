@@ -17,6 +17,7 @@ exports.locals = {
         'robots' : 'noindex,nofollow'
     },
     nav: [],
+    html_classes: [],
     head_scripts: [
         
     ],
@@ -79,6 +80,7 @@ exports.routes = {
                         return res.render('beta/welcome');
                     }
                     
+                    res.locals.html_classes.push('beta-app');
                     res.locals.user = user;
                     res.locals.page = page;
                     res.locals.scripts.unshift(
