@@ -7,16 +7,16 @@ Last Revised June 28, 2011
 
 ### OUR COMMITMENT TO PRIVACY
 
-This Privacy Policy (ìPrivacy Policyî) sets forth the information privacy practices of Bozuko, Inc. (ìBozukoî, ìweî or ìusî)
-for www.bozuko.com (the ìSiteî). Except where otherwise expressly indicated in this Privacy Policy or on the Site, this
+This Privacy Policy (‚ÄúPrivacy Policy‚Äù) sets forth the information privacy practices of Bozuko, Inc. (‚ÄúBozuko‚Äù, ‚Äúwe‚Äù or ‚Äúus‚Äù)
+for www.bozuko.com (the ‚ÄúSite‚Äù). Except where otherwise expressly indicated in this Privacy Policy or on the Site, this
 Privacy Policy applies only to information collected on the Site and does not apply to information collected outside of the
 Site. This Privacy Policy also does not apply to content, business information, ideas, concepts or inventions that you send
 to Bozuko by email. Please refer to our <Terms of Use> for our policy with respect to such information. If you want to
 keep such information private or proprietary, please do not send it in an email or otherwise provide such information to
 Bozuko. Before using or submitting information to the Site, please review this Privacy Policy carefully.
 
-Certain areas of the Site contain information, software or services (collectively, ìServicesî) intended only for users who
-register for it (ìRegistered Usersî) and we reserve the right to limit access to Services to Registered Users. This Privacy
+Certain areas of the Site contain information, software or services (collectively, ‚ÄúServices‚Äù) intended only for users who
+register for it (‚ÄúRegistered Users‚Äù) and we reserve the right to limit access to Services to Registered Users. This Privacy
 Policy addresses our privacy practices relating to general use of the Site, as well as use of the Site by Registered Users.
 
 ### INFORMATION THAT WE COLLECT AND HOW WE USE IT
@@ -25,14 +25,14 @@ Policy addresses our privacy practices relating to general use of the Site, as w
   
     Bozuko collects the following types of information from users of the Site:
 
-    1. Personal Information: Personally identifiable information (ìPersonal Informationî) is information that can be
+    1. Personal Information: Personally identifiable information (‚ÄúPersonal Information‚Äù) is information that can be
     used to identify or contact you, such as your name, email address, mailing address, telephone number or similar
     information. The Personally Information that you provide will be used by Bozuko only in accordance with this
     Privacy Policy. Examples of Personal Information that we may collect from you are:
 
         * your name, e-mail address, mailing address and other information you choose to provide us if
           you are a Registered User or otherwise asked to provide such information, such as Facebook account
-          information that you provide in connection with your use of Bozukoís Services;
+          information that you provide in connection with your use of Bozuko‚Äôs Services;
         
         * information provided by winners of sweepstakes offered through the Services; and
         
@@ -46,13 +46,13 @@ Policy addresses our privacy practices relating to general use of the Site, as w
     operating system information, IP address and aggregated statistics generated from visitors to our Site. This
     information will not be stored in a manner that is personally identifiable with you.
 
-        We use ìcookiesî to help you access and navigate the Site more efficiently and to statistically monitor how many
-    users are accessing the Site. A ìcookieî is a small file or tool stored on a userís hard drive containing information
+        We use ‚Äúcookies‚Äù to help you access and navigate the Site more efficiently and to statistically monitor how many
+    users are accessing the Site. A ‚Äúcookie‚Äù is a small file or tool stored on a user‚Äôs hard drive containing information
     that allows us to deliver customized information to you. You may set your browser to notify you of or decline
     the receipt of cookies but certain features of the Site may not function properly or be available if your browser is
     configured to disable cookies.
         
-        We use both ìsessionî and ìpersistentî cookies on this Site. Session cookies are temporary bits of information
+        We use both ‚Äúsession‚Äù and ‚Äúpersistent‚Äù cookies on this Site. Session cookies are temporary bits of information
     that are erased once you exit your web browser or turn off your computer. Persistent cookies are more
     permanent bits of information that are placed on the hard drive of your computer and stay there unless you
     delete the cookie. They store information on your computer for a number of reasons, such as helping to
@@ -63,13 +63,13 @@ Policy addresses our privacy practices relating to general use of the Site, as w
 
     When you provide Bozuko with your Personal Information, Bozuko may use it to provide the Services to you, facilitate
 communication between Bozuko and you and/or provide you with other information Bozuko feels may be of interest
-to you. Bozuko also uses information collected to customize, analyze, adjust and improve the Site to meet usersí needs.
-Bozuko also may use the information to enforce Bozukoís agreements with you, to prevent fraud and other prohibited or
+to you. Bozuko also uses information collected to customize, analyze, adjust and improve the Site to meet users‚Äô needs.
+Bozuko also may use the information to enforce Bozuko‚Äôs agreements with you, to prevent fraud and other prohibited or
 illegal activities and for other legally permissible purposes. These uses of your Personal Information may include, without
 limitation, the following:
 
-    1. Registered User Areas: Certain areas of the Site are accessible only to Registered Users (ìRegistered User
-    Areasî). Bozuko may use the Personal Information that you provide when registering to become a Registered
+    1. Registered User Areas: Certain areas of the Site are accessible only to Registered Users (‚ÄúRegistered User
+    Areas‚Äù). Bozuko may use the Personal Information that you provide when registering to become a Registered
     User and using Registered User Areas to: fulfill your specific requests; administer your account; send you
     information about enhancements, offers and features of the Registered User Areas and other information that
     Bozuko believes is relevant and useful to its Registered Users; and troubleshoot technical problems. Bozuko
@@ -84,8 +84,8 @@ limitation, the following:
     administrative information regarding the Site and related services or changes to our <Terms of Use>, this
     Privacy Policy or other policies. Bozuko also may use your Personal Information to send you periodic emails and
     newsletters with information on our products and services, updates to the Site or upcoming events. You may at
-    any time ìopt outî of having your Personal Information as part of Bozukoís marketing mailing list or otherwise
-    (see ìOpting Outî below).
+    any time ‚Äúopt out‚Äù of having your Personal Information as part of Bozuko‚Äôs marketing mailing list or otherwise
+    (see ‚ÄúOpting Out‚Äù below).
 
 ### DISCLOSURE OF THE INFORMATION THAT WE COLLECT
 
@@ -95,7 +95,7 @@ We will not disclose, share, sell or trade your Personal Information to or with 
 Personal Information, we deem necessary, in our sole discretion and without your prior permission, to comply
 with any applicable law, regulation, legal process or governmental request. Bozuko reserves the right to disclose
 Personal Information of a user who we believe is in violation of the <Terms of Use> or in order to protect or
-defend Bozukoís rights or property, even without a subpoena, warrant or other court order.
+defend Bozuko‚Äôs rights or property, even without a subpoena, warrant or other court order.
 
 2. Sale or Transfer of Information: In the event of a sale, merger, liquidation, dissolution, or sale or transfer of
 substantially all of the assets of Bozuko or the Site, Personal Information and/or other information collected
@@ -138,7 +138,7 @@ old.
 ### MODIFICATIONS
 
 We may occasionally update this Privacy Policy to reflect changes in our practices. When we post modifications to this
-Privacy Policy, we will revise the ìLast Revisedî date at the top of this web page. If we make any material modification to
+Privacy Policy, we will revise the ‚ÄúLast Revised‚Äù date at the top of this web page. If we make any material modification to
 this Privacy Policy, we will notify you by prominently posting notice of the modifications on the Site. The modified Privacy
 Policy will be effective immediately upon posting on the Site. We recommend that you check the Site from time to time
 to inform yourself of any change in this Privacy Policy or any of our other policies. Your continued use of the Site after
@@ -166,4 +166,4 @@ No Rights of Third Parties. This Privacy Policy does not create rights enforceab
 If you have questions or concerns about this Privacy Policy or Bozuko generally, please feel free to contact us at
 [questions@bozuko.com].
 
-Copyright © 2011 Bozuko, Inc. All rights reserved.
+Copyright ¬© 2011 Bozuko, Inc. All rights reserved.
