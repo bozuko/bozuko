@@ -1,34 +1,30 @@
 /*
- * Complete all contests that exist in the db. They should have previously been created
- * with scripts/provision.
+ * Complete One contest. It should have previously been created with scripts/provision.
  */
 var async = require('async');
-var assert = require('assert');
 var load = require('load');
-var express = require('express');
-var db = require('./util/db');
-var qs = require('querystring');
 
 var inspect = require('util').inspect;
 
-process.env.NODE_ENV='load';
+process.env.NODE_ENV='development';
 var Bozuko = require('../../app/bozuko');
 
 var auth = Bozuko.require('core/auth');
 
-var user_ids_free = [];
+var free_users = [];
+
 var end_of_game_errors = ['entry/no_tokens', 'entry/not_enough_tokens', 'contest/no_tokens',
     'contest/inactive','contest/no_plays', 'contest/invalid_entry'];
 var end_of_game_ct = 0;
 
 var options = {
     protocol: 'https',
-    host: '66.228.35.144',
+    host: 'localhost',
     port: 8000,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 20, // req/sec
-    time: 24*60*60, // 1 day
+    rate: 3, // req/sec
+    time: 60*60, // 1 day
     wait_time: 10000, // ms
     path: '/api',
     method: 'GET',
@@ -45,30 +41,24 @@ var options = {
     }]
 };
 
-Bozuko.models.User.find({}, {_id: 1}, function(err, docs) {
-    docs.forEach(function(doc) {
-        user_ids_free.push(doc._id);
-    });
+(function run() {
+     for (var i = 0; i < 100000; i++) {
+         free_users.push(String(i));
+     }
+
     console.log("Running Load Test");
     load.run(options, function(err, results) {
-        if (err) {
-            // close the mongoose connection so the process exits
-            Bozuko.db.conn().disconnect();
-            return console.error("Err = "+err);
-        }
+        if (err) return console.error("Err = "+err);
+
         console.log("\nresults = "+require('util').inspect(results));
         console.log("\ncomplete games = "+end_of_game_ct);
-
-        // close the mongoose connection so the process exits
-        Bozuko.db.conn().disconnect();
     });
-
-});
+})();
 
 function random_user_id() {
-    var index = Math.floor(Math.random()*user_ids_free.length);
-    var uid = user_ids_free[index];
-    user_ids_free.splice(index, 1);
+    var index = Math.floor(Math.random()*free_users.length);
+    var uid = free_users[index];
+    free_users.splice(index, 1);
     return uid;
 }
 
@@ -82,39 +72,29 @@ function checkin(res, callback) {
 
     // get a random user for checkin
     var uid = random_user_id();
-    Bozuko.models.User.findById(uid, function(err, user) {
-        if (err) {
-            user_ids_free.push(uid);
-            return callback(err);
+
+    var req = {
+        url: '/facebook/'+city.id+'/checkin/?token='+uid
+    };
+
+    var params = {
+        ll: ''+city.lat+','+city.lng,
+        message: "Load test checkin",
+        phone_type: 'iphone',
+        phone_id: uid,
+        mobile_version: '1.0',
+        challenge_response: auth.mobile_algorithms['1.0'](uid, req)
+    };
+
+    return callback(null, {
+        path: req.url,
+        method: 'POST',
+        body: JSON.stringify(params),
+        opaque: {
+            params: params,
+            uid: uid,
+            last_op: 'checkin'
         }
-        if (!user) {
-            user_ids_free.push(uid);
-            return callback(new Error("Couldn't find user "+uid));
-        }
-
-        var req = {
-            url: '/facebook/'+city.id+'/checkin/?token='+user.token
-        };
-
-        var params = {
-            ll: ''+city.lat+','+city.lng,
-            message: "Load test checkin",
-            phone_type: user.phones[0].type,
-            phone_id: user.phones[0].unique_id,
-            mobile_version: '1.0',
-            challenge_response: auth.mobile_algorithms['1.0'](user.challenge, req)
-        };
-
-        return callback(null, {
-            path: req.url,
-            method: 'POST',
-            body: JSON.stringify(params),
-            opaque: {
-                params: params,
-                user: user,
-                last_op: 'checkin'
-            }
-        });
     });
 }
 
@@ -123,13 +103,13 @@ function play(res, callback) {
         var rv = JSON.parse(res.body);
     } catch(err) {
         console.error("Bombed out in play bitch");
-        user_ids_free.push(res.opaque.user._id);
+        free_users.push(res.opaque.uid);
         return callback(err);
     }
 
     if (res.statusCode != 200)  {
-        user_ids_free.push(res.opaque.user._id);
-        if (end_of_game_errors.indexOf(rv.body.name) != -1) {
+        free_users.push(res.opaque.uid);
+        if (rv.body && end_of_game_errors.indexOf(rv.body.name) != -1) {
             end_of_game_ct++;
             return callback(null, 'done');
         }
@@ -138,11 +118,11 @@ function play(res, callback) {
 
     if (res.opaque.last_op === 'checkin') {
         if (!Bozuko.validate(['game_state'], rv)) {
-            user_ids_free.push(res.opaque.user._id);
+            free_users.push(res.opaque.uid);
             return callback(new Error("Invalid game_state"));
         }
         if (rv === []) {
-            user_ids_free.push(res.opaque.user._id);
+            free_users.push(res.opaque.uid);
             return callback(new Error("No game_states returned from entry"));
         }
 
@@ -153,9 +133,9 @@ function play(res, callback) {
         res.opaque.last_op = 'play';
 
         var req = {
-            url: state.links.game_result+'/?token='+res.opaque.user.token
+            url: state.links.game_result+'/?token='+res.opaque.uid
         };
-        res.opaque.params.challenge_response = auth.mobile_algorithms['1.0'](res.opaque.user.challenge, req);
+        res.opaque.params.challenge_response = auth.mobile_algorithms['1.0'](res.opaque.uid, req);
 
         return callback(null, {
             path: req.url,
@@ -165,7 +145,7 @@ function play(res, callback) {
         });
     } else {
         if (rv.game_state.user_tokens === 0) {
-            user_ids_free.push(res.opaque.user._id);
+            free_users.push(res.opaque.uid);
             return callback(null, 'done');
         }
 
@@ -177,9 +157,9 @@ function play(res, callback) {
         }
 
         var req = {
-            url: rv.game_state.links.game_result+'/?token='+res.opaque.user.token
+            url: rv.game_state.links.game_result+'/?token='+res.opaque.uid
         };
-        res.opaque.params.challenge_response = auth.mobile_algorithms['1.0'](res.opaque.user.challenge, req);
+        res.opaque.params.challenge_response = auth.mobile_algorithms['1.0'](res.opaque.uid, req);
 
         return callback(null, {
             path: req.url,
