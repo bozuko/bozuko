@@ -25,3 +25,5 @@ details including likes, comments and wall posts.
 * Bozuko provides complete visibility to your campaign's return including monitoring
 of prize expenses. Track your costs along side progress against the promotion's objectives
 to ensure your Bozuko campaigns are optimized to deliver the results you are expecting.
+
+It costs nothing to get started and our range of offerings deliver unique value for all sizes and types of businesses.  Visit us at www.bozuko.com/business.
