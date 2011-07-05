@@ -31,13 +31,6 @@ var proc = cluster( './app' )
     .listen( cfg.server.port )
     ;
 
-if( env == 'site' ) {
-    cluster( './http_redirect')
-        .set( 'socket path', './sockets/'+env )
-        .use( cluster.pidfiles('pids/'+env) )
-        .listen(80)
-        ;
-}
 
 if( proc.isMaster ){
 
