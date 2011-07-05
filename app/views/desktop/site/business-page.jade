@@ -2,3 +2,22 @@
   h2 Page Not Found!
   
   p The page you are looking for is gone!
+  
+.business
+  
+  .heading
+    .img
+      img(src=page.image)
+    
+    h2= page.name
+    
+    .address
+      .street= page.location.street
+      .city= page.location.city+', '+page.location.state+' '+page.location.zip
+    
+  .announcement= page.announcement
+    
+- if( locals.contests )
+  .contests
+    - each contest in contests
+      h3= contest.name
