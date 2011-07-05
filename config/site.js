@@ -98,7 +98,7 @@ module.exports = {
     server: {
         auth: false,
         ssl: true,
-        host: 'www.bozuko.com',
+        host: 'www1.bozuko.com',
         port: 443
     },
     
