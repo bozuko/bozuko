@@ -4,11 +4,22 @@ Ext.define('Beta.view.page.Dashboard', {
     extend: 'Ext.panel.Panel',
     
     requires: [
-        'Bozuko.lib.PubSub'
+        'Bozuko.lib.PubSub',
+        'Beta.view.page.Chart'
     ],
     
     initComponent : function(){
         var me = this;
+        
+        
+        Ext.define('Ext.chart.theme.Bozuko', {
+            extend : 'Ext.chart.theme.Base',
+            constructor : function(config){
+                this.callParent([Ext.apply({
+                    colors: ['#1db153','#33c667','#4ae07e']
+                }, config)]);
+            }
+        });
         
         Ext.apply(me, {
             layout          :'border',
@@ -20,7 +31,7 @@ Ext.define('Beta.view.page.Dashboard', {
                 frame           :false,
                 title           :"Winners List - All Campaigns",
                 xtype           :'winnerslist',
-                width           :250,
+                width           :320,
                 border          :false
             },{
                 region          :'center',
@@ -45,53 +56,25 @@ Ext.define('Beta.view.page.Dashboard', {
                     }],
                     buttons         :[{
                         ref             :'updateStatus',
-                        text            :'Update Announcement'
+                        text            :'Update'
                     }]
                 },{
-                    xtype: 'chart',
-                    ref: 'entrychart',
-                    border: false,
-                    animate: true,
-                    height: 300,
-                    anchor: '0',
-                    store: Ext.create('Bozuko.store.Reports',{autoload: true}),
-                    axes: [{
-                        type        :'Numeric',
-                        position    :'left',
-                        fields      :['count'],
-                        title       :'Entries',
-                        grid        :true,
-                        minimum     :0
-                    },{
-                        type        :'Time',
-                        position    :'bottom',
-                        fields      :'timestamp',
-                        title       :'Day',
-                        dateFormat  :'M d',
-                        groupBy     :'year,month,day'
-                    }],
-                    series: [{
-                        title: 'Count',
-                        type: 'column',
-                        tips: {
-                            trackMouse: true,
-                            width: 80,
-                            height: 50,
-                            renderer: function(storeItem, item) {
-                                this.setTitle(Ext.Date.format(storeItem.get('timestamp'), 'D M d'));
-                                this.update( storeItem.get('count')+' Entries' );
-                            }
-                        },
-                        axis: 'left',
-                        xField: 'timestamp',
-                        yField: 'count'
-                    }]
+                    xtype           :'component',
+                    autoEl          :{
+                        tag             :'h4',
+                        cls             :'stats-heading',
+                        html            :'Your Stats at a Glance'
+                    }
+                },{
+                    xtype           :'pagechart',
+                    anchor          :'0',
+                    border          :false
                 }]
             }]
         });
         
         me.callParent(arguments);
-        var chart = me.down('[ref=entrychart]');
+        var chart = me.down('[ref=dashboardchart]');
         Bozuko.PubSub.subscribe('contest/entry', {page_id: Bozuko.beta.page_id}, function(){
             chart.store.load();
         });
