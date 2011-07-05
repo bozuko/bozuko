@@ -1,0 +1,47 @@
+module.exports = {
+    host: 'localhost',
+    port: 10000,
+    mycroft: {
+        keepalive_poll_time: 5000,
+        timeout: 5000,
+        poll_time: 10000,
+        nodes: [{
+            host: 'localhost',
+            port: 10000
+        }]
+    },
+    plugins_dir: process.cwd(),
+    plugins: [{
+        name: 'cpu',
+        config: {
+            load_threshold: 2,
+            poll_time: 10000
+        }
+    }, {
+        name: 'mongodb',
+        config: {
+            host: 'localhost',
+            port: 27017,
+            db_name: 'bozuko_dev8000',
+            poll_time: 1000,
+            profile: {
+                level: 1
+            }
+        }
+    }],
+    alert: {
+        interval: 60, // minutes
+        email: {
+            addresses: ['andrew.j.stone.1@gmail.com'],
+            smtp:{
+                host: "smtp.gmail.com",
+                port: 465,
+                ssl: true,
+                use_authentication: true,
+                user: "mailer@bozuko.com",
+                pass: "7axxn7d8"
+            },
+            sender: 'Bozuko Mailer <mailer@bozuko.com>'
+        }
+    }
+};
