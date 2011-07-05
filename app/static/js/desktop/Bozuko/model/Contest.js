@@ -5,12 +5,13 @@ Ext.define('Bozuko.model.Contest', {
     
     requires:[
         'Ext.ux.data.writer.JsonDeep',
-        'Bozuko.lib.Router'
+        'Bozuko.lib.Router',
+        'Bozuko.model.Prize'
     ],
     
     proxy: {
         type: 'rest',
-        url: '/admin/contests',
+        url: '/contests',
         reader: {
             type: 'json',
             root: 'items'
@@ -39,7 +40,8 @@ Ext.define('Bozuko.model.Contest', {
         {name:'end',                type:'Date'},
         {name:'total_entries',      type:'Number'},
         {name:'total_plays',        type:'Number'},
-        {name:'play_cursor',        type:'Number',              defaultValue:-1}
+        {name:'play_cursor',        type:'Number',              defaultValue:-1},
+        {name:'token_cursor',       type:'Number',              defaultValue:-1}
     ],
     
     hasMany: [
@@ -48,4 +50,6 @@ Ext.define('Bozuko.model.Contest', {
     ],
     
     autoLoad: true
+}, function(){
+    this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });

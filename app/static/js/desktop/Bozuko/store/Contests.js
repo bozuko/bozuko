@@ -1,7 +1,10 @@
 Ext.define('Bozuko.store.Contests', {
     extend: 'Ext.data.Store',
     
-    requires: ['Ext.data.reader.Json'],
+    requires: [
+        'Ext.data.reader.Json',
+        'Bozuko.model.Contest'
+    ],
     
     model: 'Bozuko.model.Contest',
 

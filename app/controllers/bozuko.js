@@ -10,7 +10,6 @@ exports.transfer_objects= {
                 links:{
                     privacy_policy: '/bozuko/privacy_policy',
                     terms_of_use: '/bozuko/terms_of_use',
-                    how_to_play: '/bozuko/how_to_play',
                     about: '/bozuko/about',
                     bozuko_for_business:'/bozuko/for_business'
                 }
@@ -25,7 +24,6 @@ exports.transfer_objects= {
             links: {
                 privacy_policy: "String",
                 terms_of_use: "String",
-                how_to_play: "String",
                 about: "String",
                 bozuko_for_business: "String",
                 bozuko_page: "String"
@@ -75,12 +73,6 @@ exports.links = {
             returns: "content"
         }
     },
-    how_to_play:{
-        get: {
-            doc: "How To Play",
-            returns: "content"
-        }
-    },
     bozuko_for_business:{
         get: {
             doc: "Bozuko For Business",
@@ -124,7 +116,7 @@ exports.routes = {
         get : {
             handler : function(req, res){
 
-                render_page(res,'Privacy Policy', content.get('site/privacy.md', '<p>Coming soon...</p>') );
+                render_page(res,'Privacy Policy', content.get('app/privacy.md', '<p>Coming soon...</p>') );
             }
         }
     },
@@ -132,28 +124,21 @@ exports.routes = {
     'bozuko/terms_of_use': {
         get : {
             handler : function(req, res){
-                render_page(res,'Terms of Use', '<p>Coming soon...</p>');
+                render_page(res,'Terms of Use', content.get('app/terms.md', '<p>Coming soon...</p>'));
             }
         }
     },
     'bozuko/about': {
         get : {
             handler : function(req, res){
-                render_page(res,'About Bozuko', '<p>Coming soon...</p>');
-            }
-        }
-    },
-    'bozuko/how_to_play': {
-        get : {
-            handler : function(req, res){
-                render_page(res,'How to Play', '<p>Coming soon...</p>');
+                render_page(res,'About Bozuko', content.get('app/about.md', '<p>Coming soon...</p>'));
             }
         }
     },
     'bozuko/for_business': {
         get : {
             handler : function(req, res){
-                render_page(res,'Bozuko for Business', '<p>Coming soon...</p>');
+                render_page(res,'Bozuko for Business', content.get('app/b4b.md', '<p>Coming soon...</p>'));
             }
         }
     },

@@ -3,7 +3,7 @@ Ext.define('Bozuko.model.Place', {
     
     proxy: {
         type: 'rest',
-        url: '/admin/places',
+        url: '/places',
         reader: {
             type: 'json',
             root: 'items'
@@ -20,4 +20,6 @@ Ext.define('Bozuko.model.Place', {
 		'data',
 		'website'
     ]
+}, function(){
+    this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });

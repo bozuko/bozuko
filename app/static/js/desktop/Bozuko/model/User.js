@@ -5,7 +5,7 @@ Ext.define('Bozuko.model.User', {
     
     proxy: {
         type: 'rest',
-        url: '/admin/users',
+        url: '/users',
         reader: {
             type: 'json',
             root: 'items'
@@ -18,4 +18,6 @@ Ext.define('Bozuko.model.User', {
         'email',
         'image'
     ]
+}, function(){
+    this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });
