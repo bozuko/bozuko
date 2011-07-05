@@ -4,7 +4,7 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
   
     title= title
     
-    - if( locals.meta && locals.meta.length)
+    - if( locals.meta )
       - each content, name in meta
         meta(name=name, content=content)
     

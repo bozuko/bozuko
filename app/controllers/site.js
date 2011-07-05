@@ -75,6 +75,7 @@ exports.routes = {
             },
 
             handler: function(req, res) {
+                console.log(res.locals.meta);
                 res.render('site/index');
             }
         }

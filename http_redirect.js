@@ -1,7 +1,12 @@
-var http = require('http');
+var http = require('http'),
+    config = require('./config/site')
+    ;
 
 module.exports = http.createServer(function(req, res){
-    var ssl_url = 'https://www1.bozuko.com'+req.url;
+    var ssl_url = (config.server.ssl ? 'https://' : 'http://')
+                + config.server.host
+                + req.url;
+                
     res.writeHead(301, {
         'Location':ssl_url
     });
