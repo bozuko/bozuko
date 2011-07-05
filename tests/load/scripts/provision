@@ -3,11 +3,8 @@
 var db = require('../util/db');
 var inspect = require('util').inspect;
 
-process.env.NODE_ENV = 'development';
-var Bozuko = require('../../../app/bozuko');
-
 var valid_args = ['--contests', '--users', '--entries', '--prizes', '--plays_per_entry',
-    '--free_play_pct', '--drop_collections'];
+    '--free_play_pct', '--drop_collections', '--env'];
 
 var defaults = {
     contests: 100,
@@ -37,7 +34,11 @@ function parse_args() {
             }
         } else {
             // get arg value
-            opts[curArg] = parseInt(process.argv[i]);
+	    if (curArg != 'env') {
+   	        opts[curArg] = parseInt(process.argv[i]);
+	    } else {
+		opts[curArg] = process.argv[i];
+	    }
         }
     }
 }
@@ -45,6 +46,9 @@ function parse_args() {
 (function run() {
      console.log("Provisioning DB");
      parse_args();
+     process.env.NODE_ENV = opts.env || 'development';	
+     var Bozuko = require('../../../app/bozuko');
+     console.error('process.env.NODE_ENV = '+process.env.NODE_ENV);
      if (opts.contests === 1) {
          // just add blue shirt cafe
          opts.pages = [{
