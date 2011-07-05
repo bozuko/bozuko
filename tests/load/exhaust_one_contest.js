@@ -23,7 +23,7 @@ var options = {
     port: 443,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 20, // req/sec
+    rate: 50, // req/sec
     time: 60*60, // 1 day
     wait_time: 10000, // ms
     path: '/api',
@@ -121,9 +121,9 @@ function play(res, callback) {
             free_users.push(res.opaque.uid);
             return callback(new Error("Invalid game_state"));
         }
-        if (rv === []) {
+        if (rv.length === 0) {
             free_users.push(res.opaque.uid);
-            return callback(new Error("No game_states returned from entry"));
+            return callback(null, 'done');
         }
 
         // Exhaust the first game first

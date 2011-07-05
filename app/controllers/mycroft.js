@@ -1,9 +1,15 @@
 exports.access = 'admin';
 
 var mycroft = require('commando').mycroft;
-var options = require(process.env.HOME + '/.commando').mycroft;
+var options = require(process.env.HOME + '/.commando');
 
 exports.init = function() {
+// TODO: Make the following work so we don't get 4 emails for every event
+/*    if (!Bozuko.isMaster) {
+        console.error("\n\nno alert = true");
+        options.noAlert = true;
+    }
+*/
     mycroft.start(options);
 };
 
