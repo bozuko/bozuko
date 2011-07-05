@@ -15,6 +15,12 @@ module.exports = {
         }
     },
     
+    controllers : {
+        except: [
+            'mycroft'
+        ]
+    },
+    
     admin : {
         winners_list:{
             poll_interval: 1000

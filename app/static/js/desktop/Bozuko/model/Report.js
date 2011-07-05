@@ -5,7 +5,7 @@ Ext.define('Bozuko.model.Report', {
     
     proxy: {
         type: 'rest',
-        url: '/admin/report',
+        url: '/report',
         reader: {
             type: 'json',
             root: 'items'
@@ -17,4 +17,6 @@ Ext.define('Bozuko.model.Report', {
         {name:'timestamp',  type:'Date'},
         {name:'count',      type:'Number',      defaultValue: 0}
     ]
+}, function(){
+    this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });

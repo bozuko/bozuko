@@ -1,4 +1,4 @@
-Ext.define('Bozuko.app.Controller', {
+Ext.define('Bozuko.lib.app.Controller', {
     extend : 'Ext.app.Controller',
     
     createGetters: function(type, refs) {

@@ -1,5 +1,5 @@
 Ext.define('Admin.controller.Pages' ,{
-    extend: 'Bozuko.app.Controller',
+    extend: 'Bozuko.lib.app.Controller',
     
     views: [
         'page.Panel',
