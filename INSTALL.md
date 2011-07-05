@@ -113,7 +113,7 @@ All DB configruation should be done as root. The replica set name is **productio
 
 If this server is not a DB, config server or arbiter you should uninstall mongodb. 
 
-    apt-get remove mongodb
+    apt-get remove mongodb-10gen
 
 
 #### Configure mongodb to start in replica set mode
