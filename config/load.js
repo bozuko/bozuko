@@ -1,7 +1,7 @@
 module.exports = {
 
     test_mode: true,
-    
+
     client: {
         mobile:{
             iphone:{
@@ -12,7 +12,16 @@ module.exports = {
             }
         }
     },
-    
+
+    controllers: {
+        except: [
+            'site',
+            'beta',
+            'business',
+            'mycroft'
+        ]
+    },
+
     admin : {
         winners_list:{
             poll_interval: 1000
@@ -20,48 +29,51 @@ module.exports = {
     },
 
     db:{
+
         name: 'bozuko_load',
         replicaSet: true,
-        hosts: ['192.168.170.232', '192.168.170.233', '192.168.170.234']
+        hosts: ['192.168.175.164', '192.168.175.163', '192.168.174.86']
     },
 
     facebook: {
         app:{
             id:'166078836756369',
             secret:'df03acad0cda5e6f2ec2161c00cf5bf3',
-            access_token:'166078836756369|5PhifMaZ8cZzgdlY4ZhfFPvGtOk'
+            access_token:'166078836756369|5PhifMaZ8cZzgdlY4ZhfFPvGtOk',
+            pubsub_verify:'12kg0a8b9123kab91831laa9sb'
         },
         perms:{
-            user:"email,publish_checkins,publish_stream,offline_access",
-            business:"email,publish_checkins,publish_stream,offline_access,manage_pages"
+            user:"email,publish_checkins,publish_stream,offline_access,user_likes",
+            business:"email,manage_pages"
         }
     },
+
+    bozuko :{
+        facebook_id: '223851717629478'
+    },
+
     foursquare: {
         app:{
             id:'E43N3RJPOS2ULW0KTUSICZRFXB21VJWH55WEXTGMJPOQLL2K',
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
-    
+
     amazon : {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
             secret: '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',
-            bucket: 'bozuko_dev'
+            bucket: 'bozuko_playground'
         }
-    },
-    
-    bozuko :{
-        facebook_id: '177515562277757'
     },
 
     checkin: {
         duration: {
-            // Allow unlimited checkins
+            // allow unlimited checkins for load test
             user: 0,
             page: 0
         },
-        
+
         distance : 400 /* feet */
     },
 
@@ -69,20 +81,28 @@ module.exports = {
         token_expiration: 1000 * 60 * 60 * 24 * 1 // one day.
     },
 
+    contest : {
+        engine : {
+            order: {
+                chunk_size: 2
+            }
+        }
+    },
+
     search: {
         // radius to search for "Nearby Games" in miles
         nearbyRadius: 2,
-        nearbyLimit: 4,
+        nearbyLimit: 10,
         featuredResults: 1
     },
 
     server: {
         auth: false,
         ssl: true,
-        host: 'bozuko.com',
+        host: 'playground.bozuko.com',
         port: 8000
     },
-    
+
     pubsub: {
         poll: {
             interval: 500

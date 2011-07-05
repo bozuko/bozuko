@@ -1,6 +1,6 @@
 module.exports = {
 
-    test_mode: false,
+    test_mode: true,
 
     client: {
         mobile:{
@@ -12,7 +12,7 @@ module.exports = {
             }
         }
     },
-    
+
     controllers: {
         except: [
             'site',
@@ -29,7 +29,7 @@ module.exports = {
     },
 
     db:{
-        
+
         name: 'bozuko_playground',
         replicaSet: true,
         hosts: ['192.168.175.164', '192.168.175.163', '192.168.174.86']
