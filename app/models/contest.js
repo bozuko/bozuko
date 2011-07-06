@@ -94,7 +94,7 @@ Contest.virtual('official_rules')
                 prizes_str = '';
                 
             prizes.sort( function(a, b){
-                return a.value - b.value;
+                return b.value - a.value;
             });
             var total = 0;
             prizes.forEach(function(prize, i){
@@ -940,7 +940,7 @@ Contest.method('getBestPrize', function(){
     if( this.prizes.length == 0 ) return null;
     var prizes = this.prizes;
     prizes.sort( function(a, b){
-        return a.value - b.value;
+        return b.value - a.value;
     });
     return prizes[0];
 });
