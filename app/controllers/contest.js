@@ -74,6 +74,7 @@ var game = {
         var obj = {};
         obj = this.merge(obj, game.contest);
         obj = this.merge(obj, game);
+        obj.rules = game.contest.official_rules;
         obj.id = game.contest.id;
         obj.type = game.getType();
         obj.name = game.getName();
@@ -336,7 +337,6 @@ exports.routes = {
             handler : function(req,res){
                 var send = res.send;
                 res.send = function(){
-                    console.error( require('util').inspect(arguments) );
                     send.apply(res, arguments);
                 };
                 return Bozuko.models.Contest.findById(req.params.id, function(error, contest){

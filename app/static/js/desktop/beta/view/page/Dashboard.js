@@ -68,16 +68,13 @@ Ext.define('Beta.view.page.Dashboard', {
                 },{
                     xtype           :'pagechart',
                     anchor          :'0',
-                    border          :false
+                    border          :false,
+                    page_id         :Bozuko.beta.page_id
                 }]
             }]
         });
         
         me.callParent(arguments);
-        var chart = me.down('[ref=dashboardchart]');
-        Bozuko.PubSub.subscribe('contest/entry', {page_id: Bozuko.beta.page_id}, function(){
-            chart.store.load();
-        });
     }
     
 });

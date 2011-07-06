@@ -84,7 +84,7 @@ exports.routes = {
                     res.locals.user = user;
                     res.locals.page = page;
                     res.locals.scripts.unshift(
-                        '/js/ext-4.0/lib/ext-all-debug.js',
+                        '/js/ext-4.0/lib/ext-all.js',
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(
@@ -229,6 +229,9 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 res.locals.content = Content.get('beta/terms.md', 'Beta Terms of Use');
+                if( req.header('x-requested-with') == 'XMLHttpRequest' ){
+                    res.locals.layout = false;
+                }
                 res.render('site/content');
             }
         }
@@ -326,16 +329,50 @@ exports.routes = {
             handler : function(req, res){
                 
                 var user = req.session.user,
+                    time = req.param('time') || 'week-1',
+                    from, interval, now = new Date(),
                     query = {
                         page_id: {$in: user.manages}
                     };
+                    
+                time = time.split('-');
+                if( time.length != 2 ) throw new Error('Invalid time argument');
+                time[1] = parseInt( time[1], 10 );
+                
+                switch( time[0] ){
+                    case 'year':
+                        from = DateUtil.add( new Date(), DateUtil.DAY, -365 * time[1] )
+                        interval = 'Date';
+                        break;
+                    case 'month':
+                        from = DateUtil.add( new Date(), DateUtil.DAY, -30 * time[1] )
+                        interval = 'Date';
+                        break;
+                    case 'week':
+                        from = DateUtil.add( new Date(), DateUtil.DAY, -7 * time[1] )
+                        interval = 'Date';
+                        break;
+                    case 'day':
+                        from = DateUtil.add( new Date(), DateUtil.DAY, -1 * time[1] )
+                        interval = 'Hours';
+                        break;
+                }
+                
+                var model = req.param('model') || 'Entry';
+                if( !~['Prize','Redeemed Prizes','Entry','Play'].indexOf(model) ) throw "Invalid model";
+                
+                if( model == 'Redeemed Prizes'){
+                    model = "Prize";
+                    query.redeemed = true;
+                }
                 
                 return Report.run('counts',
                 
                 {
+                    interval: interval,
                     query: query,
-                    model: req.param('model') || 'Entry',
-                    from: DateUtil.add( new Date(), DateUtil.DAY, -6 )
+                    model: model,
+                    from: from
                 },
                 
                 function(error, results){

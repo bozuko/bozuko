@@ -21,7 +21,7 @@ var Page = module.exports = new Schema({
     phone               :{type:String},
     description         :{type:String},
     is_location         :{type:Boolean},
-    name                :{type:String},
+    name                :{type:String, index: true},
     image               :{type:String},
     use_twitter         :{type:Boolean, default: false},
     twitter_id          :{type:String},
@@ -83,6 +83,14 @@ Page.method('addAdmin', function(user, callback){
 
 Page.method('getContests', function(callback){
     Bozuko.models.Contest.find({page_id:this.id}, callback);
+});
+
+Page.method('getGoogleMapLink', function(){
+    var url = "http://maps.google.com/maps?q="
+            + encodeURIComponent([this.name,this.location.street,this.location.city,this.location.state].join(', '))
+            + '&ll='+this.location.coords[1]+','+this.location.coords[0]
+               
+    return url;
 });
 
 Page.method('loadContests', function(user, callback){

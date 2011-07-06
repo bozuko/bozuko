@@ -94,6 +94,11 @@ FacebookLikeMethod.prototype.getDescription = function(){
     return description;
 }
 
+FacebookLikeMethod.prototype.getEntryRequirement = function(){
+    return 'Must "Like" this pages Facebook page to enter. ';
+}
+
+
 
 /**
  * Get the maximum amount of tokens

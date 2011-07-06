@@ -2,22 +2,45 @@
   h2 Page Not Found!
   
   p The page you are looking for is gone!
+
+.center
+  .main-column
+    .padding
+      h2.page-title= page.name
+      
+      - if( page.announcement )
+        .announcement
+          p!= page.announcement
+      - if( locals.contests )
+        h3 Current Games
+        .contests
+          - each contest in contests
+            img(src=contest.getGame().getListImage())
+            h4= contest.getGame().name
+            .contest
+              .entry-method
+                !=contest.getEntryMethodDescription()
   
-.business
+  .right-column
+    .padding
+      p upcoming games....
+
   
-  .heading
-    .img
-      img(src=page.image)
+.left-column
+  
+  .img.block
+    img(src=page.image)
     
-    h2= page.name
+  .address.block
+    .street= page.location.street
+    .city= page.location.city+', '+page.location.state+' '+page.location.zip
+    .map
+      a(target="_blank",href=page.getGoogleMapLink()) Google Map
     
-    .address
-      .street= page.location.street
-      .city= page.location.city+', '+page.location.state+' '+page.location.zip
-    
-  .announcement= page.announcement
-    
-- if( locals.contests )
-  .contests
-    - each contest in contests
-      h3= contest.name
+  -if( page.website )
+    .website.block
+      a(target="_blank", href=page.website)!= page.website
+      
+  -if( page.service('facebook'))
+    .facebook.block
+      a(target="_blank", href=page.service('facebook').data.link) Visit our Facebook Page

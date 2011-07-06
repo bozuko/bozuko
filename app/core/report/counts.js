@@ -12,7 +12,7 @@ CountsReport.mapFunctionTmpl = {
     
     time: (function(){
         var ts = this.FIELDNAME;
-        var timestamp = Date.UTC(ts.getFullYear(), 0, 0, 12, 0, 0, 0);
+        var timestamp = Date.UTC(ts.getUTCFullYear(), '%0%', '%0%', '%0%', '%0%', '%0%', '%0%');
         emit( timestamp, {timestamp: new Date(timestamp), count: 1} );
     }).toString(),
     
@@ -33,10 +33,11 @@ CountsReport.getMapFunction = function getMapFunction(type, field, interval){
     var index = intervals.indexOf(interval);
     if( ~index ){
         for(var i = 0; i < index+1; i++ ){
-            str = 'ts.get'+intervals[i]+'()';
-            fn = fn.replace(/(0|12)/, str);
+            str = 'ts.getUTC'+intervals[i]+'()';
+            fn = fn.replace(/'%(0|12)%'/, str);
         }
     }
+    fn = fn.replace(/'%0%'/g, '0').replace(/'%12%'/g, '12');
     return fn;
 };
 
@@ -91,6 +92,9 @@ CountsReport.prototype.run = function run(callback){
         if( self.options[name] ) options[name] = self.options[name];
     });
     
+    console.log(mapFn);
+    console.log(reduceFn);
+    
     return Bozuko.models[modelName].collection.mapReduce(
         
         mapFn,
@@ -103,6 +107,7 @@ CountsReport.prototype.run = function run(callback){
                 console.log(error);
                 return callback( error );
             }
+            console.log(results);
             var items = [];
             results.forEach( function(result){
                 var obj = result.value;
@@ -117,16 +122,17 @@ CountsReport.prototype.run = function run(callback){
             
             if( self.options.fillBlanks !== false ){
                 var intervals = ['FullYear','Month','Date','Hours','Minutes','Seconds','Milliseconds'];
+                var intervalMap = [DateUtil.DAY * 365, DateUtil.DAY * 29, DateUtil.DAY, DateUtil.HOUR, DateUtil.MINUTE, DateUtil.SECOND, DateUtil.MILLISECOND]
                 var from = self.options.from || items[0][field],
-                    to = self.options.to || DateUtil.add( new Date(), DateUtil.DAY, 1);
+                    to = self.options.to || new Date(); // DateUtil.add( new Date(), DateUtil.HOUR, 4);
                 
                 var index = intervals.indexOf(self.options.interval || 'Date');
                 if( !~index ) index = 0;
                 var startArgs = [], endArgs = [];
                 
                 for(var i = 0; i < index+1; i++ ){
-                    startArgs.push(from['get'+intervals[i]]());
-                    endArgs.push(to['get'+intervals[i]]());
+                    startArgs.push(from['getUTC'+intervals[i]]());
+                    endArgs.push(to['getUTC'+intervals[i]]());
                 }
                 var start = DateUtil.create(startArgs),
                     end = DateUtil.create(endArgs);
@@ -134,8 +140,8 @@ CountsReport.prototype.run = function run(callback){
                 var tmp = items.slice(), i=0;
                 items = [];
                 
-                for(var cur = +start; cur <= +end; cur +=  DateUtil.DAY ){
-                    if( !tmp.length || tmp[i] === undefined || cur < tmp[i]._id ){
+                for(var cur = +start; cur <= +end; cur += intervalMap[index] ){
+                    if( !tmp.length || tmp[i] === undefined || cur < +tmp[i][field] ){
                         // add a blank
                         var blank = {_id: cur, count: 0};
                         blank[field] = new Date(cur);

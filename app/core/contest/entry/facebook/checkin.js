@@ -104,6 +104,17 @@ FacebookCheckinMethod.prototype.getDescription = function(){
 };
 
 
+FacebookCheckinMethod.prototype.getEntryRequirement = function(){
+    return "Must check-in with Facebook to enter.";
+}
+
+FacebookCheckinMethod.prototype.getPlayLimitations = function(){
+    var str = EntryMethod.prototype.getPlayLimitations.apply(this);
+    if( this.config.options.enable_like ){
+        str+=' An additional '+(this.config.tokens > 1 ? "plays" : "play" )+' offered to users who "Like" this page on Facebook.';
+    }
+    return str;
+}
 /**
  * Get the maximum amount of tokens
  *

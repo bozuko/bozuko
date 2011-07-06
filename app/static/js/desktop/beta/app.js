@@ -69,6 +69,30 @@ Ext.Loader.require('Bozuko.lib.Router', function(){
                         this.offset = Ext.fly(hd).getHeight() + Ext.fly(copyright).getHeight() + 10;
                         this.setHeight();
                         Ext.EventManager.onWindowResize(this.setHeight, this);
+                        
+                        Ext.fly(copyright).down('.agreement').on('click', function(e, el){
+                            e.stopEvent();
+                            var win = new Ext.window.Window({
+                                title: 'Beta Agreement',
+                                width: 800,
+                                height: 500,
+                                bodyPadding: 10,
+                                autoScroll: true,
+                                bodyStyle: 'background: #fff',
+                                modal: true,
+                                html :'Loading...',
+                                buttons: [{
+                                    text: 'Close',
+                                    handler: function(){
+                                        win.close();
+                                    }
+                                }]
+                            });
+                            win.show();
+                            Ext.Ajax.request({url: el.href, success: function(response){
+                                win.update( response.responseText );
+                            }});
+                        });
                     },
                     
                     setHeight : function(){

@@ -102,7 +102,7 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
           - if( locals.html_classes && ~locals.html_classes.indexOf('beta-app') )
             ul
               li
-                a(href="/beta/terms-of-use") Beta Agreement
+                a.agreement(href="/beta/terms-of-use") Beta Agreement
               li
                 a(href="http://getsatisfaction.com/bozuko", onclick="feedback_widget.show(); return false;") Feedback &amp; Support
               li

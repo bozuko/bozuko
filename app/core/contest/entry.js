@@ -61,6 +61,34 @@ EntryMethod.prototype.getDescription = function(){
     return this.description;
 }
 
+EntryMethod.prototype.getEntryRequirement = function(){
+    return "Valid Bozuko Account is required to enter.";
+}
+
+EntryMethod.prototype.getPlayLimitations = function(){
+    // need a nice duration
+    // get the number of minutes:
+    var seconds = this.config.duration / 1000,
+        minutes = seconds / 60,
+        hours = minutes / 60,
+        days = hours / 24;
+
+    var duration = '';
+    if( days >= 1 ){
+        days = Math.floor( days );
+        duration = days==1 ? 'day': (days+' days');
+    }
+    else if( hours >= 2 ){
+        duration = hours+' hours';
+    }
+    else if( minutes >= 1 ){
+        duration = Math.ceil(minutes)+' minutes';
+    }
+    else{
+        duration = Math.ceil(seconds)+' seconds';
+    }
+    return this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+}
 
 /**
  * Configure the entryMethod
@@ -286,9 +314,7 @@ EntryMethod.prototype.getButtonEnabled = function( tokens, callback ){
         var enabled = true;
         var now = new Date();
         if( time > now ){
-            console.error("time > now");
             if( tokens == 0 ){
-                console.error("tokens == 0");
                 enabled = false;
             }
         }
