@@ -109,7 +109,7 @@ CountsReport.prototype.run = function run(callback){
                 obj._id = result._id;
                 items.push(obj);
             });
-            if( type !== 'time' || !items.length ) return callback( null, items );
+            if( type !== 'time' ) return callback( null, items );
             
             items.sort(function(a,b){
                 return a._id - b._id;
