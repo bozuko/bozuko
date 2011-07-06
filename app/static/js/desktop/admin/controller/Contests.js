@@ -420,9 +420,9 @@ Ext.define('Admin.controller.Contests' ,{
         if( !panel.reports[id] ){
             panel.reports[id] = panel.add({
                 border: false,
+                record: record,
                 xtype: 'contestreportpanel'
             });
-            panel.reports[id].setRecord( record );
         }
         navbar.hide();
         panel.getLayout().setActiveItem(panel.reports[id]);

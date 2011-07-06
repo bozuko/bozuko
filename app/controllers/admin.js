@@ -4,7 +4,8 @@ var facebook    = Bozuko.require('util/facebook'),
     url         = require('url'),
     spawn       = require('child_process').spawn,
     sys         = require('sys'),
-    filter      = Bozuko.require('util/functions').filter
+    ObjectId    = require('mongoose').Types.ObjectId,
+    filter      = Bozuko.require('util/functions').filter,
     merge       = Bozuko.require('util/functions').merge,
     Report      = Bozuko.require('core/report'),
     DateUtil    = Bozuko.require('util/date')
@@ -586,11 +587,12 @@ exports.routes = {
                     };
                     
                 if( req.param('page_id') ){
-                    query.page_id = req.param('page_id');
+                    query.page_id = new ObjectId(req.param('page_id'));
                 }
                 if( req.param('contest_id') ){
-                    query.contest_id = req.param('contest_id');
+                    query.contest_id = new ObjectId(req.param('contest_id'));
                 }
+                
                 time = time.split('-');
                 if( time.length != 2 ) throw new Error('Invalid time argument');
                 time[1] = parseInt( time[1], 10 );

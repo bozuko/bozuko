@@ -11,6 +11,7 @@ Ext.define('Bozuko.lib.PubSub',{
         this.listeners = {};
         this.canceled = [];
         this.fails = 0;
+        this._requestTimeout = 0;
     },
     
     listen : function(){
@@ -19,7 +20,7 @@ Ext.define('Bozuko.lib.PubSub',{
     },
     
     cancelRequest : function(){
-        
+        clearTimeout(this._requestTimeout);
         if( this.activeRequest && this.activeRequest.xhr  ){
             this.canceled.push(this.activeRequest.id);
             this.activeRequest.xhr.abort();
@@ -147,7 +148,8 @@ Ext.define('Bozuko.lib.PubSub',{
         else{
             me.fails++;
         }
-        me.request();
+        // buffer
+        me._requestTimeout = Ext.defer(me.request, 1000, me);
     },
     
     onItem : function(item, last){

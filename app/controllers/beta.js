@@ -1,9 +1,13 @@
-var Content = Bozuko.require('util/content'),
-    validator = require('validator'),
-    mailer = Bozuko.require('util/mail'),
-    indexOf = Bozuko.require('util/functions').indexOf,
-    filter = Bozuko.require('util/functions').filter,
-    crypto = require('crypto');
+var Content     = Bozuko.require('util/content'),
+    validator   = require('validator'),
+    mailer      = Bozuko.require('util/mail'),
+    Report      = Bozuko.require('core/report'),
+    DateUtil    = Bozuko.require('util/date')
+    indexOf     = Bozuko.require('util/functions').indexOf,
+    filter      = Bozuko.require('util/functions').filter,
+    ObjectId    = require('mongoose').Types.ObjectId,
+    crypto      = require('crypto')
+    ;
 
 exports.locals = {
     home_link: '/beta',
@@ -336,10 +340,10 @@ exports.routes = {
                     };
                 
                 if( req.param('page_id') ){
-                    query.page_id = req.param('page_id');
+                    query.page_id = new ObjectId(req.param('page_id'));
                 }
                 if( req.param('contest_id') ){
-                    query.contest_id = req.param('contest_id');
+                    query.contest_id = new ObjectId(req.param('contest_id'));
                 }
                 
                 time = time.split('-');

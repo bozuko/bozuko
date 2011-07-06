@@ -146,7 +146,7 @@ exports.routes = {
         post : {
             handler : function(req, res){
                 var body = req.body,
-                    buffer = 500,
+                    buffer = 1000,
                     messages = [],
                     timeout_duration = 30000,
                     timeout = null
