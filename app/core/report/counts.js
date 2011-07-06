@@ -92,9 +92,6 @@ CountsReport.prototype.run = function run(callback){
         if( self.options[name] ) options[name] = self.options[name];
     });
     
-    console.log(mapFn);
-    console.log(reduceFn);
-    
     return Bozuko.models[modelName].collection.mapReduce(
         
         mapFn,

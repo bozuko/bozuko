@@ -90,10 +90,14 @@ Contest.virtual('official_rules')
                 "Twentyninth", "Thirtieth"
             ];
             var prizes = this.prizes,
+                consolation_prizes = this.consolation_prizes,
                 self = this,
                 prizes_str = '';
                 
             prizes.sort( function(a, b){
+                return b.value - a.value;
+            });
+            consolation_prizes.sort( function(a, b){
                 return b.value - a.value;
             });
             var total = 0;
@@ -106,6 +110,17 @@ Contest.virtual('official_rules')
                 prizes_str+= 'Odds of winning are '+(prize.total/gcd)+' / '+ (self.total_plays/gcd)+'. ';
                 total = prize.value * prize.total;
             });
+            
+            consolation_prizes.forEach(function(prize, i){
+                var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
+                prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
+                if( prize.details ) prizes_str+= prizes.details+' ';
+                var gcd = getGCD( prize.total, self.total_plays );
+                
+                prizes_str+= 'Odds of winning are '+(prize.total/gcd)+' / '+ (self.total_plays/gcd)+'. ';
+                total = prize.value * prize.total;
+            });
+            
             replacements.prizes = prizes_str;
             replacements.arv = '$'+total;
             
