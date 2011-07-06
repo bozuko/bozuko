@@ -6,7 +6,7 @@ var http    = require('http'),
     qs      = require('querystring');
 
 exports.request = function(config, callback){
-    
+
     if( config instanceof String){
         config = {url:config};
     }
@@ -57,7 +57,7 @@ exports.request = function(config, callback){
         headers: headers,
         method: method
     }, function(response){
-        
+
         var data = '';
         response.setEncoding('utf8');
         response.on('data', function(chunk){
@@ -88,7 +88,7 @@ exports.request = function(config, callback){
     });
 
     tid = setTimeout(function() {
-        console.log("http timeout: "+method+" "+config.url);
+        console.error("http timeout: "+method+" "+config.url);
         request.abort();
         return callback(Bozuko.error('http/timeout', method+" "+config.url));
     }, config.timeout || 10000);
@@ -128,7 +128,7 @@ exports.stream = function stream( _url, res, options, callback ){
         options = {};
     }
     options = options || {};
-    
+
     var parsed = url.parse(String(_url)),
         ssl = /^https/.test(String(_url)),
         opts = {
@@ -137,8 +137,8 @@ exports.stream = function stream( _url, res, options, callback ){
             path: parsed.pathname + (parsed.search||'')
         },
         buffer='';
-        
-    
+
+
     return require(ssl ? 'https' : 'http').get( opts, function(response){
         var headers = response.headers || {};
         console.log(headers);
@@ -156,20 +156,20 @@ exports.stream = function stream( _url, res, options, callback ){
         .forEach(function(header){
             if( headers[header] ) res.header(header, headers[header] );
         });
-        
+
         return response.pipe( res );
     });
 };
 
 exports.redirect = function redirect( _url, res){
-    
+
     this.getRedirect( _url, function( redirect_url ){
         return res.redirect( redirect_url );
     });
 }
 
 exports.getRedirect = function getRedirect( _url, callback ){
-    
+
     var last = _url,
         parsed = url.parse(String(_url)),
         ssl = /^https/.test(String(_url)),
@@ -179,8 +179,8 @@ exports.getRedirect = function getRedirect( _url, callback ){
             path: parsed.pathname + (parsed.search||''),
             method: 'HEAD'
         };
-        
-    
+
+
     var req = require(ssl ? 'https' : 'http').request( opts, function(response){
         var headers = response.headers || {};
         if( headers.location ){
