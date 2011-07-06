@@ -56,14 +56,8 @@ Ext.define('Beta.view.contests.Panel', {
                             return values.state.substr(0,1).toUpperCase()+values.state.substr(1);
                         },
                         getEntries : function( xindex ){
-                            var contest = me.store.getAt(xindex-1),
-                                qty = 0
-                                ;
-                            contest.prizes().each(function(prize){
-                                qty += prize.get('total');
-                            });
-                            var entries = qty * contest.get('win_frequency');
-                            return (contest.get('token_cursor') || '0') + ' / '+ (entries||'0');
+                            var contest = me.store.getAt(xindex-1)
+                            return contest.getEntryCount() +'/'+contest.getTotalEntries();
                         }
                     }
                 )

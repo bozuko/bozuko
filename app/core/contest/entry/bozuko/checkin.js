@@ -84,6 +84,12 @@ BozukoCheckinMethod.prototype.getDescription = function(){
 }
 
 
+BozukoCheckinMethod.prototype.getEntryRequirement = function(){
+    return 'Must be at this location to enter.';
+}
+
+
+
 /**
  * Get the maximum amount of tokens
  *

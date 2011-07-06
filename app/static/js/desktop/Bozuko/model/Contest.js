@@ -49,7 +49,23 @@ Ext.define('Bozuko.model.Contest', {
         {model: 'Bozuko.model.Prize', name: 'consolation_prizes', associationKey: 'consolation_prizes'}
     ],
     
-    autoLoad: true
+    autoLoad: true,
+    
+    getTotalEntries : function(){
+        var me = this,
+            qty = 0;
+        me.prizes().each(function(prize){
+            qty += prize.get('total');
+        });
+        return qty * me.get('win_frequency');
+    },
+    
+    getEntryCount : function(){
+        var me = this;
+        
+        return (me.get('token_cursor')+1) / me.get('entry_config')[0].tokens;
+    }
+    
 }, function(){
     this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });

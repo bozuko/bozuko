@@ -75,8 +75,8 @@ Bozuko.getApp = function(){
         var app = Bozuko.require('core/server');
         Bozuko.configureApp(app);
         initApplication( app );
+		initGames( app );
         initControllers( app );
-        initGames( app );
         // setup our device dependent renderer
         Bozuko.require('core/view');
         Bozuko.app = app;
@@ -383,7 +383,6 @@ function initGames(app){
                 // lets lisen on their resources folders
                 var stat = fs.statSync(themes_dir+'/'+theme);
                 if( !stat.isDirectory() ) return;
-				console.log('Init theme: ', name, theme);
                 app.use('/games/'+name+'/themes/'+theme, express.static(themes_dir+'/'+theme+'/resources'));
             });
 

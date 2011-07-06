@@ -3,6 +3,10 @@ Ext.define('Beta.view.page.Chart', {
     extend : 'Ext.panel.Panel',
     alias : 'widget.pagechart',
     
+    requires : [
+        'Bozuko.lib.PubSub'
+    ],
+    
     initComponent : function(){
         var me = this;
         
@@ -35,7 +39,8 @@ Ext.define('Beta.view.page.Chart', {
                         data            :[
                             {text:'Entries', value:'Entry'},
                             {text:'Plays', value:'Play'},
-                            {text:'Wall Posts', value:'Posts'}
+                            {text:'Won Prizes', value:'Prize'},
+                            {text:'Redeemed Prizes', value:'Redeemed Prizes'}
                         ]
                     }),
                     listeners       :{
@@ -57,9 +62,10 @@ Ext.define('Beta.view.page.Chart', {
                         fields          :['text','value'],
                         data            :[
                             {text:'Last Day', value:'day-1'},
+                            {text:'Last Two Days', value:'day-2'},
                             {text:'Last Week', value:'week-1'},
-                            {text:'Last Month', value:'month-1'},
-                            {text:'Last Year', value:'year-1'},
+                            {text:'Last Two Weeks', value:'week-2'},
+                            {text:'Last Month', value:'month-1'}
                         ]
                     }),
                     
@@ -95,7 +101,7 @@ Ext.define('Beta.view.page.Chart', {
                     type        :'Time',
                     position    :'bottom',
                     fields      :'timestamp',
-                    title       :'Day',
+                    title       :'Time',
                     dateFormat  :'M d',
                     groupBy     :'year,month,day'
                 }],
@@ -107,8 +113,15 @@ Ext.define('Beta.view.page.Chart', {
                         width: 80,
                         height: 50,
                         renderer: function(storeItem, item) {
-                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'), 'D M d'));
-                            this.update( storeItem.get('count')+' Entries' );
+                            
+                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'),
+                                (/day/i.test(me.timeField.getValue()) ?'ga':
+                                    (/year/i.test(me.timeField.getValue()) ? 'M y' :
+                                        'D M d'
+                                    )
+                                )
+                            ));
+                            this.update( storeItem.get('count')+' '+me.modelField.getRawValue() );
                         }
                     },
                     axis: 'left',
@@ -125,16 +138,44 @@ Ext.define('Beta.view.page.Chart', {
         me.timeField = me.down('[name=time]');
         me.modelField = me.down('[name=model]');
         me.updateChart();
+        Bozuko.PubSub.subscribe('contest/entry', {page_id: me.page_id}, function(){
+            if( me.modelField.getValue() == 'Entry' ) me.chart.store.load();
+        });
+        Bozuko.PubSub.subscribe('contest/play', {page_id: me.page_id}, function(){
+            if( me.modelField.getValue() == 'Play' ) me.chart.store.load();
+        });
+        Bozuko.PubSub.subscribe('contest/win', {page_id: me.page_id}, function(){
+            if( me.modelField.getValue() == 'Prize' ) me.chart.store.load();
+        });
+        Bozuko.PubSub.subscribe('prize/redeem', {page_id: me.page_id}, function(){
+            if( me.modelField.getValue() == 'Redeemed Prizes' ) me.chart.store.load();
+        });
     },
     
     updateChart : function(){
         var me = this;
         me.chartProxy.extraParams = {
             time : me.timeField.getValue(),
-            model : me.modelField.getValue()
+            model : me.modelField.getValue(),
+            page_id : me.page_id
         };
-        if( me.chart.axes.get(0).setTitle )
+        if( me.chart.axes.get(0).setTitle ){
             me.chart.axes.get(0).setTitle(me.modelField.getRawValue());
+            var time = me.timeField.getValue().split('-');
+            if( /year/i.test(time[0]) ){
+                me.chart.axes.get(1).dateFormat='M y';
+                me.chart.axes.get(1).groupBy = 'year,month';
+            }
+            else if( /day/i.test(time[0])){
+                me.chart.axes.get(1).dateFormat='ga';
+                me.chart.axes.get(1).groupBy = 'year,month,day,hour';
+                
+            }
+            else{
+                me.chart.axes.get(1).dateFormat='d M';
+                me.chart.axes.get(1).groupBy = 'year,month,day';
+            }
+        }
         me.chartStore.load();
     }
     

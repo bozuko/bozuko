@@ -10,6 +10,7 @@ var Entry = module.exports = new Schema({
     type                    :{type:String},
     action_id               :{type:ObjectId},
     timestamp               :{type:Date, default: Date.now},
+    wall_posts              :{type:Number},
     tokens                  :{type:Number},
     initial_tokens          :{type:Number}
 });
