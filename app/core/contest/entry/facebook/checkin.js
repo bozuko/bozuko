@@ -94,7 +94,7 @@ FacebookCheckinMethod.prototype.getDescription = function(){
     var description = "Check In on Facebook\n";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
     if( this.config.options.enable_like ){
-        description+= "\nBonus plays if you like us on Facebook!";
+        description+= "\nLike us for Bonus Plays!";
         if( !this.user || (this.page && !this.user.likes( this.page )) ){
             description+="\nHit back and scroll down to like us."
         }
