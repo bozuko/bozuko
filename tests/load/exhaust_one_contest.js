@@ -20,12 +20,13 @@ var end_of_game_ct = 0;
 var options = {
     protocol: 'https',
     host: 'playground.bozuko.com',
-    port: 443,
+    port: 8000,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 50, // req/sec
-    time: 60*60, // 1 day
-    wait_time: 10000, // ms
+    rate: 20, // req/sec
+    time: 60*60, // 1 day -- total time to run the test
+    wait_time: 10000, // ms -- after the last request, time to wait for others to complete
+    timeout: 20000, //ms  -- socket timeout
     path: '/api',
     method: 'GET',
     max_sessions: 50,
@@ -42,7 +43,7 @@ var options = {
 };
 
 (function run() {
-     for (var i = 0; i < 100000; i++) {
+     for (var i = 0; i < 1000; i++) {
          free_users.push(String(i));
      }
 
