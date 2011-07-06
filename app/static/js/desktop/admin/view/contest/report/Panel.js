@@ -5,7 +5,8 @@ Ext.define('Admin.view.contest.report.Panel' ,{
     
     requires: [
         'Admin.view.contest.report.Details',
-        'Bozuko.view.winners.List'
+        'Bozuko.view.winners.List',
+        'Bozuko.view.chart.Basic'
     ],
     
     layout: {
@@ -56,7 +57,10 @@ Ext.define('Admin.view.contest.report.Panel' ,{
             border          :false
         },{
             region          :'center',
+            xtype           :'bozukochartbasic',
             border          :false,
+            bodyPadding     :10,
+            autoScroll      :true,
             html            :'Report Panel'
         },{
             xtype           :'winnerslist',
@@ -73,6 +77,7 @@ Ext.define('Admin.view.contest.report.Panel' ,{
         // set the record...
         me.down('contestdetails').update( record.data );
         me.down('winnerslist').setContest( record );
+        me.down('bozukochartbasic').contest_id = record.get('_id');
         me.down('[ref=details-campaign-text]').setText(record.get('name'));
         me.record = record;
         

@@ -5,21 +5,11 @@ Ext.define('Beta.view.page.Dashboard', {
     
     requires: [
         'Bozuko.lib.PubSub',
-        'Beta.view.page.Chart'
+        'Bozuko.view.chart.Basic'
     ],
     
     initComponent : function(){
         var me = this;
-        
-        
-        Ext.define('Ext.chart.theme.Bozuko', {
-            extend : 'Ext.chart.theme.Base',
-            constructor : function(config){
-                this.callParent([Ext.apply({
-                    colors: ['#1db153','#33c667','#4ae07e']
-                }, config)]);
-            }
-        });
         
         Ext.apply(me, {
             layout          :'border',
@@ -66,7 +56,7 @@ Ext.define('Beta.view.page.Dashboard', {
                         html            :'Your Stats at a Glance'
                     }
                 },{
-                    xtype           :'pagechart',
+                    xtype           :'bozukochartbasic',
                     anchor          :'0',
                     border          :false,
                     page_id         :Bozuko.beta.page_id
