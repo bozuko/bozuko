@@ -11,8 +11,8 @@ inherits( CountsReport, Report );
 CountsReport.mapFunctionTmpl = {
     
     time: (function(){
-        var ts = this.FIELDNAME;
-        var timestamp = Date.UTC(ts.getUTCFullYear(), '%0%', '%0%', '%0%', '%0%', '%0%', '%0%');
+        var ts = this.FIELDNAME, now = new Date();
+        var timestamp = Date.UTC(ts.getUTCFullYear(), '%0%', '%0%', '%now.getUTCHours()%', '%0%', '%0%', '%0%');
         emit( timestamp, {timestamp: new Date(timestamp), count: 1} );
     }).toString(),
     
@@ -34,10 +34,10 @@ CountsReport.getMapFunction = function getMapFunction(type, field, interval){
     if( ~index ){
         for(var i = 0; i < index+1; i++ ){
             str = 'ts.getUTC'+intervals[i]+'()';
-            fn = fn.replace(/'%(0|12)%'/, str);
+            fn = fn.replace(/'%([^%]+)%'/, str);
         }
     }
-    fn = fn.replace(/'%0%'/g, '0').replace(/'%12%'/g, '12');
+    fn = fn.replace(/'%([^%]+)%'/g, '$1');
     return fn;
 };
 
@@ -107,7 +107,6 @@ CountsReport.prototype.run = function run(callback){
                 console.log(error);
                 return callback( error );
             }
-            console.log(results);
             var items = [];
             results.forEach( function(result){
                 var obj = result.value;
@@ -130,7 +129,7 @@ CountsReport.prototype.run = function run(callback){
                 if( !~index ) index = 0;
                 var startArgs = [], endArgs = [];
                 
-                for(var i = 0; i < index+1; i++ ){
+                for(var i = 0; i < intervals.length; i++ ){
                     startArgs.push(from['getUTC'+intervals[i]]());
                     endArgs.push(to['getUTC'+intervals[i]]());
                 }
@@ -151,7 +150,6 @@ CountsReport.prototype.run = function run(callback){
                         items.push( tmp[i++] );
                     }
                 }
-                
             }
             return callback( null, items);
         }
