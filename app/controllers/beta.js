@@ -334,7 +334,14 @@ exports.routes = {
                     query = {
                         page_id: {$in: user.manages}
                     };
-                    
+                
+                if( req.param('page_id') ){
+                    query.page_id = req.param('page_id');
+                }
+                if( req.param('contest_id') ){
+                    query.contest_id = req.param('contest_id');
+                }
+                
                 time = time.split('-');
                 if( time.length != 2 ) throw new Error('Invalid time argument');
                 time[1] = parseInt( time[1], 10 );
@@ -355,6 +362,13 @@ exports.routes = {
                     case 'day':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -1 * time[1] )
                         interval = 'Hours';
+                        break;
+                    case 'minute':
+                        from = DateUtil.add( new Date(), DateUtil.MINUTE, -1 * time[1] )
+                        interval = 'Minutes';
+                        if( time[1] == 1 ){
+                            interval = 'Seconds';
+                        }
                         break;
                 }
                 

@@ -579,16 +579,67 @@ exports.routes = {
 
         get : {
             handler : function(req, res){
-                return Report.run('counts', {
-                    model: req.param('model') || 'Entry',
-                    from: DateUtil.add( new Date(), DateUtil.DAY, -30 )
-                }, function(error, results){
+                
+                var time = req.param('time') || 'week-1',
+                    from, interval, now = new Date(),
+                    query = {
+                    };
+                    
+                if( req.param('page_id') ){
+                    query.page_id = req.param('page_id');
+                }
+                if( req.param('contest_id') ){
+                    query.contest_id = req.param('contest_id');
+                }
+                time = time.split('-');
+                if( time.length != 2 ) throw new Error('Invalid time argument');
+                time[1] = parseInt( time[1], 10 );
+                
+                switch( time[0] ){
+                    case 'year':
+                        from = DateUtil.add( new Date(), DateUtil.DAY, -365 * time[1] )
+                        interval = 'Date';
+                        break;
+                    case 'month':
+                        from = DateUtil.add( new Date(), DateUtil.DAY, -30 * time[1] )
+                        interval = 'Date';
+                        break;
+                    case 'week':
+                        from = DateUtil.add( new Date(), DateUtil.DAY, -7 * time[1] )
+                        interval = 'Date';
+                        break;
+                    case 'day':
+                        from = DateUtil.add( new Date(), DateUtil.DAY, -1 * time[1] )
+                        interval = 'Hours';
+                        break;
+                    case 'minute':
+                        from = DateUtil.add( new Date(), DateUtil.MINUTE, -1 * time[1] )
+                        interval = 'Minutes';
+                        if( time[1] == 1 ){
+                            interval = 'Seconds';
+                        }
+                        break;
+                }
+                
+                var model = req.param('model') || 'Entry';
+                if( !~['Prize','Redeemed Prizes','Entry','Play'].indexOf(model) ) throw "Invalid model";
+                
+                if( model == 'Redeemed Prizes'){
+                    model = "Prize";
+                    query.redeemed = true;
+                }
+                
+                return Report.run('counts',
+                
+                {
+                    interval: interval,
+                    query: query,
+                    model: model,
+                    from: from
+                },
+                
+                function(error, results){
                     if( error ) return error.send( res );
-                    // lets pimp these results for the reports
-                    var max = 0, i=0;
-                    results.forEach(function(result){
-                        //result.count = (Math.random() * (i++)) + 20;
-                    });
                     return res.send( {items: results} );
                 });
             }

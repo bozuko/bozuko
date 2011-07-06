@@ -13,7 +13,8 @@ Ext.define('Admin.view.admin.Dashboard' ,{
     requires: [
         'Bozuko.lib.PubSub',
         'Bozuko.store.Reports',
-        'Bozuko.view.winners.List'
+        'Bozuko.view.winners.List',
+        'Bozuko.view.chart.Basic'
     ],
     
     initComponent : function(){
@@ -25,42 +26,10 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             ref: 'admindashboard',
             border: false,
             items:[{
-                region: 'center',
-                xtype: 'chart',
-                border: false,
-                animate: true,
-                store: Ext.create('Bozuko.store.Reports'),
-                axes: [{
-                    type        :'Numeric',
-                    position    :'left',
-                    fields      :['count'],
-                    title       :'Entries',
-                    grid        :true,
-                    minimum     :0
-                },{
-                    type        :'Time',
-                    position    :'bottom',
-                    fields      :'timestamp',
-                    title       :'Day',
-                    dateFormat  :'M d',
-                    groupBy     :'year,month,day'
-                }],
-                series: [{
-                    title: 'Count',
-                    type: 'column',
-                    tips: {
-                        trackMouse: true,
-                        width: 80,
-                        height: 40,
-                        renderer: function(storeItem, item) {
-                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'), 'D M d'));
-                            this.update( storeItem.get('count')+' Entries' );
-                        }
-                    },
-                    axis: 'left',
-                    xField: 'timestamp',
-                    yField: 'count'
-                }]
+                region : 'center',
+                xtype : 'bozukochartbasic',
+                border : false,
+                bodyPadding: 10
             },{
                 height: 200,
                 split: true,
@@ -112,9 +81,6 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             eventLog.insert(0,[record]);
             while(eventLog.getCount() > 150 ){
                 eventLog.removeAt(150);
-            }
-            if( type == 'contest/entry' ){
-                me.down('chart').store.load();
             }
         });
     }
