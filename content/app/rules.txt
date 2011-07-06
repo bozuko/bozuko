@@ -16,8 +16,7 @@ Follow the prize claim directions that appear after your winning game message. N
 
 4. ELIGIBILITY:
 
-This Game is open to individual legal residents of the United States (including Puerto Rico and the U.S. territories & possessions), age {{age_limit}} or older as of the Start Date, except employees (and their immediate families and members of the same household) of
-Sponsor, Bozuko, Inc. and prize providers and their respective affiliates, agents and advertising and promotion agencies (collectively, the “Promotion Parties”).
+This Game is open to individual legal residents of the United States (including Puerto Rico and the U.S. territories & possessions), age {{age_limit}} or older as of the Start Date, except employees (and their immediate families and members of the same household) of Sponsor, Bozuko, Inc. and prize providers and their respective affiliates, agents and advertising and promotion agencies (collectively, the “Promotion Parties”).
 
 5. VERIFICATION OF WINNERS:
 
