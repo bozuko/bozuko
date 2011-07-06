@@ -589,7 +589,7 @@ exports.routes = {
                     query.page_id = req.param('page_id');
                 }
                 if( req.param('contest_id') ){
-                    query.page_id = req.param('contest_id');
+                    query.contest_id = req.param('contest_id');
                 }
                 time = time.split('-');
                 if( time.length != 2 ) throw new Error('Invalid time argument');
