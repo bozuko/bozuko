@@ -9,6 +9,7 @@ var mongoose = require('mongoose');
 var _db;
 
 function getConnection(){
+    var uri;
     if( !_db){
         mongoose.connection.on('opening', function() {
             console.log("Mongoose opening "+uri);
@@ -30,9 +31,10 @@ function getConnection(){
                     str+=",";
                 }
             };
+	    uri = str;
             _db = mongoose.connectSet(str);
         } else {
-            var uri = 'mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name;
+            uri = 'mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name;
             _db = mongoose.connect(uri);
         }
     }
