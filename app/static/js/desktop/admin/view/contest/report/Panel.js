@@ -58,6 +58,7 @@ Ext.define('Admin.view.contest.report.Panel' ,{
         },{
             region          :'center',
             xtype           :'bozukochartbasic',
+            contest_id      :me.record.get('_id'),
             border          :false,
             bodyPadding     :10,
             autoScroll      :true,
@@ -70,6 +71,7 @@ Ext.define('Admin.view.contest.report.Panel' ,{
             title           :'Winners List'
         }];
         me.callParent();
+        if( me.record ) me.setRecord( me.record );
     },
     
     setRecord : function(record){
