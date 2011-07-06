@@ -13,7 +13,9 @@ Ext.define('Beta.controller.Pages' ,{
     ],
     
     refs : [
+        {ref: 'appView', selector: 'betaapp'},
         {ref: 'statusField', selector: '[ref=statusField]'},
+        {ref: 'pageSettings', selector: 'pagesettings'},
         {ref: 'updateStatusButton', selector: '[ref=updateStatus]'},
         {ref: 'pagesPanel', selector: '[ref=pages]'}
     ],
@@ -30,6 +32,9 @@ Ext.define('Beta.controller.Pages' ,{
             },
             'button[ref=updateStatus]' : {
                 'click' : me.updateStatus
+            },
+            'pagesettings [action=save]' : {
+                'click' : me.saveSettings
             }
         });
     },
@@ -37,6 +42,7 @@ Ext.define('Beta.controller.Pages' ,{
     onLaunch: function(){
         var me = this,
             page = me.application.page,
+            appView = me.getAppView(),
             btn = me.getUpdateStatusButton(),
             btnText = btn.getText();
         ;
@@ -48,7 +54,15 @@ Ext.define('Beta.controller.Pages' ,{
         page.on('save', function(){
             btn.setText(btnText);
             btn.enable();
+            // update announcement
+            me.getStatusField().setValue( page.get('announcement') );
+            me.getPageSettings().loadRecord( page );
+            me.application.successStatus('Page Saved');
         });
+        
+        var item = appView.down('[ref=pages]').getLayout().getActiveItem();
+        appView.down('[ref=navigation] button[page='+item.ref+']').toggle();
+        
     },
     
     onStatusFieldRender : function(field){
@@ -62,6 +76,23 @@ Ext.define('Beta.controller.Pages' ,{
         ;
         page.set('announcement', me.getStatusField().getValue());
         page.save();
+    },
+    
+    getValues : function(form, selector){
+        var values = {};
+        selector = selector ? selector+' field' : 'field';
+        Ext.Array.each(form.query( selector ), function(field){
+            var ns = field.getName().split('.'), cur = values;
+            
+            if( ns.length > 1 ) while( ns.length > 1 ){
+                var p = ns.shift();
+                if( !cur[p]) cur[p] = {};
+                cur = cur[p];
+            }
+            
+            cur[ns.shift()] = field.getValue();
+        });
+        return values;
     },
     
     changePage : function( btn ){
@@ -81,5 +112,24 @@ Ext.define('Beta.controller.Pages' ,{
         if( panel.getLayout().getActiveItem() === page ) return;
         panel.getLayout().setActiveItem( page );
         page.doComponentLayout();
+    },
+    
+    saveSettings : function(saveBtn){
+        var me = this,
+            form = saveBtn.up('pagesettings'),
+            values = this.getValues(form);
+            
+        form.record.set(values);
+        form.record.commit();
+        saveBtn.disable();
+        form.record.save({
+            callback: function(){
+                // also double check that we have this
+                saveBtn.enable();
+            },
+            failure: function(){
+                alert('Error Saving Page');
+            }
+        });
     }
 });

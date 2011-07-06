@@ -25,7 +25,8 @@ Ext.define('Admin.view.contest.edit.Entry' ,{
                 data:[
                     {value:'facebook/checkin',text:'Facebook Check-in'},
                     {value:'facebook/like',text:'Facebook Like'},
-                    {value:'bozuko/checkin',text:'Bozuko Check-in'}
+                    {value:'bozuko/checkin',text:'Bozuko Check-in'},
+                    {value:'bozuko/nothing',text:'Bozuko Play'}
                 ]
             }),
             displayField    :'text',

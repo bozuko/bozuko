@@ -24,13 +24,27 @@ Ext.Loader.require('Bozuko.lib.Router', function(){
                         'Beta.view.App'
                     ],
                     
+                    refs : [
+                        {ref: 'appView', selector: 'betaapp'}
+                    ],
+                    
                     init : function(){
                         
+                    },
+                    
+                    successStatus : function(text){
+                        this.view.successStatus(text);
+                    },
+                    
+                    failureStatus : function(text){
+                        this.view.failureStatus(text);
                     },
                     
                     launch : function(){
                         
                         var me = this;
+                        
+                        me.titleNode = Ext.get( Ext.DomQuery.selectNode('.page-info h3') );
                         
                         Ext.fly('beta')
                             .removeCls('beta-loading')
@@ -44,9 +58,15 @@ Ext.Loader.require('Bozuko.lib.Router', function(){
                             
                         Ext.fly(ft).remove();
                         this.view = new Beta.view.App({
-                            renderTo: 'beta'
+                            renderTo: 'beta',
+                            page: record
                         });
-                        this.offset = Ext.fly(hd).getHeight() + Ext.fly(copyright).getHeight() + 20;
+                        
+                        record.on('save', function(){
+                            me.titleNode.update( record.get('name') );
+                        });
+                        
+                        this.offset = Ext.fly(hd).getHeight() + Ext.fly(copyright).getHeight() + 10;
                         this.setHeight();
                         Ext.EventManager.onWindowResize(this.setHeight, this);
                     },
@@ -54,6 +74,7 @@ Ext.Loader.require('Bozuko.lib.Router', function(){
                     setHeight : function(){
                         var h = Ext.core.Element.getViewportHeight();
                         this.view.setHeight(Math.max(h-this.offset,300));
+                        this.view.doLayout();
                     }
                     
                 });

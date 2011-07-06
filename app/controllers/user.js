@@ -181,7 +181,7 @@ exports.routes = {
                 var user = req.session.user;
                 // we should update the user's likes
 
-                return user.updateLikes( function(error){
+                return user.updateInternals( function(error){
                     if( error ) return error.send(res);
                     user.id = user._id;
                     user.links = {

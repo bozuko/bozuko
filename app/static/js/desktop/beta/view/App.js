@@ -1,11 +1,13 @@
 Ext.define('Beta.view.App', {
     
     extend: 'Ext.panel.Panel',
+    alias: 'widget.betaapp',
     
     requires: [
         'Bozuko.view.winners.List',
         'Beta.view.page.Dashboard',
         'Beta.view.contests.Panel',
+        'Beta.view.page.Settings',
         'Bozuko.store.Contests'
     ],
     
@@ -35,7 +37,6 @@ Ext.define('Beta.view.App', {
                     page        :'dashboard',
                     text        :'Dashboard',
                     group       :'page',
-                    pressed     :true,
                     icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-24.png'
                 },{
                     page        :'campaigns',
@@ -47,13 +48,17 @@ Ext.define('Beta.view.App', {
                     page        :'settings',
                     group       :'page',
                     icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png'
+                },'->',{
+                    ref         :'status-text',
+                    xtype       :'tbtext',
+                    text        :' '
                 }]
             },{
                 region          :'center',
                 layout          :'card',
                 ref             :'pages',
                 border          :false,
-                activeItem      :1,
+                activeItem      :0,
                 items: [{
                     ref             :'dashboard',
                     xtype           :'pagedashboard',
@@ -68,13 +73,32 @@ Ext.define('Beta.view.App', {
                     })
                 },{
                     ref             :'settings',
+                    xtype           :'pagesettings',
                     border          :false,
-                    html            :'settings'
+                    record          :me.page
                 }]
             }]
         });
-        
         me.callParent(arguments);
+        me.statusText = me.down('[ref=navigation] [ref=status-text]');
+    },
+    
+    updateStatus : function(text){
+        var me = this;
+        
+        clearTimeout( me.statusTextTimeout );
+        me.statusText.setText(text);
+        me.statusTextTimeout = setTimeout( function(){
+            me.statusText.setText('');
+        },3000);
+    },
+    
+    successStatus : function(text){
+        this.updateStatus( '<div style="color: #999; line-height: 16px;"><img style="float: right; margin: 0 0 0 10px;" width="16" height="16" src="/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-check-16.png" />'+text+' </div>')
+    },
+    
+    failureStatus : function(text){
+        this.updateStatus( '<div style="color: #999; line-height: 16px;"><img style="float: right; margin: 0 0 0 10px;" width="16" height="16" src="/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-cross-16.png" />'+text+'</div>')
     }
     
 });
