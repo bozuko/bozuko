@@ -83,6 +83,41 @@ User.method('likes', function(page){
     return ~likes.indexOf( page );
 });
 
+User.method('updateInternals', function(callback){
+    var self = this;
+    if( !self.service('facebook')) return callback( Bozuko.error('user/no_facebook') );
+    return Bozuko.service('facebook').user({user:self, fields:'likes,friends'}, function(error, result){
+        if( error ) return callback( error );
+        var likes = [], friends = [];
+        try{
+            var data = result.data.likes.data;
+            data.forEach(function(object){
+                likes.push(object.id);
+            });
+        }catch(e){
+            likes = [];
+        }
+        try{
+            var data = result.data.friends.data;
+            data.forEach(function(object){
+                friends.push(object);
+            });
+        }catch(e){
+            friends = [];
+        }
+        var commit = true;
+        if( !self.service('facebook').internal ){
+            self.service('facebook').internal = {};
+            commit = false;
+        }
+        self.service('facebook').internal.likes = likes;
+        self.service('facebook').internal.friends = friends;
+        self.service('facebook').internal.friend_count = friends.length;
+        if( commit ) self.commit('services');
+        return self.save(callback);
+    });
+});
+
 User.method('updateLikes', function(callback){
     var self = this;
     if( !self.service('facebook')) return callback( Bozuko.error('user/no_facebook') );

@@ -134,7 +134,7 @@ Ext.define('Bozuko.lib.PubSub',{
                         item.timestamp = timestamp;
                         me.onItem(item, index==data.length-1);
                     }catch(e){
-                        console.log(e);
+                        console.log(e, e.stack);
                     }
                 });
             }

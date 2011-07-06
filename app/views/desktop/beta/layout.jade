@@ -4,7 +4,7 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
   
     title= title
     
-    - if( locals.meta && locals.meta.length)
+    - if( locals.meta )
       - each content, name in meta
         meta(name=name, content=content)
     
@@ -99,6 +99,14 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
       .copyright
         .page-width
           &copy; 2011 Bozuko, Inc.
+          - if( locals.html_classes && ~locals.html_classes.indexOf('beta-app') )
+            ul
+              li
+                a(href="/beta/terms-of-use") Beta Agreement
+              li
+                a(href="http://getsatisfaction.com/bozuko", onclick="feedback_widget.show(); return false;") Feedback &amp; Support
+              li
+                a(href="/") Bozuko.com
         
     - if (locals.tmpls)
       .templates

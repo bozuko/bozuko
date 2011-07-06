@@ -117,7 +117,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                                 return err.send(res);
                             }
 
-                            return u.updateLikes( function(error){
+                            return u.updateInternals( function(error){
                                 req.session.userJustLoggedIn = true;
                                 req.session.user = u;
                                 

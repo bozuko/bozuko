@@ -50,7 +50,10 @@ Ext.define('Bozuko.view.winners.List' ,{
             itemTpl: new Ext.XTemplate(
                 '<div class="prize-{prize.state}">',
                     '<div class="contest-name">',
-                        '<strong>{page.name}</strong> - {contest.name}',
+                        '<tpl if="this.showPageTitle()">',
+                            '<strong>{page.name}</strong> - ',
+                        '</tpl>',
+                        '{contest.name}',
                     '</div>',
                     '<div class="winner-body">',
                         '<img src="{[this.getImage(values.user.image)]}" />',
@@ -80,6 +83,10 @@ Ext.define('Bozuko.view.winners.List' ,{
                         var date = new Date();
                         date.setTime( Date.parse(str) );
                         return Ext.Date.format(date, 'm/d/Y h:i a');
+                    },
+                    
+                    showPageTitle : function(){
+                        return !this.isPageSpecific();
                     }
                 }
             ),

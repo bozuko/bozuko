@@ -84,7 +84,7 @@ exports.routes = {
                     res.locals.user = user;
                     res.locals.page = page;
                     res.locals.scripts.unshift(
-                        '/js/ext-4.0/lib/ext-all.js',
+                        '/js/ext-4.0/lib/ext-all-debug.js',
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(
@@ -213,9 +213,12 @@ exports.routes = {
                             signed_by: user.id,
                             signed_date: new Date()
                         };
-                        page.addAdmin( user, function(error){
+                        page.save( function(error){
                             if( error ) throw error;
-                            return res.redirect('/beta/page/'+page.id);
+                            page.addAdmin( user, function(error){
+                                if( error ) throw error;
+                                return res.redirect('/beta/page/'+page.id);
+                            });
                         });
                     });
                 });
@@ -327,17 +330,16 @@ exports.routes = {
                         page_id: {$in: user.manages}
                     };
                 
-                return Report.run('counts', {
+                return Report.run('counts',
+                
+                {
                     query: query,
                     model: req.param('model') || 'Entry',
-                    from: DateUtil.add( new Date(), DateUtil.DAY, -30 )
-                }, function(error, results){
+                    from: DateUtil.add( new Date(), DateUtil.DAY, -6 )
+                },
+                
+                function(error, results){
                     if( error ) return error.send( res );
-                    // lets pimp these results for the reports
-                    var max = 0, i=0;
-                    results.forEach(function(result){
-                        //result.count = (Math.random() * (i++)) + 20;
-                    });
                     return res.send( {items: results} );
                 });
             }
@@ -440,7 +442,6 @@ exports.routes = {
                 });
 
                 var contest = new Bozuko.models.Contest(data);
-                console.log(JSON.stringify(contest));
                 return contest.save( function(error){
                     if( error ) return error.send( res );
                     return res.send({items:[contest]});
