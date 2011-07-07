@@ -41,8 +41,8 @@ exports.transfer_objects = {
                 if( error ) return callback( error );
                 o.page_id = prize.page_id;
                 o.game_id = prize.contest_id;
-                o.wrapper_message = "To redeem your prize from "+prize.page.name+", "+prize.instructions+
-                    ". This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
+                o.wrapper_message = "To redeem your prize from "+prize.page.name+": "+prize.instructions+
+                    " This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
                 o.win_time = prize.timestamp;
                 o.business_img = prize.page.image;
                 o.user_img = prize.user.image.replace(/type=large/, 'type=square');
