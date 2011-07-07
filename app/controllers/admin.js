@@ -224,6 +224,8 @@ exports.routes = {
     },
 
     '/admin/contests' : {
+        
+        alias :'/admin/contests/:id',
 
         get : {
             handler : function(req, res){
@@ -232,6 +234,7 @@ exports.routes = {
                     selector = {};
 
                 if( page_id ) selector['page_id'] = page_id;
+                if( req.param('id') ) selector['id'] = req.param('id');
                 return Bozuko.models.Contest.find(selector,{},{sort:{active: -1, start:-1}}, function(error, contests){
                     if( error ) return error.send(res);
                     contests.sort(function(a,b){
@@ -246,10 +249,11 @@ exports.routes = {
 
         post : {
             handler : function(req, res){
+                
                 var data = filter(req.body),
                     prizes = data.prizes,
                     consolation_prizes = data.consolation_prizes;
-
+                    
                 delete data._id;
 
                 delete data.play_cursor;
@@ -260,23 +264,23 @@ exports.routes = {
                 prizes.forEach(function(prize){
                     delete prize._id;
                 });
-
+                
+                
                 // any other _id things?
                 consolation_prizes.forEach(function(prize){
                     delete prize._id;
                 });
-
-                var contest = new Bozuko.models.Contest(data);
-                console.log(JSON.stringify(contest));
+                
+                
+                var contest = new Bozuko.models.Contest();
+                contest.set(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
+                    console.log(contest);
                     return res.send({items:[contest]});
                 });
             }
-        }
-    },
-
-    '/admin/contests/:id' : {
+        },
 
         put : {
             handler : function(req, res){

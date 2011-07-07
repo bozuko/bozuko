@@ -148,7 +148,6 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.timeField = me.down('[name=time]');
         me.modelField = me.down('[name=model]');
         me.updateChart();
-        
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
         
