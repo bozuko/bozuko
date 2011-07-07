@@ -23,7 +23,8 @@ exports.locals = {
             'game of chance',
             'lucky',
             'prizes'
-        ]
+        ],
+        "og:image": "https://bozuko.com/images/profile-picture.png"
     },
     nav: [{
         link: '/',

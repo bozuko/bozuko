@@ -12,18 +12,20 @@
         .announcement
           p!= page.announcement
       - if( locals.contests )
-        h3 Current Games
         .contests
+          h3 Current Games
           - each contest in contests
-            img(src=contest.getGame().getListImage())
-            h4= contest.getGame().name
             .contest
+              img(src=contest.getGame().getListImage())
+              h4= contest.getGame().name
               .entry-method
                 !=contest.getEntryMethodDescription()
   
   .right-column
     .padding
-      p upcoming games....
+      p To play Bozuko games, 
+        a(href="http://itunes.com/app/bozuko") download the app
+        |  from the app store today!
 
   
 .left-column
