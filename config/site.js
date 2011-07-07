@@ -7,7 +7,8 @@ module.exports = {
             'site',
             'beta',
             'business',
-            'admin'
+            'admin',
+            'bozuko'
         ]
     },
     
