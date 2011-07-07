@@ -21,6 +21,7 @@ var User = module.exports = new Schema({
     email               :{type:String, index: true},
     sign_up_date        :{type:Date, default: Date.now},
     favorites           :[ObjectId],
+    last_internal_update:{type:Date},
     can_manage_pages    :{type:Boolean},
     manages             :[ObjectId]
 });
@@ -85,6 +86,12 @@ User.method('likes', function(page){
 
 User.method('updateInternals', function(callback){
     var self = this;
+    
+    var now = new Date();
+    if( self.last_internal_update && +now - (+self.last_internal_update) < 2000 ){
+        return callback(null);
+    }
+    
     if( !self.service('facebook')) return callback( Bozuko.error('user/no_facebook') );
     return Bozuko.service('facebook').user({user:self, fields:'likes,friends'}, function(error, result){
         if( error ) return callback( error );
@@ -113,6 +120,7 @@ User.method('updateInternals', function(callback){
         self.service('facebook').internal.likes = likes;
         self.service('facebook').internal.friends = friends;
         self.service('facebook').internal.friend_count = friends.length;
+        self.last_internal_update = new Date();
         if( commit ) self.commit('services');
         return self.save(callback);
     });
