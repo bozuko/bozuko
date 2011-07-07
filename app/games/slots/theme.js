@@ -13,7 +13,6 @@ SlotsTheme.prototype.icons = {
     'cherry'    :'cherry.png',
     'coins'     :'coins.png',
     'dollar'    :'dollar.png',
-    'free_spin' :'free_spin.png',
     'doublebar' :'doublebar.png',
     'gold'      :'gold.png',
     'horseshoe' :'horseshoe.png',
@@ -23,7 +22,8 @@ SlotsTheme.prototype.icons = {
     'seven'     :'seven.png',
     'shamrock'  :'shamrock.png',
     'strawberry':'strawberry.png',
-    'watermelon':'watermelon.png'
+    'watermelon':'watermelon.png',
+    'free_spin' :'free_spin.png',
 };
 SlotsTheme.prototype.base = '';
 SlotsTheme.prototype.name = '';
