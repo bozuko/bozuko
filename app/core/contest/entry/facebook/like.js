@@ -180,6 +180,7 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
                 }
                 else if( self.user ){
                     if( !self.user.likes(self.page) ){
+                        console.log('user doesn not like page');
                         text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
                     }
                     else{
@@ -188,10 +189,12 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
                     }
                 }
                 else{
+                    console.log('no user');
                     text =  _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
                 }
             }
             else{
+                console.log('user has tokens?');
                 text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/play' );
             }
             return callback( null, text);
@@ -202,6 +205,7 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
 
 FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
     var self = this;
+    if( tokens ) return callback( null, true );
     self.getNextEntryTime( function(error, time){
         if( error ) return callback( error );
         var enabled = true;
