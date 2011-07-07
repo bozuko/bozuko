@@ -3,8 +3,11 @@ module.exports = {
     test_mode: false,
     
     controllers: {
-        except: [
-            'mycroft'
+        only: [
+            'site',
+            'beta',
+            'business',
+            'admin'
         ]
     },
     
