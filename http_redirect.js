@@ -12,3 +12,5 @@ module.exports = http.createServer(function(req, res){
     });
     res.end();
 });
+
+module.exports.listen(80);
