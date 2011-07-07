@@ -88,7 +88,7 @@ User.method('updateInternals', function(callback){
     var self = this;
     
     var now = new Date();
-    if( self.last_internal_update && +now -self.last_internal_update < 400 ){
+    if( self.last_internal_update && +now -self.last_internal_update < 1000 ){
         console.log('do not update internals');
         return callback(null);
     }
