@@ -35,6 +35,12 @@ Ext.define('Admin.view.page.add.Form' ,{
             title           :'Select the Owner',
             margin          :'0 0 0 0',
             autoScroll      :true,
+            tools           :[{
+                type            :'refresh',
+                handler         :function(){
+                    me.store.load();
+                }
+            }],
             items           :[{
                 xtype           :'dataview',
                 store           :me.store,
