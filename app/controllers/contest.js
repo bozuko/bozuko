@@ -28,26 +28,50 @@ var game_result = {
             ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize just for playing!";
         }
         
-        
-
-        return Bozuko.transfer('game_state', result.contest.game_state, user, function( error, game_state){
-            if( error ) return callback( error );
-            ret.game_state = game_state;
-            if( result.prize ) return Bozuko.transfer('prize', result.prize, user, function(error, prize){
+        if( user ){
+            return user.updateInternals(function(){
+                return Bozuko.transfer('game_state', result.contest.game_state, user, function( error, game_state){
+                    if( error ) return callback( error );
+                    ret.game_state = game_state;
+                    if( result.prize ) return Bozuko.transfer('prize', result.prize, user, function(error, prize){
+                        if( error ) return callback( error );
+                        ret.prize = prize;
+                        ret.links = {
+                            page: '/page/'+result.contest.page_id,
+                            game: '/game/'+result.contest.id
+                        };
+                        return callback( null, ret);
+                    });
+                    ret.links = {
+                        page: '/page/'+result.contest.page_id,
+                        game: '/game/'+result.contest.id
+                    };
+                    return callback( null, ret);
+                });
+            });
+        }
+        else{
+            return Bozuko.transfer('game_state', result.contest.game_state, user, function( error, game_state){
                 if( error ) return callback( error );
-                ret.prize = prize;
+                ret.game_state = game_state;
+                if( result.prize ) return Bozuko.transfer('prize', result.prize, user, function(error, prize){
+                    if( error ) return callback( error );
+                    ret.prize = prize;
+                    ret.links = {
+                        page: '/page/'+result.contest.page_id,
+                        game: '/game/'+result.contest.id
+                    };
+                    return callback( null, ret);
+                });
                 ret.links = {
                     page: '/page/'+result.contest.page_id,
                     game: '/game/'+result.contest.id
                 };
                 return callback( null, ret);
             });
-            ret.links = {
-                page: '/page/'+result.contest.page_id,
-                game: '/game/'+result.contest.id
-            };
-            return callback( null, ret);
-        });
+            
+        }
+        
     },
 
     def:{
