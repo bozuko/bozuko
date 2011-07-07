@@ -151,10 +151,8 @@ exports.routes = {
 
         get : {
             handler : function(req, res){
-                Bozuko.models.User.find({},{},{sort:{name:1}}, function(error, users){
-                    console.error('hello there... error is '+error);
+                Bozuko.models.User.find({},{},{sort:{name:1},limit: 50}, function(error, users){
                     if( error ) return error.send( res );
-                    console.error('no error, we have users...');
                     return res.send( {items: users} );
                 });
             }
