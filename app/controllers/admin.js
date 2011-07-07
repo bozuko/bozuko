@@ -276,7 +276,6 @@ exports.routes = {
                 contest.set(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
-                    console.log(contest);
                     return res.send({items:[contest]});
                 });
             }
