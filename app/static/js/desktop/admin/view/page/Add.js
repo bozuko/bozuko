@@ -56,6 +56,7 @@ Ext.define('Admin.view.page.Add' ,{
         me.relayEvents( me.down('pageaddmap'), ['latlngchange','selectplace'] );
         me.relayEvents( me.down('pageaddlist'), ['selectplace'] );
         me.on('selectplace', me.updateFormWithPlace, me );
+        me.usersStore.load();
     },
     
     updateFormWithPlace : function(place){
