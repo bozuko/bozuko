@@ -132,7 +132,7 @@ FacebookLikeMethod.prototype.process = function( callback ){
 
 FacebookLikeMethod.prototype.validate = function( callback ){
     var self = this;
-    if( !self.user_likes ) return callback(null, false);
+    if( !self.user || !self.page || !self.user.likes(self.page) ) return callback(null, false);
     return EntryMethod.prototype.validate.call(self, callback);
 };
 
@@ -179,7 +179,7 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
                     text = _t( self.user ? self.user.lang : 'en', use_time ? 'entry/facebook/wait_time' : 'entry/facebook/wait_date', time_str );
                 }
                 else if( self.user ){
-                    if( !self.user_likes ){
+                    if( !self.user.likes(self.page) ){
                         text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
                     }
                     else{
@@ -210,7 +210,7 @@ FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
                 enabled = false;
             }
         }
-        if( enabled && self.user && !self.user_likes ) enabled = false;
+        if( enabled && self.user && !self.user.likes(self.page) ) enabled = false;
         return callback( null, enabled );
     });
 };
