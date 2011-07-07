@@ -9,13 +9,13 @@ var mongoose = require('mongoose'),
     ;
 
 var User = module.exports = new Schema({
-    name                :{type:String},
+    name                :{type:String, index: true},
     phones              :[Phone],
     token               :{type:String},
     salt                :{type:Number},
     challenge           :{type:Number},
-    first_name          :{type:String},
-    last_name           :{type:String},
+    first_name          :{type:String, inext: true},
+    last_name           :{type:String, index: true},
     image               :{type:String},
     gender              :{type:String},
     email               :{type:String, index: true},
