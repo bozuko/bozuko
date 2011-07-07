@@ -121,7 +121,8 @@ User.method('updateInternals', function(callback){
         self.service('facebook').internal.friends = friends;
         self.service('facebook').internal.friend_count = friends.length;
         self.last_internal_update = new Date();
-        if( commit ) self.commit('services');
+        console.log(likes);
+        self.commit('services');
         return self.save(callback);
     });
 });
