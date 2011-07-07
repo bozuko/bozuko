@@ -222,7 +222,13 @@ function add_contests(options, callback) {
                 details: "You Wish",
                 duration: "600000",
                 instructions: "Figure it out and use it",
-                total: options.prizes
+                total: options.prizes,
+                is_email: true,
+                email_body: "you win",
+                email_codes: [
+                    'AAA1', 'AAA2', 'AAA3', 'AAA4', 'AAA5', 'AAA6' , 'AAA7', 'AAA8', 'AAA9', 'AAA10',
+                    'AAA11', 'AAA12', 'AAA13', 'AAA14', 'AAA15', 'AAA16', 'AAA17', 'AAA18', 'AAA19', 'AAA20'
+                ]
             });
             contest.save(function(err) {
                 if (err) {
