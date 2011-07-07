@@ -6,7 +6,13 @@ module.exports = {
         name: 'bozuko_stats',
         host: 'localhost'
     },
-    
+
+    controllers: {
+        except: [
+            'mycroft'
+        ]
+    },
+
     client: {
         mobile:{
             iphone:{
@@ -17,7 +23,7 @@ module.exports = {
             }
         }
     },
-    
+
     admin : {
         winners_list:{
             poll_interval: 1000
@@ -42,7 +48,7 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
-    
+
     amazon : {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
@@ -50,11 +56,11 @@ module.exports = {
             bucket: 'bozuko_dev'
         }
     },
-    
+
     bozuko :{
         facebook_id: '177515562277757'
     },
-    
+
     checkin: {
         duration: {
             // 15 minutes between any checkins per user
@@ -62,10 +68,10 @@ module.exports = {
             // 4 hours between checkins at the same place
             page: 1000 * 60 * 60 * 4
         },
-        
+
         distance : 400 /* feet */
     },
-    
+
     search: {
         // radius to search for "Nearby Games" in miles
         nearbyRadius: 2,
@@ -79,7 +85,7 @@ module.exports = {
         host: 'bonobo.bozuko.com',
         port: port
     },
-    
+
     pubsub: {
         poll: {
             interval: 500
@@ -89,7 +95,7 @@ module.exports = {
             interval: 1000 * 60 * 10
         }
     },
-    
+
     email : {
         smtp:{
             host: "smtp.gmail.com",
