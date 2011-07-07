@@ -183,6 +183,7 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
                         text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
                     }
                     else{
+                        console.log('user likes page');
                         text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/play');
                     }
                 }
