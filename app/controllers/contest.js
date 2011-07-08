@@ -84,6 +84,8 @@ var game = {
         obj.list_message = game.contest.getListMessage();
         obj.entry_method.description = game.contest.getEntryMethodDescription();
         // obj.can_play = obj.game_state.user_tokens > 0;
+        console.log(game.contest.post_to_wall);
+        console.log(game.contest.post_to_wall === true);
         obj.links = {
             page: '/page/'+game.contest.page_id,
             game: '/game/'+game.contest.id

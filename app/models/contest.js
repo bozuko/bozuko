@@ -38,6 +38,7 @@ var Contest = module.exports = new Schema({
     consolation_prizes      :[Prize],
     free_play_pct           :{type:Number},
     total_free_plays        :{type:Number},
+    post_to_wall            :{type:Boolean, default: true},
     active                  :{type:Boolean},
     start                   :{type:Date, index: true},
     end                     :{type:Date},
@@ -393,7 +394,7 @@ Contest.method('loadGameState', function(user, callback){
             return callback(null, state);
         }
 
-        entryMethod.getButtonText( state.user_tokens, function(error, text){
+        return entryMethod.getButtonText( state.user_tokens, function(error, text){
             if( error ) return callback(error);
             state.button_text= text;
             return entryMethod.getNextEntryTime( function(error, time){

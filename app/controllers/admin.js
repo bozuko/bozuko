@@ -242,6 +242,10 @@ exports.routes = {
                         if( b.state=='active' && a.state != 'active' ) return 1;
                         return +b.start-a.start;
                     });
+                    contests.forEach(function(contest){
+                        delete contests.results;
+                        delete contests.plays;
+                    });
                     return res.send({items:contests});
                 });
             }
