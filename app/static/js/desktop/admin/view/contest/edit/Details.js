@@ -38,6 +38,10 @@ Ext.define('Admin.view.contest.edit.Details' ,{
             fieldLabel      :'Win Frequency'
         },{
             xtype           :'checkbox',
+            name            :'post_to_wall',
+            fieldLabel      :'Post Wins to User\'s Wall'
+        },{
+            xtype           :'checkbox',
             name            :'active',
             fieldLabel      :'Active'
         }];

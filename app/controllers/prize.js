@@ -289,7 +289,7 @@ exports.routes = {
                             // get the contest
                             Bozuko.models.Contest.findById( prize.contest_id, function(error, contest){
                                 
-                                if( !page || !contest ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                                if( !page || !contest || contest.post_to_wall !== true ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                     res.send( error || result );
                                 });
                                 
