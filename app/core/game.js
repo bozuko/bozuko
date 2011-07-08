@@ -3,6 +3,8 @@ var express = require('express'),
 
 var Game = module.exports = function(contest){
     this.contest = contest;
+    this.prizes = contest.prizes.slice();
+    this.prizes.sort(function(a,b){return b.value-a.value});
     this.config = contest.game_config;
 };
 
@@ -20,7 +22,7 @@ Game.prototype = {
     },
     
     getPrizes : function(){
-        return this.contest.prizes;
+        return this.prizes;
     },
     
     getConfig : function(){

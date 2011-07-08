@@ -21,7 +21,8 @@ Slots.prototype.icon = burl('/games/slots/slots_icon3.png');
 
 Slots.prototype.process = function(outcome){
 
-    var ret = [];
+    var self = this,
+	ret = [];
     
     var icons = this.getConfig().icons;
     
@@ -39,7 +40,9 @@ Slots.prototype.process = function(outcome){
             icon = 'free_spin';
         }
         else{
-            icon = icons[outcome];
+	console.error(self.prizes);
+	    var index = self.prizes.indexOf( self.contest.prizes[outcome] );
+            icon = icons[index];
         }
         ret = [icon,icon,icon];
     }
@@ -89,7 +92,11 @@ Slots.prototype.getListImage = function(){
 };
 
 Slots.prototype.getImage = function(index){
-    var config = this.getConfig();
+    var self = this,
+        config = this.getConfig();
+    
+//    index = self.prizes.indexOf(self.contest.prizes[index]);
+    
     var icon = config.icons[index];
     
     var theme = this.getTheme();
@@ -137,12 +144,14 @@ Slots.prototype.createResultImage = function(dest, icon_src, callback){
 };
 
 Slots.prototype.getPrizes = function(){
-    var self = this;
-    self.contest.prizes.forEach( function(prize, i){
+    var self = this,
+	prizes = self.prizes;
+
+    prizes.forEach( function(prize, i){
         prize.result_image = self.getImage(i);
         /**
          * TODO - add X3 graphically (using gd library)
          */
     });
-    return self.contest.prizes;
+    return prizes;
 };

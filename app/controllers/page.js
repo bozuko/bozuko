@@ -61,7 +61,7 @@ exports.transfer_objects = {
             var fid = page.registered ? page.service('facebook').sid : page.id;
             if( !page.registered ) delete page.id;
             page.liked = false;
-            page.image = page.image + (page.image.indexOf('?')?'&':'?')+'return_ssl_resources=1';
+            page.image = page.image + (~page.image.indexOf('?')?'&':'?')+'return_ssl_resources=1';
             page.like_url = burl('/facebook/'+fid+'/like.html');
             page.links = {
                 facebook_page       :'http://facebook.com/'+fid,
