@@ -14,9 +14,9 @@ OrderEngine.prototype.generateResults = function( ){
 
     var prizes = contest.prizes;
     // sort the prizes by value
-    prizes.sort( function(a, b){
-        return b.value - a.value;
-    });
+//    prizes.sort( function(a, b){
+    //    return b.value - a.value;
+  //  });
 
     var max=0;
     contest.entry_config.forEach(function(entry_config){
@@ -72,7 +72,7 @@ OrderEngine.prototype.generateResults = function( ){
     }
 
     delete ar;
-    
+
     contest.results = results;
     contest.total_plays = totalPlays;
     contest.total_free_plays = freePlays;
