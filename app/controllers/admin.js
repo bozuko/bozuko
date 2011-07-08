@@ -235,14 +235,14 @@ exports.routes = {
 
                 if( page_id ) selector['page_id'] = page_id;
                 if( req.param('id') ) selector['id'] = req.param('id');
-                return Bozuko.models.Contest.find(selector,{},{sort:{active: -1, start:-1}}, function(error, contests){
+                return Bozuko.models.Contest.find(selector,{results:0, plays:0},{sort:{active: -1, start:-1}}, function(error, contests){
                     if( error ) return error.send(res);
                     contests.sort(function(a,b){
                         if( a.state=='active' && b.state != 'active' ) return -1;
                         if( b.state=='active' && a.state != 'active' ) return 1;
                         return +b.start-a.start;
                     });
-                    
+                    var ret = [];
                     return res.send({items:contests});
                 });
             }
