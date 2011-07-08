@@ -261,6 +261,8 @@ exports.routes = {
                 delete data.state;
                 delete data.total_entries;
                 delete data.total_plays;
+                delete data.results;
+                delete data.plays;
 
                 prizes.forEach(function(prize){
                     delete prize._id;
@@ -628,14 +630,14 @@ exports.routes = {
                 }
                 
                 var model = req.param('model') || 'Entry';
-                if( !~['Prize','Redeemed Prizes','Entry','Play'].indexOf(model) ) throw "Invalid model";
+                if( !~['Prize','Redeemed Prizes','Entry','Play','Posts'].indexOf(model) ) throw "Invalid model";
                 
                 if( model == 'Redeemed Prizes'){
                     model = "Prize";
                     query.redeemed = true;
                 }
                 
-                return Report.run('counts',
+                return Report.run( model == 'Posts' ? 'posts':'counts',
                 
                 {
                     interval: interval,
