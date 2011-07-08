@@ -90,8 +90,8 @@ Contest.method('getOfficialRules', function(){
             "Twentythird", "Twentyfouth", "Twentyfifth", "Twentysixth", "Twenthseventh", "Twentyeigth",
             "Twentyninth", "Thirtieth"
         ];
-        var prizes = this.prizes,
-            consolation_prizes = this.consolation_prizes,
+        var prizes = this.prizes.slice(),
+            consolation_prizes = this.consolation_prizes.slice(),
             self = this,
             prizes_str = '';
             
@@ -953,7 +953,7 @@ Contest.method('getGame', function(){
 
 Contest.method('getBestPrize', function(){
     if( this.prizes.length == 0 ) return null;
-    var prizes = this.prizes;
+    var prizes = this.prizes.slice();
     prizes.sort( function(a, b){
         return b.value - a.value;
     });
