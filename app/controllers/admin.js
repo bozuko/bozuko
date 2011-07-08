@@ -513,7 +513,7 @@ exports.routes = {
                 layout: false
             },
             handler : function(req, res){
-
+                
                 var transfer_objects = {};
                 var links = {};
                 Object.keys(Bozuko.transfers()).forEach(function(key){
@@ -523,6 +523,7 @@ exports.routes = {
                         def: transfer.def
                     }
                 });
+                
                 Object.keys(Bozuko.links()).forEach(function(key){
                     var link = Bozuko.link(key);
 
@@ -544,8 +545,8 @@ exports.routes = {
                         methods: methods
                     };
                 });
-
-                Bozuko.models.User.find({}, function(error, users){
+                
+                return Bozuko.models.User.find({}, {}, {limit:24}, function(error, users){
                     res.locals.transfer_objects = JSON.stringify(transfer_objects);
                     res.locals.links = JSON.stringify(links);
                     res.locals.users = JSON.stringify(users);
