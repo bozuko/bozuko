@@ -81,6 +81,16 @@ exports.routes = {
             }
         }
     },
+    
+    '/qr/:type?' : {
+        get : {
+            handler : function(req, res){
+                var type = req.param('type');
+                return res.redirect('/');
+            }
+        }
+    },
+    
     '/how-to-play' : {
         get : {
 
