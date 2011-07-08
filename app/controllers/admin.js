@@ -242,14 +242,8 @@ exports.routes = {
                         if( b.state=='active' && a.state != 'active' ) return 1;
                         return +b.start-a.start;
                     });
-                    var ret = [];
-                    contests.forEach(function(contest){
-                        var c = contest.toObject();
-                        delete c.results;
-                        delete c.plays;
-                        ret.push(c);
-                    });
-                    return res.send({items:ret});
+                    
+                    return res.send({items:contests});
                 });
             }
         },
