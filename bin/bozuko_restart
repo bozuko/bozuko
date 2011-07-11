@@ -19,6 +19,7 @@ else
         U='development'
     fi
 fi
+export NODE_ENV=$U
 echo "Restarting Bozuko"
 nohup $NODE $BOZUKO_DIR/server.js >> $BOZUKO_DIR/logs/$U/bozuko.log &
 
