@@ -2,7 +2,6 @@ var fs = require('fs');
 var async = require('async');
 
 var bozuko_dir = process.env.HOME+'/bozuko';
-var node = process.env.NVM_BIN+'/node';
 
 (function run() {
      var user = process.env.USER;

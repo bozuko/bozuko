@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-NODE="$NVM_BIN/node"
 BOZUKO_DIR="$HOME/bozuko"
+NODE_VER=`cat $BOZUKO_DIR/node_version`
+NODE="$HOME/.nvm/$NODE_VER/bin/node"
 $NODE $BOZUKO_DIR/bin/bozuko_shutdown.js
 
 if [[ "$USER" != 'root' ]]; then
