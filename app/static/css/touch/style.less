@@ -101,13 +101,14 @@ h3 {
 }
 
 #like-mask {
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: none;
     z-index: 200;
+    
     .bg{
         position: absolute;
         top: 0;
@@ -117,11 +118,12 @@ h3 {
         background: #000;
         .opacity(80);
     }
+    
     .text {
         z-index: 2;
         color: #fff;
         position: absolute;
-        top: 0;
+        top: 20px;
         width: 100%;
         text-align: center;
         font-size: 18px;

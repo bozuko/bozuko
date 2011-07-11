@@ -81,12 +81,12 @@ h3 {
   display: none !important;
 }
 #like-mask {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  display: none;
   z-index: 200;
 }
 #like-mask .bg {
@@ -104,7 +104,7 @@ h3 {
   z-index: 2;
   color: #fff;
   position: absolute;
-  top: 0;
+  top: 20px;
   width: 100%;
   text-align: center;
   font-size: 18px;
