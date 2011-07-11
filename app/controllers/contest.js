@@ -339,12 +339,14 @@ exports.routes = {
 
     '/game/:id/entry' : {
 
-       post: {
+        post: {
 
             access: 'mobile',
 
             handler : function(req,res){
-                var send = res.send;
+                var send = res.send,
+                    user = req.session.user;
+                    
                 res.send = function(){
                     send.apply(res, arguments);
                 };
@@ -378,29 +380,31 @@ exports.routes = {
                     parts[0] = parseFloat( parts[0] );
                     parts[1] = parseFloat( parts[1] );
                     
-                    
                     var config = contest.entry_config[0];
                     var entry = Bozuko.entry( config.type, req.session.user, {ll: parts} );
-                    return contest.enter( entry, function(error, entry){
-                        if( error ) return error.send(res);
-
-                        if( !entry ){
-                            return Bozuko.error('contest/entry_not_found').send(res);
-                        }
-
-                        // cool it went through, lets get all games and states in case this handled multiple
-                        return Bozuko.models.Page.findById(contest.page_id, function(error, page){
+                    
+                    return user.updateInternals( function(){
+                        contest.enter( entry, function(error, entry){
                             if( error ) return error.send(res);
-                            if( !page ) return Bozuko.error('contest/page_not_found').send(res);
-                            return page.getUserGames( req.session.user, function(error, games){
+    
+                            if( !entry ){
+                                return Bozuko.error('contest/entry_not_found').send(res);
+                            }
+    
+                            // cool it went through, lets get all games and states in case this handled multiple
+                            return Bozuko.models.Page.findById(contest.page_id, function(error, page){
                                 if( error ) return error.send(res);
-                                // get the game states
-                                var states = [];
-                                games.forEach( function(game){
-                                    states.push(game.contest.game_state);
-                                });
-                                return Bozuko.transfer('game_state', states, req.session.user, function(error, result){
-                                    res.send( error || result );
+                                if( !page ) return Bozuko.error('contest/page_not_found').send(res);
+                                return page.getUserGames( req.session.user, function(error, games){
+                                    if( error ) return error.send(res);
+                                    // get the game states
+                                    var states = [];
+                                    games.forEach( function(game){
+                                        states.push(game.contest.game_state);
+                                    });
+                                    return Bozuko.transfer('game_state', states, req.session.user, function(error, result){
+                                        res.send( error || result );
+                                    });
                                 });
                             });
                         });
