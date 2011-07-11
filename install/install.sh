@@ -11,7 +11,7 @@ install_nvm
 # node.js
 install_node
 
-echo "export PATH=~/node_modules/.bin/:$PATH" >> ~/.bashrc
+echo "export PATH=~/bozuko/bin:~/node_modules/.bin/:$PATH" >> ~/.bashrc
 source ~/.bashrc
 
 # node packages
