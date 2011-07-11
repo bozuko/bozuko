@@ -75,7 +75,7 @@ FacebookCheckinMethod.prototype.getDescription = function(callback){
     // need a nice duration
     // get the number of minutes:
     self.load(function(error){
-        var duration = DateUtil.duration(self.config.duration);
+        var duration = DateUtil.duration(self.config.duration, true);
         var description = "Check In on Facebook\n";
             description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
         if( self.config.options.enable_like ){

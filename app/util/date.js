@@ -20,9 +20,10 @@ DateUtil.create = function(args){
     return new Date( Date.UTC(args[0], args[1], args[2] || 1, args[3], args[4], args[5], args[6]) );
 }
 
-function pluralize(num, str, pstr){
+function pluralize(num, str, hide1, pstr){
     if( !pstr ) pstr = str+'s';
-    return num +' '+ (num === 1 ? str : pstr);
+    var ret = hide1 && num===1 ? '' : (num+' ');
+    return ret+ (num === 1 ? str : pstr);
 }
 
 DateUtil.inAgo = function(then, now){
@@ -42,23 +43,23 @@ DateUtil.relative = function(then, now){
     return DateUtil.duration(ms);
 };
 
-DateUtil.duration = function(ms){
+DateUtil.duration = function(ms, hide1){
     
     if( ms >= (DateUtil.WEEK - (DateUtil.DAY/2)) ){
-        return pluralize(Math.round( ms / DateUtil.WEEK ), 'week');
+        return pluralize(Math.round( ms / DateUtil.WEEK ), 'week', hide1);
     }
     
     if( ms >= (DateUtil.DAY - (DateUtil.HOUR*2)) ){
-        return pluralize(Math.round( ms / DateUtil.DAY ), 'day');
+        return pluralize(Math.round( ms / DateUtil.DAY ), 'day', hide1);
     }
     
     if( ms >= (DateUtil.HOUR) ){
-        return pluralize(Math.round( ms / DateUtil.HOUR ), 'hour');
+        return pluralize(Math.round( ms / DateUtil.HOUR ), 'hour', hide1);
     }
     
     if( ms >= (DateUtil.MINUTE - (DateUtil.SECOND*30)) ){
-        return pluralize(Math.round( ms / DateUtil.MINUTE ), 'minute');
+        return pluralize(Math.round( ms / DateUtil.MINUTE ), 'minute', hide1);
     }
     
-    return pluralize(Math.round( ms / DateUtil.SECOND ) || 1, 'second');
+    return pluralize(Math.round( ms / DateUtil.SECOND ) || 1, 'second', hide1);
 };
