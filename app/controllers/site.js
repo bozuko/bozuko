@@ -1,6 +1,7 @@
 var Content = Bozuko.require('util/content'),
     validator = require('validator'),
     mailer = Bozuko.require('util/mail'),
+    async = require('async'),
     crypto = require('crypto');
 
 
@@ -266,6 +267,7 @@ exports.routes = {
         }
     },
     '/p/:id' : {
+        alias: ['/p/:id/:name'],
         get : {
 
             title: 'Bozuko - Business Listing',
@@ -284,7 +286,14 @@ exports.routes = {
                     }
                     // lets get the contests too
                     res.locals.page = page;
+                    res.locals.title = page.name+' - Bozuko Listing';
                     return page.loadContests(null, function(error, contests){
+                        // get the stupid entry method description
+                        contests.forEach(function(contest){
+                            contest.prizes = contest.prizes.slice().sort(function(a,b){
+                                return b.value - a.value;
+                            });
+                        });
                         res.locals.contests = contests;
                         return res.render('site/business-page');
                     });

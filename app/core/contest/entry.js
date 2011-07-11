@@ -62,6 +62,15 @@ EntryMethod.prototype.getDescription = function(callback){
     return callback(null, this.description);
 }
 
+
+/**
+ * Get HTML Description
+ *
+ */
+EntryMethod.prototype.getHtmlDescription = function(callback){
+    return this.description;
+}
+
 EntryMethod.prototype.getEntryRequirement = function(){
     return "Valid Bozuko Account is required to enter.";
 }

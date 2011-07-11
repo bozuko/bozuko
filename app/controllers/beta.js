@@ -333,8 +333,10 @@ exports.routes = {
             handler : function(req, res){
                 
                 var user = req.session.user,
+                    tzOffset = -1*parseInt(req.param('timezoneOffset', 10))/60,
                     time = req.param('time') || 'week-1',
                     from, interval, now = new Date(),
+                    options = {},
                     query = {
                         page_id: {$in: user.manages}
                     };
@@ -355,18 +357,22 @@ exports.routes = {
                         from = DateUtil.add( new Date(), DateUtil.DAY, -365 * time[1] )
                         interval = 'Date';
                         break;
+                    
                     case 'month':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -30 * time[1] )
                         interval = 'Date';
                         break;
+                    
                     case 'week':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -7 * time[1] )
                         interval = 'Date';
                         break;
+                    
                     case 'day':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -1 * time[1] )
                         interval = 'Hours';
                         break;
+                    
                     case 'minute':
                         from = DateUtil.add( new Date(), DateUtil.MINUTE, -1 * time[1] )
                         interval = 'Minutes';
@@ -377,23 +383,25 @@ exports.routes = {
                 }
                 
                 var model = req.param('model') || 'Entry';
-                if( !~['Prize','Redeemed Prizes','Entry','Play'].indexOf(model) ) throw "Invalid model";
+                if( !~['Prize','Redeemed Prizes','Entry','Play','Share'].indexOf(model) ) throw "Invalid model";
                 
-                if( model == 'Redeemed Prizes'){
-                    model = "Prize";
-                    query.redeemed = true;
-                }
-                
-                return Report.run('counts',
-                
-                {
+                options = {
+                    timezoneOffset: tzOffset,
                     interval: interval,
                     query: query,
                     model: model,
                     from: from
-                },
+                };
                 
-                function(error, results){
+                if( model == 'Redeemed Prizes'){
+                    options.model = "Prize";
+                    query.redeemed = true;
+                }
+                else if(model == 'Share'){
+                    options.countField = 'visibility';
+                }
+                
+                return Report.run('counts', options, function(error, results){
                     if( error ) return error.send( res );
                     return res.send( {items: results} );
                 });
