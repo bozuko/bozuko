@@ -60,7 +60,7 @@ BozukoCheckinMethod.prototype.getDescription = function(callback){
     
     return self.load(function(error){
         // need a nice duration
-        var duration = DateUtil.duration(self.config.duration);
+        var duration = DateUtil.duration(self.config.duration, true);
         var description = "Check In on Bozuko\n";
             description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
     

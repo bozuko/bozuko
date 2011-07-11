@@ -57,7 +57,7 @@ BozukoNothingMethod.prototype.getDescription = function(callback){
     var self = this;
     // need a nice duration
     // get the number of minutes:
-    var duration = DateUtil.duration( this.config.duration );
+    var duration = DateUtil.duration( this.config.duration, true );
     var description = "Play Bozuko\n";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
     return callback(null, description);

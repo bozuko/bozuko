@@ -67,7 +67,7 @@ EntryMethod.prototype.getEntryRequirement = function(){
 }
 
 EntryMethod.prototype.getPlayLimitations = function(){
-    return this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+DateUtil.duration(this.config.duration);
+    return this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+DateUtil.duration(this.config.duration, true);
 }
 
 /**
