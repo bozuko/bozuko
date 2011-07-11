@@ -20,7 +20,8 @@ function hashme(challenge, req) {
 
 auth.mobile_algorithms = {
     '1.0': hashme,
-    '1.1': hashme
+    '1.1': hashme,
+    '1.2': hashme
 };
 
 auth.login = function(req,res,scope,defaultReturn,success,failure){
