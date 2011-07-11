@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+NODE="$NVM_BIN/node"
+BOZUKO_DIR="$HOME/bozuko"
+$NODE $BOZUKO_DIR/bin/bozuko_shutdown.js
+
+if [[ "$USER" != 'root' ]]; then
+    if [[ "$USER" == 'api' || "$USER" == 'playground' || "$USER" == 'stats' || "$USER" == 'load' ]]; then
+    U=$USER;
+    else
+        U='development'
+    fi
+
+else
+    if [[ "$SUDO_USER" == 'api' || "$SUDO_USER" == 'playground' || "$SUDO_USER" == 'stats' || "$SUDO_USER" == 'load' ]]; then
+    U=$SUDO_USER;
+    else
+        U='development'
+    fi
+fi
+echo "Restarting Bozuko"
+nohup $NODE $BOZUKO_DIR/server.js >> $BOZUKO_DIR/logs/$U/bozuko.log &
+
+echo "done"
