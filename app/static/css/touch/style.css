@@ -4,7 +4,7 @@
 html, body {
   padding: 0;
   margin: 0;
-  font-family: Tahoma, Helvitica, Arial;
+  font-family: Helvetica Nueue, Tahoma, Helvitica, Arial;
   font-size: 13px;
 }
 h1,
@@ -79,4 +79,36 @@ h3 {
 }
 .fb_edge_widget_with_comment .fb_edge_comment_widget iframe.fb_ltr {
   display: none !important;
+}
+#like-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  z-index: 200;
+}
+#like-mask .bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  -moz-opacity: 0.8;
+  -khtml-opacity: 0.8;
+  opacity: 0.8;
+}
+#like-mask .text {
+  z-index: 2;
+  color: #fff;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+}
+#like-mask .text div {
+  padding: 10px;
 }
