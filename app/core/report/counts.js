@@ -132,12 +132,12 @@ CountsReport.prototype.run = function run(callback){
                 var intervalMap = [DateUtil.YEAR, DateUtil.MONTH, DateUtil.DAY, DateUtil.HOUR, DateUtil.MINUTE, DateUtil.SECOND, DateUtil.MILLISECOND]
                 var from = self.options.from || items[0][groupField],
                     to = self.options.to || new Date(); // DateUtil.add( new Date(), DateUtil.HOUR, 4);
-                /*    
-                if( this.timezoneOffset && ~intervals.slice(0,3).indexOf( self.options.interval )  ){
-                    from = new Date( from.getTime() + this.timezoneOffset*1000*60*60 )
-                    to = new Date( to.getTime() + this.timezoneOffset*1000*60*60 )
+                
+                if(self.options.timezoneOffset && ~intervals.slice(0,3).indexOf( self.options.interval )  ){
+                    from = new Date( from.getTime() + self.options.timezoneOffset*1000*60*60 )
+                    to = new Date( to.getTime() + self.options.timezoneOffset*1000*60*60 )
                 }
-                */
+                
                 
                 var index = intervals.indexOf(self.options.interval || 'Date');
                 if( !~index ) index = 0;
@@ -167,6 +167,8 @@ CountsReport.prototype.run = function run(callback){
                 
                 for(var cur = +start; cur <= +end; cur += intervalMap[index] ){
                     
+                    console.log(new Date(cur));
+                    
                     if( !tmp.length || !withinSameInterval(cur, tmp[0][groupField] ) ){
                         // add a blank
                         var blank = {_id: cur, count: 0};
@@ -174,7 +176,13 @@ CountsReport.prototype.run = function run(callback){
                         items.push( blank );
                     }
                     else{
-                        items.push( tmp.shift() );
+                        var entry = null;
+                        while( tmp.length && withinSameInterval( cur, tmp[0][groupField] ) ){
+                            var next = tmp.shift();
+                            if( !entry ) entry = next;
+                            else entry.count +next.count;
+                        }
+                        items.push(entry);
                     }
                 }
             }
