@@ -1,5 +1,6 @@
 var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
+    DateUtil = Bozuko.require('util/date'),
     burl = Bozuko.require('util/url').create,
     dateFormat = require('dateformat');
 
@@ -60,45 +61,29 @@ FacebookLikeMethod.prototype.defaults = {
  * Get Description - allow for formatting.
  *
  */
-FacebookLikeMethod.prototype.getDescription = function(){
+FacebookLikeMethod.prototype.getDescription = function(callback){
     var self = this;
-
-    // need a nice duration
-    // get the number of minutes:
-    var seconds = this.config.duration / 1000,
-        minutes = seconds / 60,
-        hours = minutes / 60,
-        days = hours / 24;
-
-    var duration = '';
-    if( days > 1 ){
-        days = Math.floor( days );
-        duration = days==1 ? 'day': (days+' days');
-    }
-    else if( hours > 2 ){
-        duration = hours+' hours';
-    }
-    else if( minutes > 1 ){
-        duration = Math.ceil(minutes)+' minutes';
-    }
-    else{
-        duration = Math.ceil(seconds)+' seconds';
-    }
-    var description = "Like us on Facebook\n";
-        description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-
-        if( !self.user || (self.page && !self.user.likes(self.page))){
-            description+="\n\nHit back and scroll down to like us."
-        }
-
-    return description;
+    
+    return self.load(function(error){
+        // need a nice duration
+        // get the number of minutes:
+        var duration = DateUtil.duration( self.config.duration );
+        var description = "Like us on Facebook\n";
+            description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+            
+            if( self.user ) console.log( self.user.likes(self.page) );
+    
+            if( !self.user || (self.page && !self.user.likes(self.page))){
+                description+="\n\nHit back and scroll down to like us."
+            }
+    
+        return callback(error, description);
+    });
 }
 
 FacebookLikeMethod.prototype.getEntryRequirement = function(){
     return 'Must "Like" this pages Facebook page to enter. ';
 }
-
-
 
 /**
  * Get the maximum amount of tokens
@@ -127,7 +112,33 @@ FacebookLikeMethod.prototype.process = function( callback ){
 
     // lets process this...
     var self = this;
-    return EntryMethod.prototype.process.call(self, callback);
+    
+    return EntryMethod.prototype.process.call(self, function(error, entry){
+        // this might be a share...
+        // we only count one "like" per person, so just their first one.
+        return Bozuko.models.Share.count({user_id: self.user.id, service:'facebook', type:'like'}, function(error, count){
+            if( error ) return callback( error );
+            if( count ) return callback( null, entry );
+            var share = new Bozuko.models.Share({
+                service         :'facebook',
+                type            :'like',
+                contest_id      :self.contest.id,
+                page_id         :self.contest.page_id,
+                user_id         :self.user.id,
+                visibility      :0
+            });
+            
+            try{
+                share.visibility = self.user.service('facebook').internal.friends.length;
+            }catch(e){
+                share.visibility = 0;
+            }
+            return share.save(function(error){
+                return callback( null, entry );
+            });
+        });
+        
+    });
 };
 
 FacebookLikeMethod.prototype.validate = function( callback ){
@@ -158,25 +169,10 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
 
             if( error ) return callback( error );
             if( !tokens ){
+                
                 var now = new Date();
-                if( time.getTime() > now.getTime() ){
-                    var ms = time.getTime() - now.getTime();
-                    // get the number of minutes:
-                    var seconds = ms / 1000;
-                    var minutes = seconds / 60;
-                    var hours = minutes / 60;
-                    var days = hours / 24;
-                    var use_time = true;
-                    var time_str = dateFormat( time, 'hh:MM:ss TT');
-                    if( days > 1 ){
-                        use_time = false;
-                        time_str = Math.floor(days);
-                        time_str = ( time_str > 1 ) ? (time_str+' Days') : (time_str+' Day');
-                    }
-                    if( minutes > 1 ){
-                        time_str = dateFormat( time, 'hh:MM TT');
-                    }
-                    text = _t( self.user ? self.user.lang : 'en', use_time ? 'entry/facebook/wait_time' : 'entry/facebook/wait_date', time_str );
+                if( +time > +now ){
+                    text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', DateUtil.inAgo(time) );
                 }
                 else if( self.user ){
                     if( !self.user.likes(self.page) ){

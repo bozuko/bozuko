@@ -1,6 +1,7 @@
 var URL         = require('url'),
     http        = Bozuko.require('util/http'),
     merge       = require('connect').utils.merge,
+    inspect     = require('util').inspect,
     qs          = require('querystring'),
     url         = require('url'),
     facebook    = Bozuko.require('util/facebook'),
@@ -131,6 +132,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                         });
                     });
                 } else {
+                    console.error(inspect(result));
                     if( failure ){
                         if( failure('Authentication Failed', req, res) === false ){
                             return null;
@@ -409,7 +411,7 @@ FacebookService.prototype.post = function(options, callback){
     if( options.description )   params.description  = options.description;
     if( options.actions )       params.actions      = JSON.stringify(options.actions);
 
-    if( options.test ){
+    if( options.test || Bozuko.cfg('test_mode', true) ){
         return callback(null, {result:123123123});
     }
 

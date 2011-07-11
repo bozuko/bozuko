@@ -1,5 +1,6 @@
 var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
+    DateUtil = Bozuko.require('util/date'),
     dateFormat = require('dateformat');
 
 /**
@@ -54,33 +55,17 @@ BozukoCheckinMethod.prototype.defaults = {
  * Get Description - allow for formatting.
  *
  */
-BozukoCheckinMethod.prototype.getDescription = function(){
-
-    // need a nice duration
-    // get the number of minutes:
-    var seconds = this.config.duration / 1000,
-        minutes = seconds / 60,
-        hours = minutes / 60,
-        days = hours / 24;
-
-    var duration = '';
-    if( days > 1 ){
-        days = Math.floor( days );
-        duration = days==1 ? 'day': (days+' days');
-    }
-    else if( hours > 2 ){
-        duration = hours+' hours';
-    }
-    else if( minutes > 1 ){
-        duration = Math.ceil(minutes)+' minutes';
-    }
-    else{
-        duration = Math.ceil(seconds)+' seconds';
-    }
-    var description = "Check In on Bozuko\n";
-        description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-
-    return description;
+BozukoCheckinMethod.prototype.getDescription = function(callback){
+    var self = this;
+    
+    return self.load(function(error){
+        // need a nice duration
+        var duration = DateUtil.duration(self.config.duration);
+        var description = "Check In on Bozuko\n";
+            description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+    
+        return callback(error, description);
+    });
 }
 
 
@@ -183,23 +168,8 @@ BozukoCheckinMethod.prototype.getButtonText = function( tokens, callback ){
             if( !tokens ){
                 var now = new Date();
                 if( time.getTime() > now.getTime() ){
-                    var ms = time.getTime() - now.getTime();
-                    // get the number of minutes:
-                    var seconds = ms / 1000;
-                    var minutes = seconds / 60;
-                    var hours = minutes / 60;
-                    var days = hours / 24;
-                    var use_time = true;
-                    var time_str = dateFormat( time, 'hh:MM:ss TT');
-                    if( days > 1 ){
-                        use_time = false;
-                        time_str = Math.floor(days);
-                        time_str = ( time_str > 1 ) ? (time_str+' Days') : (time_str+' Day');
-                    }
-                    if( minutes > 1 ){
-                        time_str = dateFormat( time, 'hh:MM TT');
-                    }
-                    return callback(null, _t( self.user ? self.user.lang : 'en', use_time ? 'entry/bozuko/wait_time' : 'entry/bozuko/wait_date', time_str )  );
+                    var time_str = DateUtil.inAgo( time );
+                    return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/wait_duration', time_str )  );
                 }
                 if( self.user && !self.can_checkin ){
                     return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/bozuko/enter' )  );

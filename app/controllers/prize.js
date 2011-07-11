@@ -256,6 +256,8 @@ exports.routes = {
 
             handler: function(req,res){
                 // redeem the prize
+                var user = req.session.user;
+                
                 return Bozuko.models.Prize.findById(req.param('id'), function(error, prize){
                     if( error ) return error.send(res);
                     
@@ -269,7 +271,7 @@ exports.routes = {
                             
                         if( share == 'false' ) share = false;
                             
-                        if( (!share) || Bozuko.cfg('test_mode', true) ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                        if( !share ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                             res.send( error || result );
                         });
                         
@@ -289,7 +291,10 @@ exports.routes = {
                             // get the contest
                             Bozuko.models.Contest.findById( prize.contest_id, function(error, contest){
                                 
+                                console.error('redeem prize, contest.post_to_wall == true '+ (contest.post_to_wall) );
+                                
                                 if( !page || !contest || contest.post_to_wall !== true ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                                    console.error('not gonna share');
                                     res.send( error || result );
                                 });
                                 
@@ -301,17 +306,30 @@ exports.routes = {
                                 
                                 return Bozuko.service('facebook').post(options, function(error){
                                     
-                                    // if there is an error, we don't need to frighten the user,
-                                    // lets just log it and move on.
+                                    // lets save this share...
+                                    var share = new Bozuko.models.Share({
+                                        service         :'facebook',
+                                        type            :'post',
+                                        contest_id      :prize.contest_id,
+                                        page_id         :prize.page_id,
+                                        user_id         :prize.user_id,
+                                        visibility      :0
+                                    });
                                     
-                                    // send the redemption object
-                                    return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
-                                        res.send( error || result );
+                                    try{
+                                        share.visibility = user.service('facebook').internal.friends.length;
+                                    }catch(e){
+                                        share.visibility = 0;
+                                    }
+                                    return share.save(function(error){
+                                        console.log('saved share from redeem');
+                                        // send the redemption object
+                                        return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                                            res.send( error || result );
+                                        });
                                     });
                                 });
-                                
                             });
-                            
                         });
                     });
                 });

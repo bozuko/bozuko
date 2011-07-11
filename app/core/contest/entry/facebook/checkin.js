@@ -1,6 +1,8 @@
 var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
     burl = Bozuko.require('util/url').create,
+    inspect = require('util').inspect,
+    DateUtil = Bozuko.require('util/date'),
     dateFormat = require('dateformat'),
     Profiler = Bozuko.require('util/profiler')
 ;
@@ -68,44 +70,30 @@ FacebookCheckinMethod.prototype.defaults = {
  * Get Description - allow for formatting.
  *
  */
-FacebookCheckinMethod.prototype.getDescription = function(){
+FacebookCheckinMethod.prototype.getDescription = function(callback){
     var self = this;
     // need a nice duration
     // get the number of minutes:
-    var seconds = this.config.duration / 1000,
-        minutes = seconds / 60,
-        hours = minutes / 60,
-        days = hours / 24;
-
-    var duration = '';
-    if( days >= 1 ){
-        days = Math.floor( days );
-        duration = days==1 ? 'day': (days+' days');
-    }
-    else if( hours >= 2 ){
-        duration = hours+' hours';
-    }
-    else if( minutes >= 1 ){
-        duration = Math.ceil(minutes)+' minutes';
-    }
-    else{
-        duration = Math.ceil(seconds)+' seconds';
-    }
-    var description = "Check In on Facebook\n";
-        description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-    if( this.config.options.enable_like ){
-        description+= "\nLike us for Bonus Plays!";
-        if( !this.user || (this.page && !this.user.likes( this.page )) ){
-            description+="\nHit back and scroll down to like us."
+    self.load(function(error){
+        var duration = DateUtil.duration(self.config.duration);
+        var description = "Check In on Facebook\n";
+            description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+        if( self.config.options.enable_like ){
+            var play = (self.config.tokens > 1 ? "Plays" : "Play" );
+            description+= "\nLike us for "+self.config.tokens+" Bonus "+play+"!";
+            if( !self.user || (self.page && !self.user.likes( self.page )) ){
+                description+="\nHit back and scroll down to like us."
+            }
         }
-    }
-
-    return description;
+    
+        return callback(error, description);
+    });
+    
 };
 
 
 FacebookCheckinMethod.prototype.getEntryRequirement = function(){
-    return "Must check-in with Facebook to enter.";
+    return "Player must \"check in\" with Facebook to enter.";
 }
 
 FacebookCheckinMethod.prototype.getPlayLimitations = function(){
@@ -183,8 +171,25 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                     for(var i=0; i<result.entries.length; i++){
                         var entry = result.entries[i];
                         if( entry.type == self.type && entry.contest_id == self.contest.id ){
-                            // this is our entry
-                            return callback( null, entry );
+                            
+                            var share = new Bozuko.models.Share({
+                                service         :'facebook',
+                                type            :'checkin',
+                                contest_id      :self.contest.id,
+                                page_id         :self.contest.page_id,
+                                user_id         :self.user.id,
+                                visibility      :0,
+                                message         :self.options.message
+                            });
+                            
+                            try{
+                                share.visibility = self.user.service('facebook').internal.friends.length;
+                            }catch(e){
+                                share.visibility = 0;
+                            }
+                            return share.save(function(error){
+                                return callback( null, entry );
+                            });
                         }
                     }
 
@@ -193,7 +198,8 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                     return callback( Bozuko.error('contest/no_entry_found_after_checkin') );
                 });
             }
-            // TODO: also look for other contests that are satisfied by this checkin?
+            console.log('user cannot checkin...');
+            
             return EntryMethod.prototype.process.call(self, callback);
 
         });
@@ -237,23 +243,8 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
             if( !tokens ){
                 var now = new Date();
                 if( time.getTime() > now.getTime() ){
-                    var ms = time.getTime() - now.getTime();
-                    // get the number of minutes:
-                    var seconds = ms / 1000;
-                    var minutes = seconds / 60;
-                    var hours = minutes / 60;
-                    var days = hours / 24;
-                    var use_time = true;
-                    var time_str = dateFormat( time, 'hh:MM:ss TT');
-                    if( days > 1 ){
-                        use_time = false;
-                        time_str = Math.floor(days);
-                        time_str = ( time_str > 1 ) ? (time_str+' Days') : (time_str+' Day');
-                    }
-                    if( minutes > 1 ){
-                        time_str = dateFormat( time, 'hh:MM TT');
-                    }
-                    return callback(null, _t( self.user ? self.user.lang : 'en', use_time ? 'entry/facebook/wait_time' : 'entry/facebook/wait_date', time_str )  );
+                    var time_str = DateUtil.inAgo(time);
+                    return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', time_str ) );
                 }
                 if( self.user && !self.can_checkin ){
                     return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/facebook/enter' )  );

@@ -71,7 +71,8 @@ var game = {
 
     create : function(game, user, callback){
         // load the prizes up...
-        var obj = {};
+        var self = this,
+            obj = {};
         obj = this.merge(obj, game.contest);
         obj = this.merge(obj, game);
         obj.rules = game.contest.getOfficialRules();
@@ -82,15 +83,15 @@ var game = {
         obj.prizes = game.getPrizes();
         obj.image = game.getListImage();
         obj.list_message = game.contest.getListMessage();
-        obj.entry_method.description = game.contest.getEntryMethodDescription();
-        // obj.can_play = obj.game_state.user_tokens > 0;
-        console.log(game.contest.post_to_wall);
-        console.log(game.contest.post_to_wall === true);
-        obj.links = {
-            page: '/page/'+game.contest.page_id,
-            game: '/game/'+game.contest.id
-        };
-        return this.sanitize(obj, null, user, callback);
+        return game.contest.getEntryMethodDescription(user, function(error, description){
+            obj.entry_method.description = description;
+            // obj.can_play = obj.game_state.user_tokens > 0;
+            obj.links = {
+                page: '/page/'+game.contest.page_id,
+                game: '/game/'+game.contest.id
+            };
+            return self.sanitize(obj, null, user, callback);
+        });
     },
 
     def:{

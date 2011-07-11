@@ -48,6 +48,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                         data            :[
                             {text:'Entries', value:'Entry'},
                             {text:'Plays', value:'Play'},
+                            {text:'Facebook Wall Posts', value:'Share'},
                             {text:'Total Prize Wins', value:'Prize'},
                             {text:'Redeemed Prizes', value:'Redeemed Prizes'}
                         ]

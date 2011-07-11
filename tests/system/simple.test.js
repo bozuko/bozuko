@@ -552,6 +552,7 @@ exports['prizes tests'] = {
                 var result = JSON.parse(res.body);
                 console.log("free_plays = "+total_free_plays+", wins = "+wins);
                 test.deepEqual( result.prizes.length, wins-total_free_plays, 'Incorrect number of prizes' );
+                console.log(result);
                 prizes = result.prizes;
                 test.done();
             });

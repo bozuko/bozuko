@@ -1,4 +1,5 @@
 var _t = Bozuko.t,
+    DateUtil = Bozuko.require('util/date'),
     merge = Bozuko.require('util/merge'),
     dateFormat = require('dateformat')
 ;
@@ -57,8 +58,8 @@ EntryMethod.prototype.getListMessage = function(){
  * Get Description - allow for formatting.
  *
  */
-EntryMethod.prototype.getDescription = function(){
-    return this.description;
+EntryMethod.prototype.getDescription = function(callback){
+    return callback(null, this.description);
 }
 
 EntryMethod.prototype.getEntryRequirement = function(){
@@ -66,28 +67,7 @@ EntryMethod.prototype.getEntryRequirement = function(){
 }
 
 EntryMethod.prototype.getPlayLimitations = function(){
-    // need a nice duration
-    // get the number of minutes:
-    var seconds = this.config.duration / 1000,
-        minutes = seconds / 60,
-        hours = minutes / 60,
-        days = hours / 24;
-
-    var duration = '';
-    if( days >= 1 ){
-        days = Math.floor( days );
-        duration = days==1 ? 'day': (days+' days');
-    }
-    else if( hours >= 2 ){
-        duration = hours+' hours';
-    }
-    else if( minutes >= 1 ){
-        duration = Math.ceil(minutes)+' minutes';
-    }
-    else{
-        duration = Math.ceil(seconds)+' seconds';
-    }
-    return this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+    return this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+DateUtil.duration(this.config.duration);
 }
 
 /**
@@ -293,7 +273,7 @@ EntryMethod.prototype.getButtonText = function( tokens, callback ){
             if( !tokens ){
                 var now = new Date();
                 if( time.getTime() >= now.getTime() ){
-                    self._buttonText = _t( self.user ? self.user.lang : 'en', 'entry/wait', relativeDate( time) );
+                    self._buttonText = _t( self.user ? self.user.lang : 'en', 'entry/bozuko/wait_duration', DateUtil.inAgo( time ) );
                 }
                 else{
                     self._buttonText =  _t( self.user ? self.user.lang : 'en', 'entry/enter');

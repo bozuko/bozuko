@@ -33,10 +33,11 @@ module.exports = {
     },
     
     facebook: {
+        
         app:{
-            id:'215589698455936',
-            secret:'659158dbd9a51f02bb9fffcf39804434',
-            access_token:'215589698455936|Ino_wd7UTm9e9Tpr34LzNM_-Zl8',
+            id:'225077010865990',
+            secret:'e6d03c37d46db15dacdfd8690536157f',
+            access_token:'225077010865990|9pz_ejdAow5uXxnE1iK3uOGMPe0',
             pubsub_verify:'12kg0a8b9123kab91831laa9sb'
         },
         perms:{
