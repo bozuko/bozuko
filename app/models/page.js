@@ -273,7 +273,8 @@ Page.method('checkin', function(user, options, callback) {
             if( error ) return callback(error);
 
             options.user = user;
-            options.link = 'http://bozuko.com';
+            // options.link = 'http://bozuko.com';
+            options.link = self.service('facebook').data.link;
             options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
 
             // okay, lets try to give them entries on all open contests
@@ -302,6 +303,7 @@ Page.method('checkin', function(user, options, callback) {
                     }
                 }
                 var game = contest.getGame();
+                //options.link = self.service('facebook').data.link;
                 options.name = _t(user.lang, 'checkin/contest_checkin_name', self.name);
                 options.description = _t(
                     user.lang,

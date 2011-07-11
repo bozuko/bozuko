@@ -33,7 +33,7 @@ CountsReport.prototype.getMapFunction = function getMapFunction(){
     var fn = this.mapFunctionTmpl[this.options.type||'time']
         .replace(/FIELDNAME/g, this.options.groupField || 'timestamp' )
         .replace(/COUNTFIELD/g, this.options.countField ? 'this.'+this.options.countField: '1')
-        .replace(/OFFSET/g, (this.options.timezoneOffset && ~['Month','Date'].indexOf(this.options.interval)) ? this.options.timezoneOffset*1000*60*60*24 : '0')
+        .replace(/OFFSET/g, (this.options.timezoneOffset && ~['Month','Date'].indexOf(this.options.interval)) ? (this.options.timezoneOffset*1000*60*60*24) : '0')
         ;
     
     if( this.options.type == 'filter') return fn;
@@ -98,8 +98,6 @@ CountsReport.prototype.run = function run(callback){
         if( self.options[name] ) options[name] = self.options[name];
     });
     
-    console.error( mapFn );
-    
     return Bozuko.models[modelName].collection.mapReduce(
         
         mapFn,
@@ -121,8 +119,6 @@ CountsReport.prototype.run = function run(callback){
             });
             if( type !== 'time' ) return callback( null, items );
             
-            console.error( inspect( items ) );
-            
             items.sort(function(a,b){
                 return a._id - b._id;
             });
@@ -134,8 +130,8 @@ CountsReport.prototype.run = function run(callback){
                     to = self.options.to || new Date(); // DateUtil.add( new Date(), DateUtil.HOUR, 4);
                 
                 if(self.options.timezoneOffset && ~intervals.slice(0,3).indexOf( self.options.interval )  ){
-                    from = new Date( from.getTime() + self.options.timezoneOffset*1000*60*60 )
-                    to = new Date( to.getTime() + self.options.timezoneOffset*1000*60*60 )
+                    from = new Date( from.getTime() + (self.options.timezoneOffset*1000*60*60) )
+                    to = new Date( to.getTime() + (self.options.timezoneOffset*1000*60*60) )
                 }
                 
                 
@@ -157,17 +153,20 @@ CountsReport.prototype.run = function run(callback){
                     item;
                     
                 var withinSameInterval = function(ts, b){
+                    if(self.options.timezoneOffset && ~intervals.slice(0,3).indexOf( self.options.interval )  ){
+                        b= new Date( b.getTime() + (self.options.timezoneOffset*1000*60*60) )
+                    }
+                    
                     var a = new Date(ts), aArgs=[], bArgs=[];
                     for(var i = 0; i < intervals.length; i++ ){
                         aArgs.push(( i > index ) ? 0 : a['getUTC'+intervals[i]]());
                         bArgs.push(( i > index ) ? 0 : b['getUTC'+intervals[i]]());
                     }
-                    return +DateUtil.create(aArgs) === +DateUtil.create(bArgs);
+                    return Date.UTC.apply(null, aArgs) === Date.UTC.apply(null, bArgs);
                 }
                 
                 for(var cur = +start; cur <= +end; cur += intervalMap[index] ){
                     
-                    console.log(new Date(cur));
                     
                     if( !tmp.length || !withinSameInterval(cur, tmp[0][groupField] ) ){
                         // add a blank
@@ -180,7 +179,7 @@ CountsReport.prototype.run = function run(callback){
                         while( tmp.length && withinSameInterval( cur, tmp[0][groupField] ) ){
                             var next = tmp.shift();
                             if( !entry ) entry = next;
-                            else entry.count +next.count;
+                            else entry.count += next.count;
                         }
                         items.push(entry);
                     }
