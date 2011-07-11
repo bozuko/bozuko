@@ -764,7 +764,7 @@ body {
 }
 .site-business-page .main-column {
   float: left;
-  width: 75%;
+  width: 62%;
 }
 .site-business-page .main-column .padding {
   border-left: 1px solid #ccc;
@@ -782,11 +782,13 @@ body {
   padding-bottom: 10px;
   padding-top: 10px;
   padding-left: 10px;
+  font-size: 24px;
+  color: #00a24f;
 }
 .site-business-page .main-column .announcement {
   margin-left: -10px;
   margin-right: -10px;
-  background: #e8e8e8;
+  background: #f2f2f2;
   color: #333;
   padding: 10px;
 }
@@ -796,6 +798,8 @@ body {
 .site-business-page .main-column .contests h3 {
   color: #666;
   margin-bottom: .5em;
+  font-size: 20px;
+  font-family: ArvoRegular;
 }
 .site-business-page .main-column .contests .contest {
   background-color: #ffffff;
@@ -807,6 +811,7 @@ body {
   padding: 10px;
   margin: 0 -10px;
   overflow: hidden;
+  font-size: 12px;
 }
 .site-business-page .main-column .contests .contest img {
   float: left;
@@ -816,9 +821,38 @@ body {
   font-weight: bold;
   margin-bottom: .5em;
 }
+.site-business-page .main-column .contests .contest .prizes {
+  margin-left: 92px;
+}
+.site-business-page .main-column .contests .contest .prizes ul, .site-business-page .main-column .contests .contest .prizes li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.site-business-page .main-column .contests .contest .prizes li {
+  padding: 10px 0;
+}
+.site-business-page .main-column .contests .contest .prizes h5 {
+  margin-top: .5em;
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  font-weight: normal;
+}
+.site-business-page .main-column .contests .contest .prizes h6 {
+  padding: 0;
+  margin-bottom: .5em;
+  font-style: normal;
+  color: #000;
+  font-weight: bold;
+  font-size: 15px;
+}
 .site-business-page .right-column {
-  width: 24%;
+  width: 37%;
   float: right;
+}
+.site-business-page .right-column .padding {
+  padding-top: 20px;
 }
 .cityscape .bd {
   background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;

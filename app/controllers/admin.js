@@ -236,14 +236,36 @@ exports.routes = {
                 if( page_id ) selector['page_id'] = page_id;
                 if( req.param('id') ) selector['id'] = req.param('id');
                 return Bozuko.models.Contest.find(selector,{results:0, plays:0},{sort:{active: -1, start:-1}}, function(error, contests){
+                    
                     if( error ) return error.send(res);
+                    
                     contests.sort(function(a,b){
                         if( a.state=='active' && b.state != 'active' ) return -1;
                         if( b.state=='active' && a.state != 'active' ) return 1;
                         return +b.start-a.start;
                     });
                     var ret = [];
-                    return res.send({items:contests});
+                    
+                    // lets get the prizes information as well, this should be done in the model
+                    var prizes = {};
+                    contests.forEach(function(contest){
+                        contest.prizes.forEach(function(prize){
+                            prize.redeemed = 0;
+                            prize.won = 0;
+                            prizes[String(prize.id)] = prize;
+                        });
+                    });
+                    
+                    return Bozuko.models.Prize.find({id: {$in: Object.keys(prizes)}}, {_id: 1, redeemed: 1, user_id: 1}, {sort: {_id: 1}},function(error, ar){
+                        if( error ) return error.send(res);
+                        ar.forEach(function(item){
+                            var id = String(item.id);
+                            prizes[id].won++;
+                            if( item.redeemed ) prizes[id].redeemed++;
+                            console.log(prize);
+                        });
+                        return res.send({items:contests});
+                    });
                 });
             }
         },
@@ -589,6 +611,7 @@ exports.routes = {
             handler : function(req, res){
                 
                 var time = req.param('time') || 'week-1',
+                    tzOffset = -1*parseInt(req.param('timezoneOffset', 0),10) / 60,
                     from, interval, now = new Date(),
                     query = {},
                     options ={}
@@ -635,7 +658,7 @@ exports.routes = {
                 if( !~['Prize','Redeemed Prizes','Entry','Play','Share'].indexOf(model) ) throw "Invalid model";
                 
                 options = {
-                    timezoneOffset: -4,
+                    timezoneOffset: tzOffset,
                     interval: interval,
                     query: query,
                     model: model,

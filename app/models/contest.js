@@ -323,6 +323,15 @@ Contest.method('getEntryMethodDescription', function(user, callback){
     return entryMethod.getDescription(callback);
 });
 
+Contest.method('getEntryMethodHtmlDescription', function(){
+    var config = this.entry_config[0];
+    var entryMethod = Bozuko.entry( config.type, null);
+    entryMethod.configure( config );
+    entryMethod.setContest( this );
+    return entryMethod.getHtmlDescription();
+});
+
+
 Contest.method('getUserInfo', function(user_id, callback) {
 
     var min_expiry_date = new Date(new Date().getTime() - Bozuko.config.entry.token_expiration);
@@ -718,6 +727,7 @@ Contest.method('savePrize', function(opts, callback) {
             contest_id: self._id,
             page_id: self.page_id,
             user_id: opts.user_id,
+            prize_id: prize._id,
             uuid: opts.uuid,
             code: opts.consolation ? opts.consolation_prize_code : opts.prize_code,
             value: prize.value,
@@ -750,10 +760,13 @@ Contest.method('savePrize', function(opts, callback) {
                 user_prize.barcode_image = burl('/game/'+self._id+'/prize/'+opts.prize_index+'/barcode/'+opts.prize_count);
             }
         }
-
-        return user_prize.save(function(err) {
-            if (err) return callback(err);
-            return callback(null, user_prize);
+        
+        prize.won++;
+        return self.save(function(error){
+            return user_prize.save(function(err) {
+                if (err) return callback(err);
+                return callback(null, user_prize);
+            });
         });
     });
 });

@@ -89,7 +89,6 @@ exports['favorite tests'] = {
                 try{
                     test.ok(result.pages.length == 1);
                 }catch(e){
-                    console.log(result);
                     throw e;
                 }
                 test.done();
@@ -114,8 +113,6 @@ exports['favorite tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-
-                console.log('favorite_toggle', result);
 
                 test.ok(Bozuko.validate('favorite_response', result));
                 test.ok(result.added);
@@ -147,7 +144,6 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                console.log(result);
                 // test.ok(result.button_text == 'Check in to Play', 'Button text is wrong');
                 test.done();
             });
@@ -201,7 +197,6 @@ exports['game tests'] = {
             function(res) {
                 var game_states = JSON.parse(res.body);
                 test.ok(Bozuko.validate(['game_state'], game_states));
-                console.log(game_states);
                 tokens = game_states[0].user_tokens;
                 test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
                 link = game_states[0].links.game_result;
@@ -470,7 +465,6 @@ exports['game tests'] = {
             data: params},
             {status: 500, headers: {'Content-Type': 'application/json; charset=utf-8'}},
             function(res) {
-		console.log(res);
                 var facebook_checkin_result = JSON.parse(res.body);
                 test.done();
             });
@@ -552,7 +546,6 @@ exports['prizes tests'] = {
                 var result = JSON.parse(res.body);
                 console.log("free_plays = "+total_free_plays+", wins = "+wins);
                 test.deepEqual( result.prizes.length, wins-total_free_plays, 'Incorrect number of prizes' );
-                console.log(result);
                 prizes = result.prizes;
                 test.done();
             });
