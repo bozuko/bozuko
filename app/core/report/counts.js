@@ -13,13 +13,26 @@ var CountsReport = module.exports = function(options){
 };
 inherits( CountsReport, Report );
 
+var pad = function(n){ return ( n < 10 ) ? '0'+n : n; };
+
 CountsReport.prototype.mapFunctionTmpl = {
     
     time: (function(){
-        var ts = this.FIELDNAME;
-        var offsetTime = new Date(ts.getTime() + OFFSET);
-        var timestamp = Date.UTC(offsetTime.getUTCFullYear(), '%0%', '%0%', '%12%', '%0%', '%0%', '%0%');
-        emit( timestamp, {timestamp: ts, count: COUNTFIELD} );
+        var pad = function(n){ return ( n < 10 ) ? '0'+n : n; };
+        var ts = this.FIELDNAME,
+            offsetTime = new Date(ts.getTime() + OFFSET),
+            timestamp = Date.UTC(offsetTime.getUTCFullYear(), '%0%', '%0%', '%12%', '%0%', '%0%', '%0%'),
+            d = new Date(timestamp),
+            _id = [
+                pad(d.getUTCFullYear()),
+                pad(d.getUTCMonth()),
+                pad(d.getUTCDate()),
+                pad(d.getUTCHours()),
+                pad(d.getUTCMinutes()),
+                pad(d.getUTCSeconds()),
+                pad(d.getUTCMilliseconds())
+            ].join(':');
+        emit( _id, {timestamp: ts, count: COUNTFIELD} );
     }).toString(),
     
     filter: (function(){
@@ -33,7 +46,7 @@ CountsReport.prototype.getMapFunction = function getMapFunction(){
     var fn = this.mapFunctionTmpl[this.options.type||'time']
         .replace(/FIELDNAME/g, this.options.groupField || 'timestamp' )
         .replace(/COUNTFIELD/g, this.options.countField ? 'this.'+this.options.countField: '1')
-        .replace(/OFFSET/g, (this.options.timezoneOffset && ~['Month','Date'].indexOf(this.options.interval)) ? (this.options.timezoneOffset*1000*60*60*24) : '0')
+        .replace(/OFFSET/g, (this.options.timezoneOffset && ~['Month','Date'].indexOf(this.options.interval)) ? (this.options.timezoneOffset*1000*60*60) : '0')
         ;
     
     if( this.options.type == 'filter') return fn;
@@ -120,7 +133,7 @@ CountsReport.prototype.run = function run(callback){
             if( type !== 'time' ) return callback( null, items );
             
             items.sort(function(a,b){
-                return a._id - b._id;
+                return +a[groupField] -b[groupField];
             });
             
             if( self.options.fillBlanks !== false ){
@@ -129,17 +142,18 @@ CountsReport.prototype.run = function run(callback){
                 var from = self.options.from || items[0][groupField],
                     to = self.options.to || new Date(); // DateUtil.add( new Date(), DateUtil.HOUR, 4);
                 
+                // set the clock back / forward so it returns the right day if we are looking at anything larger
+                // than hours
                 if(self.options.timezoneOffset && ~intervals.slice(0,3).indexOf( self.options.interval )  ){
                     from = new Date( from.getTime() + (self.options.timezoneOffset*1000*60*60) )
                     to = new Date( to.getTime() + (self.options.timezoneOffset*1000*60*60) )
                 }
                 
-                
                 var index = intervals.indexOf(self.options.interval || 'Date');
                 if( !~index ) index = 0;
                 var startArgs = [], endArgs = [];
                 
-                for(var i = 0; i < intervals.length; i++ ){
+                for(var i = 0; i < intervals.length && i <= index; i++ ){
                     startArgs.push(( i > index ) ? 0 : from['getUTC'+intervals[i]]());
                     endArgs.push(( i > index ) ? 0 : to['getUTC'+intervals[i]]());
                 }
@@ -152,10 +166,9 @@ CountsReport.prototype.run = function run(callback){
                     items = [],
                     item;
                     
-                var withinSameInterval = function(ts, b){
-                    if(self.options.timezoneOffset && ~intervals.slice(0,3).indexOf( self.options.interval )  ){
-                        b= new Date( b.getTime() + (self.options.timezoneOffset*1000*60*60) )
-                    }
+                var withinSameInterval = function(ts, _id){
+                    
+                    b = DateUtil.create(_id.split(':'));
                     
                     var a = new Date(ts), aArgs=[], bArgs=[];
                     for(var i = 0; i < intervals.length; i++ ){
@@ -167,8 +180,7 @@ CountsReport.prototype.run = function run(callback){
                 
                 for(var cur = +start; cur <= +end; cur += intervalMap[index] ){
                     
-                    
-                    if( !tmp.length || !withinSameInterval(cur, tmp[0][groupField] ) ){
+                    if( !tmp.length || !withinSameInterval(cur, tmp[0]._id ) ){
                         // add a blank
                         var blank = {_id: cur, count: 0};
                         blank[groupField] = new Date(cur);
@@ -176,9 +188,12 @@ CountsReport.prototype.run = function run(callback){
                     }
                     else{
                         var entry = null;
-                        while( tmp.length && withinSameInterval( cur, tmp[0][groupField] ) ){
+                        while( tmp.length && withinSameInterval( cur, tmp[0]._id ) ){
                             var next = tmp.shift();
-                            if( !entry ) entry = next;
+                            if( !entry ){
+                                entry = next;
+                                entry.timestamp = DateUtil.create( next._id.split(':') );
+                            }
                             else entry.count += next.count;
                         }
                         items.push(entry);
