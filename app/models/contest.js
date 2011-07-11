@@ -315,12 +315,12 @@ Contest.method('getListMessage', function(){
     return entryMethod.getListMessage();
 });
 
-Contest.method('getEntryMethodDescription', function(){
+Contest.method('getEntryMethodDescription', function(user, callback){
     var config = this.entry_config[0];
-    var entryMethod = Bozuko.entry( config.type );
+    var entryMethod = Bozuko.entry( config.type, user );
     entryMethod.configure( config );
     entryMethod.setContest( this );
-    return entryMethod.getDescription();
+    return entryMethod.getDescription(callback);
 });
 
 Contest.method('getUserInfo', function(user_id, callback) {

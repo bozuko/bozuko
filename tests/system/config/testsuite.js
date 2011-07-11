@@ -9,11 +9,11 @@ var http = require('http');
 var users = {
     a: {
 	'id': '100001848849081',
-	'auth' : '166078836756369|276ce4323ea377ed62e7b4f6-100001848849081|J6QeM27-_fZKB45vk9t4qRL-b3w'
+	'auth' : '225077010865990|c55eacc9bc1097ba9ffe133d.1-100001848849081|hH18si5YDG-YoIoLAf_2IciZDQs'
     },
     b: {
 	'id': '100001863668743',
-	'auth' : '166078836756369|81213baf1a427b66698083c8-100001863668743|VGHsgIgaHcr9twaMGSzLhctxZe0'
+	'auth' : '225077010865990|379bc114f914fa3983c0129f.1-100001863668743|xh3EcHoiXpVtzyeOavrFJUZlnbE'
     }
 };
 

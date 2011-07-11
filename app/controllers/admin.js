@@ -590,8 +590,9 @@ exports.routes = {
                 
                 var time = req.param('time') || 'week-1',
                     from, interval, now = new Date(),
-                    query = {
-                    };
+                    query = {},
+                    options ={}
+                    ;
                     
                 if( req.param('page_id') ){
                     query.page_id = new ObjectId(req.param('page_id'));
@@ -631,23 +632,25 @@ exports.routes = {
                 }
                 
                 var model = req.param('model') || 'Entry';
-                if( !~['Prize','Redeemed Prizes','Entry','Play','Posts'].indexOf(model) ) throw "Invalid model";
+                if( !~['Prize','Redeemed Prizes','Entry','Play','Share'].indexOf(model) ) throw "Invalid model";
                 
-                if( model == 'Redeemed Prizes'){
-                    model = "Prize";
-                    query.redeemed = true;
-                }
-                
-                return Report.run( model == 'Posts' ? 'posts':'counts',
-                
-                {
+                options = {
+                    timezoneOffset: -4,
                     interval: interval,
                     query: query,
                     model: model,
                     from: from
-                },
+                };
                 
-                function(error, results){
+                if( model == 'Redeemed Prizes'){
+                    options.model = "Prize";
+                    query.redeemed = true;
+                }
+                else if(model == 'Share'){
+                    options.countField = 'visibility';
+                }
+                
+                return Report.run( 'counts', options, function(error, results){
                     if( error ) return error.send( res );
                     return res.send( {items: results} );
                 });

@@ -13,6 +13,8 @@ window.fbAsyncInit = function() {
         
     function onEdgeCreate( response ){
         
+        document.getElementById('like-mask').style.display='block';
+        
         // update the user with the latest and greatest likes...
         Bozuko.remote.HTTP.request({
             url: url,

@@ -3,14 +3,13 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId
 ;
 
-var Entry = module.exports = new Schema({
+var Share = module.exports = new Schema({
+    timestamp               :{type:Date,        default: Date.now},
     contest_id              :{type:ObjectId,    index: true},
     page_id                 :{type:ObjectId,    index: true},
     user_id                 :{type:ObjectId,    index: true},
     type                    :{type:String},
-    action_id               :{type:ObjectId},
-    timestamp               :{type:Date,        default: Date.now},
-    wall_posts              :{type:Number,      default: 0},
-    tokens                  :{type:Number},
-    initial_tokens          :{type:Number}
+    service                 :{type:String},
+    visibility              :{type:Number,      default: 0},
+    message                 :{type:String}
 });
