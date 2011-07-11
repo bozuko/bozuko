@@ -56,68 +56,71 @@ exports.transfer_objects = {
         create: function(page, user, callback){
             // this should hopefully be a Page model object
             // lets check for a contest
-
-            var prof = new Profiler('/controllers/page/create_page');
-            var fid = page.registered ? page.service('facebook').sid : page.id;
-            if( !page.registered ) delete page.id;
-            page.liked = false;
-            page.image = page.image + (~page.image.indexOf('?')?'&':'?')+'return_ssl_resources=1';
-            page.like_url = burl('/facebook/'+fid+'/like.html');
-            page.links = {
-                facebook_page       :'http://facebook.com/'+fid,
-                facebook_checkin    :'/facebook/'+fid+'/checkin'
-                // facebook_like       :'/facebook/'+fid+'/like'
-            };
-            page.is_place = page.location  && page.location.lat && page.location.lng;
-            if( page.registered ){
-                // page.image = burl('/page/'+page.id+'/image?version=8');
-            }
-            if( user ){
-                page.like_url +='?token='+user.token;
+            var self = this;
+            var createPage = function(){
+                var prof = new Profiler('/controllers/page/create_page');
+                var fid = page.registered ? page.service('facebook').sid : page.id;
+                if( !page.registered ) delete page.id;
+                page.liked = false;
+                page.image = page.image + (~page.image.indexOf('?')?'&':'?')+'return_ssl_resources=1';
+                page.like_url = burl('/facebook/'+fid+'/like.html');
+                page.links = {
+                    facebook_page       :'http://facebook.com/'+fid,
+                    facebook_checkin    :'/facebook/'+fid+'/checkin'
+                    // facebook_like       :'/facebook/'+fid+'/like'
+                };
+                page.is_place = page.location  && page.location.lat && page.location.lng;
                 if( page.registered ){
-
-                    // favorite
-                    if( ~user.favorites.indexOf( page.id ) ) page.favorite = true;
-                    page.links.favorite = '/user/favorite/'+page.id;
-
-                    if( page.service('facebook') ){
+                    // page.image = burl('/page/'+page.id+'/image?version=8');
+                }
+                if( user ){
+                    page.like_url +='?token='+user.token;
+                    if( page.registered ){
+    
+                        // favorite
+                        if( ~user.favorites.indexOf( page.id ) ) page.favorite = true;
+                        page.links.favorite = '/user/favorite/'+page.id;
+    
+                        if( page.service('facebook') ){
+                            try{
+                                page.liked = user.likes(page);
+                                if( page.liked ) delete page.links.facebook_like;
+                            }catch(e){
+                                page.liked = false;
+                            }
+                        }
+                    }
+                    else{
                         try{
-                            page.liked = user.likes(page);
+                            page.liked = user.likes(fid);
                             if( page.liked ) delete page.links.facebook_like;
                         }catch(e){
                             page.liked = false;
                         }
                     }
                 }
-                else{
-                    try{
-                        page.liked = user.likes(fid);
-                        if( page.liked ) delete page.links.facebook_like;
-                    }catch(e){
-                        page.liked = false;
-                    }
+    
+                // add registered links...
+                if( page.registered ){
+                    page.share_url         =burl('/business/'+page.id);
+                    page.links.page         ='/page/'+page.id;
+                    page.links.share        ='/page/'+page.id+'/share';
+                    page.links.feedback     ='/page/'+page.id+'/feedback';
                 }
-            }
-
-            // add registered links...
-            if( page.registered ){
-                page.share_url         =burl('/business/'+page.id);
-                page.links.page         ='/page/'+page.id;
-                page.links.share        ='/page/'+page.id+'/share';
-                page.links.feedback     ='/page/'+page.id+'/feedback';
-            }
-            // non-registered links
-            else{
-                page.links.recommend    ='/page/recommend/facebook/'+fid;
-            }
-
-            page.games = [];
-            if( page.contests ) page.contests.forEach(function(contest){
-                page.games.push( contest.getGame() );
-            });
-
-            prof.stop();
-            return this.sanitize(page, null, user, callback);
+                // non-registered links
+                else{
+                    page.links.recommend    ='/page/recommend/facebook/'+fid;
+                }
+    
+                page.games = [];
+                if( page.contests ) page.contests.forEach(function(contest){
+                    page.games.push( contest.getGame() );
+                });
+    
+                prof.stop();
+                return self.sanitize(page, null, user, callback);
+            };
+            return user ? user.updateInternals(createPage) : createPage();
         }
     },
 
