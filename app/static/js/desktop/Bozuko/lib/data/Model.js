@@ -28,10 +28,17 @@ Ext.define( "Bozuko.lib.data.Model", {
         me.callParent([options]);
     },
     
-    reload : function(callbacks){
+    load : function(callbacks){
         var me = this;
-        console.log(me);
-        // me.self().load( me.getId(), callbacks );
+        if( Ext.type(callbacks) == 'function' ){
+            callbacks = {success: callbacks};
+        }
+        var success = callbacks.success;
+        callbacks.success = function(record){
+            if( record ) me.set(record.raw);
+            if( success && Ext.type(success) == 'function' ) success.apply( callbacks.scope || null, arguments );
+        };
+        me.self.load( me.getId(), callbacks );
     }
 
 });

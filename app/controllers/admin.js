@@ -234,7 +234,8 @@ exports.routes = {
                     selector = {};
 
                 if( page_id ) selector['page_id'] = page_id;
-                if( req.param('id') ) selector['id'] = req.param('id');
+                if( req.param('id') ) selector['_id'] = new ObjectId(req.param('id'));
+                console.log(selector);
                 return Bozuko.models.Contest.find(selector,{results:0, plays:0},{sort:{active: -1, start:-1}}, function(error, contests){
                     
                     if( error ) return error.send(res);
