@@ -4,14 +4,36 @@ Ext.define('Bozuko.view.contest.Overview',{
     extend : 'Ext.panel.Panel',
     cls : 'contest-overview',
     
+    requires : [
+        'Ext.XTemplate',
+        'Bozuko.lib.PubSub'
+    ],
+    
     initComponent : function(){
         var me = this;
         
         me.blocks = {};
         me.circles = {};
+        me.callbacks = {};
         
         Ext.apply(me, {
             tpl : new Ext.XTemplate(
+                
+                '<div class="contest-info">',
+                    '<div class="info-row">',
+                        '<label>Campaign:</label>',
+                        '<span>{name}</span>',
+                    '</div>',
+                    '<div class="info-row">',
+                        '<label>Game:</label>',
+                        '<span>{game}</span>',
+                    '</div>',
+                    '<div class="info-row">',
+                        '<label>Timeline:</label>',
+                        '<span>{timeline}</span>',
+                    '</div>',
+                '</div>',
+                
                 '<div class="stat-blocks">',
                     '<div class="stat-block stat-block-entries">',
                         '<div class="info">',
@@ -55,6 +77,9 @@ Ext.define('Bozuko.view.contest.Overview',{
         });
         
         me.callParent( arguments );
+        if( me.record ){
+            me.initPubSub();
+        }
     },
     
     afterRender : function(){
@@ -82,7 +107,6 @@ Ext.define('Bozuko.view.contest.Overview',{
             ctx.fill();
             ctx.beginPath();
             ctx.fillStyle = 'rgba('+parseInt(255*percent)+','+parseInt(255 * (1-percent))+',0,.4)';
-            console.log( ctx.fillStyle);
             ctx.moveTo(40,40);
             ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
             ctx.moveTo(40,40);
@@ -99,6 +123,16 @@ Ext.define('Bozuko.view.contest.Overview',{
             data = {};
         
         if( !me.record ) return data;
+        
+        data.name = me.record.get('name') || 'Untitled';
+        data.game = me.record.get('game') || 'Untitled';
+        data.game = data.game.substr(0,1).toUpperCase()+data.game.substr(1);
+        var game_cfg = me.record.get('game_config');
+        if( game_cfg && game_cfg.name ){
+            data.game = game_cfg.name+' ('+data.game+')';
+        }
+        
+        data.timeline = Ext.Date.format( me.record.get('start'), 'm/d/Y')+' - '+Ext.Date.format(me.record.get('end'), 'm/d/Y');
         
         data.entries_current = me.record.getEntryCount();
         data.entries_total = me.record.getTotalEntries();
@@ -147,9 +181,47 @@ Ext.define('Bozuko.view.contest.Overview',{
         return data;
     },
     
+    getCallback : function(name){
+        var me = this;
+        if( !me.callbacks[name] ){
+            me.callbacks[name] = function(){
+                me[name]();
+            };
+        }
+        return me.callbacks[name];
+    },
+    
     update : function(record){
-        this.record = record;
+        var me = this;
+        if( record ){
+            if(me.record ) me.unPubSub();
+            this.record = record;
+            me.initPubSub();
+        }
         this.callParent([this.getData()]);
+    },
+    
+    unPubSub : function(){
+        var me = this,
+            refresh = me.getCallback('refresh');
+        Bozuko.PubSub.unsubscribe('contest/win',{contest_id: me.record.get('_id')}, refresh);
+        Bozuko.PubSub.unsubscribe('contest/entry',{contest_id: me.record.get('_id')}, refresh);
+        Bozuko.PubSub.unsubscribe('prize/redeemed',{contest_id: me.record.get('_id')}, refresh);
+    },
+    
+    initPubSub : function(){
+        var me = this,
+            refresh = me.getCallback('refresh');
+            
+        console.log({contest_id: me.record.get('_id')});
+        Bozuko.PubSub.subscribe('contest/win',{contest_id: me.record.get('_id')}, refresh);
+        Bozuko.PubSub.subscribe('contest/entry',{contest_id: me.record.get('_id')}, refresh);
+        Bozuko.PubSub.subscribe('prize/redeemed',{contest_id: me.record.get('_id')}, refresh);
+    },
+    
+    refresh : function(){
+        var me = this;
+        console.log('refresh', me, me.load);
     }
     
 });
