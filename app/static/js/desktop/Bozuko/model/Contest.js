@@ -67,7 +67,7 @@ Ext.define('Bozuko.model.Contest', {
     getEntryCount : function(){
         var me = this;
         
-        return (me.get('token_cursor')+1) / me.get('entry_config')[0].tokens;
+        return Math.floor((me.get('token_cursor')+1) / me.get('entry_config')[0].tokens);
     },
     
     getWonPrizeCount : function(){
