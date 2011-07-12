@@ -274,12 +274,13 @@ fieldset .x-fieldset-header {
 .contest-overview .stat-block h3 {
   margin-top: 0;
   font-size: 13px;
+  margin-bottom: 1em;
 }
 .contest-overview .stat-block .stat-info .current {
   display: block;
   font-weight: normal;
   font-size: 28px;
-  line-height: 32px;
+  line-height: 46px;
   font-family: ArvoRegular;
 }
 .contest-overview .stat-block .stat-info .total {
@@ -291,12 +292,9 @@ fieldset .x-fieldset-header {
   position: relative;
 }
 .contest-overview .stat-block .circle {
-  -moz-opacity: 0.4;
-  -khtml-opacity: 0.4;
-  opacity: 0.4;
   position: absolute;
   left: 50%;
-  top: 50%;
+  bottom: 0;
   margin-left: -40px;
   margin-top: -40px;
 }

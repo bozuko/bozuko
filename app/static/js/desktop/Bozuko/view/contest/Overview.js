@@ -81,7 +81,8 @@ Ext.define('Bozuko.view.contest.Overview',{
             ctx.closePath();
             ctx.fill();
             ctx.beginPath();
-            ctx.fillStyle = '#1db153';
+            ctx.fillStyle = 'rgba('+parseInt(255*percent)+','+parseInt(255 * (1-percent))+',0,.4)';
+            console.log( ctx.fillStyle);
             ctx.moveTo(40,40);
             ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
             ctx.moveTo(40,40);
