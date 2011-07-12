@@ -762,7 +762,7 @@ Contest.method('savePrize', function(opts, callback) {
         }
         
         // this 'if' is for backwards compatability
-        if( ~prize.won ) Bozuko.models.Contest.collection.update(
+        if( prize.won || prize.won === 0) Bozuko.models.Contest.collection.update(
             {'prizes._id':prize._id},
             {$inc: {'prizes.$.won':1}},
             function(error){
