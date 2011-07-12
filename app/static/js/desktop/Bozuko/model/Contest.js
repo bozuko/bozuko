@@ -58,6 +58,9 @@ Ext.define('Bozuko.model.Contest', {
         me.prizes().each(function(prize){
             qty += prize.get('total');
         });
+        if( me.entry_config && me.entry_config[0].type == 'facebook/checkin' && me.entry_config[0].enable_like ){
+            qty *= 2;
+        }
         return qty * me.get('win_frequency');
     },
     
@@ -65,7 +68,41 @@ Ext.define('Bozuko.model.Contest', {
         var me = this;
         
         return (me.get('token_cursor')+1) / me.get('entry_config')[0].tokens;
+    },
+    
+    getWonPrizeCount : function(){
+        var me = this,
+            qty = 0;
+            
+        me.prizes().each(function(prize){
+            qty+= (prize.get('won') || 0);
+        });
+        
+        return qty;
+    },
+    
+    getTotalPrizeCount : function(){
+        var me = this,
+            qty = 0;
+            
+        me.prizes().each(function(prize){
+            qty+= prize.get('total');
+        });
+        
+        return qty;
+    },
+    
+    getRedeemedPrizeCount : function(){
+        var me = this,
+            qty = 0;
+            
+        me.prizes().each(function(prize){
+            qty+= (prize.get('redeemed') || 0);
+        });
+        
+        return qty;
     }
+    
     
 }, function(){
     this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);

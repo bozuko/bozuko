@@ -69,29 +69,26 @@ Prize.method('redeem', function(user, callback){
         if( error ) return callback( error );
         if (self.is_email) self.sendEmail(user);
         
-        function finish(){
-            // okay, lets get the page and get its security image
-            return Bozuko.models.Page.findById(self.page_id, function(error, page){
-                if( error ) return callback( error );
-                self.user = user;
-                self.page = page;
-                Bozuko.publish('prize/redeemed', {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
-                return callback(null, {
-                    security_image: page.security_img || burl('/images/security_image.png'),
-                    prize: self
-                });
-            });
-        };
+        // this 'if' is for backwards compatability
+        if( self.prize_id ) Bozuko.models.Contest.collection.update(
+            {'prizes._id':self.prize_id},
+            {$inc: {'prizes.$.redeemed':1}},
+            function(error){
+                if( error ) console.error( error );
+                else console.log('updated redeemed');
+            }
+        );
         
-        // this is for backwards compatability
-        if( !self.prize_id ) return finish();
-        
-        // get the original prize by id
-        return Bozuko.models.Contest.findById( self.contest_id, {prizes:1}, function(error, contest){
+        // okay, lets get the page and get its security image
+        return Bozuko.models.Page.findById(self.page_id, function(error, page){
             if( error ) return callback( error );
-            var prize = contest.prizes.id( self.prize_id );
-            prize.redeemed++;
-            return contest.save(finish);
+            self.user = user;
+            self.page = page;
+            Bozuko.publish('prize/redeemed', {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
+            return callback(null, {
+                security_image: page.security_img || burl('/images/security_image.png'),
+                prize: self
+            });
         });
     });
 });

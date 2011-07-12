@@ -40,6 +40,9 @@ Ext.define('Admin.view.contest.Panel' ,{
             margin          :'2 2 2 0',
             title           :'Winners List'
         }];
+        
+        window.contests = me.store;
+        
         me.callParent();
     }
 });

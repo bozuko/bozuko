@@ -257,3 +257,46 @@ fieldset .x-fieldset-header {
   float: left;
   margin: 5px 1px;
 }
+.contest-overview .x-panel-body {
+  background: #f3f3f3;
+}
+.contest-overview .stat-blocks {
+  float: right;
+}
+.contest-overview .stat-block {
+  float: left;
+  margin: 5px;
+  text-align: center;
+  position: relative;
+  padding: 10px;
+  min-width: 80px;
+}
+.contest-overview .stat-block h3 {
+  margin-top: 0;
+  font-size: 13px;
+}
+.contest-overview .stat-block .stat-info .current {
+  display: block;
+  font-weight: normal;
+  font-size: 28px;
+  line-height: 32px;
+  font-family: ArvoRegular;
+}
+.contest-overview .stat-block .stat-info .total {
+  display: block;
+  font-size: 11px;
+}
+.contest-overview .stat-block .info {
+  z-index: 10;
+  position: relative;
+}
+.contest-overview .stat-block .circle {
+  -moz-opacity: 0.4;
+  -khtml-opacity: 0.4;
+  opacity: 0.4;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -40px;
+  margin-top: -40px;
+}

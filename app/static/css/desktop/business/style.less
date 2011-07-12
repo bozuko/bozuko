@@ -308,3 +308,50 @@ fieldset{
     float: left;
     margin: 5px 1px;
 }
+.contest-overview {
+    .x-panel-body {
+        background: #f3f3f3;
+    }
+    .stat-blocks {
+        float: right;
+    }
+    .stat-block {
+        float: left;
+        margin : 5px;
+        text-align: center;
+        position: relative;
+        padding: 10px;
+        min-width: 80px;
+        h3 {
+            margin-top: 0;
+            font-size: 13px;
+        }
+        .stat-info {
+            .current {
+                display: block;
+                font-weight: normal;
+                font-size: 28px;
+                line-height: 32px;
+                font-family: ArvoRegular;
+            }
+            .total {
+                display: block;
+                font-size: 11px;
+            }
+        }
+        
+        .info {
+            z-index: 10;
+            position: relative;
+        }
+        
+        .circle {
+            .opacity(40);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -40px;
+            margin-top: -40px;
+        }
+    }
+}
