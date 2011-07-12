@@ -1,5 +1,5 @@
 Ext.define('Bozuko.model.Contest', {
-    extend: 'Ext.data.Model',
+    extend: 'Bozuko.lib.data.Model',
     
     idProperty: '_id',
     

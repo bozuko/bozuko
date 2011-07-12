@@ -26,6 +26,12 @@ Ext.define( "Bozuko.lib.data.Model", {
             return;
         }
         me.callParent([options]);
+    },
+    
+    reload : function(callbacks){
+        var me = this;
+        console.log(me);
+        // me.self().load( me.getId(), callbacks );
     }
 
 });
