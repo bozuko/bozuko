@@ -86,35 +86,7 @@ Ext.define('Bozuko.view.contest.Overview',{
         var me = this;
         
         me.callParent( arguments );
-        
-        Ext.each(['entries','plays','winners','times'],function(name){
-            me.blocks[name] = me.getEl().down('.stat-block-'+name);
-            var canvas = me.circles[name] = me.blocks[name].createChild({
-                tag: 'canvas',
-                cls: 'circle',
-                width: 80,
-                height: 80
-            });
-            if( !canvas.dom.getContext ) return;
-            var percent = me.getData()[name+'_percent'],
-                ctx = canvas.dom.getContext('2d');
-            ctx.beginPath();
-            ctx.fillStyle = '#ffffff';
-            ctx.moveTo(40,40);
-            ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * 1), false);
-            ctx.moveTo(40,40);
-            ctx.closePath();
-            ctx.fill();
-            ctx.beginPath();
-            ctx.fillStyle = 'rgba('+parseInt(255*percent)+','+parseInt(255 * (1-percent))+',0,.4)';
-            ctx.moveTo(40,40);
-            ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
-            ctx.moveTo(40,40);
-            ctx.closePath();
-            ctx.fill();
-        });
-        
-        var data = me.getData();
+        me.addCircles();
         
     },
     
@@ -195,16 +167,18 @@ Ext.define('Bozuko.view.contest.Overview',{
         var me = this;
         if( record ){
             if(me.record ) me.unPubSub();
-            this.record = record;
+            me.record = record;
             me.initPubSub();
         }
-        this.callParent([this.getData()]);
+        me.callParent([me.getData()]);
+        me.addCircles();
     },
     
     unPubSub : function(){
         var me = this,
             refresh = me.getCallback('refresh');
         Bozuko.PubSub.unsubscribe('contest/win',{contest_id: me.record.get('_id')}, refresh);
+        Bozuko.PubSub.unsubscribe('contest/play',{contest_id: me.record.get('_id')}, refresh);
         Bozuko.PubSub.unsubscribe('contest/entry',{contest_id: me.record.get('_id')}, refresh);
         Bozuko.PubSub.unsubscribe('prize/redeemed',{contest_id: me.record.get('_id')}, refresh);
     },
@@ -214,28 +188,57 @@ Ext.define('Bozuko.view.contest.Overview',{
             refresh = me.getCallback('refresh');
             
         Bozuko.PubSub.subscribe('contest/win',{contest_id: me.record.get('_id')}, refresh);
+        Bozuko.PubSub.subscribe('contest/play',{contest_id: me.record.get('_id')}, refresh);
         Bozuko.PubSub.subscribe('contest/entry',{contest_id: me.record.get('_id')}, refresh);
         Bozuko.PubSub.subscribe('prize/redeemed',{contest_id: me.record.get('_id')}, refresh);
     },
     
     refresh : function(){
         var me = this;
-        console.log('refresh...');
         try{
-            me.record.reload({
+            me.record.load({
                 scope : me,
                 success : function(){
-                    console.log('success');
                     me.update();
                 },
                 callback : function(){
-                    console.log('callback');
+                    
                 }
             });
         }catch(e){
             console.log(e);
         }
-        
+    },
+    
+    addCircles : function(){
+        var me = this;
+        if( !me.rendered ) return;
+        Ext.each(['entries','plays','winners','times'],function(name){
+            me.blocks[name] = me.getEl().down('.stat-block-'+name);
+            var canvas = me.circles[name] = me.blocks[name].createChild({
+                tag: 'canvas',
+                cls: 'circle',
+                width: 80,
+                height: 80
+            });
+            if( !canvas.dom.getContext ) return;
+            var percent = me.getData()[name+'_percent'],
+                ctx = canvas.dom.getContext('2d');
+            ctx.beginPath();
+            ctx.fillStyle = '#ffffff';
+            ctx.moveTo(40,40);
+            ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * 1), false);
+            ctx.moveTo(40,40);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba('+parseInt(255*percent)+','+parseInt(255 * (1-percent))+',0,.4)';
+            ctx.moveTo(40,40);
+            ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
+            ctx.moveTo(40,40);
+            ctx.closePath();
+            ctx.fill();
+        });
     }
     
 });
