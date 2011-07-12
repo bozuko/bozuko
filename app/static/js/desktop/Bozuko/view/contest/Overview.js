@@ -255,7 +255,6 @@ Ext.define('Bozuko.view.contest.Overview',{
         else{
             r=255,g=0,b=0;
         }
-        console.log(['rgba(',r,g,b,'.5)'].join(','));
         return ['rgba('+r,g,b,'.5)'].join(',');
     }
     

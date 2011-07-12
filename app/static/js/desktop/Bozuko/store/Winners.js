@@ -42,7 +42,6 @@ Ext.define('Bozuko.store.Winners', {
         if( !me.page_id && !me.contest_id ) selector = true;
         
         var reload = function(){
-            console.log('reload', arguments);
             if( !me.bufferedLoadTimeout ) me.bufferedLoadTimeout = Ext.defer( function(){
                 me.load();
                 me.bufferedLoadTimeout = false;
