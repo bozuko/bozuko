@@ -255,7 +255,7 @@ exports['game tests'] = {
                     }
                     // we also want to see if we won
                     if( result.win ){
-                        win_results.push(result);
+                        if( !result.free_play ) win_results.push(result);
                         wins++;
                     }
                     callback(null, '');

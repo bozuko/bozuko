@@ -244,28 +244,7 @@ exports.routes = {
                         if( b.state=='active' && a.state != 'active' ) return 1;
                         return +b.start-a.start;
                     });
-                    var ret = [];
-                    
-                    // lets get the prizes information as well, this should be done in the model
-                    var prizes = {};
-                    contests.forEach(function(contest){
-                        contest.prizes.forEach(function(prize){
-                            prize.redeemed = 0;
-                            prize.won = 0;
-                            prizes[String(prize.id)] = prize;
-                        });
-                    });
-                    
-                    return Bozuko.models.Prize.find({id: {$in: Object.keys(prizes)}}, {_id: 1, redeemed: 1, user_id: 1}, {sort: {_id: 1}},function(error, ar){
-                        if( error ) return error.send(res);
-                        ar.forEach(function(item){
-                            var id = String(item.id);
-                            prizes[id].won++;
-                            if( item.redeemed ) prizes[id].redeemed++;
-                            console.log(prize);
-                        });
-                        return res.send({items:contests});
-                    });
+                    return res.send({items:contests});
                 });
             }
         },

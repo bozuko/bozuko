@@ -40,8 +40,9 @@ exports.locals = {
     scripts:[
     ],
     styles:[
-        '/css/desktop/style.css',
-        '/css/desktop/layout.css'
+        // Date now forces styles to refresh after a server reboot
+        '/css/desktop/style.css?'+Date.now(),
+        '/css/desktop/layout.css?'+Date.now()
     ]
 };
 

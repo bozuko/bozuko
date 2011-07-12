@@ -6,7 +6,8 @@ Ext.define('Admin.view.contest.report.Panel' ,{
     requires: [
         'Admin.view.contest.report.Details',
         'Bozuko.view.winners.List',
-        'Bozuko.view.chart.Basic'
+        'Bozuko.view.chart.Basic',
+        'Bozuko.view.contest.Overview'
     ],
     
     layout: {
@@ -51,9 +52,9 @@ Ext.define('Admin.view.contest.report.Panel' ,{
         */
         
         me.items = [{
-            xtype           :'contestdetails',
+            record          :me.record,
+            xtype           :'contestoverview',
             region          :'north',
-            html            :'Contest Details',
             border          :false
         },{
             region          :'center',
@@ -67,7 +68,7 @@ Ext.define('Admin.view.contest.report.Panel' ,{
             xtype           :'winnerslist',
             region          :'east',
             width           :250,
-            margin          :'0 2 2',
+            margin          :'2 2 2',
             title           :'Winners List'
         }];
         me.callParent();
@@ -77,7 +78,7 @@ Ext.define('Admin.view.contest.report.Panel' ,{
     setRecord : function(record){
         var me = this;
         // set the record...
-        me.down('contestdetails').update( record.data );
+        me.down('contestoverview').update( record );
         me.down('winnerslist').setContest( record );
         me.down('bozukochartbasic').contest_id = record.get('_id');
         me.down('[ref=details-campaign-text]').setText(record.get('name'));

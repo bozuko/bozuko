@@ -761,12 +761,19 @@ Contest.method('savePrize', function(opts, callback) {
             }
         }
         
-        prize.won++;
-        return self.save(function(error){
-            return user_prize.save(function(err) {
-                if (err) return callback(err);
-                return callback(null, user_prize);
-            });
+        // this 'if' is for backwards compatability
+        if( ~prize.won ) Bozuko.models.Contest.collection.update(
+            {'prizes._id':prize._id},
+            {$inc: {'prizes.$.won':1}},
+            function(error){
+                if( error ) console.error( error );
+                else console.log('updated won');
+            }
+        );
+        
+        return user_prize.save(function(err) {
+            if (err) return callback(err);
+            return callback(null, user_prize);
         });
     });
 });

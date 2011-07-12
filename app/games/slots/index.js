@@ -40,9 +40,9 @@ Slots.prototype.process = function(outcome){
             icon = 'free_spin';
         }
         else{
-	console.error(self.prizes);
-	    var index = self.prizes.indexOf( self.contest.prizes[outcome] );
+			var index = self.prizes.indexOf( self.contest.prizes[outcome] );
             icon = icons[index];
+			console.log('icon for win '+icon)
         }
         ret = [icon,icon,icon];
     }
