@@ -268,7 +268,7 @@ fieldset .x-fieldset-header {
   margin: 5px;
   text-align: center;
   position: relative;
-  padding: 10px;
+  padding: 0 10px 10px;
   min-width: 80px;
 }
 .contest-overview .stat-block h3 {
@@ -279,13 +279,15 @@ fieldset .x-fieldset-header {
 .contest-overview .stat-block .stat-info .current {
   display: block;
   font-weight: normal;
-  font-size: 28px;
+  font-size: 30px;
   line-height: 46px;
   font-family: ArvoRegular;
+  color: #333;
 }
 .contest-overview .stat-block .stat-info .total {
   display: block;
   font-size: 11px;
+  color: #999;
 }
 .contest-overview .stat-block .info {
   z-index: 10;
@@ -297,4 +299,20 @@ fieldset .x-fieldset-header {
   bottom: 0;
   margin-left: -40px;
   margin-top: -40px;
+}
+.contest-overview .contest-info {
+  float: left;
+  padding: 10px;
+}
+.contest-overview .contest-info .info-row {
+  overflow: hidden;
+  clear: both;
+  padding-bottom: .6em;
+}
+.contest-overview .contest-info .info-row label, .contest-overview .contest-info .info-row span {
+  float: left;
+}
+.contest-overview .contest-info .info-row label {
+  width: 80px;
+  font-weight: bold;
 }
