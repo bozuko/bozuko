@@ -44,15 +44,6 @@ Ext.define('Bozuko.view.contest.Overview',{
                             '</div>',
                         '</div>',
                     '</div>',
-                    '<div class="stat-block stat-block-times">',
-                        '<div class="info">',
-                            '<h3>Day</h3>',
-                            '<div class="stat-info">',
-                                '<span class="current">{times_current}</span>',
-                                '<span class="total">of {times_total}</span>',
-                            '</div>',
-                        '</div>',
-                    '</div>',
                     '<div class="stat-block stat-block-plays">',
                         '<div class="info">',
                             '<h3>Plays</h3>',
@@ -68,6 +59,15 @@ Ext.define('Bozuko.view.contest.Overview',{
                             '<div class="stat-info">',
                                 '<span class="current">{winners_current}</span>',
                                 '<span class="total">of {winners_total}</span>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                    '<div class="stat-block stat-block-times">',
+                        '<div class="info">',
+                            '<h3>Day</h3>',
+                            '<div class="stat-info">',
+                                '<span class="current">{times_current}</span>',
+                                '<span class="total">of {times_total}</span>',
                             '</div>',
                         '</div>',
                     '</div>',
@@ -232,13 +232,31 @@ Ext.define('Bozuko.view.contest.Overview',{
             ctx.closePath();
             ctx.fill();
             ctx.beginPath();
-            ctx.fillStyle = 'rgba('+parseInt(255*percent)+','+parseInt(255 * (1-percent))+',0,.4)';
+            ctx.fillStyle = me.rgb(percent);
             ctx.moveTo(40,40);
             ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
             ctx.moveTo(40,40);
             ctx.closePath();
             ctx.fill();
         });
+    },
+    
+    rgb : function(percent){
+        var r,g,b;
+        if( percent < .25 ){
+            r=29,g=177,b=53;
+        }
+        else if( percent < .50 ){
+            r=255,g=255,b=0;
+        }
+        else if( percent < .75 ){
+            r=255,g=127,b=0;
+        }
+        else{
+            r=255,g=0,b=0;
+        }
+        console.log(['rgba(',r,g,b,'.5)'].join(','));
+        return ['rgba('+r,g,b,'.5)'].join(',');
     }
     
 });
