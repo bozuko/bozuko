@@ -330,3 +330,7 @@ fieldset .x-fieldset-header {
   font-family: ArvoRegular;
   font-weight: normal;
 }
+.contest-list .contest-overview .app-buttons {
+  padding-left: 10px;
+  text-align: left;
+}
