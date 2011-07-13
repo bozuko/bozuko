@@ -58,9 +58,14 @@ Ext.define('Bozuko.model.Contest', {
         me.prizes().each(function(prize){
             qty += prize.get('total');
         });
-        if( me.entry_config && me.entry_config[0].type == 'facebook/checkin' && me.entry_config[0].enable_like ){
-            qty *= 2;
+        try{
+            if( me.entry_config[0].type == 'facebook/checkin' && me.entry_config[0].options.enable_like ){
+                qty *= 2;
+            }
+        }catch(e){
+            // no big deal, probably didn't have options
         }
+        
         return qty * me.get('win_frequency');
     },
     

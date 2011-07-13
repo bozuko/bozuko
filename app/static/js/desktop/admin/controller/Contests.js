@@ -28,7 +28,7 @@ Ext.define('Admin.controller.Contests' ,{
                 // setup our contest object
                 itemdblclick : this.onContestDblClick
             },
-            'contestsview' : {
+            'contestlist' : {
                 // setup our contest object
                 itemclick : this.onContestItemClick,
                 render: this.onContestsViewRender

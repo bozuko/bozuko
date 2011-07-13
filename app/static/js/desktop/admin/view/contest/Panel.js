@@ -4,7 +4,7 @@ Ext.define('Admin.view.contest.Panel' ,{
     alias : 'widget.contestpanel',
     
     requires: [
-        'Admin.view.contest.View'
+        'Bozuko.view.contest.List'
     ],
     layout: 'border',
     
@@ -13,7 +13,6 @@ Ext.define('Admin.view.contest.Panel' ,{
         
         me.items = [{
             region          :'center',
-            bodyPadding     :10,
             autoScroll      :true,
             border          :false,
             bodyCls         :'contestpanel',
@@ -29,7 +28,7 @@ Ext.define('Admin.view.contest.Panel' ,{
                 autoEl          :{tag:'h1'},
                 html            :'Campaigns'
             },{
-                xtype           :'contestsview',
+                xtype           :'contestlist',
                 store           :me.store
             }]
         },{

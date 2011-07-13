@@ -93,7 +93,7 @@ exports.routes = {
                     );
                     res.locals.styles.unshift(
                         '/js/ext-4.0/lib/resources/css/ext-all-gray.css',
-                        '/css/desktop/business/style.css',
+                        '/css/desktop/business/style.css?v2',
                         '/css/desktop/admin/app.css'
                     );
                     return res.render('beta/index');

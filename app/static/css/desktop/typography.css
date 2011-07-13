@@ -216,7 +216,7 @@ ul.errors li {
   list-style: disc;
   color: darkred;
 }
-.info {
+.positive-info {
   margin: 10px 0;
   padding-left: 32px;
   padding-top: 4px;
@@ -225,7 +225,7 @@ ul.errors li {
   background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png") no-repeat 0px 0px;
   font-weight: bold;
 }
-.info p {
+.positive-info p {
   margin: 0;
   padding: 0;
 }
