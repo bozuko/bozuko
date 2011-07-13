@@ -56,15 +56,18 @@
     }
 }
 
-.buttons {
+.app-buttons {
     clear: both;
     display: block;
-    border-top: 1px solid #ddd;
-    margin-top: 6px;
-    padding-top: 6px;
+    border-top: 1px solid #f8f8f8;
+    text-align:right;
+    padding-bottom: 0;
+    margin-bottom: 0;
     
     li {
         display: inline;
+        margin: 0;
+        padding: 0;
         
         a {
             margin-right: 14px;
@@ -312,19 +315,18 @@ fieldset{
     .x-panel-body {
         background: #f3f3f3;
     }
-    .stat-blocks {
-        float: right;
-    }
     .stat-block {
-        float: left;
+        float: right;
         margin : 5px;
         text-align: center;
         position: relative;
         padding: 0 10px 10px;
         min-width: 80px;
         h3 {
+            color: #333;
+            font-weight: bold;
             margin-top: 0;
-            font-size: 13px;
+            font-size: 12px;
             margin-bottom: 1em;
         }
         .stat-info {
@@ -339,7 +341,7 @@ fieldset{
             .total {
                 display: block;
                 font-size: 11px;
-                color: #999;
+                color: #000;
             }
         }
         
@@ -358,7 +360,7 @@ fieldset{
     }
     .contest-info {
         float: left;
-        padding: 10px;
+        padding: 10px 10px 0;
         .info-row {
             overflow: hidden;
             clear: both;
@@ -369,6 +371,24 @@ fieldset{
             label {
                 width: 80px;
                 font-weight: bold;
+            }
+        }
+    }
+}
+
+.contest-list {
+    .contest-overview {
+        overflow: hidden;
+        background: #f3f3f3;
+        border-bottom: 1px solid #ccc;
+        
+        .info-row {
+            h3 {
+                color: #000;
+                font-size: 22px;
+                line-height: 30px;
+                font-family: ArvoRegular;
+                font-weight: normal;
             }
         }
     }

@@ -19,6 +19,43 @@ Ext.define('Bozuko.view.contest.Overview',{
         Ext.apply(me, {
             tpl : new Ext.XTemplate(
                 
+                '<div class="stat-block stat-block-times">',
+                    '<div class="info">',
+                        '<h3>Day</h3>',
+                        '<div class="stat-info">',
+                            '<span class="current">{times_current}</span>',
+                            '<span class="total">of {times_total}</span>',
+                        '</div>',
+                    '</div>',
+                '</div>',
+                '<div class="stat-block stat-block-winners">',
+                    '<div class="info">',
+                        '<h3>Won Prizes</h3>',
+                        '<div class="stat-info">',
+                            '<span class="current">{winners_current}</span>',
+                            '<span class="total">of {winners_total}</span>',
+                        '</div>',
+                    '</div>',
+                '</div>',
+                '<div class="stat-block stat-block-plays">',
+                    '<div class="info">',
+                        '<h3>Plays</h3>',
+                        '<div class="stat-info">',
+                            '<span class="current">{plays_current}</span>',
+                            '<span class="total">of {plays_total}</span>',
+                        '</div>',
+                    '</div>',
+                '</div>',
+                '<div class="stat-block stat-block-entries">',
+                    '<div class="info">',
+                        '<h3>Entries</h3>',
+                        '<div class="stat-info">',
+                            '<span class="current">{entries_current}</span>',
+                            '<span class="total">of {entries_total}</span>',
+                        '</div>',
+                    '</div>',
+                '</div>',
+                
                 '<div class="contest-info">',
                     '<div class="info-row">',
                         '<label>Campaign:</label>',
@@ -32,44 +69,9 @@ Ext.define('Bozuko.view.contest.Overview',{
                         '<label>Timeline:</label>',
                         '<span>{timeline}</span>',
                     '</div>',
-                '</div>',
-                
-                '<div class="stat-blocks">',
-                    '<div class="stat-block stat-block-entries">',
-                        '<div class="info">',
-                            '<h3>Entries</h3>',
-                            '<div class="stat-info">',
-                                '<span class="current">{entries_current}</span>',
-                                '<span class="total">of {entries_total}</span>',
-                            '</div>',
-                        '</div>',
-                    '</div>',
-                    '<div class="stat-block stat-block-plays">',
-                        '<div class="info">',
-                            '<h3>Plays</h3>',
-                            '<div class="stat-info">',
-                                '<span class="current">{plays_current}</span>',
-                                '<span class="total">of {plays_total}</span>',
-                            '</div>',
-                        '</div>',
-                    '</div>',
-                    '<div class="stat-block stat-block-winners">',
-                        '<div class="info">',
-                            '<h3>Won Prizes</h3>',
-                            '<div class="stat-info">',
-                                '<span class="current">{winners_current}</span>',
-                                '<span class="total">of {winners_total}</span>',
-                            '</div>',
-                        '</div>',
-                    '</div>',
-                    '<div class="stat-block stat-block-times">',
-                        '<div class="info">',
-                            '<h3>Day</h3>',
-                            '<div class="stat-info">',
-                                '<span class="current">{times_current}</span>',
-                                '<span class="total">of {times_total}</span>',
-                            '</div>',
-                        '</div>',
+                    '<div class="info-row">',
+                        '<label>Status:</label>',
+                        '<span>{state}</span>',
                     '</div>',
                 '</div>'
             ),
@@ -97,8 +99,9 @@ Ext.define('Bozuko.view.contest.Overview',{
         if( !me.record ) return data;
         
         data.name = me.record.get('name') || 'Untitled';
-        data.game = me.record.get('game') || 'Untitled';
-        data.game = data.game.substr(0,1).toUpperCase()+data.game.substr(1);
+        data.game = me.record.get('game');
+        data.state = Ext.String.capitalize( me.record.get('state') );
+        data.game = Ext.String.capitalize(data.game);
         var game_cfg = me.record.get('game_config');
         if( game_cfg && game_cfg.name ){
             data.game = game_cfg.name+' ('+data.game+')';
@@ -247,7 +250,7 @@ Ext.define('Bozuko.view.contest.Overview',{
             r=29,g=177,b=53;
         }
         else if( percent < .50 ){
-            r=255,g=255,b=0;
+            r=227,g=244,b=31;
         }
         else if( percent < .75 ){
             r=255,g=127,b=0;

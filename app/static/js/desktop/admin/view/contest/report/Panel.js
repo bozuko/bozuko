@@ -62,8 +62,7 @@ Ext.define('Admin.view.contest.report.Panel' ,{
             contest_id      :me.record.get('_id'),
             border          :false,
             bodyPadding     :10,
-            autoScroll      :true,
-            html            :'Report Panel'
+            autoScroll      :true
         },{
             xtype           :'winnerslist',
             region          :'east',
