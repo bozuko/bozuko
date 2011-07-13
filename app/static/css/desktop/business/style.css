@@ -319,6 +319,7 @@ fieldset .x-fieldset-header {
   font-weight: bold;
 }
 .contest-list .contest-overview {
+  padding: 15px 0;
   overflow: hidden;
   background: #f3f3f3;
   border-bottom: 1px solid #ccc;
