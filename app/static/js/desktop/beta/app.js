@@ -17,7 +17,8 @@ Ext.Loader.require('Bozuko.lib.Router', function(){
                     autoCreateViewport: false,
                 
                     controllers: [
-                        'Pages'
+                        'Pages',
+                        'Contests'
                     ],
                     
                     requires:[
