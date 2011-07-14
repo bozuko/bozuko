@@ -21,6 +21,7 @@ exports.transfer_objects = {
             image: "String",
             share_url: "String",
             like_url: "String",
+            like_button_url: "String",
             facebook_page: "String",
             category: "String",
             website: "String",
@@ -64,6 +65,7 @@ exports.transfer_objects = {
                 page.liked = false;
                 page.image = page.image + (~page.image.indexOf('?')?'&':'?')+'return_ssl_resources=1';
                 page.like_url = burl('/facebook/'+fid+'/like.html');
+                page.like_button_url = burl('/facebook/'+fid+'/like_button.html');
                 page.links = {
                     facebook_page       :'http://facebook.com/'+fid,
                     facebook_checkin    :'/facebook/'+fid+'/checkin'
@@ -75,6 +77,7 @@ exports.transfer_objects = {
                 }
                 if( user ){
                     page.like_url +='?token='+user.token;
+                    page.like_button_url += '?token='+user.token;
                     if( page.registered ){
     
                         // favorite

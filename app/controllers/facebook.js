@@ -115,6 +115,8 @@ exports.routes = {
     },
 
     '/facebook/:id/like.html': {
+        
+        alias : '/facebook/:id/like_button.html',
 
         get: {
 
@@ -125,30 +127,20 @@ exports.routes = {
             },
 
             handler : function(req, res){
-                // ... no dice ...
-                /*
-                Bozuko.service('facebook').like({
-                    user: req.session.user,
-                    object_id   : req.param('id')
-                },
-                function(err, result) {
-                    if (err) {
-                        return err.send(res);
-                    }
-                    return res.send(Bozuko.transfer('success_message', {
-                        success: true
-                    }));
-                });
-                */
-                // this
+                
+                var tmpl = ( /like_button/.test(req.url) ) ? 'like_button' : 'like';
+                if( tmpl == 'like_button' ){
+                    res.locals.layout = false;
+                }
+                
                 return Bozuko.service('facebook').place({place_id: req.param('id')}, function( error, place){
                     if( error ){
                         res.locals.error = error;
-                        return res.render('app/facebook/like');
+                        return res.render('app/facebook/'+tmpl);
                     }
                     if( !place ){
                         res.locals.place = null;
-                        return res.render('app/facebook/like');
+                        return res.render('app/facebook/'+tmpl);
                     }
                     res.locals.place = place;
                     // see if we can find a Bozuko place...
@@ -165,7 +157,7 @@ exports.routes = {
                             res.locals.place.image = res.locals.place.image.replace(/type=large/, 'type=square');
                         }
                         res.locals.title = "Like "+place.name+" on Facebook!";
-                        return res.render('app/facebook/like');
+                        return res.render('app/facebook/'+tmpl);
                     });
                 });
             }
