@@ -53,7 +53,7 @@ var NativePlugin = module.exports = function NativePlugin(schema, options){
         var self = this;
         var cb = arguments[arguments.length-1];
         arguments[arguments.length-1] = function(error, doc){
-            if (error) return callback(error);
+            if (error) return cb(error);
 
             // convert to model object
             var model = new self();
