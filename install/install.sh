@@ -23,3 +23,9 @@ git clone git@github.com:bozuko/commando.git
 npm install commando
 rm -rf commando
 cp ~/bozuko/install/config/commando.conf ~/.commando
+
+#install mycroft
+git clone git@github.com:bozuko/mycroft.git
+npm install mycroft
+rm -rf mycroft
+cp ~/bozuko/install/config/mycroft.conf ~/.mycroft
