@@ -142,7 +142,18 @@ exports.routes = {
             else if(req.param('phone_id') && req.param('phone_type')){
                 req.session.user_redirect = '/user/mobile';
             }
-            return Bozuko.service(service).login(req,res,'user',req.session.user_redirect||'/user');
+            return Bozuko.service(service).login(
+                req,
+                res,
+                'user',
+                req.session.user_redirect||'/user',
+                null,
+                function(error_reason, req, res){
+                    res.locals.title = ":'(";
+                    res.render('app/user/permission_denied');
+                    return false;
+                }
+            );
         }
     },
 

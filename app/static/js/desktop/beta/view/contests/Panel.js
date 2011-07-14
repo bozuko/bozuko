@@ -13,6 +13,8 @@ Ext.define('Beta.view.contests.Panel', {
         
         Ext.apply(me, {
             bodyCls: 'contestpanel',
+            layout : 'card',
+            activeItem: 0,
             items : [{
                 xtype           :'contestlist',
                 store           :me.store,
