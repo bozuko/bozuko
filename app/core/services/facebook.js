@@ -62,8 +62,8 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     }
     else if( error_reason ){
         /**
-         *          * Handle denied access
-         *          */
+         * User did not allow permissions...
+         */
         var ret = req.session.redirect || defaultReturn || '/';
         ret+= (ret.indexOf('?') != -1 ? '&' : '?')+'error_reason='+error_reason;
 
