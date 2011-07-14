@@ -1,5 +1,9 @@
-Ext.define('Beta.controller.Pages' ,{
+Ext.define('Beta.controller.Contests' ,{
     extend: 'Bozuko.lib.app.Controller',
+    
+    requires: [
+        'Bozuko.view.contest.Reports'
+    ],
     
     views: [
         
@@ -22,9 +26,21 @@ Ext.define('Beta.controller.Pages' ,{
         var me = this;
         me.control({
             'contestlist' : {
-                'itemclick' : me.onContestItemClick
+                'itemclick'     :me.onContestItemClick
+            },
+            'contestreports button[action=back]' : {
+                'click'         :me.onContestReportsBackButton
             }
         });
+    },
+    
+    onContestReportsBackButton : function(btn){
+        var panel = btn.up('contestspanel');
+        var contest = panel.getLayout().getActiveItem();
+        panel.getLayout().setActiveItem( 0 );
+        panel.doComponentLayout();
+        panel.remove(contest);
+        contest.destroy();
     },
     
     onLaunch: function(){
@@ -54,8 +70,7 @@ Ext.define('Beta.controller.Pages' ,{
     
     openContest : function(record, cmp){
         // create a new
-        var panel = cmp.up('pagepanel'),
-            navbar = panel.down('[ref=page-navbar]'),
+        var panel = cmp.up('contestspanel'),
             id = record.get('_id');
 
         if( !panel.reports ) panel.reports = {};
@@ -63,10 +78,14 @@ Ext.define('Beta.controller.Pages' ,{
             panel.reports[id] = panel.add({
                 border: false,
                 record: record,
-                xtype: 'contestreportpanel'
+                xtype: 'contestreports',
+                listeners: {
+                    destroy : function(){
+                        delete panel.reports[id];
+                    }
+                }
             });
         }
-        navbar.hide();
         panel.getLayout().setActiveItem(panel.reports[id]);
         panel.doComponentLayout();
     }
