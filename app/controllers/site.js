@@ -1,7 +1,7 @@
 var Content = Bozuko.require('util/content'),
     validator = require('validator'),
     mailer = Bozuko.require('util/mail'),
-    inpsect = require('util').inspect,
+    inspect = require('util').inspect,
     async = require('async'),
     crypto = require('crypto');
 

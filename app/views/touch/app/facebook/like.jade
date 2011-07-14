@@ -23,7 +23,7 @@
       p Like us on Facebook below!
       script
         APP_ID = #{Bozuko.config.facebook.app.id};
-      script(src="https://connect.facebook.net/en_US/all.js#appId=176409089082816&amp;xfbml=1")
+      script(src="https://connect.facebook.net/en_US/all.js#appId="+Bozuko.config.facebook.app.id+"&amp;xfbml=1")
       script(src="/js/touch/lib/http.js?v2")
       script(src="/js/touch/app/facebook/like.js?v2")
       .arrows
