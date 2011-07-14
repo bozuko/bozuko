@@ -89,7 +89,7 @@ Page.method('getGoogleMapLink', function(){
     var url = "http://maps.google.com/maps?q="
             + encodeURIComponent([this.name,this.location.street,this.location.city,this.location.state].join(', '))
             + '&ll='+this.location.coords[1]+','+this.location.coords[0]
-               
+
     return url;
 });
 
@@ -134,16 +134,16 @@ Page.method('getActiveContests', function(user, callback){
 
     Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, {sort: {start: -1}}, function(err, contests) {
         if (err) return callback(err);
-        
-        
+
+
         var exhausted_contests = {};
         var exhausted_contest_ids = [];
         var contest;
-        
+
         for (var i = 0; i < contests.length; i++) {
             contest = contests[i];
-            
-            
+
+
             // Is contest exhausted?
             if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
                 exhausted_contests[String(contest._id)] = contest;
@@ -151,7 +151,7 @@ Page.method('getActiveContests', function(user, callback){
                 contests.splice(i, 1);
             }
         }
-       
+
         if (!user_id) return callback(null, contests);
 
         // Find user entries that still have tokens for exhausted contests.
@@ -179,12 +179,12 @@ Page.method('getActiveContests', function(user, callback){
                         contests.push(exhausted_contests[String(cid)]);
                     }
                 }
-                
+
                 return callback( null, contests);
 
             }
         );
-        
+
 
         return callback(null, contests);
     });
@@ -332,6 +332,7 @@ Page.method('checkin', function(user, options, callback) {
                 return async.forEach( contests,
 
                     function(contest, cb){
+
                         // check to make sure that the contest requires a checkin
                         var found = false;
                         contest.entry_config.forEach(function(entry_config){
@@ -346,6 +347,17 @@ Page.method('checkin', function(user, options, callback) {
                         var entry = Bozuko.entry(options.service+'/checkin', user, {
                             checkin: checkin
                         });
+
+                        entry.configure(contest.entry_config[0]);
+
+                        // Exhausted contests can't be checked into. getActiveContests() may return
+                        // exhausted contests because the user might still have tokens for the contest
+                        // even though no more tokens can be distributed via entry.
+                        //
+                        if (contest.token_cursor > contest.total_plays - contest.total_free_plays - entry.getTokenCount()) {
+                            return cb(null);
+                        }
+
                         return contest.enter( entry, function(error, entry){
                             if( error ){
                                 console.log('error entering contest');
