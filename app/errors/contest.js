@@ -14,7 +14,7 @@ module.exports = {
     },
 
     inactive : {
-        title: "Gave over",
+        title: "Game over",
         message: "Sorry, this game has ended :("
     },
 
