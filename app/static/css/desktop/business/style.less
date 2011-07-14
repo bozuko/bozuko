@@ -3,7 +3,10 @@
 
 .contestpanel {
     h1 {
-        font-size: 20px;
+        font-family: ArvoRegular;
+        font-weight: normal;
+        font-size: 32px;
+        line-height: 1.3em;
         margin-bottom: 1em;
     }
 }
@@ -59,7 +62,6 @@
 .app-buttons {
     clear: both;
     display: block;
-    border-top: 1px solid #f8f8f8;
     text-align:right;
     padding-bottom: 0;
     margin-bottom: 0;
@@ -327,20 +329,21 @@ fieldset{
             font-weight: bold;
             margin-top: 0;
             font-size: 12px;
-            margin-bottom: 1em;
+            margin-bottom: 2.2em;
         }
         .stat-info {
             .current {
                 display: block;
                 font-weight: normal;
                 font-size: 30px;
-                line-height: 46px;
+                line-height: 34px;
                 font-family: ArvoRegular;
                 color: #333;
             }
             .total {
                 display: block;
-                font-size: 11px;
+                padding-top:3px;
+                font-size: 10px;
                 color: #000;
             }
         }
@@ -377,12 +380,36 @@ fieldset{
 }
 
 .contest-list {
+    border-top: 1px solid #eee;
     .contest-overview {
+        .transition(background, .5s, ease-out);
         padding: 15px 0;
         overflow: hidden;
         background: #f3f3f3;
         border-bottom: 1px solid #ccc;
+        border-top: 1px solid #ffffff;
         
+        /*
+        .stat-info {
+            .current {
+                padding-top: 0px;
+                font-size: 24px;
+                line-height: 26px;
+                
+            }
+            .total {
+                font-size: 10px;
+            }
+        }
+        .circle {
+            margin-left: -30px;
+            margin-top: -30px;
+        }
+        
+        .stat-block {
+            min-width: 60px;
+        }
+        */
         .info-row {
             h3 {
                 color: #000;
@@ -394,8 +421,73 @@ fieldset{
         }
         
         .app-buttons {
+            padding-top: 10px;
             padding-left: 10px;
             text-align: left;
+        }
+        
+        .contest-info {
+            padding-top: 0;
+        }
+    }
+    
+    .contest-overview-over{
+        background: #e8e8e8;
+    }
+}
+
+.player-list {
+    
+    .player-item {
+        position: relative;
+        float: left;
+        height: 50px;
+        width: 50px;
+        margin: 8px;
+        .ct {
+            overflow: hidden;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 50px;
+            background: #f3f3f3;
+            border: 1px solid #ccc;
+            .transition(all,.2s, ease-out);
+            
+            img {
+                .transition(all,.2s, ease-out);
+                width: 50px;
+                height: 50px;
+            }
+            
+            .name {
+                display: block;
+                overflow: hidden;
+                font-size: 10px;
+                line-height: 12px;
+                text-align: center;
+                color: #333;
+            }
+            
+        }
+    }
+    
+    .player-item-over{
+        .ct {
+            left: -6px;
+            width: 62px;
+            height: 93px;
+            .box_shadow(0,0,6px,#ccc);
+            
+            img {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .name {
+                height: 24px;
+            }
         }
     }
 }

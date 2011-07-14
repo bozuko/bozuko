@@ -20,6 +20,8 @@ Ext.define('Admin.view.contest.edit.Game' ,{
             fieldLabel      :'Game',
             forceSelection  :true,
             editable        :false,
+            value           :'slots',
+            queryMode       :'local',
             store           :Ext.create('Ext.data.Store',{
                 fields:['value', 'text'],
                 data:[
@@ -41,6 +43,10 @@ Ext.define('Admin.view.contest.edit.Game' ,{
             xtype           :'combo',
             name            :'free_play_pct',
             fieldLabel      :'Free Plays',
+            value           :'30%',
+            queryMode       :'local',
+            editable        :false,
+            forceSelection  :true,
             store           :Ext.create('Ext.data.Store',{
                 fields:['value', 'text'],
                 data:[
@@ -76,6 +82,8 @@ Ext.define('Admin.view.contest.edit.Game' ,{
                     fieldLabel      :'Theme',
                     forceSelection  :true,
                     editable        :false,
+                    queryMode       :'local',
+                    value           :'default',
                     store           :Ext.create('Ext.data.Store',{
                         fields:['value', 'text'],
                         data:[
@@ -96,6 +104,8 @@ Ext.define('Admin.view.contest.edit.Game' ,{
                     fieldLabel      :'Theme',
                     forceSelection  :true,
                     editable        :false,
+                    queryMode       :'local',
+                    value           :'default',
                     store           :Ext.create('Ext.data.Store',{
                         fields:['value', 'text'],
                         data:[

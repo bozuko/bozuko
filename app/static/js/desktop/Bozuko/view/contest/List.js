@@ -15,7 +15,10 @@ Ext.define('Bozuko.view.contest.List' ,{
         me.callbacks = {};
         Ext.apply( me, {
             cls: 'contest-list',
+            circleRadius: 40,
+            trackOver: true,
             itemSelector: '.contest-overview',
+            overItemCls : 'contest-overview-over',
             itemCls : 'contest-overview',
             itemTpl : new Ext.XTemplate(
                 
@@ -34,6 +37,10 @@ Ext.define('Bozuko.view.contest.List' ,{
                     '<div class="info-row">',
                         '<label>Status:</label>',
                         '<span>{State}</span>',
+                    '</div>',
+                    '<div class="info-row">',
+                        '<label>Prizes:</label>',
+                        '<span>{prizes}</span>',
                     '</div>',
                 '</div>',
                 
@@ -81,7 +88,9 @@ Ext.define('Bozuko.view.contest.List' ,{
                     '<tpl if="this.canEdit(values)">',
                         '<li><a href="javascript:;" class="edit">Edit</a></li>',
                     '</tpl>',
-                    '<li><a href="javascript:;" class="copy">Copy</a></li>',
+                    '<tpl if="this.canCopy(values)">',
+                        '<li><a href="javascript:;" class="copy">Copy</a></li>',
+                    '</tpl>',
                     '<tpl if="this.canPublish(values)">',
                         '<li><a href="javascript:;" class="publish">Publish</a></li>',
                     '</tpl>',
@@ -95,22 +104,32 @@ Ext.define('Bozuko.view.contest.List' ,{
                 {
                     
                     canEdit : function(values){
+                        if( me.actionButtons && !~me.actionButtons.indexOf('edit')) return '';
                         return true || ~['draft', 'published'].indexOf(values.state);
                     },
                     
+                    canCopy : function(values){
+                        if( me.actionButtons && !~me.actionButtons.indexOf('copy')) return '';
+                        return true;
+                    },
+                    
                     canPublish : function(values){
+                        if( me.actionButtons && !~me.actionButtons.indexOf('publish')) return '';
                         return ~['draft'].indexOf(values.state);
                     },
                     
                     canDelete : function(values){
+                        if( me.actionButtons && !~me.actionButtons.indexOf('delete')) return '';
                         return ~['draft','published'].indexOf(values.state);
                     },
                     
                     canCancel : function(values){
+                        if( me.actionButtons && !~me.actionButtons.indexOf('cancel')) return '';
                         return ~['active'].indexOf(values.state);
                     },
                     
                     canReport : function(values){
+                        if( me.actionButtons && !~me.actionButtons.indexOf('report')) return '';
                         return ~['active','complete','cancelled'].indexOf(values.state);
                     }
                 }
@@ -118,7 +137,9 @@ Ext.define('Bozuko.view.contest.List' ,{
             
             listeners : {
                 scope : me,
-                refresh : me.onRefresh
+                refresh : me.onRefresh,
+                itemupdate : me.onItemUpdate,
+                itemadd : me.onItemUpdate
             }
         });
         
@@ -129,11 +150,16 @@ Ext.define('Bozuko.view.contest.List' ,{
         var me = this;
         if( !me.rendered ) return;
         me.store.each(function(record, index){
-            console.log(record);
             me.addCircles( index, record );
         });
         me.initPubSub();
-        
+    },
+    
+    onItemUpdate : function(record, index){
+        var me = this;
+        if( !me.rendered ) return;
+        me.addCircles( index, record );
+        me.initPubSub();
     },
     
     getCallback : function(name){
@@ -201,6 +227,8 @@ Ext.define('Bozuko.view.contest.List' ,{
             data.game = game_cfg.name+' ('+data.game+')';
         }
         
+        data.prizes = record.getPrizeCount()+' ('+record.getTotalPrizeCount()+', $'+record.getTotalPrizesValue()+' total retail value)';
+        
         data.timeline = Ext.Date.format( record.get('start'), 'm/d/Y')+' - '+Ext.Date.format(record.get('end'), 'm/d/Y');
         
         data.entries_current = record.getEntryCount();
@@ -253,35 +281,37 @@ Ext.define('Bozuko.view.contest.List' ,{
     addCircles : function(index, record){
         var me = this;
         if( !me.rendered ) return;
-        var el = me.getNode(index);
+        var el = me.getNode(index),
+            radius = me.circleRadius || 40,
+            diameter = radius * 2;
         Ext.each(['entries','plays','winners','times'],function(name){
             var block = Ext.fly(el).down('.stat-block-'+name);
             var canvas = block.createChild({
                 tag: 'canvas',
                 cls: 'circle',
-                width: 80,
-                height: 80
+                width: diameter,
+                height: diameter
             });
             if( !canvas.dom.getContext ) return;
             var percent = me.getData(record)[name+'_percent'],
                 ctx = canvas.dom.getContext('2d');
             ctx.beginPath();
             ctx.fillStyle = '#ffffff';
-            ctx.moveTo(40,40);
-            ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * 1), false);
-            ctx.moveTo(40,40);
+            ctx.moveTo(radius,radius);
+            ctx.arc(radius,radius,radius,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * 1), false);
+            ctx.moveTo(radius,radius);
             ctx.closePath();
             ctx.fill();
             ctx.beginPath();
             ctx.fillStyle = me.rgb(percent);
-            ctx.moveTo(40,40);
-            ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
-            ctx.moveTo(40,40);
+            ctx.moveTo(radius,radius);
+            ctx.arc(radius,radius,radius,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
+            ctx.moveTo(radius,radius);
             ctx.closePath();
             ctx.fill();
             ctx.beginPath();
             ctx.strokeStyle = '#e0e0e0';
-            ctx.arc(40,40,40,0,Math.PI*2, false);
+            ctx.arc(radius,radius,radius,0,Math.PI*2, false);
             ctx.closePath();
             ctx.stroke();
         });
