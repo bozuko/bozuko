@@ -1,6 +1,7 @@
 var Content = Bozuko.require('util/content'),
     validator = require('validator'),
     mailer = Bozuko.require('util/mail'),
+    inpsect = require('util').inspect,
     async = require('async'),
     crypto = require('crypto');
 
@@ -61,6 +62,7 @@ exports.afterRoute = function(){
     });
 
     app.error(function(err,req,res,next){
+        console.error(inspect(err));
         return self.refs.notFound(req,res,next,err);
     });
 };

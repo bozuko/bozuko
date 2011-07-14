@@ -19,7 +19,10 @@ Ext.define('Admin.view.contest.edit.Entry' ,{
             name            :'type',
             fieldLabel      :'Method of Entry',
             emptyText       :'Please Select the Entry Type',
-            
+            value           :'facebook/checkin',
+            editable        :false,
+            forceSelection  :true,
+            queryMode       :'local',
             store           :Ext.create('Ext.data.Store',{
                 fields:['value', 'text'],
                 data:[

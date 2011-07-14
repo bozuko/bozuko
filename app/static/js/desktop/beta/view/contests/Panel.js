@@ -14,9 +14,10 @@ Ext.define('Beta.view.contests.Panel', {
         Ext.apply(me, {
             bodyCls: 'contestpanel',
             items : [{
-                xtype       :'contestlist',
-                store       :me.store,
-                autoScroll  :true
+                xtype           :'contestlist',
+                store           :me.store,
+                actionButtons   :['report'],
+                autoScroll      :true
             }]    
         });
         

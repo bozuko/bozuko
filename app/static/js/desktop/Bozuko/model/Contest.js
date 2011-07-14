@@ -24,23 +24,23 @@ Ext.define('Bozuko.model.Contest', {
     fields: [
         {name:'_id',                type:'String'},
         {name:'page_id',            type:'String'},
-        {name:'name',               type:'String'},
-        {name:'win_frequency',      type:'Number'},
+        {name:'name',               type:'String',              defaultValue:'Untitled Campaign'},
+        {name:'win_frequency',      type:'Number',              defaultValue:2},
         {name:'engine_type',        type:'String'},
-        {name:'game',               type:'String'},
-        {name:'game_config',        type:'Object'},
-        {name:'auto_rules',         type:'String'},
+        {name:'game',               type:'String',              defaultValue:'slots'},
+        {name:'game_config',        type:'Object',              defaultValue:{theme:'default'}},
+        {name:'auto_rules',         type:'Boolean',             defaultValue:true},
         {name:'rules',              type:'String'},
-        {name:'entry_config',       type:'Array'},
+        {name:'entry_config',       type:'Array',               defaultValue:[{type:'facebook/checkin',tokens:3}]},
         {name:'consolation_config', type:'Array'},
-        {name:'free_play_pct',      type:'Number'},
+        {name:'free_play_pct',      type:'Number',              defaultValue:'30%'},
         {name:'active',             type:'Boolean'},
         {name:'state',              type:'String'},
-        {name:'start',              type:'Date'},
-        {name:'end',                type:'Date'},
+        {name:'start',              type:'Date',                defaultValue:new Date()},
+        {name:'end',                type:'Date',                defaultValue:Ext.Date.add(new Date(), Ext.Date.DAY, 90)},
         {name:'total_entries',      type:'Number'},
         {name:'total_plays',        type:'Number'},
-        {name:'post_to_wall',       type:'Boolean'},
+        {name:'post_to_wall',       type:'Boolean',             defaultValue:true},
         {name:'play_cursor',        type:'Number',              defaultValue:-1},
         {name:'token_cursor',       type:'Number',              defaultValue:0}
     ],
@@ -106,6 +106,20 @@ Ext.define('Bozuko.model.Contest', {
         });
         
         return qty;
+    },
+    
+    getPrizeCount : function(){
+        return this.prizes().getCount();
+    },
+    
+    
+    getTotalPrizesValue : function(){
+        var me = this,
+            value = 0;
+        me.prizes().each(function(prize){
+            value += (prize.get('total')* prize.get('value'));
+        });
+        return value;
     }
     
     
