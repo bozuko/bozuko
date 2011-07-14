@@ -309,12 +309,16 @@ Ext.define('Admin.controller.Contests' ,{
                         record.prizes().each(function(prize){
                             var c = prize.copy();
                             c.set('_id','');
+                            c.set('won', 0);
+                            c.set('redeemed', 0);
                             prizes.add(c);
                         });
 
                         record.consolation_prizes().each(function(prize){
                             var c = prize.copy();
                             c.set('_id','');
+                            c.set('won', 0);
+                            c.set('redeemed', 0);
                             consolations.add(c);
                         });
 

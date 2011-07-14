@@ -242,6 +242,8 @@ Contest.method('publish', function(callback){
     var total_prizes = 0;
     this.prizes.forEach(function(prize){
         total_prizes += prize.total || 0;
+        prize.won = 0;
+        prize.redeemed = 0;
     });
 
     this.total_entries = total_prizes * this.win_frequency;
