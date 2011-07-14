@@ -26,6 +26,24 @@ Ext.define( "Bozuko.lib.data.Model", {
             return;
         }
         me.callParent([options]);
+    },
+    
+    load : function(callbacks){
+        var me = this;
+        if( Ext.type(callbacks) == 'function' ){
+            callbacks = {success: callbacks};
+        }
+        var success = callbacks.success;
+        callbacks.success = function(record){
+            if( record ) me.set(record.data);
+            if( record.associations ) record.associations.each(function(association){
+                if( association.type !== 'hasMany' ) return;
+                me[association.name]().removeAll();
+                me[association.name]().add(record[association.name]().data.items);
+            });
+            if( success && Ext.type(success) == 'function' ) success.apply( callbacks.scope || null, arguments );
+        };
+        me.self.load( me.getId(), callbacks );
     }
 
 });

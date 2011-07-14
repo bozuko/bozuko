@@ -68,6 +68,20 @@ BozukoCheckinMethod.prototype.getDescription = function(callback){
     });
 }
 
+/**
+ * Get Html Description - allow for formatting.
+ *
+ */
+BozukoCheckinMethod.prototype.getHtmlDescription = function(){
+    var self = this;
+    // need a nice duration
+    var duration = DateUtil.duration(self.config.duration, true);
+    var description = "Check In on Bozuko and get \n";
+        description+= self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration+'.';
+
+    return description;
+}
+
 
 BozukoCheckinMethod.prototype.getEntryRequirement = function(){
     return 'Must be at this location to enter.';

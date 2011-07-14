@@ -4,7 +4,7 @@ Ext.define('Admin.view.contest.Panel' ,{
     alias : 'widget.contestpanel',
     
     requires: [
-        'Admin.view.contest.View'
+        'Bozuko.view.contest.List'
     ],
     layout: 'border',
     
@@ -13,12 +13,11 @@ Ext.define('Admin.view.contest.Panel' ,{
         
         me.items = [{
             region          :'center',
-            bodyPadding     :10,
             autoScroll      :true,
             border          :false,
             bodyCls         :'contestpanel',
             items: [{
-                style           :'float:right',
+                style           :'float:right; margin: 10px;',
                 xtype           :'button',
                 scale           :'medium',
                 action          :'create',
@@ -26,10 +25,12 @@ Ext.define('Admin.view.contest.Panel' ,{
                 icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png"
             },{
                 xtype           :'component',
+                style           :'margin: 10px;',
                 autoEl          :{tag:'h1'},
                 html            :'Campaigns'
             },{
-                xtype           :'contestsview',
+                xtype           :'contestlist',
+                style           :'clear: both',
                 store           :me.store
             }]
         },{
@@ -40,6 +41,9 @@ Ext.define('Admin.view.contest.Panel' ,{
             margin          :'2 2 2 0',
             title           :'Winners List'
         }];
+        
+        window.contests = me.store;
+        
         me.callParent();
     }
 });

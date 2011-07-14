@@ -190,20 +190,23 @@ exports.routes = {
     },
 
     '/admin/pages' : {
+        
+        alias : '/admin/pages/:id',
 
         get : {
             handler : function(req, res){
                 // need to get all pages
-                return Bozuko.models.Page.find({owner_id:{$exists:true}},{},{sort:{name:1}}, function(error, pages){
+                var id = req.param('id'),
+                    selector = {owner_id:{$exists:true}};
+                    
+                if(id) selector._id = id;
+                return Bozuko.models.Page.find(selector,{},{sort:{name:1}}, function(error, pages){
                     if( error ) return error.send(res);
                     return res.send({items:pages});
                 });
             }
-        }
-    },
-
-    'admin/pages/:id' : {
-
+        },
+        
         /* update */
         put : {
             handler : function(req,res){
@@ -234,15 +237,16 @@ exports.routes = {
                     selector = {};
 
                 if( page_id ) selector['page_id'] = page_id;
-                if( req.param('id') ) selector['id'] = req.param('id');
+                if( req.param('id') ) selector['_id'] = new ObjectId(req.param('id'));
                 return Bozuko.models.Contest.find(selector,{results:0, plays:0},{sort:{active: -1, start:-1}}, function(error, contests){
+                    
                     if( error ) return error.send(res);
+                    
                     contests.sort(function(a,b){
                         if( a.state=='active' && b.state != 'active' ) return -1;
                         if( b.state=='active' && a.state != 'active' ) return 1;
                         return +b.start-a.start;
                     });
-                    var ret = [];
                     return res.send({items:contests});
                 });
             }
@@ -475,6 +479,62 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/players' : {
+        
+        alias : '/admin/players/:id',
+        
+        get : {
+            handler: function(req, res){
+                
+                var page_id = req.param('page_id'),
+                    contest_id = req.param('contest_id'),
+                    limit = req.param('limit') || 25,
+                    skip = req.param('start') || 0
+                    selector = {};
+                    
+                if( page_id ) selector.page_id = page_id;
+                if( contest_id ) selector.contest_id = contest_id;
+                
+                return Bozuko.models.Entry.find(selector, {}, {sort:{timestamp: -1}, limit: limit, skip: skip}, function(error, entries){
+                    if( error ) return error.send(res);
+                    
+                    var user_ids = [];
+                    entries.forEach(function(entry){
+                        if( !~user_ids.indexOf(entry.user_id) ) user_ids.push( entry.user_id );
+                    });
+                    
+                    // get the users...
+                    return Bozuko.models.User.find({_id: {$in: user_ids}}, {
+                        phones: 0,
+                        challenge: 0,
+                        last_internal_update: 0,
+                        manages: 0,
+                        salt: 0,
+                        token: 0
+                    }, function(error, users){
+                        if( error ) return error.send( res );
+                        
+                        var players = [],
+                            map = {};
+                        // map the users
+                        
+                        users.forEach( function(user){
+                            map[String(user._id)] = user;
+                        });
+                        var order = [];
+                        entries.forEach( function(entry){
+                            var obj = map[String(entry.user_id)];
+                            obj.entry_id = entry._id;
+                            order.push( obj );
+                        });
+                        
+                        return res.send({items: order});
+                    });
+                });
+            }
+        }
+    },
 
     '/admin/contests/:id/publish' : {
         post : {
@@ -589,6 +649,7 @@ exports.routes = {
             handler : function(req, res){
                 
                 var time = req.param('time') || 'week-1',
+                    tzOffset = -1*parseInt(req.param('timezoneOffset', 0),10) / 60,
                     from, interval, now = new Date(),
                     query = {},
                     options ={}
@@ -635,7 +696,7 @@ exports.routes = {
                 if( !~['Prize','Redeemed Prizes','Entry','Play','Share'].indexOf(model) ) throw "Invalid model";
                 
                 options = {
-                    timezoneOffset: -4,
+                    timezoneOffset: tzOffset,
                     interval: interval,
                     query: query,
                     model: model,

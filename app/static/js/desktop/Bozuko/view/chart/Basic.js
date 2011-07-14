@@ -121,7 +121,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                     type: 'column',
                     tips: {
                         trackMouse: true,
-                        width: 80,
+                        width: 150,
                         height: 50,
                         renderer: function(storeItem, item) {
                             
@@ -151,18 +151,18 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.updateChart();
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
-        
+        var model = function(){ return me.modelField.getValue() };
         Bozuko.PubSub.subscribe('contest/entry', filter, function(){
-            if( me.modelField.getValue() == 'Entry' ) me.chart.store.load();
+            if( ~['Entry','Share'].indexOf(model()) ) me.chart.store.load();
         });
         Bozuko.PubSub.subscribe('contest/play', filter, function(){
-            if( me.modelField.getValue() == 'Play' ) me.chart.store.load();
+            if( ~['Play'].indexOf(model()) ) me.chart.store.load();
         });
         Bozuko.PubSub.subscribe('contest/win', filter, function(){
-            if( me.modelField.getValue() == 'Prize' ) me.chart.store.load();
+            if( ~['Prize'].indexOf(model()) ) me.chart.store.load();
         });
         Bozuko.PubSub.subscribe('prize/redeem', filter, function(){
-            if( me.modelField.getValue() == 'Redeemed Prizes' ) me.chart.store.load();
+            if( ~['Redeemed Prizes', 'Share'].indexOf(model()) ) me.chart.store.load();
         });
     },
     
@@ -170,7 +170,8 @@ Ext.define('Bozuko.view.chart.Basic', {
         var me = this;
         me.chartProxy.extraParams = {
             time : me.timeField.getValue(),
-            model : me.modelField.getValue()
+            model : me.modelField.getValue(),
+            timezoneOffset : (new Date()).getTimezoneOffset()
         };
         if( me.page_id ){
             me.chartProxy.extraParams.page_id = me.page_id;

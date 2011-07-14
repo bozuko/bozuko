@@ -252,7 +252,7 @@ var add_contests = function(callback) {
 				});
 				contest.prizes.push({
 					name: 'Wicked cool T-Shirt',
-					value: '20',
+					value: 20,
 					description: "Awesome Owl Watch T-Shirt",
 					details: "Only available in Large or Extra-large",
 					instructions: "Show this screen to an employee",
@@ -261,7 +261,7 @@ var add_contests = function(callback) {
 				});
 				contest.prizes.push({
 					name: 'Owl Watch Mug',
-					value: '10',
+					value: 10,
 					description: "Sweet travel Mug",
 					details: "Not good for drinking out of.",
 					instructions: "Show this screen to an employee",
@@ -270,7 +270,7 @@ var add_contests = function(callback) {
 				});
 				contest.prizes.push({
 					name: 'A whole lot of nothing',
-					value: '0',
+					value: 0,
 					description: "You get nothing at all",
 					instructions: "Show this screen to an employee",
 					duration: 1000*60*60,

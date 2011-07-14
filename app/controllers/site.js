@@ -1,6 +1,8 @@
 var Content = Bozuko.require('util/content'),
     validator = require('validator'),
     mailer = Bozuko.require('util/mail'),
+    inpsect = require('util').inspect,
+    async = require('async'),
     crypto = require('crypto');
 
 
@@ -39,8 +41,9 @@ exports.locals = {
     scripts:[
     ],
     styles:[
-        '/css/desktop/style.css',
-        '/css/desktop/layout.css'
+        // Date now forces styles to refresh after a server reboot
+        '/css/desktop/style.css?'+Date.now(),
+        '/css/desktop/layout.css?'+Date.now()
     ]
 };
 
@@ -59,6 +62,7 @@ exports.afterRoute = function(){
     });
 
     app.error(function(err,req,res,next){
+        console.error(inspect(err));
         return self.refs.notFound(req,res,next,err);
     });
 };
@@ -266,6 +270,7 @@ exports.routes = {
         }
     },
     '/p/:id' : {
+        alias: ['/p/:id/:name'],
         get : {
 
             title: 'Bozuko - Business Listing',
@@ -284,7 +289,14 @@ exports.routes = {
                     }
                     // lets get the contests too
                     res.locals.page = page;
+                    res.locals.title = page.name+' - Bozuko Listing';
                     return page.loadContests(null, function(error, contests){
+                        // get the stupid entry method description
+                        contests.forEach(function(contest){
+                            contest.prizes = contest.prizes.slice().sort(function(a,b){
+                                return b.value - a.value;
+                            });
+                        });
                         res.locals.contests = contests;
                         return res.render('site/business-page');
                     });

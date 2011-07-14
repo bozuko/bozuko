@@ -209,7 +209,6 @@ exports.routes = {
                         };
                         if( hasNext ) ret.next = next;
                         return Bozuko.transfer('prizes', ret, req.session.user, function(error, result){
-                            console.log(result);
                             res.send( error || result );
                         });
                     });

@@ -14,7 +14,7 @@ apt-get upgrade
 apt-get install -y mongodb-10gen
 
 # install essential libraries and build tools
-apt-get install -y build-essential libssl-dev libgd2-xpm-dev g++ barcode
+apt-get install -y build-essential libssl-dev libgd2-xpm-dev g++ barcode imagemagick
 
 # install useful tools and utilities
 apt-get install -y emacs vim js2-mode ufw

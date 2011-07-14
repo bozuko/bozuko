@@ -16,7 +16,8 @@ Ext.define('Bozuko.model.User', {
         '_id',
         'name',
         'email',
-        'image'
+        'image',
+        'entry_id'
     ]
 }, function(){
     this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);

@@ -71,19 +71,33 @@ FacebookLikeMethod.prototype.getDescription = function(callback){
         var description = "Like us on Facebook\n";
             description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
             
-            if( self.user ) console.log( self.user.likes(self.page) );
-    
-            if( !self.user || (self.page && !self.user.likes(self.page))){
-                description+="\n\nHit back and scroll down to like us."
-            }
+        if( self.user ) console.log( self.user.likes(self.page) );
+
+        if( !self.user || (self.page && !self.user.likes(self.page))){
+            description+="\n\nHit back and scroll down to like us."
+        }
     
         return callback(error, description);
     });
-}
+};
+
+/**
+ * Get Description - allow for formatting.
+ *
+ */
+FacebookLikeMethod.prototype.getHtmlDescription = function(){
+    var self = this;
+
+    var duration = DateUtil.duration( self.config.duration, true );
+    var description = "Like us on Facebook and get ";
+        description+= self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration+'.';
+        
+    return description;
+};
 
 FacebookLikeMethod.prototype.getEntryRequirement = function(){
     return 'Must "Like" this pages Facebook page to enter. ';
-}
+};
 
 /**
  * Get the maximum amount of tokens
@@ -91,7 +105,7 @@ FacebookLikeMethod.prototype.getEntryRequirement = function(){
  */
 FacebookLikeMethod.prototype.getMaxTokens = function(){
     return this.config.tokens;
-}
+};
 
 /**
  * Get the number of tokens for this user on a successfull entry
@@ -99,7 +113,7 @@ FacebookLikeMethod.prototype.getMaxTokens = function(){
  */
 FacebookLikeMethod.prototype.getTokenCount = function(){
     return this.config.tokens;
-}
+};
 
 /**
  * Perform all necessary actions accociated with this entry method (eg, checkin, check for location, etc)
@@ -114,6 +128,7 @@ FacebookLikeMethod.prototype.process = function( callback ){
     var self = this;
     
     return EntryMethod.prototype.process.call(self, function(error, entry){
+        if( error ) return callback( error );
         // this might be a share...
         // we only count one "like" per person, so just their first one.
         return Bozuko.models.Share.count({user_id: self.user.id, service:'facebook', type:'like'}, function(error, count){

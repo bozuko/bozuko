@@ -14,7 +14,8 @@ Ext.define('Admin.view.admin.Dashboard' ,{
         'Bozuko.lib.PubSub',
         'Bozuko.store.Reports',
         'Bozuko.view.winners.List',
-        'Bozuko.view.chart.Basic'
+        'Bozuko.view.chart.Basic',
+        'Bozuko.view.contest.Players'
     ],
     
     initComponent : function(){
@@ -27,9 +28,20 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             border: false,
             items:[{
                 region : 'center',
-                xtype : 'bozukochartbasic',
                 border : false,
-                bodyPadding: 10
+                layout : 'anchor',
+                bodyPadding: 10,
+                autoScroll: true,
+                items : [{
+                    xtype : 'bozukochartbasic',
+                    border : false,
+                    anchor : 0,
+                    style: 'margin-bottom: 10px'
+                },{
+                    xtype : 'contestplayers',
+                    border : false,
+                    anchor : 0
+                }]
             },{
                 height: 200,
                 split: true,
