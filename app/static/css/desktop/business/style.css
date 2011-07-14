@@ -1,5 +1,8 @@
 .contestpanel h1 {
-  font-size: 20px;
+  font-family: ArvoRegular;
+  font-weight: normal;
+  font-size: 32px;
+  line-height: 1.3em;
   margin-bottom: 1em;
 }
 .campaigns-body {
@@ -40,17 +43,19 @@
 .campaigns-body .campaign-list .list-item .details table td {
   padding: 4px;
 }
-.buttons {
+.app-buttons {
   clear: both;
   display: block;
-  border-top: 1px solid #ddd;
-  margin-top: 6px;
-  padding-top: 6px;
+  text-align: right;
+  padding-bottom: 0;
+  margin-bottom: 0;
 }
-.buttons li {
+.app-buttons li {
   display: inline;
+  margin: 0;
+  padding: 0;
 }
-.buttons li a {
+.app-buttons li a {
   margin-right: 14px;
   display: inline-block;
   line-height: 28px;
@@ -62,26 +67,26 @@
   color: #da6619;
   font-size: 14px;
 }
-.buttons li a:hover {
+.app-buttons li a:hover {
   text-decoration: underline;
   color: #ac5113;
 }
-.buttons li .delete {
+.app-buttons li .delete {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png');
 }
-.buttons li .edit {
+.app-buttons li .edit {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-24.png');
 }
-.buttons li .publish {
+.app-buttons li .publish {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png');
 }
-.buttons li .copy {
+.app-buttons li .copy {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png');
 }
-.buttons li .cancel {
+.app-buttons li .cancel {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/warning-24.png');
 }
-.buttons li .reports {
+.app-buttons li .reports {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-report-bar-24.png');
 }
 .bozuko-list .x-dataview-item {
@@ -256,4 +261,169 @@ fieldset .x-fieldset-header {
   display: inline-block;
   float: left;
   margin: 5px 1px;
+}
+.contest-overview .x-panel-body {
+  background: #f3f3f3;
+}
+.contest-overview .stat-block {
+  float: right;
+  margin: 5px;
+  text-align: center;
+  position: relative;
+  padding: 0 10px 10px;
+  min-width: 80px;
+}
+.contest-overview .stat-block h3 {
+  color: #333;
+  font-weight: bold;
+  margin-top: 0;
+  font-size: 12px;
+  margin-bottom: 2.2em;
+}
+.contest-overview .stat-block .stat-info .current {
+  display: block;
+  font-weight: normal;
+  font-size: 30px;
+  line-height: 34px;
+  font-family: ArvoRegular;
+  color: #333;
+}
+.contest-overview .stat-block .stat-info .total {
+  display: block;
+  padding-top: 3px;
+  font-size: 10px;
+  color: #000;
+}
+.contest-overview .stat-block .info {
+  z-index: 10;
+  position: relative;
+}
+.contest-overview .stat-block .circle {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  margin-left: -40px;
+  margin-top: -40px;
+}
+.contest-overview .contest-info {
+  float: left;
+  padding: 10px 10px 0;
+}
+.contest-overview .contest-info .info-row {
+  overflow: hidden;
+  clear: both;
+  padding-bottom: .6em;
+}
+.contest-overview .contest-info .info-row label, .contest-overview .contest-info .info-row span {
+  float: left;
+}
+.contest-overview .contest-info .info-row label {
+  width: 80px;
+  font-weight: bold;
+}
+.contest-list {
+  border-top: 1px solid #eee;
+}
+.contest-list .contest-overview {
+  transition: background 0.5s ease-out;
+  -moz-transition: background 0.5s ease-out;
+  -o-transition: background 0.5s ease-out;
+  -webkit-transition: background 0.5s ease-out;
+  padding: 15px 0;
+  overflow: hidden;
+  background: #f3f3f3;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ffffff;
+  /*
+        .stat-info {
+            .current {
+                padding-top: 0px;
+                font-size: 24px;
+                line-height: 26px;
+                
+            }
+            .total {
+                font-size: 10px;
+            }
+        }
+        .circle {
+            margin-left: -30px;
+            margin-top: -30px;
+        }
+        
+        .stat-block {
+            min-width: 60px;
+        }
+        */
+
+}
+.contest-list .contest-overview .info-row h3 {
+  color: #000;
+  font-size: 22px;
+  line-height: 30px;
+  font-family: ArvoRegular;
+  font-weight: normal;
+}
+.contest-list .contest-overview .app-buttons {
+  padding-top: 10px;
+  padding-left: 10px;
+  text-align: left;
+}
+.contest-list .contest-overview .contest-info {
+  padding-top: 0;
+}
+.contest-list .contest-overview-over {
+  background: #e8e8e8;
+}
+.player-list .player-item {
+  position: relative;
+  float: left;
+  height: 50px;
+  width: 50px;
+  margin: 8px;
+}
+.player-list .player-item .ct {
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  -webkit-transition: all 0.2s ease-out;
+}
+.player-list .player-item .ct img {
+  transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  -webkit-transition: all 0.2s ease-out;
+  width: 50px;
+  height: 50px;
+}
+.player-list .player-item .ct .name {
+  display: block;
+  overflow: hidden;
+  font-size: 10px;
+  line-height: 12px;
+  text-align: center;
+  color: #333;
+}
+.player-list .player-item-over .ct {
+  left: -6px;
+  width: 62px;
+  height: 93px;
+  -moz-box-shadow: 0 0 6px #cccccc;
+  -webkit-box-shadow: 0 0 6px #cccccc;
+  box-shadow: 0 0 6px #cccccc;
+}
+.player-list .player-item-over .ct img {
+  width: 60px;
+  height: 60px;
+}
+.player-list .player-item-over .ct .name {
+  height: 24px;
 }

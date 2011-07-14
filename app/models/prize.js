@@ -8,6 +8,7 @@ var Prize = module.exports = new Schema({
     contest_id              :{type:ObjectId, index:true},
     page_id                 :{type:ObjectId, index:true},
     user_id                 :{type:ObjectId, index:true},
+    prize_id                :{type:ObjectId, index:true},
     uuid                    :{type:String},
     code                    :{type:String},
     value                   :{type:Number},
@@ -67,6 +68,17 @@ Prize.method('redeem', function(user, callback){
     return self.save( function(error){
         if( error ) return callback( error );
         if (self.is_email) self.sendEmail(user);
+        
+        // this 'if' is for backwards compatability
+        if( self.prize_id ) Bozuko.models.Contest.collection.update(
+            {'prizes._id':self.prize_id},
+            {$inc: {'prizes.$.redeemed':1}},
+            function(error){
+                if( error ) console.error( error );
+                else console.log('updated redeemed');
+            }
+        );
+        
         // okay, lets get the page and get its security image
         return Bozuko.models.Page.findById(self.page_id, function(error, page){
             if( error ) return callback( error );

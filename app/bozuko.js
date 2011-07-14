@@ -251,8 +251,8 @@ function initApplication(app){
     if (Bozuko.env() != 'test') {
         app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
     }
-    if( Bozuko.env() == 'development' ){
-        // app.use(Bozuko.require('middleware/debug')());
+    if( Bozuko.env() == 'playground' ){
+        app.use(Bozuko.require('middleware/debug')());
     }
 
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));

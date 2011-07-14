@@ -28,7 +28,7 @@ Ext.define('Admin.controller.Contests' ,{
                 // setup our contest object
                 itemdblclick : this.onContestDblClick
             },
-            'contestsview' : {
+            'contestlist' : {
                 // setup our contest object
                 itemclick : this.onContestItemClick,
                 render: this.onContestsViewRender
@@ -141,7 +141,7 @@ Ext.define('Admin.controller.Contests' ,{
     onContestSaveClick : function(btn){
         var contestForm = btn.up('contestform'),
             pagePanel = btn.up('pagepanel'),
-            contestsView = pagePanel.down('contestsview'),
+            contestsView = pagePanel.down('contestlist'),
             pageRecord = pagePanel.record,
             record = contestForm.record,
             details = contestForm.down('contestformdetails'),
@@ -256,25 +256,37 @@ Ext.define('Admin.controller.Contests' ,{
 
             case 'publish':
                 var url = '/admin/contests/'+record.getId()+'/publish';
-                Ext.Ajax.request({
-                    url: url,
-                    method: 'post',
-                    callback : function(opts, success, response){
-                        if( !success ){
-                            // alert?
-                            return;
-                        }
-                        try{
-                            var result = Ext.decode( response.responseText );
-                            if( result && result.success){
-                                // need to refresh the contests..
-                                view.store.load();
+                Ext.Msg.confirm(
+                    'Are you sure?',
+                    'Are you sure you want to publish this campaign?',
+                    function(btn){
+                        if( btn != 'ok' && btn != 'yes' ) return;
+                        var cp = view.up('contestpanel');
+                        cp.setLoading("Publishing... This may take a minute, please be patient");
+                        Ext.Ajax.request({
+                            url: url,
+                            timeout : 1000 * 60 * 5,
+                            method: 'post',
+                            callback : function(opts, success, response){
+                                cp.setLoading(false);
+                                if( !success ){
+                                    // alert?
+                                    alert('Publish request was unreadable');
+                                    return;
+                                }
+                                try{
+                                    var result = Ext.decode( response.responseText );
+                                    if( result && result.success){
+                                        // need to refresh the contests..
+                                        view.store.load();
+                                    }
+                                }catch(e){
+        
+                                }
                             }
-                        }catch(e){
-
-                        }
+                        });
                     }
-                });
+                );
                 break;
 
             case 'copy':
@@ -341,25 +353,33 @@ Ext.define('Admin.controller.Contests' ,{
             case 'cancel':
 
                 var url = '/admin/contests/'+record.getId()+'/cancel';
-                Ext.Ajax.request({
-                    url: url,
-                    method: 'post',
-                    callback : function(opts, success, response){
-                        if( !success ){
-                            // alert?
-                            return;
-                        }
-                        try{
-                            var result = Ext.decode( response.responseText );
-                            if( result && result.success){
-                                // need to refresh the contests..
-                                view.store.load();
+                 Ext.Msg.confirm(
+                    'Are you sure?',
+                    'Are you sure you want to delete this campaign?',
+                    function(btn){
+                        if( btn != 'ok' && btn != 'yes' ) return;
+                        Ext.Ajax.request({
+                            url: url,
+                            method: 'post',
+                            callback : function(opts, success, response){
+                                if( !success ){
+                                    // alert?
+                                    return;
+                                }
+                                try{
+                                    var result = Ext.decode( response.responseText );
+                                    if( result && result.success){
+                                        // need to refresh the contests..
+                                        view.store.load();
+                                    }
+                                }catch(e){
+        
+                                }
                             }
-                        }catch(e){
-
-                        }
+                        });
                     }
-                });
+                );
+                
                 break;
 
             case 'reports':

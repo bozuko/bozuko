@@ -1,7 +1,7 @@
 module.exports = {
     get: {
         code: 404,
-        message: 'Failed to retreive data from s3 for '+this.data
+        message: 'Your barcode cannot be retrieved. Please check your prize screen later.'
     },
 
     put: {

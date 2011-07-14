@@ -25,6 +25,6 @@ Ext.define('Bozuko.lib.app.Controller', {
         },
         this);
         this.callParent(arguments);
-    },
+    }
     
 });

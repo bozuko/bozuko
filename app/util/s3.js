@@ -61,13 +61,13 @@ Client.prototype.get = function(path, wstream) {
             wstream.end();
         });
 
-        res.on('error', function(err) {
+        res.on('error', function(error) {
             return err();
         });
 
     });
 
-    req.on('error', function(err) {
+    req.on('error', function(error) {
         return err();
     });
 

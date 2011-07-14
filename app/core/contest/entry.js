@@ -62,6 +62,15 @@ EntryMethod.prototype.getDescription = function(callback){
     return callback(null, this.description);
 }
 
+
+/**
+ * Get HTML Description
+ *
+ */
+EntryMethod.prototype.getHtmlDescription = function(callback){
+    return this.description;
+}
+
 EntryMethod.prototype.getEntryRequirement = function(){
     return "Valid Bozuko Account is required to enter.";
 }
@@ -255,11 +264,16 @@ EntryMethod.prototype.getNextEntryTime = function( callback ){
 };
 
 EntryMethod.prototype.getLastEntry = function(callback){
-    // assume we have the contest
-    var entries = this.contest.getUserInfo(this.user._id, function(err, info) {
-        if (err) return callback(err);
-        return callback(null, info.last_entry);
-    });
+    
+    return Bozuko.models.Entry.find(
+        {contest_id: this.contest._id, user_id: this.user._id},
+        {},
+        {sort: {timestamp: -1}, limit: 1},
+        function(err, entries) {
+            if (err) return callback(err);
+            return callback(null, entries.length ? entries[0] : null);
+        }
+    );
 };
 
 EntryMethod.prototype.getButtonText = function( tokens, callback ){

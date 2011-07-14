@@ -3,46 +3,54 @@
   
   p The page you are looking for is gone!
 
-.center
-  .main-column
-    .padding
-      h2.page-title= page.name
-      
-      - if( page.announcement )
-        .announcement
-          p!= page.announcement
-      - if( locals.contests )
-        .contests
-          h3 Current Games
-          - each contest in contests
-            .contest
-              img(src=contest.getGame().getListImage())
-              h4= contest.getGame().name
-              .entry-method
-                !=contest.getEntryMethodDescription()
-  
-  .right-column
-    .padding
-      p To play Bozuko games, 
-        a(href="http://itunes.com/app/bozuko") download the app
-        |  from the app store today!
-
-  
-.left-column
-  
-  .img.block
-    img(src=page.image)
+- else
+  .center
+    .main-column
+      .padding
+        h2.page-title= page.name
+        
+        - if( page.announcement )
+          .announcement
+            p!= page.announcement
+        - if( locals.contests )
+          .contests
+            h3 Current Games
+            - each contest in contests
+              .contest
+                img(src=contest.getGame().getListImage())
+                h4= contest.getGame().name
+                .entry-method
+                  !=contest.getEntryMethodHtmlDescription()
+                
+                .prizes
+                  h5 You could win...
+                  ul.prize-list
+                    - each prize in contest.prizes
+                      li.prize
+                        h6.prize-name= prize.name
+                        .prize-description= prize.description
     
-  .address.block
-    .street= page.location.street
-    .city= page.location.city+', '+page.location.state+' '+page.location.zip
-    .map
-      a(target="_blank",href=page.getGoogleMapLink()) Google Map
+    .right-column
+      .padding
+        a(href="http://itunes.com/app/bozuko")
+          img(src="/images/desktop/site/img_iphone-download.png",alt="To play Bozuko, download the app",title="To play Bozuko, download the app")
+  
     
-  -if( page.website )
-    .website.block
-      a(target="_blank", href=page.website)!= page.website
+  .left-column
+    
+    .img.block
+      img(src=page.image)
       
-  -if( page.service('facebook'))
-    .facebook.block
-      a(target="_blank", href=page.service('facebook').data.link) Visit our Facebook Page
+    .address.block
+      .street= page.location.street
+      .city= page.location.city+', '+page.location.state+' '+page.location.zip
+      .map
+        a(target="_blank",href=page.getGoogleMapLink()) Google Map
+      
+    -if( page.website )
+      .website.block
+        a(target="_blank", href=page.website)!= page.website
+        
+    -if( page.service('facebook'))
+      .facebook.block
+        a(target="_blank", href=page.service('facebook').data.link) Visit our Facebook Page

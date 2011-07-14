@@ -63,6 +63,20 @@ BozukoNothingMethod.prototype.getDescription = function(callback){
     return callback(null, description);
 }
 
+/**
+ * Get Description - allow for formatting.
+ *
+ */
+BozukoNothingMethod.prototype.getHtmlDescription = function(callback){
+    var self = this;
+    // need a nice duration
+    // get the number of minutes:
+    var duration = DateUtil.duration( this.config.duration, true );
+    var description = "Just login and you will receive ";
+        description+= this.config.tokens+" "+(this.config.tokens > 1 ? "plays" : "play" )+" every "+duration+'.';
+    return description;
+}
+
 
 /**
  * Get the maximum amount of tokens

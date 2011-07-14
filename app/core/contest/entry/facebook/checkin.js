@@ -85,11 +85,27 @@ FacebookCheckinMethod.prototype.getDescription = function(callback){
                 description+="\nHit back and scroll down to like us."
             }
         }
-    
         return callback(error, description);
     });
-    
 };
+
+/**
+ * Get Description - allow for formatting.
+ *
+ */
+FacebookCheckinMethod.prototype.getHtmlDescription = function(){
+    var self = this,
+        duration = DateUtil.duration(self.config.duration, true),
+        description = "Check in on Facebook and get ";
+        description+= self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration+'.';
+        
+    if( self.config.options.enable_like ){
+        var play = (self.config.tokens > 1 ? "plays" : "play" );
+        description+= "\nGet "+self.config.tokens+" bonus "+play+" if you Like us on Facebook!";
+    }
+    return description;
+};
+
 
 
 FacebookCheckinMethod.prototype.getEntryRequirement = function(){
