@@ -116,9 +116,15 @@ exports.transfer_objects = {
                 }
     
                 page.games = [];
-                if( page.contests ) page.contests.forEach(function(contest){
-                    page.games.push( contest.getGame() );
-                });
+                
+                if( page.contests ){
+                    page.contests.sort(function(a,b){
+                        return +b.start-a.start;
+                    });
+                    page.contests.forEach(function(contest){
+                        page.games.push( contest.getGame() );
+                    });
+                }
     
                 prof.stop();
                 return self.sanitize(page, null, user, callback);

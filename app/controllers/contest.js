@@ -399,6 +399,9 @@ exports.routes = {
                                     if( error ) return error.send(res);
                                     // get the game states
                                     var states = [];
+                                    games.sort( function(a,b){
+                                        return +b.contest.start-a.contest.start;
+                                    });
                                     games.forEach( function(game){
                                         states.push(game.contest.game_state);
                                     });
