@@ -155,8 +155,8 @@ Ext.define('Bozuko.view.contest.Overview',{
             current_hours = Math.ceil( current / HOUR )
             ;
         
-        if( current_days > total_days ) current_days = 'Past';
-        if( current_hours > total_hours ) current_hours = 'Past';
+        if( current_days > total_days ) current_days = total_days;
+        if( current_hours > total_hours ) current_hours = total_days;
         
         data.times_current = current_days;
         data.times_total = total_days;
