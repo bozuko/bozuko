@@ -172,11 +172,11 @@ exports.routes = {
                     req.connection.removeListener('error', unsubscribe);
                     prof.stop();
                 };
-
-                var send = function(){
+                var sent = false,
+                    send = function(){
                     clearTimeout( timeout );
                     unsubscribe();
-                    res.send(messages);
+                    if( !sent ) res.send(messages);
                 };
 
                 var seen = [];
