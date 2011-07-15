@@ -52,6 +52,40 @@ Ext.define('Bozuko.model.Contest', {
     
     autoLoad: true,
     
+    getEntryType : function(){
+        var me = this;
+        console.log(me.get('entry_config'));
+        try{
+            switch( me.get('entry_config')[0].type ){
+                
+                case 'bozuko/checkin':
+                    return 'Bozuko Checkin';
+                
+                case 'bozuko/nothing':
+                    return 'Bozuko Play';
+                
+                case 'facebook/like':
+                    return 'Facebook Like';
+                
+                case 'facebook/checkin':
+                    try{
+                        if( me.get('entry_config')[0].options.enable_like){
+                            return 'Facebook Checkin w/ Like Bonus';
+                        }
+                        throw '';
+                    }catch(e){
+                        return 'Facebook Checkin';
+                    }
+                    
+                default:
+                    throw '';
+                
+            }
+        }catch(e){
+            return 'Unknown';
+        }
+    },
+    
     getTotalEntries : function(){
         var me = this,
             qty = 0;

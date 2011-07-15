@@ -73,6 +73,10 @@ Ext.define('Bozuko.view.contest.Overview',{
                         '<label>Status:</label>',
                         '<span>{state}</span>',
                     '</div>',
+                    '<div class="info-row">',
+                        '<label>Entry Type:</label>',
+                        '<span>{entry_type}</span>',
+                    '</div>',
                 '</div>'
             ),
             data : me.getData()
@@ -106,6 +110,8 @@ Ext.define('Bozuko.view.contest.Overview',{
         if( game_cfg && game_cfg.name ){
             data.game = game_cfg.name+' ('+data.game+')';
         }
+        
+        data.entry_type = me.record.getEntryType();
         
         data.timeline = Ext.Date.format( me.record.get('start'), 'm/d/Y')+' - '+Ext.Date.format(me.record.get('end'), 'm/d/Y');
         
@@ -148,6 +154,9 @@ Ext.define('Bozuko.view.contest.Overview',{
             current_days = Math.ceil( current / DAY ),
             current_hours = Math.ceil( current / HOUR )
             ;
+        
+        if( current_days > total_days ) current_days = 'Past';
+        if( current_hours > total_hours ) current_hours = 'Past';
         
         data.times_current = current_days;
         data.times_total = total_days;
