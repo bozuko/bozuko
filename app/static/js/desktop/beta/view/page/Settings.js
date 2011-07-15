@@ -26,7 +26,7 @@ Ext.define('Beta.view.page.Settings' ,{
                     layout          :'anchor',
                     style           :'background-color: #f3f3f3'
                 },
-                tbar : [' ', {
+                tbar : [{
                     text            :'Save',
                     action          :'save',
                     scale           :'medium',

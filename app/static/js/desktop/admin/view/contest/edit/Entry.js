@@ -56,6 +56,10 @@ Ext.define('Admin.view.contest.edit.Entry' ,{
             value           :1000 * 60 * 60
         }];
         me.callParent();
+        me.on('render', function(){
+            var type = me.down('[name=type]');
+            me.onEntryTypeChange(type, type.getValue());
+        });
     },
     
     onEntryTypeChange : function(field, value){

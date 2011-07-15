@@ -42,6 +42,10 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '<label>Prizes:</label>',
                         '<span>{prizes}</span>',
                     '</div>',
+                    '<div class="info-row">',
+                        '<label>Entry Type:</label>',
+                        '<span>{entry_type}</span>',
+                    '</div>',
                 '</div>',
                 
                 '<div class="stat-block stat-block-times">',
@@ -226,6 +230,8 @@ Ext.define('Bozuko.view.contest.List' ,{
         if( game_cfg && game_cfg.name ){
             data.game = game_cfg.name+' ('+data.game+')';
         }
+        
+        data.entry_type = record.getEntryType();
         
         data.prizes = record.getPrizeCount()+' ('+record.getTotalPrizeCount()+', $'+record.getTotalPrizesValue()+' total retail value)';
         

@@ -176,7 +176,7 @@ exports.routes = {
                     send = function(){
                     clearTimeout( timeout );
                     unsubscribe();
-                    if( !sent ) res.send(messages);
+                    if( !sent && !res._headersSent ) res.send(messages);
                 };
 
                 var seen = [];
