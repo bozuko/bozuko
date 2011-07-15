@@ -24,8 +24,16 @@ Ext.define('Bozuko.view.winners.List' ,{
         me.blinkState = false;
         me.blinkers = [];
         me.blinking = false;
-        me.store = Ext.create('Bozuko.store.Winners', {autoLoad: true});
-        me.tmpStore = Ext.create('Bozuko.store.Winners',{autoLoad: false});
+        me.store = Ext.create('Bozuko.store.Winners', {
+            autoLoad: true,
+            contest_id : me.contest_id || (me.contest ? me.contest.get('_id') : null),
+            page_id : me.page_id || (me.page ? me.page.get('_id') : null)
+        });
+        me.tmpStore = Ext.create('Bozuko.store.Winners',{
+            autoLoad: false,
+            contest_id : me.contest_id || (me.contest ? me.contest.get('_id') : null),
+            page_id : me.page_id || (me.page ? me.page.get('_id') : null)
+        });
         
         me.tools = [{
             type: 'refresh',
@@ -198,6 +206,7 @@ Ext.define('Bozuko.view.winners.List' ,{
         var me = this;
         me.contest = contest;
         me.store.contest_id = contest.get('_id');
+        me.tmpStore.contest_id = contest.get('_id');
         me.store.load();
     },
     
@@ -205,6 +214,7 @@ Ext.define('Bozuko.view.winners.List' ,{
         var me = this;
         me.page = page;
         me.store.page_id = page.get('_id');
+        me.tmpStore.page_id = page.get('_id');
         me.store.load();
     }
 });
