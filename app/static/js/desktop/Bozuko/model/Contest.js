@@ -53,37 +53,48 @@ Ext.define('Bozuko.model.Contest', {
     autoLoad: true,
     
     getEntryType : function(){
-        var me = this;
-        console.log(me.get('entry_config'));
+        var me = this,
+            type;
+        var cfg = me.get('entry_config');
+        if( cfg && cfg.length) cfg = cfg[0];
+        else cfg = {};
         try{
-            switch( me.get('entry_config')[0].type ){
+            switch( cfg.type ){
                 
                 case 'bozuko/checkin':
-                    return 'Bozuko Checkin';
+                    type = 'Bozuko Checkin';
+                    break;
                 
                 case 'bozuko/nothing':
-                    return 'Bozuko Play';
+                    type = 'Bozuko Play';
+                    break;
                 
                 case 'facebook/like':
-                    return 'Facebook Like';
+                    type = 'Facebook Like';
+                    break;
                 
                 case 'facebook/checkin':
                     try{
-                        if( me.get('entry_config')[0].options.enable_like){
-                            return 'Facebook Checkin w/ Like Bonus';
+                        if( cfg.options.enable_like){
+                            type = 'Facebook Checkin w/ Like Bonus';
                         }
-                        throw '';
+                        else{
+                            throw '';
+                        }
                     }catch(e){
-                        return 'Facebook Checkin';
+                        type = 'Facebook Checkin';
                     }
+                    break;
                     
                 default:
                     throw '';
                 
             }
         }catch(e){
-            return 'Unknown';
+            type = 'Unknown';
         }
+        var tokens = cfg.tokens || 0;
+        return type + ' ('+tokens+' plays)';
     },
     
     getTotalEntries : function(){

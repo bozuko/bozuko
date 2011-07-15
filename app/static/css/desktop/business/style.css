@@ -243,6 +243,8 @@
 }
 .title-toolbar .x-toolbar-text {
   font-size: 18px;
+  font-weight: normal;
+  font-family: ArvoRegular;
 }
 fieldset {
   -webkit-background-clip: padding-box;
@@ -312,7 +314,7 @@ fieldset .x-fieldset-header {
 .contest-overview .contest-info .info-row {
   overflow: hidden;
   clear: both;
-  padding-bottom: .6em;
+  padding-bottom: .4em;
 }
 .contest-overview .contest-info .info-row label, .contest-overview .contest-info .info-row span {
   float: left;
