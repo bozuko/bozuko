@@ -87,7 +87,11 @@ Bozuko.lib.PubSub = Ext.extend( Object, {
                 callbacks:[callback]
             };
         }
-        me.listen();
+        // buffer the listener
+        if( !me.subscribeBuffer ) me.subscribeBuffer = Ext.defer( function(){
+            me.listen();
+            me.subscribeBuffer = false;
+        }, 200);
     },
     
     /**
