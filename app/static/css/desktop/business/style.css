@@ -377,55 +377,36 @@ fieldset .x-fieldset-header {
 .contest-list .contest-overview-over {
   background: #e8e8e8;
 }
+.player-list {
+  padding: 0 30px;
+}
+.player-list .scroll-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 6px 0;
+}
 .player-list .player-item {
   position: relative;
-  float: left;
-  height: 50px;
-  width: 50px;
-  margin: 8px;
+  width: 52px;
+  margin: 0 6px;
 }
 .player-list .player-item .ct {
-  overflow: hidden;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 50px;
-  height: 50px;
   background: #f3f3f3;
   border: 1px solid #ccc;
-  transition: all 0.2s ease-out;
-  -moz-transition: all 0.2s ease-out;
-  -o-transition: all 0.2s ease-out;
-  -webkit-transition: all 0.2s ease-out;
+  -moz-box-shadow: 0 0 6px #cccccc;
+  -webkit-box-shadow: 0 0 6px #cccccc;
+  box-shadow: 0 0 6px #cccccc;
 }
 .player-list .player-item .ct img {
-  transition: all 0.2s ease-out;
-  -moz-transition: all 0.2s ease-out;
-  -o-transition: all 0.2s ease-out;
-  -webkit-transition: all 0.2s ease-out;
   width: 50px;
   height: 50px;
 }
 .player-list .player-item .ct .name {
   display: block;
-  overflow: hidden;
   font-size: 10px;
   line-height: 12px;
+  height: 28px;
   text-align: center;
   color: #333;
-}
-.player-list .player-item-over .ct {
-  left: -6px;
-  width: 62px;
-  height: 93px;
-  -moz-box-shadow: 0 0 6px #cccccc;
-  -webkit-box-shadow: 0 0 6px #cccccc;
-  box-shadow: 0 0 6px #cccccc;
-}
-.player-list .player-item-over .ct img {
-  width: 60px;
-  height: 60px;
-}
-.player-list .player-item-over .ct .name {
-  height: 24px;
 }

@@ -49,7 +49,8 @@ module.exports = {
     },
 
     bozuko :{
-        facebook_id: '223851717629478'
+        facebook_id: '223851717629478',
+        demo_id: "4e2467c7796c2c582e279f51"
     },
 
     foursquare: {

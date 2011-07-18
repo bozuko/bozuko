@@ -440,34 +440,34 @@ fieldset{
 
 .player-list {
     
+    padding: 0 30px;
+    
+    .scroll-container {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        padding: 6px 0;
+    }
+    
     .player-item {
         position: relative;
-        float: left;
-        height: 50px;
-        width: 50px;
-        margin: 8px;
+        width: 52px;
+        margin: 0 6px;
         .ct {
-            overflow: hidden;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 50px;
             background: #f3f3f3;
             border: 1px solid #ccc;
-            .transition(all,.2s, ease-out);
+            .box_shadow(0,0,6px,#ccc);
             
             img {
-                .transition(all,.2s, ease-out);
                 width: 50px;
                 height: 50px;
             }
             
             .name {
                 display: block;
-                overflow: hidden;
                 font-size: 10px;
                 line-height: 12px;
+                height: 28px;
                 text-align: center;
                 color: #333;
             }
@@ -476,20 +476,7 @@ fieldset{
     }
     
     .player-item-over{
-        .ct {
-            left: -6px;
-            width: 62px;
-            height: 93px;
-            .box_shadow(0,0,6px,#ccc);
-            
-            img {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .name {
-                height: 24px;
-            }
-        }
+        
+        
     }
 }
