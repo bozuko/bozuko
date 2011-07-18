@@ -117,7 +117,7 @@ exports.routes = {
                     
                     // the return...
                     var transfer = function(page, demo_page){
-                        return Bozuko.transfer('bozuko',{page: page}, null, function(error, result){
+                        return Bozuko.transfer('bozuko',{page: page, demo_page: demo_page || false}, null, function(error, result){
                             res.send( error || result );
                         });
                     };
