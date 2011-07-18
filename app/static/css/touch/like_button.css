@@ -7,5 +7,8 @@ html, body {
 }
 body {
   overflow: hidden;
-  background: transparent url("/images/assets/facebook/like-loader.gif") 0 0 no-repeat;
+  background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat;
+}
+iframe {
+  background: transparent;
 }
