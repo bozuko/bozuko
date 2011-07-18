@@ -4,17 +4,18 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
     title= title
     meta(charset="utf-8")
     meta(name="viewport",content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
-    link(rel="stylesheet",type="text/css",href="/css/touch/like_button.css")
+    style(type="text/css")
+      html,body{ padding: 0; margin: 0; overflow: hidden; width: 50px; height: 20px;}
+      body{ overflow: hidden; background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat; }
+      iframe{ background: transparent; }
+    script(src="https://connect.facebook.net/en_US/all.js#appId="+Bozuko.config.facebook.app.id+"&amp;xfbml=1")
+    script(type="text/javascript")
+      APP_ID = #{Bozuko.config.facebook.app.id};
+      window.Bozuko=window.Bozuko||{};Bozuko.remote=(function(){return{HTTP:{request:function(config){if(!config||!config.url)return false;var req=new XMLHttpRequest();req.onreadystatechange=function(){if(req.readyState==4&&req.status==200){if(config.callback){config.callback.call(config.scope||window,req.responseText,req.responseXML,req)}}}config.method=config.method||'GET';var body=null;if(config.params){if(config.method=='GET'){if(typeof config.params!=='string'){var params=[];for(var i in config.params){if(config.params.hasOwnProperty(i)){params.push(i+'='+escape(config.params[i]))}}config.params=params.join('&')}config.url+=(config.url.indexOf('?')!=-1?'&':'?')+config.params}else{body=config.params}}req.open(config.method,config.url);req.send(body);return req}}}})();
+      window.fbAsyncInit=function(){FB.init({appId:APP_ID,status:true,cookie:true,xfbml:true});var loc=window.location,matches=window.location.search.match(/token=(.*)(&|$)/),url=loc.protocol+'//'+loc.host+'/user?token='+matches[1];function onEdgeCreate(response){Bozuko.remote.HTTP.request({url:url,callback:function(){window.location='bozuko://facebook/liked'}})}FB.Event.subscribe('edge.create',onEdgeCreate)};(function(){var e=document.createElement('script');e.async=true;e.src=document.location.protocol+'//connect.facebook.net/en_US/all.js';document.getElementById('fb-root').appendChild(e)}());
   body
     #fb-root
       
     -if( locals.place )
       .like-button
-      
         fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
-      
-        script
-          APP_ID = #{Bozuko.config.facebook.app.id};
-        script(src="https://connect.facebook.net/en_US/all.js#appId="+Bozuko.config.facebook.app.id+"&amp;xfbml=1")
-        script(src="/js/touch/lib/http.js?v2")
-        script(src="/js/touch/app/facebook/like_button.js?v2")
