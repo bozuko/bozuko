@@ -17,6 +17,9 @@ exports.transfer_objects= {
             if( obj.page ){
                 ret.links.bozuko_page = '/page/'+obj.page.id;
             }
+            if( obj.demo_page ){
+                ret.links.bozuko_demo_page = '/page/'+obj.demo_page.id;
+            }
             // delete obj.page;
             return callback(null, ret);
         },
@@ -26,7 +29,8 @@ exports.transfer_objects= {
                 terms_of_use: "String",
                 about: "String",
                 bozuko_for_business: "String",
-                bozuko_page: "String"
+                bozuko_page: "String",
+                bozuko_demo_page : "String"
             }
         }
     },
@@ -84,6 +88,12 @@ exports.links = {
             doc: "Bozuko Page - for the 'Play our Game' button",
             returns: "page"
         }
+    },
+    bozuko_demo_page:{
+        get: {
+            doc: "Bozuko Demonstration Page - for the 'Demo Games' button",
+            returns: "page"
+        }
     }
 };
 
@@ -104,8 +114,20 @@ exports.routes = {
                 // we need to find the bozuko page...
                 Bozuko.models.Page.findByService('facebook', Bozuko.config.bozuko.facebook_id, function(error, page){
                     if( error ) return error.send(res);
-                    return Bozuko.transfer('bozuko',{page: page}, null, function(error, result){
-                        res.send( error || result );
+                    
+                    // the return...
+                    var transfer = function(page, demo_page){
+                        return Bozuko.transfer('bozuko',{page: page}, null, function(error, result){
+                            res.send( error || result );
+                        });
+                    };
+                    
+                    if( !Bozuko.config.bozuko.demo_id ){
+                        return transfer( page );
+                    }
+                    return Bozuko.models.Page.findById( Bozuko.config.bozuko.demo_id, function(error, demo_page){
+                        if( error ) return error.send(res);
+                        return transfer(page, demo_page);
                     });
                 });
             }

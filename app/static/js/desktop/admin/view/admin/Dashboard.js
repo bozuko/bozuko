@@ -35,12 +35,11 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                 items : [{
                     xtype : 'bozukochartbasic',
                     border : false,
-                    anchor : 0,
-                    style: 'margin-bottom: 10px'
+                    anchor : '0'
                 },{
                     xtype : 'contestplayers',
                     border : false,
-                    anchor : 0
+                    anchor : '0'
                 }]
             },{
                 height: 200,
