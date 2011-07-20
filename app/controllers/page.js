@@ -32,6 +32,7 @@ exports.transfer_objects = {
             announcement: "String",
             distance: "String",
             is_place: "Boolean",
+            is_facebook: "Boolean",
             location: {
                 street: "String",
                 city: "String",
@@ -102,6 +103,8 @@ exports.transfer_objects = {
                         }
                     }
                 }
+                
+                page.is_facebook = ( !page.registered || page.service('facebook') );
     
                 // add registered links...
                 if( page.registered ){
