@@ -4,7 +4,6 @@ Ext.define('Beta.view.App', {
     alias: 'widget.betaapp',
     
     requires: [
-        'Bozuko.view.winners.List',
         'Beta.view.page.Dashboard',
         'Beta.view.contests.Panel',
         'Beta.view.page.Settings',

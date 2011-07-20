@@ -21,11 +21,8 @@ Ext.define('Bozuko.view.contest.List' ,{
             overItemCls : 'contest-overview-over',
             itemCls : 'contest-overview',
             itemTpl : new Ext.XTemplate(
-                
+                '<h3 class="contest-name">{name}</h3>',
                 '<div class="contest-info">',
-                    '<div class="info-row">',
-                        '<h3>{name}</h3>',
-                    '</div>',
                     '<div class="info-row">',
                         '<label>Game:</label>',
                         '<span>{game}</span>',

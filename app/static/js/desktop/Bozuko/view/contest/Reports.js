@@ -5,7 +5,8 @@ Ext.define('Bozuko.view.contest.Reports', {
     
     requires : [
         'Bozuko.view.contest.Overview',
-        'Bozuko.view.chart.Basic'
+        'Bozuko.view.chart.Basic',
+        'Bozuko.view.contest.Players'
     ],
     
     initComponent : function(){
@@ -49,11 +50,10 @@ Ext.define('Bozuko.view.contest.Reports', {
                 bodyPadding     :10,
                 autoScroll      :true
             },{
-                xtype           :'winnerslist',
+                xtype           :'contestplayers',
                 region          :'east',
                 width           :250,
                 margin          :'2 2 2',
-                title           :'Winners List',
                 contest_id      :me.record.get('_id')
             }]
         });

@@ -41,6 +41,7 @@ Ext.define('Admin.view.page.Panel' ,{
         });
         me.items = [{
             xtype       :'contestpanel',
+            page        :me.record,
             store: Ext.create('Bozuko.store.Contests', {
                 page_id: me.record.get('_id'),
                 autoLoad: true

@@ -4,6 +4,7 @@ Ext.define('Beta.view.page.Dashboard', {
     extend: 'Ext.panel.Panel',
     
     requires: [
+        'Bozuko.view.contest.Players',
         'Bozuko.lib.PubSub',
         'Bozuko.view.chart.Basic'
     ],
@@ -18,9 +19,7 @@ Ext.define('Beta.view.page.Dashboard', {
                 style           :'border-left: 1px solid #ccc;',
                 collapsible     :true,
                 split           :true,
-                frame           :false,
-                title           :"Winners List - All Campaigns",
-                xtype           :'winnerslist',
+                xtype           :'contestplayers',
                 width           :320,
                 border          :false
             },{

@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     burl = Bozuko.require('util/url').create,
     LastUpdatedPlugin = require('./plugins/lastupdated'),
+    JSONPlugin = require('./plugins/json'),
     ObjectId = Schema.ObjectId;
 
 var Prize = module.exports = new Schema({
@@ -39,6 +40,7 @@ Prize.EXPIRED = 'expired';
 
 
 Prize.plugin(LastUpdatedPlugin);
+Prize.plugin(JSONPlugin);
 
 Prize.virtual('state')
     .get(function(){

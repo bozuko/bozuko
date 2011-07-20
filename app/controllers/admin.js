@@ -7,8 +7,10 @@ var facebook    = Bozuko.require('util/facebook'),
     ObjectId    = require('mongoose').Types.ObjectId,
     filter      = Bozuko.require('util/functions').filter,
     merge       = Bozuko.require('util/functions').merge,
+    array_map   = Bozuko.require('util/functions').map,
     Report      = Bozuko.require('core/report'),
-    DateUtil    = Bozuko.require('util/date')
+    DateUtil    = Bozuko.require('util/date'),
+    async       = require('async')
 ;
 
 exports.access = 'admin';
@@ -451,6 +453,7 @@ exports.routes = {
                                 pages.forEach(function(page){
                                     page_map[String(page._id)] = page;
                                 });
+                                
                                 // get the contests
                                 return Bozuko.models.Contest.find({_id: {$in: Object.keys(contest_ids)}}, {name: 1}, function(error, contests){
 
@@ -461,11 +464,12 @@ exports.routes = {
 
                                     var winners = [];
                                     prizes.forEach(function(prize){
+                                        
                                         // create a winner object
                                         winners.push({
                                             _id: prize.id,
                                             prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
-                                            user: filter(user_map[String(prize.user_id)],'_id','name','image','email'),
+                                            user: filter(user_map[String(prize.user_id)],'_id','name','image','email','services'),
                                             page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
                                             contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
                                         });
@@ -480,9 +484,9 @@ exports.routes = {
         }
     },
     
-    '/admin/players' : {
+    '/admin/entries' : {
         
-        alias : '/admin/players/:id',
+        alias : '/admin/entries/:id',
         
         get : {
             handler: function(req, res){
@@ -490,47 +494,90 @@ exports.routes = {
                 var page_id = req.param('page_id'),
                     contest_id = req.param('contest_id'),
                     limit = req.param('limit') || 25,
-                    skip = req.param('start') || 0
-                    selector = {};
-                    
-                if( page_id ) selector.page_id = page_id;
-                if( contest_id ) selector.contest_id = contest_id;
+                    skip = req.param('start') || 0,
+                    objects = {},
+                    results = []
+                    ;
                 
-                return Bozuko.models.Entry.find(selector, {}, {sort:{timestamp: -1}, limit: limit, skip: skip}, function(error, entries){
-                    if( error ) return error.send(res);
+                return async.series({
                     
-                    var user_ids = [];
-                    entries.forEach(function(entry){
-                        if( !~user_ids.indexOf(entry.user_id) ) user_ids.push( entry.user_id );
-                    });
+                    entries : function(callback){
+                        var selector = {};
+                        
+                        if( page_id ) selector.page_id = page_id;
+                        if( contest_id ) selector.contest_id = contest_id;
+                        
+                        return Bozuko.models.Entry.find(selector, {}, {sort:{timestamp: -1}, limit: limit, skip: skip}, function(error, entries){
+                            if( error ) return callback(error);
+                            objects.entries = entries;
+                            return callback( null );
+                        });
+                    },
                     
-                    // get the users...
-                    return Bozuko.models.User.find({_id: {$in: user_ids}}, {
-                        phones: 0,
-                        challenge: 0,
-                        last_internal_update: 0,
-                        manages: 0,
-                        salt: 0,
-                        token: 0
-                    }, function(error, users){
-                        if( error ) return error.send( res );
-                        
-                        var players = [],
-                            map = {};
-                        // map the users
-                        
-                        users.forEach( function(user){
-                            map[String(user._id)] = user;
+                    user : function(callback){
+                        // create a user map
+                        var ids = [];
+                        objects.entries.forEach(function(entry){
+                            if( !~ids.indexOf( entry.user_id ) ) ids.push(entry.user_id);
                         });
-                        var order = [];
-                        entries.forEach( function(entry){
-                            var obj = map[String(entry.user_id)];
-                            obj.entry_id = entry._id;
-                            order.push( obj );
+                        return Bozuko.models.User.find({_id: {$in: ids}}, {
+                            phones: 0,
+                            challenge: 0,
+                            last_internal_update: 0,
+                            manages: 0,
+                            salt: 0,
+                            token: 0
+                        },function(error, users){
+                            if( error ) return callback(error);
+                            objects.users = users;
+                            objects.user_map = array_map(users,'_id');
+                            console.log(objects);
+                            return callback(null);
                         });
-                        
-                        return res.send({items: order});
+                    },
+                    
+                    contests : function(callback){
+                        // create a user map
+                        var ids = [];
+                        objects.entries.forEach(function(entry){
+                            if( !~ids.indexOf( entry.contest_id ) ) ids.push(entry.contest_id);
+                        });
+                        return Bozuko.models.Contest.find({_id: {$in: ids}}, {
+                            name: 1
+                        },function(error, contests){
+                            if( error ) return callback(error);
+                            objects.contests = contests;
+                            objects.contest_map = array_map(contests,'_id');
+                            return callback(null);
+                        });
+                    },
+                    
+                    pages : function(callback){
+                        // create a user map
+                        var ids = [];
+                        objects.entries.forEach(function(entry){
+                            if( !~ids.indexOf( entry.page_id ) ) ids.push(entry.page_id);
+                        });
+                        return Bozuko.models.Page.find({_id: {$in: ids}}, {
+                            name: 1 
+                        },function(error, pages){
+                            if( error ) return callback(error);
+                            objects.pages = pages;
+                            objects.page_map = array_map(pages,'_id');
+                            return callback(null);
+                        });
+                    }
+                    
+                }, function finish(error){
+                    if( error ) return error.send( res );
+                    objects.entries.forEach(function(entry){
+                        var result = filter(entry);
+                        result.user = filter( objects.user_map[String(entry.user_id)] );
+                        result.contest = filter( objects.contest_map[String(entry.contest_id)], 'name' );
+                        result.page = filter( objects.page_map[String(entry.page_id)], 'name' );
+                        results.push(result);
                     });
+                    return res.send({items: results});
                 });
             }
         }

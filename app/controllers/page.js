@@ -211,6 +211,13 @@ exports.links = {
         post: {
             access: 'user',
             doc: 'Allow a user to recommend Bozuko to a place',
+            params: {
+                message:{
+                    required: true,
+                    type: "String",
+                    description: "The message to send to the Business / Bozuko"
+                }
+            },
             returns: 'success_message'
         }
     }
@@ -401,6 +408,8 @@ exports.routes = {
     },
 
     'page/recommend/:service/:id': {
+        
+        access : 'user',
 
         post : {
 
@@ -408,9 +417,73 @@ exports.routes = {
                 /**
                  * TODO - add the recommendation logic
                  */
-                Bozuko.publish('page/recommend', {message:req.param('message'), service:req.param('service')});
-                Bozuko.transfer('success_message', {success: true}, null, function(error, result){
-                    res.send( error || result );
+                var id = req.param('id'),
+                    user = req.session.user,
+                    service = req.param('service'),
+                    message = req.param('message') || '';
+                    
+                async.series({
+                    page : function(callback){
+                        return Bozuko.models.Page.findByService(service, id, function(err, page) {
+
+                            if( err ){
+                                return callback( err );
+                            }
+                            if( page ){
+                                return callback( null, page );
+                            }
+                            return Bozuko.service(service).place({place_id:id}, function(error, place){
+                                if( error ){
+                                    return callback(error);
+                                }
+                                if( !place ){
+                                    return callback(Bozuko.error('facebook/bad_place_id'));
+                                }
+                                return Bozuko.models.Page.createFromServiceObject( place, function(error, page){
+                                    if( error ) return callback(error);
+                                    return callback( null, page )
+                                });
+                            });
+                        });
+                    }
+                }, function finish(error, result){
+                    if( error ) return error.send( res );
+                    
+                    var page = result.page;
+                    
+                    var recommendation = new Bozuko.models.Recommendation();
+                    recommendation.page_id = page._id;
+                    recommendation.user_id = user._id;
+                    recommendation.message = message;
+                    
+                    return recommendation.save( function(error){
+                        if( error ) return error.send(res);
+                        /**
+                        * Async process
+                        */
+                        mailer.send({
+                            to: 'feedback@bozuko.com',
+                            subject: "New Recommendation from a Bozuko User!",
+                            body: [
+                                user.name+' ('+user.email+')' +
+                                ' just submitted the following recommendation for '+page.name+' ('+page.service('facebook').data.link+'):',
+                                '',
+                                message,
+                                '',
+                                '--',
+                                '- The Bozuko Mailer (please do not reply to this email)'
+                            ].join("\n")
+                        }, function(error){
+                            if( error ){
+                                console.error('Error sending recommendation! ['+recommendation._id+']');
+                            }
+                        });
+                        
+                        Bozuko.publish('page/recommend', {message:message, service:service, page: page.name});
+                        return Bozuko.transfer('success_message', {success: true}, null, function(error, result){
+                            return res.send( error || result );
+                        });
+                    });
                 });
             }
         }

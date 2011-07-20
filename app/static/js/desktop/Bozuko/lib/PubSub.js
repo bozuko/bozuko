@@ -153,7 +153,7 @@ Ext.define('Bozuko.lib.PubSub',{
             me.fails++;
         }
         // buffer
-        me._requestTimeout = Ext.defer(me.request, 1000, me);
+        me._requestTimeout = Ext.defer(me.request, 500, me);
     },
     
     onItem : function(item, last){
