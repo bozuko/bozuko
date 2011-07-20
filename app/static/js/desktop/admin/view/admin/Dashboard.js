@@ -47,7 +47,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                 xtype: 'grid',
                 store: Ext.create('Ext.data.Store',{
                     id: 'eventStore',
-                    fields:['type','message','timestamp'],
+                    fields:['type','message','timestamp','_id'],
                     data:{'items':[]},
                     sorters: [{property:'timestamp', direction: 'DESC'}],
                     proxy:{
@@ -62,7 +62,33 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                     {header: 'Timestamp', dataIndex: 'timestamp', width: 150},
                     {header: 'Event', dataIndex: 'type', width: 150},
                     {header: 'Message', dataIndex: 'message', renderer: JSON.stringify, flex: 1}
-                ]
+                ],
+                listeners : {
+                    itemdblclick : function(view, record, item, index, event ){
+                        var me = this,
+                            id = record.get('_id'),
+                            win;
+                        if( !this.windows ) this.windows = {};
+                        if( !(win = this.windows[id]) ){
+                            win = Ext.create('Ext.window.Window', {
+                                width: 600,
+                                height: 400,
+                                bodyStyle: 'background: #020202; color: #fff',
+                                autoScroll: true,
+                                title: record.get('type')+' @ '+record.get('timestamp'),
+                                html: '<pre>'+JSON.stringify( record.get('message'), null, '  ')+'</pre>',
+                                bodyPadding: 10,
+                                listeners:{
+                                    close : function(){
+                                        delete me.windows[id];
+                                    }
+                                }
+                            });
+                            me.windows[id] = win;
+                        }
+                        win.show();
+                    }
+                }
             }]
         },{
             region: 'east',
@@ -74,10 +100,10 @@ Ext.define('Admin.view.admin.Dashboard' ,{
         }];
         this.callParent();
         var eventLog = Ext.data.StoreManager.lookup('eventStore');
-        Bozuko.PubSub.subscribe('*', true, function(message, type, timestamp){
+        Bozuko.PubSub.subscribe('*', true, function(message, type, timestamp, _id){
             var time = new Date();
             time.setTime( Date.parse(timestamp) );
-            var record = eventLog.createModel({type:type,message: message, timestamp: time});
+            var record = eventLog.createModel({type:type,message: message, timestamp: time, _id: _id});
             eventLog.insert(0,[record]);
             while(eventLog.getCount() > 150 ){
                 eventLog.removeAt(150);

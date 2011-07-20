@@ -189,7 +189,7 @@ Ext.define('Bozuko.lib.PubSub',{
                 }
                 if( satisfied ){
                     Ext.Array.each( filter.callbacks, function(callback){
-                        callback(message, event, timestamp)
+                        callback(message, event, timestamp, _id)
                     });
                 }
             });

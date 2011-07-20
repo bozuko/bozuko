@@ -32,14 +32,15 @@ Ext.define( 'Bozuko.view.contest.Entries', {
             
             itemTpl: new Ext.XTemplate(
                 '<div class="entry-item">',
-                    '<div class="contest-name">',
-                        '<tpl if="this.showPageTitle()">',
-                            '<strong>{page.name}</strong> - ',
-                        '</tpl>',
-                        '{contest.name}',
-                    '</div>',
+                    '<tpl if="!this.isContestSpecific()">',
+                        '<div class="contest-name">',
+                            '<tpl if="this.showPageTitle()">',
+                                '<strong>{page.name}</strong> - ',
+                            '</tpl>',
+                            '{contest.name}',
+                        '</div>',
+                    '</tpl>',
                     '<div class="entry-body">',
-                        
                         '<img src="{[this.getImage(values.user.image)]}" />',
                         '<div class="user-name">{[this.getUserName(values)]}</div>',
                         '<div class="user-friend-count">{[this.getFriendCount(values)]} Friends</div>',
@@ -91,7 +92,7 @@ Ext.define( 'Bozuko.view.contest.Entries', {
                     },
                     
                     showPageTitle : function(){
-                        return !this.isPageSpecific();
+                        return !this.isContestSpecific() && !this.isPageSpecific();
                     },
                     
                     getUserName : function(values){
