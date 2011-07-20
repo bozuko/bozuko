@@ -114,30 +114,50 @@
 .bozuko-list .x-item-selected {
   background-color: #d5eaf9;
 }
+.entry-list .page-name {
+  background: #e6e6e6;
+  text-align: left;
+  padding: .2em 6px;
+  font-weight: bold;
+}
+.entry-list .contest-name {
+  background: #e8e8e8;
+  border-bottom: #d0d0d0;
+  text-align: left;
+  font-size: 1em;
+  padding: .4em 6px;
+  font-weight: normal;
+}
+.entry-list .x-dataview-item {
+  background-color: #fff;
+  padding: 0;
+  cursor: default;
+}
+.entry-list .entry-body {
+  padding: 6px;
+}
+.entry-list .user-name {
+  font-weight: bold;
+  margin-bottom: .2em;
+}
+.entry-list .user-friend-count {
+  color: #999;
+  font-size: 11px;
+  margin-bottom: .2em;
+}
+.entry-list .entry-timestamp {
+  font-size: 12px;
+  color: #999;
+}
 .winners-list {
   background: #e6e6e6;
   padding-top: 0px;
   padding-bottom: 0px;
-  /*
-    .list-item {
-        padding-left: 44px;
-        background: transparent none 6px 50% no-repeat;
-    }
-    .prize-active {
-        background-image: url("/images/assets/prizes/32/icon-active.png");
-    }
-    .prize-expired {
-        background-image: url("/images/assets/prizes/32/icon-expired.png");
-    }
-    .prize-redeemed {
-        background-image: url("/images/assets/prizes/32/icon-redeemed.png");
-    }
-    */
-
 }
 .winners-list .x-dataview-item {
   background-color: #fff;
   padding: 0;
+  cursor: default;
 }
 .winners-list .page-name {
   background: #e6e6e6;
@@ -331,7 +351,7 @@ fieldset .x-fieldset-header {
   -moz-transition: background 0.5s ease-out;
   -o-transition: background 0.5s ease-out;
   -webkit-transition: background 0.5s ease-out;
-  padding: 15px 0;
+  padding: 10px 0 10px;
   overflow: hidden;
   background: #f3f3f3;
   border-bottom: 1px solid #ccc;
@@ -359,8 +379,10 @@ fieldset .x-fieldset-header {
         */
 
 }
-.contest-list .contest-overview .info-row h3 {
-  color: #000;
+.contest-list .contest-overview h3.contest-name {
+  color: #008943;
+  padding-left: 10px;
+  margin-bottom: 10px;
   font-size: 22px;
   line-height: 30px;
   font-family: ArvoRegular;
@@ -376,37 +398,4 @@ fieldset .x-fieldset-header {
 }
 .contest-list .contest-overview-over {
   background: #e8e8e8;
-}
-.player-list {
-  padding: 0 30px;
-}
-.player-list .scroll-container {
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-  padding: 6px 0;
-}
-.player-list .player-item {
-  position: relative;
-  width: 52px;
-  margin: 0 6px;
-}
-.player-list .player-item .ct {
-  background: #f3f3f3;
-  border: 1px solid #ccc;
-  -moz-box-shadow: 0 0 6px #cccccc;
-  -webkit-box-shadow: 0 0 6px #cccccc;
-  box-shadow: 0 0 6px #cccccc;
-}
-.player-list .player-item .ct img {
-  width: 50px;
-  height: 50px;
-}
-.player-list .player-item .ct .name {
-  display: block;
-  font-size: 10px;
-  line-height: 12px;
-  height: 28px;
-  text-align: center;
-  color: #333;
 }

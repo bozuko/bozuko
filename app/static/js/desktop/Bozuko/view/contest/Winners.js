@@ -1,7 +1,7 @@
-Ext.define('Bozuko.view.winners.List' ,{
+Ext.define('Bozuko.view.contest.Winners' ,{
     
     extend: 'Ext.panel.Panel',
-    alias : 'widget.winnerslist',
+    alias : 'widget.contestwinners',
     
     requires: [
         'Bozuko.store.Winners'
@@ -11,9 +11,7 @@ Ext.define('Bozuko.view.winners.List' ,{
     blinkRate : 800,
     blinkCls : 'winner-blink',
     
-    layout: {
-        type        :'fit'
-    },
+    autoScroll: true,
     
     showNotifications : function(){
         
@@ -29,18 +27,6 @@ Ext.define('Bozuko.view.winners.List' ,{
             contest_id : me.contest_id || (me.contest ? me.contest.get('_id') : null),
             page_id : me.page_id || (me.page ? me.page.get('_id') : null)
         });
-        me.tmpStore = Ext.create('Bozuko.store.Winners',{
-            autoLoad: false,
-            contest_id : me.contest_id || (me.contest ? me.contest.get('_id') : null),
-            page_id : me.page_id || (me.page ? me.page.get('_id') : null)
-        });
-        
-        me.tools = [{
-            type: 'refresh',
-            handler: function(){
-                if(me.store) me.store.load();
-            }
-        }];
         
         // going to create a view within this panel.
         me.items = [{
@@ -51,8 +37,6 @@ Ext.define('Bozuko.view.winners.List' ,{
             overItemCls : 'x-item-over',
             
             emptyText: '<p>No Winners yet!</p>',
-            
-            autoScroll: true,
             
             store: me.store,
             itemTpl: new Ext.XTemplate(
@@ -65,7 +49,7 @@ Ext.define('Bozuko.view.winners.List' ,{
                     '</div>',
                     '<div class="winner-body">',
                         '<img src="{[this.getImage(values.user.image)]}" />',
-                        '<div class="user-name">{user.name}</div>',
+                        '<div class="user-name">{[this.getUserName(values)]}</div>',
                         '<div class="prize-name">{prize.name}</div>',
                         '<div class="prize-timestamp">{[this.getFormattedDate(values.prize.timestamp)]}</div>',
                     '</div>',
@@ -95,40 +79,32 @@ Ext.define('Bozuko.view.winners.List' ,{
                     
                     showPageTitle : function(){
                         return !this.isPageSpecific();
+                    },
+                    
+                    getUserName : function(values){
+                        var name = values.user.name;
+                        if( values.user.services ) Ext.each(values.user.services,function(service){
+                            if( service.name == 'facebook' && service.data && service.data.link ){
+                                name ='<a href="'+service.data.link+'" target="_blank">'+name+'</a>';
+                                return false;
+                            }
+                            return true;
+                        });
+                        return name;
                     }
                 }
             ),
             
             listeners :{
                 scope : me,
-                refresh: me.onRefresh
+                refresh: me.onRefresh,
+                itemadd: me.onRefresh,
+                itemupdate: me.onRefresh,
+                itemremove: me.onRefresh
             }
         }];
         
         me.callParent(arguments);
-    },
-    
-    updateStore : function(){
-        var me = this;
-        
-        me.tmpStore.load({
-            scope : me,
-            callback : function(records){
-                var j =0;
-                Ext.Array.each( records, function(record, i){
-                    var r = me.store.getById( record.getId() );
-                    if( r ){
-                        r.set( record.data );
-                        r.commit();
-                    }
-                    else{
-                        me.store.insert(j++, record);
-                    }
-                });
-                me.onRefresh();
-                while( me.store.getCount() > 100 ) me.store.removeAt(100);
-            }
-        });
     },
     
     onRefresh : function(){

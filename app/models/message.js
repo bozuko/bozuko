@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
 ;
 
 var Message = module.exports = new Schema({
-    timestamp               :{type: Date, index: true},
+    timestamp               :{type: Date,       index: true},
     type                    :{type: String},
     content                 :{}
 });

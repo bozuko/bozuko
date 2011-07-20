@@ -290,18 +290,17 @@ exports.routes = {
                             // get the contest
                             Bozuko.models.Contest.findById( prize.contest_id, function(error, contest){
                                 
-                                console.error('redeem prize, contest.post_to_wall == true '+ (contest.post_to_wall) );
-                                
                                 if( !page || !contest || contest.post_to_wall !== true ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                     console.error('not gonna share');
                                     res.send( error || result );
                                 });
                                 
-                                // finish up the options
+                                
+                                var gameName = contest.getGame().getName();
                                 
                                 var a = /^(a|an|the)\s/i.test(String(prize.name)) ? '' : (String(prize.name).match(/^[aeiou]/i) ? 'an ' : 'a ');
                                 options.name = req.session.user.name+' just won '+a+prize.name+'!';
-                                options.description = 'You could too! Play Bozuko at '+page.name+' for your chance to win!';
+                                options.description = 'You could too! Play '+gameName+' at '+page.name+' with Bozuko for your chance to win!';
                                 
                                 return Bozuko.service('facebook').post(options, function(error){
                                     

@@ -5,9 +5,9 @@ var mongoose = require('mongoose'),
 ;
 
 var Checkin = module.exports = new Schema({
-    user_id                 :{type:ObjectId},
-    page_id                 :{type:ObjectId},
-    timestamp               :{type:Date, default: Date.now},
+    user_id                 :{type:ObjectId,    index: true},
+    page_id                 :{type:ObjectId,    index: true},
+    timestamp               :{type:Date,        index: true,    default: Date.now},
     description             :{type:String},
     message                 :{type:String},
     service                 :{type:String},

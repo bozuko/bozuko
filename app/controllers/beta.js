@@ -2,9 +2,11 @@ var Content     = Bozuko.require('util/content'),
     validator   = require('validator'),
     mailer      = Bozuko.require('util/mail'),
     Report      = Bozuko.require('core/report'),
-    DateUtil    = Bozuko.require('util/date')
+    DateUtil    = Bozuko.require('util/date'),
+    async       = require('async'),
     indexOf     = Bozuko.require('util/functions').indexOf,
     filter      = Bozuko.require('util/functions').filter,
+    array_map   = Bozuko.require('util/functions').map,
     ObjectId    = require('mongoose').Types.ObjectId,
     crypto      = require('crypto')
     ;
@@ -322,6 +324,105 @@ exports.routes = {
                             });
                         });
                     });
+                });
+            }
+        }
+    },
+    
+    '/beta/entries' : {
+        
+        alias : '/admin/entries/:id',
+        
+        get : {
+            handler: function(req, res){
+                
+                var page_id = req.param('page_id'),
+                    contest_id = req.param('contest_id'),
+                    limit = req.param('limit') || 25,
+                    skip = req.param('start') || 0,
+                    objects = {},
+                    results = []
+                    ;
+                
+                return async.series({
+                    
+                    entries : function(callback){
+                        var selector = {};
+                        
+                        if( page_id ) selector.page_id = page_id;
+                        if( contest_id ) selector.contest_id = contest_id;
+                        
+                        return Bozuko.models.Entry.find(selector, {}, {sort:{timestamp: -1}, limit: limit, skip: skip}, function(error, entries){
+                            if( error ) return callback(error);
+                            objects.entries = entries;
+                            return callback( null );
+                        });
+                    },
+                    
+                    user : function(callback){
+                        // create a user map
+                        var ids = [];
+                        objects.entries.forEach(function(entry){
+                            if( !~ids.indexOf( entry.user_id ) ) ids.push(entry.user_id);
+                        });
+                        return Bozuko.models.User.find({_id: {$in: ids}}, {
+                            phones: 0,
+                            challenge: 0,
+                            last_internal_update: 0,
+                            manages: 0,
+                            salt: 0,
+                            token: 0
+                        },function(error, users){
+                            if( error ) return callback(error);
+                            objects.users = users;
+                            objects.user_map = array_map(users,'_id');
+                            console.log(objects);
+                            return callback(null);
+                        });
+                    },
+                    
+                    contests : function(callback){
+                        // create a user map
+                        var ids = [];
+                        objects.entries.forEach(function(entry){
+                            if( !~ids.indexOf( entry.contest_id ) ) ids.push(entry.contest_id);
+                        });
+                        return Bozuko.models.Contest.find({_id: {$in: ids}}, {
+                            name: 1
+                        },function(error, contests){
+                            if( error ) return callback(error);
+                            objects.contests = contests;
+                            objects.contest_map = array_map(contests,'_id');
+                            return callback(null);
+                        });
+                    },
+                    
+                    pages : function(callback){
+                        // create a user map
+                        var ids = [];
+                        objects.entries.forEach(function(entry){
+                            if( !~ids.indexOf( entry.page_id ) ) ids.push(entry.page_id);
+                        });
+                        return Bozuko.models.Page.find({_id: {$in: ids}}, {
+                            name: 1 
+                        },function(error, pages){
+                            if( error ) return callback(error);
+                            objects.pages = pages;
+                            objects.page_map = array_map(pages,'_id');
+                            return callback(null);
+                        });
+                    }
+                    
+                }, function finish(error){
+                    if( error ) return error.send( res );
+                    objects.entries.forEach(function(entry){
+                        var result = filter(entry);
+                        result.user = filter( objects.user_map[String(entry.user_id)] );
+                        result.contest = filter( objects.contest_map[String(entry.contest_id)], 'name' );
+                        result.page = filter( objects.page_map[String(entry.page_id)], 'name' );
+                        results.push(result);
+                    });
+                    return res.send({items: results});
                 });
             }
         }

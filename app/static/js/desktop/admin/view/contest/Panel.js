@@ -4,7 +4,8 @@ Ext.define('Admin.view.contest.Panel' ,{
     alias : 'widget.contestpanel',
     
     requires: [
-        'Bozuko.view.contest.List'
+        'Bozuko.view.contest.List',
+        'Bozuko.view.contest.Players'
     ],
     layout: 'border',
     
@@ -35,11 +36,11 @@ Ext.define('Admin.view.contest.Panel' ,{
             }]
         },{
             region          :'east',
-            xtype           :'winnerslist',
+            xtype           :'contestplayers',
+            page_id         :me.page.get('_id'),
             split           :true,
             width           :250,
-            margin          :'2 2 2 0',
-            title           :'Winners List'
+            margin          :'2 2 2 0'
         }];
         
         window.contests = me.store;

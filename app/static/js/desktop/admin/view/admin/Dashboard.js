@@ -13,7 +13,6 @@ Ext.define('Admin.view.admin.Dashboard' ,{
     requires: [
         'Bozuko.lib.PubSub',
         'Bozuko.store.Reports',
-        'Bozuko.view.winners.List',
         'Bozuko.view.chart.Basic',
         'Bozuko.view.contest.Players'
     ],
@@ -34,10 +33,6 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                 autoScroll: true,
                 items : [{
                     xtype : 'bozukochartbasic',
-                    border : false,
-                    anchor : '0'
-                },{
-                    xtype : 'contestplayers',
                     border : false,
                     anchor : '0'
                 }]
@@ -75,13 +70,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             split: true,
             border: true,
             margin: '2 2 2 0',
-            title: 'All Winners',
-            xtype: 'winnerslist',
-            listeners: {
-                render: function(){
-                    this.store.load();
-                }
-            }
+            xtype: 'contestplayers'
         }];
         this.callParent();
         var eventLog = Ext.data.StoreManager.lookup('eventStore');

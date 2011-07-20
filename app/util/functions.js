@@ -10,6 +10,8 @@ function indexOf(haystack, needle){
 
 
 function filter(data){
+    
+    if( data && data.toJSON ) data = data.toJSON();
 
     if( arguments.length > 1 && data){
         var tmp={};
@@ -35,7 +37,16 @@ function filter(data){
     return data;
 }
 
+function map(ar, key){
+    var _map = {};
+    ar.forEach(function(item){
+        _map[String(item[key])] = item;
+    });
+    return _map;
+}
+
 exports.indexOf = indexOf;
 exports.filter = filter;
 exports.merge = object.merge;
 exports.clone = object.clone;
+exports.map = map;

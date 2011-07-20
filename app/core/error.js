@@ -23,7 +23,6 @@ Error.prototype.title = 'Uh-oh!';
 MongooseError.prototype.name='database';
 
 Error.prototype.toTransfer = function(callback){
-    console.log('hi');
     return Bozuko.transfer('error', this, null, callback);
 };
 

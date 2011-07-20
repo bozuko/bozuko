@@ -61,7 +61,7 @@ Ext.define('Admin.controller.Contests' ,{
         var me = this,
             p = view.up('contestpanel');
             
-        p.down('winnerslist').setPage(p.up('pagepanel').record);
+        // p.down('winnerslist').setPage(p.up('pagepanel').record);
         
         // get at the store...
         view.store.on('load', function(store){

@@ -1,25 +1,24 @@
-Ext.define('Bozuko.store.Winners', {
+Ext.define('Bozuko.store.Entries', {
     extend: 'Ext.data.Store',
     
     requires: [
-        'Bozuko.model.Winner',
+        'Bozuko.model.Entry',
         'Bozuko.lib.PubSub',
         'Ext.data.reader.Json'
     ],
     
-    model: 'Bozuko.model.Winner',
+    model: 'Bozuko.model.Entry',
     
     isListener : true,
-
+    
     constructor : function(){
-        
         var me = this;
-        
         me.last = {};
         me.listening = false;
         
         me.callParent(arguments);
         me.on('beforeload', me.onBeforeLoad, me);
+        
         if( me.isListener ){
             me.startListening();
             me.tmpStore = me.self.create({
@@ -30,11 +29,11 @@ Ext.define('Bozuko.store.Winners', {
                 autoLoad: false
             });
         }
-        
     },
     
     onBeforeLoad : function(store, operation){
         var me = this;
+        
         if( !me.page_id && !me.contest_id ) return;
         if( !operation.params ) operation.params = {};
         operation.params['page_id'] = me.page_id;
@@ -60,9 +59,7 @@ Ext.define('Bozuko.store.Winners', {
             }, 500);
         };  
         
-        Bozuko.PubSub.subscribe('prize/redeemed', selector, reload);
-        Bozuko.PubSub.subscribe('contest/win', selector, reload);
-        Bozuko.PubSub.subscribe('contest/consolation', selector, reload);
+        Bozuko.PubSub.subscribe('contest/entry', selector, reload);
         me.listening = true;
     },
     

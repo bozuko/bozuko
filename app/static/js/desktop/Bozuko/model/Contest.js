@@ -100,6 +100,7 @@ Ext.define('Bozuko.model.Contest', {
     getTotalEntries : function(){
         var me = this,
             qty = 0;
+            
         me.prizes().each(function(prize){
             qty += prize.get('total');
         });

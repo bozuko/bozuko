@@ -89,7 +89,6 @@ User.method('updateInternals', function(callback){
     
     var now = new Date();
     if( self.last_internal_update && +now -self.last_internal_update < (1000 * 2) ){
-        console.log('do not update internals');
         return callback(null);
     }
     
@@ -122,7 +121,6 @@ User.method('updateInternals', function(callback){
         self.service('facebook').internal.friends = friends;
         self.service('facebook').internal.friend_count = friends.length;
         self.last_internal_update = new Date();
-        console.log('updating internals');
         self.commit('services');
         return self.save(callback);
     });

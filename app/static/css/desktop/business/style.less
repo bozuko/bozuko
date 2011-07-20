@@ -143,6 +143,53 @@
         background-color: #d5eaf9;
     }
 }
+
+
+.entry-list {
+    
+    .page-name {
+        background: #e6e6e6;
+        text-align: left;
+        padding: .2em 6px;
+        font-weight: bold;
+    }
+    .contest-name {
+        background: #e8e8e8;
+        border-bottom: #d0d0d0;
+        text-align: left;
+        font-size: 1em;
+        padding: .4em 6px;
+        font-weight: normal;
+    }
+    
+    .x-dataview-item {
+        background-color: #fff;
+        padding: 0;
+        cursor: default;
+    }
+    
+    .entry-body {
+        padding: 6px;
+    }
+    
+    .user-name {
+        font-weight: bold;
+        margin-bottom: .2em;
+    }
+    .user-friend-count{
+        color: #999;
+        font-size: 11px;
+        margin-bottom: .2em;
+    }
+    
+    .entry-timestamp {
+        font-size: 12px;
+        color: #999;
+    }
+    
+}
+
+
 .winners-list {
     
     background: #e6e6e6;
@@ -152,6 +199,7 @@
     .x-dataview-item {
         background-color: #fff;
         padding: 0;
+        cursor: default;
     }
     
     .page-name {
@@ -185,21 +233,6 @@
         font-size: 12px;
         color: #999;
     }
-    /*
-    .list-item {
-        padding-left: 44px;
-        background: transparent none 6px 50% no-repeat;
-    }
-    .prize-active {
-        background-image: url("/images/assets/prizes/32/icon-active.png");
-    }
-    .prize-expired {
-        background-image: url("/images/assets/prizes/32/icon-expired.png");
-    }
-    .prize-redeemed {
-        background-image: url("/images/assets/prizes/32/icon-redeemed.png");
-    }
-    */
     .winner-body {
         padding: 6px 6px 6px 44px;
         background: transparent none -12px 50% no-repeat;
@@ -383,9 +416,10 @@ fieldset{
 
 .contest-list {
     border-top: 1px solid #eee;
+    
     .contest-overview {
         .transition(background, .5s, ease-out);
-        padding: 15px 0;
+        padding: 10px 0 10px;
         overflow: hidden;
         background: #f3f3f3;
         border-bottom: 1px solid #ccc;
@@ -412,15 +446,16 @@ fieldset{
             min-width: 60px;
         }
         */
-        .info-row {
-            h3 {
-                color: #000;
-                font-size: 22px;
-                line-height: 30px;
-                font-family: ArvoRegular;
-                font-weight: normal;
-            }
+        h3.contest-name {
+            color: darken(@brand_color, 5%);
+            padding-left: 10px;
+            margin-bottom: 10px;
+            font-size: 22px;
+            line-height: 30px;
+            font-family: ArvoRegular;
+            font-weight: normal;
         }
+        
         
         .app-buttons {
             padding-top: 10px;
@@ -435,48 +470,5 @@ fieldset{
     
     .contest-overview-over{
         background: #e8e8e8;
-    }
-}
-
-.player-list {
-    
-    padding: 0 30px;
-    
-    .scroll-container {
-        width: 100%;
-        overflow: hidden;
-        position: relative;
-        padding: 6px 0;
-    }
-    
-    .player-item {
-        position: relative;
-        width: 52px;
-        margin: 0 6px;
-        .ct {
-            background: #f3f3f3;
-            border: 1px solid #ccc;
-            .box_shadow(0,0,6px,#ccc);
-            
-            img {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .name {
-                display: block;
-                font-size: 10px;
-                line-height: 12px;
-                height: 28px;
-                text-align: center;
-                color: #333;
-            }
-            
-        }
-    }
-    
-    .player-item-over{
-        
-        
     }
 }
