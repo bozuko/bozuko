@@ -68,7 +68,6 @@ Ext.define('Bozuko.store.Winners', {
     
     updateStore : function(){
         var me = this;
-        console.log('updateStore');
         me.tmpStore.load({
             scope : me,
             callback : function(records){
@@ -76,6 +75,12 @@ Ext.define('Bozuko.store.Winners', {
                 Ext.Array.each( records, function(record, i){
                     var r = me.getById( record.getId() );
                     if( r ){
+                        var index = me.indexOf(r);
+                        if( index !== i ){
+                            // move it into position
+                            me.removeAt(index);
+                            me.insert( i, r );
+                        }
                         r.set( record.data );
                         r.commit();
                     }
