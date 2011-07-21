@@ -27,13 +27,13 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
             
             var loc = window.location,
                 matches = window.location.search.match(/token=(.*)(&|$)/),
-                url = loc.protocol + '//' + loc.host + '/user?token=' + matches[1];
+                url = '/user?token=' + matches[1];
                 
             function updateLikes(callback){
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function () {
                     if (req.readyState == 4 && req.status == 200) {
-                        setTimeout(callback, 10000);
+                        setTimeout(callback, 10);
                     }
                 };
                 req.open('GET', url);

@@ -377,61 +377,70 @@ Contest.method('getUserInfo', function(user_id, callback) {
 
 Contest.method('loadGameState', function(user, callback){
 
-    var self = this;
-
-    // we need to create an entry to see whats up...
-    var config = this.entry_config[0];
-    var entryMethod = Bozuko.entry(config.type, user);
-    entryMethod.setContest(this);
-    entryMethod.configure(config);
-
-    var state = {
-        user_tokens: 0,
-        next_enter_time: new Date(),
-        button_text: '',
-        button_enabled: true,
-        button_action: 'enter',
-        contest: self,
-        game_over: false
-    };
-
-    this.game_state = state;
-
-    function load() {
-        // Contest is over for this user
-        if (state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
-            state.game_over = true;
-	    state.next_enter_time = 'Never';
-	    state.button_text = 'Game Over';
-            state.button_enabled = false;
-            return callback(null, state);
-        }
-
-        return entryMethod.getButtonText( state.user_tokens, function(error, text){
-            if( error ) return callback(error);
-            state.button_text= text;
-            return entryMethod.getNextEntryTime( function(error, time){
-                if( error ) return callback( error );
-                state.next_enter_time = time;
-
-                return entryMethod.getButtonEnabled( state.user_tokens, function(error, enabled){
-                    if( error ) return callback( error);
-                    state.button_enabled = enabled;
-                    return callback(null, state);
+    var self = this,
+        state = {
+            user_tokens: 0,
+            next_enter_time: new Date(),
+            button_text: '',
+            button_enabled: true,
+            button_action: 'enter',
+            contest: self,
+            game_over: false
+        };
+    
+    self.game_state = state;
+    return async.series([
+        
+        function update_user(cb){
+            if( user ){
+                return user.updateInternals(function(error){
+                    if( error ) return cb(error);
+                    
+                    return self.getUserInfo(user._id, function(err, info){
+                        if (err) return callback(err);
+                        if (info.tokens) state.user_tokens = info.tokens;
+                        return cb();
+                    });
+                    
+                });
+            }
+            return cb();
+        },
+        
+        function load_entry_method(cb){
+            self.loadEntryMethod(user, cb);
+        },
+        
+        function load_state(cb){
+            // Contest is over for this user
+            if (state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
+                state.game_over = true;
+                state.next_enter_time = 'Never';
+                state.button_text = 'Game Over';
+                state.button_enabled = false;
+                return cb();
+            }
+    
+            return self.entry_method.getButtonText( state.user_tokens, function(error, text){
+                if( error ) return cb(error);
+                state.button_text= text;
+                
+                return self.entry_method.getNextEntryTime( function(error, time){
+                    if( error ) return cb( error );
+                    state.next_enter_time = time;
+    
+                    return self.entry_method.getButtonEnabled( state.user_tokens, function(error, enabled){
+                        if( error ) return cb( error);
+                        state.button_enabled = enabled;
+                        
+                        return cb();
+                    });
                 });
             });
-        });
-    }
-
-    if (user) {
-        return this.getUserInfo(user._id, function(err, info){
-            if (err) return callback(err);
-            if (info.tokens) state.user_tokens = info.tokens;
-            return load();
-        });
-    }
-
-    return load();
+        }
+    ], function return_state(error){
+        return callback(error, state);
+    });
 
 });
 

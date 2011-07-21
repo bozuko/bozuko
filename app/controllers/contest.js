@@ -136,11 +136,13 @@ var game_state = {
             }
             game_state.links = links;
         }
+        /*
         if( user ){
             return user.updateInternals(function(){
                 return self.sanitize(game_state, null, user, callback);
             });
         }
+        */
         return self.sanitize( game_state, null, user, callback );
     },
 
