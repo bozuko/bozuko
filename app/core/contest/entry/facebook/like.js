@@ -158,8 +158,13 @@ FacebookLikeMethod.prototype.process = function( callback ){
 
 FacebookLikeMethod.prototype.validate = function( callback ){
     var self = this;
-    if( !self.user || !self.page || !self.user.likes(self.page) ) return callback(null, false);
-    return EntryMethod.prototype.validate.call(self, callback);
+    self.load(function(error){
+        if( error ) return callback(error);
+        if( !self.user || !self.page || !self.user.likes(self.page) ){
+            return callback(null, false);
+        }
+        return EntryMethod.prototype.validate.call(self, callback);
+    });
 };
 
 FacebookLikeMethod.prototype._load = function( callback ){
