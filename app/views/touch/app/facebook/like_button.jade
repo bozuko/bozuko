@@ -12,7 +12,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
     #fb-root
       
     -if( locals.place )
-      .like-button
+      .like-button(style="z-index:2; position:relative;")
         fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
       
       script(type="text/javascript")
@@ -27,11 +27,17 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
             
             var loc = window.location,
                 matches = window.location.search.match(/token=(.*)(&|$)/),
-                url = '/user?token=' + matches[1];
+                port = ~[80,443].indexOf(window.location.port) ? '' : (':'+window.location.port);
+                url = window.location.protocol+'//'+window.location.host+port+'/user?token=' + matches[1];
                 
             function updateLikes(callback){
                 var iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
+                iframe.style.width='1px';
+                iframe.style.height='1px';
+                iframe.style.zIndex = 1;
+                iframe.style.position='absolute';
+                iframe.style.top='4px';
+                iframe.style.left='4px';
                 iframe.onload = callback();
                 iframe.src = url;
                 document.body.appendChild(iframe);
