@@ -259,7 +259,17 @@ FacebookService.prototype.checkin = function(options, callback){
     if( Bozuko.config.test_mode ){
         return callback(null, {id:134574646614657});
     }
-
+    
+    
+    // we need to know how far away this cat is...
+    // get the distance now
+    /*
+    var d = Geo.distance( self.ll, self.page.coords, 'mi' );
+    if( d > Bozuko.cfg('checkin.distance', 600) / 5280 ){
+        // too far...
+        return callback( null, false );
+    }
+    */
     return facebook.graph('/me/checkins',{
         user: options.user,
         params: params,

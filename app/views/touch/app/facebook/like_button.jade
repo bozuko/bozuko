@@ -16,7 +16,9 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
         fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
       
       script(type="text/javascript")
-        APP_ID = #{Bozuko.config.facebook.app.id};
+        var APP_ID = #{Bozuko.config.facebook.app.id},
+            token = '#{locals.user ? user.token : ""}';
+        
         window.fbAsyncInit = function () {
             FB.init({
                 appId: APP_ID,
@@ -25,17 +27,15 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 xfbml: true
             });
             
-            var loc = window.location,
-                matches = window.location.search.match(/token=(.*)(&|$)/),
-                port = ~[80,443].indexOf(window.location.port) ? '' : (':'+window.location.port);
-                url = window.location.protocol+'//'+window.location.hostname+port+'/user?token=' + matches[1];
-                
             function updateLikes(callback){
-                var script = document.createElement('script');
-                script.async = true;
-                script.onload = callback();
-                script.src = url;
-                document.getElementsById('fb-root').appendChild(script);
+                var req = new XMLHttpRequest();
+                req.onreadystatechange = function(){
+                    if(req.readyState == 4){
+                        callback();
+                    }
+                }
+                req.open('GET', '/user?token'+token);
+                req.send();
             }
         
             function onEdgeCreate(response) {

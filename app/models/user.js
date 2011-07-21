@@ -81,7 +81,7 @@ User.method('likes', function(page){
         return false;
     }
     var likes = fb.internal.likes || [];
-    return ~likes.indexOf( page );
+    return !!~likes.indexOf( page );
 });
 
 User.method('updateInternals', function(force, callback){
