@@ -643,7 +643,6 @@ Page.static('search', function(options, callback){
         }
         else if( !page ){
             var distance = Bozuko.config.search.nearbyRadius / Geo.earth.radius.mi;
-            console.log(distance);
             bozukoSearch.selector.coords = {$nearSphere: options.ll, $maxDistance: distance};
             if( options.query ) delete bozukoSearch.selector.coords['$maxDistance'];
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;

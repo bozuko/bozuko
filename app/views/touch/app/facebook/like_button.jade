@@ -33,7 +33,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function () {
                     if (req.readyState == 4 && req.status == 200) {
-                        setTimeout(callback, 200);
+                        setTimeout(callback, 2000);
                     }
                 };
                 req.open('GET', url);
