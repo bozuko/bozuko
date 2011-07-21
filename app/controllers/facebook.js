@@ -132,6 +132,7 @@ exports.routes = {
                 if( tmpl == 'like_button' ){
                     res.locals.layout = false;
                 }
+                res.locals.user = req.session.user;
                 
                 return Bozuko.service('facebook').place({place_id: req.param('id')}, function( error, place){
                     if( error ){
