@@ -32,7 +32,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 
             function updateLikes(callback){
                 var req = new XMLHttpRequest();
-                req.onreadystatechange(){
+                req.onreadystatechange = function(){
                     if(req.readyState == 4){
                         callback();
                     }
