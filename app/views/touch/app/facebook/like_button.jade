@@ -30,14 +30,11 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 url = '/user?token=' + matches[1];
                 
             function updateLikes(callback){
-                var req = new XMLHttpRequest();
-                req.onreadystatechange = function () {
-                    if (req.readyState == 4 && req.status == 200) {
-                        setTimeout(callback, 10);
-                    }
-                };
-                req.open('GET', url);
-                req.send();
+                var iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.onload = callback();
+                iframe.src = url;
+                document.body.appendChild(iframe);
             }
         
             function onEdgeCreate(response) {
