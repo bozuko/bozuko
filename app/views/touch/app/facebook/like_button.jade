@@ -16,8 +16,8 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
         fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
       
       script(type="text/javascript")
-        alert('hello');
         APP_ID = #{Bozuko.config.facebook.app.id};
+        /*
         window.Bozuko = window.Bozuko || {};
         Bozuko.remote = (function () {
             return {
@@ -88,6 +88,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
             FB.Event.subscribe('edge.create', onEdgeCreate);
             FB.Event.subscribe('edge.remove', onEdgeRemove);
         };
+        */
         (function () {
             var e = document.createElement('script');
             e.async = true;
