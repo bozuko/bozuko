@@ -779,9 +779,12 @@ Page.static('search', function(options, callback){
 
                             var prof = new Profiler('/models/page/search/loadPagesContests');
                             pages = pages.concat(_pages);
-
-                            pages.sort( sort_by('_distance') );
-                            pages.sort( sort_by('featured') );
+                            
+                            pages.sort( function(a,b){
+                                if( a.featured && !b.featured ) return -1;
+                                if( b.featured && !a.featured ) return 1;
+                                return sort_by('_distance')(a,b);
+                            });
                             results.sort( sort_by('_distance') );
 
                             pages = pages.concat(results);
