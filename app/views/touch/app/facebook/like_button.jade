@@ -57,6 +57,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 }
             }
         })();
+        */
         window.fbAsyncInit = function () {
             FB.init({
                 appId: APP_ID,
@@ -64,6 +65,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 cookie: true,
                 xfbml: true
             });
+            /*
             var loc = window.location,
                 matches = window.location.search.match(/token=(.*)(&|$)/),
                 url = loc.protocol + '//' + loc.host + '/user?token=' + matches[1];
@@ -87,8 +89,9 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
             }
             FB.Event.subscribe('edge.create', onEdgeCreate);
             FB.Event.subscribe('edge.remove', onEdgeRemove);
+            */
         };
-        */
+        
         (function () {
             var e = document.createElement('script');
             e.async = true;
