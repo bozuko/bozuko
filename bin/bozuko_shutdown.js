@@ -19,12 +19,16 @@ function shutdown(user) {
     var dir = bozuko_dir+'/pids/'+user;
     console.log("pid dir = "+dir);
     fs.readdir(dir, function(err, files) {
+        console.log("err = "+err+", files = "+files);
         async.forEach(files, function(file, cb) {
             if (file === '.gitignore') return cb(null);
             var path = dir+'/'+file;
             fs.readFile(path, function(err, pid) {
                 if (err) cb(err);
-                process.kill(pid, 'SIGKILL');
+                try {
+                    process.kill(pid, 'SIGKILL');
+                } catch(e) {
+                }
                 fs.unlink(path, function(err) {
                     cb(err);
                 });
