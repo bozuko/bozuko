@@ -31,11 +31,14 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 url = window.location.protocol+'//'+window.location.hostname+port+'/user?token=' + matches[1];
                 
             function updateLikes(callback){
-                var e = document.createElement('script');
-                e.async = true;
-                e.onload = callback;
-                e.src = url;
-                document.getElementById('fb-root').appendChild(e)
+                var req = new XMLHttpRequest();
+                req.onreadystatechange(){
+                    if(req.readyState == 4){
+                        callback();
+                    }
+                }
+                req.open('GET', url);
+                req.send();
             }
         
             function onEdgeCreate(response) {
