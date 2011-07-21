@@ -72,6 +72,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 Bozuko.remote.HTTP.request({
                     url: url,
                     callback: function () {
+                        alert('should have hit '+url);
                         window.location = 'bozuko://facebook/liked';
                     }
                 });
