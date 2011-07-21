@@ -123,7 +123,8 @@ exports.routes = {
             title : "Like a business on Facebook",
 
             locals:{
-                classes:['like']
+                classes:['like'],
+                device: 'touch'
             },
 
             handler : function(req, res){
