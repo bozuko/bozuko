@@ -17,7 +17,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
       
       script(type="text/javascript")
         var APP_ID = #{Bozuko.config.facebook.app.id},
-            token = '#{user.token}';
+            token = '#{locals.user ? user.token : ""}';
         
         window.fbAsyncInit = function () {
             FB.init({

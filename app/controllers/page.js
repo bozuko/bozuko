@@ -65,8 +65,8 @@ exports.transfer_objects = {
                 if( !page.registered ) delete page.id;
                 page.liked = false;
                 page.image = page.image + (~page.image.indexOf('?')?'&':'?')+'return_ssl_resources=1';
-                page.like_url = burl('/facebook/'+fid+'/like.html?device=touch');
-                page.like_button_url = burl('/facebook/'+fid+'/like_button.html?device=touch');
+                page.like_url = burl('/facebook/'+fid+'/like.html');
+                page.like_button_url = burl('/facebook/'+fid+'/like_button.html');
                 page.links = {
                     facebook_page       :'http://facebook.com/'+fid,
                     facebook_checkin    :'/facebook/'+fid+'/checkin'
@@ -77,8 +77,8 @@ exports.transfer_objects = {
                     // page.image = burl('/page/'+page.id+'/image?version=8');
                 }
                 if( user ){
-                    page.like_url +='&token='+user.token;
-                    page.like_button_url += '&token='+user.token;
+                    page.like_url +='?token='+user.token;
+                    page.like_button_url += '?token='+user.token;
                     if( page.registered ){
     
                         // favorite
