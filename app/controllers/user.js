@@ -196,7 +196,6 @@ exports.routes = {
                     if( error ) return error.send(res);
                     user.id = user._id;
                     user.links = {
-                        // facebook_login: "/user/login/facebook",
                         logout: "/user/logout",
                         favorites: "/user/favorites"
                     };
