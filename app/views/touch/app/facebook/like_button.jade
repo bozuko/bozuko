@@ -8,7 +8,6 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
       html,body{ background: transparent; padding: 0; margin: 0; overflow: hidden; width: 50px; height: 20px !important;}
       body{ overflow: hidden; background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat; }
       iframe{ background: transparent !important; }
-    script(src="https://connect.facebook.net/en_US/all.js#appId="+Bozuko.config.facebook.app.id+"&amp;xfbml=1")
   body
     #fb-root
       
@@ -72,7 +71,6 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 Bozuko.remote.HTTP.request({
                     url: url,
                     callback: function () {
-                        alert('should have hit '+url);
                         window.location = 'bozuko://facebook/liked';
                     }
                 });
