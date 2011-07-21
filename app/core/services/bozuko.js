@@ -87,7 +87,6 @@ BozukoService.prototype.checkin = function(options, callback){
         return callback(Bozuko.error('facebook/no_lat_lng_user_place'));
     }
     
-    console.log(options.place_id);
     // we just need to find the place and compare distance
     return Bozuko.models.Page.findById( options.place_id, function(error, page){
         if( error ) return callback( error );
