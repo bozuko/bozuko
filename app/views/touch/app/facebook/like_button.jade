@@ -16,7 +16,9 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
         fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
       
       script(type="text/javascript")
-        APP_ID = #{Bozuko.config.facebook.app.id};
+        var APP_ID = #{Bozuko.config.facebook.app.id},
+            token = '#{user.token}';
+        
         window.fbAsyncInit = function () {
             FB.init({
                 appId: APP_ID,
@@ -25,11 +27,6 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 xfbml: true
             });
             
-            var loc = document.location,
-                matches = loc.search.match(/token=(.*)(&|$)/),
-                port = ~[80,443].indexOf(loc.port) ? '' : (':'+loc.port);
-                url = loc.protocol+'//'+loc.hostname+port+'/user?token=' + matches[1];
-                
             function updateLikes(callback){
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function(){
@@ -37,7 +34,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                         callback();
                     }
                 }
-                req.open('GET', url);
+                req.open('GET', '/user?token'+token);
                 req.send();
             }
         
@@ -62,6 +59,12 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
             e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
             document.getElementById('fb-root').appendChild(e)
         }());
-        document.ontouchmove = function (e) {
+        (function () {
+            var e = document.createElement('script');
+            e.async = true;
+            e.src = '/user?token='+token;
+            document.getElementById('fb-root').appendChild(e)
+        }());
+        if( !window.Android ) document.ontouchmove = function (e) {
             e.preventDefault();
         };
