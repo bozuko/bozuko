@@ -16,6 +16,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
         fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
       
       script(type="text/javascript")
+        alert('hello');
         APP_ID = #{Bozuko.config.facebook.app.id};
         window.Bozuko = window.Bozuko || {};
         Bozuko.remote = (function () {
@@ -68,6 +69,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 url = loc.protocol + '//' + loc.host + '/user?token=' + matches[1];
         
             function onEdgeCreate(response) {
+                alert('onEdgeCreate');
                 Bozuko.remote.HTTP.request({
                     url: url,
                     callback: function () {

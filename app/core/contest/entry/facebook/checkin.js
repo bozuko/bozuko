@@ -214,7 +214,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                     return callback( Bozuko.error('contest/no_entry_found_after_checkin') );
                 });
             }
-            console.log('user cannot checkin...');
+            
             
             return EntryMethod.prototype.process.call(self, callback);
 
