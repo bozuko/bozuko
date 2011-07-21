@@ -31,16 +31,10 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 url = window.location.protocol+'//'+window.location.host+port+'/user?token=' + matches[1];
                 
             function updateLikes(callback){
-                var iframe = document.createElement('iframe');
-                iframe.style.width='1px';
-                iframe.style.height='1px';
-                iframe.style.zIndex = 1;
-                iframe.style.position='absolute';
-                iframe.style.top='4px';
-                iframe.style.left='4px';
-                iframe.onload = callback();
-                iframe.src = url;
-                document.body.appendChild(iframe);
+                var script = document.createElement('script');
+                script.onload = callback();
+                script.src = url;
+                document.getElementsByTagName('head')[0].appendChild(script);
             }
         
             function onEdgeCreate(response) {
