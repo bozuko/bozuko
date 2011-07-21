@@ -6,7 +6,7 @@ Ext.define('Bozuko.lib.PubSub',{
     
     retryAttempts: 5,
     
-    asyncRequests : 10,
+    asyncRequests : 2,
     
     constructor : function(){
         this.listening = false;
