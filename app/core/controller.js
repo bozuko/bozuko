@@ -2,7 +2,6 @@ var
     merge = Bozuko.require('util/object').merge,
     http = require('http'),
     auth = require('./auth')
-    // io = require('socket.io')
     ;
 
 var ignores = ['req','res'];

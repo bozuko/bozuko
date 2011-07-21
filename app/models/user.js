@@ -84,11 +84,15 @@ User.method('likes', function(page){
     return ~likes.indexOf( page );
 });
 
-User.method('updateInternals', function(callback){
+User.method('updateInternals', function(force, callback){
+    if( typeof force === 'function' ){
+        callback = force;
+        force = false;
+    }
     var self = this;
     
     var now = new Date();
-    if( self.last_internal_update && +now -self.last_internal_update < (1000 * 2) ){
+    if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 2) ){
         return callback(null);
     }
     

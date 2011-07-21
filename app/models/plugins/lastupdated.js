@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 var LastUpdatedPlugin = module.exports = function(schema, opts){
     
     schema.add({
-        'last_updated': {type:Date, default: Date.now}
+        'last_updated': {type:Date, default: Date.now, index: true}
     });
     
     schema.pre('save', function(next){

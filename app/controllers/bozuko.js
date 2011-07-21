@@ -287,8 +287,9 @@ exports.routes = {
                 req.connection.addListener('close', unsubscribe);
                 req.connection.addListener('error', unsubscribe);
 
-                if( req.body.since ){
-                    Bozuko.pubsub.since( req.body.since, function(error, items){
+                if( req.param('since') ){
+                    var since = req.param('since');
+                    Bozuko.pubsub.since( since, function(error, items){
                         if( error ) return error.send( res );
                         subscribe();
                         return items.forEach(function(item){

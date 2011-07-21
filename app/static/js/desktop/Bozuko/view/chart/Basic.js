@@ -91,7 +91,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 border: false,
                 theme : 'Bozuko',
                 animate: true,
-                height: 250,
+                height: 280,
                 anchor: '0',
                 store: Ext.create('Bozuko.store.Reports'),
                 axes: [{
@@ -151,19 +151,35 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.updateChart();
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
-        var model = function(){ return me.modelField.getValue() };
-        Bozuko.PubSub.subscribe('contest/entry', filter, function(){
-            if( ~['Entry','Share'].indexOf(model()) ) me.chart.store.load();
-        });
-        Bozuko.PubSub.subscribe('contest/play', filter, function(){
-            if( ~['Play'].indexOf(model()) ) me.chart.store.load();
-        });
-        Bozuko.PubSub.subscribe('contest/win', filter, function(){
-            if( ~['Prize'].indexOf(model()) ) me.chart.store.load();
-        });
-        Bozuko.PubSub.subscribe('prize/redeem', filter, function(){
-            if( ~['Redeemed Prizes', 'Share'].indexOf(model()) ) me.chart.store.load();
-        });
+        
+        Bozuko.PubSub.subscribe('contest/entry', filter, me.getCallback('entry') );
+        Bozuko.PubSub.subscribe('contest/play', filter, me.getCallback('play') );
+        Bozuko.PubSub.subscribe('contest/win', filter, me.getCallback('win') );
+        Bozuko.PubSub.subscribe('prize/redeemed', filter, me.getCallback('redeemed') );
+    },
+    
+    getCallback : function(name){
+        var me = this,
+            model = function(){ return me.modelField.getValue() }
+            callbacks = {
+                entry: function(item, callback){
+                    if( ~['Entry','Share'].indexOf(model()) ) me.chart.store.load(callback);
+                    else callback();
+                },
+                play : function(item, callback){
+                    if( ~['Play'].indexOf(model()) ) me.chart.store.load(callback);
+                    else callback();
+                },
+                win : function(item, callback){
+                    if( ~['Prize'].indexOf(model()) ) me.chart.store.load(callback);
+                    else callback();
+                },
+                redeemed : function(item, callback){
+                    if( ~['Redeemed Prizes', 'Share'].indexOf(model()) ) me.chart.store.load(callback);
+                    else callback();
+                }
+            };
+        return callbacks[name];
     },
     
     updateChart : function(){

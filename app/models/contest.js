@@ -59,6 +59,8 @@ Contest.CANCELLED = 'cancelled';
 Contest.plugin( Native );
 Contest.plugin( JsonPlugin );
 
+var no_matching_re = /no\smatching\sobject/i;
+
 Contest.virtual('state')
     .get(function(){
         if( !this.active ) return Contest.DRAFT;
@@ -473,7 +475,7 @@ Contest.method('addEntry', function(tokens, callback) {
         {new: true, fields: {plays: 0, results: 0}},
         function(err, contest) {
             prof.stop();
-            if (err) return callback(err);
+            if (err && !err.message.match(no_matching_re)) return callback(err);
             if (!contest) {
                 return callback(Bozuko.error('entry/not_enough_tokens'));
             }
@@ -531,7 +533,7 @@ Contest.method('startPlay', function(user_id, callback) {
         {$inc: {tokens : -1}},
         {new: true},
         function(err, entry) {
-            if (err) return callback(err);
+            if (err && !err.message.match(no_matching_re)) return callback(err);
             if (!entry) return callback(Bozuko.error("contest/no_tokens"));
             // If we crash here the user will lose a token. Don't worry about it now.
 
@@ -544,7 +546,7 @@ Contest.method('startPlay', function(user_id, callback) {
                 {new: true, fields: {plays: 0, results: 0}},
                 function(err, contest) {
                     prof.stop();
-                    if (err) return callback(err);
+                    if (err && !err.message.match(no_matching_re)) return callback(err);
                     if (!contest) return callback(Bozuko.error("contest/no_tokens"));
                     var opts = {
                         user_id: user_id,
@@ -561,7 +563,7 @@ Contest.method('startPlay', function(user_id, callback) {
                         {$set : {'plays.$.active': true, 'plays.$.cursor': contest.play_cursor}},
                         {new: true, fields: {plays: 0, results: 0}},
                         function(err, contest) {
-                            if (err) return callback(err);
+                            if (err && !err.message.match(no_matching_re)) return callback(err);
                             if (!contest) return callback(Bozuko.error("contest/play_not_found"));
                             return contest.getResult(opts, callback);
                         }
@@ -623,7 +625,7 @@ Contest.method('claimConsolation', function(opts, callback) {
         {new: true, fields: {plays: 0, results:0}},
         function(err, contest) {
             prof.stop();
-            if (err) return callback(err);
+            if( err && !err.message.match(no_matching_re) ) console.log(err);
             if (!contest) {
                 opts.consolation = false;
                 return callback(null);
@@ -769,7 +771,6 @@ Contest.method('savePrize', function(opts, callback) {
             {$inc: {'prizes.$.won':1}},
             function(error){
                 if( error ) console.error( error );
-                else console.log('updated won');
             }
         );
         
@@ -931,7 +932,7 @@ Contest.method('endPlay', function(opts, callback) {
             {new: true},
             function(err, entry) {
                 prof.stop();
-                if (err) return callback(err);
+                if (err && !err.message.match(/no\smatching\sobject/i)) return callback(err);
                 // There isn't an active entry to give a token to. Log it and don't give out a free play.
                 if (!entry) {
                     console.error("Free play won for contest "+self._id+" user "+opts.user_id+
@@ -947,6 +948,7 @@ Contest.method('endPlay', function(opts, callback) {
                     {new: true, fields: {plays: 0, results:0}},
                     function(err, contest) {
                         prof2.stop();
+                        if( err && err.message.match(/no\smatching\sobject/i) ) err = null;
                         handler(err, contest);
                     }
                 );

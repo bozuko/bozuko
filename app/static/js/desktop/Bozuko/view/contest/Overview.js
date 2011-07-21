@@ -169,7 +169,7 @@ Ext.define('Bozuko.view.contest.Overview',{
         var me = this;
         if( !me.callbacks[name] ){
             me.callbacks[name] = function(){
-                me[name]();
+                me[name].apply(me, arguments);
             };
         }
         return me.callbacks[name];
@@ -205,7 +205,7 @@ Ext.define('Bozuko.view.contest.Overview',{
         Bozuko.PubSub.subscribe('prize/redeemed',{contest_id: me.record.get('_id')}, refresh);
     },
     
-    refresh : function(){
+    refresh : function(item, callback){
         var me = this;
         try{
             me.record.load({
@@ -214,11 +214,12 @@ Ext.define('Bozuko.view.contest.Overview',{
                     me.update();
                 },
                 callback : function(){
-                    
+                    callback();
                 }
             });
         }catch(e){
             console.log(e);
+            callback();
         }
     },
     

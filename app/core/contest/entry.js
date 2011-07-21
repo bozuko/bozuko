@@ -133,13 +133,14 @@ EntryMethod.prototype.process = function( callback ){
     if( !this.contest ) return callback(Bozuko.error('entry/process_no_contest'));
 
     var self = this;
-    self.validate( function(error){
+    self.validate( function(error, valid){
 
         if( error ){
             // yikes
             return callback(error);
         }
-
+        if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
+        
         var now = new Date();
         return self.contest.addEntry(self.getTokenCount(), function(error){
             if( error ) return callback(error);

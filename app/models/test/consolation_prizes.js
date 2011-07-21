@@ -17,6 +17,7 @@ var start = new Date();
 var end = new Date();
 end.setTime(start.getTime()+1000*60*60*24*2);
 
+
 var contest_all_once = new Bozuko.models.Contest(
 {
     game: 'slots',
@@ -25,7 +26,8 @@ var contest_all_once = new Bozuko.models.Contest(
     },
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 3
+        tokens: 3,
+        duration: 1
     }],
     consolation_config: [{
         who: 'all',
@@ -38,6 +40,8 @@ var contest_all_once = new Bozuko.models.Contest(
     prizes: [{
         name: 'Litter Critters',
         value: '0',
+        won: 0,
+        redeemed: 0,
         description: 'Wash your hands after you play',
         details: 'Your cat gives so many wonderful presents',
         total: 3
@@ -45,6 +49,8 @@ var contest_all_once = new Bozuko.models.Contest(
     consolation_prizes: [{
         name: 'Log',
         value: '5',
+        won: 0,
+        redeemed: 0,
         description: 'Log, Log everyone loves a Log!',
         details: 'A beautiful gift for all ages',
         instructions: 'Show this screen to an employee',
@@ -61,7 +67,8 @@ var contest_all_always = new Bozuko.models.Contest(
     },
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 3
+        tokens: 3,
+        duration: 1
     }],
     consolation_config: [{
         who: 'all',
@@ -74,6 +81,8 @@ var contest_all_always = new Bozuko.models.Contest(
     prizes: [{
         name: 'Litter Critters',
         value: '0',
+        won: 0,
+        redeemed: 0,
         description: 'Wash your hands after you play',
         details: 'Your cat gives so many wonderful presents',
         total: 3
@@ -81,6 +90,8 @@ var contest_all_always = new Bozuko.models.Contest(
     consolation_prizes: [{
         name: 'Log',
         value: '5',
+        won: 0,
+        redeemed: 0,
         description: 'Log, Log everyone loves a Log!',
         details: 'A beautiful gift for all ages',
         instructions: 'Show this screen to an employee',
@@ -96,7 +107,8 @@ var contest_losers_always_one_win = new Bozuko.models.Contest(
     },
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 3
+        tokens: 3,
+        duration: 1
     }],
     consolation_config: [{
         who: 'losers',
@@ -109,6 +121,8 @@ var contest_losers_always_one_win = new Bozuko.models.Contest(
     prizes: [{
         name: 'Litter Critters',
         value: '0',
+        won: 0,
+        redeemed: 0,
         description: 'Wash your hands after you play',
         details: 'Your cat gives so many wonderful presents',
         total: 1
@@ -116,6 +130,8 @@ var contest_losers_always_one_win = new Bozuko.models.Contest(
     consolation_prizes: [{
         name: 'Log',
         value: '5',
+        won: 0,
+        redeemed: 0,
         description: 'Log, Log everyone loves a Log!',
         details: 'A beautiful gift for all ages',
         instructions: 'Show this screen to an employee',
@@ -131,7 +147,8 @@ var contest_losers_once = new Bozuko.models.Contest(
     },
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 3
+        tokens: 3,
+        duration: 1
     }],
     consolation_config: [{
         who: 'losers',
@@ -144,6 +161,8 @@ var contest_losers_once = new Bozuko.models.Contest(
     consolation_prizes: [{
         name: 'Log',
         value: '5',
+        won: 0,
+        redeemed: 0,
         description: 'Log, Log everyone loves a Log!',
         details: 'A beautiful gift for all ages',
         instructions: 'Show this screen to an employee',
@@ -159,7 +178,8 @@ var contest_losers_always = new Bozuko.models.Contest(
     },
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 3
+        tokens: 3,
+        duration: 1
     }],
     consolation_config: [{
         who: 'losers',
@@ -172,6 +192,8 @@ var contest_losers_always = new Bozuko.models.Contest(
     consolation_prizes: [{
         name: 'Log',
         value: '5',
+        won: 0,
+        redeemed: 0,
         description: 'Log, Log everyone loves a Log!',
         details: 'A beautiful gift for all ages',
         instructions: 'Show this screen to an employee',
@@ -501,6 +523,7 @@ function play3times(contest, callback) {
         function() { return count < 3; },
         function(callback) {
             contest.play(user._id, function(err, res) {
+                if( err ) console.log(err.stack);
                 console.log('res.play.win = '+res.play.win);
                 if (res.play.win) won = true;
                 result = res;

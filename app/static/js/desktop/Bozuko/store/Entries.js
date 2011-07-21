@@ -52,24 +52,25 @@ Ext.define('Bozuko.store.Entries', {
         
         if( !me.page_id && !me.contest_id ) selector = true;
         
-        var reload = function(){
+        var reload = function(item, callback){
             if( !me.bufferedLoadTimeout ) me.bufferedLoadTimeout = Ext.defer( function(){
-                me.updateStore();
+                me.updateStore(callback);
                 me.bufferedLoadTimeout = false;
             }, 500);
+            else callback();
         };  
         
         Bozuko.PubSub.subscribe('contest/entry', selector, reload);
         me.listening = true;
     },
     
-    updateStore : function(){
+    updateStore : function(callback){
         var me = this;
-        console.log('updateStore');
         me.tmpStore.load({
             scope : me,
             callback : function(records){
                 var j =0;
+                callback();
                 Ext.Array.each( records, function(record, i){
                     var r = me.getById( record.getId() );
                     if( r ){

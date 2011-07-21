@@ -100,13 +100,17 @@ Ext.define('Bozuko.view.contest.Winners' ,{
             listeners :{
                 scope : me,
                 refresh: me.onRefresh,
-                itemadd: me.onRefresh,
-                itemupdate: me.onRefresh,
-                itemremove: me.onRefresh
+                itemadd: me.refresh,
+                itemupdate: me.refresh,
+                itemremove: me.refresh
             }
         }];
         
         me.callParent(arguments);
+    },
+    
+    refresh : function(){
+         this.down('dataview').refresh();
     },
     
     onRefresh : function(){

@@ -167,18 +167,21 @@ Ext.define('Bozuko.view.contest.List' ,{
         var me = this;
         if( !me.callbacks[name] ){
             me.callbacks[name] = function(){
+                console.log('in callback', arguments);
                 me[name].apply(me, arguments);
             };
         }
         return me.callbacks[name];
     },
     
-    findAndUpdate : function(message){
+    findAndUpdate : function(item, callback){
+        console.log(item);
         var me = this,
-            record = me.store.getById(message.contest_id);
+            record = me.store.getById(item.message.contest_id);
             
-        if( !record ) return;
-        record.load( function(){
+        if( !record ) return callback();
+        return record.load( function(){
+            callback();
             me.refresh();
         });
     },
