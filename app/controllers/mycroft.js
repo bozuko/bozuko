@@ -1,49 +1,19 @@
-exports.access = 'admin';
-
-var mycroft = require('commando').mycroft;
-var options = require(process.env.HOME + '/.commando');
-
-exports.init = function() {
-// TODO: Make the following work so we don't get 4 emails for every event
-/*    if (!Bozuko.isMaster) {
-        console.error("\n\nno alert = true");
-        options.noAlert = true;
-    }
-*/
-    mycroft.start(options);
-};
-
 exports.routes = {
 
-    '/mycroft/mongodb' : {
+    '/alive' : {
         get : {
-
-            title: 'MongoDB Monitor',
-            locals:{
-                layout: false
-            },
             handler: function(req, res) {
-                if( req.device == 'touch' ) res.locals.layout = false;
-                res.render('commando/mongodb');
+                res.send({alive:true});
             }
         }
     },
 
-    '/mycroft/mongodb/db': {
-        get : {
+    '/data' : {
+        get: {
             handler: function(req, res) {
-                var keys = Object.keys(mycroft.nodes);
-                for (var i = 0; i < keys.length; i++) {
-                    var node = mycroft.nodes[keys[i]];
-                    if (node.data && node.data.mongodb) {
-                        var db_stats = node.data.mongodb.db_stats;
-                        console.error("db_stats = "+JSON.stringify(db_stats));
-                        return res.send(JSON.stringify({db_stats: db_stats}));
-                    }
-                };
-                console.error("db_stats is Empty!");
-                return res.send(JSON.stringify({db_stats: []}));
+                res.send([]);
             }
         }
     }
+
 };

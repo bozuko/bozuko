@@ -17,7 +17,6 @@ module.exports = {
 
     controllers : {
         except: [
-            'mycroft'
         ]
     },
 
@@ -33,7 +32,7 @@ module.exports = {
     },
 
     facebook: {
-        
+
         app:{
             id:'225077010865990',
             secret:'e6d03c37d46db15dacdfd8690536157f',

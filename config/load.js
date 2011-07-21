@@ -17,8 +17,7 @@ module.exports = {
         except: [
             'site',
             'beta',
-            'business',
-            'mycroft'
+            'business'
         ]
     },
 

@@ -5,8 +5,7 @@ module.exports = {
     controllers: {
         except: [
             'site',
-            'business',
-            'mycroft'
+            'business'
         ]
     },
 

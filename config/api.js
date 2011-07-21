@@ -1,16 +1,15 @@
 module.exports = {
 
     test_mode: false,
-    
+
     controllers: {
         except: [
             'site',
             'business',
-			'beta',
-			'mycroft'
+	    'beta'
         ]
     },
-    
+
     client: {
         mobile:{
             iphone:{
@@ -21,7 +20,7 @@ module.exports = {
             }
         }
     },
-    
+
     admin : {
         winners_list:{
             poll_interval: 1000
@@ -46,7 +45,7 @@ module.exports = {
             business:"email,manage_pages"
         }
     },
-    
+
     bozuko :{
         facebook_id: '223851717629478',
 		demo_id: '4e135336fe02d136c3a4ec31'
@@ -58,7 +57,7 @@ module.exports = {
             secret:'GXYMXF3HPXTNAQSBRJLAZVOGC25SKX4MBKYW0OQ40GW5IGYJ'
         }
     },
-    
+
     amazon : {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
@@ -74,7 +73,7 @@ module.exports = {
             // 4 hours between checkins at the same place
             page: 1000 * 60 * 60 * 4
         },
-        
+
         distance : 400 /* feet */
     },
 
@@ -103,7 +102,7 @@ module.exports = {
         host: 'api.bozuko.com',
         port: 443
     },
-    
+
     pubsub: {
         poll: {
             interval: 500

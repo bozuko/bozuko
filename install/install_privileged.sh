@@ -12,6 +12,7 @@ apt-get upgrade
 
 # install mongodb
 apt-get install -y mongodb-10gen
+cp config/mongodb.conf /etc/mongodb.conf
 
 # install essential libraries and build tools
 apt-get install -y build-essential libssl-dev libgd2-xpm-dev g++ barcode imagemagick
