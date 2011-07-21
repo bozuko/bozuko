@@ -28,7 +28,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
             var loc = window.location,
                 matches = window.location.search.match(/token=(.*)(&|$)/),
                 port = ~[80,443].indexOf(window.location.port) ? '' : (':'+window.location.port);
-                url = window.location.protocol+'//'+window.location.host+port+'/user?token=' + matches[1];
+                url = window.location.protocol+'//'+window.location.hostname+port+'/user?token=' + matches[1];
                 
             function updateLikes(callback){
                 var script = document.createElement('script');
