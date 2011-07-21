@@ -138,21 +138,23 @@ Page.method('getActiveContests', function(user, callback){
 
         var exhausted_contests = {};
         var exhausted_contest_ids = [];
+        var active_contests = [];
         var contest;
 
         for (var i = 0; i < contests.length; i++) {
             contest = contests[i];
 
-
             // Is contest exhausted?
             if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
                 exhausted_contests[String(contest._id)] = contest;
                 exhausted_contest_ids.push(contest._id);
-                contests.splice(i, 1);
-            }
+            } else {
+		active_contests.push(contest);
+	    }
         }
 
-        if (!user_id) return callback(null, contests);
+        if (!user_id) return callback(null, active_contests);
+
 
         // Find user entries that still have tokens for exhausted contests.
         // That means the contest is active for this user, but not users without tokens.
@@ -166,27 +168,27 @@ Page.method('getActiveContests', function(user, callback){
             }, {contest_id: 1},
             function(err, entries) {
                 if (err) return callback(err);
-                if (!entries) return callback(null, contests);
+                if (!entries) return callback(null, active_contests);
 
                 var contest_ids = {};
 
-                // Add any exhausted contests with valid entries for this user back on the active list
+                // Add any exhausted contests with valid entries for this user on to the active list
                 // There shouldn't be more than 1 or 2 entries to search
                 for (var i = 0; i < entries.length; i++) {
                     var cid = entries[i].contest_id;
                     if (!contest_ids[cid]) {
                         contest_ids[cid] = true;
-                        contests.push(exhausted_contests[String(cid)]);
+                        active_contests.push(exhausted_contests[String(cid)]);
                     }
                 }
 
-                return callback( null, contests);
+                return callback( null, active_contests);
 
             }
         );
 
 
-        return callback(null, contests);
+        return callback(null, active_contests);
     });
 });
 
