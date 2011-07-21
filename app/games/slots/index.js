@@ -42,7 +42,6 @@ Slots.prototype.process = function(outcome){
         else{
 			var index = self.prizes.indexOf( self.contest.prizes[outcome] );
             icon = icons[index];
-			console.log('icon for win '+icon)
         }
         ret = [icon,icon,icon];
     }

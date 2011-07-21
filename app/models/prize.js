@@ -24,7 +24,7 @@ var Prize = module.exports = new Schema({
     details                 :{type:String},
     instructions            :{type:String},
     redeemed                :{type:Boolean},
-    redeemed_time           :{type:Date},
+    redeemed_time           :{type:Date,    index: true},
     is_email                :{type:Boolean, default:false},
     email_body              :{type:String},
     email_code              :{type:String},

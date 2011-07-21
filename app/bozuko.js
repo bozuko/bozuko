@@ -35,7 +35,6 @@ var self = this;
 var http            = Bozuko.require('util/http'),
     create_url      = Bozuko.require('util/url').create,
     express         = require('express'),
-    socketIO	    = require('socket.io'),
     Schema          = require('mongoose').Schema,
     BozukoStore     = Bozuko.require('core/session/store'),
     Monomi          = require('monomi'),

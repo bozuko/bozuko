@@ -1,5 +1,6 @@
 var events = require('events'),
-    util = require('util')
+    util = require('util'),
+    ObjectId = require('mongoose').Types.ObjectId
     ;
 
 var PubSub = module.exports = function(){
@@ -128,7 +129,7 @@ PubSub.prototype.publish = function(type, content){
 };
 
 PubSub.prototype.since = function(id, callback){
-    this.model.nativeFind({_id: {$gt: id}}, {}, {sort: {_id: 1}}, callback);
+    this.model.nativeFind({_id: {$gt: ObjectId(id)}}, {}, {sort: {_id: 1}}, callback);
 };
 
 PubSub.prototype.subscribe = function(type, callback){

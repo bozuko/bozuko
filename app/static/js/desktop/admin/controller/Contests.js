@@ -68,27 +68,10 @@ Ext.define('Admin.controller.Contests' ,{
             this.updateCards(store, view);
         }, this);
         
-        var listener = function(msg){
-            me.onContestPlay(view, msg);
-        };
         
         var page_id = p.up('pagepanel').record.get('_id');
-        
-        Bozuko.PubSub.subscribe('contest/play', {page_id: page_id}, listener);
-        view.on('destroy', function(){
-            Bozuko.PubSub.unsubscribe('contest/play', {page_id: page_id}, listener);
-        });
     },
     
-    onContestPlay : function(view, msg){
-        var id = msg.contest_id;
-        var contest = view.store.getById(id);
-        // now we need to get the gauge
-        if( !view.gauges || !view.gauges[id] ) return;
-        var percent = (msg.play_cursor + 1) / contest.get('total_plays');
-        view.gauges[id].store.loadData( [{percent: percent * 100}], false );
-    },
-
     onContestDblClick : function(view, record){
         var panel = view.panel.up('contestpanel'),
             pagePanel = view.panel.up('pagepanel');

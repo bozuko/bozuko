@@ -6,11 +6,14 @@ Ext.define('Bozuko.lib.PubSub',{
     
     retryAttempts: 5,
     
+    asyncRequests : 10,
+    
     constructor : function(){
         this.listening = false;
         this.listeners = {};
         this.canceled = [];
         this.fails = 0;
+        this.workers = 0;
         this._requestTimeout = 0;
     },
     
@@ -72,7 +75,6 @@ Ext.define('Bozuko.lib.PubSub',{
     
     subscribe : function(event, filter, callback){
         var me = this;
-        
         if( !me.listeners[event] ) me.listeners[event] = {};
         var filterKey = Ext.encode(filter);
         var listener = me.listeners[event];
@@ -121,7 +123,8 @@ Ext.define('Bozuko.lib.PubSub',{
     },
     
     handleResponse : function(options, success, response){
-        var me = options.self;
+        var me = options.self,
+            callbacks = [];
         // forget it
         if( !me.listening ) return;
         if( ~me.canceled.indexOf(response.requestId) ){
@@ -137,7 +140,7 @@ Ext.define('Bozuko.lib.PubSub',{
                         var timestamp = new Date();
                         timestamp.setTime(Date.parse(item.timestamp));
                         item.timestamp = timestamp;
-                        me.onItem(item, index==data.length-1);
+                        callbacks = callbacks.concat( me.onItem(item, index==data.length-1) );
                     }catch(e){
                         console.log(e, e.stack);
                     }
@@ -152,21 +155,20 @@ Ext.define('Bozuko.lib.PubSub',{
         else{
             me.fails++;
         }
-        // buffer
-        me._requestTimeout = Ext.defer(me.request, 500, me);
+        me.processCallbacks(callbacks, function(){
+            me.request();
+        });
     },
     
     onItem : function(item, last){
         var me = this,
-            _id = item._id,
+            callbacks = [],
             event = item.type,
-            message = item.message,
-            timestamp = item.timestamp,
             filters = me.listeners[event],
             star_filters = me.listeners['*'];
         
         if( !filters && !star_filters ){
-            return;
+            return [me.emptyCallback];
         }
         Ext.Array.each([filters, star_filters], function(fs){
             if( !fs ) return;
@@ -181,7 +183,7 @@ Ext.define('Bozuko.lib.PubSub',{
                     var match = 0, count = 0;
                     Ext.Object.each( filter.conditions, function(key, value){
                         count++;
-                        if( message[key] == value ) match++;
+                        if( item.message[key] == value ) match++;
                     });
                     if( match === count ){
                         satisfied = true;
@@ -189,15 +191,54 @@ Ext.define('Bozuko.lib.PubSub',{
                 }
                 if( satisfied ){
                     Ext.Array.each( filter.callbacks, function(callback){
-                        callback(message, event, timestamp, _id)
+                        callbacks.push( me.createItemCallback(callback, item) );
                     });
                 }
             });
         });
+        
         if( last ){
-            me.since = _id;
+            me.since = item._id;
         }
+        return callbacks;
+    },
+    
+    createItemCallback : function(fn, item){
+        var cb = function(callback){
+            fn(item, callback);
+        };
+        return cb;
+    },
+    
+    processCallbacks : function(fns, callback){
+        
+        var me = this,
+            done = false;
+        
+        var next = function(){
+            if( done ) return false;
+            if( !fns.length && !me.workers){
+                done = true;
+                return callback();
+            }
+            while(fns.length && me.workers <= me.asyncRequests ){
+                var fn = fns.shift();
+                me.workers++;
+                return fn(function(){
+                    me.workers--;
+                    next();
+                });
+            }
+            return true;
+        };
+        
+        return next();
+    },
+    
+    emptyCallback : function(fn){
+        return fn();
     }
+    
     
 }, function(){
     Bozuko.PubSub = new this();

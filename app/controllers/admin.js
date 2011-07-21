@@ -531,7 +531,6 @@ exports.routes = {
                             if( error ) return callback(error);
                             objects.users = users;
                             objects.user_map = array_map(users,'_id');
-                            console.log(objects);
                             return callback(null);
                         });
                     },

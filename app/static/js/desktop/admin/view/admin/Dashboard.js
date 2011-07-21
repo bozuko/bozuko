@@ -100,14 +100,13 @@ Ext.define('Admin.view.admin.Dashboard' ,{
         }];
         this.callParent();
         var eventLog = Ext.data.StoreManager.lookup('eventStore');
-        Bozuko.PubSub.subscribe('*', true, function(message, type, timestamp, _id){
-            var time = new Date();
-            time.setTime( Date.parse(timestamp) );
-            var record = eventLog.createModel({type:type,message: message, timestamp: time, _id: _id});
+        Bozuko.PubSub.subscribe('*', true, function(item, callback){
+            var record = eventLog.createModel(item);
             eventLog.insert(0,[record]);
             while(eventLog.getCount() > 150 ){
                 eventLog.removeAt(150);
             }
+            callback();
         });
     }
 });
