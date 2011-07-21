@@ -25,10 +25,10 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 xfbml: true
             });
             
-            var loc = window.location,
-                matches = window.location.search.match(/token=(.*)(&|$)/),
-                port = ~[80,443].indexOf(window.location.port) ? '' : (':'+window.location.port);
-                url = window.location.protocol+'//'+window.location.hostname+port+'/user?token=' + matches[1];
+            var loc = document.location,
+                matches = loc.search.match(/token=(.*)(&|$)/),
+                port = ~[80,443].indexOf(loc.port) ? '' : (':'+loc.port);
+                url = loc.protocol+'//'+loc.hostname+port+'/user?token=' + matches[1];
                 
             function updateLikes(callback){
                 var req = new XMLHttpRequest();
