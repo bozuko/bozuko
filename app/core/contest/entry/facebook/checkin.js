@@ -147,10 +147,6 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
     var self = this;
     EntryMethod.prototype.validate.call(self, function(error, valid){
         
-        console.error('Checkin Validate, Entry Method error '+error);
-        console.error('Checkin Validate, Entry Method valid '+valid);
-        console.error('Checkin Validate, Entry Method hasCheckedIn '+self.hasCheckedIn());
-        
         if( error || !valid ) return callback( error, valid );
         /**
          * If a user cannot check in, check to make sure that the user has at least checked in here within
@@ -168,6 +164,9 @@ FacebookCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
     var thresh = Date.now();
     thresh -= Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4);
+    console.log(self.last_checkin_here);
+    console.log('thresh '+thresh);
+    if( self.last_checkin_here ) console.log('last_checkin_here_time'+(+self.last_checkin_here.timestamp));
     if( !self.can_checkin && (!self.last_checkin_here || +self.last_checkin_here.timestamp < +thresh) ){
         return false;
     }
