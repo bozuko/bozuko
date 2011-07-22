@@ -152,21 +152,21 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
          * the configured duration for a page check in
          */
         if( error || !valid ) return callback( error, valid );
-        if( self.hasNotCheckedInYet() ){
+        if( !self.hasCheckedIn() ){
             return callback(null, false);
         }
         return callback( null, true);
     });
 };
 
-FacebookCheckinMethod.prototype.hasNotCheckedInYet = function(){
+FacebookCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
     var thresh = Date.now();
     thresh -= Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4);
     if( !self.can_checkin && (!self.last_checkin_here || +self.last_checkin_here.timestamp < +thresh) ){
-        return true;
+        return false;
     }
-    return false;
+    return true;
 };
 
 
@@ -186,7 +186,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
         return self.validate( function(error, valid){
             if( error ) return callback( error );
             if( !valid ){
-                if(self.hasNotCheckedInYet()){
+                if(!self.hasCheckedIn()){
                     /**
                      * TODO
                      * this should be a better message when we know whats wrong
@@ -289,7 +289,7 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
                     var time_str = DateUtil.inAgo(time);
                     return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', time_str ) );
                 }
-                if( self.user && !self.can_checkin && !self.hasNotCheckedInYet() ){
+                if( self.user && !self.can_checkin && self.hasCheckedIn() ){
                     return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/facebook/enter' )  );
                 }
                 return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/checkin_to_play' ));
