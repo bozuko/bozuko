@@ -5,7 +5,8 @@ var URL         = require('url'),
     qs          = require('querystring'),
     url         = require('url'),
     facebook    = Bozuko.require('util/facebook'),
-    Service     = Bozuko.require('core/service')
+    Service     = Bozuko.require('core/service'),
+    Geo         = Bozuko.require('util/geo')
 ;
 
 var FacebookService = module.exports = function(){
