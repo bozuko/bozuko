@@ -31,6 +31,7 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function(){
                     if(req.readyState == 4){
+                        alert('returned from /user');
                         callback();
                     }
                 }
@@ -40,12 +41,12 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
         
             function onEdgeCreate(response) {
                 updateLikes(function () {
-                    window.location = navigator.userAgent.match(/iPhone/i) ? 'bozuko://facebook/like' : 'bozuko://facebook/liked';
+                    window.location = 'bozuko://facebook/liked';
                 });
             }
             function onEdgeRemove(response) {
                 updateLikes(function () {
-                    window.location = navigator.userAgent.match(/iPhone/i) ? 'bozuko://facebook/unlike' : 'bozuko://facebook/unliked';
+                    window.location = 'bozuko://facebook/unliked';
                 });
             }
             FB.Event.subscribe('edge.create', onEdgeCreate);
