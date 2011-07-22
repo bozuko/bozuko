@@ -334,8 +334,6 @@ Page.method('checkin', function(user, options, callback) {
                 var current = 0, entries = [];
                 var count = 0;
                 
-                console.log(contests);
-                
                 return async.forEach( contests,
 
                     function(contest, cb){
@@ -368,11 +366,16 @@ Page.method('checkin', function(user, options, callback) {
                         return contest.enter( entry, function(error, entry){
                             if( error ){
                                 console.log('error entering contest');
-                                console.log(error.stack);
-                                return callback( error );
+                                /**
+                                 * We need to swallow this error as it can occur upon unsuccessful
+                                 * validation and thus screw up the rest of our processing
+                                 */
+                                return callback( null );
                             }
-                            entries.push(entry);
-                            return contest.loadGameState(user, cb);
+                            else{
+                                entries.push(entry);
+                                return contest.loadGameState(user, cb);
+                            }
                         });
                     },
 

@@ -164,9 +164,6 @@ FacebookCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
     var thresh = Date.now();
     thresh -= Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4);
-    console.log(self.last_checkin_here);
-    console.log('thresh '+thresh);
-    if( self.last_checkin_here ) console.log('last_checkin_here_time'+(+self.last_checkin_here.timestamp));
     if( !self.can_checkin && (!self.last_checkin_here || +self.last_checkin_here.timestamp < +thresh) ){
         return false;
     }
@@ -284,7 +281,6 @@ FacebookCheckinMethod.prototype._load = function( callback ){
 FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
     this.load( function(error){
-        console.log(error);
         if( error ) return callback( error );
         return self.getNextEntryTime( function( error, time ){
 
