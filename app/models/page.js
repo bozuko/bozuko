@@ -365,6 +365,7 @@ Page.method('checkin', function(user, options, callback) {
                         return contest.enter( entry, function(error, entry){
                             if( error ){
                                 console.log('error entering contest');
+                                console.log(error.stack);
                                 return callback( error );
                             }
                             entries.push(entry);
