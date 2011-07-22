@@ -40,12 +40,12 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
         
             function onEdgeCreate(response) {
                 updateLikes(function () {
-                    window.location = 'bozuko://facebook/liked';
+                    window.location = navigator.userAgent.match(/iPhone/i) ? 'bozuko://facebook/like' : 'bozuko://facebook/liked';
                 });
             }
             function onEdgeRemove(response) {
                 updateLikes(function () {
-                    window.location = 'bozuko://facebook/unliked';
+                    window.location = navigator.userAgent.match(/iPhone/i) ? 'bozuko://facebook/unlike' : 'bozuko://facebook/unliked';
                 });
             }
             FB.Event.subscribe('edge.create', onEdgeCreate);
