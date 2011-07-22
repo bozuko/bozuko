@@ -270,9 +270,9 @@ FacebookCheckinMethod.prototype._load = function( callback ){
             if( error ) return callback( error );
             self.can_checkin = flag;
             if( self.can_checkin ) return callback(null);
-            return Bozuko.models.Checkin.find({service:'facebook', page_id: self.page._id},{},{sort: {timestamp: -1}, limit: 1}, function(error, checkin){
+            return Bozuko.models.Checkin.find({service:'facebook', page_id: self.page._id},{},{sort: {timestamp: -1}, limit: 1}, function(error, checkins){
                 if( error ) return callback( error );
-                self.last_checkin_here = checkin;
+                if( checkins.length ) self.last_checkin_here = checkins[0];
                 return callback( null );
             });
         });
