@@ -46,7 +46,6 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
         'scope' : Bozuko.config.facebook.perms[scope],
         'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+((url.search||'').replace(/[&\?]code=.*$/i, ''))
     };
-
     
     if( req.param('display')){
         params.display = req.param('display');
@@ -59,7 +58,9 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
     if( !code && !error_reason ){
         // we need to send this person to facebook to get the code...
-        return res.redirect('https://graph.facebook.com/oauth/authorize?'+qs.stringify(params));
+        var url = 'http://www.facebook.com/dialog/oauth?'+qs.stringify(params);
+        console.log(url);
+        return res.redirect(url);
     }
     else if( error_reason ){
         /**
