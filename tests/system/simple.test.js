@@ -148,7 +148,7 @@ exports['game tests'] = {
                 test.done();
             });
     },
-
+/*
     'like a page' : function(test){
 
         var url = like_link+'/?token='+token;
@@ -173,7 +173,7 @@ exports['game tests'] = {
         });
     },
 
-
+*/
     'attempt a game entry' : function(test) {
 
         var url = game_entry_link+"/?token="+token;

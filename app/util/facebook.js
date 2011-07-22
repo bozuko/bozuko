@@ -71,7 +71,10 @@ exports.graph = function(path, options, callback){
             if (err) return callback(err);
 
             if( result.error && callback ){
-                console.log( result.error );
+                // handle bogus sessions
+                if( result.error.match(/changed the password/i) ){
+                    return callback( Bozuko.error('facebook/auth') );
+                }
                 return callback( Bozuko.error('facebook/api', result.error ));
             }
 

@@ -90,7 +90,7 @@ exports.routes = {
                     res.locals.user = user;
                     res.locals.page = page;
                     res.locals.scripts.unshift(
-                        '/js/ext-4.0/lib/ext-all.js',
+                        '/js/ext-4.0/lib/ext-all-debug.js',
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(

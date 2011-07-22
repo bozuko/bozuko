@@ -142,15 +142,33 @@ FacebookCheckinMethod.prototype.getTokenCount = function(){
     }
     return tokens;
 }
-/*
+
 FacebookCheckinMethod.prototype.validate = function( callback ){
     var self = this;
     EntryMethod.prototype.validate.call(self, function(error, valid){
-        if( error || !valid ) return callback( error, valid );
         
+        /**
+         * If a user cannot check in, check to make sure that the user has at least checked in here within
+         * the configured duration for a page check in
+         */
+        if( error || !valid ) return callback( error, valid );
+        if( self.hasNotCheckedInYet() ){
+            return callback(null, false);
+        }
+        return callback( null, true);
     });
 };
-*/
+
+FacebookCheckinMethod.prototype.hasNotCheckedInYet = function(){
+    var self = this;
+    var thresh = Date.now();
+    thresh -= Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4);
+    if( !self.can_checkin && (!self.last_checkin_here || +self.last_checkin_here.timestamp < +thresh) ){
+        return true;
+    }
+    return false;
+};
+
 
 /**
  * Perform all necessary actions accociated with this entry method (eg, checkin, check for location, etc)
@@ -167,7 +185,16 @@ FacebookCheckinMethod.prototype.process = function( callback ){
     if( !self.checkin ){
         return self.validate( function(error, valid){
             if( error ) return callback( error );
-            if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
+            if( !valid ){
+                if(self.hasNotCheckedInYet()){
+                    /**
+                     * TODO
+                     * this should be a better message when we know whats wrong
+                     */
+                    return callback( Bozuko.error('contest/invalid_entry') );
+                }
+                return callback( Bozuko.error('contest/invalid_entry') );
+            }
 
             if( self.can_checkin ){
                 return self.page.checkin( self.user, {

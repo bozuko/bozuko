@@ -103,6 +103,11 @@ Ext.define('Bozuko.view.contest.Winners' ,{
                 itemadd: me.refresh,
                 itemupdate: me.refresh,
                 itemremove: me.refresh
+            },
+            
+            onDestroy : function(){
+                if( this.loadMask === true ) this.loadMask = false;
+                this.callParent(arguments);
             }
         }];
         

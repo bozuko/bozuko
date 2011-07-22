@@ -40,7 +40,6 @@ Ext.define('Beta.controller.Contests' ,{
         panel.getLayout().setActiveItem( 0 );
         panel.doComponentLayout();
         panel.remove(contest);
-        contest.destroy();
     },
     
     onLaunch: function(){
