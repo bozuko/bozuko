@@ -151,8 +151,8 @@ Page.method('getActiveContests', function(user, callback){
                 exhausted_contests[String(contest._id)] = contest;
                 exhausted_contest_ids.push(contest._id);
             } else {
-		active_contests.push(contest);
-	    }
+                active_contests.push(contest);
+            }
         }
 
         if (!user_id) return callback(null, active_contests);
@@ -333,6 +333,9 @@ Page.method('checkin', function(user, options, callback) {
                 }
                 var current = 0, entries = [];
                 var count = 0;
+                
+                console.log(contests);
+                
                 return async.forEach( contests,
 
                     function(contest, cb){
