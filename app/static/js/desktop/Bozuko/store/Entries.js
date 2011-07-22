@@ -61,6 +61,9 @@ Ext.define('Bozuko.store.Entries', {
         };  
         
         Bozuko.PubSub.subscribe('contest/entry', selector, reload);
+        me.on('destroy', function(){
+            Bozuko.PubSub.unsubscribe('contest/entry', selector, reload);
+        });
         me.listening = true;
     },
     

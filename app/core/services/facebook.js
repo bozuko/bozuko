@@ -261,29 +261,35 @@ FacebookService.prototype.checkin = function(options, callback){
     }
     
     
-    // we need to know how far away this cat is...
-    // get the distance now
-    /*
-    var d = Geo.distance( self.ll, self.page.coords, 'mi' );
-    if( d > Bozuko.cfg('checkin.distance', 600) / 5280 ){
-        // too far...
-        return callback( null, false );
-    }
-    */
-    return facebook.graph('/me/checkins',{
+    return facebook.graph('/'+options.place_id,{
         user: options.user,
-        params: params,
-        method:'post'
+        params: {fields:'location'}
     },function(error, result){
-        // check the result..
-        if( error ){
-            if( /too far away to check in/.test(error.message) ){
-                return callback( Bozuko.error('checkin/too_far') );
-            }
-            return callback( error );
+        if( error ) return callback( error );
+        
+        coords = [result.location.longitude, result.location.latitude];
+        var d = Geo.distance( options.ll, coords, 'mi' );
+        if( d > Bozuko.cfg('checkin.distance', 600) / 5280 ){
+            // too far...
+            return callback( Bozuko.error('checkin/too_far') );
         }
-        return callback(null, result);
+        return facebook.graph('/me/checkins',{
+            user: options.user,
+            params: params,
+            method:'post'
+        },function(error, result){
+            // check the result..
+            if( error ){
+                if( /too far away/.test(error.message) ){
+                    return callback( Bozuko.error('checkin/too_far') );
+                }
+                return callback( error );
+            }
+            return callback(null, result);
+        });
+        
     });
+    
 };
 
 

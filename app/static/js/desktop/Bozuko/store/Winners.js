@@ -64,6 +64,11 @@ Ext.define('Bozuko.store.Winners', {
         Bozuko.PubSub.subscribe('prize/redeemed', selector, reload);
         Bozuko.PubSub.subscribe('contest/win', selector, reload);
         Bozuko.PubSub.subscribe('contest/consolation', selector, reload);
+        me.on('destroy', function(){
+            Bozuko.PubSub.unsubscribe('prize/redeemed', selector, reload);
+            Bozuko.PubSub.unsubscribe('contest/win', selector, reload);
+            Bozuko.PubSub.unsubscribe('contest/consolation', selector, reload);
+        });
         me.listening = true;
     },
     

@@ -428,7 +428,12 @@ Ext.define('Admin.controller.Contests' ,{
             panel.reports[id] = panel.add({
                 border: false,
                 record: record,
-                xtype: 'contestreportpanel'
+                xtype: 'contestreportpanel',
+                listeners : {
+                    destroy : function(){
+                        delete panel.reports[id];
+                    }
+                }
             });
         }
         navbar.hide();

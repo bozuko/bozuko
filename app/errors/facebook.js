@@ -5,6 +5,12 @@ module.exports = {
         message: function(){ return this.data.type+": "+this.data.message; }
     },
     
+    auth : {
+        code:403,
+        title:"Password Changed",
+        message: "Looks like you changed your Facebook password. Please log out of bozuko and log back in. Thanks!"
+    },
+    
     no_lat_lng : {
         code: 400,
         message: "Latitude and Longitude are required to checkin"

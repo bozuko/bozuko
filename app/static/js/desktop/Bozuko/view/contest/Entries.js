@@ -107,7 +107,12 @@ Ext.define( 'Bozuko.view.contest.Entries', {
                         return name;
                     }
                 }
-            )
+            ),
+            
+            onDestroy : function(){
+                if( this.loadMask === true ) this.loadMask = false;
+                this.callParent(arguments);
+            }
         }];
         me.callParent(arguments);
     }

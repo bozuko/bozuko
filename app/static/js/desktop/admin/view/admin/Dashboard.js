@@ -98,7 +98,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             margin: '2 2 2 0',
             xtype: 'contestplayers'
         }];
-        this.callParent();
+        me.callParent();
         var eventLog = Ext.data.StoreManager.lookup('eventStore');
         Bozuko.PubSub.subscribe('*', true, function(item, callback){
             var record = eventLog.createModel(item);
@@ -106,6 +106,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             while(eventLog.getCount() > 150 ){
                 eventLog.removeAt(150);
             }
+            me.doComponentLayout();
             callback();
         });
     }
