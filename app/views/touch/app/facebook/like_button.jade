@@ -31,7 +31,6 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function(){
                     if(req.readyState == 4){
-                        alert('returned from /user');
                         callback();
                     }
                 }
