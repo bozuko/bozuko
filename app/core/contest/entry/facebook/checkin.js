@@ -191,7 +191,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                      * TODO
                      * this should be a better message when we know whats wrong
                      */
-                    return callback( Bozuko.error('contest/invalid_entry') );
+                    return callback( Bozuko.error('checkin/too_many_attempts_per_user') );
                 }
                 return callback( Bozuko.error('contest/invalid_entry') );
             }
