@@ -289,7 +289,7 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
                     var time_str = DateUtil.inAgo(time);
                     return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', time_str ) );
                 }
-                if( self.user && !self.can_checkin ){
+                if( self.user && !self.can_checkin && !self.hasNotCheckedInYet() ){
                     return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/facebook/enter' )  );
                 }
                 return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/checkin_to_play' ));
