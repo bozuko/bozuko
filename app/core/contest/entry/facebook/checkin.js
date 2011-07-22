@@ -276,8 +276,6 @@ FacebookCheckinMethod.prototype._load = function( callback ){
     });
 };
 
-//  ObjectId("4e03acd53abba48a6e0001e3"), ObjectId("4e28f304dd8542084a000025")
-
 FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
     this.load( function(error){
