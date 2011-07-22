@@ -53,13 +53,12 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     }
 
     else if( req.session.device == 'touch'){
-        params.display = 'touch';
+        params.display = 'wap';
     }
 
     if( !code && !error_reason ){
         // we need to send this person to facebook to get the code...
         var url = 'https://www.facebook.com/dialog/oauth?'+qs.stringify(params);
-        console.log(url);
         return res.redirect(url);
     }
     else if( error_reason ){
