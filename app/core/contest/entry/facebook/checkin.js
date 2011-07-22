@@ -147,11 +147,16 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
     var self = this;
     EntryMethod.prototype.validate.call(self, function(error, valid){
         
+        console.error('Checkin Validate, Entry Method error '+error);
+        console.error('Checkin Validate, Entry Method valid '+valid);
+        console.error('Checkin Validate, Entry Method hasCheckedIn '+self.hasCheckedIn());
+        
+        if( error || !valid ) return callback( error, valid );
         /**
          * If a user cannot check in, check to make sure that the user has at least checked in here within
          * the configured duration for a page check in
          */
-        if( error || !valid ) return callback( error, valid );
+        
         if( !self.hasCheckedIn() ){
             return callback(null, false);
         }
@@ -266,7 +271,7 @@ FacebookCheckinMethod.prototype._load = function( callback ){
             if( error ) return callback( error );
             self.can_checkin = flag;
             if( self.can_checkin ) return callback(null);
-            return Bozuko.models.Checkin.find({page_id: self.page._id},{},{sort: {timestamp: -1}, limit: 1}, function(error, checkin){
+            return Bozuko.models.Checkin.find({service:'facebook', page_id: self.page._id},{},{sort: {timestamp: -1}, limit: 1}, function(error, checkin){
                 if( error ) return callback( error );
                 self.last_checkin_here = checkin;
                 return callback( null );
@@ -274,6 +279,8 @@ FacebookCheckinMethod.prototype._load = function( callback ){
         });
     });
 };
+
+//  ObjectId("4e03acd53abba48a6e0001e3"), ObjectId("4e28f304dd8542084a000025")
 
 FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
