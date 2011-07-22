@@ -1,6 +1,6 @@
 module.exports = {
 
-    test_mode: true,
+    test_mode: false,
 
     client: {
         mobile:{
@@ -70,7 +70,7 @@ module.exports = {
     checkin: {
         duration: {
             // 15 minutes between any checkins per user
-            user: 1000 * 60 * 15,
+            user: 1000 * 60 * 2,
             // 4 hours between checkins at the same place
             page: 1000 * 60 * 60 * 4
         },
