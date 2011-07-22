@@ -104,9 +104,11 @@ Page.method('loadContests', function(user, callback){
 
             function load_contest(contest, cb){
                 contest.loadGameState(user, function(error, state){
-                    contest.loadEntryMethod(user, function(error, method){
+                    if( error ) return callback( error );
+                    return contest.loadEntryMethod(user, function(error, method){
+                        if( error ) return callback( error );
                         self.contests.push(contest);
-                        cb(null);
+                        return cb(null);
                     });
                 });
             },
@@ -777,6 +779,8 @@ Page.static('search', function(options, callback){
                         }
 
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
+                            
+                            if( error ) return callback( error );
 
                             var prof = new Profiler('/models/page/search/loadPagesContests');
                             pages = pages.concat(_pages);

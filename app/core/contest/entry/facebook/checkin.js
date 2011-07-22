@@ -278,6 +278,7 @@ FacebookCheckinMethod.prototype._load = function( callback ){
 FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
     var self = this;
     this.load( function(error){
+        console.log(error);
         if( error ) return callback( error );
         return self.getNextEntryTime( function( error, time ){
 
