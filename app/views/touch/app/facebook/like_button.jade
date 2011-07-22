@@ -1,12 +1,13 @@
 !!! 5
-html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/xhtml",class=locals.classes?classes.join(' '):'')
+html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/xhtml",class=locals.classes?classes.join(' '):'')
   head
     title= title
     meta(charset="utf-8")
     meta(name="viewport",content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
     style(type="text/css")
       html,body{ background: transparent; padding: 0; margin: 0; overflow: hidden; width: 50px; height: 20px !important;}
-      body{ overflow: hidden; background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat; }
+      body{ overflow: hidden;}
+      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat; }
       iframe{ background: transparent !important; }
   body
     #fb-root
@@ -18,6 +19,8 @@ html.like_button(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.
       script(type="text/javascript")
         var APP_ID = #{Bozuko.config.facebook.app.id},
             token = '#{locals.user ? user.token : ""}';
+            
+        document.getElementsByTagName('html')[0].className += ' like_button_loading';
         
         window.fbAsyncInit = function () {
             FB.init({
