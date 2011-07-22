@@ -53,7 +53,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     }
 
     else if( req.session.device == 'touch'){
-        params.display = 'wap';
+        params.display = 'touch';
     }
 
     if( !code && !error_reason ){
