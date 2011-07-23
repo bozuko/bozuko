@@ -152,7 +152,6 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
          * If a user cannot check in, check to make sure that the user has at least checked in here within
          * the configured duration for a page check in
          */
-        
         if( !self.hasCheckedIn() ){
             return callback(null, false);
         }
@@ -164,7 +163,7 @@ FacebookCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
     var thresh = Date.now();
     thresh -= Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4);
-    if( !self.can_checkin && (!self.last_checkin_here || +self.last_checkin_here.timestamp < +thresh) ){
+    if( !self.checkin && !self.can_checkin && (!self.last_checkin_here || +self.last_checkin_here.timestamp < +thresh) ){
         return false;
     }
     return true;
@@ -254,24 +253,20 @@ FacebookCheckinMethod.prototype.process = function( callback ){
 
 FacebookCheckinMethod.prototype._load = function( callback ){
     var self = this;
-    return Bozuko.models.Page.findById( self.contest.page_id, function(error, page){
+   
+    if( !self.user ){
+        self.can_checkin = true;
+        return callback( null );
+    }
+    
+    return self.page.canUserCheckin( self.user, function(error, flag, checkin, error2){
         if( error ) return callback( error );
-        if( !page ) return callback( Bozuko.error('contest/page_not_found'));
-        self.page = page;
-        if( !self.user ){
-            self.can_checkin = true;
-            return callback( null );
-        }
-        
-        return page.canUserCheckin( self.user, function(error, flag, checkin, error2){
+        self.can_checkin = flag;
+        if( self.can_checkin ) return callback(null);
+        return Bozuko.models.Checkin.find({service:'facebook', page_id: self.page._id},{},{sort: {timestamp: -1}, limit: 1}, function(error, checkins){
             if( error ) return callback( error );
-            self.can_checkin = flag;
-            if( self.can_checkin ) return callback(null);
-            return Bozuko.models.Checkin.find({service:'facebook', page_id: self.page._id},{},{sort: {timestamp: -1}, limit: 1}, function(error, checkins){
-                if( error ) return callback( error );
-                if( checkins.length ) self.last_checkin_here = checkins[0];
-                return callback( null );
-            });
+            if( checkins.length ) self.last_checkin_here = checkins[0];
+            return callback( null );
         });
     });
 };

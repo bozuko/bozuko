@@ -12,6 +12,8 @@ var user = new Bozuko.models.User(
 });
 
 var page = new Bozuko.models.Page();
+page.active = true;
+page.name = "test page";
 
 var start = new Date();
 var end = new Date();
@@ -522,7 +524,7 @@ function play3times(contest, callback) {
     async.whilst(
         function() { return count < 3; },
         function(callback) {
-            contest.play(user._id, function(err, res) {
+            contest.play(user, function(err, res) {
                 if( err ) console.log(err.stack);
                 console.log('res.play.win = '+res.play.win);
                 if (res.play.win) won = true;

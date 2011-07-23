@@ -16,7 +16,7 @@ var _t = Bozuko.t,
 
 var Page = module.exports = new Schema({
     tree                :{type:String},
-    category            :{type:String},
+    category            :{type:String, index: true},
     website             :{type:String},
     phone               :{type:String},
     description         :{type:String},
@@ -29,7 +29,7 @@ var Page = module.exports = new Schema({
     security_img        :{type:String},
     featured            :{type:Boolean},
     test                :{type:Boolean, index: true, default: false},
-    active              :{type:Boolean, default: true},
+    active              :{type:Boolean, default: false},
     location            :{
         street              :String,
         city                :String,
@@ -37,6 +37,7 @@ var Page = module.exports = new Schema({
         zip                 :String,
         country             :String
     },
+    /* deprecate */
     owner_id            :{type:ObjectId, index: true},
     admins              :[ObjectId],
     beta_agreement      :{
@@ -51,9 +52,6 @@ Page.index({admins: 1});
 Page.plugin(Services);
 Page.plugin(Coords);
 
-Page.method('getOwner', function(callback){
-    Bozuko.models.User.findById( this.owner_id, callback );
-});
 
 Page.method('isAdmin', function(user, callback){
     callback( null, ~this.admins.indexOf(user._id) );
@@ -597,7 +595,7 @@ Page.static('search', function(options, callback){
 
     var bozukoSearch = {
         type:'find',
-        selector:{owner_id: {$exists: true}},
+        selector:{active: true},
         fields: {},
         // sorting asc puts true first
         options:{limit: Bozuko.config.search.nearbyLimit, skip: Bozuko.config.search.nearbyLimit * page}
@@ -626,7 +624,7 @@ Page.static('search', function(options, callback){
     // are we looking for bounded results
     else if( options.bounds ){
 
-        bozukoSearch.selector.owner_id = {$exists:true};
+        bozukoSearch.selector.active = true;
         bozukoSearch.selector.coords = {$within: {$box: options.bounds}};
 
         bozukoSearch.type='nativeFind';
@@ -674,7 +672,7 @@ Page.static('search', function(options, callback){
             if( page.doc ){
                 page.registered = true;
             }
-            if (!page.owner_id && page._id) {
+            if (!page.active && page._id) {
                 page.id = page.service('facebook').sid;
             }
             page._distance = Geo.distance( options.ll, page.coords );
@@ -764,9 +762,7 @@ Page.static('search', function(options, callback){
                     prof.stop();
 
                     return Bozuko.models.Page.findByService(service, Object.keys(map), {
-                        owner_id: {
-                            $exists: true
-                        },
+                        active: true,
                         _id: {$nin: page_ids}
                     }, function(error, _pages){
                         if( error ) return callback( error );

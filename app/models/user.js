@@ -92,7 +92,7 @@ User.method('updateInternals', function(force, callback){
     var self = this;
     
     var now = new Date();
-    if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 2) ){
+    if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 60 * 60) ){
         return callback(null);
     }
     

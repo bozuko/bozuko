@@ -45,6 +45,10 @@ Ext.define('Admin.view.page.Form' ,{
                 fieldLabel      :'Image'
             },{
                 xtype           :'checkbox',
+                name            :'active',
+                fieldLabel      :'Active'
+            },{
+                xtype           :'checkbox',
                 name            :'test',
                 fieldLabel      :'Test page'
             },{

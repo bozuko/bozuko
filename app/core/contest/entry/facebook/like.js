@@ -167,15 +167,10 @@ FacebookLikeMethod.prototype.validate = function( callback ){
 
 FacebookLikeMethod.prototype._load = function( callback ){
     var self = this;
-    return Bozuko.models.Page.findById( self.contest.page_id, function(error, page){
-        if( error ) return callback( error );
-        if( !page ) return callback( Bozuko.error('contest/page_not_found'));
-        self.page = page;
-        if( self.user ){
-            self.user_likes = self.user.likes( page );
-        }
-        return callback();
-    });
+    if( self.user ){
+        self.user_likes = self.user.likes( self.page );
+    }
+    return callback();
 };
 
 FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
