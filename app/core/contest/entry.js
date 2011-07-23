@@ -236,6 +236,16 @@ EntryMethod.prototype.load = function(callback){
             if( error ) return callback( error );
             if( !page ) return callback( Bozuko.error('contest/page_not_found'));
             self.page = page;
+            // always load the users internals...
+            if( self.user ){
+                return self.user.updateInternals(true, function(error){
+                    if( error ) return callback( error );
+                    return self._load(function(error){
+                        self._loaded = true;
+                        return callback(error);
+                    });
+                });
+            }
             return self._load(function(error){
                 self._loaded = true;
                 return callback(error);
