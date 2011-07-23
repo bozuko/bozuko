@@ -395,23 +395,38 @@ Bozuko.initFacebookPubSub = function(){
     var url = 'https://graph.facebook.com/'+
               Bozuko.config.facebook.app.id+
               '/subscriptions?access_token='+
-              Bozuko.config.facebook.app.access_token;
+              Bozuko.config.facebook.app.access_token,
+			  
+		pubsub_url = create_url('/facebook/pubsub')
+		;
 
     // first we need to delete any existing subscriptions
     http.request({
         url: url,
-        method: 'DELETE'},
+        method: 'GET'},
         function(err, body){
-            if (err) console.log("Failed to delete existing facebook subscriptions");
-            // now lets setup the new subscriptions
+            if (err) console.log("Failed to get existing facebook subscriptions");
+			body = JSON.parse(body);
+			// now lets setup the new subscriptions
             // Should there be other error checking for the following 2 http requests?
+			if(body && body.data && body.data.length ){
+				var found = false;
+				body.data.forEach(function(subscription){
+					if( subscription.callback_url == pubsub_url ){
+						found = true;
+					}
+				});
+				if( found ){
+					return;
+				}
+			}
             http.request({
                 url: url,
                 method: 'POST',
                 params: {
                     object: 'user',
                     fields: 'likes,friends',
-                    callback_url: create_url('/facebook/pubsub'),
+                    callback_url: pubsub_url,
                     verify_token: Bozuko.config.facebook.app.pubsub_verify
                 }
             });
@@ -421,7 +436,7 @@ Bozuko.initFacebookPubSub = function(){
                 params: {
                     object: 'permissions',
                     fields: Bozuko.config.facebook.perms.user,
-                    callback_url: create_url('/facebook/pubsub'),
+                    callback_url: pubsub_url,
                     verify_token: Bozuko.config.facebook.app.pubsub_verify
                 }
             });
