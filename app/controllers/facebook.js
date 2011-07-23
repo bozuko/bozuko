@@ -183,18 +183,23 @@ exports.routes = {
                 if( undefined === entry || false === entry ) return res.send({});
                 if( !Array.isArray(entry) ) entry = [entry];
 
-                switch(req.param('object')){
+                switch(object){
 
                     case 'user':
                         var ids = [];
-                        entry.forEach(function(user){
-                            var uid = user.uid;
-                            if( ~user.changed_fields.indexOf('likes') ) ids.push(uid);
+                        entry.forEach(function(fb_user){
+                            var uid = fb_user.uid;
+                            Bozuko.models.User.findByService('facebook', uid, function(err, user){
+                                if( err ) return console.error(err);
+                                if( user ){
+                                    console.log(user.name);
+                                    return user.updateInternals(true, function(error){
+                                        console.log('updated after pubsub notify');
+                                    });
+                                }
+                                return true;
+                            });
                         });
-                        return Bozuko.models.User.updateFacebookLikes(ids, function(){
-                            res.send({});
-                        });
-
 
                     case 'permissions':
                         /**

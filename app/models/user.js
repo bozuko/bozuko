@@ -126,6 +126,7 @@ User.method('updateInternals', function(force, callback){
         self.service('facebook').internal.friend_count = friends.length;
         self.last_internal_update = new Date();
         self.commit('services');
+        console.log('saving updated internals');
         return self.save(callback);
     });
 });
