@@ -7,9 +7,10 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     style(type="text/css")
       html,body{ background: transparent; padding: 0; margin: 0; overflow: hidden; width: 50px; height: 20px !important;}
       body{ overflow: hidden;}
-      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat; }
+      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat; position: relative; z-index: 1;}
       iframe{ background: transparent !important; }
       #mask{ display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; }
+      #touch-killer{ display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
   body
     #fb-root
       
@@ -17,6 +18,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       .like-button(style="z-index:2; position:relative;")
         fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
       #mask
+      #touch-killer
       script(type="text/javascript")
         var APP_ID = #{Bozuko.config.facebook.app.id},
             fb_token = '#{locals.user.service('facebook').auth}',
@@ -88,3 +90,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
         document.ontouchmove = function (e) {
             e.preventDefault();
         };
+        var touchKill = document.getElementById('touch-killer');
+        touchKill.onclick = function(e){
+          e.stopPropagation();
+        }
