@@ -525,19 +525,22 @@ Contest.static('audit', function(callback) {
     });
 });
 
-Contest.method('play', function(user_id, callback){
-    this.startPlay(user_id, callback);
+Contest.method('play', function(user, callback){
+    this.startPlay(user, callback);
 });
 
-Contest.method('startPlay', function(user_id, callback) {
-    var self = this;
-
-    var now = new Date();
-    var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
-    var _uuid = uuid();
-
-    return Bozuko.models.Entry.findAndModify(
-        {contest_id: this._id, user_id: user_id, timestamp: {$gt :min_expiry_date}, tokens: {$gt : 0}},
+Contest.method('startPlay', function(user, callback) {
+    var self = this,
+        user_id = user._id,
+        now = new Date(),
+        min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration),
+        _uuid = uuid()
+        ;
+    
+    console.log({contest_id: self._id, user_id: user_id, timestamp: {$gt :min_expiry_date}, tokens: {$gt : 0}});
+    
+    Bozuko.models.Entry.findAndModify(
+        {contest_id: self._id, user_id: user_id, timestamp: {$gt :min_expiry_date}, tokens: {$gt : 0}},
         [],
         {$inc: {tokens : -1}},
         {new: true},
@@ -559,6 +562,7 @@ Contest.method('startPlay', function(user_id, callback) {
                     if (!contest) return callback(Bozuko.error("contest/no_tokens"));
                     var opts = {
                         user_id: user_id,
+                        user_name: user.name,
                         play_cursor: contest.play_cursor,
                         timestamp: now,
                         uuid: _uuid
@@ -740,6 +744,7 @@ Contest.method('savePrize', function(opts, callback) {
             contest_id: self._id,
             page_id: self.page_id,
             user_id: opts.user_id,
+            user_name: opts.user_name,
             prize_id: prize._id,
             uuid: opts.uuid,
             code: opts.consolation ? opts.consolation_prize_code : opts.prize_code,

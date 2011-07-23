@@ -24,8 +24,7 @@ Ext.define('Bozuko.model.Page', {
         {name:'active',         type:'Boolean'},
         {name:'location',       type:'Object'},
         {name:'coords',         type:'Array'},
-        {name:'test',           type:'Boolean'},
-        {name:'owner_id',       type:'String'}
+        {name:'test',           type:'Boolean'}
     ]
 }, function(){
     this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);

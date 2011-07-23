@@ -156,19 +156,14 @@ BozukoCheckinMethod.prototype.process = function( callback ){
 
 BozukoCheckinMethod.prototype._load = function( callback ){
     var self = this;
-    return Bozuko.models.Page.findById( self.contest.page_id, function(error, page){
+    if( !self.user ){
+        self.can_checkin = true;
+        return callback( null );
+    }
+    return self.page.canUserCheckin( self.user, function(error, flag){
         if( error ) return callback( error );
-        if( !page ) return callback( Bozuko.error('contest/page_not_found'));
-        self.page = page;
-        if( !self.user ){
-            self.can_checkin = true;
-            return callback( null );
-        }
-        return page.canUserCheckin( self.user, function(error, flag){
-            if( error ) return callback( error );
-            self.can_checkin = flag;
-            return callback(null);
-        });
+        self.can_checkin = flag;
+        return callback(null);
     });
 };
 
