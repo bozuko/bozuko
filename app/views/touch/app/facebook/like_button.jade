@@ -21,7 +21,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       #touch-killer
       script(type="text/javascript")
         var APP_ID = #{Bozuko.config.facebook.app.id},
-            fb_token = '#{locals.user.service('facebook').auth}',
+            fb_token = '#{locals.user ? locals.user.service('facebook').auth : ""}',
             fb_id = '#{place.data.id}',
             token = '#{locals.user ? user.token : ""}';
             

@@ -391,7 +391,7 @@ function initGames(app){
 
 // this will be called 4 times with multinode...
 // not sure how to avoid this...
-function initFacebookPubSub(){
+Bozuko.initFacebookPubSub = function(){
     var url = 'https://graph.facebook.com/'+
               Bozuko.config.facebook.app.id+
               '/subscriptions?access_token='+
@@ -410,7 +410,7 @@ function initFacebookPubSub(){
                 method: 'POST',
                 params: {
                     object: 'user',
-                    fields: 'likes',
+                    fields: 'likes,friends',
                     callback_url: create_url('/facebook/pubsub'),
                     verify_token: Bozuko.config.facebook.app.pubsub_verify
                 }
@@ -420,7 +420,7 @@ function initFacebookPubSub(){
                 method: 'POST',
                 params: {
                     object: 'permissions',
-                    fields: Bozuko.config.facebook.perms.business,
+                    fields: Bozuko.config.facebook.perms.user,
                     callback_url: create_url('/facebook/pubsub'),
                     verify_token: Bozuko.config.facebook.app.pubsub_verify
                 }
@@ -428,6 +428,7 @@ function initFacebookPubSub(){
         }
     );
 }
+
 Bozuko.initStats= function(){
     var stats = Bozuko.require('util/stats');
     var ms_per_hr = 1000*60*60;
