@@ -50,6 +50,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
         
             function onEdgeCreate(response) {
                 updateLikes(function () {
+                    enableMask();
                     window.location = 'bozuko://facebook/liked';
                 });
             }
@@ -69,18 +70,21 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                 var like = likes[i];
                 if( fb_id == like.id ){
                   found =true;
-                  // hide the button
-                  var m = document.getElementById('mask');
-                  m.style.display='block';
-                  m.onclick = function(e){
-                    e.stopPropagation();
-                  }
+                  enableMask();
                 }
               }
             });
             
         };
         
+        // hide the button
+        function enableMask(){
+            var m = document.getElementById('mask');
+            m.style.display='block';
+            m.onclick = function(e){
+              e.stopPropagation();
+            }
+        }
         (function () {
             var e = document.createElement('script');
             e.async = true;
