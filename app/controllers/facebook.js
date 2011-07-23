@@ -182,7 +182,7 @@ exports.routes = {
                 var entry = req.param('entry');
                 if( undefined === entry || false === entry ) return res.send({});
                 if( !Array.isArray(entry) ) entry = [entry];
-
+                console.log('facebook pubsub ['+object+']');
                 switch(object){
 
                     case 'user':
