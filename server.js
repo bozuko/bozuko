@@ -43,6 +43,8 @@ if( proc.isMaster ){
     if( env === 'development' ){
         // console.log('intializing development environment');
         // Bozuko.require('dev/setup').init();
+        Bozuko.initFacebookPubSub();
     }
+    
 
 }

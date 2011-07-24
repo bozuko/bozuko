@@ -8,6 +8,10 @@ module.exports = {
         code: 400,
         message: "Page is required for checkin"
     },
+    non_location: {
+        code: 400,
+        message: "Sorry, you cannot checkin here because it is not a location"
+    },
     too_many_attempts_per_page: {
         code: 403,
         title: "Checkin Error",

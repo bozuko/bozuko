@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
     Services = require('./plugins/services'),
+    Native = require('./plugins/native'),
     crypto = require('crypto'),
     Phone = require('./embedded/user/phone'),
     async = require('async'),
@@ -27,6 +28,7 @@ var User = module.exports = new Schema({
 });
 
 User.plugin(Services);
+User.plugin(Native);
 
 User.pre('save', function(next) {
     if (!this.challenge) {
@@ -92,10 +94,10 @@ User.method('updateInternals', function(force, callback){
     var self = this;
     
     var now = new Date();
-    if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 2) ){
+    if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 60 * 60) ){
         return callback(null);
     }
-    
+    console.log('updating internals...');
     if( !self.service('facebook')) return callback( Bozuko.error('user/no_facebook') );
     return Bozuko.service('facebook').user({user:self, fields:'likes,friends'}, function(error, result){
         if( error ) return callback( error );
@@ -122,10 +124,13 @@ User.method('updateInternals', function(force, callback){
             commit = false;
         }
         self.service('facebook').internal.likes = likes;
+        console.log(likes);
+        console.log(likes.length);
         self.service('facebook').internal.friends = friends;
         self.service('facebook').internal.friend_count = friends.length;
         self.last_internal_update = new Date();
         self.commit('services');
+        console.log(self.collection);
         return self.save(callback);
     });
 });

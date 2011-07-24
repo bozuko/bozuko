@@ -179,7 +179,7 @@ exports.routes = {
                     return Bozuko.models.Page.createFromServiceObject( place, function(error, page){
                         if( error ) return error.send(res);
                         if( !page ) return new Error('weird problem creating place');
-                        page.owner_id = user_id;
+                        page.active = false;
                         return page.save(function(error){
                             if( error ) return error.send( res );
                             return res.send(page);
@@ -199,9 +199,9 @@ exports.routes = {
             handler : function(req, res){
                 // need to get all pages
                 var id = req.param('id'),
-                    selector = {owner_id:{$exists:true}};
+                    selector = {};
                     
-                if(id) selector._id = id;
+                if(id) selector._id = new ObjectId(id);
                 return Bozuko.models.Page.find(selector,{},{sort:{name:1}}, function(error, pages){
                     if( error ) return error.send(res);
                     return res.send({items:pages});
@@ -212,12 +212,15 @@ exports.routes = {
         /* update */
         put : {
             handler : function(req,res){
+                console.error( req.param('id'));
                 return Bozuko.models.Page.findById( req.param('id'), function(error, page){
                     if( error ) return error.send( res );
                     // else, lets bind the reqest to the page
                     var data = req.body;
 
                     delete data._id;
+                    delete data.owner_id;
+                    console.log(data);
                     page.set( data );
                     return page.save( function(error){
                         if( error ) return error.send(res);

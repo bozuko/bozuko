@@ -10,6 +10,10 @@ exports.request = function(config, callback){
     if( config instanceof String){
         config = {url:config};
     }
+    
+    if( !callback ) {
+        callback = function(){};
+    }
 
     if( !config.url ){
         throw "Error[util::http] - request method called with no url";
