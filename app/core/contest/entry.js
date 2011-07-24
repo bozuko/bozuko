@@ -161,6 +161,8 @@ EntryMethod.prototype.loadEntry = function( entry, timestamp ){
     entry.contest_id = self.contest._id;
     entry.page_id = self.contest.page_id;
     entry.user_id = self.user._id;
+    entry.user_name = self.user.name;
+    entry.page_name = self.page.name;
     entry.type = self.type;
     entry.tokens = self.getTokenCount();
     entry.initial_tokens = self.getTokenCount();
@@ -229,9 +231,25 @@ EntryMethod.prototype.load = function(callback){
     }
     // this contest should already have previous entries
     if( force || !self._loaded ){
-        return self._load(function(error){
-            self._loaded = true;
-            callback(error);
+        // always get the page
+        return Bozuko.models.Page.findById( self.contest.page_id, function(error, page){
+            if( error ) return callback( error );
+            if( !page ) return callback( Bozuko.error('contest/page_not_found'));
+            self.page = page;
+            // always load the users internals...
+            if( self.user ){
+                return self.user.updateInternals(true, function(error){
+                    if( error ) return callback( error );
+                    return self._load(function(error){
+                        self._loaded = true;
+                        return callback(error);
+                    });
+                });
+            }
+            return self._load(function(error){
+                self._loaded = true;
+                return callback(error);
+            });
         });
     }
     return callback();

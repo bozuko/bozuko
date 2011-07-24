@@ -312,7 +312,7 @@ exports.routes = {
                     if( contest.state !== contest.schema.ACTIVE ){
                         return Bozuko.error('contest/inactive').send(res);
                     }
-                    return contest.play(req.session.user._id, function(error, result){
+                    return contest.play(req.session.user, function(error, result){
                         if( error ){
                             return error.send(res);
                         }

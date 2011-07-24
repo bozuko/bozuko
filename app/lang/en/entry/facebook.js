@@ -7,7 +7,7 @@ module.exports = {
     wait_time: 'Play Again at %1$s',
     wait_day: 'Play Again in %1$s',
     wait_duration: 'Play Again %1$s',
-    like_enter: 'Like us on Facebook',
+    like_enter: 'Like us on Facebook to Play',
     play: 'Play',
     enter: 'Play Again!'
 };

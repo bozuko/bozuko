@@ -268,7 +268,7 @@ FacebookService.prototype.checkin = function(options, callback){
         params: {fields:'location'}
     },function(error, result){
         if( error ) return callback( error );
-        
+        if( !result || !result.location ) return callback( Bozuko.error('checkin/non_location') );
         coords = [result.location.longitude, result.location.latitude];
         var d = Geo.distance( options.ll, coords, 'mi' );
         if( d > Bozuko.cfg('checkin.distance', 600) / 5280 ){

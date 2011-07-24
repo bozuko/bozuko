@@ -4,7 +4,7 @@ var uuid = require('node-uuid');
 
 var start = new Date();
 var end = new Date();
-end.setTime(start.getTime()+1000*60*60*24*2);
+end.setTime(+start+(1000*60*60*24*2));
 
 var user = new Bozuko.models.User(
 {
@@ -17,16 +17,19 @@ var user = new Bozuko.models.User(
 });
 
 var page = new Bozuko.models.Page();
+page.active = true;
+page.name = "Test page";
 
 var contest = new Bozuko.models.Contest(
 {
     game: 'slots',
     game_config: {
-        icons: ['seven','bar','bozuko','banana','monkey','cherries']
+        theme: 'default'
     },
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 3
+        tokens: 3,
+        duration: 2
     }],
     start: start,
     end: end,
@@ -41,6 +44,8 @@ contest.prizes.push({
     details: 'Don\'t worry, you won\'t make money off this',
     instructions: 'Check yer email fool!',
     total: 1,
+    won: 0,
+    redeemed: 0,
     is_email: true,
     email_body: 'Give the gift code to the proprietor and watch him amaze you!',
     email_codes: ["15h1ttyd3s1gn"]
@@ -96,6 +101,7 @@ exports['enter contest'] = function(test) {
     var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
     contest.enter(entryMethod, function(err, e) {
         test.ok(!err);
+        if( err ) console.log(err.stack);
         entry = e;
         test.done();
     });
@@ -113,7 +119,7 @@ exports['enter contest fail - no tokens'] = function(test) {
 var free_play = false;
 
 function play(callback) {
-    contest.play(user._id, function(err, result) {
+    contest.play(user, function(err, result) {
         if (result.play.free_play) free_play = true;
         callback(err, result);
     });

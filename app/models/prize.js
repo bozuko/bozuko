@@ -13,8 +13,10 @@ var Prize = module.exports = new Schema({
     uuid                    :{type:String},
     code                    :{type:String},
     value                   :{type:Number},
+    /* page and user names for searching */
     name                    :{type:String},
     page_name               :{type:String},
+    user_name               :{type:String},
     timestamp               :{type:Date, index: true},
     image                   :{type:String},
     message                 :{type:String},
