@@ -132,7 +132,9 @@ exports.routes = {
             // if we are being redirected with a token, its internal
             if( req.param('token')){
                 // lets show the response screen
-                return res.send('Will clean this up to look good...');
+                res.locals.user = req.session.user;
+                res.locals.title = 'You are Logged In';
+                return res.render('app/user/login_thanks')
             }
             
             service = req.param('service') || 'facebook';
