@@ -587,7 +587,6 @@ Page.static('getFeaturedPages', function(num, options, callback){
 Page.static('search', function(options, callback){
 
     var getFeatured = false,
-        profiler = new Profiler('models/pages/search'),
         hideFeaturedPastThreshold = options.hideFeaturedPastThreshold || false,
         limit = options.limit || 25,
         offset = options.offset || 0,
@@ -709,15 +708,11 @@ Page.static('search', function(options, callback){
                 $nin: featured_ids
             };
         }
-        profiler.mark('after getFeaturedPages');
-
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
             pages = featured.concat(pages);
             
-            profiler.mark('after search ('+bozukoSearch.type+')');
-
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
 
@@ -746,8 +741,7 @@ Page.static('search', function(options, callback){
 
                 return Bozuko.service(service).search(options, function(error, _results){
                     
-                    profiler.mark('after service search');
-
+                    
                     if( error ){
 
                         console.error( error );
@@ -772,8 +766,6 @@ Page.static('search', function(options, callback){
                     }, function(error, _pages){
                         if( error ) return callback( error );
                         
-                        profiler.mark('after findByService');
-                        
                         prepare_pages(_pages, options.user, function(page){
                             if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
@@ -791,8 +783,6 @@ Page.static('search', function(options, callback){
 
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
                             
-                            profiler.mark('after loadPagesContests');
-                            
                             if( error ) return callback( error );
 
                             var prof = new Profiler('/models/page/search/loadPagesContests');
@@ -809,8 +799,6 @@ Page.static('search', function(options, callback){
 
                             prof.stop();
                             
-                            profiler.mark('before return pages');
-
                             return return_pages(pages);
                         });
                     });
