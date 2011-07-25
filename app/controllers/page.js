@@ -129,7 +129,7 @@ exports.transfer_objects = {
                     });
                 }
     
-                prof.stop();
+                prof.mark('after creating page');
                 return self.sanitize(page, null, user, callback);
             };
             return createPage();
