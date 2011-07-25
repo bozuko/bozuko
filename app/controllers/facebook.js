@@ -131,6 +131,8 @@ exports.routes = {
 
             handler : function(req, res){
                 
+                console.log(req.headers);
+                
                 var tmpl = ( /like_button/.test(req.url) ) ? 'like_button' : 'like';
                 if( tmpl == 'like_button' ){
                     res.locals.layout = false;
