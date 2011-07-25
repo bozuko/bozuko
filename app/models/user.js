@@ -97,7 +97,8 @@ User.method('updateInternals', function(force, callback){
     if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 60 * 60) ){
         return callback(null);
     }
-    if( !self.service('facebook')) return callback( Bozuko.error('user/no_facebook') );
+    console.log('updating internals');
+    if( !self.service('facebook')) return callback( );
     return Bozuko.service('facebook').user({user:self, fields:'likes,friends'}, function(error, result){
         if( error ) return callback( error );
         var likes = [], friends = [];
