@@ -95,7 +95,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
             }]
         });
         if( !Bozuko.beta ){
-            me.items[0].push({
+            me.items[0].items.push({
                 title           :'Administration',
                 defaults        :{
                     anchor          :'0'
