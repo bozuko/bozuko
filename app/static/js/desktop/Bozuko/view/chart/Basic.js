@@ -163,23 +163,40 @@ Ext.define('Bozuko.view.chart.Basic', {
             model = function(){ return me.modelField.getValue() }
             callbacks = {
                 entry: function(item, callback){
-                    if( ~['Entry','Share'].indexOf(model()) ) me.chart.store.load(callback);
+                    if( ~['Entry','Share'].indexOf(model()) ) me.loadStore(callback);
                     else callback();
                 },
                 play : function(item, callback){
-                    if( ~['Play'].indexOf(model()) ) me.chart.store.load(callback);
+                    if( ~['Play'].indexOf(model()) ) me.loadStore(callback);
                     else callback();
                 },
                 win : function(item, callback){
-                    if( ~['Prize'].indexOf(model()) ) me.chart.store.load(callback);
+                    if( ~['Prize'].indexOf(model()) )me.loadStore(callback);
                     else callback();
                 },
                 redeemed : function(item, callback){
-                    if( ~['Redeemed Prizes', 'Share'].indexOf(model()) ) me.chart.store.load(callback);
+                    if( ~['Redeemed Prizes', 'Share'].indexOf(model()) ) me.loadStore(callback);
                     else callback();
                 }
             };
         return callbacks[name];
+    },
+    
+    loadStore : function(callback){
+        var me  = this;
+        if( callback ) callback();
+        if( me.isLoading ){
+            me.loadAgain = true;
+            return;
+        }
+        me.isLoading = true;
+        if( me.chart && me.chart.store ) me.chart.store.load(function(){
+            me.isLoading = false;
+            if( me.loadAgain ){
+                me.loadAgain = false;
+                me.loadStore();
+            };
+        });
     },
     
     updateChart : function(){

@@ -4,9 +4,17 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     title= title
     meta(charset="utf-8")
     meta(name="viewport",content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
+    -if( locals.place )
+      meta(property="og:title",content=place.name)
+      meta(property="og:url",content=place.data.link)
+      meta(property="og:image",content=place.image)
+      meta(property="og:type",content="website")
+      meta(property="og:site_name",content=place.name)
+      meta(property="og:app_id",content=Bozuko.config.facebook.app.id)
     style(type="text/css")
       html,body{ background: transparent; padding: 0; margin: 0; overflow: hidden; width: 50px; height: 20px !important;}
       body{ overflow: hidden;}
+      #like-button{ overflow: hidden; width: 50px; height: 20px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
       .like_button_loading{ background: transparent; position: relative; z-index: 1;}
       iframe{ background: transparent !important; }
       #mask{ display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; }
@@ -15,8 +23,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     #fb-root
       
     -if( locals.place )
-      .like-button(style="z-index:2; position:relative;")
-        fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
+      #like-button
+        fb:like(send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
       #mask
       #touch-killer
       script(type="text/javascript")
@@ -69,12 +77,33 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               for(var i=0; i<likes.length && !found; i++){
                 var like = likes[i];
                 if( fb_id == like.id ){
-                  found =true;
+                  found = true;
                   enableMask();
                 }
               }
             });
-            
+        };
+        
+        window.onload = function(){
+          var likeBtn = document.getElementById('like-button');
+          function showLikeButton(){
+              likeBtn.style.top='0px';
+              likeBtn.style.left='0px';
+              try{
+                window.location='bozuko://facebook/like_loaded';
+              }catch(e){
+                // supposed to get an error
+              }
+          }
+          var interval = setInterval(function(){
+              var iframes;
+              if( (iframes = likeBtn.getElementsByTagName('iframe')).length ){
+                clearInterval(interval);
+                iframes[0].onload = function(){
+                  showLikeButton();
+                }
+              }
+          }, 200);
         };
         
         // hide the button

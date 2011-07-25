@@ -18,3 +18,28 @@ html
         span Administrator
         
       .logged-in Logged in as #{req.session.remoteUser.email}
+    
+
+    .hidden(style="display:none")
+      #preview-tmpl
+        .heading.block
+          .img
+            img(src="{page.image}")
+          .top
+            h4!= "{page.name}"
+            h5!= "{page.category}"
+          .bottom
+            div!= "{page.location.street}&nbsp;"
+            div!= "{page.location.city}, {page.location.state}&nbsp;"
+            
+        tpl(if="page.announcement != ''")
+          .announcement.block!= "{page.announcement}"
+        
+        .facebook.block
+          .checkin Facebook Check In
+          .like Like us on Facebook
+          
+        .sharing.block
+          .feedback Feedback
+          .share
+            a(target="_blank", href="/p/{page._id}") Share

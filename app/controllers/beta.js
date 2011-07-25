@@ -160,7 +160,10 @@ exports.routes = {
                     pages.forEach(function(page){
                         ids.push(page.id);
                     });
-                    var selector = {'services.name':'facebook', 'services.sid':{$in:ids}};
+                    /**
+                     * TODO - remove the active flag, we probably need another one
+                     */
+                    var selector = {active: true, 'services.name':'facebook', 'services.sid':{$in:ids}};
                     if( req.session.page_id ){
                         selector._id = req.session.page_id;
                     }
@@ -256,9 +259,7 @@ exports.routes = {
                     user = req.session.user,
                     selector = {page_id: {$in: user.manages}}
                     ;
-                    
-                console.log(selector);
-
+                
                 if( contest_id ){
                     selector['contest_id'] = contest_id;
                 }
@@ -341,13 +342,16 @@ exports.routes = {
                     limit = req.param('limit') || 25,
                     skip = req.param('start') || 0,
                     objects = {},
+                    user = req.session.user,
                     results = []
                     ;
                 
                 return async.series({
                     
                     entries : function(callback){
-                        var selector = {};
+                        var selector = {
+                            page_id: {$in: user.manages}
+                        };
                         
                         if( page_id ) selector.page_id = page_id;
                         if( contest_id ) selector.contest_id = contest_id;

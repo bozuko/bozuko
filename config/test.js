@@ -72,9 +72,9 @@ module.exports = {
          */
         duration: {
             // 5 seconds
-            user: 1000 * 10,
+            user: 1000 * 20,
             // 5 seconds
-            page: 1000 * 10
+            page: 1000 * 20
         },
         distance : 400 /* feet */
     },

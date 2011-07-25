@@ -108,6 +108,7 @@ Ext.define('Admin.controller.Pages' ,{
         // need to open a new tab with the business page
         var id = record.get('_id'),
             me = this;
+            
         if( !this._tabs[id] ){
             var copy = record.copy();
             var panel = Ext.create('Admin.view.page.Panel', {
@@ -123,75 +124,20 @@ Ext.define('Admin.controller.Pages' ,{
             });
             me.getTabPanel().add( panel );
             me._tabs[id] = panel;
-            this.initPagePanel( panel, record );
+            copy.on('save', me.onSavePage, me);
         }
         me.getTabPanel().setActiveTab( me._tabs[id] );
     },
     
-    initPagePanel : function( panel, record ){
-        var form = panel.down('pageform'),
-            saveBtn = form.down('button[action=save]');
+    onSavePage : function( record ){
+        console.log('on save page');
+        var me = this,
+            r = me.getPagesStore().getById(record.getId());
             
-        form.loadRecord( record );
-        saveBtn.on('click', function(){
-            this.savePage(form);
-        }, this);
-        
-    },
-    
-    getValues : function(form, selector){
-        var values = {};
-        selector = selector ? selector+' field' : 'field';
-        Ext.Array.each(form.query( selector ), function(field){
-            var ns = field.getName().split('.'), cur = values;
-            
-            if( ns.length > 1 ) while( ns.length > 1 ){
-                var p = ns.shift();
-                if( !cur[p]) cur[p] = {};
-                cur = cur[p];
-            }
-            
-            cur[ns.shift()] = field.getValue();
-        });
-        return values;
-    },
-    
-    savePage : function( form ){
-        var me = this;
-        // update the record...
-        var saveBtn = form.down('button[action=save]');
-        var values = this.getValues(form);
-        /*
-        Ext.Object.each( values, function(key, value){
-            var parts = key.split('.');
-            if( parts.length == 1 ) return;
-            var cur = values;
-            while( parts.length > 1 ){
-                var part = parts.shift();
-                if( !cur[part] ) cur[part] = {};
-                cur = cur[part];
-            }
-            cur[parts.shift()] = value;
-        });
-        */
-        form.record.set(values);
-        form.record.commit();
-        saveBtn.disable();
-        form.record.save({
-            success: function(){
-                // also double check that we have this
-                var r = me.getPagesStore().getById(form.record.getId());
-                if( r ){
-                    r.set( form.record.data );
-                    r.commit();
-                }
-                saveBtn.enable();
-            },
-            failure: function(){
-                alert('Error Saving Page');
-                saveBtn.enable();
-            }
-        });
+        if( r ){
+            r.set( record.data );
+            r.commit();
+        }
     },
     
     changePage : function( btn ){

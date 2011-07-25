@@ -39,6 +39,7 @@ Ext.define('Admin.view.page.List' ,{
             xtype: 'toolbar',
             items: [{
                 text: 'Add Business',
+                icon: "/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-16.png",
                 action: 'add'
             },'->',{
                 text: 'Refresh',

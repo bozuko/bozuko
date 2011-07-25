@@ -327,6 +327,7 @@
 
 .title-toolbar {
     .x-toolbar-text {
+        line-height: 30px;
         font-size: 18px;
         font-weight: normal;
         font-family: ArvoRegular;
@@ -456,6 +457,15 @@ fieldset{
             font-weight: normal;
         }
         
+        .contest-state-active h3.contest-name {
+            color: darken(@brand_color, 5%);
+        }
+        .contest-state-complete h3.contest-name {
+            color: red;
+        }
+        .contest-state-draft h3.contest-name {
+            color: #999;
+        }
         
         .app-buttons {
             padding-top: 10px;
@@ -470,5 +480,118 @@ fieldset{
     
     .contest-overview-over{
         background: #e8e8e8;
+    }
+}
+
+
+
+.page-preview {
+    .x-panel-body {
+        background: url("/images/desktop/beta/stripes.png");
+        padding: 10px;
+        
+        .block {
+            margin-bottom: 10px;
+        }
+        
+        .heading {
+            font-family: "Helvetica Neue", "Arial";
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            .border_radius( 10px );
+            .img {
+                height: 70px;
+                width: 70px;
+                float: left;
+                margin: 8px;
+                border: 2px solid #ccc;
+                position: relative;
+                overflow: hidden;
+                
+                img {
+                    height: 70px;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    margin-top: -35px;
+                    margin-left: -35px;
+                }
+            }
+            
+            .top {
+                margin: 6px 10px 0 85px;
+                border-bottom: 1px solid #ccc;
+                h4 {
+                    color: #000;
+                    font-weight: bold;
+                    font-size: 15px;
+                    margin-top: 0;
+                    margin-bottom: .3em;
+                }
+                h5 {
+                    color: #999;
+                    font-weight: normal;
+                    font-size: 10px;
+                    margin : 0 0 .4em;
+                }
+            }
+            .bottom {
+                font-size: 10px;
+                font-weight: bold;
+                color: #333;
+                margin-left: 85px;
+                div {
+                    line-height: 1.4em;
+                }
+            }
+        }
+        
+        .announcement {
+            background: #111;
+            .border_radius( 10px );
+            color: #fff;
+            line-height: 1.5em;
+            text-align: center;
+            font-size: 12px;
+            padding: 10px;
+        }
+        
+        .facebook {
+            background: #fff;
+            text-align: center;
+            border: 1px solid #ccc;
+            .border_radius( 10px );
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.6em;
+            .checkin {
+                border-bottom: 1px solid #ccc;
+            }
+            div {
+                padding: 8px;
+                background: transparent url("/images/entry/facebook.png") 10px 50% no-repeat;
+                background-size: 30px 30px;
+            }
+        }
+        
+        .sharing {
+            background: #fff;
+            text-align: center;
+            border: 1px solid #ccc;
+            .border_radius( 10px );
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1.6em;
+            .feedback {
+                border-bottom: 1px solid #ccc;
+            }
+            div {
+                padding: 8px;
+            }
+        }
     }
 }

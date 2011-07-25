@@ -1,12 +1,12 @@
-Ext.define('Beta.view.App', {
+Ext.define('Bozuko.view.page.Panel', {
     
     extend: 'Ext.panel.Panel',
     alias: 'widget.pagepanel',
     
     requires: [
         'Bozuko.view.page.Dashboard',
-        'Beta.view.contests.Panel',
-        'Beta.view.page.Settings',
+        'Bozuko.view.contests.Panel',
+        'Bozuko.view.page.Settings',
         'Bozuko.store.Contests'
     ],
     
@@ -61,13 +61,14 @@ Ext.define('Beta.view.App', {
                 items: [{
                     ref             :'dashboard',
                     xtype           :'pagedashboard',
-                    border          :false
+                    border          :false,
+                    page            :me.page
                 },{
                     ref             :'campaigns',
                     xtype           :'contestspanel',
                     border          :false,
                     store           :Ext.create('Bozuko.store.Contests', {
-                        page_id         :Bozuko.beta.page_id,
+                        page_id         :me.page.get('_id'),
                         autoLoad        :true
                     })
                 },{

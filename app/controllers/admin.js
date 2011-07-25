@@ -26,6 +26,115 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/upgrade/from/owners': {
+        get : {
+            handler : function(req, res){
+                
+                Bozuko.models.Page.collection.update({
+                    owner_id: {$exists:false}
+                },{
+                    $set: {active: true}
+                },{
+                    multi: true
+                }, function(error, result){
+                    console.log(error);
+                    console.log(result);
+                });
+            }
+        }
+    },
+    
+    '/admin/add/search/params': {
+        get : {
+            handler : function(req, res){
+                var user_map = {}, page_map={}, atEnd = false;
+                var do_update = function(model, callback){
+                    var collection = model.collection;
+                    collection.find({}, function(error, cursor){
+                        
+                        async.whilst(
+                            
+                            function(){ return !atEnd; },
+                            
+                            function(_cb){
+                                cursor.nextObject(function( err, obj ){
+                                    
+                                    if( err ){
+                                        return _cb(err);
+                                    }
+                                    if( !obj ) {
+                                        atEnd = true;
+                                        return _cb();
+                                    }
+                                    var user_name,
+                                        page_name,
+                                        user_id = obj.user_id,
+                                        page_id = obj.page_id
+                                        ;
+                                        
+                                    return async.series([
+                                        function get_user(cb){
+                                            if( user_map[String(user_id)] ){
+                                                user_name = user_map[String(user_id)];
+                                                return cb(null);
+                                            }
+                                            return Bozuko.models.User.findOne({_id: user_id}, {name:1}, function(error, user){
+                                                if( error ) return cb(error);
+                                                if( !user ){
+                                                    user_name = '';
+                                                }else{
+                                                    user_name = user.name;
+                                                }
+                                                user_map[String(user_id)] = user_name;
+                                                return cb(null);
+                                            });
+                                        },
+                                        function get_page(cb){
+                                            if( page_map[String(page_id)] ){
+                                                page_name = page_map[String(page_id)];
+                                                return cb(null);
+                                            }
+                                            return Bozuko.models.Page.findOne({_id: page_id}, {name:1}, function(error, page){
+                                                if( error ) return cb(error);
+                                                if( !page ){
+                                                    page_name = '';
+                                                }
+                                                else{
+                                                    page_name = page.name;
+                                                }
+                                                page_map[String(page_id)] = page_name;
+                                                return cb(null);
+                                            });
+                                        }
+                                    ], function finish(error){
+                                        collection.update({_id: obj._id}, {$set:{page_name: page_name, user_name:user_name}}, function(err, result){
+                                            
+                                        });
+                                        _cb(null);
+                                    });
+                                    
+                                });
+                            }, function(error){
+                                callback(null);
+                            }
+                        );
+                    });
+                };
+                async.series([
+                    function(cback){
+                        do_update(Bozuko.models.Entry, cback);
+                    },
+                    function(cback){
+                        do_update(Bozuko.models.Prize, cback);
+                    }
+                ], function(error){
+                    console.log(error);
+                    res.send('done.');
+                })
+            }
+        }
+    },
 
     '/admin' : {
 

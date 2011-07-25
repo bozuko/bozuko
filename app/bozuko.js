@@ -417,9 +417,11 @@ Bozuko.initFacebookPubSub = function(){
 					}
 				});
 				if( found ){
+					console.log('Facebook PubSub for '+pubsub_url+' exists.');
 					return;
 				}
 			}
+			console.log('Creating PubSub for '+pubsub_url);
             http.request({
                 url: url,
                 method: 'POST',

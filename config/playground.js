@@ -15,8 +15,6 @@ module.exports = {
 
     controllers: {
         except: [
-            'site',
-            'beta',
             'business'
         ]
     },

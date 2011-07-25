@@ -207,19 +207,27 @@ Ext.define('Bozuko.view.contest.Overview',{
     
     refresh : function(item, callback){
         var me = this;
+        if( callback ) callback();
         try{
+            if( me.isLoading ){
+                me.loadAgain = true;
+                return;
+            }
             me.record.load({
                 scope : me,
                 success : function(){
                     me.update();
                 },
                 callback : function(){
-                    callback();
+                    me.isLoading = false;
+                    if( me.loadAgain ){
+                        me.loadAgain = false;
+                        me.refresh(item);
+                    }
                 }
             });
         }catch(e){
             console.log(e);
-            callback();
         }
     },
     
