@@ -407,6 +407,7 @@ Bozuko.initFacebookPubSub = function(){
         function(err, body){
             if (err) console.log("Failed to get existing facebook subscriptions");
 			body = JSON.parse(body);
+			console.log('Existing Facebook Subscriptions');
 			// now lets setup the new subscriptions
             // Should there be other error checking for the following 2 http requests?
 			if(body && body.data && body.data.length ){

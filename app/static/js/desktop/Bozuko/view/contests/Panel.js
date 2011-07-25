@@ -30,7 +30,12 @@ Ext.define('Bozuko.view.contests.Panel', {
                 action          :'create',
                 text            :'Create Campaign',
                 icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png"
-            },' ');
+            },' ',{
+                hidden          :true,
+                action          :'builder',
+                text            :'Builder (Beta)',
+                icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png"
+            });
         }
         
         Ext.apply(me, {
@@ -39,13 +44,14 @@ Ext.define('Bozuko.view.contests.Panel', {
             activeItem: 0,
             items : [{
                 xtype           :'panel',
+                layout          :'fit',
                 border          :false,
                 tbar            :tbar,
                 items :[{
                     xtype           :'contestlist',
                     store           :me.store,
-                    actionButtons   :Bozuko.beta?['report']:null,
-                    autoScroll      :true
+                    autoScroll      :true,
+                    actionButtons   :Bozuko.beta?['report']:null
                 }]
             }]    
         });

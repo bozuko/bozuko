@@ -46,7 +46,7 @@ exports.routes = {
         }
     },
     
-    '/admin/add/search/params': {
+    '/admin/add/search/params/:type': {
         get : {
             handler : function(req, res){
                 var user_map = {}, page_map={}, atEnd = false;
@@ -123,12 +123,12 @@ exports.routes = {
                     });
                 };
                 async.series([
+                    
                     function(cback){
-                        do_update(Bozuko.models.Entry, cback);
-                    },
-                    function(cback){
-                        do_update(Bozuko.models.Prize, cback);
+                        var model = req.param('type')=='prize' ? Bozuko.models.Prize : Bozuko.models.Entry;
+                        do_update(model, cback);
                     }
+                    
                 ], function(error){
                     console.log(error);
                     res.send('done.');
@@ -276,10 +276,9 @@ exports.routes = {
         post : {
             handler : function(req, res){
                 // need a facebook id and a user_id
-                var user_id = req.param('user_id'),
-                    place_id = req.param('place_id');
+                var place_id = req.param('place_id');
 
-                if( !user_id || !place_id ){
+                if( !place_id ){
                     return new Error('No user or no place').send( res );
                 }
 

@@ -3,7 +3,7 @@ Ext.define('Admin.view.page.add.Form' ,{
     extend          :'Ext.panel.Panel',
     alias           :'widget.pageaddform',
     
-    layout          :'border',
+    layout          :'fit',
     margin          :'4',
     border          :false,
     defaults        :{
@@ -17,7 +17,6 @@ Ext.define('Admin.view.page.add.Form' ,{
             region          :'north',
             title           :'Choose Place',
             data            :{},
-            height          :126,
             bodyPadding     :10,
             margin          :'0 0 4',
             tpl             :[
@@ -25,46 +24,12 @@ Ext.define('Admin.view.page.add.Form' ,{
                     '<img src="{image}&type=square" height="80" style="float: left; margin: 0 10px 10px 0" />',
                     '<div style="font-weight: bold;">{name}</div>',
                     '<div>{category}</div>',
+                    '<div>{location.city}, {location.state}</div>',
                 '</tpl>',
                 '<tpl if="!name">',
                     '<h3>Find a place or page in the left panel</h3>',
                 '</tpl>'
             ]
-        },{
-            region          :'center',
-            title           :'Select the Owner',
-            margin          :'0 0 0 0',
-            autoScroll      :true,
-            tools           :[{
-                type            :'refresh',
-                handler         :function(){
-                    me.store.load();
-                }
-            }],
-            items           :[{
-                xtype           :'dataview',
-                store           :me.store,
-                overItemCls     :'list-item-over',
-                selectedItemCls :'list-item-selected',
-                itemSelector    :'.list-item',
-                emptyText       :'No Pages',
-                tpl             :[
-                    '<div class="bozuko-list">',
-                        '<tpl for=".">',
-                            '<div class="list-item">',
-                                '<img src="{image}&type=square" />',
-                                '<span class="title">{name}</span>',
-                            '</div>',
-                        '</tpl>',
-                    '</div>'
-                ],
-                listeners       :{
-                    scope           :me,
-                    select          :function(view, user){
-                        me.setUser( user );
-                    }
-                }
-            }]
         }];
         me.callParent( arguments );
     },
@@ -75,13 +40,8 @@ Ext.define('Admin.view.page.add.Form' ,{
         this.checkComplete();
     },
     
-    setUser : function(user){
-        this.user = user;
-        this.checkComplete();
-    },
-    
     checkComplete : function(){
-        if( this.user && this.place ){
+        if( this.place ){
             this.fireEvent('allset');
         }
     }
