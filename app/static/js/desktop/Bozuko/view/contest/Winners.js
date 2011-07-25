@@ -36,7 +36,8 @@ Ext.define('Bozuko.view.contest.Winners' ,{
             trackOver: true,
             overItemCls : 'x-item-over',
             
-            emptyText: '<p>No Winners yet!</p>',
+            deferEmptyText  :false,
+            emptyText       :'<div style="padding: 10px;">No Winners yet!</div>',
             
             store: me.store,
             itemTpl: new Ext.XTemplate(
