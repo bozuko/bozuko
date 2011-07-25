@@ -118,6 +118,7 @@ exports.setup = function(fn) {
 	emptyCollection('Page'),
 	emptyCollection('Contest'),
 	emptyCollection('Checkin'),
+	emptyCollection('Entry'),
 	emptyCollection('Play'),
 	emptyCollection('Prize'),
 	add_users,
@@ -249,7 +250,7 @@ var add_contests = function(callback) {
 					type: 'facebook/checkin',
 					tokens: 3,
 					enable_like: false,
-					duration: 1000 * 5
+					duration: 1000 * 10
 				});
 				contest.prizes.push({
 					name: 'Wicked cool T-Shirt',

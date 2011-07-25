@@ -8,8 +8,9 @@ Ext.application({
 
     autoCreateViewport: true,
     controllers: [
-        'Pages',
-        'Contests'
+        'Bozuko.controller.Pages',
+        'Bozuko.controller.Contests',
+        'Admin',
     ],
     
     requires:[

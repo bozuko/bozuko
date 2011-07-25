@@ -54,11 +54,8 @@ Ext.define('Bozuko.store.Winners', {
         if( !me.page_id && !me.contest_id ) selector = true;
         
         var reload = function(item, callback){
-            if( !me.bufferedLoadTimeout ) me.bufferedLoadTimeout = Ext.defer( function(){
-                me.updateStore(callback);
-                me.bufferedLoadTimeout = false;
-            }, 500);
-            else callback();
+            me.updateStore();
+            callback();
         };  
         
         Bozuko.PubSub.subscribe('prize/redeemed', selector, reload);
@@ -74,11 +71,22 @@ Ext.define('Bozuko.store.Winners', {
     
     updateStore : function(cb){
         var me = this;
+        if( me.isLoading ){
+            me.loadAgain = true;
+            me.loadAgainCallback = cb;
+            return;
+        }
+        me.isLoading = true;
         me.tmpStore.load({
             scope : me,
             callback : function(records){
+                me.isLoading = false;
                 var j =0;
-                cb();
+                if( cb ) cb();
+                if( me.loadAgain ){
+                    me.updateStore(me.loadAgainCallback);
+                    me.loadAgain = false;
+                }
                 Ext.Array.each( records, function(record, i){
                     var r = me.getById( record.getId() );
                     if( r ){

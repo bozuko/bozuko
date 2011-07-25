@@ -1,4 +1,4 @@
-Ext.define('Beta.controller.Pages' ,{
+Ext.define('Bozuko.controller.Pages' ,{
     extend: 'Bozuko.lib.app.Controller',
     
     views: [
@@ -13,15 +13,10 @@ Ext.define('Beta.controller.Pages' ,{
     ],
     
     refs : [
-        {ref: 'pagePanel', selector: 'pagepanel'},
-        {ref: 'statusField', selector: '[ref=statusField]'},
-        {ref: 'pageSettings', selector: 'pagesettings'},
-        {ref: 'updateStatusButton', selector: '[ref=updateStatus]'},
-        {ref: 'pagesPanel', selector: '[ref=pages]'}
+        
     ],
     
     init : function(){
-        window.pageController = this;
         var me = this;
         me.control({
             'pagepanel' : {
@@ -45,63 +40,46 @@ Ext.define('Beta.controller.Pages' ,{
     onPagePanelRender : function(pagePanel){
         var me = this,
             page = pagePanel.page,
-            btn = pagePanel.down('button[ref=updateStats]'),
+            btn = pagePanel.down('button[ref=updateStatus]'),
             btnText = btn.getText();
         ;
-        
-        page.on('beforesave', function(){
+        var beforesave = function(){
             btn.setText('Updating Announcement...');
             btn.disable();
-        });
-        page.on('save', function(){
+        };
+        var save = function(){
             btn.setText(btnText);
             btn.enable();
             // update announcement
-            me.getStatusField().setValue( page.get('announcement') );
-            me.getPageSettings().loadRecord( page );
-            me.application.successStatus('Page Saved');
+            pagePanel.down('[ref=statusField]').setValue( page.get('announcement') );
+            pagePanel.down('pagesettings').loadRecord( page );
+            pagePanel.successStatus('Page Saved');
+        };
+        page.on('beforesave', beforesave);
+        page.on('save', save);
+        pagePanel.on('destroy', function(){
+            page.un('beforesave', beforesave);
+            page.un('save', save);
         });
         
         var item = pagePanel.down('[ref=pages]').getLayout().getActiveItem();
-        pagePanel.down('[ref=navigation] button[page='+item.ref+']').toggle();
-    },
-    
-    onLaunch: function(){
-        var me = this,
-            page = me.application.page,
-            appView = me.getPagePanel(),
-            btn = me.getUpdateStatusButton(),
-            btnText = btn.getText();
-        ;
         
-        page.on('beforesave', function(){
-            btn.setText('Updating Announcement...');
-            btn.disable();
-        });
-        page.on('save', function(){
-            btn.setText(btnText);
-            btn.enable();
-            // update announcement
-            me.getStatusField().setValue( page.get('announcement') );
-            me.getPageSettings().loadRecord( page );
-            me.application.successStatus('Page Saved');
-        });
-        
-        var item = appView.down('[ref=pages]').getLayout().getActiveItem();
-        appView.down('[ref=navigation] button[page='+item.ref+']').toggle();
-        
+        var pageBtn = pagePanel.down('[ref=navigation] button[page='+item.ref+']');
+        pageBtn.on('render', pageBtn.toggle, pageBtn);
     },
     
     onStatusFieldRender : function(field){
-        var me = this;
-        field.setValue( me.application.page.get('announcement') );
+        var me = this,
+            pagePanel = field.up('pagepanel');
+        field.setValue( pagePanel.page.get('announcement') );
     },
     
-    updateStatus : function(){
+    updateStatus : function(btn){
         var me = this,
-            page = me.application.page
+            pagePanel = btn.up('pagepanel'),
+            page = pagePanel.page
         ;
-        page.set('announcement', me.getStatusField().getValue());
+        page.set('announcement', pagePanel.down('[ref=statusField]').getValue());
         page.save();
     },
     
@@ -124,14 +102,16 @@ Ext.define('Beta.controller.Pages' ,{
     
     changePage : function( btn ){
         var me = this,
+            pagePanel = btn.up('pagepanel'),
             toolbar = btn.up('toolbar')
             ;
+            
         toolbar.items.each(function(cmp){
             if( cmp.xtype == 'button' && cmp.pressed ) cmp.toggle();
         });
         if( !btn.pressed ) btn.toggle();
         
-        var panel = me.getPagesPanel(),
+        var panel = pagePanel.down('[ref=pages]'),
             page = panel.down('> [ref='+btn.page+']')
             ;
         

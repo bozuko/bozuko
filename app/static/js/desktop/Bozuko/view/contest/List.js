@@ -13,6 +13,7 @@ Ext.define('Bozuko.view.contest.List' ,{
     initComponent : function(){
         var me = this;
         me.callbacks = {};
+        
         Ext.apply( me, {
             cls: 'contest-list',
             circleRadius: 40,
@@ -21,87 +22,89 @@ Ext.define('Bozuko.view.contest.List' ,{
             overItemCls : 'contest-overview-over',
             itemCls : 'contest-overview',
             itemTpl : new Ext.XTemplate(
-                '<h3 class="contest-name">{name}</h3>',
-                '<div class="contest-info">',
-                    '<div class="info-row">',
-                        '<label>Game:</label>',
-                        '<span>{game}</span>',
-                    '</div>',
-                    '<div class="info-row">',
-                        '<label>Timeline:</label>',
-                        '<span>{timeline}</span>',
-                    '</div>',
-                    '<div class="info-row">',
-                        '<label>Status:</label>',
-                        '<span>{State}</span>',
-                    '</div>',
-                    '<div class="info-row">',
-                        '<label>Prizes:</label>',
-                        '<span>{prizes}</span>',
-                    '</div>',
-                    '<div class="info-row">',
-                        '<label>Entry Type:</label>',
-                        '<span>{entry_type}</span>',
-                    '</div>',
-                '</div>',
-                
-                '<div class="stat-block stat-block-times">',
-                    '<div class="info">',
-                        '<h3>Day</h3>',
-                        '<div class="stat-info">',
-                            '<span class="current">{times_current}</span>',
-                            '<span class="total">of {times_total}</span>',
+                '<div class="contest-state contest-state-{state}">',
+                    '<h3 class="contest-name">{name}</h3>',
+                    '<div class="contest-info">',
+                        '<div class="info-row">',
+                            '<label>Game:</label>',
+                            '<span>{game}</span>',
+                        '</div>',
+                        '<div class="info-row">',
+                            '<label>Timeline:</label>',
+                            '<span>{timeline}</span>',
+                        '</div>',
+                        '<div class="info-row">',
+                            '<label>Status:</label>',
+                            '<span>{State}</span>',
+                        '</div>',
+                        '<div class="info-row">',
+                            '<label>Prizes:</label>',
+                            '<span>{prizes}</span>',
+                        '</div>',
+                        '<div class="info-row">',
+                            '<label>Entry Type:</label>',
+                            '<span>{entry_type}</span>',
                         '</div>',
                     '</div>',
-                '</div>',
-                '<div class="stat-block stat-block-winners">',
-                    '<div class="info">',
-                        '<h3>Won Prizes</h3>',
-                        '<div class="stat-info">',
-                            '<span class="current">{winners_current}</span>',
-                            '<span class="total">of {winners_total}</span>',
+                    
+                    '<div class="stat-block stat-block-times">',
+                        '<div class="info">',
+                            '<h3>Day</h3>',
+                            '<div class="stat-info">',
+                                '<span class="current">{times_current}</span>',
+                                '<span class="total">of {times_total}</span>',
+                            '</div>',
                         '</div>',
                     '</div>',
-                '</div>',
-                '<div class="stat-block stat-block-plays">',
-                    '<div class="info">',
-                        '<h3>Plays</h3>',
-                        '<div class="stat-info">',
-                            '<span class="current">{plays_current}</span>',
-                            '<span class="total">of {plays_total}</span>',
+                    '<div class="stat-block stat-block-winners">',
+                        '<div class="info">',
+                            '<h3>Won Prizes</h3>',
+                            '<div class="stat-info">',
+                                '<span class="current">{winners_current}</span>',
+                                '<span class="total">of {winners_total}</span>',
+                            '</div>',
                         '</div>',
                     '</div>',
-                '</div>',
-                '<div class="stat-block stat-block-entries">',
-                    '<div class="info">',
-                        '<h3>Entries</h3>',
-                        '<div class="stat-info">',
-                            '<span class="current">{entries_current}</span>',
-                            '<span class="total">of {entries_total}</span>',
+                    '<div class="stat-block stat-block-plays">',
+                        '<div class="info">',
+                            '<h3>Plays</h3>',
+                            '<div class="stat-info">',
+                                '<span class="current">{plays_current}</span>',
+                                '<span class="total">of {plays_total}</span>',
+                            '</div>',
                         '</div>',
                     '</div>',
+                    '<div class="stat-block stat-block-entries">',
+                        '<div class="info">',
+                            '<h3>Entries</h3>',
+                            '<div class="stat-info">',
+                                '<span class="current">{entries_current}</span>',
+                                '<span class="total">of {entries_total}</span>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                    
+                    '<ul class="app-buttons">',
+                        '<tpl if="this.canReport(values)">',
+                            '<li><a href="javascript:;" class="reports">Reports</a></li>',
+                        '</tpl>',
+                        '<tpl if="this.canEdit(values)">',
+                            '<li><a href="javascript:;" class="edit">Edit</a></li>',
+                        '</tpl>',
+                        '<tpl if="this.canCopy(values)">',
+                            '<li><a href="javascript:;" class="copy">Copy</a></li>',
+                        '</tpl>',
+                        '<tpl if="this.canPublish(values)">',
+                            '<li><a href="javascript:;" class="publish">Publish</a></li>',
+                        '</tpl>',
+                        '<tpl if="this.canDelete(values)">',
+                            '<li><a href="javascript:;" class="delete">Delete</a></li>',
+                        '</tpl>',
+                        '<tpl if="this.canCancel(values)">',
+                            '<li><a href="javascript:;" class="cancel">Cancel</a></li>',
+                        '</tpl>',
+                    '</ul>',
                 '</div>',
-                
-                '<ul class="app-buttons">',
-                    '<tpl if="this.canReport(values)">',
-                        '<li><a href="javascript:;" class="reports">Reports</a></li>',
-                    '</tpl>',
-                    '<tpl if="this.canEdit(values)">',
-                        '<li><a href="javascript:;" class="edit">Edit</a></li>',
-                    '</tpl>',
-                    '<tpl if="this.canCopy(values)">',
-                        '<li><a href="javascript:;" class="copy">Copy</a></li>',
-                    '</tpl>',
-                    '<tpl if="this.canPublish(values)">',
-                        '<li><a href="javascript:;" class="publish">Publish</a></li>',
-                    '</tpl>',
-                    '<tpl if="this.canDelete(values)">',
-                        '<li><a href="javascript:;" class="delete">Delete</a></li>',
-                    '</tpl>',
-                    '<tpl if="this.canCancel(values)">',
-                        '<li><a href="javascript:;" class="cancel">Cancel</a></li>',
-                    '</tpl>',
-                '</ul>',
                 {
                     
                     canEdit : function(values){
@@ -159,6 +162,13 @@ Ext.define('Bozuko.view.contest.List' ,{
     onItemUpdate : function(record, index){
         var me = this;
         if( !me.rendered ) return;
+        if( Ext.isArray(record) ){
+            Ext.Array.each( record, function(record){
+                index = me.store.indexOf(record);
+                me.onItemUpdate(record, index);
+            });
+            return;
+        }
         me.addCircles( index, record );
         me.initPubSub();
     },
@@ -167,7 +177,6 @@ Ext.define('Bozuko.view.contest.List' ,{
         var me = this;
         if( !me.callbacks[name] ){
             me.callbacks[name] = function(){
-                console.log('in callback', arguments);
                 me[name].apply(me, arguments);
             };
         }
@@ -175,13 +184,25 @@ Ext.define('Bozuko.view.contest.List' ,{
     },
     
     findAndUpdate : function(item, callback){
-        console.log(item);
+        
         var me = this,
             record = me.store.getById(item.message.contest_id);
             
-        if( !record ) return callback();
-        return record.load( function(){
-            callback();
+        if( callback ) callback();
+            
+        if( !record ) return;
+        
+        if( me.isLoading ){
+            me.loadAgain = true;
+            return;
+        }
+        me.isLoading = true;
+        record.load( function(){
+            me.isLoading = false;
+            if( me.loadAgain ){
+                me.loadAgain = false;
+                me.findAndUpdate(item);
+            }
             me.refresh();
         });
     },

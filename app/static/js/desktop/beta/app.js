@@ -17,16 +17,16 @@ Ext.Loader.require('Bozuko.lib.Router', function(){
                     autoCreateViewport: false,
                 
                     controllers: [
-                        'Pages',
+                        'Bozuko.controller.Pages',
                         'Contests'
                     ],
                     
                     requires:[
-                        'Beta.view.App'
+                        'Bozuko.view.page.Panel'
                     ],
                     
                     refs : [
-                        {ref: 'appView', selector: 'betaapp'}
+                        {ref: 'appView', selector: 'pagepanel'}
                     ],
                     
                     init : function(){
@@ -58,7 +58,7 @@ Ext.Loader.require('Bozuko.lib.Router', function(){
                             ;
                             
                         Ext.fly(ft).remove();
-                        this.view = new Beta.view.App({
+                        this.view = Ext.create('Bozuko.view.page.Panel', {
                             renderTo: 'beta',
                             page: record
                         });

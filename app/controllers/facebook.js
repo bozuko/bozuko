@@ -182,7 +182,6 @@ exports.routes = {
                 var entry = req.param('entry');
                 if( undefined === entry || false === entry ) return res.send({});
                 if( !Array.isArray(entry) ) entry = [entry];
-                console.log('facebook pubsub ['+object+']');
                 switch(object){
 
                     case 'user':
@@ -192,9 +191,8 @@ exports.routes = {
                             Bozuko.models.User.findByService('facebook', uid, function(err, user){
                                 if( err ) return console.error(err);
                                 if( user ){
-                                    console.log(user.name);
                                     return user.updateInternals(true, function(error){
-                                        console.log('updated after pubsub notify');
+                                        console.log('Updated Facebook internals for '+user.name);
                                     });
                                 }
                                 return true;

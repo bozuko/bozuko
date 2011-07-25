@@ -537,8 +537,6 @@ Contest.method('startPlay', function(user, callback) {
         _uuid = uuid()
         ;
     
-    console.log({contest_id: self._id, user_id: user_id, timestamp: {$gt :min_expiry_date}, tokens: {$gt : 0}});
-    
     Bozuko.models.Entry.findAndModify(
         {contest_id: self._id, user_id: user_id, timestamp: {$gt :min_expiry_date}, tokens: {$gt : 0}},
         [],

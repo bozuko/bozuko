@@ -98,16 +98,35 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             margin: '2 2 2 0',
             xtype: 'contestplayers'
         }];
+        
         me.callParent();
-        var eventLog = Ext.data.StoreManager.lookup('eventStore');
+        me.queuedItems = [];
+        
+        me.on('activate', function(){
+            while( me.queuedItems.length ) me.addEventToLog( me.queuedItems.shift() );
+        });
+        
         Bozuko.PubSub.subscribe('*', true, function(item, callback){
-            var record = eventLog.createModel(item);
+            
+            callback();
+            if( !me.isVisible() ){
+                me.queuedItems.push(item);
+                return;
+            }
+            me.addEventToLog( item );
+        });
+    },
+    
+    addEventToLog : function(item){
+        var eventLog = Ext.data.StoreManager.lookup('eventStore'),
+        record = eventLog.createModel(item);
+        try{
             eventLog.insert(0,[record]);
             while(eventLog.getCount() > 150 ){
                 eventLog.removeAt(150);
             }
-            me.doComponentLayout();
-            callback();
-        });
+        }catch(e){
+            console.log(e.stack);
+        }
     }
 });
