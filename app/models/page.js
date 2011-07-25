@@ -771,6 +771,9 @@ Page.static('search', function(options, callback){
                         _id: {$nin: page_ids}
                     }, function(error, _pages){
                         if( error ) return callback( error );
+                        
+                        profiler.mark('after findByService');
+                        
                         prepare_pages(_pages, options.user, function(page){
                             if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
@@ -787,6 +790,8 @@ Page.static('search', function(options, callback){
                         }
 
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
+                            
+                            profiler.mark('after loadPagesContests');
                             
                             if( error ) return callback( error );
 
