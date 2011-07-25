@@ -132,7 +132,7 @@ exports.transfer_objects = {
                 prof.stop();
                 return self.sanitize(page, null, user, callback);
             };
-            return user ? user.updateInternals(createPage) : createPage();
+            return createPage();
         }
     },
 
