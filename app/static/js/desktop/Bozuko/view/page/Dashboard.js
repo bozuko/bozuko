@@ -18,7 +18,7 @@ Ext.define('Bozuko.view.page.Dashboard', {
                 region          :'east',
                 style           :'border-left: 1px solid #ccc;',
                 xtype           :'contestplayers',
-                page            :me.page,
+                page_id         :me.page.get('_id'),
                 width           :320,
                 border          :false
             },{
