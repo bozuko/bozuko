@@ -270,7 +270,7 @@ exports.routes = {
         }
     },
     '/p/:id' : {
-        alias: ['/p/:id/:name','/business/:id','/business/:id/:name'],
+        aliases: ['/p/:id/:name','/business/:id','/business/:id/:name'],
         get : {
 
             title: 'Bozuko - Business Listing',
