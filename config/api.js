@@ -6,7 +6,8 @@ module.exports = {
         except: [
             'site',
             'business',
-	    'beta'
+			'beta',
+			'admin'
         ]
     },
 
@@ -74,7 +75,7 @@ module.exports = {
             page: 1000 * 60 * 60 * 4
         },
 
-        distance : 400 /* feet */
+        distance : 1600 /* feet */
     },
 
     entry : {

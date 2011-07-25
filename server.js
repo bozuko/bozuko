@@ -39,5 +39,7 @@ if( proc.isMaster ){
     if( env === 'stats'){
         Bozuko.initStats();
     }
-    Bozuko.initFacebookPubSub();
+    if( env !== 'test' && evn !=='stats' ){
+        Bozuko.initFacebookPubSub();
+    }
 }

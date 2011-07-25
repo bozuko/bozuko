@@ -3,7 +3,8 @@ Ext.define('Bozuko.controller.Contests' ,{
     
     requires: [
         'Bozuko.view.contest.Reports',
-        'Bozuko.view.contest.edit.Form'
+        'Bozuko.view.contest.edit.Form',
+        'Bozuko.view.contest.builder.Panel'
     ],
     
     views: [
@@ -38,11 +39,17 @@ Ext.define('Bozuko.controller.Contests' ,{
             'contestform button[action=back]' : {
                 click           :this.onContestBackClick
             },
+            'contestbuilder button[action=back]' : {
+                click           :this.onContestBackClick
+            },
             'contestform panel[region=west] dataview' : {
                 itemclick       :this.onContestNavClick
             },
             'contestspanel button[action=create]' : {
                 click           :this.onCreateContestClick
+            },
+            'contestspanel button[action=builder]' : {
+                click           :this.onBuilderButtonClick
             }
         });
     },
@@ -67,11 +74,11 @@ Ext.define('Bozuko.controller.Contests' ,{
     
     onContestBackClick : function(btn){
         var panel = btn.up('contestspanel'),
-            form = panel.getLayout().getActiveItem();
+            active = panel.getLayout().getActiveItem();
         
         panel.getLayout().setActiveItem( 0 );
         panel.doComponentLayout();
-        panel.remove( form );
+        panel.remove( active );
     },
     
     onContestSaveClick : function(btn){
@@ -333,6 +340,25 @@ Ext.define('Bozuko.controller.Contests' ,{
                 });
                 break;
         }
+    },
+    
+    onBuilderButtonClick : function(btn){
+        // create a new
+        var panel = btn.up('contestspanel');
+
+        if( !panel.builder ){
+            panel.builder = panel.add({
+                border: false,
+                xtype: 'contestbuilder',
+                contest: new Bozuko.model.Contest(),
+                listeners :{
+                    destroy : function(){
+                        delete panel.builder;
+                    }
+                }
+            });
+        }
+        panel.getLayout().setActiveItem(panel.builder);
     },
     
     onCreateContestClick : function(btn){
