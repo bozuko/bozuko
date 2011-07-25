@@ -42,7 +42,9 @@ exports.routes = {
 
                 var id = req.param('id');
                 var ll = req.param('ll');
-                var msg = req.param('message') || '';
+                var msg = (req.param('message') || '').replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                
+                if( msg == '') msg = null;
 
                 if( !ll ){
                     return Bozuko.error('facebook/no_lat_lng').send(res);
