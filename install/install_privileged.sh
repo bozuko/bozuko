@@ -23,6 +23,9 @@ apt-get install -y emacs vim js2-mode ufw
 # install all upstart scripts
 cp upstart/* /etc/init
 
+# install all logrotate config files
+cp logrotate/* /etc/logrotate.d
+
 # don't let ssh timeout
 echo "ClientAliveInterval 30" >> /etc/ssh/sshd_config
 echo "ClientAliveCountMax 4" >> /etc/ssh/sshd_config
