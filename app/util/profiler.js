@@ -97,7 +97,7 @@ function formatBytes(bytes) {
 Profiler.prototype.mark = function(message){
     var now = new Date();
     var time = (now.getTime() - this.start_time.getTime())/1000;
-    console.log(this.name, message, time+'s');
+    console.log(this.name+': '+ message+': '+time+'s');
 };
 
 Profiler.create = function(name){
