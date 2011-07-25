@@ -57,7 +57,7 @@ Ext.define('Bozuko.view.page.Dashboard', {
                     xtype           :'bozukochartbasic',
                     anchor          :'0',
                     border          :false,
-                    page            :me.page
+                    page_id         :me.page.get('_id')
                 }]
             }]
         });
