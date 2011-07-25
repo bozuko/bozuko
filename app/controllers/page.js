@@ -130,7 +130,10 @@ exports.transfer_objects = {
                 }
     
                 prof.mark('after creating page');
-                return self.sanitize(page, null, user, callback);
+                return self.sanitize(page, null, user, function(){
+                    profile.mark('after sanitize');
+                    callback.apply(this, arguments);
+                });
             };
             return createPage();
         }
