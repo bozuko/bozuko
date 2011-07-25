@@ -808,6 +808,8 @@ Page.static('search', function(options, callback){
                             pages = pages.concat(results);
 
                             prof.stop();
+                            
+                            profiler.mark('before return pages');
 
                             return return_pages(pages);
                         });

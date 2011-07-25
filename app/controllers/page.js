@@ -297,16 +297,21 @@ exports.routes = {
                     options.favorites = true;
                     options.sort = {'name': 1};
                 }
+                
+                var profiler = Profiler.create('controller/page/search');
 
                 return Bozuko.models.Page.search(options,
                     function(error, pages){
                         if( error )return error.send(res);
+                        
+                        profiler.mark('after search');
 
                         var ret = {
                             pages:pages
                         };
                         if( pages.length ) ret.next = next;
                         return Bozuko.transfer('pages', ret, req.session.user, function(error, result){
+                            profiler.mark('after transfer');
                             res.send( error || result );
                         });
                     }
