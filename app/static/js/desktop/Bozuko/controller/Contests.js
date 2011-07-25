@@ -195,7 +195,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                     'Are you sure you want to publish this campaign?',
                     function(btn){
                         if( btn != 'ok' && btn != 'yes' ) return;
-                        var cp = view.up('contestpanel');
+                        var cp = view.up('contestspanel');
                         cp.setLoading("Publishing... This may take a minute, please be patient");
                         Ext.Ajax.request({
                             url: url,
