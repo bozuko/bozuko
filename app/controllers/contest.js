@@ -85,6 +85,7 @@ var game = {
         obj.list_message = game.contest.getListMessage();
         return game.contest.getEntryMethodDescription(user, function(error, description){
             obj.entry_method.description = description;
+            obj.entry_method.image = game.contest.getEntryMethod(user).image;
             // obj.can_play = obj.game_state.user_tokens > 0;
             obj.links = {
                 page: '/page/'+game.contest.page_id,
