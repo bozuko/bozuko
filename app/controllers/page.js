@@ -129,9 +129,8 @@ exports.transfer_objects = {
                     });
                 }
     
-                prof.mark('after creating page');
+                
                 return self.sanitize(page, null, user, function(){
-                    prof.mark('after sanitize');
                     callback.apply(this, arguments);
                 });
             };
