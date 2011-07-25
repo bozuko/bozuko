@@ -23,7 +23,8 @@ Ext.define( 'Bozuko.view.contest.Entries', {
             xtype           :'dataview',
             cls             :'bozuko-list entry-list',
             
-            emptyText       :'<p>No Playersyet!</p>',
+            deferEmptyText  :false,
+            emptyText       :'<div style="padding: 10px;">No Players yet!</div>',
             
             trackOver       :true,
             overItemCls     :'entry-item-over',
