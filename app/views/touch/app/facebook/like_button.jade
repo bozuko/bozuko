@@ -90,8 +90,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               likeBtn.style.top='0px';
               likeBtn.style.left='0px';
               try{
-              alert(navigator.userAgent);
-                if( !~navigator.userAgent.toLowerCase().indexOf('android') ){
+                if( /iphone/i.test(navigator.userAgent) ){
                   window.location='bozuko://facebook/like_loaded';
                 }
               }catch(e){
