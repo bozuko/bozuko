@@ -314,25 +314,22 @@ Contest.method('getEngine', function(){
 });
 
 Contest.method('getListMessage', function(){
-    var config = this.entry_config[0];
-    var entryMethod = Bozuko.entry( config.type );
-    return entryMethod.getListMessage();
+    return this.getEntryMethod().getListMessage();
 });
 
 Contest.method('getEntryMethodDescription', function(user, callback){
+    return this.getEntryMethod(user).getDescription(callback);
+});
+Contest.method('getEntryMethod', function(user){
     var config = this.entry_config[0];
     var entryMethod = Bozuko.entry( config.type, user );
     entryMethod.configure( config );
     entryMethod.setContest( this );
-    return entryMethod.getDescription(callback);
+    return entryMethod;
 });
 
 Contest.method('getEntryMethodHtmlDescription', function(){
-    var config = this.entry_config[0];
-    var entryMethod = Bozuko.entry( config.type, null);
-    entryMethod.configure( config );
-    entryMethod.setContest( this );
-    return entryMethod.getHtmlDescription();
+    return this.getEntryMethod().getHtmlDescription();
 });
 
 
