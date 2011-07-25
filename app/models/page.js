@@ -655,7 +655,9 @@ Page.static('search', function(options, callback){
             bozukoSearch.selector.coords = {$nearSphere: options.ll, $maxDistance: distance};
             if( options.query ){
                 delete bozukoSearch.selector.coords['$maxDistance'];
-                bozukoSearch.selector.coords = {$or: [bozukoSearch.selector.coords, {$exists: false}]};
+                var coords = bozukoSearch.selector.coords;
+                delete bozukoSearch.selector.coords;
+                bozukoSearch.selector.$or = [bozukoSearch.selector.coords, {$exists: false}];
             }
             bozukoSearch.options.limit = Bozuko.config.search.nearbyMin;
             bozukoSearch.type='nativeFind';
