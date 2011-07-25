@@ -280,7 +280,7 @@ exports.routes = {
                         var options = {
                             user: req.session.user,
                             message: message,
-                            link: 'http://bozuko.com',
+                            link: 'https://bozuko.com/p/'+prize.page_id,
                             picture: burl('/page/'+prize.page_id+'/image')
                         };
                         
