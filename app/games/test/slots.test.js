@@ -9,12 +9,18 @@ var contest = {
 var Slots = require('../slots/index.js');
 var slots = new Slots(contest);
 
-exports['lose'] = function(test) {
+exports['lose'] = function(test, keepgoing) {
     var result = slots.process(false);
-    console.log(result);
     test.ok( result[0] != result[1] || result[0] != result[2] );
-    test.done();
+    if( !keepgoing ) test.done();
 };
+
+exports['lose a bunch'] = function(test){
+    for(var i=0; i<500; i++){
+        exports['lose'](test, true);
+    }
+    test.done();
+}
 
 exports['win'] = function(test) {
     var result = slots.process(3);
