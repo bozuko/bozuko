@@ -108,7 +108,7 @@ exports.transfer_objects = {
     
                 // add registered links...
                 if( page.registered ){
-                    page.share_url         =burl('/business/'+page.id);
+                    page.share_url         =burl('/p/'+page.id);
                     page.links.page         ='/page/'+page.id;
                     page.links.share        ='/page/'+page.id+'/share';
                     page.links.feedback     ='/page/'+page.id+'/feedback';
