@@ -24,7 +24,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       
     -if( locals.place )
       #like-button
-        fb:like(send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
+        fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
       #mask
       #touch-killer
       script(type="text/javascript")
