@@ -60,8 +60,10 @@ TransferObject.prototype.returnedBy = function(link){
 };
 
 TransferObject.prototype.merge = function(a,b){
-    Object.keys(b).forEach(function(prop){
-        a[prop] = b[prop];
+    // only do it for the properties we have
+    
+    Object.keys(this.def).forEach(function(prop){
+        if( b[prop] ) a[prop] = b[prop];
     });
     return a;
 };
