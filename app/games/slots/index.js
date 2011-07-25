@@ -31,7 +31,7 @@ Slots.prototype.process = function(outcome){
         var icons2 = icons.slice();
 		
 		// add _real_ suspense? 20% of the time
-		if( Math.random() < .1 ){
+		if( Math.random() < .2 ){
 			// get a random prize index
 			var index = parseInt( Math.random() * this.prizes.length, 10 );
 			var icon = icons2.splice( index, 1 )[0];
