@@ -90,7 +90,12 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               likeBtn.style.top='0px';
               likeBtn.style.left='0px';
               try{
-                if( ~navigator.userAgent.toLowerCase().indexOf('iphone') ) window.location='bozuko://facebook/like_loaded';
+                if( ~navigator.userAgent.toLowerCase().indexOf('iphone') ){
+                  // window.location='bozuko://facebook/like_loaded';
+                }
+                else{
+                alert('android');
+                }
               }catch(e){
                 // supposed to get an error
               }
