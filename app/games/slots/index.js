@@ -29,16 +29,23 @@ Slots.prototype.process = function(outcome){
     if( outcome === false ){
         // need random icons
         var icons2 = icons.slice();
-        for(var i =0; i<3; i++){
-			var index = parseInt(Math.random()*icons2.length, 10);
-			if( i == 1 ){
+		
+		// add _real_ suspense? 20% of the time
+		if( Math.random() < .25 ){
+			// get a random prize index
+			var index = parseInt( Math.random() * this.prizes.length, 10 );
+			var icon = icons2.splice( index, 1 )[0];
+			ret.push(icon); ret.push(icon);
+			index = parseInt(Math.random()*icons2.length, 10);
+			ret.push( icons2[index] );
+		}
+		// don't show doubles of non-winners
+		else{
+			for(var i =0; i<3; i++){
+				var index = parseInt(Math.random()*icons2.length, 10);
 				ret.push( icons2.splice(index, 1)[0] );
 			}
-			else{
-				ret.push( icons2[index] );
-			}
-            
-        }
+		}
     }
 
     else {
