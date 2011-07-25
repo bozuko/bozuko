@@ -30,7 +30,14 @@ Slots.prototype.process = function(outcome){
         // need random icons
         var icons2 = icons.slice();
         for(var i =0; i<3; i++){
-            ret.push( icons2.splice( parseInt(Math.random()*icons2.length), 1)[0] );
+			var index = parseInt(Math.random()*icons2.length, 10);
+			if( i == 1 ){
+				ret.push( icons2.splice(index, 1)[0] );
+			}
+			else{
+				ret.push( icons2[index] );
+			}
+            
         }
     }
 
