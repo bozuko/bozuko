@@ -94,6 +94,37 @@ Ext.define('Bozuko.view.page.Settings' ,{
                 
             }]
         });
+        if( !Bozuko.beta ){
+            me.items[0].add({
+                title           :'Administration',
+                defaults        :{
+                    anchor          :'0'
+                },
+                items           :[{
+                    xtype           :'checkbox',
+                    name            :'active',
+                    fieldLabel      :'Active'
+                },{
+                    xtype           :'checkbox',
+                    name            :'test',
+                    fieldLabel      :'Test page'
+                },{
+                    xtype           :'checkbox',
+                    name            :'featured',
+                    fieldLabel      :'Featured'
+                },{
+                    xtype           :'textfield',
+                    readOnly        :true,
+                    name            :'sharelink',
+                    fieldLabel      :'Share Link'
+                },{
+                    xtype           :'textfield',
+                    readOnly        :true,
+                    name            :'betalink',
+                    fieldLabel      :'Beta Link'
+                }]
+            });
+        }
         me.callParent(arguments);
         if( me.record ){
             me.loadRecord( me.record );
@@ -115,6 +146,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
             values['location.'+key] = value;
         });
         values.betalink = window.location.protocol+'//'+window.location.host+'/beta/page/'+record.get('_id');
+        values.sharelink = window.location.protocol+'//'+window.location.host+'/p/'+record.get('_id');
         me.getForm().setValues(values);
         
         me.down('pagepreview').loadRecord( record );
