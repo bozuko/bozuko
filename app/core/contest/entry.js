@@ -1,7 +1,8 @@
 var _t = Bozuko.t,
     DateUtil = Bozuko.require('util/date'),
     merge = Bozuko.require('util/merge'),
-    dateFormat = require('dateformat')
+    dateFormat = require('dateformat'),
+    Profiler = Bozuko.require('util/profiler')
 ;
 
 /**
@@ -224,7 +225,11 @@ EntryMethod.prototype.validate = function( callback ){
 
 EntryMethod.prototype.load = function(callback){
     var self = this,
+        prof = Profiler.create('entry.load'),
         force = false;
+        
+        
+        
     if( arguments.length > 1 ){
         callback = arguments[1];
         force = arguments[0];
@@ -238,7 +243,7 @@ EntryMethod.prototype.load = function(callback){
             self.page = page;
             // always load the users internals...
             if( self.user ){
-                return self.user.updateInternals(true, function(error){
+                return self.user.updateInternals(function(error){
                     if( error ) return callback( error );
                     return self._load(function(error){
                         self._loaded = true;

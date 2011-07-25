@@ -4,8 +4,8 @@ var mongoose = require('mongoose'),
     ;
 
 var Service = new Schema({
-    name                :{type:String},
-    sid                 :{type:String},
+    name                :{type:String, index: true},
+    sid                 :{type:String, index: true},
     auth                :{type:String},
     data                :{},
     internal            :{}
