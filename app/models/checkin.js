@@ -10,7 +10,7 @@ var Checkin = module.exports = new Schema({
     timestamp               :{type:Date,        index: true,    default: Date.now},
     description             :{type:String},
     message                 :{type:String},
-    service                 :{type:String},
+    service                 :{type:String,      index: true},
     data                    :{}
 });
 Checkin.plugin(Coords);
