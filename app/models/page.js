@@ -587,6 +587,7 @@ Page.static('getFeaturedPages', function(num, options, callback){
 Page.static('search', function(options, callback){
 
     var getFeatured = false,
+        profiler = new Profiler('models/pages/search'),
         hideFeaturedPastThreshold = options.hideFeaturedPastThreshold || false,
         limit = options.limit || 25,
         offset = options.offset || 0,
@@ -700,20 +701,22 @@ Page.static('search', function(options, callback){
 
         if( error ) return callback(error);
         var featured_ids = [];
+        
 
-        var prof = new Profiler('/models/page/search/build_featured_selector');
         if( featured.length ){
             featured.forEach(function(feature){ featured_ids.push( feature._id ); });
             bozukoSearch.selector._id = {
                 $nin: featured_ids
             };
         }
-        prof.stop();
+        profiler.mark('after getFeaturedPages');
 
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
             pages = featured.concat(pages);
+            
+            profiler.mark('after search ('+bozukoSearch.type+')');
 
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
@@ -742,6 +745,8 @@ Page.static('search', function(options, callback){
                 var service = options.service || Bozuko.config.defaultService;
 
                 return Bozuko.service(service).search(options, function(error, _results){
+                    
+                    profiler.mark('after service search');
 
                     if( error ){
 
