@@ -11,9 +11,8 @@ var slots = new Slots(contest);
 
 exports['lose'] = function(test) {
     var result = slots.process(false);
-    test.notEqual(result[0], result[1]);
-    test.notEqual(result[0], result[2]);
-    test.notEqual(result[1], result[2]);
+    console.log(result);
+    test.ok( result[0] != result[1] || result[0] != result[2] );
     test.done();
 };
 
