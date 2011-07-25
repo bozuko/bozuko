@@ -40,6 +40,7 @@ exports.routes = {
                 }, function(error, result){
                     console.log(error);
                     console.log(result);
+                    res.send('done.');
                 });
             }
         }
