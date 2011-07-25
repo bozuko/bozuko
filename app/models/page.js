@@ -29,7 +29,7 @@ var Page = module.exports = new Schema({
     security_img        :{type:String},
     featured            :{type:Boolean},
     test                :{type:Boolean, index: true, default: false},
-    active              :{type:Boolean, default: false},
+    active              :{type:Boolean, default: false, index: true},
     location            :{
         street              :String,
         city                :String,
