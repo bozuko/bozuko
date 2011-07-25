@@ -91,7 +91,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               likeBtn.style.left='0px';
               try{
                 if( /iphone/i.test(navigator.userAgent) ){
-                  window.location='bozuko://facebook/like_loaded';
+                  window.hash='#facebook/like_loaded';
                 }
               }catch(e){
                 // supposed to get an error
