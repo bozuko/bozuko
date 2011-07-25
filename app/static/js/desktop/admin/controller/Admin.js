@@ -63,7 +63,6 @@ Ext.define('Admin.controller.Admin' ,{
                 height: 600,
                 placesStore: me.getPlacesStore(),
                 pagesStore: Ext.create('Bozuko.store.Places'),
-                usersStore: Ext.create('Bozuko.store.Users'),
                 listeners: {
                     close : function(){
                         delete me._addWindow;
@@ -80,13 +79,11 @@ Ext.define('Admin.controller.Admin' ,{
             me._addWindow.down('button[action=add]').on('click', function(){
                 
                 var form = me._addWindow.down('pageaddform');
-                var user = form.user;
                 var place = form.place;
                 
                 Ext.Ajax.request({
                     url: '/admin/addpage',
                     params:{
-                        user_id: user.get('_id'),
                         place_id: place.get('id')
                     },
                     method: 'post',

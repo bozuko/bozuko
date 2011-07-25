@@ -127,7 +127,6 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                                 field[fn]();
                                 field[fn==='show'?'enable':'disable']();
                             });
-                            
                         }
                     }
                 },{
