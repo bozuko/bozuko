@@ -535,15 +535,20 @@ fieldset .x-fieldset-header {
 .contest-builder .card-form .x-field {
   margin-bottom: 10px;
 }
-.contest-builder .help-panel .x-panel-body {
+.contest-builder .help-panel {
+  background: #fff;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  right: 0;
   color: #666;
   line-height: 1.5em;
 }
-.contest-builder .help-panel .x-panel-body h3 {
+.contest-builder .help-panel h3 {
   margin-bottom: 1em;
   color: #333;
 }
-.contest-builder .help-panel .x-panel-body p {
+.contest-builder .help-panel p {
   margin-bottom: 1em;
 }
 .contest-builder .builder-arrow {

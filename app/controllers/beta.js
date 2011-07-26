@@ -134,7 +134,7 @@ exports.routes = {
                 
                 return Bozuko.models.Page.findById( page_id, function(error, page){
                     if( error ) throw error;
-                    if( !page || !page.beta_agreement.signed ){
+                    if( !page || !user.manages(page) || !page.beta_agreement.signed ){
                         return res.redirect('/beta/agreement');
                     }
                     var redirect_url = '/beta/';
