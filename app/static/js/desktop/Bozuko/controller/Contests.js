@@ -350,7 +350,6 @@ Ext.define('Bozuko.controller.Contests' ,{
             panel.builder = panel.add({
                 border: false,
                 xtype: 'contestbuilder',
-                contest: new Bozuko.model.Contest(),
                 listeners :{
                     destroy : function(){
                         delete panel.builder;
