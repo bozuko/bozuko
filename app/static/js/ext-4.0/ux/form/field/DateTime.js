@@ -5,6 +5,7 @@ Ext.define('Ext.ux.form.field.DateTime', {
     requires: ['Ext.ux.picker.DateTime'],
     
     showTime: true,
+    dateFormat : 'm/d/Y h:i a',
    
     createPicker: function() {
         var me = this,
