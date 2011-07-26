@@ -84,8 +84,8 @@ Ext.define('Bozuko.store.Winners', {
                 var j =0;
                 if( cb ) cb();
                 if( me.loadAgain ){
-                    me.updateStore(me.loadAgainCallback);
                     me.loadAgain = false;
+                    me.updateStore(me.loadAgainCallback);
                 }
                 Ext.Array.each( records, function(record, i){
                     var r = me.getById( record.getId() );

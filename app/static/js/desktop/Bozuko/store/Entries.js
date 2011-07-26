@@ -76,9 +76,10 @@ Ext.define('Bozuko.store.Entries', {
             scope : me,
             callback : function(records){
                 var j =0;
+                me.isLoading = false;
                 if( me.loadAgain ){
-                    me.updateStore(me.loadAgainCallback);
                     me.loadAgain = false;
+                    me.updateStore(me.loadAgainCallback);
                 }
                 if( callback ) callback();
                 Ext.Array.each( records, function(record, i){
