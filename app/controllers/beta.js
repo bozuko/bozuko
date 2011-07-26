@@ -138,7 +138,11 @@ exports.routes = {
                     if( !page || !page.beta_agreement.signed ){
                         return res.redirect('/beta/agreement');
                     }
-                    return res.redirect('/beta');
+                    var redirect_url = '/beta/';
+                    if( page_id ){
+                        redirect_url += '/page/'+page_id;
+                    }
+                    return res.redirect( redirect_url );
                 });
             }
         }
