@@ -72,8 +72,8 @@ Ext.define('Bozuko.store.Winners', {
     updateStore : function(cb){
         var me = this;
         if( me._isLoading ){
-            me.loadAgain = true;
-            me.loadAgainCallback = cb;
+            me._loadAgain = true;
+            me._loadAgainCallback = cb;
             return;
         }
         me._isLoading = true;
@@ -81,12 +81,12 @@ Ext.define('Bozuko.store.Winners', {
             scope : me,
             callback : function(records){
                 me._isLoading = false;
+                if( me._loadAgain ){
+                    me._loadAgain = false;
+                    me.updateStore(me._loadAgainCallback);
+                }
                 var j =0;
                 if( cb ) cb();
-                if( me.loadAgain ){
-                    me.loadAgain = false;
-                    me.updateStore(me.loadAgainCallback);
-                }
                 Ext.Array.each( records, function(record, i){
                     var r = me.getById( record.getId() );
                     if( r ){
