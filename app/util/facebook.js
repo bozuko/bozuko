@@ -101,5 +101,5 @@ exports.graph = function(path, options, callback){
         if (callback instanceof Function) return callback.apply(this,[null, result]);
         else return console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
     };
-    http.request(opts, callback);
+    http.request(opts, http_callback);
 };
