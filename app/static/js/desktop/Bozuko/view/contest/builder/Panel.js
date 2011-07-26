@@ -3,12 +3,18 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
     extend          :'Ext.panel.Panel',
     alias           :'widget.contestbuilder',
     
+    cls             :'contest-builder',
+    
     requires        :[
-        'Bozuko.model.Contest'
+        'Bozuko.model.Contest',
+        'Bozuko.view.contest.builder.General'
     ],
     
     initComponent : function(){
         var me = this;
+        
+        // create a new contest with the defaults
+        me.contest = new Bozuko.model.Contest();
         
         me.tbar = Ext.create('Ext.toolbar.Toolbar',{
             ref         :'contestform-navbar',
@@ -25,15 +31,18 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
             },' ',{
                 xtype       :'tbtext',
                 ref         :'edit-campaign-text',
-                text        :'Campaign Builder'
+                text        :'Build a Campaign'
             }]
         });
         
         Ext.apply(me,{
             layout              :'card',
             activeItem          :0,
+            defaults            :{
+                border              :false
+            },
             items               :[{
-                html: 'first page'
+                xtype               :'contestbuildergeneral'
             }]
         });
         me.callParent(arguments);
