@@ -11,7 +11,7 @@ var slots = new Slots(contest);
 
 exports['lose'] = function(test, keepgoing) {
     var result = slots.process(false);
-    test.ok( result[0] != result[1] || result[0] != result[2] );
+    test.ok( result[0] != result[1] || result[0] != result[2], result );
     if( !keepgoing ) test.done();
 };
 
