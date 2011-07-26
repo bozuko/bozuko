@@ -368,7 +368,8 @@ Page.method('checkin', function(user, options, callback) {
                                  * We need to swallow this error as it can occur upon unsuccessful
                                  * validation and thus screw up the rest of our processing
                                  */
-                                console.error( entry );
+                                console.error( error.message );
+                                console.error( error.stack );
                                 return cb( null );
                             }
                             else{
