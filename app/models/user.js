@@ -257,20 +257,22 @@ User.method('getManagedPages', function(){
         args = [].slice.apply(arguments),
         fnArgs = [], arg,
         param, params = ['selector', 'fields', 'options'],
-        selector = {admins:self._id},
-        callback = args.pop();
+        callback = args.pop(),
+        selector = {admins:self._id}
+        ;
     
     while( args.length && (arg = args.shift()) && params.length && (param = params.shift()) ){
         
         switch( param ){
             case 'selector':
-                fnArgs.push( merge( selector, arg) );
+                fnArgs.push( merge( selector, arg ) );
                 console.log(fnArgs);
                 break;
             default:
                 fnArgs.push( arg );
         }
     }
+    
     fnArgs.push( callback );
     Bozuko.models.Page.find.apply( Bozuko.models.Page, fnArgs );
 });
