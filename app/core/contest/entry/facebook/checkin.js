@@ -210,7 +210,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
 
                     var prof = new Profiler('core/contest/entry/facebook/checkin/process');
 
-                    for(var i=0; i<result.entries.length; i++){
+                    for(var i=0; i<result.entries && result.entries.length; i++){
                         var entry = result.entries[i];
                         if( entry.type == self.type && entry.contest_id == self.contest.id ){
                             
