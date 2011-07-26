@@ -31,7 +31,8 @@ Slots.prototype.process = function(outcome){
         var icons2 = icons.slice();
 		
 		// add _real_ suspense? 20% of the time
-		if( Math.random() < .2 ){
+		/*
+		if( Math.random() < .1 ){
 			// get a random prize index
 			var index = parseInt( Math.random() * this.prizes.length, 10 );
 			var icon = icons2.splice( index, 1 )[0];
@@ -39,11 +40,14 @@ Slots.prototype.process = function(outcome){
 			index = parseInt(Math.random()*icons2.length, 10);
 			ret.push( icons2[index] );
 		}
-		// don't show doubles of non-winners
-		else{
-			for(var i =0; i<3; i++){
-				var index = parseInt(Math.random()*icons2.length, 10);
+		*/
+		for(var i =0; i<3; i++){
+			var index = parseInt(Math.random()*icons2.length, 10);
+			if( i === 1 ){
 				ret.push( icons2.splice(index, 1)[0] );
+			}
+			else{
+				ret.push( icons2[index] );
 			}
 		}
     }
