@@ -61,22 +61,23 @@ Ext.define('Bozuko.store.Entries', {
         me.on('destroy', function(){
             Bozuko.PubSub.unsubscribe('contest/entry', selector, reload);
         });
+        me._isLoading = false;
         me.listening = true;
     },
     
     updateStore : function(callback){
         var me = this;
-        if( me.isLoading ){
+        if( me._isLoading ){
             me.loadAgain = true;
             me.loadAgainCallback = callback;
             return;
         }
-        me.isLoading = true;
+        me._isLoading = true;
         me.tmpStore.load({
             scope : me,
             callback : function(records){
                 var j =0;
-                me.isLoading = false;
+                me._isLoading = false;
                 if( me.loadAgain ){
                     me.loadAgain = false;
                     me.updateStore(me.loadAgainCallback);

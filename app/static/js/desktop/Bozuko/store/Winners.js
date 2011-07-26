@@ -71,16 +71,16 @@ Ext.define('Bozuko.store.Winners', {
     
     updateStore : function(cb){
         var me = this;
-        if( me.isLoading ){
+        if( me._isLoading ){
             me.loadAgain = true;
             me.loadAgainCallback = cb;
             return;
         }
-        me.isLoading = true;
+        me._isLoading = true;
         me.tmpStore.load({
             scope : me,
             callback : function(records){
-                me.isLoading = false;
+                me._isLoading = false;
                 var j =0;
                 if( cb ) cb();
                 if( me.loadAgain ){
