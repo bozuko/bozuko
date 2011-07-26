@@ -55,13 +55,12 @@ exports.routes = {
                     else{
                         req.session.page_id = false;
                     }
-
                     return res.render('beta/welcome');
                 }
                 
                 var selector = {};
                 if( req.param('page_id') ){
-                    selector._id = page_id;
+                    selector._id = new ObjectId(page_id);
                 }
                 else{
                     req.session.page_id = false;
