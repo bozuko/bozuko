@@ -34,7 +34,7 @@ exports.routes = {
                 Bozuko.models.Page.collection.update({
                     owner_id: {$exists:false}
                 },{
-                    $set: {active: true}
+                    $set: {active: false}
                 },{
                     multi: true
                 }, function(error, result){
