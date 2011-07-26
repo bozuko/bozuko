@@ -31,10 +31,10 @@ Ext.define('Bozuko.view.contests.Panel', {
                 text            :'Create Campaign',
                 icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png"
             },' ',{
-                hidden          :true,
+                hidden          :false,
                 action          :'builder',
-                text            :'Builder (Beta)',
-                icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png"
+                text            :'Build a Campaign (Beta)',
+                icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-plus-24.png"
             });
         }
         

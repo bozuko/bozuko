@@ -60,36 +60,46 @@ exports.graph = function(path, options, callback){
 
         return;
     }
-
-    http.request({
+    
+    var opts = {
         url: url,
         method: options.method,
         params: params,
-        returnJSON : options.returnJSON},
-        function(err, result){
+        timeout: 20000,
+        returnJSON : options.returnJSON
+    };
+    
+    var http_callback = function(err, result){
 
-            if (err) return callback(err);
-
-            if( result.error && callback ){
-                // handle bogus sessions
-                if( result.error.message.match(/changed the password/i) ){
-                    return callback( Bozuko.error('facebook/auth') );
-                }
-                return callback( Bozuko.error('facebook/api', result.error ));
+        if (err){
+            if( err.type == 'http/timeout' && !opts.isRetry ){
+                opts.timeout = 10000;
+                opts.isRetry = true;
+                return http.request(opts, http_callback);
             }
-
-            /**
-             * If we want to debug all facebook requests it can go here..
-             */
-            var then = new Date();
-            if(useCache) cache[cacheKey] = {arguments:arguments, time:then, duration:then.getTime()-now.getTime()};
-
-            Bozuko.last_facebook_time = then.getTime() - now.getTime();
-            if( !Bozuko.facebook_requests ) Bozuko.facebook_requests={};
-            if( !Bozuko.facebook_requests[url] ) Bozuko.facebook_requests[url] = [];
-            Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
-            if (callback instanceof Function) return callback.apply(this,[null, result]);
-            else return console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
+            return callback(err);
         }
-    );
+
+        if( result.error && callback ){
+            // handle bogus sessions
+            if( result.error.message.match(/changed the password/i) ){
+                return callback( Bozuko.error('facebook/auth') );
+            }
+            return callback( Bozuko.error('facebook/api', result.error ));
+        }
+
+        /**
+         * If we want to debug all facebook requests it can go here..
+         */
+        var then = new Date();
+        if(useCache) cache[cacheKey] = {arguments:arguments, time:then, duration:then.getTime()-now.getTime()};
+
+        Bozuko.last_facebook_time = then.getTime() - now.getTime();
+        if( !Bozuko.facebook_requests ) Bozuko.facebook_requests={};
+        if( !Bozuko.facebook_requests[url] ) Bozuko.facebook_requests[url] = [];
+        Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
+        if (callback instanceof Function) return callback.apply(this,[null, result]);
+        else return console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");
+    };
+    http.request(opts, callback);
 };
