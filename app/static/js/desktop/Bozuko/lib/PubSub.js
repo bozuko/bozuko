@@ -222,7 +222,7 @@ Ext.define('Bozuko.lib.PubSub',{
                 return callback();
             }
             while(fns.length && me.workers <= me.asyncRequests ){
-                var fn = fns.shift();
+                var fn = fns.pop();
                 me.workers++;
                 return fn(function(){
                     me.workers--;
