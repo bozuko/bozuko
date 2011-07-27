@@ -118,7 +118,7 @@ exports.request = function(config, callback){
             config.onContinue.apply(this,arguments);
         });
     }
-    if(body) req.write(body, encoding);
+    if(body) request.write(body, encoding);
     request.end();
 
 };
