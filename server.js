@@ -43,7 +43,7 @@ if( proc.isMaster ){
     if( env === 'api' ){
         Bozuko.initFacebookPubSub();
     }
-    if( env === 'site' ){
+    if( env === 'site' || env === 'playground' ){
         Bozuko.initHttpRedirect();
     }
 }
