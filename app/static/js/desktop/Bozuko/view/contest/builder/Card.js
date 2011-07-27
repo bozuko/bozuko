@@ -4,11 +4,13 @@ Ext.define('Bozuko.view.contest.builder.Card', {
     extend          :'Ext.panel.Panel',
     
     layout          :'anchor',
+    cls             :'builder-card',
+    bodyCls         :'builder-card-body',
     
     border          :false,
     
     helpRegion      :'east',
-    helpRegionWidth :280,
+    helpRegionWidth :260,
     
     autoScroll      :true,
     
@@ -16,6 +18,8 @@ Ext.define('Bozuko.view.contest.builder.Card', {
     
     form            :{
         border          :false,
+        xtype           :'form',
+        ref             :'card-form',
         layout          :'anchor',
         defaults        :{
             xtype           :'textfield',
@@ -29,19 +33,42 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         me.form.anchor = String(-1*me.helpRegionWidth);
         
+        me.form.items.push({
+            xtype           :'toolbar',
+            ui              :'footer',
+            defaults        :{
+                minWidth        :80
+            },
+            items           :['->',{
+                text            :'Next',
+                style           :'margin-right: 0'
+            }]
+        });
+        
         Ext.apply(me,{
             items : [me.form]
         });
         
         me.callParent(arguments);
-        /*
+        
+        me.form = me.down('[ref=card-form]');
+        me.form.on('resize', me.onFormResize, me);
+        
         var fields = me.query('[ref=card-form] field');
         Ext.Array.each(fields, function(field){
             field.on('focus', function(field){
                 me.onFieldFocus(field);
             })
         });
-        */
+        
+    },
+    
+    onFormResize : function(panel, width){
+        var me = this;
+        if( !me.helpPanel ) return;
+        me.helpPanel.setStyle({
+            left: width+'px'
+        });
     },
     
     onRender : function(){
@@ -51,9 +78,10 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             tag: 'div',
             cls: 'help-panel',
             style: {
+                left: 0,
                 width: me.helpRegionWidth+'px'
             },
-            html: '<div class="help-text"></div>'
+            html: '<div class="help-text">'+me.overview+'</div>'
         });
         me.arrow = document.createElement('div');
         me.arrow.className = 'builder-arrow';

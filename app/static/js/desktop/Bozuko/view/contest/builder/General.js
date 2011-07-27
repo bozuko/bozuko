@@ -50,73 +50,7 @@ Ext.define('Bozuko.view.contest.builder.General', {
                         'Please note, campaigns may end prior to this date if all the entries are distributed.',
                     '</p>'
                 ]
-            },
-            {
-                name                :'name',
-                fieldLabel          :'Campaign Name',
-                helpText            :[
-                    "<p>",
-                        "Enter a name for you to track your campaign internally. ",
-                        "This will not be visible in the app - only you (and any other page admins) will see this.",
-                    "</p>",
-                    '<p>',
-                        'An example might be "Summer Scratch 2012" if you plan on running a long campaign, or ',
-                        '"St. Paddy\'s 2012" for a short one day campaign.',
-                    '</p>'
-                ]
-            },{
-                name                :'name',
-                fieldLabel          :'Campaign Name',
-                helpText            :[
-                    "<p>",
-                        "Enter a name for you to track your campaign internally. ",
-                        "This will not be visible in the app - only you (and any other page admins) will see this.",
-                    "</p>",
-                    '<p>',
-                        'An example might be "Summer Scratch 2012" if you plan on running a long campaign, or ',
-                        '"St. Paddy\'s 2012" for a short one day campaign.',
-                    '</p>'
-                ]
-            },{
-                name                :'name',
-                fieldLabel          :'Campaign Name',
-                helpText            :[
-                    "<p>",
-                        "Enter a name for you to track your campaign internally. ",
-                        "This will not be visible in the app - only you (and any other page admins) will see this.",
-                    "</p>",
-                    '<p>',
-                        'An example might be "Summer Scratch 2012" if you plan on running a long campaign, or ',
-                        '"St. Paddy\'s 2012" for a short one day campaign.',
-                    '</p>'
-                ]
-            },{
-                name                :'name',
-                fieldLabel          :'Campaign Name',
-                helpText            :[
-                    "<p>",
-                        "Enter a name for you to track your campaign internally. ",
-                        "This will not be visible in the app - only you (and any other page admins) will see this.",
-                    "</p>",
-                    '<p>',
-                        'An example might be "Summer Scratch 2012" if you plan on running a long campaign, or ',
-                        '"St. Paddy\'s 2012" for a short one day campaign.',
-                    '</p>'
-                ]
-            },{
-                name                :'name',
-                fieldLabel          :'Campaign Name',
-                helpText            :[
-                    "<p>",
-                        "Enter a name for you to track your campaign internally. ",
-                        "This will not be visible in the app - only you (and any other page admins) will see this.",
-                    "</p>",
-                    '<p>',
-                        'An example might be "Summer Scratch 2012" if you plan on running a long campaign, or ',
-                        '"St. Paddy\'s 2012" for a short one day campaign.',
-                    '</p>'
-                ]
-            },]
+            }]
         });
         
         me.callParent(arguments);

@@ -45,9 +45,9 @@ exports.request = function(config, callback){
     var headers = {'host':url_parsed.host};
     if( config.headers ) headers = merge(headers, config.headers);
 
-    var body = null, encoding = null;
+    var body = config.body || null, encoding = config.encoding || null;
 
-    if( method == 'POST' && params ){
+    if( method == 'POST' && params && !body){
         body = qs.stringify(params);
         encoding = config.encoding || 'utf-8';
     }
