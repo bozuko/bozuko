@@ -219,7 +219,7 @@ exports.routes = {
                                         console.log('Updated Facebook internals for '+user.name);
                                     });
                                 }
-                                return true;
+                                return res.send({});
                             });
                         });
 
