@@ -185,7 +185,7 @@ exports.routes = {
                 var object = req.param('object');
                 var entry = req.param('entry');
                 
-                if( Bozuko.env === 'api'){
+                if( Bozuko.env() === 'api'){
                     
                     // because api is the most stable, lets let that handle all these
                     // notifications and then alert the places we think are necessary
