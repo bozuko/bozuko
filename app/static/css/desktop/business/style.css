@@ -529,10 +529,10 @@ fieldset .x-fieldset-header {
 .page-preview .x-panel-body .sharing div {
   padding: 8px;
 }
-.contest-builder .card-form .x-panel-body {
+.contest-builder .builder-card .x-panel-body {
   background: #f0f0f0;
 }
-.contest-builder .card-form .x-field {
+.contest-builder .builder-card .x-field {
   margin-bottom: 10px;
 }
 .contest-builder .help-panel {
@@ -540,9 +540,11 @@ fieldset .x-fieldset-header {
   position: absolute;
   top: 0;
   height: 100%;
-  right: 0;
   color: #666;
   line-height: 1.5em;
+}
+.contest-builder .help-panel .help-text {
+  padding: 10px;
 }
 .contest-builder .help-panel h3 {
   margin-bottom: 1em;

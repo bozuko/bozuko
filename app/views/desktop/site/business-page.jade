@@ -18,7 +18,7 @@
             - each contest in contests
               .contest
                 img(src=contest.getGame().getListImage())
-                h4= contest.getGame().name
+                h4= contest.getGame().getName()
                 .entry-method
                   !=contest.getEntryMethodHtmlDescription()
                 
