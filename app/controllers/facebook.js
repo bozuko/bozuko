@@ -185,6 +185,8 @@ exports.routes = {
                 var object = req.param('object');
                 var entry = req.param('entry');
                 
+                console.log(req.body);
+                
                 if( Bozuko.env() === 'api'){
                     
                     // because api is the most stable, lets let that handle all these
