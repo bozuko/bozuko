@@ -1,4 +1,5 @@
-var async = require('async');
+var async = require('async'),
+    http = Bozuko.require('util/http');
 
 exports.links = {
     facebook_checkin: {
@@ -180,8 +181,29 @@ exports.routes = {
          */
         post: {
             handler : function(req, res){
+                
                 var object = req.param('object');
                 var entry = req.param('entry');
+                
+                // because api is the most stable, lets let that handle all these
+                // notifications and then alert the places we think are necessary
+                var urls = [
+                    'https://playground.bozuko.com/facebook/pubsub',
+                    'https://bonobo.bozuko.com:8001/facebook/pubsub'
+                ];
+                urls.forEach(function(url){
+                    // launch an async request to our internal pubsubs
+                    require('http').request({
+                        method      :'post',
+                        url         :url,
+                        body        :req.rawBody,
+                        encoding    :'utf-8'
+                    }, function(error){
+                        if( error ) console.error( error );
+                    });
+                });
+                
+                
                 if( undefined === entry || false === entry ) return res.send({});
                 if( !Array.isArray(entry) ) entry = [entry];
                 switch(object){

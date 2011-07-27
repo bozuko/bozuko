@@ -39,7 +39,11 @@ if( proc.isMaster ){
     if( env === 'stats'){
         Bozuko.initStats();
     }
-    if( env !== 'test' && env !=='stats' ){
+    // need a better way to handle this
+    if( env === 'api' ){
         Bozuko.initFacebookPubSub();
+    }
+    if( env === 'site' ){
+        Bozuko.initHttpRedirect();
     }
 }

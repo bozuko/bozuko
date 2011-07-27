@@ -408,6 +408,7 @@ Bozuko.initFacebookPubSub = function(){
             if (err) console.log("Failed to get existing facebook subscriptions");
 			body = JSON.parse(body);
 			console.log('Existing Facebook Subscriptions');
+			console.log(body);
 			// now lets setup the new subscriptions
             // Should there be other error checking for the following 2 http requests?
 			if(body && body.data && body.data.length ){
@@ -446,6 +447,25 @@ Bozuko.initFacebookPubSub = function(){
         }
     );
 }
+
+Bozuko.initHttpRedirect = function(){
+	var http = require('http'),
+		config = Bozuko.getConfig()
+		;
+	
+	var redirect_server = http.createServer(function(req, res){
+		var ssl_url = (config.server.ssl ? 'https://' : 'http://')
+					+ config.server.host
+					+ req.url;
+					
+		res.writeHead(301, {
+			'Location':ssl_url
+		});
+		res.end();
+	});
+	
+	redirect_server.listen(80);
+};
 
 Bozuko.initStats= function(){
     var stats = Bozuko.require('util/stats');

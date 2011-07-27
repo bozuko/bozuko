@@ -402,6 +402,11 @@ exports.routes = {
             handler : function(req,res){
                 Bozuko.models.Page.findById(req.param('id'), function(error, page) {
                     if( error ) return error.send(res);
+                    // check to make sure we have a page..
+                    if( !page ) {
+                        console.error('page/:id/image - page not found ['+req.param('id')+']');
+                        return res.redirect('/images/assets/icons/unknown.png');
+                    }
                     var url = page.image,
                         type = req.param('type');
                     if( type ){

@@ -146,7 +146,7 @@ auth.mobile = function(req, res, callback) {
                     return callback(null);
                 });
             } else {
-                console.log("Unkown result from user.verify_phone: "+result);
+                console.error("Unkown result from user.verify_phone: "+result);
                 return callback(Bozuko.error('auth/mobile'));
             }
         },
@@ -171,7 +171,10 @@ auth.mobile = function(req, res, callback) {
                     return callback(null);
                 }
             }
-            console.log('failing on challenge question');
+            console.error('expected: '+result);
+            console.error('challend_response: '+req.session.challenge_response);
+            console.error('req.url: '+req.url);
+            console.error('failing on challenge question');
             return callback(Bozuko.error('auth/mobile'));
         }
 
