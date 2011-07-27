@@ -193,7 +193,7 @@ exports.routes = {
                 ];
                 urls.forEach(function(url){
                     // launch an async request to our internal pubsubs
-                    http.request({
+                    Bozuko.require('util/http').request({
                         method      :'post',
                         url         :url,
                         body        :req.rawBody,
@@ -210,7 +210,7 @@ exports.routes = {
 
                     case 'user':
                         var ids = [];
-                        entry.forEach(function(fb_user){
+                        return entry.forEach(function(fb_user){
                             var uid = fb_user.uid;
                             Bozuko.models.User.findByService('facebook', uid, function(err, user){
                                 if( err ) return console.error(err);
