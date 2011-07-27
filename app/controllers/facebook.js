@@ -185,6 +185,8 @@ exports.routes = {
                 var object = req.param('object');
                 var entry = req.param('entry');
                 
+                console.error(req.rawBody);
+                
                 if( Bozuko.env() === 'api'){
                     
                     // because api is the most stable, lets let that handle all these
@@ -204,7 +206,6 @@ exports.routes = {
                             if( error ) console.error( error );
                         });
                     });
-                    
                 }
                 
                 if( undefined === entry || false === entry ) return res.send({});
