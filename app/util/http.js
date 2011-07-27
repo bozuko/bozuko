@@ -52,15 +52,18 @@ exports.request = function(config, callback){
         encoding = config.encoding || 'utf-8';
     }
 
-    var tid;
-    var request = http_.request({
-        host: url_parsed.host,
-        agent: false,
-        port: port,
-        path: path,
-        headers: headers,
-        method: method
-    }, function(response){
+    var tid,
+        request_opts = {
+            host: url_parsed.host,
+            agent: false,
+            port: port,
+            path: path,
+            headers: headers,
+            method: method
+        };
+        
+    console.log(request_opts);
+    var request = http_.request(request_opts, function(response){
 
         var data = '';
         response.setEncoding('utf8');
