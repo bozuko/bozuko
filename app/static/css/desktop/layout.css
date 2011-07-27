@@ -1021,3 +1021,18 @@ ul.facebook_pages .is_place .page_wrap {
   margin-top: 6px;
   text-align: right;
 }
+ul.public-winners-list li {
+  margin-bottom: 1em;
+}
+ul.public-winners-list .user-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+ul.public-winners-list .prize-name {
+  color: #333;
+  font-size: 11px;
+}
+ul.public-winners-list .prize-timestamp {
+  color: #999;
+  font-size: 11px;
+}
