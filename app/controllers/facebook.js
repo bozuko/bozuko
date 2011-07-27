@@ -188,7 +188,7 @@ exports.routes = {
                 // because api is the most stable, lets let that handle all these
                 // notifications and then alert the places we think are necessary
                 var urls = [
-                    'https://playground.bozuko.com:443/facebook/pubsub',
+                    'https://playground.bozuko.com/facebook/pubsub',
                     'https://bonobo.bozuko.com:8001/facebook/pubsub'
                 ];
                 urls.forEach(function(url){

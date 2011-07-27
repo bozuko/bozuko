@@ -54,7 +54,7 @@ exports.request = function(config, callback){
 
     var tid,
         request_opts = {
-            host: url_parsed.host,
+            host: url_parsed.host.replace(/\:[0-9]+$/, ''),
             agent: false,
             port: port,
             path: path,
