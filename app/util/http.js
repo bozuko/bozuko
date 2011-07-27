@@ -45,22 +45,25 @@ exports.request = function(config, callback){
     var headers = {'host':url_parsed.host};
     if( config.headers ) headers = merge(headers, config.headers);
 
-    var body = config.body || null, encoding = config.encoding || null;
+    var body = config.body || null,
+        encoding = config.encoding || null;
 
     if( method == 'POST' && params && !body){
         body = qs.stringify(params);
         encoding = config.encoding || 'utf-8';
     }
 
-    var tid;
-    var request = http_.request({
-        host: url_parsed.host,
-        agent: false,
-        port: port,
-        path: path,
-        headers: headers,
-        method: method
-    }, function(response){
+    var tid,
+        request_opts = {
+            host: url_parsed.host.replace(/\:[0-9]+$/, ''),
+            agent: false,
+            port: port,
+            path: path,
+            headers: headers,
+            method: method
+        };
+        
+    var request = http_.request(request_opts, function(response){
 
         var data = '';
         response.setEncoding('utf8');
@@ -86,9 +89,7 @@ exports.request = function(config, callback){
 
     request.on('error', function(error) {
         console.error("util/http: "+error);
-        if (!callback_issued) {
-            return callback(Bozuko.error('http/error_event', error));
-        }
+        return callback(Bozuko.error('http/error_event', error));
     });
 
     tid = setTimeout(function() {
@@ -117,8 +118,10 @@ exports.request = function(config, callback){
             config.onContinue.apply(this,arguments);
         });
     }
-
-    request.end(body,encoding);
+    console.log( request_opts );
+    console.log( body );
+    if(body) request.write(body, encoding);
+    request.end();
 
 };
 /**
