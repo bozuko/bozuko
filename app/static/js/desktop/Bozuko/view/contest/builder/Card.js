@@ -33,18 +33,6 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         me.form.anchor = String(-1*me.helpRegionWidth);
         
-        me.form.items.push({
-            xtype           :'toolbar',
-            ui              :'footer',
-            defaults        :{
-                minWidth        :80
-            },
-            items           :['->',{
-                text            :'Next',
-                style           :'margin-right: 0'
-            }]
-        });
-        
         Ext.apply(me,{
             items : [me.form]
         });
@@ -58,7 +46,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         Ext.Array.each(fields, function(field){
             field.on('focus', function(field){
                 me.onFieldFocus(field);
-            })
+            });
         });
         
     },
