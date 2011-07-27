@@ -193,7 +193,7 @@ exports.routes = {
                 ];
                 urls.forEach(function(url){
                     // launch an async request to our internal pubsubs
-                    require('http').request({
+                    http.request({
                         method      :'post',
                         url         :url,
                         body        :req.rawBody,
