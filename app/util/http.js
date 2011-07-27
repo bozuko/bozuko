@@ -86,9 +86,7 @@ exports.request = function(config, callback){
 
     request.on('error', function(error) {
         console.error("util/http: "+error);
-        if (!callback_issued) {
-            return callback(Bozuko.error('http/error_event', error));
-        }
+        return callback(Bozuko.error('http/error_event', error));
     });
 
     tid = setTimeout(function() {
