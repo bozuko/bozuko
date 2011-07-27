@@ -201,10 +201,13 @@ exports.routes = {
                             url         :url,
                             body        :String(body),
                             encoding    :'utf-8'
-                        }, cb);
+                        }, function(error){
+                            if( error ) return callback(error);
+                            console.log('notified '+url);
+                            cb();
+                        });
                     }, function (error){
                         if(error) console.error(error);
-                        else console.log('notified '+url);
                     });
                 }
                 
