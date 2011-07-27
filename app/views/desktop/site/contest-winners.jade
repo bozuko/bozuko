@@ -7,29 +7,14 @@
   .center
     .main-column
       .padding
-        h2.page-title= page.name
+        h2.page-title= contest.getGame().getName()+' Winners'
         
-        - if( page.announcement )
-          .announcement
-            p!= page.announcement
-        - if( locals.contests )
-          .contests
-            h3 Current Games
-            - each contest in contests
-              .contest
-                img(src=contest.getGame().getListImage())
-                h4= contest.getGame().getName()
-                .entry-method
-                  !=contest.getEntryMethodHtmlDescription()
-                
-                .prizes
-                  h5 You could win...
-                  ul.prize-list
-                    - each prize in contest.prizes
-                      li.prize
-                        h6.prize-name= prize.name
-                        .prize-description= prize.description
-                a(href="/p/"+page._id+"/winners/"+contest._id) Winners List
+        ul.public-winners-list
+          -each winner in winners
+            li
+              .user-name= winner.displayName
+              .prize-name= winner.name
+              .prize-timestamp= winner.timestamp
     
     .right-column
       .padding
