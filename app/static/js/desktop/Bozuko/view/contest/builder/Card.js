@@ -21,6 +21,10 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             xtype           :'textfield',
             anchor          :'-10',
             labelWidth      :160
+        },
+        listeners       :{
+            scope           :me,
+            resize          :me.onFormResize
         }
     },
     
