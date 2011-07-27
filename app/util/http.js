@@ -62,7 +62,6 @@ exports.request = function(config, callback){
             method: method
         };
         
-    console.log(request_opts);
     var request = http_.request(request_opts, function(response){
 
         var data = '';
