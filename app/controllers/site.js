@@ -304,6 +304,76 @@ exports.routes = {
             }
         }
     },
+    '/p/:id/winners/:contest' : {
+        
+        get : {
+
+            title: 'Bozuko - Winners List',
+            locals: {
+                html_classes: ['site-business-page'],
+                head_scripts: [
+
+                ]
+            },
+
+            handler: function(req, res) {
+                var page, contest, prizes, winners=[], user_map={};
+                
+                async.series([
+                    function get_pages(cb){
+                        return Bozuko.models.Page.findById( req.param('id'), function(error, _page){
+                            if( error ) cb(error);
+                            if( !_page ) cb("No Page Found");
+                            page = _page;
+                            return cb();
+                        });
+                    },
+                    function get_contests(cb){
+                        return Bozuko.models.Contest.findById( req.param('contest'), function(error, _contest){
+                            if( error ) cb(error);
+                            if( !_contest ) cb("No Contest Found");
+                            contest = _contest;
+                            return cb();
+                        });
+                    },
+                    function get_prizes(cb){
+                        return Bozuko.models.Prize.find( {contest_id: req.param('contest'), page_id: req.param('id')}, {user_id: 1, name: 1,timestamp: 1}, {sort: {timestamp: 1}}, function(error, _prizes){
+                            if( error ) return cb(error);
+                            prizes = _prizes;
+                            return cb();
+                        });
+                    },
+                    function get_users(cb){
+                        var user_ids = [];
+                        prizes.forEach(function(prize){
+                            user_ids.push(prize.user_id);
+                        });
+                        return Bozuko.models.User.find({_id: {$in:user_ids}}, {first_name: 1, last_name: 1}, function(error, _users){
+                            if( error ) return cb(error);
+                            _users.forEach( function(user){
+                                user_map[String(user._id)] = user;
+                            });
+                            prizes.forEach(function(prize){
+                                var winner = prize.toJSON();
+                                var u = user_map[String(prize.user_id)];
+                                winner.displayName = u.first_name+' '+u.last_name.substr(0,1);
+                                winners.push(winner);
+                            });
+                            return cb();
+                        });
+                    }
+                ], function render_page(error){
+                    if( error ) throw error;
+                    // lets get the contests too
+                    res.locals.page = page;
+                    res.locals.contest = contest;
+                    res.locals.title = page.name+' - Contest '+contest._id+' Winners';
+                    res.locals.winners = winners;
+                    return res.render('site/contest-winners');
+                });
+            }
+        }
+    },
     '/404' : {
         get : {
             ref: 'notFound',
