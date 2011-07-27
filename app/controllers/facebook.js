@@ -204,7 +204,6 @@ exports.routes = {
                             if( error ) console.error( error );
                         });
                     });
-                    
                 }
                 
                 if( undefined === entry || false === entry ) return res.send({});
