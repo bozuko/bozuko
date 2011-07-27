@@ -7,8 +7,8 @@ Ext.define('Bozuko.view.contest.builder.General', {
         'Bozuko.view.contest.builder.Card',
         'Ext.ux.form.field.DateTime'
     ],
-    
-    overview         :"It is easy to create a new Bozuko campaign. We will help describe each step as you are filling out the form.",
+    name            :"Contest Name",
+    overview        :"It is easy to create a new Bozuko campaign. We will help describe each step as you are filling out the form.",
     
     initComponent : function(){
         var me = this;
@@ -31,6 +31,7 @@ Ext.define('Bozuko.view.contest.builder.General', {
             },{
                 xtype               :'datetimefield',
                 name                :'start',
+                format              :'m-d-Y h:i a',
                 fieldLabel          :'Campaign Start Date',
                 helpText            :[
                     "<p>",
@@ -41,6 +42,7 @@ Ext.define('Bozuko.view.contest.builder.General', {
             },{
                 xtype               :'datetimefield',
                 name                :'end',
+                format              :'m-d-Y h:i a',
                 fieldLabel          :'Campaign End Date',
                 helpText            :[
                     "<p>",
@@ -54,6 +56,9 @@ Ext.define('Bozuko.view.contest.builder.General', {
         });
         
         me.callParent(arguments);
+        
+        
+        
     }
     
     
