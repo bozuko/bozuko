@@ -195,16 +195,19 @@ exports.routes = {
                         'https://playground.bozuko.com/facebook/pubsub',
                         'https://bonobo.bozuko.com:8001/facebook/pubsub'
                     ];
-                    urls.forEach(function(url){
+                    var body = String(req.rawBody);
+                    async.forEachSeries(urls, function(url, cb){
                         // launch an async request to our internal pubsubs
                         Bozuko.require('util/http').request({
                             method      :'post',
                             url         :url,
-                            body        :req.rawBody,
+                            body        :body,
                             encoding    :'utf-8'
                         }, function(error){
-                            if( error ) console.error( error );
+                            cb(error);
                         });
+                    }, function (error){
+                        if(error) console.error(error);
                     });
                 }
                 
