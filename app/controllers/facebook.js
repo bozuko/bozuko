@@ -202,7 +202,7 @@ exports.routes = {
                             body        :String(body),
                             encoding    :'utf-8'
                         }, function(error){
-                            if( error ) return callback(error);
+                            if( error ) return cb(error);
                             console.log('notified '+url);
                             return cb();
                         });
@@ -220,17 +220,21 @@ exports.routes = {
 
                     case 'user':
                         var ids = [];
-                        return entry.forEach(function(fb_user){
+                        return async.forEachSeries(entry, function(fb_user, cb){
                             var uid = fb_user.uid;
-                            Bozuko.models.User.findByService('facebook', uid, function(err, user){
-                                if( err ) return console.error(err);
+                            return Bozuko.models.User.findByService('facebook', uid, function(err, user){
+                                if( err ) return cb(err);
                                 if( user ){
                                     return user.updateInternals(true, function(error){
                                         console.log('Updated Facebook internals for '+user.name);
+                                        return cb(error);
                                     });
                                 }
-                                return res.send({});
+                                return cb();
                             });
+                        }, function(error){
+                            console.error(error);
+                            return res.send({});
                         });
 
                     case 'permissions':
