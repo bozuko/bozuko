@@ -201,13 +201,15 @@ exports.routes = {
                             url         :url,
                             body        :String(body),
                             encoding    :'utf-8'
-                        }, function(error){
-                            cb(error);
-                        });
+                        }, cb);
                     }, function (error){
                         if(error) console.error(error);
+                        else console.log('notified '+url);
                     });
                 }
+                
+                console.log('pubsub body');
+                console.log(req.rawBody);
                 
                 if( undefined === entry || false === entry ) return res.send({});
                 if( !Array.isArray(entry) ) entry = [entry];
