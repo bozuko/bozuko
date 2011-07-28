@@ -205,6 +205,11 @@ exports.routes = {
                     };
                     console.error('user = '+inspect(user));
                     return Bozuko.transfer('user', user, user, function(error, result){
+                        if (result) {
+                            console.error('\nuser transfer = '+inspect(result)+'\n\n');
+                        } else {
+                            console.error('\n no transfer user\n');
+                        }
                         res.send( error || result );
                     });
                 });
