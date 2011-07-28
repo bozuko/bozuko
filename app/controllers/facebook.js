@@ -44,7 +44,7 @@ exports.routes = {
                 var id = req.param('id');
                 var ll = req.param('ll');
                 var msg = (req.param('message') || '').replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                
+
                 if( msg == '') msg = null;
 
                 if( !ll ){
@@ -78,7 +78,7 @@ exports.routes = {
 
                                 var contests = result.contests;
                                 var states = [];
-                                
+
                                 return async.forEachSeries(contests,
                                     function iterator(contest, next){
                                         Bozuko.transfer('game_state', contest.game_state, req.session.user, function(error, result){
@@ -118,7 +118,7 @@ exports.routes = {
     },
 
     '/facebook/:id/like.html': {
-        
+
         alias : '/facebook/:id/like_button.html',
 
         get: {
@@ -131,13 +131,13 @@ exports.routes = {
             },
 
             handler : function(req, res){
-                
+
                 var tmpl = ( /like_button/.test(req.url) ) ? 'like_button' : 'like';
                 if( tmpl == 'like_button' ){
                     res.locals.layout = false;
                 }
                 res.locals.user = req.session.user;
-                
+
                 return Bozuko.service('facebook').place({place_id: req.param('id')}, function( error, place){
                     if( error ){
                         res.locals.error = error;
@@ -181,12 +181,12 @@ exports.routes = {
          */
         post: {
             handler : function(req, res){
-                
+
                 var object = req.param('object');
                 var entry = req.param('entry');
-                
+
                 if( Bozuko.env() === 'api'){
-                    
+
                     // because api is the most stable, lets let that handle all these
                     // notifications and then alert the places we think are necessary
                     var urls = [
@@ -199,7 +199,10 @@ exports.routes = {
                         Bozuko.require('util/http').request({
                             method      :'post',
                             url         :url,
-                            body        :String(body),
+                            headers     : {
+                                'content-type': 'application/json'
+                            },
+                            body        :body,
                             encoding    :'utf-8'
                         }, function(error){
                             if( error ) return cb(error);
@@ -210,10 +213,10 @@ exports.routes = {
                         if(error) console.error(error);
                     });
                 }
-                
+
                 console.log('pubsub body');
                 console.log(req.rawBody);
-                
+
                 if( undefined === entry || false === entry ) return res.send({});
                 if( !Array.isArray(entry) ) entry = [entry];
                 switch(object){
