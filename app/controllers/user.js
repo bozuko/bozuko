@@ -1,4 +1,5 @@
 var Profiler = Bozuko.require('util/profiler');
+var inspect = require('util').inspect;
 
 exports.transfer_objects= {
     user: {
@@ -128,7 +129,7 @@ exports.routes = {
         aliases     :['/login/:service?'],
 
         get : function(req,res){
-            
+
             // if we are being redirected with a token, its internal
             if( req.param('token')){
                 // lets show the response screen
@@ -136,7 +137,7 @@ exports.routes = {
                 res.locals.title = 'You are Logged In';
                 return res.render('app/user/login_thanks')
             }
-            
+
             service = req.param('service') || 'facebook';
             if( req.param('return') ){
                 req.session.user_redirect = req.param('return');
@@ -202,6 +203,7 @@ exports.routes = {
                         logout: "/user/logout",
                         favorites: "/user/favorites"
                     };
+                    console.error('user = '+inspect(user));
                     return Bozuko.transfer('user', user, user, function(error, result){
                         res.send( error || result );
                     });
