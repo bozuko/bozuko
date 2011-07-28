@@ -172,7 +172,9 @@ auth.mobile = function(req, res, callback) {
                 }
             }
             console.error('expected: '+result);
-            console.error('challend_response: '+req.session.challenge_response);
+            console.error('user name: '+user.name);
+            console.error('challenge: '+user.challenge);
+            console.error('challenge_response: '+req.session.challenge_response);
             console.error('req.url: '+req.url);
             console.error('failing on challenge question');
             return callback(Bozuko.error('auth/mobile'));
