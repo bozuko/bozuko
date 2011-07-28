@@ -10,7 +10,7 @@ exports.request = function(config, callback){
     if( config instanceof String){
         config = {url:config};
     }
-    
+
     if( !callback ) {
         callback = function(){};
     }
@@ -62,7 +62,7 @@ exports.request = function(config, callback){
             headers: headers,
             method: method
         };
-        
+
     var request = http_.request(request_opts, function(response){
 
         var data = '';
@@ -158,7 +158,7 @@ exports.stream = function stream( _url, res, options, callback ){
             'last-modified',
             'cache-control',
             'expires',
-            'date',
+            'date'
         ]
         .forEach(function(header){
             if( headers[header] ) res.header(header, headers[header] );
