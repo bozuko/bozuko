@@ -8,7 +8,7 @@ module.exports = {
                 min_version: '1.0'
             },
             android:{
-                min_version: '1.1'
+                min_version: '1.0'
             }
         }
     },
