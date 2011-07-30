@@ -529,17 +529,165 @@ fieldset .x-fieldset-header {
 .page-preview .x-panel-body .sharing div {
   padding: 8px;
 }
-.contest-builder .builder-card .x-panel-body {
-  background: #f0f0f0;
+.x-datepicker-inner em {
+  font-style: normal;
+}
+.x-form-invalid-tip ul, .x-form-invalid-tip li {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+.contest-builder p {
+  margin: 1em 0;
+}
+.contest-builder .builder-card .intro {
+  color: #666;
+  margin-bottom: 1em;
+}
+.contest-builder .builder-card .builder-card {
+  background: #f0f0f0 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
+}
+.contest-builder .builder-card .builder-card-body {
+  padding: 20px 20px 10px;
+  background: transparent url("/images/desktop/app/builder/builder-card-bg.png?v2") 0 0 repeat-y;
 }
 .contest-builder .builder-card .x-field {
   margin-bottom: 10px;
 }
-.contest-builder .help-panel {
+.contest-builder .builder-card .card-nav-toolbar {
+  background-color: #f2f2f2;
+  background-image: url("/images/desktop/app/builder/builder-card-bg-right.png?v3");
+  background-position: 100% 0;
+  background-repeat: repeat-y;
+  padding-top: 4px;
+}
+.contest-builder .builder-card .card-nav-toolbar .x-box-inner {
+  background-image: url("/images/desktop/app/builder/builder-card-bg.png?v2");
+  backgground-position: 0 0;
+  margin-top: -4px;
+  margin-left: -2px;
+  padding-top: 2px;
+  padding-left: 2px;
+  background-repeat: repeat-y;
+}
+.contest-builder .builder-card .card-nav-toolbar .x-box-inner .x-toolbar-item {
+  margin-top: 4px;
+  margin-left: 2px;
+}
+.contest-builder .game-list img {
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-clip: padding-box;
+}
+.contest-builder .select-list .x-dataview-item {
+  background: #ddd;
+  border: 2px solid #ccc;
+  margin: 1px 1px 5px;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background-clip: padding-box;
+  transition: background 0.25s linear;
+  -moz-transition: background 0.25s linear;
+  -o-transition: background 0.25s linear;
+  -webkit-transition: background 0.25s linear;
+}
+.contest-builder .select-list .x-dataview-item img {
+  float: left;
+  margin: 6px;
+}
+.contest-builder .select-list .x-dataview-item .entry-method-body, .contest-builder .select-list .x-dataview-item .game-body {
+  padding: 4px 6px 4px 0;
+  margin-left: 110px;
+  color: #666;
+  font-size: 12px;
+}
+.contest-builder .select-list .x-dataview-item .entry-method-body .title, .contest-builder .select-list .x-dataview-item .game-body .title {
+  font-family: ArvoRegular;
+  font-size: 18px;
+  line-height: 1.6em;
+  color: #333;
+}
+.contest-builder .select-list .x-dataview-item .entry-method-body p, .contest-builder .select-list .x-dataview-item .game-body p {
+  margin-top: 0;
+}
+.contest-builder .select-list .x-dataview-item .entry-method-body .options, .contest-builder .select-list .x-dataview-item .game-body .options {
+  display: none;
+  line-height: 16px;
+}
+.contest-builder .select-list .x-dataview-item-over {
+  background: #eee;
+}
+.contest-builder .select-list .x-item-selected {
+  transition: background 0s linear;
+  -moz-transition: background 0s linear;
+  -o-transition: background 0s linear;
+  -webkit-transition: background 0s linear;
+  border-color: #00a24f;
   background: #fff;
+}
+.contest-builder .theme-list .theme {
+  position: relative;
+  margin: 6px;
+  width: 170px;
+  cursor: pointer;
+}
+.contest-builder .theme-list img {
+  height: 220px;
+  width: 170px;
+}
+.contest-builder .theme-list .theme-scroller {
+  overflow: auto;
+}
+.contest-builder .theme-list .title {
+  padding: 4px;
+  text-align: center;
+  font-size: 16px;
+  font-family: ArvoRegular;
+}
+.contest-builder .theme-list .description {
+  font-size: 11px;
   position: absolute;
-  top: 0;
-  height: 100%;
+  bottom: 5px;
+  left: 0;
+  padding: 5px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  width: 100%;
+  -moz-opacity: 0;
+  -khtml-opacity: 0;
+  opacity: 0;
+  transition: all 0.25s linear;
+  -moz-transition: all 0.25s linear;
+  -o-transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+.contest-builder .theme-list .theme-over .description {
+  -moz-opacity: 1;
+  -khtml-opacity: 1;
+  opacity: 1;
+  height: auto;
+}
+.contest-builder .theme-list .x-item-selected {
+  width: 174px;
+  margin: 4px;
+  transition: background 0s linear;
+  -moz-transition: background 0s linear;
+  -o-transition: background 0s linear;
+  -webkit-transition: background 0s linear;
+  border: 2px solid #00a24f;
+  background: #fff;
+}
+.contest-builder .help-panel .x-panel-body {
+  background: #fff;
   color: #666;
   line-height: 1.5em;
 }
@@ -547,6 +695,8 @@ fieldset .x-fieldset-header {
   padding: 10px;
 }
 .contest-builder .help-panel h3 {
+  font-family: ArvoRegular;
+  font-weight: normal;
   margin-bottom: 1em;
   color: #333;
 }
@@ -555,9 +705,33 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .builder-arrow {
   position: absolute;
-  right: -20px;
+  left: -20px;
   top: 0px;
-  background: transparent url("/images/desktop/app/builder/builder-arrow.png?v2") 100% 0 no-repeat;
+  background: transparent url("/images/desktop/app/builder/builder-arrow.png?v3") 100% 0 no-repeat;
   width: 11px;
-  height: 22px;
+  height: 24px;
+}
+.contest-builder .contest-preview {
+  padding: 10px;
+  color: #666;
+}
+.contest-builder .contest-preview h3 {
+  color: #666;
+  font-size: 14px;
+  font-family: ArvoRegular;
+  font-weight: normal;
+  margin-bottom: .6em;
+}
+.contest-builder .contest-preview .info-row {
+  margin-bottom: .6em;
+}
+.contest-builder .contest-preview .info-row .label {
+  padding: 2px 4px;
+  background: #f3f3f3;
+  font-size: .9em;
+  color: #999;
+  margin-bottom: .2em;
+}
+.contest-builder .contest-preview .info-row .value {
+  color: #333;
 }

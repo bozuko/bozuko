@@ -26,7 +26,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                 trackOver       :true,
                 overItemCls     :'x-dataview-item-over',
                 
-                cls             :'entry-list',
+                cls             :'select-list entry-list',
                 
                 emptyText       :'No Entry Methods',
                 deferEmptyText  :false,
@@ -56,7 +56,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                         ].join(''),
                         options: [
                             '<input type="checkbox" name="enable_like" id="',like_id,'" value="true" /> ',
-                            '<label for="',like_id,'">Enable Bonus Plays if the user likes you Facebook</label>'
+                            '<label for="',like_id,'">Enable Bonus Plays if the user likes your Facebook Page</label>'
                         ].join('')
                     },{
                         type: 'facebook/like',
@@ -131,6 +131,14 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
     watchOptions : function(){
         var me = this;
         me.dataview.getEl().select('.options input').on('change', me.updateRecord, me);
+        /*
+        me.dataview.getEl().select('.focus-field').on('focus', function(field){
+            Ext.fly(field).up('.x-dataview-item').focus();
+        });
+        me.dataview.getEl().select('.focus-field').on('blur', function(field){
+            Ext.fly(field).up('.x-dataview-item').blur();
+        });
+        */
     },
     
     validate : function(){

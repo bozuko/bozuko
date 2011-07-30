@@ -1,4 +1,6 @@
 var express = require('express'),
+    burl = Bozuko.require('util/url').create,
+    merge = Bozuko.require('util/functions').merge,
     fs = require('fs');
 
 var Game = module.exports = function(contest){
@@ -41,4 +43,17 @@ Game.prototype = {
         return this.config && this.config.name ? this.config.name : this.name;
     }
     
+};
+
+
+Game.parseThemeMeta = function(directory, game, themename, meta){
+    var base = {
+        theme: themename,
+        game: game
+    };
+    meta = merge(meta||{}, base);
+    if( meta.preview && !meta.preview.match(/^(http|\/)/) ){
+        meta.preview = burl('/games/'+game+'/themes/'+themename+'/'+meta.preview);
+    }
+    return meta;
 };
