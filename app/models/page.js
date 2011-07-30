@@ -721,7 +721,6 @@ Page.static('search', function(options, callback){
             };
         }
         
-        console.log(JSON.stringify(bozukoSearch));
         
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
@@ -731,8 +730,7 @@ Page.static('search', function(options, callback){
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
                 
-                console.log('page search found '+pages.length+' Bozuko results');
-
+                
                 var page_ids = [], fb_ids=[];
                 prepare_pages(pages, options.user, function(page){
                     var fb;
@@ -747,7 +745,6 @@ Page.static('search', function(options, callback){
                 if( !serviceSearch ){
                     pages.sort( sort_by('_distance') );
                     pages.sort( 'featured' );
-                    console.log('page search returning '+pages.length+' results');
                     return return_pages( pages );
                 }
 
