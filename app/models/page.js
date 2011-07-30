@@ -719,6 +719,9 @@ Page.static('search', function(options, callback){
                 $nin: featured_ids
             };
         }
+        
+        console.log(bozukoSearch);
+        
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
