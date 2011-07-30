@@ -89,7 +89,7 @@ exports.routes = {
                     res.locals.user = user;
                     res.locals.page = page;
                     res.locals.scripts.unshift(
-                        '/js/ext-4.0/lib/ext-all-debug.js',
+                        '/js/ext-4.0/lib/ext-all.js',
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(
@@ -134,7 +134,7 @@ exports.routes = {
                 
                 return Bozuko.models.Page.findById( page_id, function(error, page){
                     if( error ) throw error;
-                    if( !page || !user.manages(page) || !page.beta_agreement.signed ){
+                    if( !page || !~user.manages.indexOf(page) || !page.beta_agreement.signed ){
                         return res.redirect('/beta/agreement');
                     }
                     var redirect_url = '/beta/';
@@ -245,6 +245,19 @@ exports.routes = {
                     res.locals.layout = false;
                 }
                 res.render('site/content');
+            }
+        }
+    },
+    
+    '/beta/themes/:game' : {
+        get : {
+            handler : function( req, res ){
+                try{
+                    return res.send( {items: Bozuko.games[req.param('game')].themes} );
+                }catch(e){
+                    console.error(e);
+                    return res.send({items:[]});
+                }
             }
         }
     },

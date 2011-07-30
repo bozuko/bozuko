@@ -7,14 +7,21 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
     
     requires        :[
         'Bozuko.model.Contest',
-        'Bozuko.view.contest.builder.General'
+        'Bozuko.view.contest.builder.Preview',
+        'Bozuko.view.contest.builder.card.General',
+        'Bozuko.view.contest.builder.card.Entry',
+        'Bozuko.view.contest.builder.card.Game',
+        'Bozuko.view.contest.builder.card.GameOptions'
     ],
     
     initComponent : function(){
         var me = this;
         
         // create a new contest with the defaults
-        me.contest = new Bozuko.model.Contest();
+        if( !me.contest ){
+            me.contest = new Bozuko.model.Contest();
+            me.contest.data = {};
+        }
         
         me.dockedItems = [{
             xtype       :'toolbar',
@@ -46,15 +53,32 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         }];
         
         Ext.apply(me,{
-            layout              :'card',
-            activeItem          :0,
+            layout              :'border',
             defaults            :{
                 border              :false
             },
             items               :[{
-                xtype               :'contestbuildergeneral'
+                region              :'center',
+                layout              :'card',
+                activeItem          :0,
+                defaults            :{
+                    border              :false,
+                    contest             :me.contest
+                },
+                items: [{
+                    xtype               :'contestbuildergeneral'
+                },{
+                    xtype               :'contestbuilderentry'
+                },{
+                    xtype               :'contestbuildergame'
+                },{
+                    xtype               :'contestbuildergameoptions'
+                }]
             },{
-                xtype               :'contestbuildergeneral'
+                xtype               :'contestbuilderpreview',
+                width               :230,
+                region              :'east',
+                contest             :me.contest
             }]
         });
         me.callParent(arguments);
@@ -62,44 +86,101 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         // now that all the display elements are in there,
         // lets take a peak and initialize our stuff
         
-        me.cards = me.query('contestbuildercard');
+        me.preview = me.down('contestbuilderpreview');
         me.stepToolbar = me.down('toolbar[ref=steps]');
+        me.centerPanel = me.down('[region=center]');
         
-        Ext.Array.each( me.cards, function(card, i){
+        me.centerPanel.items.each(function(card, i){
             
-            var buttons = ['->'];
-            
-            if( i > 0 ) buttons.push({
-                text: 'Back'
-            });
-            
-            if( i === me.cards.length-1 ) buttons.push({
-                text: 'Finish',
-                style: 'margin-right: 0'
-            });
-            
-            else buttons.push({
-                text: "Next",
-                style: 'margin-right: 0'
-            });
-            
-            card.form.add({
-                xtype           :'toolbar',
-                ui              :'footer',
-                defaults        :{
-                    minWidth        :80,
-                    scale           :'medium'
-                },
-                items           :buttons
-            });
+            if( card.addNavigationButtons ){
+                var buttons = [];
+                if( i > 0 ) buttons.push('back');
+                if( i !== me.centerPanel.items.getCount()-1 ) buttons.push('next');
+                else buttons.push('finish');
+                card.addNavigationButtons( buttons );
+            }
             
             // add step to our toolbar
             me.stepToolbar.add({
-                text: (i+1)+'. '+card.name
-            })
+                text: (i+1)+'. '+card.name,
+                disabled: i!==0,
+                toggled: i===0,
+                handler: function(){
+                    me.goToCard(i);
+                }
+            });
+            
+            card.on('activate', me.onCardActivate, me);
+            card.on('back', me.back, me);
+            card.on('next', me.next, me);
+            card.on('finish', me.finish, me);
         });
         
+        me.stepButtons = me.stepToolbar.query('button');
+    },
+    
+    onCardActivate : function(card){
+        var me = this,
+            index = me.centerPanel.items.indexOf(card);
         
+        Ext.Array.each( me.stepButtons, function(stepBtn, i){
+            if( i <= index ){
+                stepBtn.setDisabled(false);
+            }
+            stepBtn.toggle( i === index );
+        });
+    },
+    
+    currentStep : function(){
+        var me = this;
+        return me.centerPanel.items.indexOf( me.activeCard() );
+    },
+    
+    activeCard : function(){
+        var me = this;
+        return me.centerPanel.getLayout().getActiveItem();
+    },
+    
+    next : function(btn){
+        var me = this;
+        me.goToCard( me.currentStep()+1 );
+        
+    },
+    back : function(btn){
+        var me = this
+        // TODO validate the current card
+        
+        me.goToCard( me.currentStep()-1 );
+        
+    },
+    finish : function(btn){
+        var me = this,
+            index = me.currentStep();
+    },
+    goToCard : function(index){
+        var me = this, valid;
+        
+        // validate current card
+        if( me.currentStep() < index && (valid = me.activeCard().validate())!==true ){
+            var title, message, defaultTitle = 'Uh-oh';
+            
+            if( Ext.isObject(valid) ){
+                title = valid.title||defaultTitle;
+                message = valid.message;
+            }
+            else if( Ext.isString(valid) ){
+                title = defaultTitle;
+                message = valid;
+            }
+            if( !valid ){
+                title = defaultTitle;
+                message = 'Please fix the errors on the form before moving on to the next step';
+            }
+            Ext.Msg.alert(title, message);
+            return;
+        }
+        
+        me.centerPanel.getLayout().setActiveItem( index );
     }
     
     

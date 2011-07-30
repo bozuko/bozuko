@@ -7,7 +7,8 @@ Ext.define( "Bozuko.lib.data.Model", {
             'beforesave',
             'save',
             'beforedelete',
-            'delete'
+            'delete',
+            'modify'
         );
         me.callParent( arguments );
     },
@@ -44,6 +45,12 @@ Ext.define( "Bozuko.lib.data.Model", {
             if( success && Ext.type(success) == 'function' ) success.apply( callbacks.scope || null, arguments );
         };
         me.self.load( me.getId(), callbacks );
+    },
+    
+    set : function(prop){
+        var me = this;
+        me.callParent(arguments);
+        me.fireEvent('modify', me);
     }
 
 });

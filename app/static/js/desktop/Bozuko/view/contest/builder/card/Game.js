@@ -20,7 +20,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 trackOver       :true,
                 overItemCls     :'x-dataview-item-over',
                 
-                cls             :'game-list',
+                cls             :'select-list game-list',
                 
                 emptyText       :'No Games',
                 deferEmptyText  :false,

@@ -276,7 +276,9 @@ Page.method('checkin', function(user, options, callback) {
 
             options.user = user;
             // options.link = 'http://bozuko.com';
-            options.link = self.service('facebook').data.link;
+            if( self.service('facebook') ){
+                options.link = self.service('facebook').data.link;
+            }
             options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
 
             // okay, lets try to give them entries on all open contests

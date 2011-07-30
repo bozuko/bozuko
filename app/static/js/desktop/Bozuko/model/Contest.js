@@ -52,7 +52,15 @@ Ext.define('Bozuko.model.Contest', {
     
     autoLoad: true,
     
-    getEntryType : function(){
+    getEntryConfig : function(){
+        var me = this,
+            cfg = me.get('entry_config');
+            
+        if( !cfg || !cfg.length) return false;
+        return cfg[0];
+    },
+    
+    getEntryType : function(plays){
         var me = this,
             type;
         var cfg = me.get('entry_config');
@@ -93,8 +101,21 @@ Ext.define('Bozuko.model.Contest', {
         }catch(e){
             type = 'Unknown';
         }
-        var tokens = cfg.tokens || 0;
-        return type + ' ('+tokens+' plays)';
+        if( plays !== false ){
+            var tokens = cfg.tokens || 0;
+            return type + ' ('+tokens+' plays)';
+        }
+        return type;
+    },
+    
+    getGameName : function(){
+        switch( this.get('game') ){
+            case 'slots':
+                return 'Slot Machine';
+            case 'scratch':
+                return 'Scratch Ticket';
+        }
+        return '';
     },
     
     getTotalEntries : function(){
