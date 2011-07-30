@@ -10,6 +10,7 @@ var _t = Bozuko.t,
     ObjectId = Schema.ObjectId,
     indexOf = Bozuko.require('util/functions').indexOf,
     async = require('async'),
+    inspect = require('util').inspect,
     rand = Bozuko.require('util/math').rand,
     Profiler = Bozuko.require('util/profiler')
 ;
@@ -720,7 +721,7 @@ Page.static('search', function(options, callback){
             };
         }
         
-        console.log(bozukoSearch);
+        console.log(JSON.stringify(bozukoSearch));
         
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
