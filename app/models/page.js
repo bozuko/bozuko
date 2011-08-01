@@ -10,6 +10,7 @@ var _t = Bozuko.t,
     ObjectId = Schema.ObjectId,
     indexOf = Bozuko.require('util/functions').indexOf,
     async = require('async'),
+    inspect = require('util').inspect,
     rand = Bozuko.require('util/math').rand,
     Profiler = Bozuko.require('util/profiler')
 ;
@@ -276,7 +277,9 @@ Page.method('checkin', function(user, options, callback) {
 
             options.user = user;
             // options.link = 'http://bozuko.com';
-            options.link = self.service('facebook').data.link;
+            if( self.service('facebook') ){
+                options.link = self.service('facebook').data.link;
+            }
             options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
 
             // okay, lets try to give them entries on all open contests
@@ -717,6 +720,8 @@ Page.static('search', function(options, callback){
                 $nin: featured_ids
             };
         }
+        
+        
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
@@ -724,7 +729,8 @@ Page.static('search', function(options, callback){
             
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
-
+                
+                
                 var page_ids = [], fb_ids=[];
                 prepare_pages(pages, options.user, function(page){
                     var fb;

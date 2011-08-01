@@ -345,7 +345,6 @@ Ext.define('Bozuko.controller.Contests' ,{
     onBuilderButtonClick : function(btn){
         // create a new
         var panel = btn.up('contestspanel');
-
         if( !panel.builder ){
             panel.builder = panel.add({
                 border: false,

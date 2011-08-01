@@ -118,8 +118,7 @@ exports.request = function(config, callback){
             config.onContinue.apply(this,arguments);
         });
     }
-    console.log( request_opts );
-    console.log( body );
+    
     if(body) request.write(body, encoding);
     request.end();
 

@@ -1,6 +1,6 @@
 module.exports = {
 
-    test_mode: false,
+    test_mode: true,
 
     client: {
         mobile:{
@@ -96,7 +96,7 @@ module.exports = {
 
     search: {
         // radius to search for "Nearby Games" in miles
-        nearbyRadius: 2,
+        nearbyRadius: 1000,
         nearbyLimit: 10,
         featuredResults: 1
     },
