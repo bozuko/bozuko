@@ -252,7 +252,7 @@ exports.routes = {
 
 
                 var options = {
-                    limit: parseInt(req.param('limit')) || 25,
+                    limit: parseInt(req.param('limit')) || Bozuko.cfg('test_mode', false) ? 100 : 25,
                     offset: parseInt(req.param('offset')) || 0,
                     user: req.session.user,
                     hideFeaturedPastThreshold: true
