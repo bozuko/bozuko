@@ -375,14 +375,31 @@ function initGames(app){
             // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Bozuko.require('/games/'+file);
             app.use('/games/'+name, express.static(Bozuko.dir+'/app/games/'+name+'/resources'));
-            // check for themes
-
+            Bozuko.games[name].themes = [];
+			// check for themes
             var themes_dir = dir+'/'+name+'/themes';
             if( existsSync(themes_dir) ) fs.readdirSync(themes_dir).forEach( function(theme){
-                // lets lisen on their resources folders
-                var stat = fs.statSync(themes_dir+'/'+theme);
+				if( theme == 'test' ) return;
+				
+				var stat = fs.statSync(themes_dir+'/'+theme);
                 if( !stat.isDirectory() ) return;
+				
+				// lets listen on their resources folders
                 app.use('/games/'+name+'/themes/'+theme, express.static(themes_dir+'/'+theme+'/resources'));
+				
+				// check for the meta file
+				var meta = themes_dir+'/'+theme+'/meta.js';
+				if( existsSync( meta ) ){
+					// the meta information to our themes array
+					Bozuko.games[name].themes.push(
+						Bozuko.require('core/game').parseThemeMeta(
+							themes_dir+'/'+theme,
+							name,
+							theme,
+							require( meta )
+						)
+					);
+				}
             });
 
         }

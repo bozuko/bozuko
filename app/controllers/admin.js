@@ -136,7 +136,7 @@ exports.routes = {
             }
         }
     },
-
+    
     '/admin' : {
 
         get : {
@@ -149,6 +149,18 @@ exports.routes = {
             handler: function(req,res){
                 if( req.device == 'touch' ) res.locals.layout = false;
                 res.render('admin/index');
+            }
+        }
+    },
+    
+    '/admin/themes/:game' : {
+        get : {
+            handler : function( req, res ){
+                try{
+                    return res.send( {items: Bozuko.games[req.get('game')].themes} );
+                }catch(e){
+                    return res.send({items:[]});
+                }
             }
         }
     },

@@ -228,8 +228,6 @@ EntryMethod.prototype.load = function(callback){
         prof = Profiler.create('entry.load'),
         force = false;
         
-        
-        
     if( arguments.length > 1 ){
         callback = arguments[1];
         force = arguments[0];
@@ -241,16 +239,6 @@ EntryMethod.prototype.load = function(callback){
             if( error ) return callback( error );
             if( !page ) return callback( Bozuko.error('contest/page_not_found'));
             self.page = page;
-            // always load the users internals...
-            if( self.user ){
-                return self.user.updateInternals(function(error){
-                    if( error ) return callback( error );
-                    return self._load(function(error){
-                        self._loaded = true;
-                        return callback(error);
-                    });
-                });
-            }
             return self._load(function(error){
                 self._loaded = true;
                 return callback(error);
@@ -278,10 +266,10 @@ EntryMethod.prototype.getNextEntryTime = function( callback ){
             // assume we have the contest
             if( !lastEntry ) return callback( null, new Date() );
             // check the timestamp on this bad boy.
-            var timestamp = lastEntry.timestamp;
-            timestamp.setTime( timestamp.getTime() + (self.config.duration||0));
-            now = new Date();
-            self._nextEntryTime = timestamp > now ? timestamp : now;
+            var timestamp = +lastEntry.timestamp;
+            timestamp += (self.config.duration||0);
+            now = Date.now();
+            self._nextEntryTime = new Date(timestamp > now ? timestamp : now);
             return callback(null, self._nextEntryTime);
         });
     });
