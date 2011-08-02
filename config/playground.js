@@ -100,8 +100,8 @@ module.exports = {
 
     search: {
         // radius to search for "Nearby Games" in miles
-        nearbyRadius: 1000,
-        nearbyLimit: 50,
+        nearbyRadius: 1,
+        nearbyLimit: 3,
         featuredResults: 1
     },
 
