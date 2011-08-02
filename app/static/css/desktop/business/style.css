@@ -177,6 +177,11 @@
   font-weight: normal;
   margin-bottom: .4em;
 }
+.winners-list .user-friend-count {
+  color: #999;
+  font-size: 11px;
+  margin-bottom: .2em;
+}
 .winners-list .prize-name {
   font-size: 14px;
   font-weight: bold;
