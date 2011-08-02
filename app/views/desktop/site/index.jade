@@ -22,10 +22,10 @@
           .bottom
             a.how-to-play(href="/how-to-play") How To Play
           
-            a.download.app-store(target="_blank", href="http://itunes.com/app/bozuko", title="Download for iPhone")
+            a.download.app-store(target="_blank", href=Bozuko.cfg('client.mobile.iphone.link','#'), title="Download for iPhone")
               img(src="/images/desktop/site/icon_app-store.png", title="Download for iPhone")
               
-            a.download.android-market(target="blank", href="https://market.android.com/details?id=com.bozuko.bozuko", title="Download for Android")
+            a.download.android-market(target="blank", href=Bozuko.cfg('client.mobile.android.link','#'), title="Download for Android")
               img(src="/images/desktop/site/icon_android-market.png", title="Download for Android")
   
   .businesses
