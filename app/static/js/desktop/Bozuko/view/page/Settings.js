@@ -101,6 +101,10 @@ Ext.define('Bozuko.view.page.Settings' ,{
                     anchor          :'0'
                 },
                 items           :[{
+                    xtype           :'textfield',
+                    name            :'image',
+                    fieldLabel      :'Image'
+                },{
                     xtype           :'checkbox',
                     name            :'active',
                     fieldLabel      :'Active'
