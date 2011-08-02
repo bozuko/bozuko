@@ -14,6 +14,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     style(type="text/css")
       html,body{ background: transparent; padding: 0; margin: 0; overflow: hidden; width: 50px; height: 20px !important;}
       body{ overflow: hidden;}
+      body.no-place{ background: #fff; }
       #like-button{ overflow: hidden; width: 50px; height: 20px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
       .like_button_loading{ background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat; position: relative; z-index: 1;}
       iframe{ background: transparent !important; }
@@ -130,3 +131,12 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
         touchKill.onclick = function(e){
           e.stopPropagation();
         }
+    -else
+      script(type="text/javascript")
+        window.location = 'bozuko://facebook/like_loaded'
+        window.onload = function(){
+          document.body.className = 'no-place';
+        }
+        document.ontouchmove = function (e) {
+            e.preventDefault();
+        };
