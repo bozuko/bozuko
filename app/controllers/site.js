@@ -107,10 +107,10 @@ exports.routes = {
                 }
                 else if(android){
                     // redirect to android store
-                    res.locals.redirect = Bozuko.cfg('client.mobile.android.link','/');
+                    res.locals.redirect = Bozuko.cfg('client.mobile.android.app_link','/');
                 }
                 else if(iphone){
-                    res.locals.redirect = Bozuko.cfg('client.mobile.iphone.link','/');
+                    res.locals.redirect = Bozuko.cfg('client.mobile.iphone.app_link','/');
                 }
                 return res.render('redirect');
             }
