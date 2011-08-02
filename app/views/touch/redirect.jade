@@ -1,0 +1,22 @@
+!!! 5
+html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/xhtml")
+  head
+    title= title
+    meta(charset="utf-8")
+    meta(name="viewport",content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
+  body
+    - if( !Bozuko.config.test_mode )
+      script(type="text/javascript")
+  
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-22885354-1']);
+        _gaq.push(['_trackPageview']);
+      
+      script(type="text/javascript",src="https://sssl.google-analytics.com/ga.js")
+    script(type="text/javascript")
+      window.location = "#{redirect}";
+      
+    p(style="font-family:Helvetica,Tahoma;font-size:12px;text-align: center;")
+      | If you are not automatically redirected, please  
+      a(href="#{redirect}") click here
+      
