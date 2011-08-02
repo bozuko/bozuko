@@ -65,15 +65,7 @@ Ext.define( 'Bozuko.view.contest.Entries', {
                     
                     getFriendCount : function(values){
                         try{
-                            var count = 0;
-                            Ext.each( values.user.services, function(service){
-                                if( service.name === 'facebook'){
-                                    count = service.internal.friends.length;
-                                    return false;
-                                }
-                                return true;
-                            });
-                            return count;
+                            return values.user.friend_count;
                         }catch(e){
                             return 0;
                         }
@@ -98,13 +90,10 @@ Ext.define( 'Bozuko.view.contest.Entries', {
                     
                     getUserName : function(values){
                         var name = values.user.name;
-                        if( values.user.services ) Ext.each(values.user.services,function(service){
-                            if( service.name == 'facebook' && service.data && service.data.link ){
-                                name ='<a href="'+service.data.link+'" target="_blank">'+name+'</a>';
-                                return false;
-                            }
-                            return true;
-                        });
+                        
+                        if( values.user.facebook_link ){
+                            name ='<a href="'+values.user.facebook_link+'" target="_blank">'+name+'</a>';
+                        }
                         return name;
                     }
                 }

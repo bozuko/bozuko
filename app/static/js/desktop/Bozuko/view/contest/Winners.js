@@ -53,6 +53,7 @@ Ext.define('Bozuko.view.contest.Winners' ,{
                     '<div class="winner-body">',
                         '<img src="{[this.getImage(values.user.image)]}" />',
                         '<div class="user-name">{[this.getUserName(values)]}</div>',
+                        '<div class="user-friend-count">{[this.getFriendCount(values)]} Friends</div>',
                         '<div class="prize-name">{prize.name}</div>',
                         '<div class="prize-timestamp">{[this.getFormattedDate(values.prize.timestamp)]}</div>',
                     '</div>',
@@ -74,6 +75,14 @@ Ext.define('Bozuko.view.contest.Winners' ,{
                         return image;
                     },
                     
+                    getFriendCount : function(values){
+                        try{
+                            return values.user.friend_count;
+                        }catch(e){
+                            return 0;
+                        }
+                    },
+                    
                     getFormattedDate : function(str){
                         var date = new Date();
                         date.setTime( Date.parse(str) );
@@ -86,13 +95,10 @@ Ext.define('Bozuko.view.contest.Winners' ,{
                     
                     getUserName : function(values){
                         var name = values.user.name;
-                        if( values.user.services ) Ext.each(values.user.services,function(service){
-                            if( service.name == 'facebook' && service.data && service.data.link ){
-                                name ='<a href="'+service.data.link+'" target="_blank">'+name+'</a>';
-                                return false;
-                            }
-                            return true;
-                        });
+                        
+                        if( values.user.facebook_link ){
+                            name ='<a href="'+values.user.facebook_link+'" target="_blank">'+name+'</a>';
+                        }
                         return name;
                     }
                 }
