@@ -92,12 +92,12 @@ html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",c
                 h3 Download
                 ul.download
                   li
-                    a.download.app-store(target="_blank", href="http://itunes.com/app/bozuko", title="Download for iPhone")
+                    a.download.app-store(target="_blank", href=Bozuko.cfg('client.mobile.iphone.link','#'))
                       img(src="/images/desktop/site/icon_app-store.png", title="Download for iPhone")
                   
                   li  
-                    a.download.android-market(href="#", title="Download for Android")
-                      img(src="/images/desktop/site/icon_android-market-cs.png", title="Download for Android")
+                    a.download.android-market(target="_blank", href=Bozuko.cfg('client.mobile.android.link','#'), title="Download for Android")
+                      img(src="/images/desktop/site/icon_android-market.png", title="Download for Android")
       
       .copyright
         .page-width

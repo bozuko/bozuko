@@ -88,9 +88,31 @@ exports.routes = {
     
     '/qr/:type?' : {
         get : {
+            
+            locals : {
+                device: 'touch',
+                layout: false
+            },
+            
             handler : function(req, res){
-                var type = req.param('type');
-                return res.redirect('/');
+                var type = req.param('type'),
+                    ua = req.header('user-agent') || '';
+                
+                // figure out if this is android or iphone.
+                var android = ua.match(/android/i),
+                    iphone = !android && ua.match(/i(phone|pad|pod)/i);
+                
+                if( !android && !iphone ){
+                    res.locals.redirect = '/';
+                }
+                else if(android){
+                    // redirect to android store
+                    res.locals.redirect = Bozuko.cfg('client.mobile.android.app_link','/');
+                }
+                else if(iphone){
+                    res.locals.redirect = Bozuko.cfg('client.mobile.iphone.app_link','/');
+                }
+                return res.render('redirect');
             }
         }
     },

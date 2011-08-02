@@ -5,9 +5,13 @@ module.exports = {
     client: {
         mobile:{
             iphone:{
+                link: 'http://itunes.com/app/bozuko',
+                app_link: 'http://itunes.com/app/bozuko',
                 min_version: '1.0'
             },
             android:{
+                link: 'https://market.android.com/details?id=com.bozuko.bozuko',
+                app_link: 'market://details?id=com.bozuko.bozuko',
                 min_version: '1.0'
             }
         }
