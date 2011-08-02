@@ -242,33 +242,31 @@ exports.routes = {
                 var service = req.param('service');
                 var query = req.param('query');
                 var favorites = req.param('favorites');
-
+                
                 if( req.param('throw_error')){
                     throw new Error('intentional error');
                 }
-
+                
                 if( !ll) return Bozuko.error('page/pages_no_ll').send(res);
-
-
-
+                
                 var options = {
-                    limit: parseInt(req.param('limit')) || Bozuko.cfg('test_mode', false) ? 100 : 25,
+                    limit: parseInt(req.param('limit')) || 25,
                     offset: parseInt(req.param('offset')) || 0,
                     user: req.session.user,
                     hideFeaturedPastThreshold: true
                 };
-
+                
                 var url_parsed = URL.parse(req.url);
                 var params = qs.parse(url_parsed.query);
-
+                
                 params['limit'] = options.limit;
                 params['offset'] = options.offset+options.limit;
-
+                
                 var next = url_parsed.pathname+'?'+qs.stringify(params);
-
+                
                 // first, we will try center
                 if( ll ){
-
+                    
                     var parts = ll.split(',');
                     if( parts.length != 2 ){
                         Bozuko.error('page/malformed_center').send(res);
