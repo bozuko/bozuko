@@ -88,6 +88,7 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                         fields:['value', 'text'],
                         data:[
                             {value:'default',text:'Default'},
+                            {value:'mexican_theme',text:'Mexican'},
                             {value:'alt',text:'Alternate'}
                         ]
                     }),

@@ -141,14 +141,14 @@ Slots.prototype.createResultImage = function(dest, icon_src, callback){
     var x3_src = __dirname+'/resources/x3.png';
     
     if(path.existsSync(dest)) return;
-    
+    console.error(icon_src);
     gd.openPng(
         x3_src,
-        function(x3, path){
+        function(err, x3, path){
             gd.openPng(
                 icon_src,
-                function(icon, path){
-                    icon.copyResampled(x3,10,10,0,0,60,60,icon.width,icon.height);
+                function(err, icon, path){
+					icon.copyResampled(x3,10,10,0,0,60,60,icon.width,icon.height);
                     x3.saveAlpha(1);
                     x3.savePng(dest, 0, gd.noop);
                     if( callback ) {
