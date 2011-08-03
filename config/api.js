@@ -79,7 +79,7 @@ module.exports = {
             page: 1000 * 60 * 60 * 4
         },
 
-        distance : 2600 /* feet */
+        distance : 5820 /* feet */
     },
 
     entry : {

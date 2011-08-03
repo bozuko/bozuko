@@ -218,7 +218,13 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/errorHandler')());
 
     if (Bozuko.env() != 'test') {
-        app.use(Bozuko.require('middleware/profiler')());
+        app.use(Bozuko.require('middleware/profiler')({
+			ignore: [
+				'/listen',
+				'/alive',
+				'/data'
+			]
+		}));
     }
 
     // setup basic authentication for development
@@ -248,7 +254,14 @@ function initApplication(app){
 	// app.use(Bozuko.require('middleware/location')());
 
     if (Bozuko.env() != 'test') {
-        app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
+        app.use(Bozuko.require('middleware/logger')({
+			ignore: [
+				'/listen',
+				'/alive',
+				'/data'
+			],
+			format: ':date [:remote-addr] :method :url :response-time'
+		}));
     }
     if( Bozuko.env() == 'playground' ){
         // app.use(Bozuko.require('middleware/debug')());
