@@ -218,7 +218,13 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/errorHandler')());
 
     if (Bozuko.env() != 'test') {
-        app.use(Bozuko.require('middleware/profiler')());
+        app.use(Bozuko.require('middleware/profiler')({
+			ignore: [
+				'/listen',
+				'/alive',
+				'/data'
+			]
+		}));
     }
 
     // setup basic authentication for development
@@ -250,6 +256,7 @@ function initApplication(app){
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/logger')({
 			ignore: [
+				'/listen',
 				'/alive',
 				'/data'
 			],
