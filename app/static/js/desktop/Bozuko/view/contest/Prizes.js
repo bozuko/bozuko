@@ -8,11 +8,12 @@ Ext.define('Bozuko.view.contest.Prizes', {
         
         
         Ext.apply( me, {
+            
+            autoScroll      :true,
+            
             items           :[{
                 xtype           :'dataview',
                 store           :me.contest.prizes(),
-                
-                autoScroll      :true,
                 
                 cls             :'prize-list bozuko-list',
                 disableSelection:true,
