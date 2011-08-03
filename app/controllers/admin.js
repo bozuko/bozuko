@@ -563,7 +563,7 @@ exports.routes = {
                         });
 
                         // get the users
-                        return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, function(error, users){
+                        return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, {'services.internal.friends':0,'services.internal.likes':0}, function(error, users){
                             if( error ) return error.send(res);
                             var user_map = {};
                             users.forEach(function(user){
@@ -648,7 +648,7 @@ exports.routes = {
                         objects.entries.forEach(function(entry){
                             if( !~ids.indexOf( entry.user_id ) ) ids.push(entry.user_id);
                         });
-                        return Bozuko.models.User.find({_id: {$in: ids}}, {
+                        return Bozuko.models.User.find({_id: {$in: ids}}, {'services.internal.friends':0,'services.internal.likes':0}, {
                             phones: 0,
                             challenge: 0,
                             last_internal_update: 0,
