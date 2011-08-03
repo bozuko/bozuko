@@ -29,8 +29,11 @@ Ext.define('Bozuko.view.contest.Prizes', {
                             '</table>',
                         '</div>',
                         '<div class="title">{name}</div>',
-                        '<div class="value">Value: ${value}</div>',
-                        '<div class="description">Description: {description}</div>',
+                        '<table class="info">',
+                            '<tr valign="top"><th>Value:</th><td>${value}</td></tr>',
+                            '<tr valign="top"><th>Description:</th><td>{description}</td></tr>',
+                            '<tr valign="top"><th>Instructions:</th><td>{instructions}</td></tr>',
+                        '</table>',
                     '</div>',
                     {
                         getWon : function(values){
@@ -44,7 +47,7 @@ Ext.define('Bozuko.view.contest.Prizes', {
                         },
                         getNumberString : function(total, number, string){
                             var percent = (number/total*100).toFixed(2);
-                            return '<tr><th>'+string+': </th><td><span class="number">'+number+'</span> <span class="percent">('+percent+'%)</span></td></tr>';
+                            return '<tr><th>'+string+': </th><td><span class="number">'+number+'</span> <span class="percent">'+percent+'%</span></td></tr>';
                         }
                     }
                 )
@@ -52,6 +55,9 @@ Ext.define('Bozuko.view.contest.Prizes', {
         });
         
         me.callParent( arguments );
+        me.dataview = me.down('dataview');
+        
+        me.contest.on('update', me.dataview.refresh, me.dataview);
     }
     
 });
