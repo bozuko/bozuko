@@ -248,7 +248,13 @@ function initApplication(app){
 	// app.use(Bozuko.require('middleware/location')());
 
     if (Bozuko.env() != 'test') {
-        app.use(express.logger({ format: ':date [:remote-addr] :method :url :response-time' }));
+        app.use(Bozuko.require('middleware/logger')({
+			ignore: [
+				'/alive',
+				'/data'
+			],
+			format: ':date [:remote-addr] :method :url :response-time'
+		}));
     }
     if( Bozuko.env() == 'playground' ){
         // app.use(Bozuko.require('middleware/debug')());
