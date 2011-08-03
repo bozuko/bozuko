@@ -30,4 +30,4 @@ MexicanTheme.prototype.name = path.basename(__dirname);
 MexicanTheme.prototype.base = burl('/games/slots/themes/'+path.basename(__dirname)+'/icons' );
 
 // this is clearly here. why won't it show up in fuzz?
-MexicanTheme.prototype.icon = burl('/games/slots/themes/'+path.basename(__dirname)+'/icons/mask.png' );
+MexicanTheme.prototype.icon = burl('/games/slots/themes/'+path.basename(__dirname)+'/icons/margarita.png' );
