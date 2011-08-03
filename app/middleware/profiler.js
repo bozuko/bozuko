@@ -25,10 +25,22 @@
  *  * @api public
  *  */
 
-module.exports = function profiler(){
+module.exports = function profiler(options){
+  options = options || {};
+  
+  var ignore = options.ignore || false;
+  if( ignore && !Array.isArray( ignore ) ) ignore = [ignore];
+  
   return function(req, res, next){
+    
+    if( ignore ) for(var i=0; i<ignore.length; i++){
+      if( ignore[i] === req.url ) return next();
+    }
+    
     var end = res.end
       , start = snapshot();
+      
+    
 
     // state snapshot
     function snapshot() {
@@ -45,7 +57,7 @@ module.exports = function profiler(){
       compare(req, start, snapshot());
     };
 
-    next();
+    return next();
   };
 };
 

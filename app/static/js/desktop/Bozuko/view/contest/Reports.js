@@ -5,6 +5,7 @@ Ext.define('Bozuko.view.contest.Reports', {
     
     requires : [
         'Bozuko.view.contest.Overview',
+        'Bozuko.view.contest.Prizes',
         'Bozuko.view.chart.Basic',
         'Bozuko.view.contest.Players'
     ],
@@ -44,16 +45,29 @@ Ext.define('Bozuko.view.contest.Reports', {
                 border          :false
             },{
                 region          :'center',
-                xtype           :'bozukochartbasic',
-                contest_id      :me.record.get('_id'),
+                xtype           :'tabpanel',
                 border          :false,
-                bodyPadding     :10,
-                autoScroll      :true
+                activeTab       :0,
+                defaults        :{
+                    border          :false
+                },
+                items           :[{
+                    xtype           :'bozukochartbasic',
+                    title           :'Performance',
+                    contest_id      :me.record.get('_id'),
+                    bodyPadding     :10,
+                    autoScroll      :true
+                },{
+                    title           :'Prizes',
+                    xtype           :'contestprizes',
+                    contest         :me.record
+                }]
             },{
                 xtype           :'contestplayers',
                 region          :'east',
+                style           :'border-right-width: 0 !important',
                 width           :250,
-                margin          :'2 2 2',
+                margin          :'0 0 0 2',
                 contest_id      :me.record.get('_id')
             }]
         });
