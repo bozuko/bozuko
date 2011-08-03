@@ -740,3 +740,30 @@ fieldset .x-fieldset-header {
 .contest-builder .contest-preview .info-row .value {
   color: #333;
 }
+.prize-list .x-dataview-item {
+  cursor: default;
+}
+.prize-list .title {
+  font-size: 16px;
+  margin-bottom: .4em;
+}
+.prize-list .description {
+  color: #666;
+}
+.prize-list .numbers {
+  float: right;
+  margin-left: 10px;
+}
+.prize-list .numbers .number {
+  font-weight: bold;
+}
+.prize-list .numbers .percent {
+  color: #666;
+}
+.prize-list .numbers th {
+  padding: 2px 4px 2px 0;
+}
+.prize-list .value {
+  color: #666;
+  margin: .4em 0;
+}
