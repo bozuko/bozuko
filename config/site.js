@@ -106,7 +106,7 @@ module.exports = {
         auth: false,
         ssl: true,
 		ssl_config:{
-			key : '/ssl/wildcard/bozuko.com.key',
+			key : '/ssl/wildcard/wildcard.bozuko.com.key',
 			ca : '/ssl/wildcard/gd_bundle.crt',
 			cert: '/ssl/wildcard/bozuko.com.crt'
 		},
