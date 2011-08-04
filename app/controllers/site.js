@@ -490,8 +490,18 @@ exports.routes = {
     },
     '/spinners' : {
         get : {
+            title: 'Bozuko - The Lowell Spinner',
+            locals: {
+                device      : 'desktop',
+                html_classes: ['site-business-page'],
+                head_scripts: [
+
+                ]
+            },
+
             handler : function(req,res){
-                return res.redirect('/p/4e3715f9536da4954d0000d7');
+                res.locals.content = Content.get('site/customers/spinners.html');
+                return res.render('site/content');
             }
         }
     }
