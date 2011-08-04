@@ -196,10 +196,10 @@ exports.routes = {
                 };
                 var sent = false,
                     send = function(){
-                    clearTimeout( timeout );
-                    unsubscribe();
-                    if( !sent && !res._headersSent ) res.send(messages);
-                };
+                        clearTimeout( timeout );
+                        unsubscribe();
+                        if( !sent && !res._headersSent ) res.send(messages);
+                    };
 
                 var seen = [];
 
