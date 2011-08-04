@@ -31,7 +31,8 @@ module.exports = {
             if( !this.data.user || this.data.user.phone !== 'iphone' ){
                 return "You are too far away from this place to checkin.";
             }
-            return "You are too far away from this place to checkin. Please try going back to the list and pulling down to refresh your location.";
+            return "You are too far away from this place to checkin. "+
+                "Please try going back to the list and pulling down to refresh your location.";
         },
         detail: "User is too far away to checkin to this location."
     }
