@@ -490,7 +490,7 @@ exports.routes = {
     },
     '/spinners' : {
         get : {
-            title: 'Bozuko - The Lowell Spinner',
+            title: 'Bozuko - Lowell Spinners',
             locals: {
                 device      : 'desktop',
                 html_classes: ['site-business-page'],
