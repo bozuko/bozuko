@@ -1,5 +1,6 @@
 var events = require('events'),
     util = require('util'),
+    filter = Bozuko.require('util/functions').filter,
     ObjectId = require('mongoose').Types.ObjectId
     ;
 
@@ -12,10 +13,10 @@ var PubSub = module.exports = function(){
     self.running = false;
     self.last_id = false;
     self.max = 100;
-    self.threshold = Bozuko.getConfigValue( 'pubsub.cleanup.threshold', 1000 * 60 * 60 * 2); // 2 hours
+    self.threshold = Bozuko.cfg( 'pubsub.cleanup.threshold', 1000 * 60 * 60 * 2); // 2 hours
     self.poll_timeout = null;
-    self.poll_interval = Bozuko.getConfigValue( 'pubsub.poll.interval', 500 );
-    self.cleanup_interval = Bozuko.getConfigValue( 'pubsub.cleanup.interval', 1000 * 60 * 10); // 10 minutes
+    self.poll_interval = Bozuko.cfg( 'pubsub.poll.interval', 1000 );
+    self.cleanup_interval = Bozuko.cfg( 'pubsub.cleanup.interval', 1000 * 60 * 10); // 10 minutes
     self.cleanup_timeout = null;
     self.start();
 };
@@ -113,6 +114,8 @@ PubSub.prototype.onItem = function(item){
 
 PubSub.prototype.publish = function(type, content){
     var self = this;
+    
+    content = filter(content);
     
     var msg = new self.model({
         timestamp: new Date(),
