@@ -19,7 +19,7 @@ MexicanTheme.prototype.icons = {
     'nachos'        :'nachos.png',
     'sculpture'     :'sculpture.png',
     'shakers'       :'shakers.png',
-    'skull'         :'skull.png',
+    //'skull'         :'skull.png',
     'temple'        :'temple.png',
     'tequila'       :'tequila.png',
     'free_spin'     :'free_spin.png'
