@@ -7,10 +7,12 @@ var BozukoError = module.exports = function(name,message,data,code,title){
     this.data = data;
     if( code ) this.code = code;
     if( title ) this.title = title;
-    if( message instanceof Function)
-        this.generateMessage(message);
-    else
+    if( message instanceof Function){
+        this.message = message.apply(this)
+    }
+    else{
         this.message = message;
+    }
 };
 
 BozukoError.prototype.__proto__ = Error.prototype;
@@ -26,13 +28,9 @@ Error.prototype.toTransfer = function(callback){
     return Bozuko.transfer('error', this, null, callback);
 };
 
-proto.generateMessage = function(fn){
-    this.message = fn.apply(this);
-};
-
 Error.prototype.send = function(res){
     console.error('send '+this.name+": "+this.message);
-    Bozuko.publish('error/send', this);
+    Bozuko.publish('error/send', {message: this.message, name:this.name, code: this.code, stack: this.stack} );
     console.error('send '+this.name+": "+this.message);
     var code = this.code;
     this.toTransfer(function(error, result){
