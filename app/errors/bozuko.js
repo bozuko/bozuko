@@ -36,5 +36,14 @@ module.exports = {
     unauthorized_request: {
         title: "Unauthorized request",
         message: "You are not allowed to do that!"
+    },
+    
+    test: {
+        code: 500,
+        title: "Fall down go boom!",
+        message: function(){
+            return "What the hell is happening?";
+        },
+        detail: "Please give us more information"
     }
 };
