@@ -105,6 +105,11 @@ module.exports = {
     server: {
         auth: false,
         ssl: true,
+		ssl_config:{
+			key : '/ssl/bozuko.com/bozuko.com.key',
+			ca : '/ssl/bozuko.com/gd_bundle.crt',
+			cert: '/ssl/bozuko.com/bozuko.com.crt'
+		},
         host: 'bozuko.com',
         port: 443
     },
