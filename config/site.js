@@ -111,7 +111,7 @@ module.exports = {
 
     pubsub: {
         poll: {
-            interval: 500
+            interval: 1000
         },
         cleanup: {
             threshold: 1000 * 60 * 60 * 2,
