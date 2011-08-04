@@ -27,7 +27,7 @@ module.exports = {
     too_far: {
         code: 500,
         title: "So far away...",
-        message: "You are too far away from this place to checkin. ",
+        message: "You are too far away from this place to checkin. Please try refreshing the Nearby list.",
         detail: "User is too far away to checkin to this location."
     }
 
