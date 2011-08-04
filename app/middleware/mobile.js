@@ -47,6 +47,11 @@ module.exports = function mobile() {
                 // force an update
                 return Bozuko.error('bozuko/update').send(res);
             }
+            
+            if( req.session.user ){
+                req.session.user.phone = key;
+            }
+            
         }
 
         return next();
