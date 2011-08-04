@@ -487,6 +487,23 @@ exports.routes = {
                 });
             }
         }
+    },
+    '/spinners' : {
+        get : {
+            title: 'Bozuko - Lowell Spinners',
+            locals: {
+                device      : 'desktop',
+                html_classes: ['site-business-page'],
+                head_scripts: [
+
+                ]
+            },
+
+            handler : function(req,res){
+                res.locals.content = Content.get('site/customers/spinners.html');
+                return res.render('site/content');
+            }
+        }
     }
 };
 
