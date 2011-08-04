@@ -487,6 +487,13 @@ exports.routes = {
                 });
             }
         }
+    },
+    '/spinners' : {
+        get : {
+            handler : function(req,res){
+                return res.redirect('/p/4e3715f9536da4954d0000d7');
+            }
+        }
     }
 };
 
