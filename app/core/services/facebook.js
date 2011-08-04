@@ -262,18 +262,29 @@ FacebookService.prototype.checkin = function(options, callback){
         return callback(null, {id:134574646614657});
     }
     
-    
     return facebook.graph('/'+options.place_id,{
         user: options.user,
-        params: {fields:'location'}
+        params: {fields:'location,name'}
     },function(error, result){
         if( error ) return callback( error );
+        
         if( !result || !result.location ) return callback( Bozuko.error('checkin/non_location') );
         coords = [result.location.longitude, result.location.latitude];
+        
         var d = Geo.distance( options.ll, coords, 'mi' );
+
         if( d > Bozuko.cfg('checkin.distance', 600) / 5280 ){
             // too far...
-            return callback( Bozuko.error('checkin/too_far') );
+            console.error(
+                "\n\n********Too Far Away Error*********\n"+
+                "User is "+(Geo.formatDistance(d))+' away\n'+
+                "Name: "+options.user.name+"\n"+
+                "Place: "+result.name+"\n"+
+                "Facebook ID "+options.place_id+"\n"+
+                "User Coords: "+options.ll.slice().reverse().join(',')+"\n"+
+                "Place Coords: "+coords.slice().reverse().join(',')+"\n"
+            );
+            return callback( Bozuko.error('checkin/too_far', {user: options.user}) );
         }
         return facebook.graph('/me/checkins',{
             user: options.user,
