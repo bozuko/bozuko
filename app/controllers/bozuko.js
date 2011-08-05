@@ -230,8 +230,8 @@ exports.routes = {
                             continue;
                         }
                         if( Array.isArray(filters) ){
-                            for( var i=0; i<filters.length && !add; i++){
-                                var filter = filters[i];
+                            for( var j=0; j<filters.length && !add; j++){
+                                var filter = filters[j];
 
                                 if( filter === true ){
                                     add=true;
@@ -242,8 +242,8 @@ exports.routes = {
                                     length = keys.length,
                                     match = 0;
 
-                                for(var i=0; i<length && !add; i++){
-                                    var key = keys[i];
+                                for(var k=0; k<length && !add; k++){
+                                    var key = keys[k];
                                     if( msg[key] && String(msg[key]) === String(filter[key]) ){
                                         match++;
                                     }
