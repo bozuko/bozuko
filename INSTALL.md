@@ -91,6 +91,10 @@ Restart ssh for the changes to take effect.
 
     emacs /etc/init/bozuko.conf
 
+### Configure bozuko logrotate script for the proper user
+
+    emacs /etc/logrotate.d/bozuko
+
 ## User Install
 
 Login as the appropriate user and run the following commands
