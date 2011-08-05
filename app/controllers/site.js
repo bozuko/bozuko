@@ -59,7 +59,7 @@ exports.afterRoute = function(){
 
     app.use(function(req,res){
         
-        if( req.url.match(/^\/(admin|beta).*/ )){
+        if( req.url.match(/^\/(admin|beta|listen).*/ )){
             return res.redirect('https://dashboard.bozuko.com'+req.url);
         }
         
