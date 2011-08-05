@@ -6,6 +6,7 @@ module.exports = {
         only: [
             'beta',
             'admin',
+			'bozuko',
             'mycroft'
         ]
     },
