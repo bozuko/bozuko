@@ -127,7 +127,7 @@ PubSub.prototype.publish = function(type, content){
         /**
          * TODO - decide if we should just wait on this.
          */
-        self.poll(true);
+        // self.poll(true);
     });
 };
 
