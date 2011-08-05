@@ -527,7 +527,7 @@ initTransferObjects();
 
 var PubSub = Bozuko.require('core/pubsub');
 Bozuko.pubsub = new PubSub();
-Bozuko.pubsub.setMaxListeners(0);
+Bozuko.pubsub.setMaxListeners(20);
 Bozuko.publish = function(){
 	Bozuko.pubsub.publish.apply( Bozuko.pubsub, arguments );
 };
