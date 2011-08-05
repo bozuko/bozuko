@@ -107,7 +107,7 @@ module.exports = {
 			ca : '/ssl/wildcard/gd_bundle.crt',
 			cert: '/ssl/wildcard/bozuko.com.crt'
 		},
-        host: 'admin.bozuko.com',
+        host: 'dashboard.bozuko.com',
         port: 443
     },
 
