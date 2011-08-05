@@ -220,9 +220,11 @@ function initApplication(app){
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/profiler')({
 			ignore: [
+				/*
 				'/listen',
 				'/alive',
 				'/data'
+				*/
 			]
 		}));
     }
@@ -256,9 +258,11 @@ function initApplication(app){
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/logger')({
 			ignore: [
+				/*
 				'/listen',
 				'/alive',
 				'/data'
+				*/
 			],
 			format: ':date [:remote-addr] :method :url :response-time'
 		}));
