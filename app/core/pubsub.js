@@ -138,10 +138,10 @@ PubSub.prototype.since = function(id, callback){
 PubSub.prototype.subscribe = function(type, callback){
     // count events
     //console.error('pubsub subscribe: '+type+' '+util.inspect( this._events ) );
-    this.on(type, callback);
+    // this.on(type, callback);
 };
 
 PubSub.prototype.unsubscribe = function(type, callback){
     //console.error('pubsub unsubscribing: '+type+' '+util.inspect( this._events ) );
-    this.removeListener(type, callback);
+    // this.removeListener(type, callback);
 };
