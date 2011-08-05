@@ -46,7 +46,7 @@ var proc = cluster( './app' )
         if( env === 'api' ){
             Bozuko.initFacebookPubSub();
         }
-        if( env === 'site' || env === 'playground' ){
+        if( env === 'site' || env === 'playground' || env == 'dashboard' ){
             Bozuko.initHttpRedirect();
         }
     }
