@@ -58,7 +58,12 @@ exports.afterRoute = function(){
         app = self.app;
 
     app.use(function(req,res){
-        self.refs.notFound(req,res);
+        
+        if( req.url.match(/^\/(admin|beta).*/ )){
+            return res.redirect('https://admin.bozuko.com'+req.url);
+        }
+        
+        return self.refs.notFound(req,res);
     });
 
     app.error(function(err,req,res,next){
@@ -68,6 +73,7 @@ exports.afterRoute = function(){
 };
 
 exports.routes = {
+    
     '/' : {
         get : {
 
