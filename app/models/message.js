@@ -5,9 +5,10 @@ var mongoose = require('mongoose'),
 ;
 
 var Message = module.exports = new Schema({
+    _id                     :{type: Number,     index: true},
     timestamp               :{type: Date,       index: true},
     type                    :{type: String},
-    content                 :{}
+    message                 :{}
 });
 
 Message.plugin( NativePlugin );
