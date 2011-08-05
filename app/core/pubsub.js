@@ -23,7 +23,6 @@ var PubSub = module.exports = function(){
      */
     setTimeout(function(){
         if( Bozuko.isMaster ) return;
-        console.error('apparently i am not master '+process.title+' '+require('util').inspect(process.title.match(/[0-9]+/)));
         
         var stagger = self.poll_interval / 4,
             id = parseInt(process.title.match(/[0-9]+/)[0], 10);
@@ -51,8 +50,6 @@ PubSub.prototype.poll = function(now){
 
 PubSub.prototype._poll = function(){
     var self = this;
-    
-    console.error(process.title+' _polling');
     
     var selector = {};
     if( self.last_id ){
