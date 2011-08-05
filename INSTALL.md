@@ -87,6 +87,10 @@ Restart ssh for the changes to take effect.
 
     restart ssh
 
+### Configure bozuko upstart script for the proper user
+
+    emacs /etc/init/bozuko.conf
+
 ## User Install
 
 Login as the appropriate user and run the following commands

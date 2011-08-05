@@ -1,4 +1,4 @@
-export NODE_VER=v0.4.8
+export NODE_VER=`cat ~/bozuko/node_version`
 
 function install_nvm() {
     echo "*** Installing nvm"
