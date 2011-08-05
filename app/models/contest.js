@@ -86,7 +86,7 @@ Contest.method('getOfficialRules', function(){
             winners_list_url : 'https://bozuko.com/p/'+this.page_id+'/winners/'+this.id
         };
         var map = [
-            "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", 
+            "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth",
             "Ninth", "Tenth", "Eleventh", "Twelvth", "Thirteenth", "Fourteenth", "Fifteenth",
             "Sixteenth", "Seventeenth", 'Eighteenth', "Twentieth", "Twentyfirst", "Twentysecond",
             "Twentythird", "Twentyfouth", "Twentyfifth", "Twentysixth", "Twenthseventh", "Twentyeigth",
@@ -96,7 +96,7 @@ Contest.method('getOfficialRules', function(){
             consolation_prizes = this.consolation_prizes.slice(),
             self = this,
             prizes_str = '';
-            
+
         prizes.sort( function(a, b){
             return b.value - a.value;
         });
@@ -109,28 +109,28 @@ Contest.method('getOfficialRules', function(){
             prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
             if( prize.details ) prizes_str+= prizes.details+' ';
             var gcd = getGCD( prize.total, self.total_plays );
-            
+
             prizes_str+= 'Odds of winning are '+(prize.total/gcd)+' / '+ (self.total_plays/gcd)+'. ';
             total = prize.value * prize.total;
         });
-        
+
         consolation_prizes.forEach(function(prize, i){
             var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
             prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
             if( prize.details ) prizes_str+= prizes.details+' ';
             var gcd = getGCD( prize.total, self.total_plays );
-            
+
             prizes_str+= 'Odds of winning are '+(prize.total/gcd)+' / '+ (self.total_plays/gcd)+'. ';
             total = prize.value * prize.total;
         });
-        
+
         replacements.prizes = prizes_str;
         replacements.arv = '$'+total;
-        
+
         var config = this.entry_config[0];
         var entryMethod = Bozuko.entry( config.type );
         replacements.entry_requirement = entryMethod.getEntryRequirement();
-        
+
         rules = rules.replace(/\{\{([a-zA-Z0-9_-]+)\}\}/g, function(match, key){
             return replacements[key] || '';
         });
@@ -248,7 +248,7 @@ Contest.method('publish', function(callback){
         prize.redeemed = 0;
     });
 
-    this.total_entries = total_prizes * this.win_frequency;
+    this.total_entries = Math.ceil(total_prizes * this.win_frequency);
     this.active = true;
     this.generateResults( function(error, results){
         if( error ) return callback(error);
@@ -384,30 +384,30 @@ Contest.method('loadGameState', function(user, callback){
             contest: self,
             game_over: false
         };
-    
+
     self.game_state = state;
     return async.series([
-        
+
         function update_user(cb){
             if( user ){
                 return user.updateInternals(function(error){
                     if( error ) return cb(error);
-                    
+
                     return self.getUserInfo(user._id, function(err, info){
                         if (err) return callback(err);
                         if (info.tokens) state.user_tokens = info.tokens;
                         return cb();
                     });
-                    
+
                 });
             }
             return cb();
         },
-        
+
         function load_entry_method(cb){
             self.loadEntryMethod(user, cb);
         },
-        
+
         function load_state(cb){
             // Contest is over for this user
             if (state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
@@ -417,19 +417,19 @@ Contest.method('loadGameState', function(user, callback){
                 state.button_enabled = false;
                 return cb();
             }
-    
+
             return self.entry_method.getButtonText( state.user_tokens, function(error, text){
                 if( error ) return cb(error);
                 state.button_text= text;
-                
+
                 return self.entry_method.getNextEntryTime( function(error, time){
                     if( error ) return cb( error );
                     state.next_enter_time = time;
-    
+
                     return self.entry_method.getButtonEnabled( state.user_tokens, function(error, enabled){
                         if( error ) return cb( error);
                         state.button_enabled = enabled;
-                        
+
                         return cb();
                     });
                 });
@@ -533,7 +533,7 @@ Contest.method('startPlay', function(user, callback) {
         min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration),
         _uuid = uuid()
         ;
-    
+
     Bozuko.models.Entry.findAndModify(
         {contest_id: self._id, user_id: user_id, timestamp: {$gt :min_expiry_date}, tokens: {$gt : 0}},
         [],
@@ -773,7 +773,7 @@ Contest.method('savePrize', function(opts, callback) {
                 user_prize.barcode_image = burl('/game/'+self._id+'/prize/'+opts.prize_index+'/barcode/'+opts.prize_count);
             }
         }
-        
+
         // this 'if' is for backwards compatability
         if( prize.won || prize.won === 0) Bozuko.models.Contest.collection.update(
             {'prizes._id':prize._id},
@@ -782,7 +782,7 @@ Contest.method('savePrize', function(opts, callback) {
                 if( error ) console.error( error );
             }
         );
-        
+
         return user_prize.save(function(err) {
             if (err) return callback(err);
             return callback(null, user_prize);
