@@ -132,16 +132,17 @@ PubSub.prototype.publish = function(type, content){
 };
 
 PubSub.prototype.since = function(id, callback){
-    this.model.nativeFind({_id: {$gt: ObjectId(id)}}, {}, {sort: {_id: 1}}, callback);
+    // this.model.nativeFind({_id: {$gt: ObjectId(id)}}, {}, {sort: {_id: 1}}, callback);
+    return callback(null, []);
 };
 
 PubSub.prototype.subscribe = function(type, callback){
     // count events
     //console.error('pubsub subscribe: '+type+' '+util.inspect( this._events ) );
-    // this.on(type, callback);
+    this.on(type, callback);
 };
 
 PubSub.prototype.unsubscribe = function(type, callback){
     //console.error('pubsub unsubscribing: '+type+' '+util.inspect( this._events ) );
-    // this.removeListener(type, callback);
+    this.removeListener(type, callback);
 };
