@@ -124,10 +124,7 @@ PubSub.prototype.publish = function(type, content){
     });
     
     msg.save(function(){
-        /**
-         * TODO - decide if we should just wait on this.
-         */
-        // self.poll(true);
+       
     });
 };
 
