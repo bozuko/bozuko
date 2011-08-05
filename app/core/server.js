@@ -13,8 +13,6 @@ if( Bozuko.getConfig().server.ssl ){
         ca: fs.readFileSync(Bozuko.dir+Bozuko.cfg('server.ssl_config.ca', '/ssl/wildcard/gd_bundle.crt')),
         cert: fs.readFileSync(Bozuko.dir+Bozuko.cfg('server.ssl_config.cert', '/ssl/wildcard/bozuko.com.crt'))
     };
-    console.log(ssl_config);
-    
     app = express.createServer(ssl_config);
 }
 else{
