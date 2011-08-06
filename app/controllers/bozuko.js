@@ -1,4 +1,5 @@
 var content = Bozuko.require('util/content'),
+    filterFn = Bozuko.require('util/functions').filter,
     Profiler = Bozuko.require('util/profiler')
 ;
 
@@ -194,25 +195,30 @@ exports.routes = {
                     req.connection.removeListener('error', unsubscribe);
                     prof.stop();
                 };
-                var sent = false,
+                var seen = [],
+                    sent = false,
                     send = function(){
                         clearTimeout( timeout );
                         unsubscribe();
                         if( !sent && !res._headersSent ) res.send(messages);
                     };
 
-                var seen = [];
-
-                var onItem = function(msg, type, timestamp, _id){
+                var onItem = function(item){
+                    
+                    var msg = item.message,
+                        type = item.type,
+                        timestamp = item.timestamp,
+                        _id = item._id;
+                    
                     var prof = new Profiler('/controllers/bozuko/listen/onItem');
                     var all_filters = [body.listeners[type],body.listeners['*']],
                         add = false;
 
 
-                    if( ~seen.indexOf(String(_id)) ){
+                    if( ~seen.indexOf(+item._id) ){
                         return;
                     }
-                    seen.push(String(_id));
+                    seen.push(+item._id);
                     // i don't think there will be more than 20 distinct listeners per event...
                     if( seen.length > 20 ) seen.shift();
 
@@ -224,8 +230,8 @@ exports.routes = {
                             continue;
                         }
                         if( Array.isArray(filters) ){
-                            for( var i=0; i<filters.length && !add; i++){
-                                var filter = filters[i];
+                            for( var j=0; j<filters.length && !add; j++){
+                                var filter = filters[j];
 
                                 if( filter === true ){
                                     add=true;
@@ -236,8 +242,8 @@ exports.routes = {
                                     length = keys.length,
                                     match = 0;
 
-                                for(var i=0; i<length && !add; i++){
-                                    var key = keys[i];
+                                for(var k=0; k<length && !add; k++){
+                                    var key = keys[k];
                                     if( msg[key] && String(msg[key]) === String(filter[key]) ){
                                         match++;
                                     }
@@ -252,19 +258,16 @@ exports.routes = {
                         if( !messages.length ){
                             setTimeout(send, buffer);
                         }
-                        messages.push({
-                            type: type,
-                            message: msg,
-                            timestamp: timestamp,
-                            _id: _id
-                        });
+                        messages.push(filterFn(item));
                     }
                     prof.stop();
                 };
 
                 var subscribe = function(){
                     var prof = new Profiler('/controllers/bozuko/listen/subscribe');
-                    // well, if its listening for everything, than just return everything, don't bother with individual listeners
+                    
+                    // well, if its listening for everything, than just return everything,
+                    // don't bother with individual listeners
                     if( body.listeners['*'] && body.listeners['*'] === true || (Array.isArray(body.listeners['*']) && ~body.listeners['*'].indexOf(true)) ){
                         body.listeners = {'*':[true]};
                     }
@@ -272,8 +275,8 @@ exports.routes = {
 
                         // distinct callbacks - we need to create a separate
                         // one for each event / filter
-                        var listener = function(msg, type, timestamp, _id){
-                            onItem(msg, type, timestamp, _id);
+                        var listener = function(item){
+                            onItem(item);
                         };
                         Bozuko.subscribe(event, listener);
                         if( !listeners[event] ) listeners[event] = [];
@@ -282,10 +285,10 @@ exports.routes = {
                     prof.stop();
                 };
 
-                req.connection.addListener('timeout', unsubscribe);
-                req.connection.addListener('end', unsubscribe);
-                req.connection.addListener('close', unsubscribe);
-                req.connection.addListener('error', unsubscribe);
+                req.connection.addListener('timeout',   unsubscribe);
+                req.connection.addListener('end',       unsubscribe);
+                req.connection.addListener('close',     unsubscribe);
+                req.connection.addListener('error',     unsubscribe);
 
                 if( req.param('since') ){
                     var since = req.param('since');
@@ -294,7 +297,7 @@ exports.routes = {
                         subscribe();
                         return items.forEach(function(item){
                             try{
-                                onItem(item.content, item.type, item.timestamp, item._id);
+                                onItem(item);
                             }catch(e){
                                 // protect ourself from evil
                             }

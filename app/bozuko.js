@@ -220,9 +220,11 @@ function initApplication(app){
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/profiler')({
 			ignore: [
+				/*
 				'/listen',
 				'/alive',
 				'/data'
+				*/
 			]
 		}));
     }
@@ -256,9 +258,11 @@ function initApplication(app){
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/logger')({
 			ignore: [
+				/*
 				'/listen',
 				'/alive',
 				'/data'
+				*/
 			],
 			format: ':date [:remote-addr] :method :url :response-time'
 		}));
@@ -527,7 +531,7 @@ initTransferObjects();
 
 var PubSub = Bozuko.require('core/pubsub');
 Bozuko.pubsub = new PubSub();
-Bozuko.pubsub.setMaxListeners(0);
+Bozuko.pubsub.setMaxListeners(20);
 Bozuko.publish = function(){
 	Bozuko.pubsub.publish.apply( Bozuko.pubsub, arguments );
 };
