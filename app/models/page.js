@@ -250,12 +250,76 @@ Page.method('canUserCheckin', function(user, callback){
             if( error ) return callback( error );
 
             if( checkin ){
+                
+                /*
                 if( checkin.page_id == self._id ){
                     return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_page') );
                 }
                 return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_user') );
+                */
+                return self.getNextCheckinTime(user, function(error, next_time){
+                    if( error ) return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_user') );
+                    if( String(checkin.page_id) == String(self._id) ){
+                        return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_page', {next_time: next_time}) );
+                    }
+                    return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_user', {next_time: next_time}) );
+                });
+                
             }
             return callback( null, true );
+        }
+    );
+});
+
+Page.method('getNextCheckinTime', function(user, callback){
+
+    var self = this;
+    var now = new Date();
+
+    var page_last_allowed_checkin = new Date();
+    var user_last_allowed_checkin = new Date();
+    /**
+     * TODO - what about contest entry configs?
+     *
+     * However, this could get weird - what if they are on the business page
+     * and want to checkin, should we allow that as long as they satisfy the global
+     * page checkin duration, even if one contest checkin duration is longer? What
+     * if there are two contests with different checkin durations?
+     *
+     */
+    page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
+    user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
+
+    Bozuko.models.Checkin.find(
+        {
+            $or: [{
+                user_id: user._id,
+                page_id: self._id,
+                timestamp: {$gt: page_last_allowed_checkin}
+            },{
+                user_id: user._id,
+                timestamp: {$gt: user_last_allowed_checkin}
+            }]
+
+        },{},{sort: {timestamp: -1}},
+        function(error, checkins){
+            // lets look at the last checkin
+            if( error ) return callback( error );
+            if( !checkins.length ) return callback(null, new Date() );
+            
+            var nextTime = Date.now();
+            
+            checkins.forEach(function(checkin){
+                var time;
+                if( String(checkin.page_id) != String(self._id) ){
+                    time = +checkin.timestamp+Bozuko.config.checkin.duration.user;
+                }
+                else{
+                    time = +checkin.timestamp+Bozuko.config.checkin.duration.page;
+                }
+                nextTime = Math.max(nextTime, time);
+            });
+            return callback( null, new Date(nextTime) );
         }
     );
 });
