@@ -78,9 +78,9 @@ module.exports = {
     checkin: {
         duration: {
             // 15 minutes between any checkins per user
-            user: 1000 * 60 * .25,
+            user: 1000 * 60 * 15,
             // 4 hours between checkins at the same place
-            page: 1000 * 60 * .5
+            page: 1000 * 60 * 60 * 4
         },
 
         distance : 1000 /* feet */

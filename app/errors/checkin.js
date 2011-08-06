@@ -1,3 +1,5 @@
+var DateUtil = Bozuko.require('util/date');
+
 module.exports = {
 
     no_user : {
@@ -14,14 +16,24 @@ module.exports = {
     },
     too_many_attempts_per_page: {
         code: 403,
-        title: "Checkin Error",
-        message: "You are checkin in at this place too often.",
+        title: "Woah There...",
+        message: function(){
+            if( !this.data || !this.data.next_time){
+                return "You are trying to check in here too often. Please wait a little bit";
+            }
+            return "Sorry, you are trying to check in here too often. You can checkin here "+DateUtil.inAgo(this.data.next_time);
+        },
         detail: "Checkin occurred too soon after the last checkin for this page"
     },
     too_many_attempts_per_user: {
         code: 403,
         title: "Woah there...",
-        message: "You are trying to checkin too often. Wait a little bit",
+        message: function(){
+            if( !this.data || !this.data.next_time){
+                return "You are trying to check in too often. Please wait a little bit";
+            }
+            return "You are trying to check in too often. You can checkin here "+DateUtil.inAgo(this.data.next_time);
+        },
         detail: "Checkin occurred too soon after the last checkin for this user"
     },
     too_far: {
