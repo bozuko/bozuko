@@ -14,6 +14,11 @@ module.exports = {
         code: 400,
         message: "Sorry, you cannot checkin here because it is not a location"
     },
+    no_gps : {
+        code: 400,
+        title: "Where are you?",
+        message: "It looks like your GPS may not be enabled. Please make sure that location services are enabled on your phone and allowed for Bozuko. Thanks!"
+    },
     too_many_attempts_per_page: {
         code: 403,
         title: "Woah There...",
