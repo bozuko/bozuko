@@ -21,7 +21,7 @@ module.exports = {
             if( !this.data || !this.data.next_time){
                 return "You are trying to check in here too often. Please wait a little bit";
             }
-            return "Sorry, you are trying to check in here too often. You can checkin here "+DateUtil.inAgo(this.data.next_time);
+            return "Sorry, you are trying to check in here too often. You can check in here "+DateUtil.inAgo(this.data.next_time);
         },
         detail: "Checkin occurred too soon after the last checkin for this page"
     },
@@ -32,9 +32,9 @@ module.exports = {
             if( !this.data || !this.data.next_time){
                 return "You are trying to check in too often. Please wait a little bit";
             }
-            return "You are trying to check in too often. You can checkin here "+DateUtil.inAgo(this.data.next_time);
+            return "You are trying to check in too often. You can check in here "+DateUtil.inAgo(this.data.next_time);
         },
-        detail: "Checkin occurred too soon after the last checkin for this user"
+        detail: "Checkin occurred too soon after the last check in for this user"
     },
     too_far: {
         code: 500,
