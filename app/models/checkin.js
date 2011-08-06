@@ -29,6 +29,10 @@ Checkin.static('process', function(options, callback){
     if( options.service ){
         if( options.service != 'bozuko' ) options.place_id = String( options.page.service( options.service ).sid );
         else options.place_id = options.page._id;
+        
+        if( !options.ll || (options.ll[0] == 0 && options.ll[1] == 0) ){
+            return callback( Bozuko.error('checkin/no_gps') );
+        }
 
         Bozuko.service( options.service ).checkin( options, function(error, result){
             if( error ) return callback( error );
