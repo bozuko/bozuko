@@ -73,13 +73,13 @@ module.exports = {
 
     checkin: {
         duration: {
-            // 15 minutes between any checkins per user
-            user: 1000 * 60 * 15,
+            // 45 minutes between any checkins per user
+            user: 1000 * 60 * 45,
             // 4 hours between checkins at the same place
             page: 1000 * 60 * 60 * 4
         },
 
-        distance : 2910 /* feet */
+        distance : 10560 /* feet */
     },
 
     entry : {
@@ -104,6 +104,11 @@ module.exports = {
     server: {
         auth: false,
         ssl: true,
+		ssl_config:{
+			key : '/ssl/wildcard/wildcard.bozuko.com.key',
+			ca : '/ssl/wildcard/gd_bundle.crt',
+			cert: '/ssl/wildcard/bozuko.com.crt'
+		},
         host: 'api.bozuko.com',
         port: 443
     },

@@ -108,6 +108,11 @@ module.exports = {
     server: {
         auth: false,
         ssl: true,
+		ssl_config:{
+			key : '/ssl/wildcard/wildcard.bozuko.com.key',
+			ca : '/ssl/wildcard/gd_bundle.crt',
+			cert: '/ssl/wildcard/bozuko.com.crt'
+		},
         host: 'playground.bozuko.com',
         port: 443
     },

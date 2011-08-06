@@ -22,6 +22,7 @@ Object.keys(dirs).forEach( function(name){
 });
 
 var proc = cluster( './app' )
+    .set( 'worker title', env+' {n}')
     .set( 'socket path', './sockets/'+env )
     .use( cluster.logger('logs/'+env, cfg.logLevel || 'debug') )
     .use( cluster.pidfiles('pids/'+env) )
@@ -31,19 +32,22 @@ var proc = cluster( './app' )
     .listen( cfg.server.port )
     ;
 
-
-if( proc.isMaster ){
-
-    Bozuko.isMaster = true;
-
-    if( env === 'stats'){
-        Bozuko.initStats();
+//proc.on('connect', function(){
+    if( proc.isMaster ){
+    
+        Bozuko.isMaster = true;
+        console.log('wtf');
+        Bozuko.pubsub.stop();
+    
+        if( env === 'stats'){
+            Bozuko.initStats();
+        }
+        // need a better way to handle this
+        if( env === 'api' ){
+            Bozuko.initFacebookPubSub();
+        }
+        if( env === 'site' || env === 'playground' || env == 'dashboard' ){
+            Bozuko.initHttpRedirect();
+        }
     }
-    // need a better way to handle this
-    if( env === 'api' ){
-        Bozuko.initFacebookPubSub();
-    }
-    if( env === 'site' || env === 'playground' ){
-        Bozuko.initHttpRedirect();
-    }
-}
+//});

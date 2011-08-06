@@ -1,24 +1,29 @@
 module.exports = {
 
-    test_mode: true,
+    test_mode: false,
+
+    controllers: {
+        only: [
+            'beta',
+            'admin',
+			'bozuko',
+            'mycroft'
+        ]
+    },
 
     client: {
         mobile:{
             iphone:{
+                link: 'http://itunes.com/app/bozuko',
+                app_link: 'http://itunes.com/app/bozuko',
                 min_version: '1.0'
             },
             android:{
+                link: 'https://market.android.com/details?id=com.bozuko.bozuko',
+                app_link: 'market://details?id=com.bozuko.bozuko',
                 min_version: '1.0'
             }
         }
-    },
-
-    controllers: {
-        except: [
-            'site',
-            'beta',
-            'business'
-        ]
     },
 
     admin : {
@@ -28,10 +33,9 @@ module.exports = {
     },
 
     db:{
-
-        name: 'bozuko_load',
+        name: 'bozuko_production',
         replicaSet: true,
-        hosts: ['192.168.175.164', '192.168.175.163', '192.168.174.86']
+        hosts: ['192.168.175.159', '192.168.175.161', '192.168.175.154']
     },
 
     facebook: {
@@ -62,15 +66,16 @@ module.exports = {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
             secret: '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',
-            bucket: 'bozuko_playground'
+            bucket: 'bozuko'
         }
     },
 
     checkin: {
         duration: {
-            // allow unlimited checkins for load test
-            user: 0,
-            page: 0
+            // 15 minutes between any checkins per user
+            user: 1000 * 60 * 15,
+            // 4 hours between checkins at the same place
+            page: 1000 * 60 * 60 * 4
         },
 
         distance : 400 /* feet */
@@ -99,17 +104,17 @@ module.exports = {
         auth: false,
         ssl: true,
 		ssl_config:{
-			key : '/ssl/wildcard/wildcard.bozuko.com.key',
+            key : '/ssl/wildcard/wildcard.bozuko.com.key',
 			ca : '/ssl/wildcard/gd_bundle.crt',
 			cert: '/ssl/wildcard/bozuko.com.crt'
 		},
-        host: 'playground.bozuko.com',
-        port: 8000
+        host: 'dashboard.bozuko.com',
+        port: 443
     },
 
     pubsub: {
         poll: {
-            interval: 500
+            interval: 2000
         },
         cleanup: {
             threshold: 1000 * 60 * 60 * 2,
