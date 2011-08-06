@@ -254,6 +254,7 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/session')());
     app.use(Bozuko.require('middleware/mobile')());
 	// app.use(Bozuko.require('middleware/location')());
+	app.use(Bozuko.require('middleware/poweredby')());
 
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/logger')({
