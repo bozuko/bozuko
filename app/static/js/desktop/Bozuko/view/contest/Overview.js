@@ -131,8 +131,8 @@ Ext.define('Bozuko.view.contest.Overview',{
         data.redeemed_total = me.record.getTotalPrizeCount();
         data.redeemed_percent = data.redeemed_current / data.redeemed_total;
         
-        var start = me.record.get('start'),
-            end = me.record.get('end'),
+        var start = new Date(+me.record.get('start')),
+            end = new Date(+me.record.get('end')),
             now = new Date();
             
         start.setHours(0);
