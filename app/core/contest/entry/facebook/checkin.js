@@ -152,7 +152,7 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
          * If a user cannot check in, check to make sure that the user has at least checked in here within
          * the configured duration for a page check in
          */
-        if( !self.can_checkin && !self.hasCheckedIn() ){
+        if( !self.checkin && !self.can_checkin && !self.hasCheckedIn() ){
             return callback(null, false);
         }
         return callback( null, true);
@@ -161,12 +161,10 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
 
 FacebookCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
-    var thresh = Date.now();
-    thresh -= Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4);
-    if( !self.checkin && (!self.last_checkin_here || +self.last_checkin_here.timestamp < +thresh) ){
-        return false;
+    if( self.last_checkin_here ){
+        return true;
     }
-    return true;
+    return false;
 };
 
 
@@ -186,7 +184,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
         return self.validate( function(error, valid){
             if( error ) return callback( error );
             if( !valid ){
-                if(!self.hasCheckedIn()){
+                if(!self.can_checkin && !self.hasCheckedIn()){
                     /**
                      * TODO
                      * this should be a better message when we know whats wrong
@@ -266,10 +264,17 @@ FacebookCheckinMethod.prototype._load = function( callback ){
         if( error ) return callback( error );
         self.can_checkin = flag;
         if( self.can_checkin ) return callback(null);
-        return Bozuko.models.Checkin.find({service:'facebook', page_id: self.page._id},{},{sort: {timestamp: -1}, limit: 1}, function(error, checkins){
+        var date = new Date(
+            Date.now() - Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4)
+        );
+        return Bozuko.models.Checkin.findOne({
+            service:'facebook',
+            page_id: self.page._id,
+            timestamp: {$gt: date}
+        }, function(error, checkin){
             if( error ) return callback( error );
             //console.error( 'last checkin here: '+inspect( checkins ) );
-            if( checkins.length ) self.last_checkin_here = checkins[0];
+            self.last_checkin_here = checkin;
             return callback( null );
         });
     });

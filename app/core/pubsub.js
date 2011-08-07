@@ -23,7 +23,7 @@ var PubSub = module.exports = function(){
      */
     setTimeout(function(){
         if( Bozuko.isMaster ) return;
-        
+        if( !process.title.match(/[0-9]+/) ) return;
         var stagger = self.poll_interval / 4,
             id = parseInt(process.title.match(/[0-9]+/)[0], 10);
         
