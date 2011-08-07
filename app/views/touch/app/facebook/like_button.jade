@@ -35,6 +35,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             mobile_version = '#{req.session.mobile_version}',
             fb_token = '#{locals.user ? locals.user.service('facebook').auth : ""}',
             fb_id = '#{place.data.id}',
+            liked = #{locals.user.likes(place.data.id)?'true':'false'};
             token = '#{locals.user ? user.token : ""}';
             
         document.getElementsByTagName('html')[0].className += ' like_button_loading';
@@ -74,8 +75,30 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             FB.Event.subscribe('edge.create', onEdgeCreate);
             FB.Event.subscribe('edge.remove', onEdgeRemove);
             
-            FB.api('/me', {fields:'likes',access_token:fb_token}, function(data){
+            FB.api('/me', {fields:'likes'}, function(data){
               var found = false;
+              if( data && data.error && data.error.type.match(/oauthexception/i) ){
+                // this is a bad case... we should not get here
+                // in the next release, we will need to fire a url event
+                // bozuko://facebook/no_session
+                // until then, we will try to do our best with what we got.
+                document.getElementById('like-button').style.display='none';
+                var img = document.createElement('img');
+                img.style.position = 'relative';
+                img.style.zIndex = '1';
+                if( liked ){
+                  img.src="/images/assets/facebook/like-btn-liked.png";
+                  document.body.appendChild(img);
+                }
+                else{
+                  img.src="/images/assets/facebook/like-btn.png";
+                  img.onclick = function(){
+                    alert("Sorry - your Facebook session for Bozuko is not longer valid. You must go to the Bozuko page, and Log out and back in. We apologize for the inconvenience and working on a better solution.");
+                  }
+                  document.body.appendChild(img);
+                }
+                
+              }
               if(!data || !data.likes || !data.likes.data.length ) return;
               var likes = data.likes.data;
               for(var i=0; i<likes.length && !found; i++){
@@ -118,6 +141,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               e.stopPropagation();
             }
         }
+        
         (function () {
             var e = document.createElement('script');
             e.async = true;
