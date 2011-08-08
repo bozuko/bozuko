@@ -320,9 +320,12 @@ exports.routes = {
             handler : function(req, res){
                 // need to get all pages
                 var id = req.param('id'),
-                    selector = {active: 1}
+                    selector = {active: true}
                     ;
                     
+                if( req.param('inactive') ){
+                    selector = {active: false};
+                }
                 if(id) selector._id = new ObjectId(id);
                 return Bozuko.models.Page.find(selector,{},{sort:{name:1}}, function(error, pages){
                     if( error ) return error.send(res);
