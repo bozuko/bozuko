@@ -8,7 +8,6 @@ Ext.define('Admin.controller.Admin' ,{
     ],
     
     stores: [
-        'Bozuko.store.Pages',
         'Bozuko.store.Places',
         'Bozuko.store.Users'
     ],
@@ -20,12 +19,20 @@ Ext.define('Admin.controller.Admin' ,{
     
     refs : [
         {ref: 'pageData', selector: 'pagelist dataview'},
+        {ref: 'pageSearch', selector: 'pagelist [ref=search]'},
+        {ref: 'pageInactiveBtn', selector: 'pagelist [ref=inactive]'},
+        {ref: 'pagePagingToolbar', selector: 'pagelist pagingtoolbar'},
         {ref: 'tabPanel', selector: 'viewport tabpanel'},
     ],
+    
+    getPagesStore : function(){
+        return this.getPageData().store;
+    },
     
     init : function(){
         var me = this;
         this._tabs = {};
+        
         this.control({
             'pagelist dataview':{
                 itemclick: this.onPageClick
@@ -37,6 +44,16 @@ Ext.define('Admin.controller.Admin' ,{
                 click: function(){
                     me.getPagesStore().load();
                 }
+            },
+            'pagelist [ref=search]':{
+                keyup : Ext.Function.createBuffered( function(){
+                    me.getPagesStore().load();
+                }, 250)
+            },
+            'pagelist [ref=inactive]':{
+                toggle : function(){
+                    me.getPagesStore().load();
+                }
             }
         });
     },
@@ -45,12 +62,34 @@ Ext.define('Admin.controller.Admin' ,{
         
         var me = this,
             store = this.getPagesStore(),
+            pagingToolbar = this.getPagePagingToolbar(),
             dataview = this.getPageData();
             
         dataview.bindStore( store );
+        pagingToolbar.bindStore( store );
+        store.on('beforeload', me.onBeforeLoadPages, me);
         store.on('update', function(s, r){
             var id = r.get('_id');
         });
+    },
+    
+    onBeforeLoadPages : function(store, operation){
+        var me = this,
+            searchField = me.getPageSearch(),
+            search = searchField.getValue(),
+            inactiveBtn = me.getPageInactiveBtn(),
+            showInactive = inactiveBtn.pressed
+            ;
+        
+        if( !operation.params ) operation.params = {};
+        
+        if( search ){
+            operation.params['search'] = search;
+        }
+        if( showInactive ){
+            operation.params['showInactive'] = true;
+        }
+        
     },
     
     addPage : function(){
