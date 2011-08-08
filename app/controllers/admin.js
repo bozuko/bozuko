@@ -685,7 +685,7 @@ exports.routes = {
                         return Bozuko.models.Entry.find(selector, {}, {sort:{timestamp: -1}, limit: limit, skip: skip}, function(error, entries){
                             if( error ) return callback(error);
                             objects.entries = entries;
-                            return Bozuko.models.Entry.find(selector, function(error, total){
+                            return Bozuko.models.Entry.count(selector, function(error, total){
                                 if( error ) return error.send(res);
                                 total = total;
                                 return callback( null );
