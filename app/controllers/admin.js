@@ -556,7 +556,13 @@ exports.routes = {
                 if( contest_id ) selector['contest_id'] = contest_id;
                 if( page_id ) selector['page_id'] = page_id;
                 
-                if( search ) selector['user_name'] = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");;
+                if( search ){
+                    search = new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
+                    selector['$or'] = [
+                        {'user_name': search},
+                        {'name': search}
+                    ];
+                }
                 
                 return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
                     if( error ) return error.send( res );
