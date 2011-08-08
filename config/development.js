@@ -114,7 +114,7 @@ module.exports = {
 			ca : '/ssl/wildcard/gd_bundle.crt',
 			cert: '/ssl/wildcard/bozuko.com.crt'
 		},
-        host: 'bonobo.bozuko.com',
+        host: 'playground.bozuko.com',
         port: port
     },
 

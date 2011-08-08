@@ -11,7 +11,8 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         'Bozuko.view.contest.builder.card.General',
         'Bozuko.view.contest.builder.card.Entry',
         'Bozuko.view.contest.builder.card.Game',
-        'Bozuko.view.contest.builder.card.GameOptions'
+        'Bozuko.view.contest.builder.card.GameOptions',
+        'Bozuko.view.contest.builder.card.Prizes'
     ],
     
     initComponent : function(){
@@ -73,6 +74,8 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                     xtype               :'contestbuildergame'
                 },{
                     xtype               :'contestbuildergameoptions'
+                },{
+                    xtype               :'contestbuilderprizes'
                 }]
             },{
                 xtype               :'contestbuilderpreview',
@@ -182,6 +185,4 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         
         me.centerPanel.getLayout().setActiveItem( index );
     }
-    
-    
 });
