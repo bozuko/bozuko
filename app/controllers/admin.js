@@ -328,8 +328,14 @@ exports.routes = {
                     limit = req.param('limit') || 25
                     ;
                 
-                if( !showInactive ) selector.active = true;
-                if( search ) selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
+                if( !showInactive ){
+                    selector.active = true;
+                }
+                if( search ){
+                    selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
+                }
+                
+                console.error(require('util').inspect(selector));
                 
                 if(id) selector._id = new ObjectId(id);
                 return Bozuko.models.Page.find(selector,{},{sort:{name:1}, limit: limit, skip: start}, function(error, pages){
