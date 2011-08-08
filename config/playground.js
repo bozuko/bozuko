@@ -26,7 +26,11 @@ module.exports = {
     admin : {
         winners_list:{
             poll_interval: 1000
-        }
+        },
+		allowed_domains: [
+			'bozuko.com',
+			'fuzzproductions.com'
+		]
     },
 
     db:{
