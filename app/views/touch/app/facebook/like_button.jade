@@ -35,6 +35,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             mobile_version = '#{req.session.mobile_version}',
             fb_token = '#{locals.user ? locals.user.service('facebook').auth : ""}',
             fb_id = '#{place.data.id}',
+            mobile_version = '{#locals.user.mobile_version}';
             liked = #{locals.user.likes(place.data.id)?'true':'false'};
             token = '#{locals.user ? user.token : ""}';
             
@@ -82,6 +83,9 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                 // in the next release, we will need to fire a url event
                 // bozuko://facebook/no_session
                 // until then, we will try to do our best with what we got.
+                if( mobile_version == 'iphone-1.3' ){
+                  window.location='bozuko://facebook/no_session';
+                }
                 document.getElementById('like-button').style.display='none';
                 var img = document.createElement('img');
                 img.style.position = 'relative';

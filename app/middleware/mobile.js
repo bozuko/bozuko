@@ -50,6 +50,7 @@ module.exports = function mobile() {
             
             if( req.session.user ){
                 req.session.user.phone = key;
+                req.session.user.mobile_version = req.session.mobile_version;
             }
             
         }
