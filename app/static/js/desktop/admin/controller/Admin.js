@@ -20,6 +20,8 @@ Ext.define('Admin.controller.Admin' ,{
     
     refs : [
         {ref: 'pageData', selector: 'pagelist dataview'},
+        {ref: 'pageSearch', selector: 'pagelist [ref=search]'},
+        {ref: 'pageInactives', selector: 'pagelist [ref=inactive]'},
         {ref: 'tabPanel', selector: 'viewport tabpanel'},
     ],
     
@@ -37,6 +39,16 @@ Ext.define('Admin.controller.Admin' ,{
                 click: function(){
                     me.getPagesStore().load();
                 }
+            },
+            'pagelist [ref=search]':{
+                keyup : function(){
+                    me.getPagesStore().load();
+                }
+            },
+            'pagelist [ref=inactive]':{
+                keyup : function(){
+                    me.getPagesStore().load();
+                }
             }
         });
     },
@@ -48,9 +60,14 @@ Ext.define('Admin.controller.Admin' ,{
             dataview = this.getPageData();
             
         dataview.bindStore( store );
+        store.on('beforeload', me.onBeforeLoadPages, me);
         store.on('update', function(s, r){
             var id = r.get('_id');
         });
+    },
+    
+    onBeforeLoadPages : function(store, operation){
+        
     },
     
     addPage : function(){

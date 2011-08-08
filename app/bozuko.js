@@ -531,6 +531,7 @@ initModels();
 // setup out transfer objects
 initTransferObjects();
 
+
 var PubSub = Bozuko.require('core/pubsub');
 Bozuko.pubsub = new PubSub();
 Bozuko.pubsub.setMaxListeners(20);
@@ -544,7 +545,10 @@ Bozuko.unsubscribe = function(){
 	Bozuko.pubsub.unsubscribe.apply( Bozuko.pubsub, arguments );
 };
 Bozuko.since = function(date, callback){
-    Bozuko.pubsub.since(date, callback);
+	Bozuko.pubsub.since(date, callback);
 };
 
+if( !Bozuko.cfg('pubsub.enabled', true) ){
+	Bozuko.pubsub.stop();
+}
 module.exports = Bozuko;
