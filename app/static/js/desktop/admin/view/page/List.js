@@ -2,8 +2,14 @@ Ext.define('Admin.view.page.List' ,{
     extend: 'Ext.panel.Panel',
     alias: 'widget.pagelist',
     
+    requires: [
+        'Bozuko.store.Pages'
+    ],
+    
     initComponent : function(){
         var me = this;
+        
+        me.store = Ext.create('Bozuko.store.Pages');
         
         me.html = 'Page list';
         me.layout = 'fit';
@@ -12,16 +18,18 @@ Ext.define('Admin.view.page.List' ,{
             xtype: 'dataview',
             store: me.store,
             autoScroll: true,
-            cls: 'bozuko-list',
+            cls: 'bozuko-list page-list',
             
             trackOver: true,
             itemOverCls: 'x-item-over',
             
             itemTpl :new Ext.XTemplate(
-                '<img src="{[this.getImage(values.image)]}" />',
-                '<span class="title">{name}</span>',
-                '<div class="sub">',
-                    '{location.street}<br />{location.city}, {location.state}',
+                '<div class="page-{[values.active?"active":"inactive"]}">',
+                    '<img src="{[this.getImage(values.image)]}" />',
+                    '<span class="title">{name}</span>',
+                    '<div class="sub">',
+                        '{location.street}<br />{location.city}, {location.state}',
+                    '</div>',
                 '</div>',
                 {
                     getImage: function(image){
@@ -42,10 +50,6 @@ Ext.define('Admin.view.page.List' ,{
                 text: 'Add Business',
                 icon: "/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-16.png",
                 action: 'add'
-            },'->',{
-                text: 'Refresh',
-                icon: '/images/icons/famfamfam/icons/arrow_refresh.png',
-                action: 'reload'
             }]
         },{
             dock: 'top',
@@ -53,12 +57,17 @@ Ext.define('Admin.view.page.List' ,{
             items: [{
                 xtype : 'textfield',
                 ref: 'search',
-                emptyText: 'Search...'
+                emptyText: 'Search...',
+                enableKeyEvents: true
             },'->',{
                 text: 'Show Inactive',
                 ref: 'inactive',
-                toggle: true
+                enableToggle: true
             }]
+        },{
+            dock: 'bottom',
+            xtype: 'pagingtoolbar',
+            store: me.store
         }]
         me.callParent();
     }

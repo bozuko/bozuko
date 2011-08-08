@@ -8,7 +8,8 @@ Ext.define('Bozuko.model.Page', {
         url: '/pages',
         reader: {
             type: 'json',
-            root: 'items'
+            root: 'items',
+            totalProperty: 'total'
         }
     },
     

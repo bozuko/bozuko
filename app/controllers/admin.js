@@ -10,6 +10,7 @@ var facebook    = Bozuko.require('util/facebook'),
     array_map   = Bozuko.require('util/functions').map,
     Report      = Bozuko.require('core/report'),
     DateUtil    = Bozuko.require('util/date'),
+    XRegExp     = Bozuko.require('util/xregexp'),
     async       = require('async')
 ;
 
@@ -320,16 +321,23 @@ exports.routes = {
             handler : function(req, res){
                 // need to get all pages
                 var id = req.param('id'),
-                    selector = {active: true}
+                    selector = {},
+                    search = req.param('search'),
+                    showInactive = req.param('showInactive'),
+                    start = req.param('start') || 0,
+                    limit = req.param('limit') || 25
                     ;
-                    
-                if( req.param('inactive') ){
-                    selector = {active: false};
-                }
+                
+                if( !showInactive ) selector.active = true;
+                if( search ) selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
+                
                 if(id) selector._id = new ObjectId(id);
-                return Bozuko.models.Page.find(selector,{},{sort:{name:1}}, function(error, pages){
+                return Bozuko.models.Page.find(selector,{},{sort:{name:1}, limit: limit, skip: start}, function(error, pages){
                     if( error ) return error.send(res);
-                    return res.send({items:pages});
+                    return Bozuko.models.Page.count(selector, function(error, count){
+                        if( error ) return error.send(res);
+                        return res.send({items:pages, total: count});
+                    });
                 });
             }
         },
@@ -540,6 +548,7 @@ exports.routes = {
                     page_id = req.param('page_id'),
                     limit = req.param('limit') || 25,
                     offset = req.param('offset') || 0,
+                    search = req.param('search'),
                     updateOnly = req.param('updateOnly') || false,
                     selector = {}
                     ;
@@ -547,66 +556,73 @@ exports.routes = {
                 if( contest_id ) selector['contest_id'] = contest_id;
                 if( page_id ) selector['page_id'] = page_id;
                 
+                if( search ) selector['user_name'] = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");;
+                
                 return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
                     if( error ) return error.send( res );
 
                     return Bozuko.models.Prize.find(selector, {}, {sort: {last_updated: -1}, limit: limit, skip: offset},function(error, prizes){
                         if( error ) return error.send(res);
-
-                        var user_ids = {};
-                        prizes.forEach(function(prize){
-                            user_ids[String(prize.user_id)] = true;
-                        });
-                        var page_ids = {};
-                        prizes.forEach(function(prize){
-                            page_ids[String(prize.page_id)] = true;
-                        });
-                        var contest_ids = {};
-                        prizes.forEach(function(prize){
-                            contest_ids[String(prize.contest_id)] = true;
-                        });
-
-                        // get the users
-                        return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, {'services.internal.friends':0,'services.internal.likes':0}, function(error, users){
-                            if( error ) return error.send(res);
-                            var user_map = {};
-                            users.forEach(function(user){
-                                user_map[String(user._id)] = user;
+                        
+                        return Bozuko.models.Prize.count(selector, function(error, total){
+                            
+                            if( error ) return error.send( res );
+                            
+                            var user_ids = {};
+                            prizes.forEach(function(prize){
+                                user_ids[String(prize.user_id)] = true;
                             });
-
-                            // get the pages
-                            return Bozuko.models.Page.find({_id: {$in: Object.keys(page_ids)}}, {name: 1, image: 1}, function(error, pages){
-
-                                var page_map = {};
-                                pages.forEach(function(page){
-                                    page_map[String(page._id)] = page;
+                            var page_ids = {};
+                            prizes.forEach(function(prize){
+                                page_ids[String(prize.page_id)] = true;
+                            });
+                            var contest_ids = {};
+                            prizes.forEach(function(prize){
+                                contest_ids[String(prize.contest_id)] = true;
+                            });
+    
+                            // get the users
+                            return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, {'services.internal.friends':0,'services.internal.likes':0}, function(error, users){
+                                if( error ) return error.send(res);
+                                var user_map = {};
+                                users.forEach(function(user){
+                                    user_map[String(user._id)] = user;
                                 });
-                                
-                                // get the contests
-                                return Bozuko.models.Contest.find({_id: {$in: Object.keys(contest_ids)}}, {name: 1}, function(error, contests){
-
-                                    var contest_map = {};
-                                    contests.forEach(function(contest){
-                                        contest_map[String(contest._id)] = contest;
+    
+                                // get the pages
+                                return Bozuko.models.Page.find({_id: {$in: Object.keys(page_ids)}}, {name: 1, image: 1}, function(error, pages){
+    
+                                    var page_map = {};
+                                    pages.forEach(function(page){
+                                        page_map[String(page._id)] = page;
                                     });
-
-                                    var winners = [];
-                                    prizes.forEach(function(prize){
-                                        
-                                        var user = filter(user_map[String(prize.user_id)],'_id','name','image','email');
-                                        user.facebook_link = user_map[String(prize.user_id)].service('facebook').data.link;
-                                        user.friend_count = user_map[String(prize.user_id)].service('facebook').internal.friend_count;
-                                        
-                                        // create a winner object
-                                        winners.push({
-                                            _id: prize.id,
-                                            prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
-                                            user: user,
-                                            page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
-                                            contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
+                                    
+                                    // get the contests
+                                    return Bozuko.models.Contest.find({_id: {$in: Object.keys(contest_ids)}}, {name: 1}, function(error, contests){
+    
+                                        var contest_map = {};
+                                        contests.forEach(function(contest){
+                                            contest_map[String(contest._id)] = contest;
                                         });
+    
+                                        var winners = [];
+                                        prizes.forEach(function(prize){
+                                            
+                                            var user = filter(user_map[String(prize.user_id)],'_id','name','image','email');
+                                            user.facebook_link = user_map[String(prize.user_id)].service('facebook').data.link;
+                                            user.friend_count = user_map[String(prize.user_id)].service('facebook').internal.friend_count;
+                                            
+                                            // create a winner object
+                                            winners.push({
+                                                _id: prize.id,
+                                                prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
+                                                user: user,
+                                                page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
+                                                contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
+                                            });
+                                        });
+                                        return res.send({items:winners, total: total, last_updated: lastUpdated?filter(lastUpdated,'_id','last_updated'):null});
                                     });
-                                    return res.send({items:winners, last_updated: lastUpdated?filter(lastUpdated,'_id','last_updated'):null});
                                 });
                             });
                         });
@@ -627,8 +643,10 @@ exports.routes = {
                     contest_id = req.param('contest_id'),
                     limit = req.param('limit') || 25,
                     skip = req.param('start') || 0,
+                    search = req.param('search') || false,
                     objects = {},
-                    results = []
+                    results = [],
+                    total = 0
                     ;
                 
                 return async.series({
@@ -639,10 +657,28 @@ exports.routes = {
                         if( page_id ) selector.page_id = page_id;
                         if( contest_id ) selector.contest_id = contest_id;
                         
+                        if( search ){
+                            search = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
+                            if( !page_id ){
+                                selector['$or'] = [
+                                    {user_name: search},
+                                    {page_name: search},
+                                ]
+                            }
+                            else{
+                                selector.user_name = search;
+                            }
+                        }
+                        
                         return Bozuko.models.Entry.find(selector, {}, {sort:{timestamp: -1}, limit: limit, skip: skip}, function(error, entries){
                             if( error ) return callback(error);
                             objects.entries = entries;
-                            return callback( null );
+                            return Bozuko.models.Entry.find(selector, function(error, total){
+                                if( error ) return error.send(res);
+                                total = total;
+                                return callback( null );
+                            })
+                            
                         });
                     },
                     
@@ -710,7 +746,7 @@ exports.routes = {
                         result.page = filter( objects.page_map[String(entry.page_id)], 'name' );
                         results.push(result);
                     });
-                    return res.send({items: results});
+                    return res.send({items: results, total: total});
                 });
             }
         }
