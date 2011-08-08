@@ -76,13 +76,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             FB.Event.subscribe('edge.create', onEdgeCreate);
             FB.Event.subscribe('edge.remove', onEdgeRemove);
             
-            FB.api('/me', {fields:'likes', access_token: token}, function(data){
-              var found = false;
-              if( data && data.error && data.error.type.match(/oauthexception/i) ){
-                // this is a bad case... we should not get here
-                // in the next release, we will need to fire a url event
-                // bozuko://facebook/no_session
-                // until then, we will try to do our best with what we got.
+            FB.getLoginStatus(function(response){
+              if( !response.authResponse ){
                 if( mobile_version == 'iphone-1.3' ){
                   window.location='bozuko://facebook/no_session';
                 }
@@ -101,18 +96,25 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   }
                   document.body.appendChild(img);
                 }
-                
               }
-              if(!data || !data.likes || !data.likes.data.length ) return;
-              var likes = data.likes.data;
-              for(var i=0; i<likes.length && !found; i++){
-                var like = likes[i];
-                if( fb_id == like.id ){
-                  found = true;
-                  enableMask();
+              FB.api('/me', {fields:'likes', access_token: token}, function(data){
+                var found = false;
+                if( data && data.error && data.error.type.match(/oauthexception/i) ){
+                  // woah...
+                  return;
                 }
-              }
+                if(!data || !data.likes || !data.likes.data.length ) return;
+                var likes = data.likes.data;
+                for(var i=0; i<likes.length && !found; i++){
+                  var like = likes[i];
+                  if( fb_id == like.id ){
+                    found = true;
+                    enableMask();
+                  }
+                }
+              });
             });
+            
         };
         
         window.onload = function(){
