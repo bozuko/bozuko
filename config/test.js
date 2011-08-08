@@ -107,6 +107,7 @@ module.exports = {
     },
 
     pubsub: {
+        enabled: false,
         poll: {
             interval: 500
         },

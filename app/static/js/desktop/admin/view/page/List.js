@@ -36,6 +36,7 @@ Ext.define('Admin.view.page.List' ,{
             emptyText:'No Pages'
         }];
         me.dockedItems = [{
+            dock: 'top',
             xtype: 'toolbar',
             items: [{
                 text: 'Add Business',
@@ -45,6 +46,18 @@ Ext.define('Admin.view.page.List' ,{
                 text: 'Refresh',
                 icon: '/images/icons/famfamfam/icons/arrow_refresh.png',
                 action: 'reload'
+            }]
+        },{
+            dock: 'top',
+            xtype: 'toolbar',
+            items: [{
+                xtype : 'textfield',
+                ref: 'search',
+                emptyText: 'Search...'
+            },'->',{
+                text: 'Show Inactive',
+                ref: 'inactive',
+                toggle: true
             }]
         }]
         me.callParent();
