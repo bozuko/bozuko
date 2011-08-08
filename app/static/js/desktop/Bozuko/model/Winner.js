@@ -13,7 +13,8 @@ Ext.define('Bozuko.model.Winner', {
         url: '/winners',
         reader: {
             type: 'json',
-            root: 'items'
+            root: 'items',
+            totalProperty: 'total'
         }
     },
     

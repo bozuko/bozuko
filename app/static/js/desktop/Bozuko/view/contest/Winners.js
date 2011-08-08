@@ -28,6 +28,32 @@ Ext.define('Bozuko.view.contest.Winners' ,{
             page_id : me.page_id || (me.page ? me.page.get('_id') : null)
         });
         
+        me.bufferedSearch = Ext.Function.createBuffered(function(){
+            me.store.load();
+        }, 250);
+        
+        me.store.on('beforeload', me.onBeforeLoad, me);
+        
+        me.dockedItems = [{
+            xtype           :'toolbar',
+            dock            :'top',
+            items           :[{
+                xtype           :'textfield',
+                emptyText       :'Search...',
+                ref             :'search',
+                enableKeyEvents :true,
+                listeners       :{
+                    keyup           :me.bufferedSearch
+                }
+            }]
+        },{
+            xtype           :'pagingtoolbar',
+            dock            :'bottom',
+            store           :me.store,
+            displayInfo     :true
+        }];
+        
+        
         // going to create a view within this panel.
         me.items = [{
             xtype: 'dataview',
@@ -119,6 +145,12 @@ Ext.define('Bozuko.view.contest.Winners' ,{
         }];
         
         me.callParent(arguments);
+    },
+    
+    onBeforeLoad : function(){
+        var me = this,
+            search = this.down('[ref=search]');
+        me.store.getProxy().extraParams['search'] = search.getValue();
     },
     
     refresh : function(){

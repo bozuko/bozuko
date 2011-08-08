@@ -191,7 +191,7 @@ exports.routes = {
                     // notifications and then alert the places we think are necessary
                     var urls = [
                         'https://playground.bozuko.com:443/facebook/pubsub',
-                        'https://bonobo.bozuko.com:8001/facebook/pubsub'
+                        'https://playground.bozuko.com:8001/facebook/pubsub'
                     ];
                     var body = String(req.rawBody);
                     async.forEachSeries(urls, function(url, cb){
