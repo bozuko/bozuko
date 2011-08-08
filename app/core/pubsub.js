@@ -21,7 +21,7 @@ var PubSub = module.exports = function(){
     /**
      * Hack to stagger the listeners
      */
-    setTimeout(function(){
+    self.startup_timeout = setTimeout(function(){
         if( Bozuko.isMaster ) return;
         if( !process.title.match(/[0-9]+/) ) return;
         var stagger = self.poll_interval / 4,
@@ -107,6 +107,7 @@ PubSub.prototype.stop = function(){
     var self = this;
     if( !self.running ) return;
     self.running = false;
+    clearTimeout( self.startup_timeout );
     clearTimeout( self.poll_timeout );
     clearTimeout( self.cleanup_timeout );
 };
