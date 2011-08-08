@@ -21,7 +21,8 @@ function hashme(challenge, req) {
 auth.mobile_algorithms = {
     '1.0': hashme,
     '1.1': hashme,
-    '1.2': hashme
+    '1.2': hashme,
+    '1.3': hashme
 };
 
 auth.login = function(req,res,scope,defaultReturn,success,failure){
@@ -70,8 +71,7 @@ var adminAuth = basicAuth(function(user,pass,cb){
     var email = user.toLowerCase();
     // lets do some pseudo hardcoding...
 
-    var domains = ['bozuko.com'];
-    if( Bozuko.config.server.port == '8005' || Bozuko.config.server.port == '443' ) domains.push('fuzzproductions.com');
+    var domains = Bozuko.cfg('admin.allowed_domains', ['bozuko.com']);
 
     if( !email ){
         return cb(new Error('No Email'));
