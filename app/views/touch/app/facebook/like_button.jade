@@ -76,7 +76,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             FB.Event.subscribe('edge.create', onEdgeCreate);
             FB.Event.subscribe('edge.remove', onEdgeRemove);
             
-            FB.api('/me', {fields:'likes'}, function(data){
+            FB.api('/me', {fields:'likes', access_token: token}, function(data){
               var found = false;
               if( data && data.error && data.error.type.match(/oauthexception/i) ){
                 // this is a bad case... we should not get here
