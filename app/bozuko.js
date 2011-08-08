@@ -62,6 +62,7 @@ Bozuko.getConfigValue = function(key, defaultValue){
 			if( typeof obj[key] === undefined ) return defaultValue;
 			return getValue(keys, obj[key]);
 		}
+		if( obj[keys[0]] === undefined ) return defaultValue;
 		return obj[keys[0]];
 	};
 	return getValue( parts, Bozuko.getConfig());
