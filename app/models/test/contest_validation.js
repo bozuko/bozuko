@@ -36,9 +36,8 @@ exports['save page'] = function(test) {
     });
 };
 
-
 exports['prizes - no prizes'] = function(test) {
-    contest.validatePrizes(function(err, status) {
+    contest.validatePrizes(false, function(err, status) {
         test.ok(status.errors[0] instanceof BozukoError);
         test.ok(status.errors[0].name === 'validate/contest/no_prizes');
         test.done();
@@ -61,7 +60,7 @@ exports['prizes - valid prize'] = function(test) {
     });
 
     var email_codes, email_body;
-    contest.validatePrizes(function(err, status) {
+    contest.validatePrizes(false, function(err, status) {
         for (var i = 0; i < status.errors.length; i++) {
 	    if (status.errors[i].name === 'validate/contest/email_codes') {
 		email_codes = true;
@@ -82,7 +81,7 @@ exports['prizes - email codes count and missing body'] = function(test) {
 
     var email_codes, email_body;
 
-    contest.validatePrizes(function(err, status) {
+    contest.validatePrizes(false, function(err, status) {
         for (var i = 0; i < status.errors.length; i++) {
 	    if (status.errors[i].name === 'validate/contest/email_codes') {
 		email_codes = true;
@@ -110,7 +109,7 @@ exports['prizes - barcodes bad count'] = function(test) {
         barcodes: ["01234567", "12345678"]
     });
 
-    contest.validatePrizes(function(err, status) {
+    contest.validatePrizes(false, function(err, status) {
 	var bc_err = status.errors.some(function(err) {
 	    if (err.name === 'validate/contest/barcodes_length') return true;
             return false;	    
@@ -121,20 +120,33 @@ exports['prizes - barcodes bad count'] = function(test) {
 
 };
 
-exports['entries and plays'] = function(test) {
+exports['entries and plays - ok'] = function(test) {
     contest.publish(function(err) {
         contest.validateEntriesAndPlays(function(err, status) {
-            test.ok(!status);
+            test.ok(!status.errors.length);
             test.done();
         });
     });
 };
 
-exports['prizes - barcodes valid'] = function(test) {
-    contest.prizes[1].barcodes = ["1234567"];
-    contest.save(function(err) {
+exports['entries and plays - error'] = function(test) {
+    var oldPlays = contest.total_plays;
+    contest.total_plays = 3;
+    contest.validateEntriesAndPlays(function(err, status) {
+	test.equal(status.errors.length, 1);
+	
+	// Reset to real total_plays
+	contest.total_plays = oldPlays;
+
+	test.done();
+    });
+};
+
+exports['prizes - barcodes exist on s3'] = function(test) {
+    contest.prizes[1].total = 2;
+    contest.publish(function(err) {
 	test.ok(!err);
-	contest.validatePrizes(function(err, status) {
+	contest.validatePrizes(false, function(err, status) {
 	    var bc_err = status.errors.some(function(err) {
 		if (err.name === 'validate/contest/barcodes_s3') return true;
 		return false;
@@ -142,5 +154,57 @@ exports['prizes - barcodes valid'] = function(test) {
 	    test.ok(!bc_err);
 	    test.done();
 	});
+    });
+};
+
+exports['consolation prizes - none'] = function(test) {
+    contest.validatePrizes(true, function(err, status) {
+	test.ok(!status.errors.length);
+	test.done();
+    });
+};
+
+exports['results - no errors'] = function(test) {
+    contest.validateResults(function(err, status) {
+	test.ok(!status.errors.length);
+	console.log("status.errors = "+status.errors);
+	test.done();
+    });
+};
+
+exports['results - bad free play count and prize count'] = function(test) {
+    var prize_count_err_ct = 0;
+    var free_play_err = false;
+
+    // Reset results to junk
+    var oldResults = contest.results;
+    contest.results = {};
+
+    contest.validateResults(function(err, status) {
+	for (var i = 0; i < status.errors.length; i++) {
+	    if (status.errors[i].name === 'validate/contest/results_prize_count') {
+		prize_count_err_ct++;
+	    }
+	    if (status.errors[i].name === 'validate/contest/results_free_play_count') {
+		free_play_err = true;
+	    }
+	}
+
+	test.equal(prize_count_err_ct, 2);
+	test.ok(free_play_err);
+				
+	// Reset to real contest results
+	test.done();
+    });
+};
+
+exports['validate_'] = function(test) {
+    contest.validate_(function(err, status) {
+	test.ok(status.entries_and_plays);
+	test.ok(status.prizes);
+	test.ok(status.consolation_prizes);
+	test.ok(status.results);
+	console.log(require('util').inspect(status));
+	test.done();
     });
 };

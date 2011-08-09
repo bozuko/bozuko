@@ -75,7 +75,7 @@ Contest.method('getEntryConfig', function() {
     return this.entry_config[0];		   
 });
 
-Contest.method('validate_', function(opts, callback) {
+Contest.method('validate_', function(callback) {
     var self = this;
 
     async.parallel({
@@ -83,22 +83,23 @@ Contest.method('validate_', function(opts, callback) {
             self.validateEntriesAndPlays(cb);
         },
         prizes: function(cb) {
-            self.validatePrizes(cb);
-        }//,
-        // consolation_prizes: function(cb) {
-        //     self.validateConsolationPrizes(cb);
-        // },
-        // results: function(cb) {
-        //     self.validateResults(cb);
-        // }
+            self.validatePrizes(false, cb);
+        },
+        consolation_prizes: function(cb) {
+	    self.validatePrizes(true, cb);
+        },
+        results: function(cb) {
+            self.validateResults(cb);
+	}
     },
     callback
     );
 });
 
 Contest.method('validateEntriesAndPlays', function(callback) {
+    var status = { errors: [], warnings: [] };
     if (!this.active) {
-	return callback(null, null);
+	return callback(null, status);
     }
     var entry_config = this.getEntryConfig();
     var tokens_per_entry = entry_config.tokens;
@@ -106,25 +107,26 @@ Contest.method('validateEntriesAndPlays', function(callback) {
         tokens_per_entry = tokens_per_entry * 2;
     }
     if ((this.total_plays - this.total_free_plays) === this.total_entries*tokens_per_entry) {
-        return callback(null, null);
+        return callback(null, status);
     }
     return callback(null, {errors: [Bozuko.error('validate/contest/plays_entries_tokens')]});
 });
 
-Contest.method('validatePrizes', function(callback) {
+Contest.method('validatePrizes', function(isConsolation, callback) {
     var self = this;
     var prize;
     var barcode_prizes = [];
     var status = { errors: [], warnings: [] };
 
-    if (this.prizes.length === 0) {
+    var prizes = isConsolation ? this.consolation_prizes : this.prizes;
+
+    if (prizes.length === 0 && !isConsolation) {
         status.errors.push(Bozuko.error('validate/contest/no_prizes'));
         return callback(null, status);
     }
 
-    for (var i = 0; i < this.prizes.length; i++) {
-        prize = this.prizes[i];
-        status.errors[prize.name] = {};
+    for (var i = 0; i < prizes.length; i++) {
+        prize = prizes[i];
 
         if (prize.is_email) {
             if (prize.total != prize.email_codes.length) {
@@ -148,7 +150,6 @@ Contest.method('validatePrizes', function(callback) {
 	return callback(null, status);	
     }
 
-
     // Check S3 to see if all barcodes are there
     async.forEach(barcode_prizes, function(index, cb) {  
 	var s3 = new S3();
@@ -170,6 +171,43 @@ Contest.method('validatePrizes', function(callback) {
     });
 
 });
+
+Contest.method('validateResults', function(callback) {
+    var status = { errors: [], warnings: [] };
+    if (!this.active) return callback(null, status);
+
+    var counts = [];
+    var free_plays = 0;
+    var index;
+
+    for (var i = 0; i < this.total_plays; i++) {
+	if (this.results[i]) {
+	    if (this.results[i] === 'free_play') {
+		free_plays++;
+	    } else {
+		index = this.results[i].index;
+		if (counts[index] == undefined) {
+		    counts[index] = 1;
+		} else {
+		    counts[index]++;
+		}
+	    }
+	}
+    }
+
+    var prize;
+    for (var j = 0; j < this.prizes.length; j++) {
+	prize = this.prizes[j];
+	if (prize.total != counts[j]) {
+	    status.errors.push(Bozuko.error('validate/contest/results_prize_count', prize.name));
+	}
+    }
+    if (this.total_free_plays != free_plays) {
+	status.errors.push(Bozuko.error('validate/contest/results_free_play_count'));
+    }
+    return callback(null, status);
+});
+
 
 Contest.method('getOfficialRules', function(){
     if( this.rules ) return this.rules;
