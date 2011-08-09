@@ -1,0 +1,7 @@
+module.exports = {
+    plays_entries_tokens: 'total plays must equal total_entries * tokens + free plays',
+
+    email_codes: "Number of email codes must match total number of prizes",
+
+    email_body: 'Email body cannot be empty'
+};
