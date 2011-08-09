@@ -35,8 +35,7 @@ Ext.define( 'Bozuko.view.contest.Entries', {
                 ref             :'search',
                 enableKeyEvents :true,
                 listeners       :{
-                    change          :me.bufferedSearch,
-                    keyup           :me.bufferedSearch
+                    change          :me.bufferedSearch
                 }
             }]
         },{
