@@ -8,7 +8,7 @@ var BozukoError = module.exports = function(name,message,data,code,title){
     if( code ) this.code = code;
     if( title ) this.title = title;
     if( message instanceof Function){
-        this.message = message.apply(this)
+        this.message = message.apply(this);
     }
     else{
         this.message = message;
