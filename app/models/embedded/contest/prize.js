@@ -11,6 +11,7 @@ var Prize = module.exports = new Schema({
     details                 :{type:String},
     instructions            :{type:String},
     total                   :{type:Number},
+    redemption_method       :{type:String, default:'bozuko'},
     claimed                 :{type:Number, default: -1},
     won                     :{type:Number, default: 0},
     redeemed                :{type:Number, default: 0},

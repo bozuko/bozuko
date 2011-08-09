@@ -554,6 +554,14 @@ fieldset .x-fieldset-header {
 .contest-builder p {
   margin: 1em 0;
 }
+.contest-builder .card-title {
+  color: #333;
+  font-family: "ArvoRegular";
+  font-weight: normal;
+  margin-top: 0;
+  font-size: 16px;
+  margin-bottom: 1em;
+}
 .contest-builder .builder-card .intro {
   color: #666;
   margin-bottom: 1em;
@@ -721,6 +729,7 @@ fieldset .x-fieldset-header {
   position: absolute;
   left: -20px;
   top: 0px;
+  z-index: 4;
   background: transparent url("/images/desktop/app/builder/builder-arrow.png?v3") 100% 0 no-repeat;
   width: 11px;
   height: 24px;
@@ -788,4 +797,7 @@ fieldset .x-fieldset-header {
 }
 .prize-list .numbers td {
   padding: 2px;
+}
+textarea.x-form-field {
+  line-height: 15px;
 }

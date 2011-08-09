@@ -40,9 +40,11 @@ Ext.define('Bozuko.view.contest.Winners' ,{
             items           :[{
                 xtype           :'textfield',
                 emptyText       :'Search...',
+                inputType       :'search',
                 ref             :'search',
                 enableKeyEvents :true,
                 listeners       :{
+                    change          :me.bufferedSearch,
                     keyup           :me.bufferedSearch
                 }
             }]

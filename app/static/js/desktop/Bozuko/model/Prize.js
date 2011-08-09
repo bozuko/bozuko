@@ -11,6 +11,7 @@ Ext.define('Bozuko.model.Prize', {
         {name:'name',           type:'String'},
         {name:'description',    type:'String'},
         {name:'details',        type:'String'},
+        {name:'redemption_type',type:'String'},
         {name:'instructions',   type:'String'},
         {name:'image',          type:'String'},
         {name:'total',          type:'Number'},

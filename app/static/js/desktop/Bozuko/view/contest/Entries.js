@@ -30,10 +30,12 @@ Ext.define( 'Bozuko.view.contest.Entries', {
             dock            :'top',
             items           :[{
                 xtype           :'textfield',
+                inputType       :'search',
                 emptyText       :'Search...',
                 ref             :'search',
                 enableKeyEvents :true,
                 listeners       :{
+                    change          :me.bufferedSearch,
                     keyup           :me.bufferedSearch
                 }
             }]
