@@ -96,13 +96,51 @@ exports['prizes - email codes count and missing body'] = function(test) {
         test.done();
     });
 };
+exports['prizes - barcodes bad count'] = function(test) {
+    contest.prizes.push({
+        name: 'barcode prize',
+        value: '0',
+        description: 'a barcode',
+        details: 'bc',
+        instructions: 'get it scanned',
+        total: 1,
+        won: 0,
+        redeemed: 0,
+        is_barcode: true,
+        barcodes: ["01234567", "12345678"]
+    });
+
+    contest.validatePrizes(function(err, status) {
+	var bc_err = status.errors.some(function(err) {
+	    if (err.name === 'validate/contest/barcodes_length') return true;
+            return false;	    
+	});
+	test.ok(bc_err);
+	test.done();
+    });
+
+};
 
 exports['entries and plays'] = function(test) {
-
     contest.publish(function(err) {
         contest.validateEntriesAndPlays(function(err, status) {
             test.ok(!status);
             test.done();
         });
+    });
+};
+
+exports['prizes - barcodes valid'] = function(test) {
+    contest.prizes[1].barcodes = ["1234567"];
+    contest.save(function(err) {
+	test.ok(!err);
+	contest.validatePrizes(function(err, status) {
+	    var bc_err = status.errors.some(function(err) {
+		if (err.name === 'validate/contest/barcodes_s3') return true;
+		return false;
+	    });
+	    test.ok(!bc_err);
+	    test.done();
+	});
     });
 };

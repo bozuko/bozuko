@@ -148,8 +148,10 @@ Contest.method('validatePrizes', function(callback) {
 	return callback(null, status);	
     }
 
+
     // Check S3 to see if all barcodes are there
     async.forEach(barcode_prizes, function(index, cb) {  
+	var s3 = new S3();
         var prize = self.prizes[index];
         var ct = 0;
         async.forEachSeries(prize.barcodes, function(barcode, cb) {
