@@ -114,6 +114,15 @@
 .bozuko-list .x-item-selected {
   background-color: #d5eaf9;
 }
+.page-list .page-inactive {
+  background: #f3f3f3;
+  overflow: hidden;
+  margin: -6px;
+  padding: 6px;
+}
+.page-list .x-item-selected .page-inactive {
+  background-color: #d5eaf9;
+}
 .entry-list .page-name {
   background: #e6e6e6;
   text-align: left;
