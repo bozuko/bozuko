@@ -66,6 +66,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         var fields = me.query('[ref=card-form] field');
         Ext.Array.each(fields, function(field){
+            
             field.on('focus', function(field){
                 me.onFieldFocus(field);
             });
@@ -76,6 +77,19 @@ Ext.define('Bozuko.view.contest.builder.Card', {
                 scope           :me,
                 blur            :me.updateRecord,
                 select          :me.updateRecord
+            });
+        });
+        
+        Ext.Array.each(me.query('[ref=card-form] htmleditor'), function(field){
+            field.on('activate', function(field){
+                me.onFieldFocus(field);
+            });
+            field.on('deactivate', function(field){
+                me.onFieldBlur(field);
+            });
+            field.on({
+                scope           :me,
+                change          :me.updateRecord
             });
         });
         
