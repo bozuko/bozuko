@@ -542,6 +542,19 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/themes/:game' : {
+        get : {
+            handler : function( req, res ){
+                try{
+                    return res.send( {items: Bozuko.games[req.param('game')].themes} );
+                }catch(e){
+                    console.error(e);
+                    return res.send({items:[]});
+                }
+            }
+        }
+    },
 
     '/admin/winners' : {
         

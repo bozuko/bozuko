@@ -58,9 +58,12 @@ Ext.define('Bozuko.lib.form.field.Duration', {
     },
     
     setValue : function(v){
+        
         var me = this,
             u = "m",
             d = 0;
+            
+        this.value = v;
         
         // v should be a number
         if( Ext.isString(v) ) v = parseInt(v, 10);
@@ -83,6 +86,7 @@ Ext.define('Bozuko.lib.form.field.Duration', {
                 break;
             }
         }
+        if( d == 0 ) return;
         me.unitField.setValue(u);
         me.valueField.setValue(d);
     },
