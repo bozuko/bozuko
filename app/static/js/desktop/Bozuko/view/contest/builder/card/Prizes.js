@@ -16,6 +16,7 @@ Ext.define('Bozuko.view.contest.builder.card.Prizes', {
     initComponent : function(){
         var me = this;
         me.prizes = me.contest.prizes();
+        me.prizes.sort('value', 'DESC');
         
         Ext.apply( me.form, {
             
@@ -44,21 +45,49 @@ Ext.define('Bozuko.view.contest.builder.card.Prizes', {
             items : [{
                 xtype           :'panel',
                 items :[{
+                    xtype           :'component',
+                    autoEl          :{tag:'h3',cls:'card-title'},
+                    html            :'Prizes'
+                },{
                     xtype           :'dataview',
                 
-                    cls             :'select-list prize-list',
+                    cls             :'builder-prize-list',
                     
-                    emptyText       :'<p>No Prizes</p>',
+                    emptyText       :'<p>This contest has no prizes. Please add one.</p>',
+                    deferEmptyText  :false,
                     
                     disableSelection:true,
                     
                     itemTpl         :new Ext.XTemplate(
                         '<div class="prize">',
-                            '<div class="name">{name}</div>',
+                            '<div class="meta">',
+                                '<div class="name">{name}</div>',
+                                '<div class="value">{total} prizes valued at ${value} each</div>',
+                            '</div>',
+                            '<ul class="app-buttons">',
+                                '<li><a href="javascript:;" class="edit">Edit</a></li>',
+                                '<li><a href="javascript:;" class="delete">Delete</a></li>',
+                            '</ul>',
                         '</div>'
                     ),
                     
-                    store : me.prizes
+                    store : me.prizes,
+                    
+                    listeners : {
+                        scope           :me,
+                        itemclick       :me.onItemClick
+                    }
+                },{
+                    xtype           :'container',
+                    style           :'text-align:center',
+                    items :[{
+                        xtype           :'button',
+                        text            :'Add a Prize',
+                        scale           :'medium',
+                        icon            :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-plus-24.png',
+                        handler         :me.addPrize,
+                        scope           :me
+                    }]
                 }]
             },{
                 xtype : 'contestbuilderprizeform',
@@ -109,6 +138,20 @@ Ext.define('Bozuko.view.contest.builder.card.Prizes', {
         });
         
         me.prizeNav = me.down('[ref=prize-nav]');
+        me.on('render', me.dataview.refresh, me.dataview);
+    },
+    
+    addPrize : function(){
+        var me = this;
+        me.prizeForm.loadForm(new Bozuko.model.Prize());
+        me.form.getLayout().setActiveItem(1);
+    },
+    
+    updateRecord : function(){
+        var me = this;
+        
+        if( me.form.getLayout().getActiveItem() !== me.prizeForm ) return;
+        me.prizeForm.prize.set(me.prizeForm.getValues());
     },
     
     onActiveCard : function(panel){
@@ -131,7 +174,34 @@ Ext.define('Bozuko.view.contest.builder.card.Prizes', {
         me.form.doComponentLayout();
     },
     
+    onItemClick :function(view, record, node, index, e){
+        var me = this;
+        // get the target
+        var target = e.getTarget();
+        if( target.tagName.toLowerCase() != 'a' ) return;
+        switch( target.className ){
+            case 'edit':
+                me.prizeForm.loadForm(record);
+                me.form.getLayout().setActiveItem(1);
+                break;
+            case 'delete':
+                Ext.Msg.confirm(
+                    'Are you sure?',
+                    'Are you sure you would like to remove this prize?',
+                    function(btn){
+                        if(btn=='yes'||btn=='ok'){
+                            me.prizes.remove(record);
+                        }
+                    }
+                )
+                
+                break;
+        }
+    },
+    
     validate : function(){
+        var me = this;
+        
         return me.prizes.getCount() ? true : {
             title : 'No Prizes',
             message: 'You must add at least one prize'
@@ -159,6 +229,7 @@ Ext.define('Bozuko.view.contest.builder.card.Prizes', {
                 me.prizes.add( me.prizeForm.prize );
             }
             me.form.getLayout().setActiveItem(0);
+            me.prizes.sort('value', 'DESC');
         }
         else{
             // show an alert
