@@ -58,6 +58,7 @@ Ext.define('Admin.view.page.List' ,{
                 xtype : 'textfield',
                 ref: 'search',
                 emptyText: 'Search...',
+                inputType: 'search',
                 enableKeyEvents: true
             },'->',{
                 text: 'Show Inactive',

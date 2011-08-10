@@ -30,16 +30,18 @@ Ext.define( 'Bozuko.view.contest.Entries', {
             dock            :'top',
             items           :[{
                 xtype           :'textfield',
+                inputType       :'search',
                 emptyText       :'Search...',
                 ref             :'search',
                 enableKeyEvents :true,
                 listeners       :{
-                    keyup           :me.bufferedSearch
+                    change          :me.bufferedSearch
                 }
             }]
         },{
             xtype           :'pagingtoolbar',
             dock            :'bottom',
+            displayMsg      :'{0} - {1} of {2}',
             store           :me.store,
             displayInfo     :true
         }];

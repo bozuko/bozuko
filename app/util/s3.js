@@ -74,3 +74,25 @@ Client.prototype.get = function(path, wstream) {
     req.end();
 };
 
+Client.prototype.head = function(path, callback) {
+    var req  = this.client.head(path);
+
+    function err() {
+        console.error('util/s3: Failed to HEAD '+path);
+        return Bozuko.error('s3/head', path);
+    }
+
+    req.on('response', function(res) {
+        if (res.statusCode != 200) {
+            return callback(err());
+        }
+
+	return callback(null, res.headers);
+    });
+
+    req.on('error', function(error) {
+        return callback(err());
+    });
+
+    req.end();
+};

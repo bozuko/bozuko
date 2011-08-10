@@ -250,7 +250,7 @@ var add_contests = function(callback) {
 					type: 'facebook/checkin',
 					tokens: 3,
 					enable_like: false,
-					duration: 1000 * 10
+					duration: 1000 * 5
 				});
 				contest.prizes.push({
 					name: 'Wicked cool T-Shirt',

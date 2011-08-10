@@ -33,7 +33,7 @@ Ext.define('Bozuko.view.contests.Panel', {
             });
         }
         
-        if( window.location.port === 8001 ) tbar.add('-',{
+        if( window.location.port === '8001' ) tbar.add('-',{
             hidden          :false,
             action          :'builder',
             text            :'Build a Campaign (Beta)',

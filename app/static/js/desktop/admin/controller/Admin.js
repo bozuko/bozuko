@@ -46,7 +46,7 @@ Ext.define('Admin.controller.Admin' ,{
                 }
             },
             'pagelist [ref=search]':{
-                keyup : Ext.Function.createBuffered( function(){
+                change: Ext.Function.createBuffered( function(){
                     me.getPagesStore().load();
                 }, 250)
             },
