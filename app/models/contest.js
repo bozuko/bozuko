@@ -418,20 +418,15 @@ Contest.method('cancel', function(callback){
  * @param {Entry}
  *
  * @public
- * Note that the entry param is not an entry model, it is an Entry defined in
+ * Note that the entry param is not an entry model, it is an Entry with prototype in
  * core/contest/entry.js
  */
 Contest.method('enter', function(entry, callback){
     var self = this;
-    // get the entry_config
-    var cfg = null, found=false;
-    for(var i=0; i<this.entry_config.length && found == false; i++){
-        if( this.entry_config[i].type == entry.type ){
-            cfg = this.entry_config[i];
-            found = true;
-        }
+    var cfg = this.getEntryConfig();
+    if( cfg.type != entry.type ){
+	return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
     }
-    if( !found ) return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
 
     entry.setContest(this);
     entry.configure(cfg);
@@ -582,7 +577,7 @@ Contest.method('loadEntryMethod', function(user, callback){
     var self =this;
 
     // we need to create an entry to see whats up...
-    var config = this.entry_config[0];
+    var config = this.getEntryConfig();
     var entryMethod = Bozuko.entry(config.type, user);
     entryMethod.setContest(this);
     entryMethod.configure(config);

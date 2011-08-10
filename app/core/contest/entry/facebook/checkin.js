@@ -16,7 +16,6 @@ var FacebookCheckinMethod = module.exports = function(key, user, options){
     EntryMethod.call(this,key,user);
     // set the valid options
     this.options = options;
-    this.checkin = this.options.checkin || false;
     this._lastCheckin = false;
 };
 
@@ -82,7 +81,7 @@ FacebookCheckinMethod.prototype.getDescription = function(callback){
             var play = (self.config.tokens > 1 ? "Plays" : "Play" );
             description+= "\nLike us for "+self.config.tokens+" Bonus "+play+"!";
             if( !self.user || (self.page && !self.user.likes( self.page )) ){
-                description+="\nHit back and scroll down to like us."
+                description+="\nHit back and scroll down to like us.";
             }
         }
         return callback(error, description);
@@ -152,7 +151,7 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
          * If a user cannot check in, check to make sure that the user has at least checked in here within
          * the configured duration for a page check in
          */
-        if( !self.checkin && !self.can_checkin && !self.hasCheckedIn() ){
+        if( !self.can_checkin && !self.hasCheckedIn() ){
             return callback(null, false);
         }
         return callback( null, true);
@@ -176,80 +175,63 @@ FacebookCheckinMethod.prototype.hasCheckedIn = function(){
  * @param {Function} callback The callback function
  */
 FacebookCheckinMethod.prototype.process = function( callback ){
-
-    // lets process this...
     var self = this;
 
-    if( !self.checkin ){
-        return self.validate( function(error, valid){
-            if( error ) return callback( error );
-            if( !valid ){
-                if(!self.can_checkin && !self.hasCheckedIn()){
-                    /**
-                     * TODO
-                     * this should be a better message when we know whats wrong
-                     */
-                    return self.page.getNextCheckinTime( self.user, function(error, next_time){
-                        if( error ) return callback( error );
-                        return callback( Bozuko.error('checkin/too_many_attempts_per_user', {next_time: next_time}) );
-                    });
-                }
-                return callback( Bozuko.error('contest/invalid_entry') );
-            }
-
-            if( self.can_checkin ){
-                return self.page.checkin( self.user, {
-                    user: self.user,
-                    contest: self.contest,
-                    service: 'facebook',
-                    ll: self.options.ll,
-                    message: self.options.message
-                }, function(error, result){
-                    if( error ){
-                        return callback( error );
-                    }
-
-                    var prof = new Profiler('core/contest/entry/facebook/checkin/process');
-
-                    for(var i=0; result.entries && i<result.entries.length; i++){
-                        var entry = result.entries[i];
-                        if( entry.type == self.type && entry.contest_id == self.contest.id ){
-                            
-                            var share = new Bozuko.models.Share({
-                                service         :'facebook',
-                                type            :'checkin',
-                                contest_id      :self.contest.id,
-                                page_id         :self.contest.page_id,
-                                user_id         :self.user.id,
-                                visibility      :0,
-                                message         :self.options.message
-                            });
-                            
-                            try{
-                                share.visibility = self.user.service('facebook').internal.friends.length;
-                            }catch(e){
-                                share.visibility = 0;
-                            }
-                            return share.save(function(error){
-                                return callback( null, entry );
-                            });
-                        }
-                    }
-
-                    prof.stop();
-
-                    return callback( Bozuko.error('contest/no_entry_found_after_checkin') );
+    return self.validate( function(error, valid){
+        if( error ) return callback( error );
+        if( !valid ){
+	    if(!self.can_checkin && !self.hasCheckedIn()){
+		/**
+                 * TODO
+                 * this should be a better message when we know whats wrong
+                 */
+		return self.page.getNextCheckinTime( self.user, function(error, next_time){
+                    if( error ) return callback( error );
+                    return callback( Bozuko.error('checkin/too_many_attempts_per_user', {next_time: next_time}) );
                 });
             }
+            return callback( Bozuko.error('contest/invalid_entry') );
+        }
+
+        if( self.can_checkin ){
+	    return self.page.checkin( self.user, {
+                user: self.user,
+		contest: self.contest,
+		service: 'facebook',
+		ll: self.options.ll,
+		message: self.options.message
+            }, function(error){
+		if( error ) return callback( error );
+
+		return EntryMethod.prototype.process.call(self, function(err, entry) {
+		    if (err) return callback(err);
+
+		    var share = new Bozuko.models.Share({
+			service         :'facebook',
+			type            :'checkin',
+			contest_id      :self.contest.id,
+			page_id         :self.contest.page_id,
+			user_id         :self.user.id,
+			visibility      :0,
+			message         :self.options.message
+                    });
+                            
+		    try{
+			share.visibility = self.user.service('facebook').internal.friends.length;
+		    }catch(e){
+			share.visibility = 0;
+		    }
+		    return share.save(function(error){
+                        return callback( null, entry );
+		    });
+		});
+
+	    });
+	}
             
-            
-            return EntryMethod.prototype.process.call(self, callback);
+        return EntryMethod.prototype.process.call(self, callback);
 
-        });
-    }
-
-
-    return EntryMethod.prototype.process.call(this, callback);
+    });
 };
 
 FacebookCheckinMethod.prototype._load = function( callback ){
