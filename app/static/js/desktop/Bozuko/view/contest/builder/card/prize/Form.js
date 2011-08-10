@@ -69,7 +69,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 store               :Ext.create('Ext.data.Store',{
                     fields              :['value','display'],
                     data                :[
-                        {value: 'bozuko',       display:'In Person / Security Image'},
+                        {value: 'image',        display:'In Person / Security Image'},
                         {value: 'barcode',      display:'Barcode'},
                         {value: 'email',        display:'Email'}
                     ]
@@ -218,7 +218,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 }
             },{
                 redemption_field    :'yes',
-                redemption_group    :'bozuko',
+                redemption_group    :'image',
                 xtype               :'textfield',
                 name                :'total',
                 regex               :/^[0-9]+$/,
@@ -234,7 +234,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 ]
             },{
                 redemption_field    :'yes',
-                redemption_group    :'barcode,email',
+                redemption_group    :'all',
                 xtype               :'displayfield',
                 name                :'total_display',
                 hidden              :true,
@@ -256,10 +256,10 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         Ext.each( me.query('[redemption_group=all]'), function(field){ field.show();} );
         Ext.each( me.query('[redemption_field=yes]'), function(field){
             if(field.name == 'total'){
-                field[type=='bozuko'?'show':'hide']();
+                field[type=='image'?'show':'hide']();
             }
             else if(field.name == 'total_display' ){
-                field[type!='bozuko'?'show':'hide']();
+                field[type!='image'?'show':'hide']();
             }
             else if(field.redemption_group!=='all'){
                 field.hide();
@@ -278,7 +278,26 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         me.getForm().reset();
         Ext.Array.each( me.query('[redemption_field=yes]'), function(field){ field.hide(); } );
         me.prize = prize;
-        if( prize.get('name') ) me.getForm().loadRecord(prize);
+        if( prize.get('name') ){
+            // backwards compatability..
+            if( !prize.get('redemption_type') ){
+                var email_codes = prize.get('email_codes'),
+                    barcodes = prize.get('barcodes');
+                    
+                // clean the arrays
+                function clean_array(ar){
+                    var i =0;
+                    while(i < ar.length){
+                        if( ar[i] == '' ) ar.splice(i,1);
+                        else i++;
+                    }
+                }
+                clean_array(barcodes);
+                clean_array(email_codes);
+                prize.set('redemption_type', email_codes && email_codes.length ? 'email' : (barcodes && barcodes.length ? 'barcode' : 'image') );
+            }
+            me.getForm().loadRecord(prize);
+        }
         me.down('[ref=title]').update( prize.get('name') ? 'Edit Prize' : 'Add Prize');
     },
     

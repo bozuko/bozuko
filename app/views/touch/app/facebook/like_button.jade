@@ -36,7 +36,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             fb_token = '#{locals.user ? locals.user.service('facebook').auth : ""}',
             fb_id = '#{place.data.id}',
             mobile_version = '{#locals.user.mobile_version}';
-            liked = #{locals.user.likes(place.data.id)?'true':'false'};
+            liked = #{locals.user ? (locals.user.likes(place.data.id)?'true':'false') : 'false' };
             token = '#{locals.user ? user.token : ""}';
             
         document.getElementsByTagName('html')[0].className += ' like_button_loading';

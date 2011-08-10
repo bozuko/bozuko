@@ -121,7 +121,14 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         var me = this,
             values = {};
         Ext.each( me.form.query('field'), function(field){
-            values[field.name] = field.getValue();
+            var parts = field.name.split('.'),
+                cur = values;
+            while( parts.length > 1 ){
+                var key = parts.shift();
+                if( !cur[key] ) cur[key] = {};
+                cur = cur[key];
+            }
+            cur[parts.shift()] = field.getValue();
         });
         return values;
     },
