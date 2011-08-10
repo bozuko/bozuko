@@ -57,6 +57,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
         });
         me.callParent(arguments);
         me.on('activate', me.onActivate, me);
+        
     },
     
     onActivate : function(){
@@ -76,37 +77,51 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
     
     loadContest : function(){
         var me = this,
-            values = {},
-            entry_cfg = me.contest.getEntryConfig(),
-            game_cfg = me.contest.get('game_config');
+            values = {};
+        
+        me.entry_cfg = me.contest.getEntryConfig() || {},
+        me.game_cfg = me.contest.get('game_config') || {};
             
-        
-        
-        if( entry_cfg ){
-            for(var i in entry_cfg){
-                values['entry_confg.'+i] = entry_cfg[i];
+        if( me.entry_cfg ){
+            for(var i in me.entry_cfg){
+                values['entry_config.'+i] = me.entry_cfg[i];
             }
         }
-        if( game_cfg ){
-            for(var i in entry_cfg){
-                values['game_confg.'+i] = entry_cfg[i];
+        if( me.game_cfg ){
+            for(var i in me.game_cfg){
+                values['game_config.'+i] = me.entry_cfg[i];
             }
         }
-        me.form.setValues(values);
+        
+        console.log(values);
+        
+        me.form.getForm().setValues(values);
     },
     
     updateRecord : function(){
+        var me = this,
+            values = me.getValues();
+            
+        Ext.apply( me.game_cfg, values.game_config);
+        Ext.apply( me.entry_cfg, values.entry_config);
         
+        me.contest.set('game_config', me.game_cfg);
+        me.contest.set('entry_config', [me.entry_config]);
     },
     
     onThemesLoad : function(store){
-        store.find('theme', me.)
+        var me = this,
+            i = store.find('theme', me.game_cfg.theme );
+        if( ~i ){
+            var tc = me.down('[ref=theme-chooser]');
+            if( tc ) tc.getSelectionModel().select(i);
+        }
     },
     
     
     addThemeChooser : function(type){
         var me = this;
-        console.log('type', type);
+        
         me.form.add({
             xtype           :'component',
             autoEl          :{
