@@ -83,9 +83,9 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         Ext.Array.each(me.query('[ref=card-form] htmleditor'), function(field){
             field.on('activate', function(field){
                 me.onFieldFocus(field);
-            });
-            field.on('deactivate', function(field){
-                me.onFieldBlur(field);
+                Ext.EventManager.on( field.getWin(),'focus', function(){
+                    me.onFieldFocus(field);
+                });
             });
             field.on({
                 scope           :me,
@@ -144,6 +144,9 @@ Ext.define('Bozuko.view.contest.builder.Card', {
     
     onFieldFocus : function(field){
         var me = this;
+        
+        if( field.up('duration') ) field = field.up('duration');
+        
         setTimeout(function(){
             me.blurred = false;
             field.getEl().dom.appendChild(me.arrow);
@@ -152,18 +155,21 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             helpText = '<h3>'+field.fieldLabel+'</h3>'+helpText;
             me.updateHelpText( helpText );
         }, 10);
-        
-        
     },
     
     onFieldBlur : function(field){
         var me = this;
         me.blurred = true;
+        
         setTimeout( function(){
             if( !me.blurred ) return;
             me.arrow.parentNode.removeChild( me.arrow );
-            me.updateHelpText( me.overview );
+            me.updateHelpText( me.getOverview() );
         }, 500);
+    },
+    
+    getOverview : function(){
+        return this.overview;
     },
     
     updateHelpText : function(html){

@@ -2,6 +2,10 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
     extend : 'Ext.form.Panel',
     alias : 'widget.contestbuilderprizeform',
     
+    requires: [
+        'Bozuko.lib.form.field.Duration'
+    ],
+    
     initComponent : function(){
         var me = this;
         
@@ -32,6 +36,8 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             },{
                 name                :'value',
                 fieldLabel          :'Prize Value',
+                regex               :/^[0-9]+$/,
+                maskRe              :/[0-9]/,
                 emptyText           :'Enter the value of the prize in USD',
                 allowBlank          :false,
                 helpText            :[
@@ -55,7 +61,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 xtype               :'combo',
                 name                :'redemption_type',
                 fieldLabel          :'Redemption Method',
-                emptyText           :'Please selection the redemption method',
+                emptyText           :'Please choose the redemption method',
                 editable            :false,
                 forceSelection      :true,
                 displayField        :'display',
@@ -95,7 +101,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             },{
                 redemption_field    :'yes',
                 redemption_group    :'all',
-                xtype               :'textfield',
+                xtype               :'duration',
                 name                :'duration',
                 hidden              :true,
                 fieldLabel          :'Redemption Period',
@@ -107,48 +113,20 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                     '</p>'
                 ]
             },{
-                redemption_field    :'yes',
-                redemption_group    :'barcode',
-                xtype               :'textarea',
-                grow                :true,
-                hidden              :true,
-                name                :'barcode_type',
-                fieldLabel          :'Barcodes',
-                emptyText           :'Please enter the barcodes (one per line)',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Enter the text values for your barcodes. You should have one barcode per line.",
-                    '</p>'
-                ]
-            },{
+                name                :'email_subject',
                 redemption_field    :'yes',
                 redemption_group    :'email',
-                xtype               :'textarea',
-                grow                :true,
-                hidden              :true,
-                name                :'email_codes',
-                fieldLabel          :'Email Codes',
-                emptyText           :'Please enter the email codes (one per line)',
+                fieldLabel          :'Email Subject',
+                emptyText           :'Subject of your email',
                 allowBlank          :false,
                 helpText            :[
                     "<p>",
-                        "Enter each all the individual email codes. Each code should be on its own line.",
-                    '</p>'
-                ]
-            },{
-                redemption_field    :'yes',
-                redemption_group    :'all',
-                xtype               :'textfield',
-                name                :'total',
-                hidden              :true,
-                fieldLabel          :'Total Prizes',
-                emptyText           :'Please enter the total number of prizes',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Please enter the total amount of this prize that you would like to distribute.",
-                    '</p>'
+                        "Please enter the subject of your email. The text will be processed before sending and the ",
+                        "following replacements will be made:",
+                    '</p>',
+                    '<table class="prize-help-table">',
+                        '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
+                    '</table>'
                 ]
             },{
                 redemption_field    :'yes',
@@ -165,11 +143,102 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         "Please enter the body of your email. The text will be processed before sending and the ",
                         "following replacements will be made:",
                     '</p>',
-                    '<table cellpadding="2">',
+                    '<table class="prize-help-table">',
                         '<tr><th>{code}</th><td>The code</td></tr>',
                         '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
                     '</table>'
                 ]
+            },{
+                redemption_field    :'yes',
+                redemption_group    :'email',
+                xtype               :'textarea',
+                grow                :true,
+                growMax             :250,
+                hidden              :true,
+                name                :'email_codes',
+                fieldLabel          :'Email Codes',
+                emptyText           :'Please enter the email codes (one per line)',
+                allowBlank          :false,
+                helpText            :[
+                    "<p>",
+                        "Enter each all the individual email codes. Each code should be on its own line.",
+                    '</p>'
+                ],
+                getValue        :function(){
+                    var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this),
+                        ret = [],
+                        ar = v.replace(/\r/,'').replace(/^\n+/,'').replace(/\n+$/, '').split('\n');
+                    
+                    for(var i=0; i<ar.length; i++){
+                        if( ar[i] !== '' ) ret.push( ar[i] );
+                    }
+                    return ret;
+                },
+                setValue        :function(v){
+                    if( Ext.isString(v) ) v = v.split('\n');
+                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
+                },
+                listeners           :{
+                    scope               :me,
+                    change              :me.updateTotalFromTextarea
+                }
+            },{
+                redemption_field    :'yes',
+                redemption_group    :'barcode',
+                xtype               :'textarea',
+                grow                :true,
+                growMax             :250,
+                hidden              :true,
+                name                :'barcode_type',
+                fieldLabel          :'Barcodes',
+                emptyText           :'Please enter the barcodes (one per line)',
+                allowBlank          :false,
+                helpText            :[
+                    "<p>",
+                        "Enter the text values for your barcodes. You should have one barcode per line.",
+                    '</p>'
+                ],
+                getValue        :function(){
+                    var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this),
+                        ret = [],
+                        ar = v.replace(/\r/,'').replace(/^\n+/,'').replace(/\n+$/, '').split('\n');
+                    
+                    for(var i=0; i<ar.length; i++){
+                        if( ar[i] !== '' ) ret.push( ar[i] );
+                    }
+                    return ret;
+                },
+                setValue        :function(v){
+                    if( Ext.isString(v) ) v = v.split('\n');
+                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
+                },
+                listeners           :{
+                    scope               :me,
+                    change              :me.updateTotalFromTextarea
+                }
+            },{
+                redemption_field    :'yes',
+                redemption_group    :'bozuko',
+                xtype               :'textfield',
+                name                :'total',
+                regex               :/^[0-9]+$/,
+                maskRe              :/[0-9]/,
+                hidden              :true,
+                fieldLabel          :'Total Prizes',
+                emptyText           :'Please enter the total number of prizes',
+                allowBlank          :false,
+                helpText            :[
+                    "<p>",
+                        "Please enter the total amount of this prize that you would like to distribute.",
+                    '</p>'
+                ]
+            },{
+                redemption_field    :'yes',
+                redemption_group    :'barcode,email',
+                xtype               :'displayfield',
+                name                :'total_display',
+                hidden              :true,
+                fieldLabel          :'Total Prizes'
             }]
         });
         
@@ -186,7 +255,13 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         // show hide the corresponding fields
         Ext.each( me.query('[redemption_group=all]'), function(field){ field.show();} );
         Ext.each( me.query('[redemption_field=yes]'), function(field){
-            if(field.redemption_group!=='all'){
+            if(field.name == 'total'){
+                field[type=='bozuko'?'show':'hide']();
+            }
+            else if(field.name == 'total_display' ){
+                field[type!='bozuko'?'show':'hide']();
+            }
+            else if(field.redemption_group!=='all'){
                 field.hide();
                 field.disable();
             }
@@ -195,11 +270,13 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             field.show();
             field.enable();
         });
-        me.down('[name=total]').setReadOnly(type=='bozuko'?false:true);
     },
     
     loadForm : function(prize){
         var me = this;
+        // reset the form
+        me.getForm().reset();
+        Ext.Array.each( me.query('[redemption_field=yes]'), function(field){ field.hide(); } );
         me.prize = prize;
         if( prize.get('name') ) me.getForm().loadRecord(prize);
         me.down('[ref=title]').update( prize.get('name') ? 'Edit Prize' : 'Add Prize');
@@ -207,7 +284,6 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
     
     updateRecord : function(){
         var me = this;
-        
         me.prize.set(me.getValues());
     },
     
@@ -215,15 +291,22 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         var me = this,
             values = {};
         Ext.each( me.query('field'), function(field){
-            values[field.name] = field.getValue();
+            if( !field.up('duration') ) values[field.name] = field.getValue();
         });
+        values['duration'] = me.down('duration').getValue();
         return values;
     },
     
     validate : function(){
         var me = this;
-        
         return me.getForm().isValid();
+    },
+    
+    updateTotalFromTextarea : function(field){
+        var me = this;
+        me.down('[name=total]').setValue( field.getValue().length );
+        me.down('[name=total_display]').setValue( field.getValue().length );
+        
     }
     
 });

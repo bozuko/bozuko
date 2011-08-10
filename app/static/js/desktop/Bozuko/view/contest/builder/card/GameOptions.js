@@ -5,6 +5,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
     
     requires        :[
         'Bozuko.view.contest.builder.Card',
+        'Bozuko.lib.form.field.Duration',
         'Bozuko.lib.Router'
     ],
     name            :"Options",
@@ -29,6 +30,16 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
                     '<p>This is how many times a user can play the game for each entry. ',
                     'This will not affect overall odds of the contest. If you business is a restaurant or bar, ',
                     'you may want to consider offering 4 or 5... need more copy.',
+                    '</p>'
+                ]
+            },{
+                xtype               :'duration',
+                name                :'entry_config[0].duration',
+                fieldLabel          :'Play Every',
+                emptyText           :'Please enter a number',
+                helpText            :[
+                    '<p>This is how often you will allow a user to play your game. The more frequent, the faster ',
+                    'your contest will go.',
                     '</p>'
                 ]
             },{

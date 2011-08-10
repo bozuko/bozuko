@@ -41,6 +41,7 @@ Ext.define( 'Bozuko.view.contest.Entries', {
         },{
             xtype           :'pagingtoolbar',
             dock            :'bottom',
+            displayMsg      :'{0} - {1} of {2}',
             store           :me.store,
             displayInfo     :true
         }];
