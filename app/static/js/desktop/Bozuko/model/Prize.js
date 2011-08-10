@@ -6,7 +6,7 @@ Ext.define('Bozuko.model.Prize', {
     fields: [
         {name:'_id',            type:'String'},
         {name:'value',          type:'Number'},
-        {name:'duration',       type:'Number',  defaultValue: 1000 * 60 * 60},
+        {name:'duration',       type:'Number',      defaultValue: 1000 * 60 * 60},
         {name:'image',          type:'String'},
         {name:'name',           type:'String'},
         {name:'description',    type:'String'},
