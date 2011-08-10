@@ -383,7 +383,7 @@ exports.routes = {
                     parts[0] = parseFloat( parts[0] );
                     parts[1] = parseFloat( parts[1] );
                     
-                    var config = contest.entry_config[0];
+                    var config = contest.getEntryConfig();
                     var entry = Bozuko.entry( config.type, req.session.user, {ll: parts} );
                     
                     return user.updateInternals( function(){

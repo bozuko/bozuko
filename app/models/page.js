@@ -336,123 +336,43 @@ Page.method('checkin', function(user, options, callback) {
             return callback( checkinError );
         }
 
-        return self.getActiveContests(user, function(error, contests){
-            if( error ) return callback(error);
+        options.user = user;
+        if( self.service('facebook') ){
+	    options.link = self.service('facebook').data.link;
+        }
+        options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
+	var contest = options.contest;
 
-            options.user = user;
-            // options.link = 'http://bozuko.com';
-            if( self.service('facebook') ){
-                options.link = self.service('facebook').data.link;
-            }
-            options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
+        if(!contest) {
+	    // lets set a generic checkin message
+	    options.name = _t(user.lang, 'checkin/general_checkin_name');
+            options.description = _t(
+		user.lang,
+		'checkin/general_checkin_desc'
+	    );
+        } else {
+	    // customize message for the contest
+            var game = contest.getGame();
+	    var best_prize = contest.getBestPrize();
+	    // There should always be a best prize in reality. Sometimes in tests we don't have any prizes.
+	    best_prize = best_prize ? best_prize.name : 'no prize';
+            options.name = _t(user.lang, 'checkin/contest_checkin_name', self.name);
+            options.description = _t(
+		user.lang,
+		'checkin/contest_checkin_desc',
+		user.name,
+		self.name,
+		best_prize,
+		game.name
+            );
+	}
 
-            // okay, lets try to give them entries on all open contests
-            if( contests.length === 0 ){
-                // lets set a generic checkin message
-                options.name = _t(user.lang, 'checkin/general_checkin_name');
-                options.description = _t(
-                    user.lang,
-                    'checkin/general_checkin_desc'
-                );
-            }
-            else{
-                var contest = contests[0];
-                if( options.contest ){
-                    if( options.contest.id ){
-                        options.contest = options.contest.id;
-                    }
-                    // customize message for this specific contest
-                    var found = false;
-                    for(var i=0; i<contests.length && found==false; i++){
+        options.page = self;
+        options.user = user;
 
-                        if( contests[i].id == options.contest ){
-                            found = true;
-                            contest = contests[i];
-                        }
-                    }
-                }
-                var game = contest.getGame();
-                //options.link = self.service('facebook').data.link;
-                options.name = _t(user.lang, 'checkin/contest_checkin_name', self.name);
-                options.description = _t(
-                    user.lang,
-                    'checkin/contest_checkin_desc',
-                    user.name,
-                    self.name,
-                    contest.getBestPrize().name,
-                    game.name
-                );
-            }
-
-            // okay, we have everything we need to make a checkin, lets
-            // do so with our checkin model
-
-            options.page = self;
-            options.user = user;
-
-            return Bozuko.models.Checkin.process(options, function(error, checkin){
-                if( error ) return callback( error );
-
-                if( contests.length == 0 ){
-                    return callback( null, {checkin:checkin, entries:[], contests: contests} );
-                }
-                var current = 0, entries = [];
-                var count = 0;
-                
-                return async.forEach( contests,
-
-                    function(contest, cb){
-
-                        // check to make sure that the contest requires a checkin
-                        var found = false;
-                        contest.entry_config.forEach(function(entry_config){
-                            if( entry_config.type == options.service+'/checkin' ){
-                                found = true;
-                            }
-                        });
-                        if( !found ){
-                            return cb(null);
-                        }
-                        // try to enter the contest
-                        var entry = Bozuko.entry(options.service+'/checkin', user, {
-                            checkin: checkin
-                        });
-
-                        entry.configure(contest.entry_config[0]);
-
-                        // Exhausted contests can't be checked into. getActiveContests() may return
-                        // exhausted contests because the user might still have tokens for the contest
-                        // even though no more tokens can be distributed via entry.
-                        //
-                        if (contest.token_cursor > contest.total_plays - contest.total_free_plays - entry.getTokenCount()) {
-                            return cb(null);
-                        }
-
-                        return contest.enter( entry, function(error, entry){
-                            if( error ){
-                                console.log('error entering contest');
-                                /**
-                                 * We need to swallow this error as it can occur upon unsuccessful
-                                 * validation and thus screw up the rest of our processing
-                                 */
-                                console.error( error.message );
-                                console.error( error.stack );
-                                return cb( null );
-                            }
-                            else{
-                                entries.push(entry);
-                                return contest.loadGameState(user, cb);
-                            }
-                        });
-                    },
-
-                    function(error){
-                        if( error ) return callback( error );
-                        return callback( null, {checkin:checkin, entries:entries, contests:contests});
-                    }
-                );
-            });
-
+        return Bozuko.models.Checkin.process(options, function(error, checkin){
+            if( error ) return callback( error );
+	    return callback( null, checkin);
         });
     });
 });

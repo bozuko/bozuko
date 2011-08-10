@@ -150,6 +150,7 @@ EntryMethod.prototype.process = function( callback ){
             self.loadEntry(entry, now);
 
             return entry.save( function(error){
+		if (error) return callback(error);
                 Bozuko.publish('contest/entry', {contest_id: self.contest._id, page_id: self.contest.page_id, user_id: self.user._id});
                 return callback( error, entry );
             });
