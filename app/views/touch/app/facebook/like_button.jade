@@ -39,7 +39,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             liked = #{locals.user ? (locals.user.likes(place.data.id)?'true':'false') : 'false' };
             token = '#{locals.user ? user.service('facebook').auth : ""}';
             
-        document.getElementsByTagName('html')[0].className += ' like_button_loading';
+        //document.getElementsByTagName('html')[0].className += ' like_button_loading';
         
         window.fbAsyncInit = function () {
             FB.init({
@@ -50,16 +50,23 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             });
             
             function updateLikes(callback){
+                var like_button = document.getElementById("like-button");
+                like_button.style.top="-1000px";
+                like_button.style.left="-1000px";
+                document.body.className = 'like-button-loading';
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function(){
                     if(req.readyState == 4){
+                        document.body.className = '';
+                        like_button.style.top="0px";
+                        like_button.style.left="0px";
                         callback();
                     }
-                }
+                };
                 req.open('GET', '/user?token='+token+'&nocache='+Date.now());
                 setTimeout(function(){
                   req.send();
-                }, 200);
+                }, 1200);
             }
         
             function onEdgeCreate(response) {
@@ -133,9 +140,14 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               var iframes;
               if( (iframes = likeBtn.getElementsByTagName('iframe')).length ){
                 clearInterval(interval);
+                var shown = false;
                 iframes[0].onload = function(){
+                  shown = true;
                   showLikeButton();
-                }
+                };
+                setTimeout(function(){
+                  if( !shown ) showLikeButton();
+                },1000);
               }
           }, 200);
         };
