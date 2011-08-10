@@ -37,7 +37,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             fb_id = '#{place.data.id}',
             mobile_version = '{#locals.user.mobile_version}';
             liked = #{locals.user ? (locals.user.likes(place.data.id)?'true':'false') : 'false' };
-            token = '#{locals.user ? user.token : ""}';
+            token = '#{locals.user ? user.service('facebook').auth : ""}';
             
         document.getElementsByTagName('html')[0].className += ' like_button_loading';
         
@@ -145,6 +145,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             var m = document.getElementById('mask');
             m.style.display='block';
             m.onclick = function(e){
+              e.preventDefault();
               e.stopPropagation();
             }
         }
