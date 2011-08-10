@@ -71,6 +71,143 @@ Contest.virtual('state')
         return Contest.COMPLETE;
     });
 
+Contest.method('getEntryConfig', function() {
+    return this.entry_config[0];		   
+});
+
+Contest.method('validate_', function(callback) {
+    var self = this;
+
+    async.parallel({
+        entries_and_plays: function(cb) {
+            self.validateEntriesAndPlays(cb);
+        },
+        prizes: function(cb) {
+            self.validatePrizes(false, cb);
+        },
+        consolation_prizes: function(cb) {
+	    self.validatePrizes(true, cb);
+        },
+        results: function(cb) {
+            self.validateResults(cb);
+	}
+    },
+    callback
+    );
+});
+
+Contest.method('validateEntriesAndPlays', function(callback) {
+    var status = { errors: [], warnings: [] };
+    if (!this.active) {
+	return callback(null, status);
+    }
+    var entry_config = this.getEntryConfig();
+    var tokens_per_entry = entry_config.tokens;
+    if (entry_config.type === 'facebook/checkin' && entry_config.options && entry_config.options.enable_like) {
+        tokens_per_entry = tokens_per_entry * 2;
+    }
+    if ((this.total_plays - this.total_free_plays) === this.total_entries*tokens_per_entry) {
+        return callback(null, status);
+    }
+    return callback(null, {errors: [Bozuko.error('validate/contest/plays_entries_tokens')]});
+});
+
+Contest.method('validatePrizes', function(isConsolation, callback) {
+    var self = this;
+    var prize;
+    var barcode_prizes = [];
+    var status = { errors: [], warnings: [] };
+
+    var prizes = isConsolation ? this.consolation_prizes : this.prizes;
+
+    if (prizes.length === 0 && !isConsolation) {
+        status.errors.push(Bozuko.error('validate/contest/no_prizes'));
+        return callback(null, status);
+    }
+
+    for (var i = 0; i < prizes.length; i++) {
+        prize = prizes[i];
+
+        if (prize.is_email) {
+            if (prize.total != prize.email_codes.length) {
+                status.errors.push(Bozuko.error('validate/contest/email_codes', prize.name));
+            }
+            if (prize.email_body === "") {
+                status.errors.push(Bozuko.error('validate/contest/email_body', prize.name));
+            }
+        }
+
+        if (prize.is_barcode) {
+            if (prize.total != prize.barcodes.length) {
+                status.errors.push(Bozuko.error('validate/contest/barcodes_length', prize.name));
+            }
+	    
+	    barcode_prizes.push(i);
+        }
+    }
+
+    if (!this.active || !barcode_prizes.length) {
+	return callback(null, status);	
+    }
+
+    // Check S3 to see if all barcodes are there
+    async.forEach(barcode_prizes, function(index, cb) {  
+	var s3 = new S3();
+        var prize = self.prizes[index];
+        var ct = 0;
+        async.forEachSeries(prize.barcodes, function(barcode, cb) {
+            var path = '/game/'+self._id+'/prize/'+index+'/barcode/'+ct;
+	    ct++;
+            s3.head(path, cb);
+        }, function(err) {
+	    if (err) {
+	        status.errors.push(Bozuko.error('validate/contest/barcodes_s3', prize.name));
+	    }
+	    cb(null);
+        });
+
+    }, function(err) {
+	return callback(null, status);	
+    });
+
+});
+
+Contest.method('validateResults', function(callback) {
+    var status = { errors: [], warnings: [] };
+    if (!this.active) return callback(null, status);
+
+    var counts = [];
+    var free_plays = 0;
+    var index;
+
+    for (var i = 0; i < this.total_plays; i++) {
+	if (this.results[i]) {
+	    if (this.results[i] === 'free_play') {
+		free_plays++;
+	    } else {
+		index = this.results[i].index;
+		if (counts[index] == undefined) {
+		    counts[index] = 1;
+		} else {
+		    counts[index]++;
+		}
+	    }
+	}
+    }
+
+    var prize;
+    for (var j = 0; j < this.prizes.length; j++) {
+	prize = this.prizes[j];
+	if (prize.total != counts[j]) {
+	    status.errors.push(Bozuko.error('validate/contest/results_prize_count', prize.name));
+	}
+    }
+    if (this.total_free_plays != free_plays) {
+	status.errors.push(Bozuko.error('validate/contest/results_free_play_count'));
+    }
+    return callback(null, status);
+});
+
 
 Contest.method('getOfficialRules', function(){
     if( this.rules ) return this.rules;
@@ -633,7 +770,7 @@ Contest.method('claimConsolation', function(opts, callback) {
         {new: true, fields: {plays: 0, results:0}},
         function(err, contest) {
             prof.stop();
-            if( err && !err.message.match(no_matching_re) ) console.log(err);
+            if( err && !err.message.match(no_matching_re) ) console.error(err);
             if (!contest) {
                 opts.consolation = false;
                 return callback(null);

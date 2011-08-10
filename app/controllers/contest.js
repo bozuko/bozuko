@@ -135,6 +135,7 @@ var game_state = {
             if( game_state.button_enabled && game_state.button_action =='enter'){
                 links.game_entry = '/game/'+game_state.contest.id+'/entry';
             }
+            game_state.next_enter_time_ms = Math.max(+game_state.next_enter_time - Date.now(),0);
             game_state.links = links;
         }
         /*
@@ -151,6 +152,7 @@ var game_state = {
         game_id: "String",
         user_tokens: "Number",
         next_enter_time: "String",
+        next_enter_time_ms: "Number",
         button_text: "String",
         button_enabled: "Boolean",
         button_action: "String",

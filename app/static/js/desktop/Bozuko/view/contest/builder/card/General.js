@@ -40,7 +40,6 @@ Ext.define('Bozuko.view.contest.builder.card.General', {
                 xtype               :'datetimefield',
                 name                :'start',
                 allowBlank          :false,
-                minValue            :new Date(),
                 format              :'m-d-Y h:i a',
                 fieldLabel          :'Campaign Start Date',
                 emptyText           :'Start Date of the Campaign',
