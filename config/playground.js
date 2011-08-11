@@ -1,6 +1,6 @@
 module.exports = {
 
-    test_mode: true,
+    test_mode: false,
 
     client: {
         mobile:{
