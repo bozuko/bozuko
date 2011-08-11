@@ -84,11 +84,12 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
+        
         return http.request({
             url: 'https://graph.facebook.com/oauth/access_token',
             params: params},
             function(err, response){
-
+                
                 if (err) {
                     if( failure && failure(err, req, res) === false){
                         return false;
