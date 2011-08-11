@@ -121,17 +121,17 @@ BozukoCheckinMethod.prototype.process = function( callback ){
         if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
 
         if( self.can_checkin ){
-	    return self.page.checkin( self.user, {
+            return self.page.checkin( self.user, {
                 test: true,
-		user: self.user,
-		contest: self.contest,
-		service: 'bozuko',
-		ll: self.options.ll,
-		message: self.options.message
+                user: self.user,
+                contest: self.contest,
+                service: 'bozuko',
+                ll: self.options.ll,
+                message: self.options.message
             }, function(error){
-		if( error ) return callback( error );
+                if( error ) return callback( error );
 
-		return EntryMethod.prototype.process.call(self, callback);
+                return EntryMethod.prototype.process.call(self, callback);
 	    });
 	}
 
