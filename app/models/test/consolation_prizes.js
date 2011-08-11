@@ -18,7 +18,7 @@ page.name = "test page";
 var start = new Date();
 var end = new Date();
 end.setTime(start.getTime()+1000*60*60*24*2);
-
+var ll = [42.646, -71.303];
 
 var contest_all_once = new Bozuko.models.Contest(
 {
@@ -260,11 +260,7 @@ exports['enter contests'] = function(test) {
     var count = 0;
     async.forEach(contests,
         function(contest, callback) {
-            var checkin = new Bozuko.models.Checkin();
-            checkin.timestamp = new Date();
-            checkin.user_id = user._id;
-            checkin.page_id = page._id;
-            var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+            var entryMethod = Bozuko.entry('facebook/checkin', user, {ll: ll});
             contest.enter(entryMethod, function(err, e) {
                 callback(err);
             });
@@ -284,11 +280,7 @@ exports['everyone gets a consolation prize once per contest'] = function(test) {
         // There should be a consolation prize here
         test.ok(result.play.consolation);
 
-        var checkin = new Bozuko.models.Checkin();
-        checkin.timestamp = new Date();
-        checkin.user_id = user._id;
-        checkin.page_id = page._id;
-        var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+        var entryMethod = Bozuko.entry('facebook/checkin', user, {ll: ll});
         contest_all_once.enter(entryMethod, function(err, e) {
             test.ok(!err);
             play3times(contest_all_once, function(err, result) {
@@ -330,11 +322,7 @@ exports['everyone gets a consolation prize every time they run out of plays'] = 
         // There should be a consolation prize here
         test.ok(result.play.consolation);
 
-        var checkin = new Bozuko.models.Checkin();
-        checkin.timestamp = new Date();
-        checkin.user_id = user._id;
-        checkin.page_id = page._id;
-        var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+        var entryMethod = Bozuko.entry('facebook/checkin', user, {ll: ll});
         contest_all_always.enter(entryMethod, function(err, e) {
             test.ok(!err);
             play3times(contest_all_always, function(err, result) {
@@ -356,7 +344,7 @@ exports['everyone gets a consolation prize every time they run out of plays'] = 
                                 test.ok(!err);
                                 test.deepEqual(2, plays.length);
 
-                                var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+                                var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
                                 contest_all_always.enter(entryMethod, function(err, e) {
                                     test.ok(!err);
                                     play3times(contest_all_always, function(err, result) {
@@ -403,11 +391,7 @@ exports['every loser gets a consolation prize once per contest'] = function(test
         // There should be a consolation prize here
         test.ok(result.play.consolation);
 
-        var checkin = new Bozuko.models.Checkin();
-        checkin.timestamp = new Date();
-        checkin.user_id = user._id;
-        checkin.page_id = page._id;
-        var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+        var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
         contest_losers_once.enter(entryMethod, function(err, e) {
             test.ok(!err);
             play3times(contest_losers_once, function(err, result) {
@@ -446,11 +430,7 @@ exports['every loser gets a consolation prize every time they run out of plays']
         // There should be a consolation prize here
         test.ok(result.play.consolation);
 
-        var checkin = new Bozuko.models.Checkin();
-        checkin.timestamp = new Date();
-        checkin.user_id = user._id;
-        checkin.page_id = page._id;
-        var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+        var entryMethod = Bozuko.entry('facebook/checkin', user, {ll: ll});
         contest_losers_always.enter(entryMethod, function(err, e) {
             test.ok(!err);
             play3times(contest_losers_always, function(err, result) {

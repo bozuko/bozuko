@@ -526,11 +526,8 @@ exports['game tests'] = {
             ok,
             function(res) {
                 var game_states = JSON.parse(res.body);
-                test.ok(Bozuko.validate(['game_state'], game_states));
-                tokens = game_states[0].user_tokens;
-                test.ok(tokens===3, 'did not get the right amount of tokens from checkin: '+tokens);
-                link = game_states[0].links.game_result;
-                exports['game tests']['play 3 times'](test);
+                test.ok(!game_states.length);
+		test.done();
             });
     }
 
