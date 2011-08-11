@@ -44,7 +44,9 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     var params = {
         'client_id' : Bozuko.config.facebook.app.id,
         'scope' : Bozuko.config.facebook.perms[scope],
-        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+Bozuko.config.server.port+url.pathname+((url.search||'').replace(/[&\?]code=.*$/i, ''))
+        'redirect_uri' : protocol+'//'+Bozuko.config.server.host+':'+
+                         Bozuko.config.server.port+url.pathname+
+                         ((url.search||'').replace(/[&\?]code=.*$/i, ''))
     };
     
     if( req.param('display')){
@@ -59,7 +61,6 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     if( !code && !error_reason ){
         // we need to send this person to facebook to get the code...
         var url = 'https://www.facebook.com/dialog/oauth?'+qs.stringify(params);
-        console.log(url);
         return res.redirect(url);
     }
     else if( error_reason ){
@@ -70,7 +71,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
         ret+= (ret.indexOf('?') != -1 ? '&' : '?')+'error_reason='+error_reason;
 
         if( failure ){
-            if( failure(error_reason, req, res) === false ){
+            if( failure(Bozuko.error('facebook/permissions_denied'), req, res) === false ){
                 return null;
             }
         }
@@ -89,7 +90,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
             function(err, response){
 
                 if (err) {
-                    if( failure && failure('Error retrieving access_token', req, res) === false){
+                    if( failure && failure(err, req, res) === false){
                         return false;
                     }
                     return err.send(res);
@@ -107,7 +108,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                         }
                     }, function(error, user){
                         if( error ){
-                            if( failure && failure('Error retrieving user', req, res) === false){
+                            if( failure && failure(error, req, res) === false){
                                 return false;
                             }
                             return error.send(res);
@@ -120,7 +121,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                                 return err.send(res);
                             }
 
-                            return u.updateInternals( function(error){
+                            return u.updateInternals( true, function(error){
                                 req.session.userJustLoggedIn = true;
                                 req.session.user = u;
                                 
@@ -134,9 +135,8 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                         });
                     });
                 } else {
-                    console.error(inspect(result));
                     if( failure ){
-                        if( failure('Authentication Failed', req, res) === false ){
+                        if( failure(Bozuko.error('facebook/permissions_denied'), req, res) === false ){
                             return null;
                         }
                     }
