@@ -29,6 +29,12 @@ Error.prototype.toTransfer = function(callback){
 };
 
 Error.prototype.send = function(res){
+    
+    if( this.name === 'http/timeout' && this.message.match(/graph\.facebook\.com/) ){
+        this.title = 'Facebook Timemout';
+        this.message = 'Facebook is taking forever! Sorry, please try again in a little bit.'
+    }
+    
     console.error('send '+this.name+": "+this.message);
     Bozuko.publish('error/send', {message: this.message, name:this.name, code: this.code, stack: this.stack} );
     console.error('send '+this.name+": "+this.message);

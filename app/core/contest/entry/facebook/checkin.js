@@ -206,24 +206,23 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                 return EntryMethod.prototype.process.call(self, function(err, entry) {
                     if (err) return callback(err);
 
-		    var share = new Bozuko.models.Share({
-                        service         :'facebook',
-                        type            :'checkin',
-                        contest_id      :self.contest.id,
-                        page_id         :self.contest.page_id,
-                        user_id         :self.user.id,
-                        visibility      :0,
-                        message         :self.options.message
-                    });
-                            
-		    try{
-                        share.visibility = self.user.service('facebook').internal.friends.length;
-		    }catch(e){
-                        share.visibility = 0;
-		    }
-		    return share.save(function(error){
-                        return callback( null, entry );
-		    });
+					var share = new Bozuko.models.Share({
+						service         :'facebook',
+						type            :'checkin',
+						contest_id      :self.contest.id,
+						page_id         :self.contest.page_id,
+						user_id         :self.user.id,
+						visibility      :0,
+						message         :self.options.message
+					});
+					try{
+						share.visibility = self.user.service('facebook').internal.friends.length;
+					}catch(e){
+						share.visibility = 0;
+					}
+					return share.save(function(error){
+						return callback( null, entry );
+					});
                 });
             });
         }
