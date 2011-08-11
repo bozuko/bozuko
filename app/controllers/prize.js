@@ -290,7 +290,7 @@ exports.routes = {
                             // get the contest
                             Bozuko.models.Contest.findById( prize.contest_id, function(error, contest){
                                 
-                                if( !page || !contest || contest.post_to_wall !== true ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                                if( error || !page || !contest || contest.post_to_wall !== true ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                     console.error('not gonna share');
                                     res.send( error || result );
                                 });
@@ -304,28 +304,36 @@ exports.routes = {
                                 
                                 return Bozuko.service('facebook').post(options, function(error){
                                     
-                                    // lets save this share...
-                                    var share = new Bozuko.models.Share({
-                                        service         :'facebook',
-                                        type            :'post',
-                                        contest_id      :prize.contest_id,
-                                        page_id         :prize.page_id,
-                                        user_id         :prize.user_id,
-                                        visibility      :0
-                                    });
-                                    
-                                    try{
-                                        share.visibility = user.service('facebook').internal.friends.length;
-                                    }catch(e){
-                                        share.visibility = 0;
+                                    if( !error ){
+                                        // lets save this share...
+                                        var share = new Bozuko.models.Share({
+                                            service         :'facebook',
+                                            type            :'post',
+                                            contest_id      :prize.contest_id,
+                                            page_id         :prize.page_id,
+                                            user_id         :prize.user_id,
+                                            visibility      :0
+                                        });
+                                        
+                                        try{
+                                            share.visibility = user.service('facebook').internal.friends.length;
+                                        }catch(e){
+                                            share.visibility = 0;
+                                        }
+                                        return share.save(function(err){
+                                            console.log('saved share from redeem');
+                                            // send the redemption object
+                                            return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                                                res.send( error || result );
+                                            });
+                                        });
                                     }
-                                    return share.save(function(error){
-                                        console.log('saved share from redeem');
-                                        // send the redemption object
+                                    else{
                                         return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
+                                            console.error('error posting');
                                             res.send( error || result );
                                         });
-                                    });
+                                    }
                                 });
                             });
                         });

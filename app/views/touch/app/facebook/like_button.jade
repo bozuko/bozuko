@@ -64,7 +64,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                 req.open('GET', '/user?token='+token+'&nocache='+Date.now());
                 setTimeout(function(){
                   req.send();
-                }, 1200);
+                }, 200);
             }
         
             function onEdgeCreate(response) {
