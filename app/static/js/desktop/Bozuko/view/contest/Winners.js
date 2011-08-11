@@ -40,15 +40,17 @@ Ext.define('Bozuko.view.contest.Winners' ,{
             items           :[{
                 xtype           :'textfield',
                 emptyText       :'Search...',
+                inputType       :'search',
                 ref             :'search',
                 enableKeyEvents :true,
                 listeners       :{
-                    keyup           :me.bufferedSearch
+                    change          :me.bufferedSearch
                 }
             }]
         },{
             xtype           :'pagingtoolbar',
             dock            :'bottom',
+            displayMsg      :'{0} - {1} of {2}',
             store           :me.store,
             displayInfo     :true
         }];

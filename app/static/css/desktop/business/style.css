@@ -551,8 +551,19 @@ fieldset .x-fieldset-header {
   padding: 0 !important;
   list-style: none !important;
 }
+.duration-field .x-form-item {
+  margin-bottom: 0 !important;
+}
 .contest-builder p {
   margin: 1em 0;
+}
+.contest-builder .card-title {
+  color: #006b37;
+  font-family: "ArvoRegular";
+  font-weight: normal;
+  margin-top: 0;
+  font-size: 16px;
+  margin-bottom: 1em;
 }
 .contest-builder .builder-card .intro {
   color: #666;
@@ -565,7 +576,7 @@ fieldset .x-fieldset-header {
   padding: 20px 20px 10px;
   background: transparent url("/images/desktop/app/builder/builder-card-bg.png?v2") 0 0 repeat-y;
 }
-.contest-builder .builder-card .x-field {
+.contest-builder .builder-card .x-form-item {
   margin-bottom: 10px;
 }
 .contest-builder .builder-card .card-nav-toolbar {
@@ -654,6 +665,7 @@ fieldset .x-fieldset-header {
   cursor: pointer;
 }
 .contest-builder .theme-list img {
+  display: block;
   height: 220px;
   width: 170px;
 }
@@ -669,7 +681,7 @@ fieldset .x-fieldset-header {
 .contest-builder .theme-list .description {
   font-size: 11px;
   position: absolute;
-  bottom: 5px;
+  bottom: 0px;
   left: 0;
   padding: 5px;
   overflow: hidden;
@@ -721,6 +733,7 @@ fieldset .x-fieldset-header {
   position: absolute;
   left: -20px;
   top: 0px;
+  z-index: 4;
   background: transparent url("/images/desktop/app/builder/builder-arrow.png?v3") 100% 0 no-repeat;
   width: 11px;
   height: 24px;
@@ -748,6 +761,39 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .contest-preview .info-row .value {
   color: #333;
+}
+.contest-builder .builder-prize-list .prize {
+  padding: 10px;
+  overflow: hidden;
+  _height: 1%;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+.contest-builder .builder-prize-list .prize .meta {
+  float: left;
+}
+.contest-builder .builder-prize-list .prize .meta .name {
+  font-size: 14px;
+  line-height: 1.5em;
+  font-family: "ArvoRegular";
+}
+.contest-builder .builder-prize-list .prize .meta .value {
+  font-size: 12px;
+  color: #666;
+}
+.contest-builder .builder-prize-list .prize .app-buttons {
+  margin: 0;
+  clear: none;
+  float: right;
+}
+.contest-builder .builder-prize-list .prize .app-buttons li a {
+  margin-right: 0;
+  margin-left: 14px;
+}
+.contest-builder .prize-info-table th {
+  padding: 2px;
+  font-family: "Courier New";
 }
 .prize-list .x-dataview-item {
   cursor: default;
@@ -788,4 +834,7 @@ fieldset .x-fieldset-header {
 }
 .prize-list .numbers td {
   padding: 2px;
+}
+textarea.x-form-field {
+  line-height: 15px;
 }

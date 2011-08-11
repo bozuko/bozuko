@@ -627,10 +627,23 @@ fieldset{
     }
 }
 
+.duration-field .x-form-item {
+    margin-bottom: 0 !important;
+}
+
 .contest-builder {
     
     p {
         margin: 1em 0;
+    }
+    
+    .card-title {
+        color: #006b37;
+        font-family: "ArvoRegular";
+        font-weight: normal;
+        margin-top: 0;
+        font-size: 16px;
+        margin-bottom: 1em;
     }
     
     .builder-card{
@@ -646,7 +659,7 @@ fieldset{
             padding:20px 20px 10px;
             background: transparent url("/images/desktop/app/builder/builder-card-bg.png?v2") 0 0 repeat-y;
         }
-        .x-field {
+        .x-form-item {
             margin-bottom: 10px;
         }
         .card-nav-toolbar{
@@ -738,6 +751,7 @@ fieldset{
             cursor: pointer;
         }
         img {
+            display: block;
             height: 220px;
             width: 170px;
         }
@@ -756,7 +770,7 @@ fieldset{
         .description {
             font-size: 11px;
             position: absolute;
-            bottom: 5px;
+            bottom: 0px;
             left: 0;
             padding: 5px;
             overflow: hidden;
@@ -808,6 +822,7 @@ fieldset{
         position: absolute;
         left: -20px;
         top: 0px;
+        z-index: 4;
         background: transparent url("/images/desktop/app/builder/builder-arrow.png?v3") 100% 0 no-repeat;
         width: 11px;
         height: 24px;
@@ -837,6 +852,47 @@ fieldset{
             .value {
                 color: #333;
             }
+        }
+    }
+    
+    .builder-prize-list {
+        .prize {
+            padding: 10px;
+            overflow: hidden; _height: 1%;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            
+            .meta {
+                float: left;
+                
+                .name {
+                    font-size: 14px;
+                    line-height: 1.5em;
+                    font-family: "ArvoRegular";
+                }
+                .value {
+                    font-size: 12px;
+                    color: #666;
+                }
+            }
+            
+            .app-buttons {
+                margin: 0;
+                clear: none;
+                float: right;
+                li a {
+                    margin-right: 0;
+                    margin-left: 14px;
+                }
+            }
+        }
+    }
+    
+    .prize-info-table {
+        th {
+            padding: 2px;
+            font-family: "Courier New";
         }
     }
 }
@@ -887,6 +943,8 @@ fieldset{
             padding: 2px;
         }
     }
-    
-    
+}
+
+textarea.x-form-field {
+    line-height: 15px;
 }

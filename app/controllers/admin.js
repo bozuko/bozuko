@@ -542,6 +542,19 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/themes/:game' : {
+        get : {
+            handler : function( req, res ){
+                try{
+                    return res.send( {items: Bozuko.games[req.param('game')].themes} );
+                }catch(e){
+                    console.error(e);
+                    return res.send({items:[]});
+                }
+            }
+        }
+    },
 
     '/admin/winners' : {
         
@@ -553,7 +566,7 @@ exports.routes = {
                 var contest_id = req.param('contest_id'),
                     page_id = req.param('page_id'),
                     limit = req.param('limit') || 25,
-                    offset = req.param('offset') || 0,
+                    offset = req.param('start') || 0,
                     search = req.param('search'),
                     updateOnly = req.param('updateOnly') || false,
                     selector = {}

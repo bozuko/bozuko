@@ -5,6 +5,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
     
     requires        :[
         'Bozuko.view.contest.builder.Card',
+        'Bozuko.lib.form.field.Duration',
         'Bozuko.lib.Router'
     ],
     name            :"Options",
@@ -18,7 +19,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
         Ext.apply( me.form, {
             items : [{
                 xtype               :'textfield',
-                name                :'entry_config[0].tokens',
+                name                :'entry_config.tokens',
                 fieldLabel          :'Plays per Entry',
                 emptyText           :'Please enter a number',
                 allowBlank          :false,
@@ -29,6 +30,16 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
                     '<p>This is how many times a user can play the game for each entry. ',
                     'This will not affect overall odds of the contest. If you business is a restaurant or bar, ',
                     'you may want to consider offering 4 or 5... need more copy.',
+                    '</p>'
+                ]
+            },{
+                xtype               :'duration',
+                name                :'entry_config.duration',
+                fieldLabel          :'Users can play every',
+                emptyText           :'Please enter a number',
+                helpText            :[
+                    '<p>This is how often you will allow a user to play your game. The more frequent, the faster ',
+                    'your contest will go.',
                     '</p>'
                 ]
             },{
@@ -46,6 +57,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
         });
         me.callParent(arguments);
         me.on('activate', me.onActivate, me);
+        
     },
     
     onActivate : function(){
@@ -63,8 +75,53 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
         me.addThemeChooser( me.currentGame );
     },
     
+    loadContest : function(){
+        var me = this,
+            values = {};
+        
+        me.entry_cfg = me.contest.getEntryConfig() || {},
+        me.game_cfg = me.contest.get('game_config') || {};
+            
+        if( me.entry_cfg ){
+            for(var i in me.entry_cfg){
+                values['entry_config.'+i] = me.entry_cfg[i];
+            }
+        }
+        if( me.game_cfg ){
+            for(var i in me.game_cfg){
+                values['game_config.'+i] = me.entry_cfg[i];
+            }
+        }
+        
+        console.log(values);
+        
+        me.form.getForm().setValues(values);
+    },
+    
+    updateRecord : function(){
+        var me = this,
+            values = me.getValues();
+            
+        Ext.apply( me.game_cfg, values.game_config);
+        Ext.apply( me.entry_cfg, values.entry_config);
+        
+        me.contest.set('game_config', me.game_cfg);
+        me.contest.set('entry_config', [me.entry_config]);
+    },
+    
+    onThemesLoad : function(store){
+        var me = this,
+            i = store.find('theme', me.game_cfg.theme );
+        if( ~i ){
+            var tc = me.down('[ref=theme-chooser]');
+            if( tc ) tc.getSelectionModel().select(i);
+        }
+    },
+    
+    
     addThemeChooser : function(type){
         var me = this;
+        
         me.form.add({
             xtype           :'component',
             autoEl          :{
@@ -73,6 +130,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
             }
         },{
             xtype           :'dataview',
+            ref             :'theme-chooser',
             trackOver       :true,
             overItemCls     :'theme-over',
             
@@ -85,6 +143,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
             deferEmptyText  :false,
             
             singleSelect    :true,
+            height          :230,
             
             itemSelector    :'.theme',
             
@@ -114,7 +173,11 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
                         root: 'items'
                     }
                 },
-                autoLoad : true
+                autoLoad : true,
+                listeners : {
+                    scope           :me,
+                    load            :me.onThemesLoad
+                }
             })
         });
     }
