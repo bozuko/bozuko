@@ -174,6 +174,10 @@ Ext.define('Bozuko.controller.Contests' ,{
         if( target.tagName.toLowerCase() != 'a' ) return;
         switch( target.className ){
             
+            case 'edit builder':
+                this.openWithBuilder(record, view);
+                break;
+            
             case 'edit':
                 this.editContest(record, view);
                 break;
@@ -384,6 +388,29 @@ Ext.define('Bozuko.controller.Contests' ,{
             panel.cards[id].setRecord( record );
         }
         panel.getLayout().setActiveItem(panel.cards[id]);
+        panel.doComponentLayout();
+    },
+    
+    
+    openWithBuilder : function(record, cmp){
+        // create a new
+        var panel = cmp.up('contestspanel'),
+            id = record.get('_id');
+
+        if( !panel.builders ) panel.builders= {};
+        if( !panel.builders[id] ){
+            panel.builders[id] = panel.add({
+                border: false,
+                xtype: 'contestbuilder',
+                contest: record,
+                listeners :{
+                    destroy : function(){
+                        delete panel.builders[record.get('_id')];
+                    }
+                }
+            });
+        }
+        panel.getLayout().setActiveItem(panel.builders[id]);
         panel.doComponentLayout();
     },
     

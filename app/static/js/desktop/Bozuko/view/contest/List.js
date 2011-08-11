@@ -91,6 +91,9 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '<tpl if="this.canEdit(values)">',
                             '<li><a href="javascript:;" class="edit">Edit</a></li>',
                         '</tpl>',
+                        '<tpl if="this.canEdit(values) && this.canUseBuilder()">',
+                            '<li><a href="javascript:;" class="edit builder">Open with Builder</a></li>',
+                        '</tpl>',
                         '<tpl if="this.canCopy(values)">',
                             '<li><a href="javascript:;" class="copy">Copy</a></li>',
                         '</tpl>',
@@ -110,6 +113,10 @@ Ext.define('Bozuko.view.contest.List' ,{
                     canEdit : function(values){
                         if( me.actionButtons && !~me.actionButtons.indexOf('edit')) return '';
                         return true || ~['draft', 'published'].indexOf(values.state);
+                    },
+                    
+                    canUseBuilder : function(){
+                        return window.location.port === '8001';
                     },
                     
                     canCopy : function(values){

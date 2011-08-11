@@ -357,15 +357,15 @@ exports['game tests'] = {
                 var now = new Date();
                 // set timeout
                 var ms = date.getTime() - now.getTime();
-                var countdown = Math.round(ms/1000)+3;
+                var countdown = Math.ceil(ms/1000)+2;
                 var interval = setInterval( function(){
                     console.log(--countdown);
                 }, 1000);
-                console.log('Wait 5 seconds before next checkin');
+                console.log('Wait '+countdown+' seconds before next checkin');
                 var timeout = setTimeout(function(){
                     clearInterval( interval );
                     test.done();
-                }, (date.getTime() - now.getTime()) + 3000);
+                }, countdown * 1000 );
             });
     },
 
@@ -494,15 +494,15 @@ exports['game tests'] = {
                 var now = new Date();
                 // set timeout
                 var ms = date.getTime() - now.getTime();
-                var countdown = Math.round(ms/1000)+3;
+                var countdown = Math.ceil(ms/1000)+2;
                 var interval = setInterval( function(){
                     console.log(--countdown);
                 }, 1000);
-                console.log('Wait 5 seconds before next checkin');
+                console.log('Wait '+countdown+' seconds before next checkin');
                 var timeout = setTimeout(function(){
                     clearInterval( interval );
                     test.done();
-                }, (date.getTime() - now.getTime()) + 3000);
+                }, countdown*1000);
             });
     },
     'do a literal facebook checkin' : function(test) {

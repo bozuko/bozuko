@@ -66,6 +66,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         var fields = me.query('[ref=card-form] field');
         Ext.Array.each(fields, function(field){
+            
             field.on('focus', function(field){
                 me.onFieldFocus(field);
             });
@@ -76,6 +77,19 @@ Ext.define('Bozuko.view.contest.builder.Card', {
                 scope           :me,
                 blur            :me.updateRecord,
                 select          :me.updateRecord
+            });
+        });
+        
+        Ext.Array.each(me.query('[ref=card-form] htmleditor'), function(field){
+            field.on('activate', function(field){
+                me.onFieldFocus(field);
+                Ext.EventManager.on( field.getWin(),'focus', function(){
+                    me.onFieldFocus(field);
+                });
+            });
+            field.on({
+                scope           :me,
+                change          :me.updateRecord
             });
         });
         
@@ -107,7 +121,14 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         var me = this,
             values = {};
         Ext.each( me.form.query('field'), function(field){
-            values[field.name] = field.getValue();
+            var parts = field.name.split('.'),
+                cur = values;
+            while( parts.length > 1 ){
+                var key = parts.shift();
+                if( !cur[key] ) cur[key] = {};
+                cur = cur[key];
+            }
+            cur[parts.shift()] = field.getValue();
         });
         return values;
     },
@@ -130,6 +151,9 @@ Ext.define('Bozuko.view.contest.builder.Card', {
     
     onFieldFocus : function(field){
         var me = this;
+        
+        if( field.up('duration') ) field = field.up('duration');
+        
         setTimeout(function(){
             me.blurred = false;
             field.getEl().dom.appendChild(me.arrow);
@@ -138,18 +162,21 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             helpText = '<h3>'+field.fieldLabel+'</h3>'+helpText;
             me.updateHelpText( helpText );
         }, 10);
-        
-        
     },
     
     onFieldBlur : function(field){
         var me = this;
         me.blurred = true;
+        
         setTimeout( function(){
             if( !me.blurred ) return;
             me.arrow.parentNode.removeChild( me.arrow );
-            me.updateHelpText( me.overview );
+            me.updateHelpText( me.getOverview() );
         }, 500);
+    },
+    
+    getOverview : function(){
+        return this.overview;
     },
     
     updateHelpText : function(html){
