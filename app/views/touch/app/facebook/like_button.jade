@@ -37,7 +37,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             fb_id = '#{place.data.id}',
             mobile_version = '{#locals.user.mobile_version}';
             liked = #{locals.user ? (locals.user.likes(place.data.id)?'true':'false') : 'false' };
-            token = '#{locals.user ? user.service('facebook').auth : ""}';
+            token = '#{locals.user ? user.token : ""}';
             
         document.getElementsByTagName('html')[0].className += ' like_button_loading';
         
@@ -53,11 +53,9 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                 var like_button = document.getElementById("like-button");
                 like_button.style.top="-1000px";
                 like_button.style.left="-1000px";
-                // document.getElementsByTagName('html')[0].className += 'like-button-loading';
                 var req = new XMLHttpRequest();
                 req.onreadystatechange = function(){
                     if(req.readyState == 4){
-                        document.body.className = '';
                         like_button.style.top="0px";
                         like_button.style.left="0px";
                         callback();
@@ -105,7 +103,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   document.body.appendChild(img);
                 }
               }
-              FB.api('/me', {fields:'likes', access_token: token}, function(data){
+              FB.api('/me', {fields:'likes', access_token: fb_token}, function(data){
                 var found = false;
                 if( data && data.error && data.error.type.match(/oauthexception/i) ){
                   // woah...
