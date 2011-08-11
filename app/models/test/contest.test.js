@@ -20,6 +20,8 @@ var page = new Bozuko.models.Page();
 page.active = true;
 page.name = "Test page";
 
+var ll = [42.646, -71.303];
+
 var contest = new Bozuko.models.Contest(
 {
     game: 'slots',
@@ -51,9 +53,6 @@ contest.prizes.push({
     email_codes: ["15h1ttyd3s1gn"]
 });
 
-var checkin = new Bozuko.models.Checkin();
-checkin.timestamp = new Date();
-
 var entry;
 
 exports['save page'] = function(test) {
@@ -80,16 +79,6 @@ exports['save contest'] = function(test) {
     });
 };
 
-exports['save checkin'] = function(test) {
-    checkin.user_id = user._id;
-    checkin.page_id = page._id;
-    checkin.save(function(err) {
-        test.ok(!err);
-        test.done();
-    });
-
-};
-
 exports['publish contest'] = function(test) {
     contest.publish(function(err, results) {
         test.ok(!err);
@@ -98,7 +87,7 @@ exports['publish contest'] = function(test) {
 };
 
 exports['enter contest'] = function(test) {
-    var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+    var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
     contest.enter(entryMethod, function(err, e) {
         test.ok(!err);
         if( err ) console.log(err.stack);
@@ -108,7 +97,7 @@ exports['enter contest'] = function(test) {
 };
 
 exports['enter contest fail - no tokens'] = function(test) {
-  var entryMethod = Bozuko.entry('facebook/checkin', user, {checkin: checkin});
+  var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
     contest.enter(entryMethod, function(err, e) {
         console.log(err);
         test.ok(err);

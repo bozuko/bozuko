@@ -12,7 +12,6 @@ var BozukoCheckinMethod = module.exports = function(key, user, options){
     EntryMethod.call(this,key,user);
     // set the valid options
     this.options = options;
-    this.checkin = this.options.checkin || false;
     this._lastCheckin = false;
 };
 
@@ -117,41 +116,27 @@ BozukoCheckinMethod.prototype.process = function( callback ){
     // lets process this...
     var self = this;
 
-    if( !self.checkin ){
-        return self.validate( function(error, valid){
-            if( error ) return callback( error );
-            if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
+    return self.validate( function(error, valid){
+        if( error ) return callback( error );
+        if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
 
-            if( self.can_checkin ){
-                return self.page.checkin( self.user, {
-                    test: true,
-                    user: self.user,
-                    contest: self.contest,
-                    service: 'bozuko',
-                    ll: self.options.ll,
-                    message: self.options.message
-                }, function(error, result){
-                    if( error ) return callback( error );
+        if( self.can_checkin ){
+	    return self.page.checkin( self.user, {
+                test: true,
+		user: self.user,
+		contest: self.contest,
+		service: 'bozuko',
+		ll: self.options.ll,
+		message: self.options.message
+            }, function(error){
+		if( error ) return callback( error );
 
-                    for(var i=0; i<result.entries.length; i++){
-                        var entry = result.entries[i];
-                        if( entry.type == self.type && entry.contest_id == self.contest.id ){
-                            // this is our entry
-                            return callback( null, entry );
-                        }
-                    }
+		return EntryMethod.prototype.process.call(self, callback);
+	    });
+	}
 
-                    return callback( Bozuko.error('contest/no_entry_found_after_checkin') );
-                });
-            }
-
-            return EntryMethod.prototype.process.call(self, callback);
-
-        });
-    }
-
-
-    return EntryMethod.prototype.process.call(this, callback);
+        return EntryMethod.prototype.process.call(self, callback);
+    });
 };
 
 BozukoCheckinMethod.prototype._load = function( callback ){

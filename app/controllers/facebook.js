@@ -62,38 +62,16 @@ exports.routes = {
                         return err.send( res );
                     }
                     var do_checkin = function(page){
-                        page.checkin(
-                            req.session.user,
-                            {
-                            //  we are applying test via config now
-                            //  test: ~['development','test', 'load'].indexOf(Bozuko.env()),
-                                service: 'facebook', // if this is omitted, try to checkin everywhere
-                                ll: ll,
-                                message: msg
-                            },
-                            function(error, result){
-                                if( error ){
-                                    return error.send(res);
-                                }
-
-                                var contests = result.contests;
-                                var states = [];
-
-                                return async.forEachSeries(contests,
-                                    function iterator(contest, next){
-                                        Bozuko.transfer('game_state', contest.game_state, req.session.user, function(error, result){
-                                            if( error ) return next(error);
-                                            states.push(result);
-                                            return next();
-                                        });
-                                    },
-                                    function cb(error){
-                                        if( error ) return callback( error );
-                                        return res.send( states );
-                                    }
-                                );
+                        page.checkin(req.session.user, {
+                            service: 'facebook', // if this is omitted, try to checkin everywhere
+			    ll: ll,
+			    message: msg
+                        },function(error){
+			    if( error ){
+				return error.send(res);
                             }
-                        );
+                            return res.send([]);
+                        });
                     };
 
                     // if there is no page for this place yet, lets create one
