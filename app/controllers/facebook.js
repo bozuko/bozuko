@@ -64,11 +64,11 @@ exports.routes = {
                     var do_checkin = function(page){
                         page.checkin(req.session.user, {
                             service: 'facebook', // if this is omitted, try to checkin everywhere
-			    ll: ll,
-			    message: msg
+                            ll: ll,
+                            message: msg
                         },function(error){
-			    if( error ){
-				return error.send(res);
+                            if( error ){
+                                return error.send(res);
                             }
                             return res.send([]);
                         });

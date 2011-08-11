@@ -180,12 +180,12 @@ FacebookCheckinMethod.prototype.process = function( callback ){
     return self.validate( function(error, valid){
         if( error ) return callback( error );
         if( !valid ){
-	    if(!self.can_checkin && !self.hasCheckedIn()){
-		/**
+            if(!self.can_checkin && !self.hasCheckedIn()){
+                /**
                  * TODO
                  * this should be a better message when we know whats wrong
                  */
-		return self.page.getNextCheckinTime( self.user, function(error, next_time){
+                return self.page.getNextCheckinTime( self.user, function(error, next_time){
                     if( error ) return callback( error );
                     return callback( Bozuko.error('checkin/too_many_attempts_per_user', {next_time: next_time}) );
                 });
@@ -194,43 +194,41 @@ FacebookCheckinMethod.prototype.process = function( callback ){
         }
 
         if( self.can_checkin ){
-	    return self.page.checkin( self.user, {
+            return self.page.checkin( self.user, {
                 user: self.user,
-		contest: self.contest,
-		service: 'facebook',
-		ll: self.options.ll,
-		message: self.options.message
+                contest: self.contest,
+                service: 'facebook',
+                ll: self.options.ll,
+                message: self.options.message
             }, function(error){
-		if( error ) return callback( error );
+                if( error ) return callback( error );
 
-		return EntryMethod.prototype.process.call(self, function(err, entry) {
-		    if (err) return callback(err);
+                return EntryMethod.prototype.process.call(self, function(err, entry) {
+                    if (err) return callback(err);
 
 		    var share = new Bozuko.models.Share({
-			service         :'facebook',
-			type            :'checkin',
-			contest_id      :self.contest.id,
-			page_id         :self.contest.page_id,
-			user_id         :self.user.id,
-			visibility      :0,
-			message         :self.options.message
+                        service         :'facebook',
+                        type            :'checkin',
+                        contest_id      :self.contest.id,
+                        page_id         :self.contest.page_id,
+                        user_id         :self.user.id,
+                        visibility      :0,
+                        message         :self.options.message
                     });
                             
 		    try{
-			share.visibility = self.user.service('facebook').internal.friends.length;
+                        share.visibility = self.user.service('facebook').internal.friends.length;
 		    }catch(e){
-			share.visibility = 0;
+                        share.visibility = 0;
 		    }
 		    return share.save(function(error){
                         return callback( null, entry );
 		    });
-		});
-
-	    });
-	}
+                });
+            });
+        }
             
         return EntryMethod.prototype.process.call(self, callback);
-
     });
 };
 

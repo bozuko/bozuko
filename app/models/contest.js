@@ -425,7 +425,7 @@ Contest.method('enter', function(entry, callback){
     var self = this;
     var cfg = this.getEntryConfig();
     if( cfg.type != entry.type ){
-	return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
+        return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
     }
 
     entry.setContest(this);

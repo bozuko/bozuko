@@ -77,7 +77,7 @@ Page.method('addAdmin', function(user, callback){
         }
     ], function(error){
         callback();
-    })
+    });
 });
 
 Page.method('getContests', function(callback){
@@ -338,41 +338,41 @@ Page.method('checkin', function(user, options, callback) {
 
         options.user = user;
         if( self.service('facebook') ){
-	    options.link = self.service('facebook').data.link;
+            options.link = self.service('facebook').data.link;
         }
         options.picture = 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/page/'+self.id+'/image';
-	var contest = options.contest;
+        var contest = options.contest;
 
         if(!contest) {
-	    // lets set a generic checkin message
-	    options.name = _t(user.lang, 'checkin/general_checkin_name');
+            // lets set a generic checkin message
+            options.name = _t(user.lang, 'checkin/general_checkin_name');
             options.description = _t(
-		user.lang,
-		'checkin/general_checkin_desc'
-	    );
+                user.lang,
+                'checkin/general_checkin_desc'
+            );
         } else {
-	    // customize message for the contest
+            // customize message for the contest
             var game = contest.getGame();
-	    var best_prize = contest.getBestPrize();
-	    // There should always be a best prize in reality. Sometimes in tests we don't have any prizes.
-	    best_prize = best_prize ? best_prize.name : 'no prize';
+            var best_prize = contest.getBestPrize();
+            // There should always be a best prize in reality. Sometimes in tests we don't have any prizes.
+            best_prize = best_prize ? best_prize.name : 'no prize';
             options.name = _t(user.lang, 'checkin/contest_checkin_name', self.name);
             options.description = _t(
-		user.lang,
-		'checkin/contest_checkin_desc',
-		user.name,
-		self.name,
-		best_prize,
-		game.name
+                user.lang,
+                'checkin/contest_checkin_desc',
+                user.name,
+                self.name,
+                best_prize,
+                game.name
             );
-	}
+        }
 
         options.page = self;
         options.user = user;
 
         return Bozuko.models.Checkin.process(options, function(error, checkin){
             if( error ) return callback( error );
-	    return callback( null, checkin);
+            return callback( null, checkin);
         });
     });
 });

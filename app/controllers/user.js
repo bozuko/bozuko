@@ -152,7 +152,16 @@ exports.routes = {
                 'user',
                 req.session.user_redirect||'/user',
                 null,
-                function(error_reason, req, res){
+                function(error, req, res){
+                    // we need to see what the deal is here...
+                    if( error.name){
+                        if( error.name == 'http/timeout' ){
+                            // we should let them know what happened
+                            res.locals.title = "Facebook is taking a long time...";
+                            res.render('app/user/facebook_auth_timeout');
+                            return false;
+                        }
+                    }
                     res.locals.title = ":'(";
                     res.render('app/user/permission_denied');
                     return false;
