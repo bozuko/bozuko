@@ -132,3 +132,80 @@ h3 {
         }
     }
 }
+
+.permissions-screen {
+    
+    .permissions-list, .permissions-list li{
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .facebook-permission {
+        padding: 8px 8px 8px 46px;
+        position: relative;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        background-color: #fff;
+        font-family: Helvetica, "lucida grande", tahoma, verdana, arial, sans-serif !important;
+        line-height: 1.28;
+        .icon {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 33px;
+            height: 32px;
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            background-image: url("/images/assets/facebook/permissions.png");
+        }
+        h3 {
+            margin: 0;
+            color: 333;
+            font-weight: bold;
+            font-family: Helvetica, "lucida grande", tahoma, verdana, arial, sans-serif !important;
+            font-size: 13px;
+            padding-bottom: 2px;
+        }
+        p {
+            margin: 0;
+            color: #808080;
+            font-weight: normal;
+            font-size: 11px;
+        }
+    }
+    
+    .explanation {
+        padding: 10px 0;
+    }
+    
+    .basic-information .icon{
+        background-position: 0 -264px;
+    }
+    .send-email .icon{
+        background-position: 0 0px;
+    }
+    .post-to-wall .icon{
+        background-position: 0 -165px;
+    }
+    .offline-access .icon{
+        background-position: 0 -66px;
+    }
+    .checkins .icon{
+        background-position: 0 -231px;
+    }
+    .profile-info .icon{
+        background-position: 0 -99px;
+    }
+}
+
+.green-button {
+    display: inline-block;
+    cursor: pointer;
+    background-color: @brand_color;
+    border: 2px solid @dark_color;
+    padding: 4px 10px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}

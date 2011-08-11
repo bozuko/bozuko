@@ -112,3 +112,72 @@ h3 {
 #like-mask .text div {
   padding: 10px;
 }
+.permissions-screen .permissions-list, .permissions-screen .permissions-list li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.permissions-screen .facebook-permission {
+  padding: 8px 8px 8px 46px;
+  position: relative;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  background-color: #fff;
+  font-family: Helvetica, "lucida grande", tahoma, verdana, arial, sans-serif !important;
+  line-height: 1.28;
+}
+.permissions-screen .facebook-permission .icon {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 33px;
+  height: 32px;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-image: url("/images/assets/facebook/permissions.png");
+}
+.permissions-screen .facebook-permission h3 {
+  margin: 0;
+  color: 333;
+  font-weight: bold;
+  font-family: Helvetica, "lucida grande", tahoma, verdana, arial, sans-serif !important;
+  font-size: 13px;
+  padding-bottom: 2px;
+}
+.permissions-screen .facebook-permission p {
+  margin: 0;
+  color: #808080;
+  font-weight: normal;
+  font-size: 11px;
+}
+.permissions-screen .explanation {
+  padding: 10px 0;
+}
+.permissions-screen .basic-information .icon {
+  background-position: 0 -264px;
+}
+.permissions-screen .send-email .icon {
+  background-position: 0 0px;
+}
+.permissions-screen .post-to-wall .icon {
+  background-position: 0 -165px;
+}
+.permissions-screen .offline-access .icon {
+  background-position: 0 -66px;
+}
+.permissions-screen .checkins .icon {
+  background-position: 0 -231px;
+}
+.permissions-screen .profile-info .icon {
+  background-position: 0 -99px;
+}
+.green-button {
+  display: inline-block;
+  cursor: pointer;
+  background-color: #00a24f;
+  border: 2px solid #006b37;
+  padding: 4px 10px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}

@@ -36,7 +36,6 @@ var proc = cluster( './app' )
     if( proc.isMaster ){
     
         Bozuko.isMaster = true;
-        console.log('wtf');
         Bozuko.pubsub.stop();
     
         if( env === 'stats'){

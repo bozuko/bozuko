@@ -4,13 +4,16 @@ module.exports = {
         code:500,
         message: function(){ return this.data.type+": "+this.data.message; }
     },
-    
     auth : {
         code:403,
         title:"Password Changed",
         message: "Looks like you changed your Facebook password. Please log out of Bozuko and log back in. Thanks!"
     },
-    
+    permissions_denied : {
+        code:403,
+        title:'Permissions Denied',
+        message: "Bozuko requires certain permissions that you have not allowed."
+    },
     no_lat_lng : {
         code: 400,
         message: "Latitude and Longitude are required to checkin"
