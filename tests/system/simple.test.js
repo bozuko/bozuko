@@ -527,7 +527,7 @@ exports['game tests'] = {
             function(res) {
                 var game_states = JSON.parse(res.body);
                 test.ok(!game_states.length);
-		test.done();
+                test.done();
             });
     }
 
