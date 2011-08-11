@@ -31,7 +31,7 @@ Error.prototype.toTransfer = function(callback){
 Error.prototype.send = function(res){
     
     if( this.name === 'http/timeout' && this.message.match(/graph\.facebook\.com/) ){
-        this.title = 'Facebook Timemout';
+        this.title = 'Facebook Timeout';
         this.message = 'Facebook is taking forever! Sorry, please try again in a little bit.'
     }
     
