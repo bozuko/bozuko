@@ -72,7 +72,7 @@ FacebookLikeMethod.prototype.getDescription = function(callback){
             description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
             
         if( !self.user || (self.page && !self.user.likes(self.page))){
-            description+="\n\nHit back and scroll down to like us."
+            description+="\nTap the Like button and wait a second."
         }
     
         return callback(error, description);
