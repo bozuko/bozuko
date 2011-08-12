@@ -64,7 +64,11 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     scope               :me,
                     refresh             :function(){
                         me.loadGame();
+                    },
+                    beforecontainerclick:function(){
+                        return false;
                     }
+                    
                 }
             }]
         });
