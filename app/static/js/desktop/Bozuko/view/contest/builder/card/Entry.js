@@ -91,6 +91,9 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                     refresh             :function(){
                         me.watchOptions();
                         me.loadEntry();
+                    },
+                    beforecontainerclick:function(){
+                        return false;
                     }
                 }
             }]
