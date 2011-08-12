@@ -112,6 +112,9 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
     onThemesLoad : function(store){
         var me = this,
             i = store.find('theme', me.game_cfg.theme );
+            
+        if(!~i) i = store.find('theme', 'default');
+        
         if( ~i ){
             var tc = me.down('[ref=theme-chooser]');
             if( tc ) tc.getSelectionModel().select(i);
@@ -178,7 +181,13 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
                     scope           :me,
                     load            :me.onThemesLoad
                 }
-            })
+            }),
+            
+            listeners : {
+                beforecontainerclick : function(view, e){
+                    return false;
+                }
+            }
         });
     }
 });
