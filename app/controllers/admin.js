@@ -312,6 +312,18 @@ exports.routes = {
         }
 
     },
+    
+    '/admin/stats' : {
+        // lets get a bunch of miscellaneous stats
+        get : {
+            handler : function(req, res){
+                
+                // need to add number of unique players as a stat
+                
+                res.send({});
+            }
+        }
+    },
 
     '/admin/pages' : {
         
