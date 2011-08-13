@@ -17,21 +17,21 @@ EmailMessage.send = function(params, callback){
     var em = new EmailMessage(params),
         attempts = 0;
         
-    var attempt = function(error){
+    var attempt = function(error, success){
         
-        if( !error ){
+        if( !error && success){
             return callback.apply(arguments);
         }
         
         attempts++;
-        if( error && attempts > 3 ){
+        if( attempts > 3 ){
             return callback.apply(arguments);
         }
         
-        // retry (wait 10 seconds the first time, 20 seconds the second time, 30 seconds the third time)
+        // retry (5,10,15 minutes)
         return setTimeout(function(){
             em.send(attempt);
-        }, attempts * 10000);
+        }, attempts * 1000 * 60 * 5);
         
     };
     
