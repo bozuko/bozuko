@@ -313,13 +313,17 @@ exports.routes = {
 
     },
     
-    '/admin/stats' : {
+    '/admin/stats/unique' : {
         // lets get a bunch of miscellaneous stats
         get : {
             handler : function(req, res){
                 
                 // need to add number of unique players as a stat
-                
+                /*
+                Bozuko.models.Entries.collection.mapReduce({
+                    
+                });
+                */
                 res.send({});
             }
         }
