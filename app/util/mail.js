@@ -17,14 +17,14 @@ EmailMessage.send = function(params, callback){
     var em = new EmailMessage(params),
         attempts = 0;
         
-    var attempt = function(error){
+    var attempt = function(error, success){
         
-        if( !error ){
+        if( !error && success){
             return callback.apply(arguments);
         }
         
         attempts++;
-        if( error && attempts > 3 ){
+        if( attempts > 3 ){
             return callback.apply(arguments);
         }
         
