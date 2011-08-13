@@ -274,6 +274,7 @@ FacebookCheckinMethod.prototype._load = function( callback ){
 		
 		var selector = {
             service:'facebook',
+			user_id: self.user._id,
             page_id: self.page._id,
             timestamp: {$gt: date}
         };
