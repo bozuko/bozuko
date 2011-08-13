@@ -104,7 +104,7 @@ Prize.method('sendEmail', function(user) {
     var mail = Bozuko.require('util/mail');
     return mail.send({
         to: user.email,
-        subject: 'You just won a bozuko prize!',
+        subject: 'You just won a Bozuko prize!',
         body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
     }, function(err, success) {
         if (err) console.log("Email Err = "+err);
