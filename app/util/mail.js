@@ -28,10 +28,10 @@ EmailMessage.send = function(params, callback){
             return callback.apply(arguments);
         }
         
-        // retry (wait 10 seconds the first time, 20 seconds the second time, 30 seconds the third time)
+        // retry (5,10,15 minutes)
         return setTimeout(function(){
             em.send(attempt);
-        }, attempts * 10000);
+        }, attempts * 1000 * 60 * 5);
         
     };
     
