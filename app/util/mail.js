@@ -20,11 +20,13 @@ EmailMessage.send = function(params, callback){
     var attempt = function(error, success){
         
         if( !error && success){
+            console.error("Email Send: success; arguments = "+arguments);
             return callback.apply(arguments);
         }
         
         attempts++;
         if( attempts > 3 ){
+            console.error("Email Send: attempts > 3; arguments = "+arguments);
             return callback.apply(arguments);
         }
         
