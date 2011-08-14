@@ -22,13 +22,13 @@ EmailMessage.send = function(params, callback){
         
         if( !error && success){
             console.error("Email Send: success; arguments = "+inspect(arguments));
-            return callback.apply(arguments);
+            return callback.apply(this, arguments);
         }
         
         attempts++;
         if( attempts > 3 ){
             console.error("Email Send: attempts > 3; arguments = "+inspect(arguments));
-            return callback.apply(arguments);
+            return callback.apply(this, arguments);
         }
         
         // retry (5,10,15 minutes)
