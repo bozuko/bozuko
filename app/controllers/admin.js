@@ -319,11 +319,16 @@ exports.routes = {
             handler : function(req, res){
                 
                 // need to add number of unique players as a stat
-                /*
-                Bozuko.models.Entries.collection.mapReduce({
+                Bozuko.models.Entries.collection.group(
+                    // key - group by user_id
+                    {key: {user_id:true}},
+                    // condition -which would be by date,
+                    {},
+                    // initial
+                    {count: 1}
+                    // reduce function
                     
-                });
-                */
+                );
                 res.send({});
             }
         }
