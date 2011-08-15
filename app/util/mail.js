@@ -1,4 +1,5 @@
 var nm = require('nodemailer');
+var inspect = require('util').inspect;
 
 nm.SMTP = Bozuko.config.email.smtp;
 
@@ -20,12 +21,14 @@ EmailMessage.send = function(params, callback){
     var attempt = function(error, success){
         
         if( !error && success){
-            return callback.apply(arguments);
+            console.error("Email Send: success; arguments = "+inspect(arguments));
+            return callback.apply(this, arguments);
         }
         
         attempts++;
         if( attempts > 3 ){
-            return callback.apply(arguments);
+            console.error("Email Send: attempts > 3; arguments = "+inspect(arguments));
+            return callback.apply(this, arguments);
         }
         
         // retry (5,10,15 minutes)
