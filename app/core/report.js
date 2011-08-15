@@ -15,4 +15,4 @@ Report.run = function run(type, options, callback){
     var reportType = require('./report/'+type);
     var report = new reportType(options);
     return report.run(callback);
-}
+};
