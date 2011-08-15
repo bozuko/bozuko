@@ -372,7 +372,12 @@ exports.routes = {
                             subject: "New Feedback from a Bozuko User!",
                             body: [
                                 req.session.user.name+' ('+req.session.user.email+')' +
-                                ' just submitted the following feedback for '+page.name+' (https://bozuko.com/p/'+page.id+'):',
+                                ' just submitted the following feedback for '+page.name+' ('+
+                                (page.service('facebook') ?
+                                    page.service('facebook').data.link :
+                                    'https://bozuko.com/p/'+page.id
+                                )+
+                                '):',
                                 '',
                                 message,
                                 '',
