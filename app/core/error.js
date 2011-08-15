@@ -35,9 +35,8 @@ Error.prototype.send = function(res){
         this.message = 'Facebook is taking forever! Sorry, please try again in a little bit.'
     }
     
-    console.error('send '+this.name+": "+this.message);
+    console.error('send '+this.name+": "+this.message+"\n"+this.stack);
     Bozuko.publish('error/send', {message: this.message, name:this.name, code: this.code, stack: this.stack} );
-    console.error('send '+this.name+": "+this.message);
     var code = this.code;
     this.toTransfer(function(error, result){
         res.send(error || result, code);
