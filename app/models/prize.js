@@ -107,9 +107,9 @@ Prize.method('sendEmail', function(user) {
         subject: 'You just won a Bozuko prize!',
         body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
     }, function(err, success) {
-        if (err) console.log("Email Err = "+err);
+        if (err) console.error("Email Err = "+err);
         if (err || !success) {
-            console.log("Error sending mail to "+user.email+"for prize_id"+self._id);
+            console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
         }
     });
 });
