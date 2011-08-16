@@ -151,21 +151,24 @@ Ext.define('Bozuko.view.contest.Winners' ,{
         me.callParent(arguments);
     },
     
-    onBeforeLoad : function(){
+    onBeforeLoad : function(store, operation){
         var me = this,
             search = this.down('[ref=search]'),
             term = search.getValue();
             
         me.store.getProxy().extraParams['search'] = term;
         if( me.searchTerm != term ){
-            me.store.getProxy().extraParams['start'] = 0;
+            operation.start = 0;
+            operation.page = 1;
+            store.currentPage = 1;
         }
         me.searchTerm = term;
     },
     
     onStoreLoad  : function(){
+        var me = this;
         try{
-            me.down('dataview').getEl().scrollTo('top', 0);
+            me.down('dataview').getEl().dom.scrollTop = 0;
         }catch(e){
             
         }
