@@ -10,6 +10,14 @@ Ext.define('Admin.view.page.List' ,{
         var me = this;
         
         me.store = Ext.create('Bozuko.store.Pages');
+        me.store.on('load', function(){
+            try{
+                console.log(me.down('dataview').getEl());
+                me.down('dataview').getEl().scrollTo('top',0);
+            }catch(e){
+                
+            }
+        });
         
         me.html = 'Page list';
         me.layout = 'fit';
@@ -40,16 +48,6 @@ Ext.define('Admin.view.page.List' ,{
                     }
                 }
             ),
-            
-            listeners : {
-                refresh : function(){
-                    try{
-                        me.down('dataview').getEl().scrollTo('top',0);
-                    }catch(e){
-                        
-                    }
-                }
-            },
             
             emptyText:'No Pages'
         }];

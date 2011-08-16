@@ -165,6 +165,7 @@ Ext.define('Bozuko.view.contest.Winners' ,{
     
     onStoreLoad  : function(){
         try{
+            console.log(me.down('dataview').getEl());
             me.down('dataview').getEl().scrollTo('top', 0);
         }catch(e){
             
