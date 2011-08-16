@@ -147,6 +147,7 @@ Ext.define( 'Bozuko.view.contest.Entries', {
         if( me.searchTerm != term ){
             operation.start = 0;
             operation.page = 1;
+            store.currentPage = 1;
         }
         me.searchTerm = term;
     },
