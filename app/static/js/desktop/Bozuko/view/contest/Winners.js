@@ -159,6 +159,7 @@ Ext.define('Bozuko.view.contest.Winners' ,{
         me.store.getProxy().extraParams['search'] = term;
         if( me.searchTerm != term ){
             operation.start = 0;
+            operation.page = 1;
         }
         me.searchTerm = term;
     },
