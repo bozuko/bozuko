@@ -43,7 +43,11 @@ Ext.define('Admin.view.page.List' ,{
             
             listeners : {
                 refresh : function(){
-                    me.dataview.getEl().dom.scrollTop=0;
+                    try{
+                        me.down('dataview').getEl().scrollTo('top',0);
+                    }catch(e){
+                        
+                    }
                 }
             },
             
