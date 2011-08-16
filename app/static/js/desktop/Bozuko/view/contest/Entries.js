@@ -152,9 +152,10 @@ Ext.define( 'Bozuko.view.contest.Entries', {
     
     onStoreLoad  : function(){
         try{
+            console.log(me.down('dataview').getEl());
             me.down('dataview').getEl().dom.scrollTop = 0;
         }catch(e){
-            
+            console.log(e);
         }
     }
     
