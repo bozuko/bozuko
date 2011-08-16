@@ -333,6 +333,43 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/prizes/expired' : {
+        get : {
+            handler : function(req, res){
+                var contest_id = req.param('contest_id');
+                if( !contest_id ) res.send({});
+                
+                var now = new Date(),
+                    expired = {};
+                
+                console.error(contest_id);
+                
+                // first things first, lets get the contest
+                Bozuko.models.Contest.findById(contest_id, function(error, contest){
+                    if( error ) return res.send( error );
+                    if( !contest ) return res.send({});
+                    
+                    // now lets go through each prize and get expired counts
+                    return async.forEachSeries( contest.prizes, function(prize, callback){
+                        
+                        Bozuko.models.Prize.count({
+                            redeemed: false,
+                            expires:{$lt: now},
+                            prize_id: prize._id,
+                            contest_id: contest._id
+                        }, function(error, count){
+                            expired[String(prize._id)] = count;
+                            callback();
+                        });
+                        
+                    }, function finish(){
+                        res.send(expired);
+                    });
+                });
+            }
+        }
+    },
 
     '/admin/pages' : {
         
