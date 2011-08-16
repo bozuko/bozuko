@@ -257,9 +257,11 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         Ext.each( me.query('[redemption_field=yes]'), function(field){
             if(field.name == 'total'){
                 field[type=='image'?'show':'hide']();
+                field.setDisabled(type!=='image');
             }
             else if(field.name == 'total_display' ){
                 field[type!='image'?'show':'hide']();
+                field.setDisabled(type==='image');
             }
             else if(field.redemption_group!=='all'){
                 field.hide();
