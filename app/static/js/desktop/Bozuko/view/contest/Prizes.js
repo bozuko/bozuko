@@ -6,9 +6,12 @@ Ext.define('Bozuko.view.contest.Prizes', {
     initComponent       :function(){
         var me = this;
         
+        me.prizes = me.contest.prizes();
+        me.prizes.sort('value', 'DESC');
+        
         Ext.apply( me, {
             autoScroll      :true,
-            store           :me.contest.prizes(),
+            store           :me.prizes,
             columns: [
                 {header: 'Name',            dataIndex: 'name',          flex: 1},
                 {header: 'Value',           dataIndex: 'value',         renderer:me.renderers.value},
