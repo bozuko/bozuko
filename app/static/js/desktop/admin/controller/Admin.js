@@ -93,6 +93,7 @@ Ext.define('Admin.controller.Admin' ,{
         if( search != this.lastSearch || showInactive != this.showInactive ){
             operation.start = 0;
             operation.page = 1;
+            store.currentPage = 1;
         }
         
         this.lastSearch = search;
