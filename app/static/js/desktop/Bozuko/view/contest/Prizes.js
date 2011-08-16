@@ -11,8 +11,9 @@ Ext.define('Bozuko.view.contest.Prizes', {
             store           :me.contest.prizes(),
             columns: [
                 {header: 'Name',            dataIndex: 'name',          flex: 1},
-                {header: 'Total Quantity',  dataIndex: 'total'},
-                {header: 'Total Remaining', dataIndex: 'total',         renderer:me.renderers.remaining},
+                {header: 'Value',           dataIndex: 'value',         renderer:me.renderers.value},
+                {header: 'Total',           dataIndex: 'total'},
+                {header: 'Remaining',       dataIndex: 'total',         renderer:me.renderers.remaining},
                 {header: 'Won',             dataIndex: 'won'},
                 {header: 'Active',          dataIndex: 'won',           renderer:me.renderers.active},
                 {header: 'Redeemed',        dataIndex: 'redeemed'}
@@ -28,6 +29,9 @@ Ext.define('Bozuko.view.contest.Prizes', {
         },
         active : function(value, meta, record){
             return (record.get('won') - record.get('redeemed'))+'<sup>*</sup>';
+        },
+        value : function(value){
+            return '$'+value;
         }
     }
     
