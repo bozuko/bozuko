@@ -90,6 +90,13 @@ Ext.define('Admin.controller.Admin' ,{
             operation.params['showInactive'] = true;
         }
         
+        if( search != this.lastSearch || showInactive != this.showInactive ){
+            operation.params['start'] = 0;
+        }
+        
+        this.lastSearch = search;
+        this.showInactive = showInactive;
+        
     },
     
     addPage : function(){

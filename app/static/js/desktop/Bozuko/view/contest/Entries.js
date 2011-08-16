@@ -139,8 +139,14 @@ Ext.define( 'Bozuko.view.contest.Entries', {
     
     onBeforeLoad : function(){
         var me = this,
-            search = this.down('[ref=search]');
-        me.store.getProxy().extraParams['search'] = search.getValue();
+            search = this.down('[ref=search]'),
+            term = search.getValue();
+            
+        me.store.getProxy().params['search'] = term;
+        if( me.searchTerm != term ){
+            me.store.getProxy().params['start'] = 0;
+        }
+        me.searchTerm = term;
     },
     
     onStoreLoad  : function(){
