@@ -12,8 +12,7 @@ Ext.define('Admin.view.page.List' ,{
         me.store = Ext.create('Bozuko.store.Pages');
         me.store.on('load', function(){
             try{
-                console.log(me.down('dataview').getEl());
-                me.down('dataview').getEl().scrollTo('top',0);
+                me.down('dataview').getEl().dom.scrollTop=0;
             }catch(e){
                 
             }
