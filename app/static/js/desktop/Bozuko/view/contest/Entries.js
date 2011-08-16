@@ -137,7 +137,7 @@ Ext.define( 'Bozuko.view.contest.Entries', {
         me.callParent(arguments);
     },
     
-    onBeforeLoad : function(){
+    onBeforeLoad : function(store, operation){
         var me = this,
             search = this.down('[ref=search]'),
             term = search.getValue(),
@@ -145,7 +145,7 @@ Ext.define( 'Bozuko.view.contest.Entries', {
             
         me.store.getProxy().extraParams['search'] = term;
         if( me.searchTerm != term ){
-            me.store.getProxy().extraParams['start'] = 0;
+            operation.start = 0;
         }
         me.searchTerm = term;
     },
