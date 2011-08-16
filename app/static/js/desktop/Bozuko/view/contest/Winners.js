@@ -11,8 +11,6 @@ Ext.define('Bozuko.view.contest.Winners' ,{
     blinkRate : 800,
     blinkCls : 'winner-blink',
     
-    autoScroll: true,
-    
     showNotifications : function(){
         
     },
@@ -22,6 +20,7 @@ Ext.define('Bozuko.view.contest.Winners' ,{
         me.blinkState = false;
         me.blinkers = [];
         me.blinking = false;
+        me.layout = 'fit';
         me.store = Ext.create('Bozuko.store.Winners', {
             autoLoad: true,
             contest_id : me.contest_id || (me.contest ? me.contest.get('_id') : null),
@@ -33,6 +32,7 @@ Ext.define('Bozuko.view.contest.Winners' ,{
         }, 250);
         
         me.store.on('beforeload', me.onBeforeLoad, me);
+        me.store.on('load', me.onStoreLoad, me);
         
         me.dockedItems = [{
             xtype           :'toolbar',
@@ -58,11 +58,13 @@ Ext.define('Bozuko.view.contest.Winners' ,{
         
         // going to create a view within this panel.
         me.items = [{
-            xtype: 'dataview',
-            cls: 'bozuko-list winners-list',
+            xtype           :'dataview',
+            cls             :'bozuko-list winners-list',
             
-            trackOver: true,
-            overItemCls : 'x-item-over',
+            trackOver       :true,
+            overItemCls     :'x-item-over',
+            
+            autoScroll      :true,
             
             deferEmptyText  :false,
             emptyText       :'<div style="padding: 10px;">No Winners yet!</div>',
@@ -151,8 +153,22 @@ Ext.define('Bozuko.view.contest.Winners' ,{
     
     onBeforeLoad : function(){
         var me = this,
-            search = this.down('[ref=search]');
-        me.store.getProxy().extraParams['search'] = search.getValue();
+            search = this.down('[ref=search]'),
+            term = search.getValue();
+            
+        me.store.getProxy().extraParams['search'] = term;
+        if( me.searchTerm != term ){
+            me.store.getProxy().extraParams['start'] = 0;
+        }
+        me.searchTerm = term;
+    },
+    
+    onStoreLoad  : function(){
+        try{
+            me.down('dataview').getEl().scrollTo('top', 0);
+        }catch(e){
+            
+        }
     },
     
     refresh : function(){

@@ -41,6 +41,16 @@ Ext.define('Admin.view.page.List' ,{
                 }
             ),
             
+            listeners : {
+                refresh : function(){
+                    try{
+                        me.down('dataview').getEl().scrollTo('top',0);
+                    }catch(e){
+                        
+                    }
+                }
+            },
+            
             emptyText:'No Pages'
         }];
         me.dockedItems = [{

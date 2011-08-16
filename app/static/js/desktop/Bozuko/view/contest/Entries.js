@@ -8,8 +8,6 @@ Ext.define( 'Bozuko.view.contest.Entries', {
         'Bozuko.store.Entries'
     ],
     
-    autoScroll :true,
-    
     initComponent : function(){
         var me = this;
         
@@ -24,6 +22,9 @@ Ext.define( 'Bozuko.view.contest.Entries', {
         }, 250);
         
         me.store.on('beforeload', me.onBeforeLoad, me);
+        me.store.on('load', me.onStoreLoad, me);
+        
+        me.layout = 'fit';
         
         me.dockedItems = [{
             xtype           :'toolbar',
@@ -52,6 +53,8 @@ Ext.define( 'Bozuko.view.contest.Entries', {
             
             deferEmptyText  :false,
             emptyText       :'<div style="padding: 10px;">No Players yet!</div>',
+            
+            autoScroll      :true,
             
             trackOver       :true,
             overItemCls     :'entry-item-over',
@@ -136,8 +139,22 @@ Ext.define( 'Bozuko.view.contest.Entries', {
     
     onBeforeLoad : function(){
         var me = this,
-            search = this.down('[ref=search]');
-        me.store.getProxy().extraParams['search'] = search.getValue();
+            search = this.down('[ref=search]'),
+            term = search.getValue();
+            
+        me.store.getProxy().extraParams['search'] = term;
+        if( me.searchTerm != term ){
+            me.store.getProxy().extraParams['start'] = 0;
+        }
+        me.searchTerm = term;
+    },
+    
+    onStoreLoad  : function(){
+        try{
+            me.down('dataview').getEl().scrollTo('top', 0);
+        }catch(e){
+            
+        }
     }
     
 });
