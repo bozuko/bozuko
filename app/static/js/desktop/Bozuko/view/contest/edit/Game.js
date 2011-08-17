@@ -63,7 +63,9 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
             valueField      :'value'
         }];
         me.callParent();
-        
+        me.on('render', function(){
+            //me.onGameChange(me.down('[name=game]'), me.contest.get('game'));
+        });
     },
     
     onGameChange : function(field, value){
@@ -89,6 +91,7 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                         data:[
                             {value:'default',text:'Default'},
                             {value:'mexican_theme',text:'Mexican'},
+                            {value:'seadog',text:'Seadog'},
                             {value:'alt',text:'Alternate'}
                         ]
                     }),
