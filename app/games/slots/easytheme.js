@@ -1,5 +1,6 @@
 var SlotsTheme = require('./theme'),
     path = require('path'),
+    burl = Bozuko.require('util/url').create,
     fs = require('fs'),
     inherits = require('util').inherits
     ;
@@ -23,7 +24,7 @@ var EasyTheme = module.exports = {
         inherits(Theme, SlotsTheme);
         
         Theme.prototype.name = name;
-        Theme.prototype.base = '/games/slots/themes/'+name+'/'+iconsDir;
+        Theme.prototype.base = burl('/games/slots/themes/'+name+'/'+iconsDir);
         
         // okay, lets grab the icons...
         var iconsPath = dirname+'/resources/'+iconsDir;
