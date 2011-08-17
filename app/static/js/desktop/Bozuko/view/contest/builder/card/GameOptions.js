@@ -37,6 +37,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
                 name                :'entry_config.duration',
                 fieldLabel          :'Users can play every',
                 emptyText           :'Please enter a number',
+                helpLabel           :'Play Frequency',
                 helpText            :[
                     '<p>This is how often you will allow a user to play your game. The more frequent, the faster ',
                     'your contest will go.',
@@ -92,8 +93,6 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
                 values['game_config.'+i] = me.entry_cfg[i];
             }
         }
-        
-        console.log(values);
         
         me.form.getForm().setValues(values);
     },

@@ -50,7 +50,14 @@ var EasyTheme = module.exports = {
             }
             icons = ordered;
         }
+        
         Theme.prototype.icons = icons;
+        
+        if( Theme.prototype.icons['free_spin'] ){
+            var fs = Theme.prototype.icons['free_spin'];
+            delete Theme.prototype.icons['free_spin'];
+            Theme.prototype.icons['free_spin'] = fs;
+        }
         
         if( options.icon ){
             Theme.prototype.icon = burl('/games/slots/themes/'+name+'/'+options.icon);
