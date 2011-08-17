@@ -229,7 +229,7 @@ var add_contests = function(callback) {
         start: start,
         game: 'slots',
 		game_config: {
-			theme: 'default'
+			theme: 'seadog'
 		},
 		end: end,
 		total_entries: 30,
