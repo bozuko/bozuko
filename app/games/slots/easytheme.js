@@ -54,9 +54,9 @@ var EasyTheme = module.exports = {
         Theme.prototype.icons = icons;
         
         if( Theme.prototype.icons['free_spin'] ){
-            var fs = Theme.prototype.icons['free_spin'];
+            var free_spin = Theme.prototype.icons['free_spin'];
             delete Theme.prototype.icons['free_spin'];
-            Theme.prototype.icons['free_spin'] = fs;
+            Theme.prototype.icons['free_spin'] = free_spin;
         }
         
         if( options.icon ){
