@@ -153,13 +153,15 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         var me = this;
         
         if( field.up('duration') ) field = field.up('duration');
+        if( field.up('fieldcontainer') ) field = field.up('fieldcontainer');
         
         setTimeout(function(){
             me.blurred = false;
             field.getEl().dom.appendChild(me.arrow);
-            var helpText = field.helpText || '';
+            var helpText = field.helpText || '',
+                label = field.helpLabel || field.fieldLabel;
             if( Ext.isArray(helpText) ) helpText = helpText.join('');
-            helpText = '<h3>'+field.fieldLabel+'</h3>'+helpText;
+            helpText = '<h3>'+label+'</h3>'+helpText;
             me.updateHelpText( helpText );
         }, 10);
     },
@@ -170,7 +172,9 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         setTimeout( function(){
             if( !me.blurred ) return;
-            me.arrow.parentNode.removeChild( me.arrow );
+            try{
+                me.arrow.parentNode.removeChild( me.arrow );
+            }catch(e){};
             me.updateHelpText( me.getOverview() );
         }, 500);
     },
