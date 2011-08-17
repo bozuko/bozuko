@@ -51,6 +51,10 @@ var EasyTheme = module.exports = {
             icons = ordered;
         }
         Theme.prototype.icons = icons;
+        
+        if( options.icon ){
+            Theme.prototype.icon = burl('/games/slots/themes/'+name+'/'+options.icon);
+        }
         return Theme;
     }
 };
