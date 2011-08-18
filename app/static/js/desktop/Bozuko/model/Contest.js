@@ -181,6 +181,26 @@ Ext.define('Bozuko.model.Contest', {
         return this.prizes().getCount();
     },
     
+    getPrizeOdds : function(index){
+        var prize = this.prizes().getAt(index),
+            prize_total = prize.get('total'),
+            total_entries = Number(this.get('total_entries')),
+            gcd = this.getGCD(prize_total, total_entries);
+        
+        return (prize_total/gcd)+' / '+(total_entries/gcd);
+    },
+    
+    getGCD : function(x,y) {
+        var w,
+            loops = 0;
+        while (y != 0 && loops++ < 100 ) {
+            w = x % y;
+            x = y;
+            y = w;
+        }
+        return x;
+    },
+
     
     getTotalPrizesValue : function(){
         var me = this,
