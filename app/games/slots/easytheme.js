@@ -62,6 +62,16 @@ var EasyTheme = module.exports = {
         if( options.icon ){
             Theme.prototype.icon = burl('/games/slots/themes/'+name+'/'+options.icon);
         }
+        
+        if( options.version ){
+            Theme.prototype.getConfig = function(){
+                var ret = SlotsTheme.prototype.getConfig.apply(this, arguments);
+                for( var i in ret.icons ){
+                    ret.icons[i]+='?version='+options.version;
+                }
+                return ret;
+            }
+        }
         return Theme;
     }
 };
