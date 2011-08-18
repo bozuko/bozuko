@@ -89,7 +89,8 @@ Slots.prototype.getConfig = function(){
         icons[key] = self.config.custom_icons[key];
     });
     Object.keys(theme.icons).forEach(function(key){
-        icons[key] = theme.icons[key];
+		icons[key] = theme.icons[key];
+		if( theme.version ) icons[key]+='?version='+theme.version;
     });
     
     var config = {
