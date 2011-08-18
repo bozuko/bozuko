@@ -66,8 +66,8 @@ var EasyTheme = module.exports = {
         if( options.version ){
             Theme.prototype.getConfig = function(){
                 var ret = SlotsTheme.prototype.getConfig.apply(this, arguments);
-                for( var i in ret.icons ){
-                    ret.icons[i]+='?version='+options.version;
+                for( var i in ret.theme.icons ){
+                    ret.theme.icons[i]+='?version='+options.version;
                 }
                 return ret;
             }
