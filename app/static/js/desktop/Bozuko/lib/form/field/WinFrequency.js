@@ -15,6 +15,7 @@ Ext.define('Bozuko.lib.form.field.WinFrequency', {
         
         Ext.apply(me, {
             layout          :'hbox',
+            height          :22,
             
             items :[{
                 xtype: 'component',
@@ -35,8 +36,11 @@ Ext.define('Bozuko.lib.form.field.WinFrequency', {
             }]
         });
         
+        me.addEvents('change','keyup');
+        
         me.callParent( arguments );
         me.valueField = me.down('[ref=value]');
+        me.relayEvents( me.valueField, ['change','keyup'] );
         me.initField();
     },
     
@@ -53,10 +57,5 @@ Ext.define('Bozuko.lib.form.field.WinFrequency', {
     getValue : function(){
         var me = this;
         return Number(me.valueField.getValue());
-    },
-    
-    hide : function(){
-        this.callParent(arguments);
-        console.log('wtf');
     }
 });
