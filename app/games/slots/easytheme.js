@@ -33,9 +33,6 @@ var EasyTheme = module.exports = {
             var matches;
             if( !(matches = filename.match(/(.+)\.png$/)) ) return;
             icons[matches[1]] = filename;
-            if( options.version ){
-                icons[matches[1]]+='?version='+options.version;
-            }
         });
         
         // anything specific that should be the first properties in the array?
