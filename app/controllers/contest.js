@@ -366,11 +366,6 @@ exports.routes = {
                         return Bozuko.error('contest/inactive').send(res);
                     }
                     
-                    /*
-                    if( !req.session.location ){
-                        return Bozuko.error('contest/game_entry_requires_ll', req.params.id).send(res);
-                    }
-                    */
                     // we need to process the entry
                     var ll = req.param('ll');
                     if( !ll ){
@@ -401,6 +396,7 @@ exports.routes = {
                                 if( error ) return error.send(res);
                                 if( !page ) return Bozuko.error('contest/page_not_found').send(res);
                                 return page.getUserGames( req.session.user, function(error, games){
+                                    console.log("Contest: "+req.params.id+" After page.getUserGames\n\n");
                                     if( error ) return error.send(res);
                                     // get the game states
                                     var states = [];

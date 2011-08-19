@@ -109,7 +109,7 @@ FacebookCheckinMethod.prototype.getHtmlDescription = function(){
 
 FacebookCheckinMethod.prototype.getEntryRequirement = function(){
     return "Player must \"check in\" with Facebook to enter.";
-}
+};
 
 FacebookCheckinMethod.prototype.getPlayLimitations = function(){
     var str = EntryMethod.prototype.getPlayLimitations.apply(this);
@@ -117,14 +117,15 @@ FacebookCheckinMethod.prototype.getPlayLimitations = function(){
         str+=' An additional '+(this.config.tokens > 1 ? "plays" : "play" )+' offered to users who "Like" this page on Facebook.';
     }
     return str;
-}
+};
+
 /**
  * Get the maximum amount of tokens
  *
  */
 FacebookCheckinMethod.prototype.getMaxTokens = function(){
     return this.config.tokens + (this.config.options.enable_like ? this.config.tokens : 0);
-}
+};
 
 /**
  * Get the number of tokens for this user on a successfull entry
@@ -140,30 +141,30 @@ FacebookCheckinMethod.prototype.getTokenCount = function(){
         }
     }
     return tokens;
-}
+};
 
 FacebookCheckinMethod.prototype.validate = function( callback ){
     var self = this;
     EntryMethod.prototype.validate.call(self, function(error, valid){
         if( error || !valid ) return callback( error, valid );
         
-		//console.error('FacebookCheckinMethod::validate - parent::validate.valid:'+
-		//	(valid?'true':'false')
-		//);
+        //console.error('FacebookCheckinMethod::validate - parent::validate.valid:'+
+        //	(valid?'true':'false')
+	//);
 		
         /**
          * If a user cannot check in, check to make sure that the user has at least checked in here within
          * the configured duration for a page check in
          */
-		//console.error('FacebookCheckinMethod::validate - self.can_checkin:'+
-		//	(self.can_checkin?'true':'false')+', self.hasCheckedIn():'+
-		//	(self.hasCheckedIn()?'true':'false')
-		//);
+	//console.error('FacebookCheckinMethod::validate - self.can_checkin:'+
+        //	(self.can_checkin?'true':'false')+', self.hasCheckedIn():'+
+        //	(self.hasCheckedIn()?'true':'false')
+        //);
         if( !self.can_checkin && !self.hasCheckedIn() ){
-			console.error('FacebookCheckinMethod::validate - returning false');
+            console.error('FacebookCheckinMethod::validate - returning false');
             return callback(null, false);
         }
-		//console.error('FacebookCheckinMethod::validate - returning true');
+        //console.error('FacebookCheckinMethod::validate - returning true');
         return callback( null, true);
     });
 };
@@ -171,10 +172,9 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
 FacebookCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
 	
-	//console.error('FacebookCheckinMethod::hasCheckedIn - self.last_checkin_here:'+
-	//	(self.last_checkin_here?'true':'false')
-	//);
-	
+    //console.error('FacebookCheckinMethod::hasCheckedIn - self.last_checkin_here:'+
+    //	(self.last_checkin_here?'true':'false')
+    //);
 	
     if( self.last_checkin_here ){
         return true;
@@ -196,24 +196,19 @@ FacebookCheckinMethod.prototype.process = function( callback ){
     return self.validate( function(error, valid){
         if( error ) return callback( error );
         if( !valid ){
-			
-			// console.error('FacebookCheckinMethod::process - self.validate:false');
-			
+                        
             if(!self.can_checkin && !self.hasCheckedIn()){
                 
-				// console.error('FacebookCheckinMethod::process - self.validate returning too_many_attempts_per_user');
                 return self.page.getNextCheckinTime( self.user, function(error, next_time){
                     if( error ) return callback( error );
                     return callback( Bozuko.error('checkin/too_many_attempts_per_user', {next_time: next_time}) );
                 });
             }
-			// console.error('FacebookCheckinMethod::process - self.validate returning invalid_entry');
+
             return callback( Bozuko.error('contest/invalid_entry') );
         }
-		// console.error('FacebookCheckinMethod::process - self.validate():true');
 
         if( self.can_checkin ){
-			// console.error('FacebookCheckinMethod::process - self.can_checkin:true');
             return self.page.checkin( self.user, {
                 user: self.user,
                 contest: self.contest,
@@ -225,28 +220,27 @@ FacebookCheckinMethod.prototype.process = function( callback ){
 
                 return EntryMethod.prototype.process.call(self, function(err, entry) {
                     if (err) return callback(err);
-
-					var share = new Bozuko.models.Share({
-						service         :'facebook',
-						type            :'checkin',
-						contest_id      :self.contest.id,
-						page_id         :self.contest.page_id,
-						user_id         :self.user.id,
-						visibility      :0,
-						message         :self.options.message
-					});
-					try{
-						share.visibility = self.user.service('facebook').internal.friends.length;
-					}catch(e){
-						share.visibility = 0;
-					}
-					return share.save(function(error){
-						return callback( null, entry );
-					});
+                                                              
+                    var share = new Bozuko.models.Share({
+                        service         :'facebook',
+                        type            :'checkin',
+                        contest_id      :self.contest.id,
+                        page_id         :self.contest.page_id,
+                        user_id         :self.user.id,
+                        visibility      :0,
+                        message         :self.options.message
+                    });
+                    try{
+                        share.visibility = self.user.service('facebook').internal.friends.length;
+                    }catch(e){
+                        share.visibility = 0;
+                    }
+                    return share.save(function(error){
+                        return callback( null, entry );
+                    });
                 });
             });
         }
-        // console.error('FacebookCheckinMethod::process - processing');
         return EntryMethod.prototype.process.call(self, callback);
     });
 };
@@ -263,26 +257,20 @@ FacebookCheckinMethod.prototype._load = function( callback ){
         if( error ) return callback( error );
         self.can_checkin = flag;
         
-		// if( self.can_checkin ) return callback(null);
-        
-		var date = new Date(
+        var date = new Date(
             Date.now() - Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4)
         );
-		
-		var selector = {
+                
+        var selector = {
             service:'facebook',
-			user_id: self.user._id,
+            user_id: self.user._id,
             page_id: self.page._id,
             timestamp: {$gt: date}
         };
-		
-		// console.error('FacebookCheckinMethod::_load - selector for last_checkin_here: '+inspect(selector));
-		
+                
         return Bozuko.models.Checkin.findOne(selector, function(error, checkin){
             if( error ) return callback( error );
-            //console.error( 'last checkin here: '+inspect( checkins ) );
             self.last_checkin_here = checkin;
-			//console.error('FacebookCheckinMethod::_load - last_checkin_here: '+JSON.stringify(self.last_checkin_here));
             return callback( null );
         });
     });
