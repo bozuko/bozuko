@@ -1072,6 +1072,7 @@ function add_pages(pages, callback) {
                         if (err) return cb(err);
                         if (!page) return cb(new Error("page "+sid+" not created"));
                         page.owner_id = user_ids[Math.floor(Math.random()*user_ct)];
+                        page.active = true;
                         return page.save(function(err) {
                             page_ids.push(page._id);
                             return cb(err);
@@ -1100,7 +1101,7 @@ function add_contests(options, callback) {
                 page_id: page_ids[page_ct],
                 game: 'slots',
                 game_config: {
-                    them: 'default'
+                    theme: 'default'
                 },
                 entry_config: [{
                     type: "facebook/checkin",
@@ -1110,7 +1111,7 @@ function add_contests(options, callback) {
                 }],
                 start: new Date(),
                 end: new Date(2013, 9, 2),
-                win_frequency: 3,
+                win_frequency: 2,
                 free_play_pct: options.free_play_pct || 10
             });
             contest.prizes.push({
@@ -1169,22 +1170,6 @@ function add_users(count, callback) {
             }];
 
             u.service('facebook', ''+ct, u.token, "somedata");
-            u.internal = {
-                likes: [],
-                friends: [],
-                friend_count: 500
-            };
-            
-            for (var i = 0; i < 50; i++) {
-                u.internal.likes.push('1234567890123');
-            }
-
-            for (i = 0; i < 500; i++) {
-                u.internal.friends.push({
-                    name: "Billy Joe Bob",
-                    id: "123456789012"
-                });
-            }
 
             return u.save(function(err) {
                 if (err) return cb(err);
