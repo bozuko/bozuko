@@ -63,9 +63,6 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         me.callParent(arguments);
         
         me.on('activate', me.focusFirstField, me );
-        me.on('destroy', function(){
-            clearTimeout( me.updateHelpTextTimeout );
-        });
         
         me.form = me.down('[ref=card-form]');
         
@@ -169,8 +166,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         if( field.up('duration') ) field = field.up('duration');
         if( field.up('fieldcontainer') ) field = field.up('fieldcontainer');
         
-        clearTimeout( this.updateHelpTextTimeout );
-        this.updateHelpTextTimeout = setTimeout(function(){
+        setTimeout(function(){
             me.blurred = false;
             field.getEl().dom.appendChild(me.arrow);
             var helpText = field.helpText || '',
@@ -185,8 +181,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         var me = this;
         me.blurred = true;
         
-        clearTimeout( this.updateHelpTextTimeout );
-        this.updateHelpTextTimeout =setTimeout( function(){
+        setTimeout( function(){
             if( !me.blurred ) return;
             try{
                 me.arrow.parentNode.removeChild( me.arrow );
