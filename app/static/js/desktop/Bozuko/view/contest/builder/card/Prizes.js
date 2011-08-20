@@ -199,6 +199,15 @@ Ext.define('Bozuko.view.contest.builder.card.Prizes', {
         }
     },
     
+    focusFirstField : function(){
+        var me = this;
+        
+        var form = me.form.getLayout().getActiveItem();
+        
+        var firstField = form.getEl().down('a,input,select,textarea');
+        if( firstField ) firstField.focus();
+    },
+    
     validate : function(){
         var me = this;
         

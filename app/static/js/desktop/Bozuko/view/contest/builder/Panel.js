@@ -22,7 +22,14 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         // create a new contest with the defaults
         if( !me.contest ){
             me.contest = new Bozuko.model.Contest();
-            me.contest.data = {};
+            me.contest.data = {
+                engine_type: 'order',
+                engine_mode: 'odds',
+                auto_rules: true,
+                free_play_pct: 20,
+                consolation_prizes: [],
+                post_to_wall: true
+            };
         }
         
         me.dockedItems = [{
@@ -102,14 +109,27 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                 var buttons = [];
                 if( i > 0 ) buttons.push('back');
                 if( i !== me.centerPanel.items.getCount()-1 ) buttons.push('next');
-                else buttons.push('finish');
+                else{
+                    // this is the last card... lets add the approriate buttons
+                    if( me.contest.get('active') ){
+                        buttons.push('save');
+                    }
+                    else{
+                        buttons.push('save-draft');
+                        buttons.push('publish');
+                    }
+                    //buttons.push('finish');
+                }
                 card.addNavigationButtons( buttons );
             }
             
             // add step to our toolbar
+            
+            var isNew = !me.contest.get('_id');
+            
             me.stepToolbar.add({
                 text: (i+1)+'. '+card.name,
-                disabled: i!==0,
+                disabled: isNew ? i!==0 : false,
                 toggled: i===0,
                 handler: function(){
                     me.goToCard(i);
@@ -120,6 +140,8 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
             card.on('back', me.back, me);
             card.on('next', me.next, me);
             card.on('finish', me.finish, me);
+            card.on('save', me.save, me);
+            card.on('publish', me.publish, me);
         });
         
         me.stepButtons = me.stepToolbar.query('button');
@@ -162,6 +184,15 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
     finish : function(btn){
         var me = this,
             index = me.currentStep();
+        
+        // 
+        
+    },
+    save : function(){
+        this.fireEvent('save', this);
+    },
+    publish : function(){
+        this.fireEvent('publish', this);
     },
     goToCard : function(index){
         var me = this, valid;

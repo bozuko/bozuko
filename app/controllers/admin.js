@@ -469,6 +469,11 @@ exports.routes = {
                 delete data.total_plays;
                 delete data.results;
                 delete data.plays;
+                
+                
+                Object.keys(data).forEach(function(key){
+                    if( data[key] === null ) delete data[key];
+                });
 
                 prizes.forEach(function(prize){
                     delete prize._id;

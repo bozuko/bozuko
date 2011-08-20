@@ -67,10 +67,16 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
         });
         
         me.callParent(arguments);
-        me.contest.on('modify', function(record){
-            me.update(record.raw);
-        }, me);
+        me.contest.on('modify', me.onContestModify, me);
+        me.on('destroy', function(){
+            me.contest.un('modify', me.onContestModify, me);
+        });
         me.on('render', me.update, me);
+    },
+    
+    onContestModify : function(record){
+        var me = this;
+        me.update(record.raw);
     }
     
 });
