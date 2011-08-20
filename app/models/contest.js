@@ -592,8 +592,6 @@ Contest.method('loadEntryMethod', function(user, callback){
 Contest.method('loadTransferObject', function(user, callback){
     var self = this;
     return self.loadGameState(user, function(error){
-        console.log("loadGameState: contest_id: "+self._id+" user_id: "+user._id+", error:"+error+"\n");
-        console.log("    contest.game_state: "+inspect(self.game_state));
         if( error ) return callback(error);
         return self.loadEntryMethod(user, function(error){
             if( error ) return callback(error);
