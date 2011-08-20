@@ -1119,7 +1119,7 @@ function add_contests(options, callback) {
                 value: '10',
                 description: "Can\'t tell you what it is",
                 details: "You Wish",
-                duration: "600000",
+                duration: 600000,
                 instructions: "Figure it out and use it",
                 total: options.prizes || 200
             });
@@ -1170,6 +1170,7 @@ function add_users(count, callback) {
             }];
 
             u.service('facebook', ''+ct, u.token, "somedata");
+            u.service('facebook').internal = {likes:[], friends:[], friend_count: 0};
 
             return u.save(function(err) {
                 if (err) return cb(err);

@@ -115,6 +115,7 @@ function enter(res, callback) {
         opaque: {
             params: params,
             uid: uid,
+            game_id: game_id,
             last_op: 'checkin'
         }
     });
@@ -144,9 +145,12 @@ function play(res, callback) {
             return callback(null, 'done');
         }
 
-        // Exhaust the first game first
-        console.log(inspect(rv));
-        var state = rv[0];
+        var state;
+        rv.forEach(function(game_state) {
+            if (game_state.game_id == res.opaque.game_id) {
+                state = game_state;
+            }
+        });
         res.opaque.message = "Load Test Play";
         res.opaque.user_tokens = state.user_tokens;
         res.opaque.last_op = 'play';
