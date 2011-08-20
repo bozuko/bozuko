@@ -7,7 +7,7 @@ var valid_args = ['--contests', '--users', '--entries', '--prizes', '--plays_per
     '--free_play_pct', '--drop_collections', '--env'];
 
 var defaults = {
-    contests: 100,
+    contests: 5000,
     users: 1000,
     entries: 2000,
     prizes: 500,
@@ -59,11 +59,8 @@ function parse_args() {
      }
 
      var db_setup_start = Date.now();
-     var t = setInterval(function() {
-         process.stdout.write('.');
-     }, 1000);
      db.setup(opts, function(err) {
-         clearInterval(t);
+         if (err) console.error("err = "+err);
          var db_setup_end = Date.now();
          console.log("DB setup took "+(db_setup_end - db_setup_start)+" ms");
          Bozuko.db.conn().disconnect();

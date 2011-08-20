@@ -11,6 +11,7 @@ Ext.define('Bozuko.lib.form.field.Duration', {
     fieldLabel : 'Duration',
     
     durations: [
+        {label: 'Years', value: 1000 * 60 * 60 * 24 * 365},
         {label: 'Months', value: 1000 * 60 * 60 * 24 * 30},
         {label: 'Weeks', value: 1000 * 60 * 60 * 24 * 7},
         {label: 'Days', value: 1000 * 60 * 60 * 24},
@@ -35,12 +36,11 @@ Ext.define('Bozuko.lib.form.field.Duration', {
                 flex            :1,
                 ref             :'unit',
                 xtype           :'combo',
-                triggerAction   :'all',
                 editable        :false,
                 forceSelection  :true,
                 displayField    :'label',
                 valueField      :'value',
-                value           :this.durations[2].value,
+                value           :this.durations[3].value,
                 store           :Ext.create('Ext.data.Store',{
                     fields :['label','value'],
                     data : me.durations

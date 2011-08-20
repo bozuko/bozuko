@@ -366,11 +366,6 @@ exports.routes = {
                         return Bozuko.error('contest/inactive').send(res);
                     }
                     
-                    /*
-                    if( !req.session.location ){
-                        return Bozuko.error('contest/game_entry_requires_ll', req.params.id).send(res);
-                    }
-                    */
                     // we need to process the entry
                     var ll = req.param('ll');
                     if( !ll ){

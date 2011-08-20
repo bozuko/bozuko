@@ -26,7 +26,7 @@ Ext.define('Bozuko.lib.form.field.WinFrequency', {
             },{xtype:'splitter'},{
                 xtype: 'textfield',
                 ref: 'value',
-                width: 30
+                width: 40
             },{xtype:'splitter'},{
                 xtype: 'component',
                 autoEl: {tag:'div'},

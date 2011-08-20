@@ -29,6 +29,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 
                 itemTpl         :new Ext.XTemplate(
                     '<div class="game">',
+                        '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
                         '<img src="{img}" />',
                         '<div class="game-body">',
                             '<div class="title">{title}</div>',

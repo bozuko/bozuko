@@ -31,7 +31,7 @@ function getConnection(){
                     str+=",";
                 }
             };
-	    uri = str;
+			uri = str;
             _db = mongoose.connectSet(str);
         } else {
             uri = 'mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name;

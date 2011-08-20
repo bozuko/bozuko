@@ -244,15 +244,22 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         
         me.callParent(arguments);
         
+        me.redemptionFields = me.query('[redemption_field=yes]');
+        
+        Ext.each( me.redemptionFields, function(field){
+            
+        });
+        
         if( me.prize ){
             me.loadForm(me.prize);
         }
     },
     
     onRedemptionTypeChange : function(){
+        
         var me = this,
             type = me.down('[name=redemption_type]').getValue();
-        // show hide the corresponding fields
+        
         Ext.each( me.query('[redemption_group=all]'), function(field){ field.show();} );
         Ext.each( me.query('[redemption_field=yes]'), function(field){
             if(field.name == 'total'){
@@ -272,6 +279,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             field.show();
             field.enable();
         });
+        
     },
     
     loadForm : function(prize){
