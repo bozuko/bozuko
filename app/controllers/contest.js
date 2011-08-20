@@ -396,7 +396,6 @@ exports.routes = {
                                 if( error ) return error.send(res);
                                 if( !page ) return Bozuko.error('contest/page_not_found').send(res);
                                 return page.getUserGames( req.session.user, function(error, games){
-                                    console.log("Contest: "+req.params.id+" After page.getUserGames\n\n");
                                     if( error ) return error.send(res);
                                     // get the game states
                                     var states = [];
