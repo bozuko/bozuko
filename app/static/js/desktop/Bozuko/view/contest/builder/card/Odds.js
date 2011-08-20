@@ -23,11 +23,11 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         '<span class="switcher">If you would rather enter the overall odds,',
         'switch to <a href="javascript:;" class="odds-mode">Overall Odds Mode</a>'
     ].join(' '),
-    
-    mode : 'odds',
 
     initComponent : function(){
         var me = this;
+        
+        me.mode = me.contest.get('engine_mode') || 'odds';
         
         Ext.apply(me.form, {
             
@@ -113,6 +113,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                 
             }]
         });
+        
         me.callParent(arguments);
         me.intro = me.down('[ref=intro]');
         me.contest.prizes().on('update', me.onStoreUpdate, me);
@@ -173,6 +174,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
             field.disable();
         });
         me.mode = me.mode=='odds'?'entry':'odds';
+        me.contest.set('engine_mode', me.mode);
         me.intro.update(me.getIntroHTML());
         Ext.each(me.query('[xmode='+me.mode+']'), function(field){
             field.show();

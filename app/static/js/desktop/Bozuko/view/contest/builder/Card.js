@@ -62,6 +62,11 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         me.callParent(arguments);
         
+        me.on('activate', me.focusFirstField, me );
+        me.on('destroy', function(){
+            clearTimeout( me.updateHelpTextTimeout );
+        });
+        
         me.form = me.down('[ref=card-form]');
         
         var fields = me.query('[ref=card-form] field');
@@ -107,6 +112,13 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         me.loadContest();
     },
     
+    focusFirstField : function(){
+        var me = this;
+        
+        var firstField = me.form.getEl().down('input,select,textarea');
+        if( firstField ) firstField.focus();
+    },
+    
     updateRecord : function(){
         var me = this;
         me.contest.set(me.getValues());
@@ -146,7 +158,9 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         me.helpPanel = me.down('[ref=help-panel]');
         me.arrow = document.createElement('div');
         me.arrow.className = 'builder-arrow';
-        me.updateHelpText( me.overview );
+        setTimeout(function(){
+            me.updateHelpText( me.overview );
+        }, 100);
     },
     
     onFieldFocus : function(field){
@@ -155,7 +169,8 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         if( field.up('duration') ) field = field.up('duration');
         if( field.up('fieldcontainer') ) field = field.up('fieldcontainer');
         
-        setTimeout(function(){
+        clearTimeout( this.updateHelpTextTimeout );
+        this.updateHelpTextTimeout = setTimeout(function(){
             me.blurred = false;
             field.getEl().dom.appendChild(me.arrow);
             var helpText = field.helpText || '',
@@ -170,7 +185,8 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         var me = this;
         me.blurred = true;
         
-        setTimeout( function(){
+        clearTimeout( this.updateHelpTextTimeout );
+        this.updateHelpTextTimeout =setTimeout( function(){
             if( !me.blurred ) return;
             try{
                 me.arrow.parentNode.removeChild( me.arrow );
@@ -220,6 +236,36 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             },
             icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png'
         });
+        
+        if( ~btns.indexOf('save') ) buttons.push({
+            text: 'Save',
+            ref: 'save',
+            style: 'margin-right: 0',
+            handler: function(){
+                me.fireEvent('save', me);
+            },
+            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png'
+        });
+        
+        if( ~btns.indexOf('save-draft') ) buttons.push({
+            text: 'Save as Draft',
+            ref: 'save',
+            style: 'margin-right: 0',
+            handler: function(){
+                me.fireEvent('save', me);
+            },
+            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png'
+        });
+        
+        if( ~btns.indexOf('publish') ) buttons.push({
+            text: 'Publish',
+            style: 'margin-right: 0',
+            handler: function(){
+                me.fireEvent('publish', me);
+            },
+            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/check-24.png'
+        });
+        
         buttons.unshift(' ');
         buttons.push(' ');
                 

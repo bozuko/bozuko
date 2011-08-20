@@ -8,13 +8,12 @@ Ext.define('Ext.ux.data.writer.JsonDeep', {
         
         record.associations.each(function(association){
             if( association.type != 'hasMany' ) return;
-            // console.log(association);
             var key = association.associationKey;
             data[key] = [];
+            if( !record[association.storeName] ) return;
             record[association.storeName].each( function(child){
                 data[key].push( me.getRecordData.call(me, child) );
             });
-            
         });
         return data;
     }

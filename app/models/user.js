@@ -87,10 +87,12 @@ User.method('likes', function(page){
 });
 
 User.method('updateInternals', function(force, callback){
+
     if( typeof force === 'function' ){
         callback = force;
         force = false;
     }
+    if (Bozuko.config.test_mode) return callback(null);
     var self = this;
     
     var now = new Date();

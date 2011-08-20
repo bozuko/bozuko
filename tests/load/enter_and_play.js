@@ -1,17 +1,16 @@
 /*
- * Complete One contest. It should have previously been created with scripts/provision.
+ *  Complete One contest. It should have previously been created with scripts/provision.
  */
+
 var async = require('async');
 var load = require('load');
 
 var inspect = require('util').inspect;
 
-process.env.NODE_ENV='playground';
+process.env.NODE_ENV='load';
 var Bozuko = require('../../app/bozuko');
 
 var auth = Bozuko.require('core/auth');
-
-var free_users = [];
 
 var end_of_game_errors = ['entry/no_tokens', 'entry/not_enough_tokens', 'contest/no_tokens',
     'contest/inactive','contest/no_plays', 'contest/invalid_entry'];
@@ -19,21 +18,21 @@ var end_of_game_ct = 0;
 
 var options = {
     protocol: 'https',
-    host: 'playground.bozuko.com',
-    port: 8000,
+    host: Bozuko.config.server.host,
+    port: Bozuko.config.server.port,
     headers: { 'content-type': 'application/json'},
     encoding: 'utf-8',
-    rate: 20, // req/sec
-    time: 60*60, // 1 day -- total time to run the test
+    rate: 2, // req/sec
+    time: 60, // sec
     wait_time: 10000, // ms -- after the last request, time to wait for others to complete
     timeout: 20000, //ms  -- socket timeout
     path: '/api',
     method: 'GET',
     max_sessions: 50,
     sessions: [{
-	probability: 100,
-	request_generators: [
-            checkin,
+        probability: 100,
+        request_generators: [
+            enter,
             play,
             play,
             play,
@@ -41,29 +40,50 @@ var options = {
         ]
     }]
 };
+var users = [];
+var games = [];
 
-(function run() {
-     for (var i = 0; i < 1000; i++) {
-         free_users.push(String(i));
-     }
-
-    console.log("Running Load Test");
-    load.run(options, function(err, results) {
-        if (err) return console.error("Err = "+err);
-
-        console.log("\nresults = "+require('util').inspect(results));
-        console.log("\ncomplete games = "+end_of_game_ct);
-    });
-})();
-
-function random_user_id() {
-    var index = Math.floor(Math.random()*free_users.length);
-    var uid = free_users[index];
-    free_users.splice(index, 1);
-    return uid;
+function loadUsers(cb) {
+    Bozuko.models.User.count({}, function(err, count) {
+        for (var i = 0; i < count; i++) {
+            users.push(String(i));
+        }
+        cb(err);
+    });    
 }
 
-function checkin(res, callback) {
+function loadGames(cb) {
+    Bozuko.models.Contest.find({}, {_id: 1}, {}, function(err, contests) {
+        games = contests;
+        cb(err);
+    });
+}
+
+(function run() {
+    async.parallel(
+        [loadUsers, loadGames], 
+        function(err) {
+           if (err) throw(err);
+           load.run(options, function(err, results) {
+               if (err) return console.error("Err = "+err);
+               console.log("\nresults = "+require('util').inspect(results));
+               console.log("\ncomplete games = "+end_of_game_ct);
+           });
+        }
+    );
+})();
+
+function randomUser() {
+    var i = Math.floor(Math.random()*users.length);
+    return users[i];
+}
+
+function randomGameId() {
+    var i = Math.floor(Math.random()*games.length);
+    return games[i]._id;
+}
+
+function enter(res, callback) {
 
     var city = {
         lat: 42.396404637936,
@@ -72,10 +92,11 @@ function checkin(res, callback) {
     };
 
     // get a random user for checkin
-    var uid = random_user_id();
+    var uid = randomUser();
+    var game_id = randomGameId();
 
     var req = {
-        url: '/facebook/'+city.id+'/checkin/?token='+uid
+        url: '/game/'+game_id+'/entry/?token='+uid
     };
 
     var params = {
@@ -94,6 +115,7 @@ function checkin(res, callback) {
         opaque: {
             params: params,
             uid: uid,
+            game_id: game_id,
             last_op: 'checkin'
         }
     });
@@ -104,12 +126,10 @@ function play(res, callback) {
         var rv = JSON.parse(res.body);
     } catch(err) {
         console.error("Bombed out in play bitch");
-        free_users.push(res.opaque.uid);
         return callback(err);
     }
 
     if (res.statusCode != 200)  {
-        free_users.push(res.opaque.uid);
         if (rv.body && end_of_game_errors.indexOf(rv.body.name) != -1) {
             end_of_game_ct++;
             return callback(null, 'done');
@@ -119,16 +139,18 @@ function play(res, callback) {
 
     if (res.opaque.last_op === 'checkin') {
         if (!Bozuko.validate(['game_state'], rv)) {
-            free_users.push(res.opaque.uid);
             return callback(new Error("Invalid game_state"));
         }
         if (rv.length === 0) {
-            free_users.push(res.opaque.uid);
             return callback(null, 'done');
         }
 
-        // Exhaust the first game first
-        var state = rv[0];
+        var state;
+        rv.forEach(function(game_state) {
+            if (game_state.game_id == res.opaque.game_id) {
+                state = game_state;
+            }
+        });
         res.opaque.message = "Load Test Play";
         res.opaque.user_tokens = state.user_tokens;
         res.opaque.last_op = 'play';
@@ -146,7 +168,6 @@ function play(res, callback) {
         });
     } else {
         if (rv.game_state.user_tokens === 0) {
-            free_users.push(res.opaque.uid);
             return callback(null, 'done');
         }
 

@@ -116,7 +116,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                     },
                     
                     canUseBuilder : function(){
-                        return window.location.port === '8001';
+                        return window.location.hostname.match(/playground/);
                     },
                     
                     canCopy : function(values){

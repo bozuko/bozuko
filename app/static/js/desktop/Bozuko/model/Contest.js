@@ -27,6 +27,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'name',               type:'String',              defaultValue:'Untitled Campaign'},
         {name:'win_frequency',      type:'Number',              defaultValue:2},
         {name:'engine_type',        type:'String'},
+        {name:'engine_mode',        type:'String',              defaultValue:'odds'},
         {name:'game',               type:'String',              defaultValue:'slots'},
         {name:'game_config',        type:'Object',              defaultValue:{theme:'default'}},
         {name:'auto_rules',         type:'Boolean',             defaultValue:true},
@@ -52,11 +53,15 @@ Ext.define('Bozuko.model.Contest', {
     
     autoLoad: true,
     
-    getEntryConfig : function(){
+    getEntryConfig : function(create){
         var me = this,
             cfg = me.get('entry_config');
             
-        if( !cfg || !cfg.length) return false;
+        if( !cfg || !cfg.length){
+            if( !create ) return false;
+            me.set('entry_config',[{}]);
+            cfg = me.get('entry_config');
+        }
         return cfg[0];
     },
     
@@ -102,7 +107,7 @@ Ext.define('Bozuko.model.Contest', {
             type = 'Unknown';
         }
         if( plays !== false ){
-            var tokens = cfg.tokens || 0;
+            var tokens = cfg.tokens || 0 ;
             return type + ' ('+tokens+' plays)';
         }
         return type;

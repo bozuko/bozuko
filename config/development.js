@@ -5,7 +5,7 @@ if (process.env.USER === 'docs') port = 7002;
 
 module.exports = {
 
-    test_mode: false,
+    test_mode: true,
 
     controllers: {
         except: [
@@ -79,9 +79,9 @@ module.exports = {
     checkin: {
         duration: {
             // 15 minutes between any checkins per user
-            user: 1000 * 60 * 15,
+            user: 0,
             // 4 hours between checkins at the same place
-            page: 1000 * 60 * 60 * 4
+            page: 0
         },
 
         distance : 1000 /* feet */

@@ -204,7 +204,13 @@ exports.routes = {
                     /**
                      * TODO - remove the active flag, we probably need another one
                      */
-                    var selector = {active: true, 'services.name':'facebook', 'services.sid':{$in:ids}};
+                    var selector = {
+                        active: true,
+                        $or : [
+                            {'services.name':'facebook', 'services.sid':{$in:ids}},
+                            {admins: {$in: user.manages}}
+                        ]
+                    };
                     if( req.session.page_id ){
                         selector._id = req.session.page_id;
                     }
@@ -255,7 +261,7 @@ exports.routes = {
                         });
                         
                         isAdmin = ~ids.indexOf(String(page.service('facebook').sid));
-                        if( !isAdmin ){
+                        if( !isAdmin && !~user.manages.indexOf(page._id) ){
                             throw new Error("You are not a manager");
                         }
                         page.beta_agreement = {
@@ -694,6 +700,10 @@ exports.routes = {
                 delete data.state;
                 delete data.total_entries;
                 delete data.total_plays;
+                
+                Object.keys(data).forEach(function(key){
+                    if( data[key] === null ) delete data[key];
+                });
 
                 prizes.forEach(function(prize){
                     delete prize._id;

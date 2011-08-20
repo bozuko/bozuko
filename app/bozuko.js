@@ -1,6 +1,6 @@
-var fs              = require('fs'),
-	async			= require('async'),
-    existsSync    	= require('path').existsSync,
+var fs = require('fs'),
+    async  = require('async'),
+    existsSync = require('path').existsSync,
     Profiler = require('./util/profiler')
 ;
 
@@ -420,9 +420,21 @@ function initGames(app){
 					);
 				}
             });
-
+			
+			Bozuko.games[name].themes.sort(function(a,b){
+				if( a.theme == 'default' && b.theme != 'default'){
+					return -1;
+				}
+				if( b.theme == 'default' && a.theme != 'default'){
+					return 1;
+				}
+				return a.theme.toLowerCase() - b.theme.toLowerCase();
+			});
+			
         }
     });
+	
+	
 }
 
 // this will be called 4 times with multinode...

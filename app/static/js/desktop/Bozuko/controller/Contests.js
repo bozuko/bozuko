@@ -50,6 +50,10 @@ Ext.define('Bozuko.controller.Contests' ,{
             },
             'contestspanel button[action=builder]' : {
                 click           :this.onBuilderButtonClick
+            },
+            'contestspanel contestbuilder' : {
+                save            :this.onSaveFromBuilder,
+                publish         :this.onPublishFromBuilder
             }
         });
     },
@@ -403,7 +407,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 border: false,
                 xtype: 'contestbuilder',
                 contest: record,
-                listeners :{
+                listeners : {
                     destroy : function(){
                         delete panel.builders[record.get('_id')];
                     }
@@ -412,6 +416,37 @@ Ext.define('Bozuko.controller.Contests' ,{
         }
         panel.getLayout().setActiveItem(panel.builders[id]);
         panel.doComponentLayout();
+    },
+    
+    onSaveFromBuilder : function(builder){
+        
+        var contestsPanel = builder.up('contestspanel'),
+            pagePanel = contestsPanel.up('pagepanel'),
+            btn = builder.down('button[ref=save]'),
+            contestsView = contestsPanel .down('contestlist'),
+            isNew = !!builder.contest.get('_id');
+        
+        builder.contest.set('page_id', pagePanel.page.get('_id'));
+        
+        btn.disable();
+        btn.setText('Saving...');
+        
+        builder.contest.save({
+            success : function(){
+                // close the builder and refresh the list
+                contestsPanel.getLayout().setActiveItem(0);
+                contestsView.store.load();
+            },
+            callback: function(){
+                pagePanel.successStatus('Contest Saved');
+                btn.setText('Save');
+                btn.enable();
+            }
+        });
+    },
+    
+    onPublishFromBuilder : function(builder){
+        
     },
     
     openContest : function(record, cmp){

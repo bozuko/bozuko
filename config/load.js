@@ -1,3 +1,6 @@
+//var port = 6999 + process.getuid();
+var port = 8004
+
 module.exports = {
 
     test_mode: true,
@@ -28,8 +31,7 @@ module.exports = {
     },
 
     db:{
-
-        name: 'bozuko_load',
+        name: 'bozuko_dev'+port,
         replicaSet: true,
         hosts: ['192.168.175.164', '192.168.175.163', '192.168.174.86']
     },
@@ -104,7 +106,7 @@ module.exports = {
 			cert: '/ssl/wildcard/bozuko.com.crt'
 		},
         host: 'playground.bozuko.com',
-        port: 8000
+        port: port
     },
 
     pubsub: {
