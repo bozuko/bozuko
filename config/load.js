@@ -1,4 +1,5 @@
-var port = 6999 + process.getuid();
+//var port = 6999 + process.getuid();
+var port = 8004
 
 module.exports = {
 

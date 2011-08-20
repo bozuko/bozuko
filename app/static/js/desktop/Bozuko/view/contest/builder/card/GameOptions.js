@@ -80,7 +80,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
         var me = this,
             values = {};
         
-        me.entry_cfg = me.contest.getEntryConfig() || {},
+        me.entry_cfg = me.contest.getEntryConfig(true),
         me.game_cfg = me.contest.get('game_config') || {};
             
         if( me.entry_cfg ){
@@ -104,8 +104,9 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
         Ext.apply( me.game_cfg, values.game_config);
         Ext.apply( me.entry_cfg, values.entry_config);
         
+        // also want to grab the theme...
+        
         me.contest.set('game_config', me.game_cfg);
-        me.contest.set('entry_config', [me.entry_config]);
     },
     
     onThemesLoad : function(store){
@@ -119,7 +120,6 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
             if( tc ) tc.getSelectionModel().select(i);
         }
     },
-    
     
     addThemeChooser : function(type){
         var me = this;
@@ -155,6 +155,7 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
                         '<tpl for=".">',
                             '<td>',
                                 '<div class="theme">',
+                                    '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
                                     '<div class="title">{title}</div>',
                                     '<img src="{preview}" />',
                                     '<div class="description">{description}</div>',
@@ -185,8 +186,15 @@ Ext.define('Bozuko.view.contest.builder.card.GameOptions', {
             listeners : {
                 beforecontainerclick : function(view, e){
                     return false;
+                },
+                selectionchange : function(view, records){
+                    if( records && records.length){
+                        me.game_cfg.theme = records[0].get('theme');
+                    }
                 }
             }
         });
+        
+        var dv = me.down('[ref=theme-chooser]');
     }
 });

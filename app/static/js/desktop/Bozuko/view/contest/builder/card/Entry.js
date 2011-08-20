@@ -35,6 +35,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                 
                 itemTpl         :new Ext.XTemplate(
                     '<div class="entry-method">',
+                        '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
                         '<img src="{img}" />',
                         '<div class="entry-method-body">',
                             '<div class="title">{title}</div>',
@@ -173,6 +174,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
 
             options.each(function(opt){
                 var value;
+                if( opt.getAttribute('name') == 'focus_field' ) return;
                 if( opt.getAttribute('type') == 'checkbox' ){
                     value = opt.dom.checked;
                 }
