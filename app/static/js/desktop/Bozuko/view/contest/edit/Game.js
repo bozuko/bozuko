@@ -63,8 +63,8 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
             valueField      :'value'
         }];
         me.callParent();
-        me.on('render', function(){
-            //me.onGameChange(me.down('[name=game]'), me.contest.get('game'));
+        me.on('activate', function(){
+            me.onGameChange(me.down('[name=game]'), me.getForm().getRecord().get('game'));
         });
     },
     
