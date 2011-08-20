@@ -214,7 +214,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             handler: function(){
                 me.fireEvent('back', me);
             },
-            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-left-24.png'
+            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/arrow-left-24.png'
         });
         
         buttons.push('->');
@@ -225,7 +225,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             handler: function(){
                 me.fireEvent('next', me);
             },
-            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png'
+            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/arrow-right-24.png'
         });
         
         if( ~btns.indexOf('finish') ) buttons.push({
@@ -263,7 +263,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             handler: function(){
                 me.fireEvent('publish', me);
             },
-            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/check-24.png'
+            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-24.png'
         });
         
         buttons.unshift(' ');
