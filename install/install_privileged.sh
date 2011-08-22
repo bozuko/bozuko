@@ -18,7 +18,7 @@ cp config/mongodb.conf /etc/mongodb.conf
 apt-get install -y build-essential libssl-dev libgd2-xpm-dev g++ barcode imagemagick
 
 # install useful tools and utilities
-apt-get install -y emacs vim js2-mode ufw rlwrap
+apt-get install -y emacs vim js2-mode ufw rlwrap sysstat
 
 # install all upstart scripts
 cp upstart/* /etc/init

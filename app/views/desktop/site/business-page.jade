@@ -49,9 +49,9 @@
       .map
         a(target="_blank",href=page.getGoogleMapLink()) Google Map
       
-    -if( page.website )
+    -if( page.getWebsite() )
       .website.block
-        a(target="_blank", href=page.website)!= page.website
+        a(target="_blank", href=page.getWebsite())!= page.getWebsite()
         
     -if( page.service('facebook'))
       .facebook.block

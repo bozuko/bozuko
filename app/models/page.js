@@ -53,6 +53,13 @@ Page.index({admins: 1});
 Page.plugin(Services);
 Page.plugin(Coords);
 
+Page.method('getWebsite', function(){
+    var website = this.website;
+    website = website.replace(/^\s+/, '').replace(/\s.*/, '');
+    if( !website.length ) return '';
+    if( !website.match(/^http/) ) website = 'http://'+website;
+    return website;
+});
 
 Page.method('isAdmin', function(user, callback){
     callback( null, ~this.admins.indexOf(user._id) );

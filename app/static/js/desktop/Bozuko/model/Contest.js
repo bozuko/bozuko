@@ -98,6 +98,8 @@ Ext.define('Bozuko.model.Contest', {
                         type = 'Facebook Checkin';
                     }
                     break;
+                case '':
+                    return '';
                     
                 default:
                     throw '';
@@ -192,7 +194,9 @@ Ext.define('Bozuko.model.Contest', {
             total_entries = Number(this.get('total_entries')),
             gcd = this.getGCD(prize_total, total_entries);
         
-        return (prize_total/gcd)+' / '+(total_entries/gcd);
+        if( !this.get('total_entries') ) return '';
+        
+        return '1 in '+((total_entries/prize_total).toFixed(2));
     },
     
     getGCD : function(x,y) {
