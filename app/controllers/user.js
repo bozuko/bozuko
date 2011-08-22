@@ -161,6 +161,11 @@ exports.routes = {
                             res.render('app/user/facebook_auth_timeout');
                             return false;
                         }
+                        if (error.name === 'user/blocked') {
+                            res.locals.title = "Access Denied";
+                            res.render('app/user/blocked');
+                            return false;
+                        }
                     }
                     res.locals.title = ":'(";
                     res.render('app/user/permission_denied');
