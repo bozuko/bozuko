@@ -276,9 +276,26 @@ exports.routes = {
 
         get : {
             handler : function(req, res){
-                Bozuko.models.User.find({},{},{sort:{name:1},limit: 50}, function(error, users){
+                 // need to get all pages
+                var id = req.param('id'),
+                    selector = {},
+                    search = req.param('search'),
+                    start = req.param('start') || 0,
+                    limit = req.param('limit') || 25
+                    ;
+                
+                if( search ){
+                    selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
+                }
+                
+                Bozuko.models.User.find(selector,{},{sort:{name:1},limit: limit, skip: start}, function(error, users){
                     if( error ) return error.send( res );
-                    return res.send( {items: users} );
+                    // get the total
+                    return Bozuko.models.User.count(selector, function(error, total){
+                        if( error ) return error.send( res );
+                        return res.send( {items: users, total: total} );
+                    })
+                    
                 });
             }
         }
