@@ -123,6 +123,8 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                             }
 
                             return u.updateInternals( true, function(error){
+                                if (error) return error.send(res);
+
                                 req.session.userJustLoggedIn = true;
                                 req.session.user = u;
                                 
