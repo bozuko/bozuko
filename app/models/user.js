@@ -9,6 +9,8 @@ var mongoose = require('mongoose'),
     merge = Bozuko.require('util/object').merge
     ;
 
+var MIN_FRIENDS = 4;
+
 var User = module.exports = new Schema({
     name                :{type:String, index: true},
     phones              :[Phone],
@@ -19,6 +21,9 @@ var User = module.exports = new Schema({
     last_name           :{type:String, index: true},
     image               :{type:String},
     gender              :{type:String},
+    suspect             :{type:Boolean},
+    blocked             :{type:Boolean},
+    allowed             :{type:Boolean},
     email               :{type:String, index: true},
     sign_up_date        :{type:Date, default: Date.now},
     favorites           :[ObjectId],
@@ -129,8 +134,23 @@ User.method('updateInternals', function(force, callback){
         self.service('facebook').internal.friends = friends;
         self.service('facebook').internal.friend_count = friends.length;
         self.last_internal_update = new Date();
-        self.commit('services');
-        return self.save(callback);
+
+        // Block users with less than MIN_FRIENDS
+        if (self.service('facebook').internal.friend_count < MIN_FRIENDS && !self.allowed) {
+            self.blocked = true;
+        }
+        return self.save(function(err) {
+            if (err) {
+                console.error("Error saving user: "+self.name+" "+self._id);
+                return callback(err);
+            }
+            if (self.blocked && !self.allowed) {
+                console.error("Fraudulent user blocked: "+self.name+" "+self._id);
+                return callback(Bozuko.error('user/blocked'));
+            }
+
+            return callback(null);
+        });
     });
 });
 
