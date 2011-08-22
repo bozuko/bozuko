@@ -418,9 +418,10 @@ Ext.define('Bozuko.controller.Contests' ,{
         panel.doComponentLayout();
     },
     
-    onSaveFromBuilder : function(builder){
+    onSaveFromBuilder : function(builder, callback){
         
         var contestsPanel = builder.up('contestspanel'),
+            activeBuilder = contestsPanel.getLayout().getActiveItem(),
             pagePanel = contestsPanel.up('pagepanel'),
             btn = builder.down('button[ref=save]'),
             contestsView = contestsPanel .down('contestlist'),
@@ -436,6 +437,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 // close the builder and refresh the list
                 contestsPanel.getLayout().setActiveItem(0);
                 contestsView.store.load();
+                contestsPanel.remove( activeBuilder );
             },
             callback: function(){
                 pagePanel.successStatus('Contest Saved');
@@ -446,6 +448,59 @@ Ext.define('Bozuko.controller.Contests' ,{
     },
     
     onPublishFromBuilder : function(builder){
+        var contestsPanel = builder.up('contestspanel'),
+            activeBuilder = contestsPanel.getLayout().getActiveItem(),
+            pagePanel = contestsPanel.up('pagepanel'),
+            btn = builder.down('button[ref=save]'),
+            contestsView = contestsPanel .down('contestlist'),
+            isNew = !!builder.contest.get('_id');
+        
+        builder.contest.set('page_id', pagePanel.page.get('_id'));
+        
+        
+        Ext.Msg.confirm(
+            'Are you sure?',
+            'Are you sure you want to publish this campaign?',
+            function(answer){
+                if( answer != 'ok' && answer != 'yes' ) return;
+                btn.disable();
+                btn.setText('Saving...');
+                builder.contest.save({
+                    success : function(){
+                        contestsPanel.getLayout().setActiveItem(0);
+                        contestsPanel.remove(activeBuilder);
+                        
+                        var url = '/admin/contests/'+builder.contest.getId()+'/publish';
+                        contestsPanel.setLoading("Publishing... This may take a minute, please be patient");
+                        
+                        Ext.Ajax.request({
+                            url: url,
+                            timeout : 1000 * 60 * 5,
+                            method: 'post',
+                            callback : function(opts, success, response){
+                                contestsPanel.setLoading(false);
+                                if( !success ){
+                                    // alert?
+                                    alert('Publish request was unreadable');
+                                    return;
+                                }
+                                try{
+                                    var result = Ext.decode( response.responseText );
+                                    if( result && result.success){
+                                    }
+                                }catch(e){
+                                    
+                                }
+                                contestsPanel.down('contestlist').store.load();
+                            }
+                        });
+                    },
+                    callback: function(){
+                        pagePanel.successStatus('Contest Saved');
+                    }
+                });
+            }
+        );
         
     },
     
