@@ -205,7 +205,6 @@ exports.routes = {
                      * TODO - remove the active flag, we probably need another one
                      */
                     var selector = {
-                        active: true,
                         $or : [
                             {'services.name':'facebook', 'services.sid':{$in:ids}},
                             {admins: {$in: user.manages}}
