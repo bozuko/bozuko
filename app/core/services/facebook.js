@@ -123,7 +123,11 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                             }
 
                             return u.updateInternals( true, function(error){
-                                if (error) return error.send(res);
+                                if (error && failure) {
+                                    if( failure(Bozuko.error('user/blocked'), req, res) === false ){
+                                        return null;
+                                    }
+                                }
 
                                 req.session.userJustLoggedIn = true;
                                 req.session.user = u;
