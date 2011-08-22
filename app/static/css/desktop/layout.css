@@ -814,6 +814,7 @@ body {
   font-size: 12px;
 }
 .site-business-page .main-column .contests .contest img {
+  max-width: 85px;
   float: left;
   margin-right: 10px;
 }
