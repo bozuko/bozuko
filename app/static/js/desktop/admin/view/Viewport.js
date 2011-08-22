@@ -4,6 +4,7 @@ Ext.define('Admin.view.Viewport' ,{
     requires: [
         'Admin.view.admin.Dashboard',
         'Admin.view.page.List',
+        'Admin.view.user.List',
         'Ext.ux.tab.plugin.CloseMenu'
     ],
     
@@ -24,12 +25,18 @@ Ext.define('Admin.view.Viewport' ,{
                 text            :'Logout'
             }]
         },{
+            xtype           :'tabpanel',
+            activeTab       :0,
             region          :'west',
-            xtype           :'pagelist',
             split           :true,
             width           :250,
             margin          :'2 0 2 2',
-            collapsible     :true
+            collapsible     :true,
+            items :[{
+                xtype           :'pagelist'
+            },{
+                xtype           :'userlist'
+            }]
         },{
             xtype           :'tabpanel',
             region          :'center',
