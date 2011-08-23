@@ -20,7 +20,8 @@ Ext.define('Bozuko.model.User', {
         {name:'image',          type:'String'},
         {name:'entry_id',       type:'String'},
         {name:'blocked',        type:'Boolean'},
-        {name:'allowed',        type:'Boolean'}
+        {name:'allowed',        type:'Boolean'},
+        {name:'services',       type:'Array'}
     ]
 }, function(){
     this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);

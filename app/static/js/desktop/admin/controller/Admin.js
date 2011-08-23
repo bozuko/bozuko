@@ -21,6 +21,7 @@ Ext.define('Admin.controller.Admin' ,{
         {ref: 'userData', selector: 'userlist dataview'},
         {ref: 'pageSearch', selector: 'pagelist [ref=search]'},
         {ref: 'userSearch', selector: 'userlist [ref=search]'},
+        {ref: 'userFilter', selector: 'userlist [ref=filter]'},
         {ref: 'pageInactiveBtn', selector: 'pagelist [ref=inactive]'},
         {ref: 'pagePagingToolbar', selector: 'pagelist pagingtoolbar'},
         {ref: 'tabPanel', selector: 'viewport tabpanel[region=center]'},
@@ -59,6 +60,11 @@ Ext.define('Admin.controller.Admin' ,{
                 change: Ext.Function.createBuffered( function(){
                     me.getUsersStore().load();
                 }, 250)
+            },
+            'userlist [ref=filter]':{
+                change: function(){
+                    me.getUsersStore().load();
+                }
             },
             'pagelist [ref=inactive]':{
                 toggle : function(){
@@ -113,20 +119,26 @@ Ext.define('Admin.controller.Admin' ,{
     onBeforeLoadUsers : function(store, operation){
         var me = this,
             searchField = me.getUserSearch(),
-            search = searchField.getValue()
+            search = searchField.getValue(),
+            filterField = me.getUserFilter()
             ;
         
+        var filter = filterField.getActiveItem().value;
+            
         if( !operation.params ) operation.params = {};
+        
+        operation.params.user_filter = filter;
         
         if( search ){
             operation.params['search'] = search;
         }
-        if( search != this.lastUserSearch ){
+        if( search != this.lastUserSearch || filter != this.lastUserFilter ){
             operation.start = 0;
             operation.page = 1;
             store.currentPage = 1;
         }
         
+        this.lastUserFilter = filter;
         this.lastUserSearch = search;
         
     },
