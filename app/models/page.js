@@ -270,11 +270,10 @@ Page.method('canUserCheckin', function(user, callback){
                 }
                 
                 // get time they could have started moving...
-                var duration = Date.now()
-                    -( +checkin.timestamp +Bozuko.cfg('checkin.duration.page', DateUtil.MINUTE * 15 ) );
+                var start = +checkin.timestamp +Bozuko.cfg('checkin.duration.page', DateUtil.MINUTE * 15 );
                     
                 
-                var hours = duration / DateUtil.HOUR,
+                var hours = (Date.now()-start) / DateUtil.HOUR,
                     // allowed distance in miles
                     allowed_distance = hours * Bozuko.cfg('checkin.travel.speed', 60),
                     // total distance between places
