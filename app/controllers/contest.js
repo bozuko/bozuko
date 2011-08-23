@@ -322,23 +322,34 @@ exports.routes = {
 
                         return result.contest.loadTransferObject( req.session.user, function(error){
                             if( error ) return error.send(res);
-                            // lets log what we are sending...
-                            Bozuko.publish('contest/result', {
-                                user: req.session.user.name,
-                                contest: contest.name,
-                                result: result
-                            });
+                            
                             if( result.prize ){
                                 return result.prize.loadTransferObject(function(error, prize){
                                     if( error ) return error.send(res);
                                     result.prize = prize;
                                     return Bozuko.transfer('game_result', result, req.session.user, function(error, result){
+                                        
+                                        // lets log what we are sending...
+                                        Bozuko.publish('contest/result', {
+                                            user: req.session.user.name,
+                                            contest: contest.name,
+                                            result: result
+                                        });
+                                        
                                         return res.send( error || result );
                                     });
                                 });
                             }
 
                             return Bozuko.transfer('game_result', result, req.session.user, function(error, result){
+                                
+                                // lets log what we are sending...
+                                Bozuko.publish('contest/result', {
+                                    user: req.session.user.name,
+                                    contest: contest.name,
+                                    result: result
+                                });
+                                
                                 return res.send( error || result );
                             });
                         });
