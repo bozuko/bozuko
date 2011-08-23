@@ -26,7 +26,9 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                 trackOver       :true,
                 overItemCls     :'x-dataview-item-over',
                 
-                cls             :'select-list entry-list',
+                itemSelector    :'.entry-method',
+                
+                cls             :'select-list2 entry-list',
                 
                 emptyText       :'No Entry Methods',
                 deferEmptyText  :false,
@@ -34,14 +36,16 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                 singleSelect    :true,
                 
                 tpl             :new Ext.XTemplate(
-                    '<div class="entry-methods">',
-                        '<div class="entry-method">',
-                            '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
-                            '<div class="title">{title}</div>',
-                            '<img src="{img}" />',
-                        '</div>',
+                    '<div class="entry-methods list-items">',
+                        '<tpl for=".">',
+                            '<div class="entry-method x-dataview-item">',
+                                '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
+                                '<img src="{img}" />',
+                                '<div class="title">{title}</div>',
+                            '</div>',
+                        '</tpl>',
                     '</div>',
-                    '<div class="entry-description"></div>'
+                    '<div class="entry-description selection-description"></div>'
                 ),
                 
                 store : Ext.create('Ext.data.Store', {
@@ -49,7 +53,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                     data : [{
                         type: 'facebook/checkin',
                         title: 'Facebook Check in',
-                        img:'/images/desktop/app/builder/entry/facebook-checkin.png',
+                        img:'/images/desktop/app/builder/entry/facebook-checkin-fit.png',
                         description: [
                             "<p>A user must check in to your establishment. Check in wall ",
                             "posts will feature your logo and provide a high level of visibility.</p>"
@@ -61,7 +65,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                     },{
                         type: 'facebook/like',
                         title: 'Facebook Like',
-                        img:'/images/desktop/app/builder/entry/facebook-like.png',
+                        img:'/images/desktop/app/builder/entry/facebook-like-fit.png',
                         description: [
                             "<p>A user must like your Facebook Page in order to play the game. ",
                             "A Like button will be presented to the user when they are viewing the game description page.</p>"
@@ -69,7 +73,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                     },{
                         type: 'bozuko/checkin',
                         title: 'Bozuko Check in',
-                        img:'/images/desktop/app/builder/entry/bozuko-checkin.png',
+                        img:'/images/desktop/app/builder/entry/bozuko-checkin-fit.png',
                         description: [
                             "<p>A user must be at your location to play the game. ",
                             "When they enter the game, nothing will be posted to their facebook wall.</p>"
@@ -77,7 +81,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                     },{
                         type: 'bozuko/nothing',
                         title: 'No Requirement',
-                        img:'/images/desktop/app/builder/entry/bozuko-play.png',
+                        img:'/images/desktop/app/builder/entry/bozuko-play-fit.png',
                         description: [
                             "<p>No requirement to play the game aside from logging into Bozuko with a Facebook Account.</p>"
                         ].join('')

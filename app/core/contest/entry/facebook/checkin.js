@@ -199,10 +199,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                         
             if(!self.can_checkin && !self.hasCheckedIn()){
                 
-                return self.page.getNextCheckinTime( self.user, function(error, next_time){
-                    if( error ) return callback( error );
-                    return callback( Bozuko.error('checkin/too_many_attempts_per_user', {next_time: next_time}) );
-                });
+                return callback( self.can_checkin_error );
             }
 
             return callback( Bozuko.error('contest/invalid_entry') );
@@ -256,6 +253,7 @@ FacebookCheckinMethod.prototype._load = function( callback ){
     return self.page.canUserCheckin( self.user, function(error, flag, checkin, error2){
         if( error ) return callback( error );
         self.can_checkin = flag;
+		self.can_checkin_error = error2;
         
         var date = new Date(
             Date.now() - Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4)
