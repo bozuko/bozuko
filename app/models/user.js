@@ -45,6 +45,10 @@ User.pre('save', function(next) {
     return next();
 });
 
+User.method('isBlocked', function(){
+    return this.blocked && !this.allowed;
+});
+
 User.method('canManage', function(page, callback){
     var self = this;
     if( typeof page === 'object' && page.isAdmin && typeof page.isAdmin === 'function' ){
