@@ -125,6 +125,10 @@ auth.mobile = function(req, res, callback) {
     if( !user ){
         return callback(Bozuko.error('auth/user'));
     }
+    if( user.isBlocked() ){
+        // check to see if this user is blocked.
+        return callback(Bozuko.error('user/blocked'));
+    }
 
     async.series([
 

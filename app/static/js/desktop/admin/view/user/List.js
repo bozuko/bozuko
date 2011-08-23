@@ -37,7 +37,9 @@ Ext.define('Admin.view.user.List' ,{
                     '<img src="{[this.getImage(values.image)]}" />',
                     '<span class="title">{name}</span>',
                     '<div class="sub">',
-                        'Friend Count: {[this.getFriendCount(values)]}',
+                        'Friend Count: {[this.getFriendCount(values)]}<br />',
+                        '<tpl if="blocked==true"><span style="color: red;">Blocked</span></tpl>',
+                        '<tpl if="blocked!=true"><span style="color: green;">Allowed</span></tpl>',
                     '</div>',
                 '</div>',
                 {
@@ -96,7 +98,8 @@ Ext.define('Admin.view.user.List' ,{
         },{
             dock: 'bottom',
             xtype: 'pagingtoolbar',
-            store: me.store
+            store: me.store,
+            displayInfo: true
         }]
         me.callParent();
     }

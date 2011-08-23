@@ -19,8 +19,8 @@ Ext.define('Bozuko.model.User', {
         {name:'email',          type:'String'},
         {name:'image',          type:'String'},
         {name:'entry_id',       type:'String'},
-        {name:'blocked',        type:'Boolean'},
-        {name:'allowed',        type:'Boolean'},
+        {name:'blocked',        type:'Boolean',     defaultValue: false},
+        {name:'allowed',        type:'Boolean',     defaultValue: false},
         {name:'services',       type:'Array'}
     ]
 }, function(){

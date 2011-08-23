@@ -1,3 +1,5 @@
+var DateUtil = require('../app/util/date');
+
 var port = 6999 + process.getuid();
 
 // Reserve the docs port for our contractors.
@@ -77,12 +79,18 @@ module.exports = {
     },
 
     checkin: {
-        duration: {
+        
+		duration: {
             // 15 minutes between any checkins per user
-            user: 0,
+            user: DateUtil.SECOND * 30,
             // 4 hours between checkins at the same place
-            page: 0
+            page: DateUtil.SECOND * 10
         },
+		
+		travel : {
+			speed: 60, /* mph */
+			reset: DateUtil.HOUR * 10
+		},
 
         distance : 1000 /* feet */
     },
