@@ -270,7 +270,7 @@ Page.method('canUserCheckin', function(user, callback){
                 }
                 
                 // get time they could have started moving...
-                var start = +checkin.timestamp +Bozuko.cfg('checkin.duration.page', DateUtil.MINUTE * 15 );
+                var start = +checkin.timestamp +Bozuko.cfg('checkin.duration.user', DateUtil.MINUTE * 15 );
                     
                 
                 var hours = (Date.now()-start) / DateUtil.HOUR,
@@ -280,7 +280,7 @@ Page.method('canUserCheckin', function(user, callback){
                     distance = Geo.distance(self.coords, checkin.coords, 'mi');
                     ;
                     
-                console.error( [start, hours, allowed_distance, distance].join(',') );
+                // console.error( [start, hours, allowed_distance, distance].join(',') );
                 
                 if( distance > allowed_distance ){
                     // how much longer?
