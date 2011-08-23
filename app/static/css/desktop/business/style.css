@@ -607,6 +607,44 @@ fieldset .x-fieldset-header {
   border-radius: 4px;
   background-clip: padding-box;
 }
+.contest-builder .select-list2 .list-items {
+  padding-left: 4px;
+  position: relative;
+  z-index: 2;
+  top: 1px;
+}
+.contest-builder .select-list2 .x-dataview-item {
+  cursor: pointer;
+  float: left;
+  padding: 10px 0px 4px;
+  margin-right: 4px;
+  background: #d8d8d8;
+  border: 1px solid #ccc;
+  border-bottom-width: 0;
+  text-align: center;
+  width: 90px;
+  min-height: 110px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 8px 8px 0 0;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+  background-clip: padding-box;
+}
+.contest-builder .select-list2 .x-dataview-item .title {
+  font-weight: bold;
+  margin: 4px;
+}
+.contest-builder .select-list2 .x-item-selected {
+  background: #fff;
+  border-color: #ccc;
+}
+.contest-builder .select-list2 .selection-description {
+  clear: both;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
 .contest-builder .select-list .x-dataview-item {
   background: #ddd;
   border: 2px solid #ccc;
