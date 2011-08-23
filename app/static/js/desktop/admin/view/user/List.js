@@ -53,9 +53,32 @@ Ext.define('Admin.view.user.List' ,{
             items: [{
                 xtype : 'textfield',
                 ref: 'search',
+                width: 100,
                 emptyText: 'Search...',
                 inputType: 'search',
                 enableKeyEvents: true
+            },'->',{
+                xtype : 'cycle',
+                prependText: 'View ',
+                showText: true,
+                text: '',
+                forceIcon: false,
+                menu: {
+                    items : [{
+                        text : 'All',
+                        checked: true,
+                        value: 'all'
+                    },{
+                        text : 'Blocked',
+                        value: 'blocked'
+                    },{
+                        text : 'Allowed',
+                        value: 'allowed'
+                    },{
+                        text : '< 10 Friends',
+                        value: 'losers'
+                    }]
+                }
             }]
         },{
             dock: 'bottom',

@@ -28,6 +28,12 @@ module.exports = function session(){
                 if( u ){
                     req.session.user = u;
                 }
+                
+                // check to see if this user is blocked.
+                if( u.isBlocked() ){
+                    return Bozuko.error('user/blocked').send(res);
+                }
+                
                 return next();
             });
         }
@@ -36,6 +42,12 @@ module.exports = function session(){
             // we should really grab this from the db... i think this is what is screwing up our user...
             return Bozuko.models.User.findById(req.session.user._id, function(error, user){
                 req.session.user = user;
+                
+                // check to see if this user is blocked.
+                if( user.isBlocked() ){
+                    return Bozuko.error('user/blocked').send(res);
+                }
+                
                 return next();
             });
         }

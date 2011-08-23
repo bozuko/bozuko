@@ -8,8 +8,7 @@ Ext.define('Admin.controller.Admin' ,{
     ],
     
     stores: [
-        'Bozuko.store.Places',
-        'Bozuko.store.Users'
+        'Bozuko.store.Places'
     ],
     
     models: [
@@ -19,14 +18,20 @@ Ext.define('Admin.controller.Admin' ,{
     
     refs : [
         {ref: 'pageData', selector: 'pagelist dataview'},
+        {ref: 'userData', selector: 'userlist dataview'},
         {ref: 'pageSearch', selector: 'pagelist [ref=search]'},
+        {ref: 'userSearch', selector: 'userlist [ref=search]'},
         {ref: 'pageInactiveBtn', selector: 'pagelist [ref=inactive]'},
         {ref: 'pagePagingToolbar', selector: 'pagelist pagingtoolbar'},
-        {ref: 'tabPanel', selector: 'viewport tabpanel'},
+        {ref: 'tabPanel', selector: 'viewport tabpanel[region=center]'},
     ],
     
     getPagesStore : function(){
         return this.getPageData().store;
+    },
+    
+    getUsersStore : function(){
+        return this.getUserData().store;
     },
     
     init : function(){
@@ -50,6 +55,11 @@ Ext.define('Admin.controller.Admin' ,{
                     me.getPagesStore().load();
                 }, 250)
             },
+            'userlist [ref=search]':{
+                change: Ext.Function.createBuffered( function(){
+                    me.getUsersStore().load();
+                }, 250)
+            },
             'pagelist [ref=inactive]':{
                 toggle : function(){
                     me.getPagesStore().load();
@@ -62,15 +72,14 @@ Ext.define('Admin.controller.Admin' ,{
         
         var me = this,
             store = this.getPagesStore(),
+            userStore = this.getUsersStore(),
             pagingToolbar = this.getPagePagingToolbar(),
             dataview = this.getPageData();
             
         dataview.bindStore( store );
         pagingToolbar.bindStore( store );
         store.on('beforeload', me.onBeforeLoadPages, me);
-        store.on('update', function(s, r){
-            var id = r.get('_id');
-        });
+        userStore.on('beforeload', me.onBeforeLoadUsers, me);
     },
     
     onBeforeLoadPages : function(store, operation){
@@ -98,6 +107,27 @@ Ext.define('Admin.controller.Admin' ,{
         
         this.lastSearch = search;
         this.showInactive = showInactive;
+        
+    },
+    
+    onBeforeLoadUsers : function(store, operation){
+        var me = this,
+            searchField = me.getUserSearch(),
+            search = searchField.getValue()
+            ;
+        
+        if( !operation.params ) operation.params = {};
+        
+        if( search ){
+            operation.params['search'] = search;
+        }
+        if( search != this.lastUserSearch ){
+            operation.start = 0;
+            operation.page = 1;
+            store.currentPage = 1;
+        }
+        
+        this.lastUserSearch = search;
         
     },
     

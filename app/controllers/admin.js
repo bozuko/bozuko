@@ -294,8 +294,7 @@ exports.routes = {
                     return Bozuko.models.User.count(selector, function(error, total){
                         if( error ) return error.send( res );
                         return res.send( {items: users, total: total} );
-                    })
-                    
+                    });
                 });
             }
         }
