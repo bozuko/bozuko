@@ -290,6 +290,10 @@ exports.routes = {
                 }
                 switch( user_filter ){
                     case 'blocked':
+                        selector.$or = [
+                            {allowed: false},
+                            {allowed: {$exists: false}}
+                        ];
                         selector.blocked = true;
                         break;
                     case 'allowed':
