@@ -280,6 +280,8 @@ Page.method('canUserCheckin', function(user, callback){
                     // total distance between places
                     distance = Geo.distance(self.coords, checkin.coords, 'mi');
                     ;
+                    
+                console.error( [hours, allowed_distance, distance].join(',') );
                 
                 if( distance > allowed_distance ){
                     // how much longer?
