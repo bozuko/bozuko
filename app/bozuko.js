@@ -55,17 +55,18 @@ Bozuko.getConfig = function(){
 Bozuko.config = Bozuko.getConfig();
 
 Bozuko.getConfigValue = function(key, defaultValue){
-	var parts = key.split('.');
+	
 	var getValue = function( keys, obj ){
 		if(keys.length > 1){
 			var key = keys.shift();
-			if( typeof obj[key] === undefined ) return defaultValue;
+			if( typeof obj[key] === 'undefined' ) return defaultValue;
 			return getValue(keys, obj[key]);
 		}
-		if( obj[keys[0]] === undefined ) return defaultValue;
+		if( obj[keys[0]] === 'undefined' ) return defaultValue;
 		return obj[keys[0]];
 	};
-	return getValue( parts, Bozuko.getConfig());
+	
+	return getValue( key.split('.'), Bozuko.getConfig());
 };
 
 Bozuko.cfg = Bozuko.getConfigValue;

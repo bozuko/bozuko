@@ -52,6 +52,15 @@ module.exports = {
                 "Please try going back to the Nearby list and pulling down to refresh your location.";
         },
         detail: "User is too far away to checkin to this location."
+    },
+    
+    too_far_too_soon : {
+        code: 403,
+        title: "Too far, too soon!",
+        message: function(){
+            return "You are moving too quickly between locations. Please slow down or wait for a bit.";
+        },
+        detail: "User is moving too far too quickly."
     }
 
 };

@@ -323,6 +323,37 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/users/:id/block' : {
+        post : {
+            handler : function(req, res){
+                var id = req.param('id');
+                Bozuko.models.User.findOne({_id:id}, function(error, user){
+                    if( error ) return error.send( res );
+                    user.allowed = false;
+                    user.blocked = true;
+                    return user.save(function(error){
+                        if( error ) return error.send(res);
+                        return res.send({success:true});
+                    });
+                });
+            }
+        },
+        del : {
+            handler : function(req, res){
+                var id = req.param('id');
+                Bozuko.models.User.findOne({_id:id}, function(error, user){
+                    if( error ) return error.send( res );
+                    user.blocked = false;
+                    user.allowed = true;
+                    return user.save(function(error){
+                        if( error ) return error.send(res);
+                        return res.send({success:true});
+                    });
+                });
+            }
+        }
+    },
 
     '/admin/addpage':{
 

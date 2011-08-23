@@ -52,7 +52,6 @@ Checkin.static('process', function(options, callback){
                 if( error ) return callback( error );
                 return callback( null, checkin );
             });
-
         });
     }
     else{

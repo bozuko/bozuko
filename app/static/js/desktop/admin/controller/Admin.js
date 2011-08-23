@@ -56,6 +56,9 @@ Ext.define('Admin.controller.Admin' ,{
                     me.getPagesStore().load();
                 }, 250)
             },
+            'userlist dataview' : {
+                itemcontextmenu: this.onUserContextMenu
+            },
             'userlist [ref=search]':{
                 change: Ext.Function.createBuffered( function(){
                     me.getUsersStore().load();
@@ -141,6 +144,67 @@ Ext.define('Admin.controller.Admin' ,{
         this.lastUserFilter = filter;
         this.lastUserSearch = search;
         
+    },
+    
+    onUserContextMenu : function(view, record, item, index, event){
+        var me = this;
+        event.preventDefault();
+        if( !me.userMenu ){
+            me.menu = Ext.create('Ext.menu.Menu', {
+                items: [{
+                    text: 'Block',
+                    ref:'block',
+                    icon: "/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-cross-16.png",
+                    handler: me.blockUser,
+                    scope: me
+                },{
+                    text: 'Allow',
+                    ref:'allow',
+                    icon: "/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-check-16.png",
+                    handler: me.allowUser,
+                    scope: me
+                }]
+            });
+        }
+        me.menu.setTitle(record.get('name'));
+        me.contextUser = record;
+        if( record.get('blocked') ){
+            me.menu.down('[ref=allow]').show();
+            me.menu.down('[ref=block]').hide();
+        }
+        else{
+            me.menu.down('[ref=block]').show();
+            me.menu.down('[ref=allow]').hide();
+        }
+        me.menu.showAt(event.getXY());
+    },
+    
+    blockUser : function(){
+        var me = this;
+        
+        if( !me.contextUser ) return;
+        var url = '/admin/users/'+me.contextUser.get('_id')+'/block';
+        Ext.Ajax.request({
+            url: url,
+            method: 'post',
+            success: function( response ){
+                me.getUsersStore().load();
+            }
+        });
+    },
+    
+    allowUser : function(){
+        var me = this;
+        
+        if( !me.contextUser ) return;
+        var url = '/admin/users/'+me.contextUser.get('_id')+'/block';
+        Ext.Ajax.request({
+            url: url,
+            method: 'DELETE',
+            success: function( response ){
+                me.getUsersStore().load();
+            }
+        });
     },
     
     addPage : function(){
