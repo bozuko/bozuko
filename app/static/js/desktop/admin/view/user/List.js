@@ -36,6 +36,9 @@ Ext.define('Admin.view.user.List' ,{
                 '<div class="user-{[values.blocked&&!values.allowed?"blocked":"allowed"]}">',
                     '<img src="{[this.getImage(values.image)]}" />',
                     '<span class="title">{name}</span>',
+                    '<div class="sub">',
+                        'Friend Count: {[this.getFriendCount(values)]}',
+                    '</div>',
                 '</div>',
                 {
                     getImage: function(image){
@@ -43,6 +46,17 @@ Ext.define('Admin.view.user.List' ,{
                             image = image.replace(/type=large/, 'type=square');
                         }
                         return image;
+                    },
+                    getFriendCount: function(values){
+                        var count = 0;
+                        Ext.Array.each( values.services, function(service){
+                            if( service.name == 'facebook' ){
+                                count = service.internal.friend_count;
+                                return false;
+                            }
+                            return true;
+                        });
+                        return count;
                     }
                 }
             )
@@ -59,13 +73,12 @@ Ext.define('Admin.view.user.List' ,{
                 enableKeyEvents: true
             },'->',{
                 xtype : 'cycle',
-                prependText: 'View ',
                 showText: true,
-                text: '',
-                forceIcon: false,
+                cls: 'x-btn-text',
+                ref: 'filter',
                 menu: {
                     items : [{
-                        text : 'All',
+                        text : 'All Users',
                         checked: true,
                         value: 'all'
                     },{
