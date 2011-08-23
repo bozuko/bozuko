@@ -38,7 +38,7 @@ Ext.define('Admin.view.user.List' ,{
                     '<span class="title">{name}</span>',
                     '<div class="sub">',
                         'Friend Count: {[this.getFriendCount(values)]}<br />',
-                        '<tpl if="blocked==true"><span style="color: red;">Blocked</span></tpl>',
+                        '<tpl if="blocked == true && allowed != true"><span style="color: red;">Blocked</span></tpl>',
                         '<tpl if="blocked!=true"><span style="color: green;">Allowed</span></tpl>',
                     '</div>',
                 '</div>',
