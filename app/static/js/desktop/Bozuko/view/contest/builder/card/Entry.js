@@ -4,7 +4,8 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
     alias           :'widget.contestbuilderentry',
     
     requires        :[
-        'Bozuko.view.contest.builder.Card'
+        'Bozuko.view.contest.builder.Card',
+        'Bozuko.lib.form.field.Duration'
     ],
     name            :"Entry Method",
     overview        :[
@@ -100,6 +101,17 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                         return false;
                     }
                 }
+            },{
+                xtype               :'duration',
+                name                :'entry_config.duration',
+                fieldLabel          :'Users can play every',
+                emptyText           :'Please enter a number',
+                helpLabel           :'Play Frequency',
+                helpText            :[
+                    '<p>This is how often you will allow a user to play your game. The more frequent, the faster ',
+                    'your contest will go.',
+                    '</p>'
+                ]
             }]
         });
         
@@ -108,7 +120,14 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
     },
     
     loadContest : function(){
-        // will do as part of the refresh
+        var me = this,
+            values = {},
+            cfg = me.contest.getEntryConfig(true);
+            
+        for(var i in cfg){
+            values['entry_config.'+i] = cfg[i];
+        }
+        me.form.getForm().setValues(values);
     },
     
     loadEntry : function(){
@@ -161,16 +180,16 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
     
     updateRecord : function(){
         var me = this,
+            values = me.getValues(),
             selections = me.dataview.getSelectionModel().getSelection(),
-            config = me.contest.get('entry_config');
+            config = me.contest.getEntryConfig(true);
         
-        if( !config || !config.length ) config = [{}];
         if( !selections.length ){
-            config[0].type = '';
+            config.type = '';
         }
         else{
-            config[0].type = selections[0].get('type');
-            config[0].options = {};
+            config.type = selections[0].get('type');
+            config.options = {};
             
             var node = me.dataview.getNode( selections[0] ),
                 options = Ext.fly(node).select('input');
@@ -184,12 +203,11 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                 else{
                     value = opt.getValue();
                 }
-                config[0].options[opt.getAttribute('name')] = value;
+                config.options[opt.getAttribute('name')] = value;
             });
-            
-            
         }
-        me.contest.set('entry_config', config);
+        Ext.apply( config, values.entry_config );
+        me.contest.set('entry_config',[config]);
     },
     
     onSelectionChange : function(view, selections){

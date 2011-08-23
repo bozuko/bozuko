@@ -284,7 +284,7 @@ Page.method('canUserCheckin', function(user, callback){
                 if( distance > allowed_distance ){
                     // how much longer?
                     var time = distance / Bozuko.cfg('checkin.travel.speed', 60) * DateUtil.HOUR;
-                    console.error('User can check in here '+DateUtil.inAgo( new Date(Date.now()+time)) );
+                    console.error('User can check in here '+DateUtil.inAgo( new Date(+checkin.timestamp+time)) );
                     
                     return callback( null, false, checkin, Bozuko.error('checkin/too_far_too_soon') );
                 }
