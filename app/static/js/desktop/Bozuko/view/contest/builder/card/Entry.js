@@ -33,16 +33,15 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                 
                 singleSelect    :true,
                 
-                itemTpl         :new Ext.XTemplate(
-                    '<div class="entry-method">',
-                        '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
-                        '<img src="{img}" />',
-                        '<div class="entry-method-body">',
+                tpl             :new Ext.XTemplate(
+                    '<div class="entry-methods">',
+                        '<div class="entry-method">',
+                            '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
                             '<div class="title">{title}</div>',
-                            '<div class="description">{description}</div>',
-                            '<div class="options">{options}</div>',
+                            '<img src="{img}" />',
                         '</div>',
-                    '</div>'
+                    '</div>',
+                    '<div class="entry-description"></div>'
                 ),
                 
                 store : Ext.create('Ext.data.Store', {
@@ -191,13 +190,16 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
     
     onSelectionChange : function(view, selections){
         var me = this;
-        
+        /*
         me.dataview.getEl().select('.options').setStyle('display', 'none');
         if( selections.length ){
             var node = me.dataview.getNode( selections[0] );
             Ext.fly(node).down('.options').setStyle('display', 'block');
         }
-        
+        */
+        if( selections.length ){
+            me.dataview.getEl().down('.entry-description').update(selections[0].get('description'));
+        }
         me.updateRecord();
     }
 });
