@@ -611,22 +611,24 @@ fieldset .x-fieldset-header {
   margin-bottom: 10px;
 }
 .contest-builder .select-list2 .list-items {
-  padding-left: 4px;
+  text-align: center;
   position: relative;
   z-index: 2;
   top: 1px;
+  vertical-align: bottom;
 }
 .contest-builder .select-list2 .x-dataview-item {
   cursor: pointer;
-  float: left;
-  padding: 10px 0px 4px;
+  display: inline-block;
+  padding: 10px 4px 4px;
   margin-right: 4px;
   background: #d8d8d8;
   border: 1px solid #ccc;
   border-bottom-width: 0;
+  vertical-align: bottom;
   text-align: center;
-  width: 90px;
-  min-height: 110px;
+  width: 98px;
+  min-height: 120px;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 8px 8px 0 0;
   -moz-background-clip: padding-box;
@@ -647,6 +649,9 @@ fieldset .x-fieldset-header {
   background: #fff;
   border: 1px solid #ccc;
   padding: 10px;
+}
+.contest-builder .select-list2 .game {
+  width: 120px;
 }
 .contest-builder .select-list .x-dataview-item {
   background: #ddd;
