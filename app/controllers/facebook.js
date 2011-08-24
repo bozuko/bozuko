@@ -214,7 +214,6 @@ exports.routes = {
                                 return cb();
                             });
                         }, function(error){
-                            console.error(error);
                             return res.send({});
                         });
 
