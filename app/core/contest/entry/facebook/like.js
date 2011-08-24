@@ -129,7 +129,7 @@ FacebookLikeMethod.prototype.process = function( callback ){
         if( error ) return callback( error );
         // this might be a share...
         // we only count one "like" per person, so just their first one.
-        return Bozuko.models.Share.count({user_id: self.user.id, service:'facebook', type:'like'}, function(error, count){
+        return Bozuko.models.Share.count({page_id: self.contest.page_id, user_id: self.user.id, service:'facebook', type:'like'}, function(error, count){
             if( error ) return callback( error );
             if( count ) return callback( null, entry );
             var share = new Bozuko.models.Share({
