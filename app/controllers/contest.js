@@ -336,12 +336,26 @@ exports.routes = {
                                             result: result
                                         });
                                         
+                                        console.log( {
+                                            user: req.session.user.name,
+                                            contest: contest.name,
+                                            result: result,
+                                            game_result: result.result
+                                        });
+                                        
                                         return res.send( error || result );
                                     });
                                 });
                             }
 
                             return Bozuko.transfer('game_result', result, req.session.user, function(error, result){
+                                
+                                console.log( {
+                                    user: req.session.user.name,
+                                    contest: contest.name,
+                                    result: result,
+                                    game_result: result.result
+                                });
                                 
                                 // lets log what we are sending...
                                 Bozuko.publish('contest/result', {
