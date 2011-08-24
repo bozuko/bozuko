@@ -137,6 +137,7 @@ User.method('updateInternals', function(force, callback){
         self.service('facebook').internal.likes = likes;
         self.service('facebook').internal.friends = friends;
         self.service('facebook').internal.friend_count = friends.length;
+        self.service('facebook').commit('internal');
         self.last_internal_update = new Date();
 
         // Block users with less than MIN_FRIENDS
