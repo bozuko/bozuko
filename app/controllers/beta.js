@@ -588,7 +588,7 @@ exports.routes = {
                 }
                 
                 var model = req.param('model') || 'Entry';
-                if( !~['Prize','Redeemed Prizes','Entry','Play','Share'].indexOf(model) ) throw "Invalid model";
+                if( !~['Prize','Redeemed Prizes','Entry','Play','Share','Likes','Checkins'].indexOf(model) ) throw "Invalid model";
                 
                 options = {
                     timezoneOffset: tzOffset,
@@ -604,6 +604,16 @@ exports.routes = {
                 }
                 else if(model == 'Share'){
                     options.countField = 'visibility';
+                }
+                else if( model == 'Likes'){
+                    options.model = 'Share';
+                    query.service = 'facebook';
+                    query.type = 'like';
+                }
+                else if( model == 'Checkins'){
+                    options.model = 'Share';
+                    query.service = 'facebook';
+                    query.type = 'checkin';
                 }
                 
                 return Report.run('counts', options, function(error, results){

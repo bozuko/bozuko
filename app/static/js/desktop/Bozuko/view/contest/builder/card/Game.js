@@ -20,22 +20,25 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 trackOver       :true,
                 overItemCls     :'x-dataview-item-over',
                 
-                cls             :'select-list game-list',
+                cls             :'select-list2 game-list',
                 
                 emptyText       :'No Games',
                 deferEmptyText  :false,
                 
                 singleSelect    :true,
+                itemSelector    :'.x-dataview-item',
                 
-                itemTpl         :new Ext.XTemplate(
-                    '<div class="game">',
-                        '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
-                        '<img src="{img}" />',
-                        '<div class="game-body">',
-                            '<div class="title">{title}</div>',
-                            '<div class="description">{description}</div>',
-                        '</div>',
-                    '</div>'
+                tpl             :new Ext.XTemplate(
+                    '<div class="games list-items">',
+                        '<tpl for=".">',
+                            '<div class="game x-dataview-item">',
+                                '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
+                                '<img src="{img}" />',
+                                '<div class="title">{title}</div>',
+                            '</div>',
+                        '</tpl>',
+                    '</div>',
+                    '<div class="entry-description selection-description"></div>'
                 ),
                 
                 store : Ext.create('Ext.data.Store', {
