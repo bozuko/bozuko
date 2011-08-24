@@ -26,7 +26,7 @@ var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
     name                    :{type:String},
     engine_type             :{type:String, default:'order'},
-    engine_mode             :{type:String, default:'odds'},
+    engine_options          :{},
     plays                   :[Play],
     game                    :{type:String},
     game_config             :{},
@@ -284,7 +284,7 @@ Contest.method('generateResults', function(callback){
     var self = this;
 
     var prof = new Profiler('/models/contest/generateResults');
-    self.getEngine().generateResults(this);
+    self.getEngine().generateResults();
     prof.stop();
     this.save(function(error){
         if( error ) return callback(error);
@@ -385,7 +385,9 @@ Contest.method('publish', function(callback){
         prize.redeemed = 0;
     });
 
-    if( this.engine_mode == 'odds' ) this.total_entries = Math.ceil(total_prizes * this.win_frequency);
+    if( !this.engine_options || !this.engine_options.mode || this.engine_options.mode == 'odds' ) {
+        this.total_entries = Math.ceil(total_prizes * this.win_frequency);
+    }
     this.active = true;
     this.generateResults( function(error, results){
         if( error ) return callback(error);
