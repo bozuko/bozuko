@@ -165,64 +165,81 @@ exports.routes = {
             }
         }
     },
-
-    '/admin/stats/play' : {
-
-        alias: '/admin/playstats',
-
-        get : {
-
-            title: 'Play Stats',
-            locals:{
-                layout: false
-            },
-
-            handler: function(req,res){
-                Bozuko.models.User.find({name:/(bozuko|fabrizio)/ig}, {_id:1}, function(error, users){
-                    var ids = [];
-                    users.forEach(function(user){ ids.push(user._id); });
-                    Bozuko.models.Play.count({user_id: {$nin: ids}}, function(error, outside_count){
-                        Bozuko.models.Play.count({user_id: {$in: ids}}, function(error, inside_count){
-                            res.contentType = 'text/plain';
-                            res.write([
-                                'Outside Bozuko Plays:  '+outside_count,
-                                'Inside Bozuko Plays:   '+inside_count,
-                            ].join('\n'));
-                            res.end();
+    
+    '/admin/fix/like/shares' : {
+        get: {
+            handler : function( req, res ){
+                console.log('/admin/fix/like/shares enter');
+                // go through each contest...
+                var shares = [];
+                Bozuko.models.Page.find({}, {_id:1,active:1,name:1}, function(error, pages){
+                    console.log('/admin/fix/like/shares after Page.find');
+                    if( error ) res.send(error);
+                    async.forEach( pages, function iterate(page, callback){
+                        console.log('iterating over page '+page._id);
+                        
+                        // get distinct users
+                        return Bozuko.models.Entry.collection.distinct(
+                            
+                            'user_id',
+                            {type:'facebook/like', page_id:page._id},
+                            
+                            function(error, user_ids){
+                                if( error ) return callback(error);
+                                
+                                // for each user
+                                return async.forEach( user_ids, function iterate(user_id, cb){
+                                    
+                                    
+                                    console.log('iterating over user_id '+user_id);
+                                    // see if this guy has a share entry
+                                    Bozuko.models.Share.count({user_id: user_id, page_id: page._id}, function(error, count){
+                                        if( error ) return cb(error);
+                                        if( count ) return cb(null);
+                                        // we need to add this share...
+                                        // lets get the first like entry
+                                        return Bozuko.models.Entry.find({
+                                            user_id: user_id,
+                                            page_id:page._id,
+                                            type:'facebook/like'
+                                        },{},{sort:{timestamp: 1}},function(error, entries){
+                                            if( error ) return cb(error);
+                                            
+                                            if( !entries ) return cb();
+                                            
+                                            var entry = entries[0];
+                                            
+                                            // lets get this user too.
+                                            return Bozuko.models.User.findOne({_id: user_id}, {'services.internal.friend_count':1},function(error, user){
+                                                if( error ) return cb(error);
+                                                
+                                                var share = new Bozuko.models.Share({
+                                                    user_id: user_id,
+                                                    page_id: page._id,
+                                                    contest_id: entry.contest_id,
+                                                    timestamp: entry.timestamp,
+                                                    visibility: user.services[0].internal.friend_count
+                                                });
+                                                return share.save(function(error){
+                                                    if( !error ) shares.push(share);
+                                                    return cb(error);
+                                                });
+                                            });
+                                        });
+                                    });
+                                }, function done_with_users(error){
+                                    return callback(error);
+                                });
+                            });
+                        }, function finish(error){
+                            if( error ) return res.send(error);
+                            return res.send( {count: shares.length, shares:shares} );
                         });
-                    });
                 });
             }
         }
     },
 
-    '/admin/stats/entry' : {
-
-        get : {
-
-            title: 'Entry Stats',
-            locals:{
-                layout: false
-            },
-
-            handler: function(req,res){
-                Bozuko.models.User.find({name:/(bozuko|fabrizio)/ig}, {_id:1}, function(error, users){
-                    var ids = [];
-                    users.forEach(function(user){ ids.push(user._id); });
-                    Bozuko.models.Entry.count({user_id: {$nin: ids}}, function(error, outside_count){
-                        Bozuko.models.Entry.count({user_id: {$in: ids}}, function(error, inside_count){
-                            res.contentType = 'text/plain';
-                            res.write([
-                                'Outside Bozuko Entries:  '+outside_count,
-                                'Inside Bozuko Entries:   '+inside_count,
-                            ].join('\n'));
-                            res.end();
-                        });
-                    });
-                });
-            }
-        }
-    },
 
     '/admin/places' : {
 
@@ -991,7 +1008,7 @@ exports.routes = {
                 }
                 
                 var model = req.param('model') || 'Entry';
-                if( !~['Prize','Redeemed Prizes','Entry','Play','Share'].indexOf(model) ) throw "Invalid model";
+                if( !~['Prize','Redeemed Prizes','Entry','Play','Share','Checkins','Likes'].indexOf(model) ) throw "Invalid model";
                 
                 options = {
                     timezoneOffset: tzOffset,
@@ -1007,6 +1024,16 @@ exports.routes = {
                 }
                 else if(model == 'Share'){
                     options.countField = 'visibility';
+                }
+                else if( model == 'Likes'){
+                    options.model = 'Share';
+                    query.service = 'facebook';
+                    query.type = 'like';
+                }
+                else if( model == 'Checkins'){
+                    options.model = 'Share';
+                    query.type = 'facebook';
+                    query.type = 'checkin';
                 }
                 
                 return Report.run( 'counts', options, function(error, results){

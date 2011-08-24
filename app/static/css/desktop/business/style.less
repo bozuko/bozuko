@@ -693,22 +693,24 @@ fieldset{
         margin-bottom: 10px;
         
         .list-items {
-            padding-left: 4px;
+            text-align: center;
             position: relative;
             z-index: 2;
             top: 1px;
+            vertical-align: bottom;
         }
         .x-dataview-item {
             cursor: pointer;
-            float: left;
-            padding: 10px 0px 4px;
+            display: inline-block;
+            padding: 10px 4px 4px;
             margin-right: 4px;
             background: #d8d8d8;
             border: 1px solid #ccc;
             border-bottom-width: 0;
+            vertical-align: bottom;
             text-align: center;
-            width: 90px;
-            min-height: 110px;
+            width: 98px;
+            min-height: 120px;
             .border_radius(8px 8px 0 0);
             
             .title {
@@ -726,6 +728,12 @@ fieldset{
             background: #fff;
             border: 1px solid #ccc;
             padding: 10px;
+        }
+        
+        .game {
+            width: 120px;
+            img {
+            }
         }
     }
     
