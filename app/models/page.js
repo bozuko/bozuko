@@ -265,7 +265,7 @@ Page.method('canUserCheckin', function(user, callback){
                 // okay, distance over time check
                 // if its the samePage, they haven't gone anywhere.
                 // or if the travel check reset duration has passed, forget it.
-                if( samePage || +checkin.timestamp < travel_thresh ){
+                if( Bozuko.cfg('test_mode', false) || samePage || +checkin.timestamp < travel_thresh ){
                     return callback( null, true );
                 }
                 

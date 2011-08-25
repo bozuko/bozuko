@@ -153,6 +153,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         var me = this;
         if( me.mode == 'odds' ){
             // need to get the total
+            me.contest.set('win_frequency', Number(me.down('[name=win_frequency]').getValue()));
             me.contest.set('total_entries', Math.ceil(me.down('[name=win_frequency]').getValue() * me.contest.getTotalPrizeCount() ))
         }
         else{

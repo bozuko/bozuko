@@ -216,6 +216,8 @@ exports.routes = {
                                                 var share = new Bozuko.models.Share({
                                                     user_id: user_id,
                                                     page_id: page._id,
+                                                    service: 'facebook',
+                                                    type: 'like',
                                                     contest_id: entry.contest_id,
                                                     timestamp: entry.timestamp,
                                                     visibility: user.services[0].internal.friend_count
@@ -406,18 +408,21 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 
-                // need to add number of unique players as a stat
-                Bozuko.models.Entries.collection.group(
-                    // key - group by user_id
-                    {key: {user_id:true}},
-                    // condition -which would be by date,
-                    {},
-                    // initial
-                    {count: 1}
-                    // reduce function
+                var selector = {},
+                    contest_id = req.param('contest_id'),
+                    page_id = req.param('page_id')
+                    ;
                     
-                );
-                res.send({});
+                if( contest_id ) selector.contest_id = new ObjectId(contest_id);
+                if( page_id ) selector.page_id = new ObjectId(page_id);
+                
+                // very simple distinct / count function...
+                Bozuko.models.Entry.collection.distinct('user_id', selector, function(error, user_ids){
+                    if( error ) return res.send ( error );
+                    return res.send({
+                        users: user_ids.length
+                    });
+                });
             }
         }
     },
@@ -553,7 +558,6 @@ exports.routes = {
 
                 delete data.play_cursor;
                 delete data.state;
-                delete data.total_entries;
                 delete data.total_plays;
                 delete data.results;
                 delete data.plays;
@@ -574,8 +578,7 @@ exports.routes = {
                 });
                 
                 
-                var contest = new Bozuko.models.Contest();
-                contest.set(data);
+                var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
                     return res.send({items:[contest]});
