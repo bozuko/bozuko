@@ -27,15 +27,16 @@ Ext.define('Bozuko.lib.form.field.Duration', {
             layout          :'hbox',
             
             items: [{
-                flex            :1,
+                width           :40,
                 xtype           :'textfield',
                 ref             :'value'
             },{
                 xtype           :'splitter'
             },{
-                flex            :1,
+                width           :80,
                 ref             :'unit',
                 xtype           :'combo',
+                triggerAction   :'all',
                 editable        :false,
                 forceSelection  :true,
                 displayField    :'label',

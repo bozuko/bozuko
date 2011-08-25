@@ -21,15 +21,16 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         
         // create a new contest with the defaults
         if( !me.contest ){
-            me.contest = new Bozuko.model.Contest();
-            me.contest.data = {
+            me.contest = new Bozuko.model.Contest({
+                name: '',
                 engine_type: 'order',
                 engine_mode: 'odds',
                 auto_rules: true,
                 free_play_pct: 20,
+                consolation_config: {},
                 consolation_prizes: [],
                 post_to_wall: true
-            };
+            });
         }
         
         me.dockedItems = [{
@@ -80,8 +81,6 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                     xtype               :'contestbuilderentry'
                 },{
                     xtype               :'contestbuildergame'
-                },{
-                    xtype               :'contestbuildergameoptions'
                 },{
                     xtype               :'contestbuilderprizes'
                 },{
