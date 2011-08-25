@@ -841,6 +841,17 @@ fieldset .x-fieldset-header {
   padding: 2px;
   font-family: "Courier New";
 }
+.contest-builder .switcher {
+  font-size: 11px;
+  text-align: center;
+  color: red;
+}
+.contest-builder .contest-odds-card .alt-display {
+  font-size: 11px;
+}
+.contest-builder .contest-odds-card input {
+  text-align: center;
+}
 .prize-list .x-dataview-item {
   cursor: default;
 }
@@ -892,23 +903,17 @@ fieldset .x-fieldset-header {
   margin-bottom: 1em;
   color: #666;
 }
-.prizes-odds ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.prizes-odds table {
+  width: 100%;
 }
-.prizes-odds ul li {
-  list-style: none;
-  margin: 0;
-  padding: 3px 0;
-  overflow: hidden;
-  _height: 1%;
+.prizes-odds table th {
+  background: #e8e8e8;
+  font-weight: bold;
+  padding: 6px;
+  text-align: left;
 }
-.prizes-odds ul li .prize-name {
-  float: left;
-}
-.prizes-odds ul li .prize-odds-value {
-  float: right;
+.prizes-odds table td {
+  padding: 6px;
 }
 textarea.x-form-field {
   line-height: 15px;

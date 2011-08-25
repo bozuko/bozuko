@@ -139,7 +139,6 @@ Ext.define('Bozuko.model.Contest', {
             }
         }catch(e){
             // no big deal, probably didn't have options
-            console.log(e);
         }
         
         return qty * me.get('win_frequency');

@@ -168,7 +168,8 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         setTimeout(function(){
             me.blurred = false;
-            field.getEl().dom.appendChild(me.arrow);
+            if( field.up('[arrowCt=true]') ) field.up('[arrowCt=true]').getEl().dom.appendChild(me.arrow);
+            else field.getEl().dom.appendChild(me.arrow);
             var helpText = field.helpText || '',
                 label = field.helpLabel || field.fieldLabel;
             if( Ext.isArray(helpText) ) helpText = helpText.join('');
