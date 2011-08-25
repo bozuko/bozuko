@@ -945,6 +945,21 @@ fieldset{
             font-family: "Courier New";
         }
     }
+    
+    .switcher {
+        font-size: 11px;
+        text-align: center;
+        color: red;
+    }
+    
+    .contest-odds-card {
+        .alt-display{
+            font-size: 11px;
+        }
+        input {
+            text-align:center;
+        }
+    }
 }
 
 .prize-list {
@@ -1008,26 +1023,16 @@ fieldset{
     
     color: #333;
     
-    ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        
-        li {
-            list-style: none;
-            margin: 0;
-            padding: 3px 0;
-            
-            overflow: hidden;
-            _height: 1%;
-            
-            .prize-name {
-                float: left;
-            }
-            
-            .prize-odds-value {
-                float: right;
-            }
+    table {
+        width: 100%;
+        th {
+            background: #e8e8e8;
+            font-weight: bold;
+            padding: 6px;
+            text-align: left;
+        }
+        td{
+            padding: 6px;
         }
     }
 }

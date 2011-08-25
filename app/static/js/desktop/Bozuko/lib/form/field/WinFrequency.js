@@ -15,24 +15,31 @@ Ext.define('Bozuko.lib.form.field.WinFrequency', {
         
         Ext.apply(me, {
             layout          :'hbox',
+            layoutConfig    :{
+                pack            :'center',
+                align           :'middle'
+            },
             height          :22,
             
             items :[{
                 xtype: 'component',
                 autoEl: {tag:'div'},
-                html: 'One of every',
-                width: 75,
-                style: 'height: auto; line-height: 18px;'
+                html: 'One in every',
+                flex: 1,
+                style: 'height: auto; line-height: 18px; text-align:right;'
             },{xtype:'splitter'},{
                 xtype: 'textfield',
+                style:'text-align:center;',
                 ref: 'value',
                 width: 40
             },{xtype:'splitter'},{
                 xtype: 'component',
-                autoEl: {tag:'div'},
-                html: 'players win.',
+                autoEl: {
+                    tag:'div',
+                    style: 'height: auto;  line-height: 18px;'
+                },
                 flex: 1,
-                style: 'height: auto;  line-height: 18px;'
+                html: 'entries win.'
             }]
         });
         
