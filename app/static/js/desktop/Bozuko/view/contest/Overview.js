@@ -146,7 +146,7 @@ Ext.define('Bozuko.view.contest.Overview',{
         end.setMilliseconds(999);
         
         var duration = +end-start,
-            current = +now-start,
+            current = Math.max(0,+now-start),
             HOUR = 1000 * 60 * 60,
             DAY = HOUR * 24,
             total_days = Math.ceil( duration / DAY ),

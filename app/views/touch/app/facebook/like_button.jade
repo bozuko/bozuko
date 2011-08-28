@@ -61,7 +61,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                         callback();
                     }
                 };
-                req.open('GET', '/user?token='+token+'&nocache='+Date.now());
+                req.open('GET', '/user?liked='+fb_id+'&token='+token+'&nocache='+Date.now());
                 setTimeout(function(){
                   req.send();
                 }, 200);

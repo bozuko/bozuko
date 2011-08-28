@@ -111,8 +111,8 @@ Ext.define('Bozuko.view.contest.List' ,{
                 {
                     
                     canEdit : function(values){
-                        if( me.actionButtons && !~me.actionButtons.indexOf('edit')) return '';
-                        return true || ~['draft', 'published'].indexOf(values.state);
+                        if( me.actionButtons && !~me.actionButtons.indexOf('edit')) return this.canUseBuilder();
+                        return ~['draft', 'published'].indexOf(values.state);
                     },
                     
                     canUseBuilder : function(){
@@ -296,7 +296,7 @@ Ext.define('Bozuko.view.contest.List' ,{
         end.setMilliseconds(999);
         
         var duration = +end-start,
-            current = +now-start,
+            current = Math.max(0,+now-start),
             HOUR = 1000 * 60 * 60,
             DAY = HOUR * 24,
             total_days = Math.ceil( duration / DAY ),

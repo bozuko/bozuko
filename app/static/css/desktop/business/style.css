@@ -622,7 +622,9 @@ fieldset .x-fieldset-header {
   display: inline-block;
   padding: 10px 4px 4px;
   margin-right: 4px;
-  background: #d8d8d8;
+  background-color: #dddddd;
+  background-image: -moz-linear-gradient(top, #dddddd, #bbbbbb);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #bbbbbb)) !important;
   border: 1px solid #ccc;
   border-bottom-width: 0;
   vertical-align: bottom;
@@ -641,7 +643,8 @@ fieldset .x-fieldset-header {
   margin: 4px;
 }
 .contest-builder .select-list2 .x-item-selected {
-  background: #fff;
+  background: #fff none;
+  background-image: none !important;
   border-color: #ccc;
 }
 .contest-builder .select-list2 .selection-description {
@@ -706,22 +709,36 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .theme-list .theme {
   position: relative;
-  margin: 6px;
-  width: 170px;
+  width: 33.3%;
+  float: left;
+  text-align: center;
   cursor: pointer;
 }
-.contest-builder .theme-list img {
-  display: block;
-  height: 220px;
-  width: 170px;
+.contest-builder .theme-list .theme-content {
+  margin: 6px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background-clip: padding-box;
+  background-color: #dddddd;
+  background-image: -moz-linear-gradient(top, #dddddd, #bbbbbb);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #bbbbbb)) !important;
+  background: #ddd;
+  border: 2px solid #aaa;
+  padding: 4px;
+}
+.contest-builder .theme-list .theme-content img {
+  height: 75px;
 }
 .contest-builder .theme-list .theme-scroller {
-  overflow: auto;
+  overflow: hidden;
 }
 .contest-builder .theme-list .title {
-  padding: 4px;
+  padding: 0 4px 4px;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
   font-family: ArvoRegular;
 }
 .contest-builder .theme-list .description {
@@ -742,20 +759,16 @@ fieldset .x-fieldset-header {
   -o-transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
-.contest-builder .theme-list .theme-over .description {
-  -moz-opacity: 1;
-  -khtml-opacity: 1;
-  opacity: 1;
-  height: auto;
-}
-.contest-builder .theme-list .x-item-selected {
-  width: 174px;
-  margin: 4px;
+.contest-builder .theme-list .x-item-selected .theme-content {
+  margin: 6px;
   transition: background 0s linear;
   -moz-transition: background 0s linear;
   -o-transition: background 0s linear;
   -webkit-transition: background 0s linear;
   border: 2px solid #00a24f;
+  background-color: #ffffff;
+  background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #f2f2f2)) !important;
   background: #fff;
 }
 .contest-builder .help-panel .x-panel-body {
@@ -851,6 +864,35 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .contest-odds-card input {
   text-align: center;
+}
+.contest-builder .builder-prize-form {
+  margin-bottom: 10px;
+  overflow: visible;
+}
+.contest-builder .builder-prize-form .x-container {
+  position: relative;
+  overflow: visible;
+}
+.contest-builder .builder-prize-form .builder-arrow {
+  left: -31px;
+}
+.contest-builder .builder-prize-form-body {
+  overflow: visible;
+  padding: 10px;
+  background: #fff;
+}
+.contest-builder .builder-prize-form-body .x-box-inner {
+  overflow: visible;
+}
+.contest-builder th {
+  font-weight: bold;
+}
+.contest-builder h2 {
+  text-align: center;
+  font-size: 20px;
+  text-transform: none;
+  color: #666;
+  margin-bottom: .5em;
 }
 .prize-list .x-dataview-item {
   cursor: default;

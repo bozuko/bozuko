@@ -4,7 +4,8 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
     alias           :'widget.contestbuildergame',
     
     requires        :[
-        'Bozuko.view.contest.builder.Card'
+        'Bozuko.view.contest.builder.Card',
+        'Ext.tip.ToolTip'
     ],
     name            :"Game",
     overview        :[
@@ -32,7 +33,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     '<div class="games list-items">',
                         '<tpl for=".">',
                             '<div class="game x-dataview-item">',
-                                '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
+                                '<input style="position: absolute; left: -99999em;" type="radio" name="focus_field" />',
                                 '<img src="{img}" />',
                                 '<div class="title">{title}</div>',
                             '</div>',
@@ -46,19 +47,21 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     data : [{
                         game: 'slots',
                         title: 'Slot Machine',
-                        img:'/images/desktop/app/builder/games/slot-machine.png',
+                        img:'/games/slots/slots_icon3.png',
                         description: [
-                            "<p>A simple slot machine. Your logo will be prominent on the face of the machine. ",
-                            "There are several themes to choose from. You can also upload your own icons to be used on ",
-                            "each slot wheel.</p>"
+                            "<p>Players spin a slot machine to win prizes. Three icons in a row and they win! ",
+                            "Your logo appears prominently on the front of the machine. ",
+                            "You may select slot wheel icon themes or even upload your own icon artwork.</p>"
                         ].join('')
                     },{
                         game: 'scratch',
                         title: 'Scratch Ticket',
-                        img:'/images/desktop/app/builder/games/scratch-ticket.png',
+                        img:'/games/scratch/themes/default/scratch.png',
                         description: [
-                            "<p>A simple Scratch Ticket. Your logo will be featured in the top left. ",
-                            "There are several themes to choose from, or you can upload your own background image (coming soon).</p>"
+                            "<p>Players scratch six positions on a scratch ticket to win prizes. ",
+                            "If any three positions match they win! ",
+                            "You logo is featured on the top of the scratch ticket. ",
+                            "Select one of our scratch ticket themes or upload your own custom scratch ticket.</p>"
                         ].join('')
                     }]
                 }),
@@ -80,8 +83,11 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 name                :'game_config.name',
                 fieldLabel          :'Game Name',
                 helpText            :[
-                    '<p>This will be displayed to the user. You can make this whatever you want, just try to keep ',
-                    'it pretty short.',
+                    '<p>',
+                        'This is the public name of this game.  Have some fun with it!',
+                    '</p>',
+                    '<p>',
+                        'Example: Car Wash Slots',
                     '</p>'
                 ]
             },{
@@ -102,8 +108,12 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     regexText           :'Please enter a number greater than zero',
                     helpText            :[
                         '<p>This is how many times a user can play the game for each entry. ',
-                        'This will not affect overall odds of the contest. If you business is a restaurant or bar, ',
-                        'you may want to consider offering 4 or 5... need more copy.',
+                            '<span style="text-decoration:underline;">This does not affect overall odds of the contest</span>.',
+                            'This is a tool to extend the play time and open the possibility of a player winning multiple prizes.',
+                        '</p>',
+                        '<p>',
+                            'Example 1: A bar may give players 3 spins at a slot machine.<br />',
+                            'Example 2: A gas station gives playes a single scratch ticket.',
                         '</p>'
                     ]
                 }]
@@ -165,6 +175,8 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         var me = this,
             selected = me.dataview.getSelectionModel().getSelection();
             
+        me.updateRecord();
+            
         if( !selected.length ){
             return "Please select on the entry types before going to the next step.";
         }
@@ -207,6 +219,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
             var tc = me.down('[ref=theme-chooser]');
             if( tc ) tc.getSelectionModel().select(i);
         }
+        me.doLayout();
     },
     
     addThemeChooser : function(type){
@@ -227,7 +240,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
             fieldLabel      :'Theme',
             labelAlign      :'top',
             
-            cls             :'select-list theme-list',
+            cls             :'theme-list',
             
             emptyText       :'No Themes Available',
             deferEmptyText  :false,
@@ -238,24 +251,22 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
             itemSelector    :'.theme',
             
             tpl         :new Ext.XTemplate(
-                '<div class="theme-scroller">',
-                    '<table><tr valign="bottom">',
-                        '<tpl for=".">',
-                            '<td>',
-                                '<div class="theme">',
-                                    '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
-                                    '<div class="title">{title}</div>',
-                                    '<img src="{preview}" />',
-                                    '<div class="description">{description}</div>',
-                                '</div>',
-                            '</td>',
-                        '</tpl>',
-                    '</tr></table>',
+                '<div class="themes">',
+                    '<tpl for=".">',
+                        '<div class="theme">',
+                            '<div class="theme-content">',
+                                '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
+                                '<div class="title">{title}</div>',
+                                '<img src="{icon}" />',
+                                '<div class="description">{description}</div>',
+                            '</div>',
+                        '</div>',
+                    '</tpl>',
                 '</div>'
             ),
             
             store : Ext.create('Ext.data.Store', {
-                fields : ['title','preview','description','theme'],
+                fields : ['title','preview','description','theme','icon'],
                 proxy : {
                     type: 'rest',
                     url: Bozuko.Router.route('/themes/'+type),
@@ -279,6 +290,24 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     if( records && records.length){
                         me.game_cfg.theme = records[0].get('theme');
                     }
+                },
+                render : function(view){
+                    view.tip = Ext.create('Ext.tip.ToolTip', {
+                        target : view.el,
+                        height : 222,
+                        width : 172,
+                        delegate : view.itemSelector,
+                        trackMouse : true,
+                        renderTo: Ext.getBody(),
+                        listeners : {
+                            beforeshow : function updateTipBody(tip){
+                                var record = view.getRecord(tip.triggerElement),
+                                    preview = record.get('preview');
+                                    
+                                tip.update('<img src="'+preview+'" height="210" />');
+                            }
+                        }
+                    });
                 }
             }
         });

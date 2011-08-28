@@ -13,6 +13,12 @@ module.exports = {
         except: [
         ]
     },
+	
+	user : {
+		block: {
+			min_friends: 4
+		}
+	},
 
     client: {
         mobile:{

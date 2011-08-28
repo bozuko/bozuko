@@ -32,13 +32,13 @@ Ext.define('Bozuko.model.Contest', {
         {name:'game_config',        type:'Object',              defaultValue:{theme:'default'}},
         {name:'auto_rules',         type:'Boolean',             defaultValue:true},
         {name:'rules',              type:'String'},
-        {name:'entry_config',       type:'Array',               defaultValue:[{type:'facebook/checkin',tokens:3}]},
+        {name:'entry_config',       type:'Array',               defaultValue:[{type:'facebook/checkin',tokens:3,duration:1000*60*60*24}]},
         {name:'consolation_config', type:'Array'},
         {name:'free_play_pct',      type:'Number',              defaultValue:'30%'},
         {name:'active',             type:'Boolean'},
         {name:'state',              type:'String'},
-        {name:'start',              type:'Date',                defaultValue:new Date()},
-        {name:'end',                type:'Date',                defaultValue:Ext.Date.add(new Date(), Ext.Date.DAY, 90)},
+        {name:'start',              type:'Date',                defaultValue:(function(){var d = new Date(); d.setMinutes(0); return d;})()},
+        {name:'end',                type:'Date',                defaultValue:(function(){var d = new Date(); d.setMinutes(0); d=Ext.Date.add(d, Ext.Date.DAY, 90);return d;})()},
         {name:'total_entries',      type:'Number'},
         {name:'total_plays',        type:'Number'},
         {name:'post_to_wall',       type:'Boolean',             defaultValue:true},
@@ -141,7 +141,7 @@ Ext.define('Bozuko.model.Contest', {
             // no big deal, probably didn't have options
         }
         
-        return qty * me.get('win_frequency');
+        return Math.ceil(qty * me.get('win_frequency'));
     },
     
     getEntryCount : function(){
@@ -190,12 +190,27 @@ Ext.define('Bozuko.model.Contest', {
     getPrizeOdds : function(index){
         var prize = this.prizes().getAt(index),
             prize_total = prize.get('total'),
-            total_entries = Number(this.get('total_entries')),
-            gcd = this.getGCD(prize_total, total_entries);
+            total_entries = Number(this.get('total_entries'));
         
         if( !this.get('total_entries') ) return '';
         
         return '1 in '+((total_entries/prize_total).toFixed(2));
+    },
+    
+    getPrizePlayOdds : function(index){
+        var prize = this.prizes().getAt(index),
+            prize_total = prize.get('total');
+        
+        return '1 in '+((this.getTotalPlays()/prize_total).toFixed(2));
+    },
+    
+    getTotalPlays : function(){
+        var total_entries = Number(this.get('total_entries')),
+            tokens = this.getEntryConfig(true).tokens || 2;
+            total_plays = Math.ceil( total_entries*tokens );
+            
+        // return Math.ceil(total_plays * (1+((this.get('free_play_pct')||20)/100) ));
+        return total_plays;
     },
     
     getGCD : function(x,y) {

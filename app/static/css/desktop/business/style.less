@@ -704,7 +704,7 @@ fieldset{
             display: inline-block;
             padding: 10px 4px 4px;
             margin-right: 4px;
-            background: #d8d8d8;
+            .background_gradient(#ddd, #bbb);
             border: 1px solid #ccc;
             border-bottom-width: 0;
             vertical-align: bottom;
@@ -720,7 +720,8 @@ fieldset{
             
         }
         .x-item-selected{
-            background: #fff;
+            background: #fff none;
+            background-image: none !important;
             border-color: #ccc;
         }
         .selection-description {
@@ -796,24 +797,32 @@ fieldset{
         
         .theme {
             position: relative;
-            margin: 6px;
-            width: 170px;
+            width: 33.3%;
+            float: left;
+            text-align: center;
             cursor: pointer;
         }
-        img {
-            display: block;
-            height: 220px;
-            width: 170px;
+        
+        .theme-content {
+            margin: 6px;
+            .border_radius(10px);
+            .background_gradient(#ddd, #bbb);
+            background: #ddd;
+            border: 2px solid #aaa;
+            img {
+                height: 75px;
+            }
+            padding: 4px;
         }
         
         .theme-scroller {
-            overflow: auto;
+            overflow: hidden;
         }
         
         .title{
-            padding: 4px;
+            padding: 0 4px 4px;
             text-align: center;
-            font-size: 16px;
+            font-size: 14px;
             font-family: ArvoRegular;
         }
         
@@ -832,15 +841,13 @@ fieldset{
         }
         
         .theme-over .description{
-            .opacity(100);
-            height: auto;
         }
         
-        .x-item-selected {
-            width: 174px;
-            margin: 4px;
+        .x-item-selected .theme-content{
+            margin: 6px;
             .transition(background,0s);
             border: 2px solid @brand_color;
+            .background_gradient(#fff, #f2f2f2);
             background: #fff;
         }
     }
@@ -959,6 +966,39 @@ fieldset{
         input {
             text-align:center;
         }
+    }
+    
+    .builder-prize-form {
+        margin-bottom: 10px;
+        overflow: visible;
+        
+        .x-container {
+            position: relative;
+            overflow: visible;
+        }
+        
+        .builder-arrow {
+            left: -31px;
+        }
+    }
+    
+    .builder-prize-form-body {
+        .x-box-inner {
+            overflow: visible;
+        }
+        overflow: visible;
+        padding: 10px;
+        background: #fff;
+    }
+    
+    th{ font-weight: bold; }
+    
+    h2 {
+        text-align: center;
+        font-size: 20px;
+        text-transform: none;
+        color: #666;
+        margin-bottom: .5em;
     }
 }
 

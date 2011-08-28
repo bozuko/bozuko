@@ -55,5 +55,6 @@ Game.parseThemeMeta = function(directory, game, themename, meta){
     if( meta.preview && !meta.preview.match(/^(http|\/)/) ){
         meta.preview = burl('/games/'+game+'/themes/'+themename+'/'+meta.preview);
     }
+    meta.icon = require(directory).prototype.icon;
     return meta;
 };

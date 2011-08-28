@@ -25,6 +25,7 @@ Ext.define('Bozuko.view.contest.Prizes', {
         // TODO - we should subscribe to wins / redemptions
         me.contest.on('update', me.getExpired, me);
         me.on('render', me.updateExpired, me);
+        me.prizes.on('update', me.updateExpired, me);
     },
     
     renderers : {
