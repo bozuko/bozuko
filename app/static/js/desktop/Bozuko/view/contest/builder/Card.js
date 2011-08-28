@@ -9,7 +9,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
     border          :false,
     
     helpRegion      :'west',
-    helpRegionWidth :210,
+    helpRegionWidth :200,
     
     autoScroll      :true,
     
@@ -28,7 +28,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             bodyCls         :'builder-card-body',
             defaults        :{
                 xtype           :'textfield',
-                labelWidth      :160,
+                labelWidth      :120,
                 anchor          :'0'
             },
             dockedItems     :[{
@@ -168,7 +168,9 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         setTimeout(function(){
             me.blurred = false;
-            if( field.up('[arrowCt=true]') ) field.up('[arrowCt=true]').getEl().dom.appendChild(me.arrow);
+            if( field.up('[arrowCt=true]') ){
+                field.up('[arrowCt=true]').getEl().dom.appendChild(me.arrow);
+            }
             else field.getEl().dom.appendChild(me.arrow);
             var helpText = field.helpText || '',
                 label = field.helpLabel || field.fieldLabel;
@@ -198,7 +200,12 @@ Ext.define('Bozuko.view.contest.builder.Card', {
     updateHelpText : function(html){
         var me = this;
         if( Ext.isArray(html) ) html = html.join('');
-        me.helpPanel.update( '<div class="help-text">'+html+'</div>' );
+        try{
+            me.helpPanel.update( '<div class="help-text">'+html+'</div>' );
+        }catch(e){
+            // this builder has probably been closed
+        }
+        
     },
     
     addNavigationButtons : function(btns){
@@ -222,15 +229,6 @@ Ext.define('Bozuko.view.contest.builder.Card', {
                 me.fireEvent('next', me);
             },
             icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/arrow-right-24.png'
-        });
-        
-        if( ~btns.indexOf('finish') ) buttons.push({
-            text: 'Finish',
-            style: 'margin-right: 0',
-            handler: function(){
-                me.fireEvent('finish', me);
-            },
-            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png'
         });
         
         if( ~btns.indexOf('save') ) buttons.push({

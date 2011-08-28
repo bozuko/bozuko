@@ -20,7 +20,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
     initComponent : function(){
         var me = this;
         
-        me.mode = me.contest.get('engine_mode') || 'odds';
+        me.engine_options = me.contest.get('engine_options');
+        me.mode = me.engine_options.mode || 'odds';
         
         Ext.apply(me.form, {
             
@@ -30,10 +31,6 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                 autoEl              :{
                     tag                 :'h2'
                 },
-                style               :{
-                    'margin-bottom'     :'1em',
-                    'text-align'        :'center'
-                },
                 html : me.getIntroHTML()
             },{
                 xtype               :'winfrequencyfield',
@@ -41,7 +38,9 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                 xmode               :'odds',
                 hideLabel           :true,
                 helpText            :[
-                    'Configure the overall Odds of for your campaign.'
+                    '<p>Enter the odds that a player wins any prize when they enter this game. ',
+                    'Note the effect overall odds have on individual prize odds.</p>',
+                    '<p>Example:  If the overall odds are 1 in 4, you would expect that for every four players, on average one will win a prize.</p>'
                 ],
                 listeners           :{
                     scope               :me,
@@ -50,6 +49,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
             },{
                 xtype               :'container',
                 arrowCt             :'true',
+                style               :'position:relative; overflow: visible',
                 layout              :{
                     type                :'hbox',
                     pack                :'center'
@@ -67,7 +67,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                     hideLabel           :true,
                     width               :100,
                     helpText            :[
-                        'Enter the total number of entries for the campaign.'
+                        '<p>Enter the total number of player entries you would like for this game.  Note the effect your total number of entries has on the odds of winning.</p>',
+                        '<p>Example: If you have 10 total prize quantity and enter 100 total entries, the overall odds of any player entry winning is 1 in 10.</p>'
                     ],
                     listeners           :{
                         scope               :me,
@@ -121,9 +122,10 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                         '<h3>Prizes Odds</h3>',
                         '<table>',
                             '<tr>',
-                                '<th width="40%">Name</th>',
+                                '<th>Name</th>',
                                 '<th>Total Prizes</th>',
-                                '<th>Odds</th>',
+                                '<th>Odds per Entry</th>',
+                                '<th>Odds per Play</th>',
                             '</tr>',
                             '<tpl for=".">',
                                 '<tr class="prize-odds">',
@@ -132,6 +134,9 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                                     '<td class="prize-odds-value">',
                                         '{[this.getPrizeOdds(xindex)]}',
                                     '</td>',
+                                    '<td class="prize-odds-value">',
+                                        '{[this.getPrizePlayOdds(xindex)]}',
+                                    '</td>',
                                 '</tr>',
                             '</tpl>',
                         '</table>',
@@ -139,6 +144,9 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                     {
                         getPrizeOdds : function(index){
                             return me.contest.getPrizeOdds(index-1);
+                        },
+                        getPrizePlayOdds : function(index){
+                            return me.contest.getPrizePlayOdds(index-1);
                         }
                     }
                 )
@@ -151,6 +159,14 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         me.contest.prizes().on('update', me.onStoreUpdate, me);
         me.contest.prizes().on('add', me.onStoreUpdate, me);
         me.contest.prizes().on('remove', me.onStoreUpdate, me);
+        me.on('activate', function(){
+            me.down('dataview').refresh();
+            me.updateContest();
+            me.updateDisplayFields();
+            // change mode accordingly.
+            me.hideFields(me.mode=='odds'?'entry':'odds')
+            me.showFields(me.mode!='odds'?'entry':'odds')
+        });
     },
     
     initSwitcher : function(cmp){
@@ -163,20 +179,29 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
     
     updateDisplayFields : function(){
         var me = this,
-            value;
+            value,
+            total_entries = me.down('[name=total_entries]'),
+            win_frequency = me.down('[name=win_frequency]');
+            
+        if( !me.alt_display || !total_entries || !win_frequency ){
+            console.log('not updating display fields');
+            return;
+        }
         if( me.mode == 'odds' ){
-            value = Math.floor(Number(me.down('[name=win_frequency]').getValue()) * me.contest.getTotalPrizeCount());
-            me.alt_display.update('Total Entries: '+value);
+            value = Math.floor(Number(win_frequency.getValue()) * me.contest.getTotalPrizeCount());
+            me.alt_display.update('Total Entries: '+value+'<br />Total Plays: '+me.contest.getTotalPlays()+'<br />Total Prizes: '+me.contest.getTotalPrizeCount() );
         }
         else{
-            value =  Number(me.down('[name=total_entries]').getValue()) / me.contest.getTotalPrizeCount();
-            me.alt_display.update('On Average, 1 in '+value.toFixed(2)+' entries will win');
+            value =  Number(total_entries.getValue()) / me.contest.getTotalPrizeCount();
+            me.alt_display.update('On Average, 1 in '+value.toFixed(2)+' entries will win'+'<br />Total Plays: '+me.contest.getTotalPlays()+'<br />Total Prizes: '+me.contest.getTotalPrizeCount()  );
         }
     },
     
     updateContest : function(){
         var me = this;
-        if( !me.alt_display ) return;
+        if( !me.alt_display ){
+            return;
+        }
         if( me.mode == 'odds' ){
             // need to get the total
             me.contest.set('win_frequency', Number(me.down('[name=win_frequency]').getValue()));
@@ -198,19 +223,30 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
     
     switchMode : function(){
         var me = this;
-        Ext.each(me.query('[xmode='+me.mode+']'), function(field){
+        me.hideFields(me.mode);
+        me.mode = me.mode=='odds'?'entry':'odds';
+        me.engine_options.mode = me.mode;
+        me.intro.update(me.getIntroHTML());
+        me.showFields(me.mode);
+        me.down('[ref=switcher]').update(me.mode=='odds'?'Switch to<br />Total Entry Mode':'Switch to<br />Average Odds Mode');
+        me.updateDisplayFields();
+        me.form.doLayout();
+    },
+    
+    hideFields : function(mode){
+        var me = this;
+        Ext.each(me.query('[xmode='+mode+']'), function(field){
             field.hide();
             field.disable();
         });
-        me.mode = me.mode=='odds'?'entry':'odds';
-        me.contest.set('engine_mode', me.mode);
-        me.intro.update(me.getIntroHTML());
-        Ext.each(me.query('[xmode='+me.mode+']'), function(field){
+    },
+    
+    showFields : function(mode){
+        var me = this;
+        Ext.each(me.query('[xmode='+mode+']'), function(field){
             field.show();
             field.enable();
         });
-        me.down('[ref=switcher]').update(me.mode=='odds'?'Switch to<br />Total Entry Mode':'Switch to<br />Average Odds Mode');
-        me.updateDisplayFields();
     },
     
     getIntroHTML : function(mode){

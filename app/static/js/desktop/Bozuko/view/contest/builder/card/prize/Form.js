@@ -2,284 +2,366 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
     extend : 'Ext.form.Panel',
     alias : 'widget.contestbuilderprizeform',
     
+    cls : 'builder-prize-form',
+    bodyCls : 'builder-prize-form-body',
+    
     requires: [
-        'Bozuko.lib.form.field.Duration'
+        'Bozuko.lib.form.field.Duration',
+        'Bozuko.lib.form.field.Codes'
     ],
     
     initComponent : function(){
         var me = this;
         
         Ext.apply(me, {
-            bodyCls         :'builder-card-body',
             layout          :'anchor',
-            
+            style           :'clear:both',
             defaults        :{
-                xtype           :'textfield',
-                labelWidth      :160,
                 anchor          :'0'
             },
             
             items: [{
-                xtype               :'component',
-                ref                 :'title',
-                autoEl              :{tag:'h3',cls:'card-title'}
+                xtype               :'container',
+                ref                 :'the-summary',
+                border              :false,
+                layout              :'hbox',
+                hidden              :me.mode != 'summary',
+                items               :[{
+                    flex                :1,
+                    xtype               :'component',
+                    ref                 :'summary-tpl',
+                    tpl                 :new Ext.XTemplate(
+                        '<tpl if="name">',
+                            '<div style="padding-top: 2px;"><table style="width:100%;"><tr>',
+                                '<td width="50%">{name}</td>',
+                                '<td width="25%"><span style="color: #666;">Value:</span> ${value}</td>',
+                                '<td width="25%"><span style="color: #666;">Quantity:</span> {total}</td>',
+                            '</tr></table></div>',
+                        '</tpl>'
+                    ),
+                    data                :me.prize.data
+                },{xtype:'splitter'},{
+                    xtype               :'button',
+                    text                :'Edit',
+                    icon                :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-pencil-16.png',
+                    handler             :me.switchMode,
+                    scope               :me
+                },{xtype:'splitter'},{
+                    xtype               :'button',
+                    text                :'Delete',
+                    icon                :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-16.png',
+                    handler             :function(){
+                        me.fireEvent('deleteme', me, me.prize);
+                    }
+                }]
+                
             },{
-                name                :'name',
-                fieldLabel          :'Prize Name',
-                emptyText           :'Enter the prize name',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Enter the prize name. Please try to keep it as short as possible.",
-                    '</p>'
-                ]
-            },{
-                name                :'value',
-                fieldLabel          :'Prize Value',
-                regex               :/^[0-9]+$/,
-                maskRe              :/[0-9]/,
-                emptyText           :'Enter the value of the prize in USD',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Enter the value of the prize for tracking purposes.",
-                    '</p>'
-                ]
-            },{
-                xtype               :'textarea',
-                name                :'description',
-                fieldLabel          :'Prize Description',
-                emptyText           :'Enter the complete prize description',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "This will be the full prize description that the user can see. You can add any ",
-                        "stipulations or restrictions here.",
-                    '</p>'
-                ]
-            },{
-                xtype               :'combo',
-                name                :'redemption_type',
-                fieldLabel          :'Redemption Method',
-                emptyText           :'Please choose the redemption method',
-                editable            :false,
-                forceSelection      :true,
-                displayField        :'display',
-                valueField          :'value',
-                store               :Ext.create('Ext.data.Store',{
-                    fields              :['value','display'],
-                    data                :[
-                        {value: 'image',        display:'In Person / Security Image'},
-                        {value: 'barcode',      display:'Barcode'},
-                        {value: 'email',        display:'Email'}
+                xtype               :'container',
+                ref                 :'the-form',
+                hidden              :me.mode == 'summary',
+                border              :false,
+                layout              :'anchor',
+                defaults        :{
+                    xtype           :'textfield',
+                    labelWidth      :120,
+                    anchor          :'0'
+                },
+                autoHeight          :true,
+                items : [{
+                
+                    xtype               :'container',
+                    arrowCt             :true,
+                    layout              :'hbox',
+                    border              :false,
+                    autoHeight          :true,
+                    defaults            :{
+                        autoHeight          :true,
+                        labelAlign          :'left',
+                        xtype               :'textfield'
+                    },
+                    items : [{
+                        name                :'name',
+                        fieldLabel          :'Prize Name',
+                        flex                :1,
+                        labelWidth          :120,
+                        emptyText           :'Enter the prize name',
+                        allowBlank          :false,
+                        helpText            :[
+                            "<p>",
+                                "Enter the prize name. Please try to keep it as short as possible.",
+                            '</p>'
+                        ]
+                    },{xtype:'splitter'},{
+                        name                :'value',
+                        fieldLabel          :'Value',
+                        labelWidth          :36,
+                        width               :80,
+                        emptyText           :'USD',
+                        allowBlank          :false,
+                        helpText            :[
+                            "<p>",
+                                "Enter the value of the prize for tracking purposes.",
+                            '</p>'
+                        ]
+                    },{xtype:'splitter'},{
+                        name                :'total',
+                        fieldLabel          :'Quantity',
+                        labelWidth          :52,
+                        width               :94,
+                        regex               :/^[0-9]+$/,
+                        maskRe              :/[0-9]/,
+                        emptyText           :'',
+                        allowBlank          :false,
+                        helpText            :[
+                            "<p>",
+                                "Enter the value of the prize for tracking purposes.",
+                            '</p>'
+                        ]
+                    }]
+                },{
+                    xtype               :'textarea',
+                    name                :'description',
+                    fieldLabel          :'Prize Description',
+                    emptyText           :'Enter the complete prize description',
+                    allowBlank          :false,
+                    helpText            :[
+                        "<p>",
+                            "This will be the full prize description that the user can see. You can add any ",
+                            "stipulations or restrictions here.",
+                        '</p>'
                     ]
-                }),
-                helpText            :[
-                    "<p>",
-                        "Describe each method here.",
-                    '</p>'
-                ],
-                listeners           :{
-                    scope               :me,
-                    change              :me.onRedemptionTypeChange
-                }
-            },{
-                redemption_field    :'yes',
-                redemption_group    :'all',
-                xtype               :'textfield',
-                name                :'instructions',
-                hidden              :true,
-                fieldLabel          :'Redemption Instructions',
-                emptyText           :'Describe how a user will redeem this prize',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Describe what the user needs to do to redeem this prize. For example, ",
-                        '"Show this screen to an employee."',
-                    '</p>'
-                ]
-            },{
-                redemption_field    :'yes',
-                redemption_group    :'all',
-                xtype               :'duration',
-                name                :'duration',
-                hidden              :true,
-                fieldLabel          :'Redemption Period',
-                emptyText           :'Length of redemption period',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Enter the amount of time a player will have to redeem their prize from the time they win.",
-                    '</p>'
-                ]
-            },{
-                name                :'email_subject',
-                redemption_field    :'yes',
-                redemption_group    :'email',
-                fieldLabel          :'Email Subject',
-                emptyText           :'Subject of your email',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Please enter the subject of your email. The text will be processed before sending and the ",
-                        "following replacements will be made:",
-                    '</p>',
-                    '<table class="prize-help-table">',
-                        '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
-                    '</table>'
-                ]
-            },{
-                redemption_field    :'yes',
-                redemption_group    :'email',
-                xtype               :'htmleditor',
-                name                :'email_body',
-                hidden              :true,
-                fieldLabel          :'Email Body',
-                height              :300,
-                labelAlign          :'top',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Please enter the body of your email. The text will be processed before sending and the ",
-                        "following replacements will be made:",
-                    '</p>',
-                    '<table class="prize-help-table">',
-                        '<tr><th>{code}</th><td>The code</td></tr>',
-                        '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
-                    '</table>'
-                ]
-            },{
-                redemption_field    :'yes',
-                redemption_group    :'email',
-                xtype               :'textarea',
-                grow                :true,
-                growMax             :250,
-                hidden              :true,
-                name                :'email_codes',
-                fieldLabel          :'Email Codes',
-                emptyText           :'Please enter the email codes (one per line)',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Enter each all the individual email codes. Each code should be on its own line.",
-                    '</p>'
-                ],
-                getValue        :function(){
-                    var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this),
-                        ret = [],
-                        ar = v.replace(/\r/,'').replace(/^\n+/,'').replace(/\n+$/, '').split('\n');
-                    
-                    for(var i=0; i<ar.length; i++){
-                        if( ar[i] !== '' ) ret.push( ar[i] );
+                },{
+                    xtype               :'combo',
+                    name                :'redemption_type',
+                    fieldLabel          :'Redemption Method',
+                    emptyText           :'Please choose the redemption method',
+                    editable            :false,
+                    forceSelection      :true,
+                    displayField        :'display',
+                    valueField          :'value',
+                    mode                :'local',
+                    allowBlank          :false,
+                    store               :Ext.create('Ext.data.Store',{
+                        fields              :['value','display'],
+                        data                :[
+                            {value: 'image',        display:'In Person / Security Image'},
+                            {value: 'barcode',      display:'Barcode'},
+                            {value: 'email',        display:'Email'}
+                        ]
+                    }),
+                    helpText            :[
+                        "<p>",
+                            "Describe each method here.",
+                        '</p>'
+                    ],
+                    listeners           :{
+                        scope               :me,
+                        change              :me.onRedemptionTypeChange
                     }
-                    return ret;
-                },
-                setValue        :function(v){
-                    if( Ext.isString(v) ) v = v.split('\n');
-                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
-                },
-                listeners           :{
-                    scope               :me,
-                    change              :me.updateTotalFromTextarea
-                }
-            },{
-                redemption_field    :'yes',
-                redemption_group    :'barcode',
-                xtype               :'textarea',
-                grow                :true,
-                growMax             :250,
-                hidden              :true,
-                name                :'barcode_type',
-                fieldLabel          :'Barcodes',
-                emptyText           :'Please enter the barcodes (one per line)',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Enter the text values for your barcodes. You should have one barcode per line.",
-                    '</p>'
-                ],
-                getValue        :function(){
-                    var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this),
-                        ret = [],
-                        ar = v.replace(/\r/,'').replace(/^\n+/,'').replace(/\n+$/, '').split('\n');
-                    
-                    for(var i=0; i<ar.length; i++){
-                        if( ar[i] !== '' ) ret.push( ar[i] );
+                },{
+                    xtype               :'container',
+                    layout              :'anchor',
+                    autoHeight          :true,
+                    border              :false,
+                    ref                 :'redemption_fields',
+                    defaults            :{
+                        anchor              :'0',
+                        labelWidth          :120,
+                        autoHeight          :true,
+                        labelAlign          :'left',
+                        xtype               :'textfield'
                     }
-                    return ret;
-                },
-                setValue        :function(v){
-                    if( Ext.isString(v) ) v = v.split('\n');
-                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
-                },
-                listeners           :{
-                    scope               :me,
-                    change              :me.updateTotalFromTextarea
-                }
-            },{
-                redemption_field    :'yes',
-                redemption_group    :'image',
-                xtype               :'textfield',
-                name                :'total',
-                regex               :/^[0-9]+$/,
-                maskRe              :/[0-9]/,
-                hidden              :true,
-                fieldLabel          :'Total Prizes',
-                emptyText           :'Please enter the total number of prizes',
-                allowBlank          :false,
-                helpText            :[
-                    "<p>",
-                        "Please enter the total amount of this prize that you would like to distribute.",
-                    '</p>'
-                ]
-            },{
-                redemption_field    :'yes',
-                redemption_group    :'all',
-                xtype               :'displayfield',
-                name                :'total_display',
-                hidden              :true,
-                fieldLabel          :'Total Prizes'
+                },{
+                    xtype               :'container',
+                    layout              :'hbox',
+                    border              :false,
+                    items               :[{
+                        xtype               :'splitter',
+                        flex                :1
+                    },{
+                        xtype               :'button',
+                        scale               :'medium',
+                        text                :'Delete',
+                        icon                :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png',
+                        handler             :function(){
+                            me.fireEvent('deleteme', me, me.prize);
+                        }
+                    },{xtype               :'splitter'},{
+                        xtype               :'button',
+                        scale               :'medium',
+                        text                :'Save',
+                        icon                :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png',
+                        handler             :me.save,
+                        scope               :me
+                    }]
+                }]
             }]
         });
         
         me.callParent(arguments);
         
-        me.redemptionFields = me.query('[redemption_field=yes]');
-        
-        Ext.each( me.redemptionFields, function(field){
-            
+        me.prize.on('modify', function(){
+            me.down('[ref=summary-tpl]').update(me.prize.data);
         });
+        
+        me.initFieldEvents();
+        
+        me.redemption_fields = {
+            'common' : [{
+                    xtype               :'textfield',
+                    name                :'instructions',
+                    fieldLabel          :'Instructions',
+                    emptyText           :'Describe how a user will redeem this prize',
+                    allowBlank          :false,
+                    helpText            :[
+                        "<p>",
+                            "Describe what the user needs to do to redeem this prize. For example, ",
+                            '"Show this screen to an employee."',
+                        '</p>'
+                    ]
+                },{
+                    xtype               :'duration',
+                    name                :'duration',
+                    fieldLabel          :'Redemption Period',
+                    emptyText           :'Length of redemption period',
+                    allowBlank          :false,
+                    helpText            :[
+                        "<p>",
+                            "Enter the amount of time a player will have to redeem their prize from the time they win.",
+                        '</p>'
+                    ]
+                }],
+            'image' : [],
+            'barcode' : [{
+                    xtype               :'codes',
+                    name                :'barcodes',
+                    fieldLabel          :'Barcodes',
+                    emptyText           :'Please enter the barcodes (one per line)',
+                    allowBlank          :false,
+                    height              :100,
+                    helpText            :[
+                        "<p>",
+                            "Enter the text values for your barcodes. You should have one barcode per line.",
+                        '</p>'
+                    ]
+                }],
+            'email' : [{
+                    name                :'email_subject',
+                    fieldLabel          :'Email Subject',
+                    emptyText           :'Subject of your email',
+                    allowBlank          :false,
+                    helpText            :[
+                        "<p>",
+                            "Please enter the subject of your email. The text will be processed before sending and the ",
+                            "following replacements will be made:",
+                        '</p>',
+                        '<table class="prize-help-table">',
+                            '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
+                            '<tr><th>{prize}</th><td>The prize name.</td></tr>',
+                        '</table>'
+                    ]
+                },{
+                    xtype               :'htmleditor',
+                    name                :'email_body',
+                    fieldLabel          :'Email Body',
+                    height              :300,
+                    labelAlign          :'top',
+                    allowBlank          :false,
+                    helpText            :[
+                        "<p>",
+                            "Please enter the body of your email. The text will be processed before sending and the ",
+                            "following replacements will be made:",
+                        '</p>',
+                        '<table class="prize-help-table">',
+                            '<tr><th>{code}</th><td>The code</td></tr>',
+                            '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
+                        '</table>'
+                    ]
+                },{
+                    xtype               :'codes',
+                    name                :'email_codes',
+                    fieldLabel          :'Email Codes',
+                    height              :100,
+                    emptyText           :'Please enter the email codes (one per line)',
+                    allowBlank          :false,
+                    helpText            :[
+                        "<p>",
+                            "Enter each all the individual email codes. Each code should be on its own line.",
+                        '</p>'
+                    ]
+                }]
+        };
         
         if( me.prize ){
             me.loadForm(me.prize);
         }
     },
     
+    switchMode : function(){
+        
+        var me = this,
+            mode = me.mode == 'summary' ? 'form' : 'summary';
+        
+        me.mode = mode;
+        
+        me.down('[ref=the-form]')[mode=='summary'?'hide':'show']();
+        me.down('[ref=the-summary]')[mode=='summary'?'show':'hide']();
+        
+        if( me.mode == 'form' ) me.focusFirstField();
+        me.fireEvent('sizechange');
+    },
+    
+    focusFirstField : function(){
+        this.down('field').focus();
+    },
+    
+    initFieldEvents : function(ct){
+        
+        var me = this;
+        
+        Ext.Array.each( (ct||me).query('field'), function(field){
+            field.on('focus', function(){
+                me.card.onFieldFocus(field);
+            });
+            field.on('blur', function(){
+                me.card.onFieldBlur(field);
+            });
+        });
+        
+        Ext.Array.each( (ct||me).query('htmleditor'), function(field){
+            field.on('activate', function(field){
+                me.card.onFieldFocus(field);
+                field.clearInvalid();
+                Ext.EventManager.on( field.getWin(),'focus', function(){
+                    me.card.onFieldFocus(field);
+                    field.clearInvalid();
+                });
+            });
+        });
+    },
+    
     onRedemptionTypeChange : function(){
         
         var me = this,
+            ct = me.down('[ref=redemption_fields]'),
             type = me.down('[name=redemption_type]').getValue();
+            
+        // clean out any old stuff.
+        ct.removeAll();
         
-        Ext.each( me.query('[redemption_group=all]'), function(field){ field.show();} );
-        Ext.each( me.query('[redemption_field=yes]'), function(field){
-            if(field.name == 'total'){
-                field[type=='image'?'show':'hide']();
-                field.setDisabled(type!=='image');
-            }
-            else if(field.name == 'total_display' ){
-                field[type!='image'?'show':'hide']();
-                field.setDisabled(type==='image');
-            }
-            else if(field.redemption_group!=='all'){
-                field.hide();
-                field.disable();
+        ct.add( me.redemption_fields.common );
+        if( me.redemption_fields[type] && me.redemption_fields[type].length ){
+            ct.add( me.redemption_fields[type] );
+        }
+        
+        Ext.Array.each( ct.query('field,fieldcontainer,htmleditor'), function(field){
+            if( me.prize.get(field.name)){
+                field.setValue( me.prize.get(field.name) );
             }
         });
-        Ext.each( me.query('[redemption_group='+type+']'), function(field){
-            field.show();
-            field.enable();
-        });
         
+        me.initFieldEvents( ct );
+        me.fireEvent('sizechange');
     },
     
     loadForm : function(prize){
@@ -308,7 +390,6 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             }
             me.getForm().loadRecord(prize);
         }
-        me.down('[ref=title]').update( prize.get('name') ? 'Edit Prize' : 'Add Prize');
     },
     
     updateRecord : function(){
@@ -319,23 +400,75 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
     getValues : function(){
         var me = this,
             values = {};
-        Ext.each( me.query('field'), function(field){
+            
+        Ext.each( me.query('field,htmleditor'), function(field){
             if( !field.up('duration') ) values[field.name] = field.getValue();
         });
-        values['duration'] = me.down('duration').getValue();
+        if( me.down('duration')){
+            values['duration'] = me.down('duration').getValue();
+        }
         return values;
     },
     
     validate : function(){
-        var me = this;
-        return me.getForm().isValid();
+        var me = this,
+            type = me.getValues().redemption_type,
+            values = me.getValues(),
+            valid = me.getForm().isValid();
+            
+        if( !valid || type == 'image' ) return valid;
+        
+        var codes = type == 'barcode' ? values.barcodes : values.email_codes;
+        if( codes.length != Number(values.total) ){
+            var field_name = type=='barcode'?'barcodes':'email_codes';
+            me.down('[name='+field_name+']').markInvalid('The number of codes does not match the quantity above.');
+            return {
+                title: 'Quantity Mismatch',
+                message: 'The quantity specified does not match the number of codes'
+            };
+        }
+        
+        if( type == 'email'){
+            if( !~values.email_body.indexOf('{code}') ){
+                me.down('[name=email_body]').markInvalid();
+                return {
+                    title: 'Email Code',
+                    message: 'The email body does not contain {code}. You must include this somewhere to be populated with the unique email codes.'
+                };
+            }
+        }
+        
+        return true;
     },
     
-    updateTotalFromTextarea : function(field){
-        var me = this;
-        me.down('[name=total]').setValue( field.getValue().length );
-        me.down('[name=total_display]').setValue( field.getValue().length );
+    save : function(){
+        var me = this,
+            valid = this.validate();
+        if( valid === true ){
+            this.prize.set( this.getValues() );
+            me.prize.set('is_email', me.prize.get('redemption_type') == 'email');
+            me.prize.set('is_barcode', me.prize.get('redemption_type') == 'barcode');
+            this.prize.commit();
+            if( this.mode=='form' ) this.switchMode();
+            return;
+        }
         
+        var title, message, defaultTitle = 'Uh-oh';
+            
+        if( Ext.isObject(valid) ){
+            title = valid.title||defaultTitle;
+            message = valid.message;
+        }
+        else if( Ext.isString(valid) ){
+            title = defaultTitle;
+            message = valid;
+        }
+        if( !valid ){
+            title = defaultTitle;
+            message = 'Please fix the errors on the form before moving on to the next step';
+        }
+        Ext.Msg.alert(title, message);
+        return;
     }
     
 });

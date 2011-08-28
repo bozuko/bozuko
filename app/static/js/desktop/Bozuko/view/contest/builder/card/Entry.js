@@ -40,7 +40,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                     '<div class="entry-methods list-items">',
                         '<tpl for=".">',
                             '<div class="entry-method x-dataview-item">',
-                                '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
+                                '<input style="position: absolute; left: -99999em;" type="radio" name="focus_field" />',
                                 '<img src="{img}" />',
                                 '<div class="title">{title}</div>',
                             '</div>',
@@ -56,8 +56,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                         title: 'Facebook Check in',
                         img:'/images/desktop/app/builder/entry/facebook-checkin-fit.png',
                         description: [
-                            "<p>A user must check in to your establishment. Check in wall ",
-                            "posts will feature your logo and provide a high level of visibility.</p>"
+                            '<p>A player must be at your location and check-in on Facebook in order to play.  Using the Bozuko app, players can "check-in and play" with a single action.</p>'
                         ].join(''),
                         options: [
                             '<input type="checkbox" name="enable_like" id="',like_id,'" value="true" /> ',
@@ -68,23 +67,21 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                         title: 'Facebook Like',
                         img:'/images/desktop/app/builder/entry/facebook-like-fit.png',
                         description: [
-                            "<p>A user must like your Facebook Page in order to play the game. ",
-                            "A Like button will be presented to the user when they are viewing the game description page.</p>"
+                            '<p>A player must first Facebook "Like" your business on in order to play the game.  The Bozuko application makes Liking your business easy by presenting the user an integrated Like button on your game page.</p>'
                         ].join('')
                     },{
                         type: 'bozuko/checkin',
                         title: 'Bozuko Check in',
                         img:'/images/desktop/app/builder/entry/bozuko-checkin-fit.png',
                         description: [
-                            "<p>A user must be at your location to play the game. ",
-                            "When they enter the game, nothing will be posted to their facebook wall.</p>"
+                            "<p>A user must be at your location to play the game.</p>"
                         ].join('')
                     },{
                         type: 'bozuko/nothing',
                         title: 'No Requirement',
                         img:'/images/desktop/app/builder/entry/bozuko-play-fit.png',
                         description: [
-                            "<p>No requirement to play the game aside from logging into Bozuko with a Facebook Account.</p>"
+                            "<p>There is no requirement on players outside of play frequency.</p>"
                         ].join('')
                     }]
                 }),
@@ -108,9 +105,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                 emptyText           :'Please enter a number',
                 helpLabel           :'Play Frequency',
                 helpText            :[
-                    '<p>This is how often you will allow a user to play your game. The more frequent, the faster ',
-                    'your contest will go.',
-                    '</p>'
+                    '<p>How often are players allowed to enter the game?</p>'
                 ]
             }]
         });

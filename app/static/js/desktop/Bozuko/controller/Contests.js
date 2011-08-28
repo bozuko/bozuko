@@ -441,8 +441,12 @@ Ext.define('Bozuko.controller.Contests' ,{
             },
             callback: function(){
                 pagePanel.successStatus('Contest Saved');
-                btn.setText('Save');
-                btn.enable();
+                /*
+                if( btn ){
+                    btn.setText('Save');
+                    btn.enable();
+                }
+                */
             }
         });
     },

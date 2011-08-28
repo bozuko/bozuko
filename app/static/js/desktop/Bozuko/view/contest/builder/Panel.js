@@ -107,7 +107,15 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
             if( card.addNavigationButtons ){
                 var buttons = [];
                 if( i > 0 ) buttons.push('back');
-                if( i !== me.centerPanel.items.getCount()-1 ) buttons.push('next');
+                if( i !== me.centerPanel.items.getCount()-1 ){
+                    if( me.contest.get('_id') ){
+                        buttons.push('save');
+                        if( !me.contest.get('active') ){
+                            buttons.push('publish');
+                        }
+                    }
+                    buttons.push('next');
+                }
                 else{
                     // this is the last card... lets add the approriate buttons
                     if( me.contest.get('active') ){
@@ -180,18 +188,46 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         me.goToCard( me.currentStep()-1 );
         
     },
-    finish : function(btn){
+    validate : function(){
         var me = this,
-            index = me.currentStep();
-        
-        // 
-        
+            valid = true;
+        // check each card to see if it validates
+        me.centerPanel.items.each(function(card, i){
+            valid = card.validate();
+            if( valid !== true ){
+                
+                me.goToCard(i);
+                
+                var title, message, defaultTitle = 'Uh-oh';
+                
+                if( Ext.isObject(valid) ){
+                    title = valid.title||defaultTitle;
+                    message = valid.message;
+                }
+                else if( Ext.isString(valid) ){
+                    title = defaultTitle;
+                    message = valid;
+                }
+                if( !valid ){
+                    title = defaultTitle;
+                    message = 'Please fix the errors on the form before saving';
+                }
+                Ext.Msg.alert(title, message);
+                return false;
+            }
+            return true;
+        });
+        return valid === true;
     },
     save : function(){
-        this.fireEvent('save', this);
+        if( this.validate() ){
+            this.fireEvent('save', this);
+        }
     },
     publish : function(){
-        this.fireEvent('publish', this);
+        if( this.validate() ){
+            this.fireEvent('publish', this);
+        }
     },
     goToCard : function(index){
         var me = this, valid;

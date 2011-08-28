@@ -436,8 +436,6 @@ exports.routes = {
                 var now = new Date(),
                     expired = {};
                 
-                console.error(contest_id);
-                
                 // first things first, lets get the contest
                 Bozuko.models.Contest.findById(contest_id, function(error, contest){
                     if( error ) return res.send( error );

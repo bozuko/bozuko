@@ -90,7 +90,7 @@ exports.routes = {
                     res.locals.user = user;
                     res.locals.page = page;
                     res.locals.scripts.unshift(
-                        '/js/ext-4.0/lib/ext-all.js',
+                        '/js/ext-4.0/lib/ext-all-debug.js',
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(
@@ -148,19 +148,21 @@ exports.routes = {
         }
     },
     
-    '/admin/prizes/expired' : {
+    '/beta/prizes/expired' : {
         get : {
             handler : function(req, res){
+                
                 var contest_id = req.param('contest_id');
-                if( !contest_id ) res.send({});
+                
+                console.error('contest_id:'+contest_id);
+                
+                if( !contest_id ) return res.send({});
                 
                 var now = new Date(),
                     expired = {};
-                
-                console.error(contest_id);
-                
+                    
                 // first things first, lets get the contest
-                Bozuko.models.Contest.findById(contest_id, function(error, contest){
+                return Bozuko.models.Contest.findById(contest_id, function(error, contest){
                     if( error ) return res.send( error );
                     if( !contest ) return res.send({});
                     
@@ -173,12 +175,14 @@ exports.routes = {
                             prize_id: prize._id,
                             contest_id: contest._id
                         }, function(error, count){
+                            if( error ) return callback(error);
                             expired[String(prize._id)] = count;
-                            callback();
+                            return callback();
                         });
                         
-                    }, function finish(){
-                        res.send(expired);
+                    }, function finish(error){
+                        if( error ) return error.send(res);
+                        return res.send(expired);
                     });
                 });
             }
@@ -764,7 +768,7 @@ exports.routes = {
                     prizes.forEach(function(prize, i){
                         var old, doc;
                         if( prize._id && (old = contest.prizes.id(prize._id)) ){
-                            doc = old.doc;
+                            doc = old.doc || old;
                             for( var p in prize ){
                                 if( prize.hasOwnProperty(p) ){
                                     doc[p] = prize[p];

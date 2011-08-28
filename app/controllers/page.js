@@ -369,6 +369,7 @@ exports.routes = {
                          */
                         mailer.send({
                             to: 'feedback@bozuko.com',
+                            reply_to: req.session.user.email,
                             subject: "New Feedback from a Bozuko User!",
                             body: [
                                 req.session.user.name+' ('+req.session.user.email+')' +

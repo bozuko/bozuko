@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     burl = Bozuko.require('util/url').create,
     LastUpdatedPlugin = require('./plugins/lastupdated'),
     JSONPlugin = require('./plugins/json'),
+    XRegExp = Bozuko.require('util/xregexp'),
     ObjectId = Schema.ObjectId;
 
 var Prize = module.exports = new Schema({
@@ -104,10 +105,46 @@ Prize.method('redeem', function(user, callback){
 Prize.method('sendEmail', function(user) {
     var self = this;
     var mail = Bozuko.require('util/mail');
+    if( self.email_format != 'text/html') {
+        return mail.send({
+            to: user.email,
+            subject: 'You just won a Bozuko prize!',
+            body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
+        }, function(err, success) {
+            if (err) console.error("Email Err = "+err);
+            if (err || !success) {
+                console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
+            }
+        });
+    }
+    // do some substitutions
+    var subject = self.email_subject,
+        body = self.email_body,
+        subs = {
+            '{name}':user.name,
+            '{email}':user.email,
+            '{prize}':self.name,
+            '{code}':self.email_code
+        };
+        
+    Object.keys(subs).forEach(function(key){
+        var re = new RegExp(XRegExp.escape(key), "gi");
+        subject = subject.replace(re, subs[key] );
+        body = body.replace(re, subs[key] );
+    });
+    
+    var text = body
+        .replace(/<br>/gi, "\n")
+        .replace(/<p.*>/gi, "\n")
+        .replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
+        .replace(/<(?:.|\s)*?>/g, "");
+    
+    
     return mail.send({
         to: user.email,
-        subject: 'You just won a Bozuko prize!',
-        body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
+        subject: subject,
+        html: body,
+        body: text
     }, function(err, success) {
         if (err) console.error("Email Err = "+err);
         if (err || !success) {

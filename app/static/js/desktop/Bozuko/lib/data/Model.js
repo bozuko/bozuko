@@ -39,8 +39,25 @@ Ext.define( "Bozuko.lib.data.Model", {
             if( record ) me.set(record.data);
             if( record.associations ) record.associations.each(function(association){
                 if( association.type !== 'hasMany' ) return;
-                me[association.name]().removeAll();
-                me[association.name]().add(record[association.name]().data.items);
+                var my_store = me[association.name]();
+                var new_store= record[association.name]();
+                new_store.each(function(item){
+                    var old_record;
+                    if( (old_record = my_store.getById(item.getId()))){
+                        old_record.set(item.data);
+                        old_record.commit();
+                    }
+                    else{
+                        // we need to create and add a new record
+                        my_store.add(item.data);
+                    }
+                });
+                // delete items that aren't in the new_store
+                my_store.each(function(item){
+                    if( !new_store.getById( item.getId() ) ){
+                        my_store.remove(item);
+                    }
+                });
             });
             if( success && Ext.type(success) == 'function' ) success.apply( callbacks.scope || null, arguments );
         };

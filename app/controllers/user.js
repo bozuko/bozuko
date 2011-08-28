@@ -212,6 +212,34 @@ exports.routes = {
 
                 return user.updateInternals( true, function(error){
                     if( error ) return error.send(res);
+                    
+                    // not only that, we should check to see if there is a "liked" page being referenced
+                    // here
+                    var liked = req.param('liked');
+                    if( liked && user.service('facebook') ){
+                        var internal = user.service('facebook').internal;
+                        if( internal.likes && ~internal.likes.indexOf( liked ) ){
+                            // boom, we got a weiner!
+                            // lets see if we have a page for this
+                            Bozuko.models.Page.findByService('facebook', liked, function(error, page){
+                                if( error || !page ) return;
+                                
+                                var share = new Bozuko.models.Share({
+                                    service         :'facebook',
+                                    type            :'like',
+                                    page_id         :page._id,
+                                    user_id         :user._id,
+                                    visibility      :internal.friend_count||0
+                                });
+                                share.save(function(error){
+                                    if( error ) console.error( error );
+                                    else console.log('Facebook Like through Bozuko: Page='+page.name+', User='+user.name);
+                                });
+                            });
+                        }
+                    }
+                    
+                    
                     user.id = user._id;
                     user.links = {
                         logout: "/user/logout",

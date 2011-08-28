@@ -9,9 +9,7 @@ var mongoose = require('mongoose'),
     merge = Bozuko.require('util/object').merge,
     DateUtil = Bozuko.require('util/date')
     ;
-
-var MIN_FRIENDS = 4;
-
+    
 var User = module.exports = new Schema({
     name                :{type:String, index: true},
     phones              :[Phone],
@@ -130,43 +128,19 @@ User.method('updateInternals', function(force, callback){
         }catch(e){
             friends = [];
         }
-        var commit = true;
         if( !self.service('facebook').internal ){
             self.service('facebook').internal = {};
-            commit = false;
         }
-        // do they have old likes?
-        var old_likes = self.service('facebook').internal.likes;
-        if( old_likes ){
-            // lets get the recently added likes.
-            var recent_likes = likes.filter(function(like){
-                return !~old_likes.indexOf(like);
-            });
-            
-            
-            var internal = self.service('facebook').internal;
-            if( internal.last_recent_update ){
-                // check the timestamp
-                if( Date.now() - internal.last_recent_update  < DateUtil.MINUTE * 5 ){
-                    // lets combine the old likes and these likes
-                    var previous_recent = (internal.recent_likes || []).filter(function(like){
-                        return !~recent_likes.indexOf(like);
-                    });
-                    // lets get the difference between these arrays
-                    recent_likes = recent_likes.concat(previous_recent);
-                }
-            }
-            internal.recent_likes = recent_likes;
-            internal.last_recent_update = Date.now();
-        }
+        
         self.service('facebook').internal.likes = likes;
         self.service('facebook').internal.friends = friends;
         self.service('facebook').internal.friend_count = friends.length;
         self.service('facebook').commit('internal');
         self.last_internal_update = new Date();
 
-        // Block users with less than MIN_FRIENDS
-        if (self.service('facebook').internal.friend_count < MIN_FRIENDS && !self.allowed) {
+        // Block users with less than configured min friends
+        var min_friends = Bozuko.cfg('user.block.min_friends',4);
+        if (self.service('facebook').internal.friend_count < min_friends && !self.allowed) {
             self.blocked = true;
         }
         return self.save(function(err) {

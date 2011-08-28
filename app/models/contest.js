@@ -893,6 +893,8 @@ Contest.method('savePrize', function(opts, callback) {
         });
 
         if (prize.is_email) {
+            user_prize.email_format = prize.email_format;
+            user_prize.email_subject = prize.email_subject;
             user_prize.email_body = prize.email_body;
             if (opts.consolation) {
                 user_prize.email_code = prize.email_codes[opts.consolation_prize_count];
