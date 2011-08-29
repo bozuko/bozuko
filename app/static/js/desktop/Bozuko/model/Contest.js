@@ -194,14 +194,14 @@ Ext.define('Bozuko.model.Contest', {
         
         if( !this.get('total_entries') ) return '';
         
-        return '1 in '+((total_entries/prize_total).toFixed(2));
+        return '1 in '+((total_entries/prize_total).toFixed(1));
     },
     
     getPrizePlayOdds : function(index){
         var prize = this.prizes().getAt(index),
             prize_total = prize.get('total');
         
-        return '1 in '+((this.getTotalPlays()/prize_total).toFixed(2));
+        return '1 in '+((this.getTotalPlays()/prize_total).toFixed(1));
     },
     
     getTotalPlays : function(){

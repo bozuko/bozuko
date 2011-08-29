@@ -100,7 +100,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         allowBlank          :false,
                         helpText            :[
                             "<p>",
-                                "Enter the value of the prize for tracking purposes.",
+                                "Enter the value per prize for tracking purposes.",
                             '</p>'
                         ]
                     },{xtype:'splitter'},{
@@ -114,7 +114,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         allowBlank          :false,
                         helpText            :[
                             "<p>",
-                                "Enter the value of the prize for tracking purposes.",
+                                "Enter the value per prize for tracking purposes.",
                             '</p>'
                         ]
                     }]
@@ -128,6 +128,17 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         "<p>",
                             "This will be the full prize description that the user can see. You can add any ",
                             "stipulations or restrictions here.",
+                        '</p>'
+                    ]
+                },{
+                    xtype               :'duration',
+                    name                :'duration',
+                    fieldLabel          :'Redemption Period',
+                    emptyText           :'Length of redemption period',
+                    allowBlank          :false,
+                    helpText            :[
+                        "<p>",
+                            "Enter the amount of time a player will have to redeem their prize from the time they win.",
                         '</p>'
                     ]
                 },{
@@ -181,12 +192,24 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                     },{
                         xtype               :'button',
                         scale               :'medium',
+                        text                :'Cancel',
+                        hidden              :true,
+                        ref                 :'cancel-btn',
+                        icon                :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-up-24.png',
+                        handler             :function(){
+                            // cancel!
+                            me.getForm().setValues(me.prize.data);
+                            me.switchMode();
+                        }
+                    },{xtype:'splitter'},{
+                        xtype               :'button',
+                        scale               :'medium',
                         text                :'Delete',
                         icon                :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-minus-24.png',
                         handler             :function(){
                             me.fireEvent('deleteme', me, me.prize);
                         }
-                    },{xtype               :'splitter'},{
+                    },{xtype:'splitter'},{
                         xtype               :'button',
                         scale               :'medium',
                         text                :'Save',
@@ -200,8 +223,13 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         
         me.callParent(arguments);
         
-        me.prize.on('modify', function(){
+        var updateSummary = function(){
             me.down('[ref=summary-tpl]').update(me.prize.data);
+        };
+        
+        me.prize.on('modify', updateSummary);
+        me.on('destroy', function(){
+            me.prize.un('modify', updateSummary);
         });
         
         me.initFieldEvents();
@@ -217,17 +245,6 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         "<p>",
                             "Describe what the user needs to do to redeem this prize. For example, ",
                             '"Show this screen to an employee."',
-                        '</p>'
-                    ]
-                },{
-                    xtype               :'duration',
-                    name                :'duration',
-                    fieldLabel          :'Redemption Period',
-                    emptyText           :'Length of redemption period',
-                    allowBlank          :false,
-                    helpText            :[
-                        "<p>",
-                            "Enter the amount of time a player will have to redeem their prize from the time they win.",
                         '</p>'
                     ]
                 }],
@@ -295,6 +312,12 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         if( me.prize ){
             me.loadForm(me.prize);
         }
+        if( me.prize.get('name') ){
+            me.down('[ref=cancel-btn]').show();
+        }
+        me.on('render', function(){
+            me.body.addCls('mode-'+me.mode);
+        });
     },
     
     switchMode : function(){
@@ -302,13 +325,20 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         var me = this,
             mode = me.mode == 'summary' ? 'form' : 'summary';
         
+        me.body.removeCls('mode-'+me.mode);
         me.mode = mode;
         
         me.down('[ref=the-form]')[mode=='summary'?'hide':'show']();
         me.down('[ref=the-summary]')[mode=='summary'?'show':'hide']();
         
-        if( me.mode == 'form' ) me.focusFirstField();
+        if( me.mode == 'form' ){
+            if( me.prize.get('name') ){
+                me.down('[ref=cancel-btn]').show();
+            }
+            me.focusFirstField();
+        }
         me.fireEvent('sizechange');
+        me.body.addCls('mode-'+me.mode);
     },
     
     focusFirstField : function(){
@@ -441,18 +471,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         return true;
     },
     
-    save : function(){
-        var me = this,
-            valid = this.validate();
-        if( valid === true ){
-            this.prize.set( this.getValues() );
-            me.prize.set('is_email', me.prize.get('redemption_type') == 'email');
-            me.prize.set('is_barcode', me.prize.get('redemption_type') == 'barcode');
-            this.prize.commit();
-            if( this.mode=='form' ) this.switchMode();
-            return;
-        }
-        
+    alert :function(valid){
         var title, message, defaultTitle = 'Uh-oh';
             
         if( Ext.isObject(valid) ){
@@ -468,6 +487,21 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             message = 'Please fix the errors on the form before moving on to the next step';
         }
         Ext.Msg.alert(title, message);
+    },
+    
+    save : function(){
+        var me = this,
+            valid = this.validate();
+            
+        if( valid === true ){
+            this.prize.set( this.getValues() );
+            me.prize.set('is_email', me.prize.get('redemption_type') == 'email');
+            me.prize.set('is_barcode', me.prize.get('redemption_type') == 'barcode');
+            this.prize.commit();
+            if( this.mode=='form' ) this.switchMode();
+            return;
+        }
+        me.alert(valid);
         return;
     }
     
