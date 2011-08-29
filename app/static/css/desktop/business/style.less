@@ -653,7 +653,7 @@ fieldset{
             margin-bottom: 1em;
         }
         .builder-card{
-            background: #f0f0f0 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
+            background: #e2e2e2 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
         }
         .builder-card-body {
             padding:20px 20px 10px;
@@ -991,6 +991,10 @@ fieldset{
         background: #fff;
     }
     
+    .mode-form {
+        .box_shadow(0,0,20px,#999);
+    }
+    
     th{ font-weight: bold; }
     
     h2 {
@@ -1050,28 +1054,35 @@ fieldset{
     }
 }
 
-.prizes-odds {
+.odds-tables {
     border: 1px solid #ccc;
     background: #fff;
     padding: 10px;
+    .box_shadow(0,0,20px,#999);
     
     h3 {
+        font-family: "ArvoRegular";
         text-align: center;
         margin-bottom: 1em;
-        color: #666;
+        color: #999;
+        font-weight: normal;
     }
     
     color: #333;
     
     table {
+        margin-bottom: 10px;
+        font-size: 11px;
         width: 100%;
+        border: 1px solid #f3f3f3;
         th {
             background: #e8e8e8;
             font-weight: bold;
-            padding: 6px;
+            padding: 3px 6px;
             text-align: left;
         }
         td{
+            width: 25%;
             padding: 6px;
         }
     }

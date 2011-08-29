@@ -111,8 +111,10 @@ Ext.define('Bozuko.view.contest.List' ,{
                 {
                     
                     canEdit : function(values){
-                        if( me.actionButtons && !~me.actionButtons.indexOf('edit')) return this.canUseBuilder();
-                        return ~['draft', 'published'].indexOf(values.state);
+                        if( me.actionButtons && !~me.actionButtons.indexOf('edit')){
+                            return this.canUseBuilder();
+                        }
+                        return ~['draft', 'published', 'active'].indexOf(values.state);
                     },
                     
                     canUseBuilder : function(){

@@ -570,7 +570,7 @@ fieldset .x-fieldset-header {
   margin-bottom: 1em;
 }
 .contest-builder .builder-card .builder-card {
-  background: #f0f0f0 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
+  background: #e2e2e2 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
 }
 .contest-builder .builder-card .builder-card-body {
   padding: 20px 20px 10px;
@@ -884,6 +884,11 @@ fieldset .x-fieldset-header {
 .contest-builder .builder-prize-form-body .x-box-inner {
   overflow: visible;
 }
+.contest-builder .mode-form {
+  -moz-box-shadow: 0 0 20px #999999;
+  -webkit-box-shadow: 0 0 20px #999999;
+  box-shadow: 0 0 20px #999999;
+}
 .contest-builder th {
   font-weight: bold;
 }
@@ -934,27 +939,36 @@ fieldset .x-fieldset-header {
 .prize-list .numbers td {
   padding: 2px;
 }
-.prizes-odds {
+.odds-tables {
   border: 1px solid #ccc;
   background: #fff;
   padding: 10px;
+  -moz-box-shadow: 0 0 20px #999999;
+  -webkit-box-shadow: 0 0 20px #999999;
+  box-shadow: 0 0 20px #999999;
   color: #333;
 }
-.prizes-odds h3 {
+.odds-tables h3 {
+  font-family: "ArvoRegular";
   text-align: center;
   margin-bottom: 1em;
-  color: #666;
+  color: #999;
+  font-weight: normal;
 }
-.prizes-odds table {
+.odds-tables table {
+  margin-bottom: 10px;
+  font-size: 11px;
   width: 100%;
+  border: 1px solid #f3f3f3;
 }
-.prizes-odds table th {
+.odds-tables table th {
   background: #e8e8e8;
   font-weight: bold;
-  padding: 6px;
+  padding: 3px 6px;
   text-align: left;
 }
-.prizes-odds table td {
+.odds-tables table td {
+  width: 25%;
   padding: 6px;
 }
 textarea.x-form-field {
