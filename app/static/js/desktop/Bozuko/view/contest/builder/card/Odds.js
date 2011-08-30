@@ -200,9 +200,17 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         
         me.callParent(arguments);
         me.intro = me.down('[ref=intro]');
-        me.contest.prizes().on('update', me.onStoreUpdate, me);
-        me.contest.prizes().on('add', me.onStoreUpdate, me);
-        me.contest.prizes().on('remove', me.onStoreUpdate, me);
+        var delayedUpdate = Ext.Function.createDelayed(me.onStoreUpdate, 10, me);
+        me.contest.prizes().on('update', delayedUpdate);
+        me.contest.prizes().on('add', delayedUpdate);
+        me.contest.prizes().on('remove', delayedUpdate);
+        
+        me.on('destroy', function(){
+            me.contest.prizes().un('update', delayedUpdate);
+            me.contest.prizes().un('add', delayedUpdate);
+            me.contest.prizes().un('remove', delayedUpdate);
+        });
+        
         me.on('activate', function(){
             me.down('dataview').refresh();
             me.updateContest();
