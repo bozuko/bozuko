@@ -623,9 +623,9 @@ fieldset .x-fieldset-header {
   padding: 10px 4px 4px;
   margin-right: 4px;
   background-color: #dddddd;
-  background-image: -moz-linear-gradient(top, #dddddd, #bbbbbb);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #bbbbbb)) !important;
-  border: 1px solid #ccc;
+  background-image: -moz-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #aaaaaa)) !important;
+  border: 1px solid #999;
   border-bottom-width: 0;
   vertical-align: bottom;
   text-align: center;
@@ -951,6 +951,7 @@ fieldset .x-fieldset-header {
 .odds-tables h3 {
   font-family: "ArvoRegular";
   text-align: center;
+  font-size: 13px;
   margin-bottom: 1em;
   color: #999;
   font-weight: normal;

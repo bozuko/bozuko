@@ -115,6 +115,17 @@ Ext.define('Bozuko.model.Contest', {
         return type;
     },
     
+    getDefaultInstructions : function(type){
+        
+        switch( type ){
+            case 'email':
+                
+            case 'barcode':
+            case 'image':
+                
+        }
+    },
+    
     getGameName : function(){
         switch( this.get('game') ){
             case 'slots':

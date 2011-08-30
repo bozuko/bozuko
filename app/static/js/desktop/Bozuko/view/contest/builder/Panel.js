@@ -90,7 +90,8 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                 xtype               :'contestbuilderpreview',
                 width               :230,
                 region              :'east',
-                contest             :me.contest
+                contest             :me.contest,
+                builder             :me
             }]
         });
         me.callParent(arguments);
