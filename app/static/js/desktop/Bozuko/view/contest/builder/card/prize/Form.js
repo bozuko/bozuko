@@ -114,7 +114,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         allowBlank          :false,
                         helpText            :[
                             "<p>",
-                                "Enter the value per prize for tracking purposes.",
+                                "Enter the total quantity of this prize.",
                             '</p>'
                         ]
                     }]

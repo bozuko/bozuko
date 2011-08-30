@@ -24,7 +24,5 @@ Ext.define('Bozuko.model.Prize', {
         {name:'email_subject',  type:'String'},
         {name:'email_body',     type:'String'},
         {name:'email_codes',    type:'Array'}
-    ],
-
-    belongsTo: 'Bozuko.model.Contest'
+    ]
 });
