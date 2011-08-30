@@ -212,12 +212,20 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         });
         
         me.on('activate', function(){
-            me.down('dataview').refresh();
             me.updateContest();
-            // change mode accordingly.
             me.hideFields(me.mode=='odds'?'entry':'odds')
             me.showFields(me.mode!='odds'?'entry':'odds')
         });
+    },
+    
+    loadContest : function(){
+        var me = this;
+        if( me.mode == 'odds' ){
+            me.down('[name=win_frequency]').setValue(me.contest.get('win_frequency')||2);
+        }
+        else{
+            me.down('[name=total_entries]').setValue(me.contest.get('total_entries')||500);
+        }
     },
     
     initSwitcher : function(cmp){
@@ -273,8 +281,11 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         Ext.each(me.query('[xmode='+mode+']'), function(field){
             field.show();
             field.enable();
+            field.focus();
         });
     },
+    
+    onFieldBlur : function(){},
     
     getIntroHTML : function(mode){
         var me = this;

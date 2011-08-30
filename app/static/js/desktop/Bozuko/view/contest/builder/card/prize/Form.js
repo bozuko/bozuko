@@ -390,6 +390,11 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             }
         });
         
+        // update instructions
+        if( type != me.prize.get('redemption_type') ){
+            me.down('[name=instructions]').setValue(me.prize.getDefaultInstructions(type));
+        }
+        
         me.initFieldEvents( ct );
         me.fireEvent('sizechange');
     },

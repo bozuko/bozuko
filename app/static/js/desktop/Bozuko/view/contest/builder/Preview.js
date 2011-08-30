@@ -55,7 +55,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                     },
                     getEntryMethod : function(){
                         var cfg = me.contest.getEntryConfig();
-                        if( !cfg || cfg.type === '' ) return false;
+                        if( !cfg || cfg.type === '') return false;
                         return me.contest.getEntryType(false);
                     },
                     getGame : function(){
