@@ -11,9 +11,9 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         'Bozuko.view.contest.builder.card.General',
         'Bozuko.view.contest.builder.card.Entry',
         'Bozuko.view.contest.builder.card.Game',
-        'Bozuko.view.contest.builder.card.GameOptions',
         'Bozuko.view.contest.builder.card.Prizes',
-        'Bozuko.view.contest.builder.card.Odds'
+        'Bozuko.view.contest.builder.card.Odds',
+        'Bozuko.view.contest.builder.card.Review'
     ],
     
     initComponent : function(){
@@ -85,6 +85,8 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                     xtype               :'contestbuilderprizes'
                 },{
                     xtype               :'contestbuilderodds'
+                },{
+                    xtype               :'contestbuilderreview'
                 }]
             },{
                 xtype               :'contestbuilderpreview',
@@ -112,7 +114,7 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                     if( me.contest.get('_id') ){
                         buttons.push('save');
                         if( !me.contest.get('active') ){
-                            buttons.push('publish');
+                            // buttons.push('publish');
                         }
                     }
                     buttons.push('next');
@@ -252,7 +254,7 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
             Ext.Msg.alert(title, message);
             return;
         }
-        
         me.centerPanel.getLayout().setActiveItem( index );
+        me.preview.onContestModify();
     }
 });

@@ -167,6 +167,11 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
             return "Please select on the entry types before going to the next step.";
         }
         
+        if( !me.down('[name=entry_config.duration]').getValue() ){
+            me.down('[name=entry_config.duration] textfield').markInvalid('This field is required');
+            return "Entry Duration is required";
+        }
+        
         return true;
     },
     
