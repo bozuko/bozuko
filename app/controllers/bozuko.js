@@ -215,7 +215,7 @@ exports.routes = {
                         add = false;
 
 
-                    if( ~seen.indexOf(+item._id) ){
+                    if( ~seen.indexOf( +item._id) ){
                         return;
                     }
                     seen.push(+item._id);
@@ -271,6 +271,7 @@ exports.routes = {
                     if( body.listeners['*'] && body.listeners['*'] === true || (Array.isArray(body.listeners['*']) && ~body.listeners['*'].indexOf(true)) ){
                         body.listeners = {'*':[true]};
                     }
+                    
                     for( var event in body.listeners ){
 
                         // distinct callbacks - we need to create a separate

@@ -219,6 +219,7 @@ Ext.define('Bozuko.view.contest.List' ,{
     unPubSub : function(){
         var me = this,
             refresh = me.getCallback('findAndUpdate');
+            
         Ext.each( me._pubsubs, function(id){
             Bozuko.PubSub.unsubscribe('contest/win',{contest_id: id}, refresh);
             Bozuko.PubSub.unsubscribe('contest/play',{contest_id: id}, refresh);
@@ -232,6 +233,7 @@ Ext.define('Bozuko.view.contest.List' ,{
             refresh = me.getCallback('findAndUpdate');
         me.unPubSub();    
         me._pubsubs = [];
+        
         me.store.each(function(record){
             me._pubsubs.push(record.getId());
             Bozuko.PubSub.subscribe('contest/win',{contest_id: record.get('_id')}, refresh);
