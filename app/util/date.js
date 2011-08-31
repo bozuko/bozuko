@@ -20,6 +20,10 @@ DateUtil.create = function(args){
     return new Date( Date.UTC(args[0], args[1], args[2] || 1, args[3], args[4], args[5], args[6]) );
 }
 
+function round5(x){
+    return (x % 5) >= 2.5 ? parseInt(x / 5) * 5 + 5 : parseInt(x / 5) * 5;
+}
+
 function pluralize(num, str, hide1, pstr){
     if( !pstr ) pstr = str+'s';
     var ret = hide1 && num===1 ? '' : (num+' ');
@@ -53,8 +57,10 @@ DateUtil.duration = function(ms, hide1){
         return pluralize(Math.round( ms / DateUtil.DAY ), 'day', hide1);
     }
     
-    if( ms >= (DateUtil.HOUR) ){
-        return pluralize(Math.round( ms / DateUtil.HOUR ), 'hour', hide1);
+    if( ms >= (DateUtil.HOUR - (DateUtil.MINUTE*10)) ){
+        var v = Math.round( ms / DateUtil.HOUR );
+        if( v > 15 ) v = round5(v);
+        return pluralize(v, 'hour', hide1);
     }
     
     if( ms >= (DateUtil.MINUTE - (DateUtil.SECOND*30)) ){
