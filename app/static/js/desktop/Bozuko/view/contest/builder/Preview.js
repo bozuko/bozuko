@@ -20,7 +20,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                             '<div class="value campaign-name">{[this.getTitle()]}</div>',
                         '</div>',
                     '</tpl>',
-                    '<tpl if="this.getTimeline()">',
+                    '<tpl if="!this.noInfo() && this.getTimeline()">',
                         '<div class="info-row">',
                             '<div class="label">Timeline</div>',
                             '<div class="value">{[this.getTimeline()]}</div>',
