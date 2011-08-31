@@ -138,10 +138,13 @@ Ext.define('Bozuko.view.contest.builder.card.Review', {
                         var html = [
                             '<div class="prizes-overview">',
                                 '<div class="expander"></div>',
+                                '<strong>',me.contest.prizes().count(),'</strong> Prize Types<br />',
                                 '<strong>',
                                 me.contest.getTotalPrizeCount(),
-                                '</strong> Total Prizes, Total Value <strong>$',
+                                '</strong> Total Prizes<br />',
+                                '<strong>$',
                                 me.contest.getTotalPrizesValue().toFixed(2),'</strong>',
+                                ' Total Value',
                             '</div>'
                         ];
                         html.push('<div class="prizes-list">');
