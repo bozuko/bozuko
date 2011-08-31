@@ -274,8 +274,10 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                             "following replacements will be made:",
                         '</p>',
                         '<table class="prize-help-table">',
-                            '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
+                            '<tr><th>{code}</th><td>The code</td></tr>',
                             '<tr><th>{prize}</th><td>The prize name.</td></tr>',
+                            '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
+                            '<tr><th>{email}</th><td>The users\s email.</td></tr>',
                         '</table>'
                     ]
                 },{
@@ -292,7 +294,9 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         '</p>',
                         '<table class="prize-help-table">',
                             '<tr><th>{code}</th><td>The code</td></tr>',
+                            '<tr><th>{prize}</th><td>The prize name.</td></tr>',
                             '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
+                            '<tr><th>{email}</th><td>The users\s email.</td></tr>',
                         '</table>'
                     ]
                 },{
