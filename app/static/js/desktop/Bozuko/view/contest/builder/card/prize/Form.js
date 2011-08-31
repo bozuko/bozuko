@@ -236,7 +236,8 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         
         me.redemption_fields = {
             'common' : [{
-                    xtype               :'textfield',
+                    xtype               :'textarea',
+                    height              :36,
                     name                :'instructions',
                     fieldLabel          :'Instructions',
                     emptyText           :'Describe how a user will redeem this prize',
