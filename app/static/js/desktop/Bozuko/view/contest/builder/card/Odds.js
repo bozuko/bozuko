@@ -12,7 +12,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
     overview        :[
     ],
     
-    oddsText : 'Average odds per player entry',
+    oddsText : 'Overall Odds per Entry',
     
     entryText : 'Total Player Entries',
 
@@ -43,8 +43,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                     xmode               :'odds',
                     hideLabel           :true,
                     helpText            :[
-                        '<p>Enter the odds that a player wins any prize when they enter this game. ',
-                        'Note the effect overall odds have on individual prize odds.</p>',
+                        '<p>Enter the overall odds that a player wins any prize when they enter this game. ',
+                        'Note the effect overall odds have on individual prize odds and the total number of entries.</p>',
                         '<p>Example:  If the overall odds are 1 in 4, you would expect that for every four players, on average one will win a prize.</p>'
                     ],
                     listeners           :{
@@ -72,7 +72,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                         hideLabel           :true,
                         width               :100,
                         helpText            :[
-                            '<p>Enter the total number of player entries you would like for this game.  Note the effect your total number of entries has on the odds of winning.</p>',
+                            '<p>Enter the total number of player entries you would like for this game.  Note the effect your total number of entries has on the overall odds.</p>',
                             '<p>Example: If you have 10 total prize quantity and enter 100 total entries, the overall odds of any player entry winning is 1 in 10.</p>'
                         ],
                         listeners           :{
@@ -111,24 +111,9 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                 tpl                 :new Ext.XTemplate(
                     '<div class="odds-tables">',
                         '<div class="overview">',
-                            '<h3>Contest Overview</h3>',
-                            '<table>',
-                                '<tr>',
-                                    '<th>Total Entries</th>',
-                                    '<th>Total Prizes</th>',
-                                    '<th>Total Plays</th>',
-                                    '<th>Odds Per Entry</th>',
-                                '</tr>',
-                                '<tr>',
-                                    '<td>{[this.totalEntries()]}</td>',
-                                    '<td>{[this.totalPrizes()]}</td>',
-                                    '<td>{[this.totalPlays()]}</td>',
-                                    '<td>{[this.averageOdds()]}</td>',
-                                '</tr>',
-                            '</table>',
+                            '<div class="alternate">{[this.getAlternate()]}</div>',
                         '</div>',
                         '<div class="prizes-odds">',
-                            '<h3>Individual Prizes Odds</h3>',
                             '<table>',
                                 '<tr>',
                                     '<th>Prize Name</th>',
@@ -148,20 +133,27 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                                         '</td>',
                                     '</tr>',
                                 '</tpl>',
+                                '<tr class="footer">',
+                                    '<th>Summary</th>',
+                                    '<td>{[this.totalPrizes()]}</td>',
+                                    '<td>{[this.overallPlayOdds()]}</td>',
+                                    '<td>{[this.overallEntryOdds()]}</td>',
+                                '</tr>',
                             '</table>',
                         '</div>',
                     '</div>',
                     {
-                        totalEntries : function(){
-                            var total_entries = me.down('[name=total_entries]'),
-                                win_frequency = me.down('[name=win_frequency]');
-                                
+                        getAlternate : function(){
                             if( me.mode=='odds' ){
-                                return Math.floor(Number(win_frequency.getValue()) * me.contest.getTotalPrizeCount());
+                                return '<strong>'+me.contest.get('total_entries')+'</strong> Total Entries';
                             }
                             else{
-                                return total_entries.getValue();
+                                return '1 in <strong>'+me.contest.get('win_frequency').toFixed(1)+'</strong> Overall Odds';
                             }
+                        },
+                        
+                        totalEntries : function(){
+                            return me.contest.get('total_entries').getValue();
                         },
                         
                         totalPlays : function(){
@@ -172,23 +164,20 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                             return me.contest.getTotalPrizeCount();
                         },
                         
-                        averageOdds : function(){
-                            var value,
-                                total_entries = me.down('[name=total_entries]'),
-                                win_frequency = me.down('[name=win_frequency]');
-                                
-                            if( me.mode=='odds' ){
-                                value = win_frequency.getValue();
-                            }
-                            else{
-                                value = Number(total_entries.getValue()) / me.contest.getTotalPrizeCount();
-                            }
+                        overallPlayOdds : function(){
+                            var value = me.contest.getTotalPlays() / me.contest.getTotalPrizeCount();
+                            return '1 in '+value.toFixed(1);
+                        },
+                        
+                        overallEntryOdds : function(){
+                            var value = me.contest.get('total_entries') / me.contest.getTotalPrizeCount();
                             return '1 in '+value.toFixed(1);
                         },
                         
                         getPrizeOdds : function(index){
                             return me.contest.getPrizeOdds(index-1);
                         },
+                        
                         getPrizePlayOdds : function(index){
                             return me.contest.getPrizePlayOdds(index-1);
                         }

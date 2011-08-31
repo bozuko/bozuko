@@ -1,5 +1,10 @@
 !!! 5
-html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
+html(
+  xmlns="http://www.w3.org/1999/xhtml",
+  xmlns:fb="https://www.facebook.com/2008/fbml",
+  class=locals.html_classes?html_classes.join(' '):'',
+  lang="en"
+)
   head
   
     title= title
@@ -32,7 +37,7 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
             
             - else
               .user-profile Logged in as #{user.name}, 
-                a(href="/beta/logout") Logout
+                a.logout(onclick="beta_logout();",href="/beta/logout") Logout
                 
               -if( locals.page )
                 .page-info
@@ -116,6 +121,43 @@ html(class=locals.html_classes?html_classes.join(' '):'',lang="en")
     - if (locals.scripts)
       - each script in scripts
         script(type="text/javascript",src=script)
+        
+    #fb-root
+    script(type="text/javascript",src="http://connect.facebook.net/en_US/all.js")
+    script
+      FB.init({
+        appId  : '#{Bozuko.cfg("facebook.app.id")}',
+        status : true, // check login status
+        cookie : true, // enable cookies to allow the server to access the session
+        xfbml  : true // parse XFBML
+      });
+      function beta_logout(link){
+        // attach facebook logout to logout button
+        FB.logout(function(){
+          window.location = link.href;
+        });
+        return false;
+      }
+      // wait till loade      
+      window.onload=function(){
+        if(document.getElementById('welcome-logged-in-as') ){
+          FB.getLoginStatus(function(response) {
+            
+            if(response.session) {
+              FB.api('/me', function(data){
+                document.getElementById('welcome-logged-in-as').innerHTML =[
+                  '<div style="padding: 10px 0; color: #666;">',
+                  '<img src="https://graph.facebook.com/'+data.id+'/picture" height="25" style="vertical-align:middle; margin: 0 10px 0 0;" />',
+                  'You are currently logged into Facebook as ',
+                  '<span style="color: #000;">',data.name,'</span>',
+                  '. <a onclick="javascript:beta_logout(this)" href="/beta/logout">Not You?</a>',
+                  '</div>'
+                ].join('');
+              });
+            }
+          });
+        }
+      }
         
     script(type="text/javascript",charset="utf-8",src="https://s3.amazonaws.com/getsatisfaction.com/javascripts/feedback-v2.js")
     script(type="text/javascript",charset="utf-8")
