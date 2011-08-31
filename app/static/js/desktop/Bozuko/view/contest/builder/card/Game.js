@@ -150,7 +150,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         }
         if( me.game_cfg ){
             for(var i in me.game_cfg){
-                values['game_config.'+i] = me.entry_cfg[i];
+                values['game_config.'+i] = me.game_cfg[i];
             }
         }
         
