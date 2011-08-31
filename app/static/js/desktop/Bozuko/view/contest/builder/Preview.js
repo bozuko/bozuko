@@ -92,7 +92,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                         */
                         var prizes = me.contest.prizes();
                         if( !prizes.getCount() ) return false;
-                        return prizes.getCount()+' Prizes ('+me.contest.getTotalPrizeCount()+'), Total Value $'+me.contest.getTotalPrizesValue();
+                        return prizes.getCount()+' Prize Types<br />'+me.contest.getTotalPrizeCount()+' Total Prizes<br />$'+me.contest.getTotalPrizesValue()+' Total Value';
                     },
                     getOdds : function(){
                         
