@@ -93,11 +93,11 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 fieldLabel          :'Plays per Entry',
                 helpText            :[
                     '<p>This is how many times a user can play the game for each entry. ',
-                        '<span style="text-decoration:underline;">This does not affect the average odds per player</span>.',
+                        '<span style="text-decoration:underline;">This does not affect the average odds per player</span>. ',
                         'Use multiple plays to extend the play time or allow players to win multiple prizes.',
                     '</p>',
                     '<p>',
-                        'Example 1: A bar may give players 3 spins at a slot machine.<br />',
+                        'Example 1: A bar may give players 3 spins at a slot machine.<br /><br />',
                         'Example 2: A gas station may give players a single scratch ticket.',
                     '</p>'
                 ],
