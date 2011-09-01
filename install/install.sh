@@ -14,13 +14,14 @@ install_node
 echo "export PATH=~/bozuko/bin:~/node_modules/.bin/:$PATH" >> ~/.bashrc
 source ~/.bashrc
 
-# Install multimeter. Use normal npm install when bar.prototype.ratio patch is accepted.
-git clone git@github.com:andrewjstone/node-multimeter.git
-npm install node-multimeter
-rm -rf node-multimeter
-
 # node packages
 echo "*** Installing node packages with npm"
-cd ~ && npm install connect connect-auth express jade less mongodb mongoose@1.8.0 monomi   \
+cd ~ && npm install connect connect-auth express jade less mongodb mongoose@2.0.4 monomi   \
     qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date    \
     cluster imap node-uuid node-gd knox validator charm 
+
+# install my version of node-mongodb-native so w:2 works. Remove when patch is accepted.
+git clone git@github.com:andrewjstone/node-mongodb-native.git
+cp -R node-mongodb-native/* ~/node_modules/mongodb/
+cp -R node-mongodb-native/* ~/node_modules/mongoose/node_modules/mongodb/
+rm -rf node-mongodb-native

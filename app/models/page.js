@@ -47,7 +47,7 @@ var Page = module.exports = new Schema({
         signed_by           :{type:ObjectId},
         signed_date         :{type:Date}
     }
-});
+}, {safe:null});
 
 Page.index({admins: 1});
 
