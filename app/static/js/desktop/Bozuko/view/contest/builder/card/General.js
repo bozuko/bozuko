@@ -28,7 +28,7 @@ Ext.define('Bozuko.view.contest.builder.card.General', {
                 allowBlank          :false,
                 helpText            :[
                     "<p>",
-                        "Enter internal name for this campaign.  This name will not be publicly visible.",
+                        "Enter a reference name for this campaign.  This name will not be publicly visible.",
                     "</p>",
                     '<p>',
                         'Example: "Summer Scratch #2"',

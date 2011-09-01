@@ -25,6 +25,36 @@ Ext.define('Bozuko.model.Prize', {
         {name:'email_body',     type:'String'},
         {name:'email_codes',    type:'Array'}
     ],
-
-    belongsTo: 'Bozuko.model.Contest'
+    
+    associations: { type: 'belongsTo', model: 'Bozuko.lib.data.Contest' },
+    
+    getDefaultInstructions : function(_type){
+        var me = this,
+            instructions = '',
+            type = me.get('redemption_type') || _type;
+            
+        // this should be part of a store..
+        if( me.store ) me.store.each(function(prize){
+            // console.log(prize, prize === this);
+            if( prize !== me && prize.get('redemption_type') == type && prize.get('instructions') != ''){
+                instructions = prize.get('instructions');
+                return false;
+            }
+            return true;
+        });
+        
+        if( instructions !== '' ) return instructions;
+        
+        switch( type ){
+            case 'email':
+                instructions = 'Press "Redeem" and your prize will be emailed to you.';
+                break;
+            
+            case 'barcode':
+            case 'image':
+                instructions = 'Please show this screen to an employee and then press "Redeem".';
+                break;
+        }
+        return instructions;
+    }
 });

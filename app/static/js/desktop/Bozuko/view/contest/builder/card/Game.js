@@ -49,9 +49,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                         title: 'Slot Machine',
                         img:'/games/slots/slots_icon3.png',
                         description: [
-                            "<p>Players spin a slot machine to win prizes. Three icons in a row and they win! ",
-                            "Your logo appears prominently on the front of the machine. ",
-                            "You may select slot wheel icon themes or even upload your own icon artwork.</p>"
+                            "<p>Players spin a slot machine to win prizes. Three icons in a row and they win!</p>"
                         ].join('')
                     },{
                         game: 'scratch',
@@ -59,9 +57,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                         img:'/games/scratch/themes/default/scratch.png',
                         description: [
                             "<p>Players scratch six positions on a scratch ticket to win prizes. ",
-                            "If any three positions match they win! ",
-                            "You logo is featured on the top of the scratch ticket. ",
-                            "Select one of our scratch ticket themes or upload your own custom scratch ticket.</p>"
+                            "If any three positions match they win! </p>"
                         ].join('')
                     }]
                 }),
@@ -95,6 +91,16 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 ref                 :'last-field',
                 border              :false,
                 fieldLabel          :'Plays per Entry',
+                helpText            :[
+                    '<p>This is how many times a user can play the game for each entry. ',
+                        '<span style="text-decoration:underline;">This does not affect the average odds per player</span>. ',
+                        'Use multiple plays to extend the play time or allow players to win multiple prizes.',
+                    '</p>',
+                    '<p>',
+                        'Example 1: A bar may give players 3 spins at a slot machine.<br /><br />',
+                        'Example 2: A gas station may give players a single scratch ticket.',
+                    '</p>'
+                ],
                 layout              :'hbox',
                 items               :[{
                     xtype               :'numberfield',
@@ -105,17 +111,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     maxValue            :20,
                     width               :50,
                     allowBlank          :false,
-                    regexText           :'Please enter a number greater than zero',
-                    helpText            :[
-                        '<p>This is how many times a user can play the game for each entry. ',
-                            '<span style="text-decoration:underline;">This does not affect overall odds of the contest</span>.',
-                            'This is a tool to extend the play time and open the possibility of a player winning multiple prizes.',
-                        '</p>',
-                        '<p>',
-                            'Example 1: A bar may give players 3 spins at a slot machine.<br />',
-                            'Example 2: A gas station gives playes a single scratch ticket.',
-                        '</p>'
-                    ]
+                    regexText           :'Please enter a number greater than zero'
                 }]
             }]
         });
@@ -154,7 +150,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         }
         if( me.game_cfg ){
             for(var i in me.game_cfg){
-                values['game_config.'+i] = me.entry_cfg[i];
+                values['game_config.'+i] = me.game_cfg[i];
             }
         }
         

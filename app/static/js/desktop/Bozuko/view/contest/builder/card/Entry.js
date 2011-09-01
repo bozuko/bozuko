@@ -9,11 +9,8 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
     ],
     name            :"Entry Method",
     overview        :[
-        "<p>Choose how people will enter the game. An example would be that someone ",
-        "must check in with Facebook at your establishment in order to play the game.</p>",
-        
-        "<p>If you do not have a physical location, you can require that someone 'Likes' your ",
-        "Facebook page in order to play.</p>"
+        "<p>This is the requirement for users to enter your game.  Each entry type has ",
+        "unique benefits for your business.  Select an entry method to learn more.</p>"
     ],
     
     initComponent : function(){
@@ -56,7 +53,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                         title: 'Facebook Check in',
                         img:'/images/desktop/app/builder/entry/facebook-checkin-fit.png',
                         description: [
-                            '<p>A player must be at your location and check-in on Facebook in order to play.  Using the Bozuko app, players can "check-in and play" with a single action.</p>'
+                            '<p>A player must be present at your location and all entries post to player\'s walls.  Using the Bozuko app, players can "check in and play" with a single button.</p>'
                         ].join(''),
                         options: [
                             '<input type="checkbox" name="enable_like" id="',like_id,'" value="true" /> ',
@@ -168,6 +165,11 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
             
         if( !selected.length ){
             return "Please select on the entry types before going to the next step.";
+        }
+        
+        if( !me.down('[name=entry_config.duration]').getValue() ){
+            me.down('[name=entry_config.duration] textfield').markInvalid('This field is required');
+            return "Entry Duration is required";
         }
         
         return true;
