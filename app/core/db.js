@@ -32,10 +32,10 @@ function getConnection(){
                 }
             };
 			uri = str;
-            _db = mongoose.connectSet(str);
+            _db = mongoose.connectSet(str, Bozuko.config.db.options);
         } else {
             uri = 'mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name;
-            _db = mongoose.connect(uri);
+            _db = mongoose.connect(uri, Bozuko.config.db.options);
         }
     }
     return _db;

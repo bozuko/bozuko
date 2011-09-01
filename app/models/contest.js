@@ -9,7 +9,6 @@ var mongoose = require('mongoose'),
     Native = require('./plugins/native'),
     JsonPlugin =  require('./plugins/json'),
     async = require('async'),
-    ObjectID = require('mongoose/lib/mongoose/types/objectid'),
     uuid = require('node-uuid'),
     Profiler = Bozuko.require('util/profiler'),
     merge = Bozuko.require('util/merge'),
@@ -49,7 +48,7 @@ var Contest = module.exports = new Schema({
     play_cursor             :{type:Number, default: -1},
     token_cursor            :{type:Number, default: 0},
     winners                 :[ObjectId]
-});
+}, {safe:null});
 
 Contest.ACTIVE = 'active';
 Contest.PUBLISHED = 'published';
@@ -615,10 +614,12 @@ Contest.method('addEntry', function(tokens, callback) {
         {new: true, fields: {plays: 0, results: 0}},
         function(err, contest) {
             prof.stop();
+            console.log("addEntry err = "+inspect(err));
             if (err && !err.message.match(no_matching_re)) return callback(err);
             if (!contest) {
                 return callback(Bozuko.error('entry/not_enough_tokens'));
             }
+            console.log("OPLOG Entry: contest._id = "+contest._id+", token_cursor = "+contest.token_cursor);
             return callback(null);
         }
     );
@@ -677,7 +678,7 @@ Contest.method('startPlay', function(user, callback) {
             if (err && !err.message.match(no_matching_re)) return callback(err);
             if (!entry) return callback(Bozuko.error("contest/no_tokens"));
             // If we crash here the user will lose a token. Don't worry about it now.
-
+            console.log("OPLOG startPlay: entry._id = "+entry._id+" tokens = "+entry.tokens);
             var prof = new Profiler('/models/contest/startPlay/Contest.findAndModify');
             return Bozuko.models.Contest.findAndModify(
                 {_id: self._id},
@@ -689,6 +690,7 @@ Contest.method('startPlay', function(user, callback) {
                     prof.stop();
                     if (err && !err.message.match(no_matching_re)) return callback(err);
                     if (!contest) return callback(Bozuko.error("contest/no_tokens"));
+                    console.log("OPLOG startPlay: contest._id = "+contest._id+", play_cursor = "+contest.play_cursor);
                     var opts = {
                         user_id: user_id,
                         user_name: user.name,
@@ -1040,6 +1042,7 @@ Contest.method('savePlay', function(opts, callback) {
                 Bozuko.publish('contest/win', play.doc );
             }
         }
+        console.log("play save error = "+inspect(err));
         if (err) return callback(err);
         return self.endPlay(opts, callback);
     });
@@ -1079,6 +1082,7 @@ Contest.method('endPlay', function(opts, callback) {
                 prof.stop();
                 if (err && !err.message.match(/no\smatching\sobject/i)) return callback(err);
                 // There isn't an active entry to give a token to. Log it and don't give out a free play.
+                console.log("OPLOG endPlay: entry._id = "+entry._id+", user_id = "+opts.user_id+", entry.tokens = "+entry.tokens);
                 if (!entry) {
                     console.error("Free play won for contest "+self._id+" user "+opts.user_id+
                         ". No active entries prevents distribution");
