@@ -115,6 +115,17 @@ Ext.define('Bozuko.model.Contest', {
         return type;
     },
     
+    getDefaultInstructions : function(type){
+        
+        switch( type ){
+            case 'email':
+                
+            case 'barcode':
+            case 'image':
+                
+        }
+    },
+    
     getGameName : function(){
         switch( this.get('game') ){
             case 'slots':
@@ -194,14 +205,14 @@ Ext.define('Bozuko.model.Contest', {
         
         if( !this.get('total_entries') ) return '';
         
-        return '1 in '+((total_entries/prize_total).toFixed(2));
+        return '1 in '+((total_entries/prize_total).toFixed(1));
     },
     
     getPrizePlayOdds : function(index){
         var prize = this.prizes().getAt(index),
             prize_total = prize.get('total');
         
-        return '1 in '+((this.getTotalPlays()/prize_total).toFixed(2));
+        return '1 in '+((this.getTotalPlays()/prize_total).toFixed(1));
     },
     
     getTotalPlays : function(){

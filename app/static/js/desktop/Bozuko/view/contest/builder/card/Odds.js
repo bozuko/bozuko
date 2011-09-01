@@ -10,10 +10,9 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
     name            :"Contest Odds",
     cls             :'builder-card contest-odds-card',
     overview        :[
-        "<p>Configure the Entry totals here.</p>"
     ],
     
-    oddsText : 'Average odds per player entry',
+    oddsText : 'Overall Odds per Entry',
     
     entryText : 'Total Player Entries',
 
@@ -33,84 +32,76 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                 },
                 html : me.getIntroHTML()
             },{
-                xtype               :'winfrequencyfield',
-                name                :'win_frequency',
-                xmode               :'odds',
-                hideLabel           :true,
-                helpText            :[
-                    '<p>Enter the odds that a player wins any prize when they enter this game. ',
-                    'Note the effect overall odds have on individual prize odds.</p>',
-                    '<p>Example:  If the overall odds are 1 in 4, you would expect that for every four players, on average one will win a prize.</p>'
-                ],
-                listeners           :{
-                    scope               :me,
-                    change              :me.updateContest
-                }
-            },{
                 xtype               :'container',
-                arrowCt             :'true',
-                style               :'position:relative; overflow: visible',
-                layout              :{
-                    type                :'hbox',
-                    pack                :'center'
-                },
                 border              :false,
+                layout              :'anchor',
+                height              :50,
+                defaults            :me.form.defaults,
                 items               :[{
-                    xtype               :'textfield',
-                    name                :'total_entries',
-                    xmode               :'entry',
-                    style               :'text-align:center;',
-                    maskRE              :/0-9/,
-                    hidden              :true,
-                    disabled            :true,
-                    fieldLabel          :'Total Entries',
+                    xtype               :'winfrequencyfield',
+                    name                :'win_frequency',
+                    xmode               :'odds',
                     hideLabel           :true,
-                    width               :100,
                     helpText            :[
-                        '<p>Enter the total number of player entries you would like for this game.  Note the effect your total number of entries has on the odds of winning.</p>',
-                        '<p>Example: If you have 10 total prize quantity and enter 100 total entries, the overall odds of any player entry winning is 1 in 10.</p>'
+                        '<p>Enter the overall odds that a player wins any prize when they enter this game. ',
+                        'Note the effect overall odds have on individual prize odds and the total number of entries.</p>',
+                        '<p>Example:  If the overall odds are 1 in 4, you would expect that for every four players, on average one will win a prize.</p>'
                     ],
                     listeners           :{
                         scope               :me,
                         change              :me.updateContest
                     }
-                }]
-            },{
-                xtype               :'container',
-                border              :false,
-                style               :'text-align:center; position: relative;margin-bottom: 20px;',
-                items               :[{
-                    xtype               :'component',
-                    ref                 :'alt-display',
-                    cls                 :'alt-display',
-                    autoEl              :{
-                        tag                 :'div'
-                    },
-                    html                :'display',
-                    listeners           :{
-                        scope               :me,
-                        render              :function(cmp){
-                            me.alt_display=cmp;
-                            me.updateDisplayFields();
-                        }
-                    }
                 },{
-                    xtype               :'component',
-                    ref                 :'switcher',
-                    autoEl              :{
-                        tag                 :'a',
-                        cls                 :'switcher',
-                        href                :'javascript:;',
-                        style               :{
-                            position            :'absolute',
-                            right               :'0px',
-                            bottom              :'0px'
-                        }
+                    xtype               :'container',
+                    arrowCt             :'true',
+                    style               :'position:relative; overflow: visible',
+                    layout              :{
+                        type                :'hbox',
+                        pack                :'center'
                     },
-                    listeners           :{
-                        render              :me.initSwitcher,
-                        scope               :me
-                    }
+                    border              :false,
+                    items               :[{
+                        xtype               :'textfield',
+                        name                :'total_entries',
+                        xmode               :'entry',
+                        style               :'text-align:center;',
+                        maskRE              :/0-9/,
+                        hidden              :true,
+                        disabled            :true,
+                        fieldLabel          :'Total Entries',
+                        hideLabel           :true,
+                        width               :100,
+                        helpText            :[
+                            '<p>Enter the total number of player entries you would like for this game.  Note the effect your total number of entries has on the overall odds.</p>',
+                            '<p>Example: If you have 10 total prize quantity and enter 100 total entries, the overall odds of any player entry winning is 1 in 10.</p>'
+                        ],
+                        listeners           :{
+                            scope               :me,
+                            change              :me.updateContest
+                        }
+                    }]
+                },{
+                    xtype               :'container',
+                    border              :false,
+                    style               :'text-align:center; position: relative;margin-bottom: 20px;',
+                    items               :[{
+                        xtype               :'component',
+                        ref                 :'switcher',
+                        autoEl              :{
+                            tag                 :'a',
+                            cls                 :'switcher',
+                            href                :'javascript:;',
+                            style               :{
+                                position            :'absolute',
+                                right               :'0px',
+                                bottom              :'0px'
+                            }
+                        },
+                        listeners           :{
+                            render              :me.initSwitcher,
+                            scope               :me
+                        }
+                    }]
                 }]
             },{
                 xtype               :'dataview',
@@ -118,33 +109,75 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                 itemSelector        :'.prize-odds',
                 trackOver           :false,
                 tpl                 :new Ext.XTemplate(
-                    '<div class="prizes-odds">',
-                        '<h3>Prizes Odds</h3>',
-                        '<table>',
-                            '<tr>',
-                                '<th>Name</th>',
-                                '<th>Total Prizes</th>',
-                                '<th>Odds per Entry</th>',
-                                '<th>Odds per Play</th>',
-                            '</tr>',
-                            '<tpl for=".">',
-                                '<tr class="prize-odds">',
-                                    '<td class="prize-name">{name}</td>',
-                                    '<td class="prize-total">{total}</td>',
-                                    '<td class="prize-odds-value">',
-                                        '{[this.getPrizeOdds(xindex)]}',
-                                    '</td>',
-                                    '<td class="prize-odds-value">',
-                                        '{[this.getPrizePlayOdds(xindex)]}',
-                                    '</td>',
+                    '<div class="odds-tables">',
+                        '<div class="overview">',
+                            '<div class="alternate">{[this.getAlternate()]}</div>',
+                        '</div>',
+                        '<div class="prizes-odds">',
+                            '<table>',
+                                '<tr>',
+                                    '<th>Prize Name</th>',
+                                    '<th>Quantity</th>',
+                                    '<th>Odds per Play</th>',
+                                    '<th>Odds per Entry</th>',
                                 '</tr>',
-                            '</tpl>',
-                        '</table>',
+                                '<tpl for=".">',
+                                    '<tr class="prize-odds">',
+                                        '<td class="prize-name">{name}</td>',
+                                        '<td class="prize-total">{total}</td>',
+                                        '<td class="prize-odds-value">',
+                                            '{[this.getPrizePlayOdds(xindex)]}',
+                                        '</td>',
+                                        '<td class="prize-odds-value">',
+                                            '{[this.getPrizeOdds(xindex)]}',
+                                        '</td>',
+                                    '</tr>',
+                                '</tpl>',
+                                '<tr class="footer">',
+                                    '<th>Summary</th>',
+                                    '<td>{[this.totalPrizes()]}</td>',
+                                    '<td>{[this.overallPlayOdds()]}</td>',
+                                    '<td>{[this.overallEntryOdds()]}</td>',
+                                '</tr>',
+                            '</table>',
+                        '</div>',
                     '</div>',
                     {
+                        getAlternate : function(){
+                            if( me.mode=='odds' ){
+                                return '<strong>'+me.contest.get('total_entries')+'</strong> Total Entries';
+                            }
+                            else{
+                                return '1 in <strong>'+me.contest.get('win_frequency').toFixed(1)+'</strong> Overall Odds';
+                            }
+                        },
+                        
+                        totalEntries : function(){
+                            return me.contest.get('total_entries').getValue();
+                        },
+                        
+                        totalPlays : function(){
+                            return me.contest.getTotalPlays();
+                        },
+                        
+                        totalPrizes : function(){
+                            return me.contest.getTotalPrizeCount();
+                        },
+                        
+                        overallPlayOdds : function(){
+                            var value = me.contest.getTotalPlays() / me.contest.getTotalPrizeCount();
+                            return '1 in '+value.toFixed(1);
+                        },
+                        
+                        overallEntryOdds : function(){
+                            var value = me.contest.get('total_entries') / me.contest.getTotalPrizeCount();
+                            return '1 in '+value.toFixed(1);
+                        },
+                        
                         getPrizeOdds : function(index){
                             return me.contest.getPrizeOdds(index-1);
                         },
+                        
                         getPrizePlayOdds : function(index){
                             return me.contest.getPrizePlayOdds(index-1);
                         }
@@ -156,17 +189,32 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         
         me.callParent(arguments);
         me.intro = me.down('[ref=intro]');
-        me.contest.prizes().on('update', me.onStoreUpdate, me);
-        me.contest.prizes().on('add', me.onStoreUpdate, me);
-        me.contest.prizes().on('remove', me.onStoreUpdate, me);
+        var delayedUpdate = Ext.Function.createDelayed(me.onStoreUpdate, 10, me);
+        me.contest.prizes().on('update', delayedUpdate);
+        me.contest.prizes().on('add', delayedUpdate);
+        me.contest.prizes().on('remove', delayedUpdate);
+        
+        me.on('destroy', function(){
+            me.contest.prizes().un('update', delayedUpdate);
+            me.contest.prizes().un('add', delayedUpdate);
+            me.contest.prizes().un('remove', delayedUpdate);
+        });
+        
         me.on('activate', function(){
-            me.down('dataview').refresh();
             me.updateContest();
-            me.updateDisplayFields();
-            // change mode accordingly.
             me.hideFields(me.mode=='odds'?'entry':'odds')
             me.showFields(me.mode!='odds'?'entry':'odds')
         });
+    },
+    
+    loadContest : function(){
+        var me = this;
+        if( me.mode == 'odds' ){
+            me.down('[name=win_frequency]').setValue(me.contest.get('win_frequency')||2);
+        }
+        else{
+            me.down('[name=total_entries]').setValue(me.contest.get('total_entries')||500);
+        }
     },
     
     initSwitcher : function(cmp){
@@ -177,31 +225,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         });
     },
     
-    updateDisplayFields : function(){
-        var me = this,
-            value,
-            total_entries = me.down('[name=total_entries]'),
-            win_frequency = me.down('[name=win_frequency]');
-            
-        if( !me.alt_display || !total_entries || !win_frequency ){
-            console.log('not updating display fields');
-            return;
-        }
-        if( me.mode == 'odds' ){
-            value = Math.floor(Number(win_frequency.getValue()) * me.contest.getTotalPrizeCount());
-            me.alt_display.update('Total Entries: '+value+'<br />Total Plays: '+me.contest.getTotalPlays()+'<br />Total Prizes: '+me.contest.getTotalPrizeCount() );
-        }
-        else{
-            value =  Number(total_entries.getValue()) / me.contest.getTotalPrizeCount();
-            me.alt_display.update('On Average, 1 in '+value.toFixed(2)+' entries will win'+'<br />Total Plays: '+me.contest.getTotalPlays()+'<br />Total Prizes: '+me.contest.getTotalPrizeCount()  );
-        }
-    },
-    
     updateContest : function(){
         var me = this;
-        if( !me.alt_display ){
-            return;
-        }
         if( me.mode == 'odds' ){
             // need to get the total
             me.contest.set('win_frequency', Number(me.down('[name=win_frequency]').getValue()));
@@ -213,12 +238,11 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
             me.contest.set('win_frequency', (Number(me.down('[name=total_entries]').getValue()) / me.contest.getTotalPrizeCount()).toFixed(2));
             me.down('[name=win_frequency]').setValue(me.contest.get('win_frequency'));
         }
-        me.updateDisplayFields();
         me.down('dataview').refresh();
     },
     
     onStoreUpdate : function(){
-        this.updateDisplayFields();
+        this.down('dataview').refresh();
     },
     
     switchMode : function(){
@@ -229,7 +253,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         me.intro.update(me.getIntroHTML());
         me.showFields(me.mode);
         me.down('[ref=switcher]').update(me.mode=='odds'?'Switch to<br />Total Entry Mode':'Switch to<br />Average Odds Mode');
-        me.updateDisplayFields();
+        me.down('dataview').refresh();
         me.form.doLayout();
     },
     
@@ -246,8 +270,11 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         Ext.each(me.query('[xmode='+mode+']'), function(field){
             field.show();
             field.enable();
+            field.focus();
         });
     },
+    
+    onFieldBlur : function(){},
     
     getIntroHTML : function(mode){
         var me = this;

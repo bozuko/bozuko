@@ -23,9 +23,17 @@ Ext.define('Bozuko.view.contest.Prizes', {
         });
         me.callParent(arguments);
         // TODO - we should subscribe to wins / redemptions
-        me.contest.on('update', me.getExpired, me);
-        me.on('render', me.updateExpired, me);
-        me.prizes.on('update', me.updateExpired, me);
+        // me.contest.on('update', me.getExpired, me);
+        
+        // delay getting the expired stuff
+        var updateExpired = Ext.Function.createBuffered( me.updateExpired, 100, me);
+        
+        me.on('render', updateExpired);
+        me.prizes.on('update', updateExpired);
+        
+        me.on('destroy', function(){
+            me.prizes.un('update', updateExpired);
+        });
     },
     
     renderers : {

@@ -403,7 +403,7 @@ exports.routes = {
 
     },
     
-    '/admin/stats/unique' : {
+    '/admin/stats/misc' : {
         // lets get a bunch of miscellaneous stats
         get : {
             handler : function(req, res){
@@ -966,7 +966,7 @@ exports.routes = {
                 
                 var time = req.param('time') || 'week-1',
                     tzOffset = -1*parseInt(req.param('timezoneOffset', 0),10) / 60,
-                    from, interval, now = new Date(),
+                    from, interval, now = new Date(), fillBlanks=true,
                     query = {},
                     options ={}
                     ;
@@ -985,11 +985,19 @@ exports.routes = {
                 switch( time[0] ){
                     case 'year':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -365 * time[1] )
-                        interval = 'Date';
+                        fillBlanks = false;
+                        interval = 'Month';
                         break;
                     case 'month':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -30 * time[1] )
-                        interval = 'Date';
+                        if( time[1] > 2 ){
+                            fillBlanks = false;
+                            interval = 'Month';
+                        }
+                        else{
+                            interval = 'Date';
+                        }
+                        
                         break;
                     case 'week':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -7 * time[1] )
@@ -1015,6 +1023,7 @@ exports.routes = {
                     timezoneOffset: tzOffset,
                     interval: interval,
                     query: query,
+                    fillBlanks: fillBlanks,
                     model: model,
                     from: from
                 };
@@ -1038,7 +1047,10 @@ exports.routes = {
                 }
                 
                 return Report.run( 'counts', options, function(error, results){
-                    if( error ) return error.send( res );
+                    if( error ){
+                        console.error(require('util').inspect(error));
+                        return error.send( res );
+                    }
                     return res.send( {items: results} );
                 });
             }

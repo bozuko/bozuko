@@ -570,7 +570,7 @@ fieldset .x-fieldset-header {
   margin-bottom: 1em;
 }
 .contest-builder .builder-card .builder-card {
-  background: #f0f0f0 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
+  background: #e2e2e2 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
 }
 .contest-builder .builder-card .builder-card-body {
   padding: 20px 20px 10px;
@@ -623,9 +623,9 @@ fieldset .x-fieldset-header {
   padding: 10px 4px 4px;
   margin-right: 4px;
   background-color: #dddddd;
-  background-image: -moz-linear-gradient(top, #dddddd, #bbbbbb);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #bbbbbb)) !important;
-  border: 1px solid #ccc;
+  background-image: -moz-linear-gradient(top, #dddddd, #aaaaaa);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #aaaaaa)) !important;
+  border: 1px solid #999;
   border-bottom-width: 0;
   vertical-align: bottom;
   text-align: center;
@@ -859,8 +859,13 @@ fieldset .x-fieldset-header {
   text-align: center;
   color: red;
 }
-.contest-builder .contest-odds-card .alt-display {
-  font-size: 11px;
+.contest-builder .contest-odds-card .alternate {
+  text-align: center;
+  padding: 6px;
+  font-family: "Tahoma";
+  font-size: 15px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
 }
 .contest-builder .contest-odds-card input {
   text-align: center;
@@ -884,6 +889,11 @@ fieldset .x-fieldset-header {
 .contest-builder .builder-prize-form-body .x-box-inner {
   overflow: visible;
 }
+.contest-builder .mode-form {
+  -moz-box-shadow: 0 0 20px #999999;
+  -webkit-box-shadow: 0 0 20px #999999;
+  box-shadow: 0 0 20px #999999;
+}
 .contest-builder th {
   font-weight: bold;
 }
@@ -893,6 +903,86 @@ fieldset .x-fieldset-header {
   text-transform: none;
   color: #666;
   margin-bottom: .5em;
+}
+.contest-builder .campaign-overview {
+  -moz-box-shadow: 0 0 20px #999999;
+  -webkit-box-shadow: 0 0 20px #999999;
+  box-shadow: 0 0 20px #999999;
+  border: 1px solid #aaa;
+}
+.contest-builder .campaign-overview .row {
+  overflow: hidden;
+  border-top: 1px solid #ffffff;
+  background: #f3f3f3;
+  padding: 6px;
+  line-height: 1.4em;
+  font-size: 13px;
+  color: #000;
+  border-bottom: 1px solid #ddd;
+}
+.contest-builder .campaign-overview .row .label {
+  color: #999;
+  float: left;
+  width: 100px;
+}
+.contest-builder .campaign-overview .row .content {
+  color: #333;
+  margin-left: 104px;
+}
+.contest-builder .campaign-overview .big-row .content {
+  font-family: "ArvoRegular";
+  font-size: 18px;
+  line-height: 1.4em;
+}
+.contest-builder .campaign-overview .first-row {
+  border-top-width: 0;
+}
+.contest-builder .campaign-overview .prizes .expander {
+  cursor: pointer;
+  float: right;
+  width: 16px;
+  height: 16px;
+  background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-down-16.png") 0 0 no-repeat;
+}
+.contest-builder .campaign-overview .prizes .expanded .expander {
+  background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-up-16.png") 0 0 no-repeat;
+}
+.contest-builder .campaign-overview .prizes .prizes-list {
+  display: none;
+  margin-top: 6px;
+}
+.contest-builder .campaign-overview .prizes .expanded .prizes-list {
+  display: block;
+}
+.contest-builder .campaign-overview .prizes .prize {
+  overflow: hidden;
+  background: #fff;
+  padding: 4px;
+  border: 1px solid #ccc;
+  margin: 2px 0 4px;
+}
+.contest-builder .campaign-overview .prizes .prize .prize-odds {
+  float: right;
+}
+.contest-builder .campaign-overview .prizes .prize .prize-name {
+  font-weight: bold;
+}
+.contest-builder .campaign-overview .prizes .prize .prize-details {
+  font-size: 11px;
+  color: #777;
+}
+.contest-builder .campaign-overview .prizes .prize .prize-details .val {
+  color: #333;
+}
+.contest-builder .campaign-overview .prizes .prize span {
+  display: block;
+}
+.contest-builder .campaign-overview .prizes .prize .plabel {
+  float: left;
+  width: 95px;
+}
+.contest-builder .campaign-overview .prizes .prize .val {
+  margin-left: 100px;
 }
 .prize-list .x-dataview-item {
   cursor: default;
@@ -934,28 +1024,46 @@ fieldset .x-fieldset-header {
 .prize-list .numbers td {
   padding: 2px;
 }
-.prizes-odds {
+.odds-tables {
   border: 1px solid #ccc;
   background: #fff;
   padding: 10px;
+  -moz-box-shadow: 0 0 20px #999999;
+  -webkit-box-shadow: 0 0 20px #999999;
+  box-shadow: 0 0 20px #999999;
   color: #333;
 }
-.prizes-odds h3 {
+.odds-tables h3 {
+  font-family: "ArvoRegular";
   text-align: center;
+  font-size: 13px;
   margin-bottom: 1em;
-  color: #666;
+  color: #999;
+  font-weight: normal;
 }
-.prizes-odds table {
+.odds-tables table {
+  margin-bottom: 10px;
+  font-size: 11px;
   width: 100%;
+  border: 1px solid #ccc;
 }
-.prizes-odds table th {
+.odds-tables table th {
   background: #e8e8e8;
   font-weight: bold;
-  padding: 6px;
+  padding: 3px 6px;
   text-align: left;
 }
-.prizes-odds table td {
+.odds-tables table td {
   padding: 6px;
+}
+.odds-tables table tr.footer th {
+  border-top: 1px solid #ccc;
+}
+.odds-tables table tr.footer td {
+  font-weight: bold;
+  background: #f3f3f3;
+  border-top: 1px solid #ccc;
+  padding: 3px 6px;
 }
 textarea.x-form-field {
   line-height: 15px;

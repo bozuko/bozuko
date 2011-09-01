@@ -79,7 +79,9 @@ Ext.define('Bozuko.view.chart.Basic', {
                             {text:'Last Two Days', value:'day-2'},
                             {text:'Last Week', value:'week-1'},
                             {text:'Last Two Weeks', value:'week-2'},
-                            {text:'Last Month', value:'month-1'}
+                            {text:'Last Month', value:'month-1'},
+                            {text:'Last 6 Months', value:'month-6'},
+                            {text:'Last Year', value: 'month-12'}
                         ]
                     }),
                     

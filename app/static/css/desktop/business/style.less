@@ -653,7 +653,7 @@ fieldset{
             margin-bottom: 1em;
         }
         .builder-card{
-            background: #f0f0f0 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
+            background: #e2e2e2 url("/images/desktop/app/builder/builder-card-bg-right.png?v3") 100% 0 repeat-y;
         }
         .builder-card-body {
             padding:20px 20px 10px;
@@ -704,8 +704,8 @@ fieldset{
             display: inline-block;
             padding: 10px 4px 4px;
             margin-right: 4px;
-            .background_gradient(#ddd, #bbb);
-            border: 1px solid #ccc;
+            .background_gradient(#ddd, #aaa);
+            border: 1px solid #999;
             border-bottom-width: 0;
             vertical-align: bottom;
             text-align: center;
@@ -960,8 +960,13 @@ fieldset{
     }
     
     .contest-odds-card {
-        .alt-display{
-            font-size: 11px;
+        .alternate{
+            text-align: center;
+            padding: 6px;
+            font-family: "Tahoma";
+            font-size: 15px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
         }
         input {
             text-align:center;
@@ -991,6 +996,10 @@ fieldset{
         background: #fff;
     }
     
+    .mode-form {
+        .box_shadow(0,0,20px,#999);
+    }
+    
     th{ font-weight: bold; }
     
     h2 {
@@ -999,6 +1008,95 @@ fieldset{
         text-transform: none;
         color: #666;
         margin-bottom: .5em;
+    }
+    
+    .campaign-overview {
+        .box_shadow(0,0,20px,#999);
+        border: 1px solid #aaa;
+        .row {
+            overflow: hidden;
+            border-top: 1px solid #ffffff;
+            background: #f3f3f3;
+            padding: 6px;
+            line-height: 1.4em;
+            font-size: 13px;
+            color: #000;
+            border-bottom: 1px solid #ddd;
+            
+            .label {
+                color: #999;
+                float: left;
+                width: 100px;
+            }
+            .content {
+                color: #333;
+                margin-left: 104px;
+            }
+        }
+        .big-row {
+            .content {
+                font-family: "ArvoRegular";
+                font-size: 18px;
+                line-height: 1.4em;
+            }
+        }
+        .first-row {
+            border-top-width: 0;
+        }
+        .prizes {
+            
+            .expander {
+                cursor: pointer;
+                float: right;
+                width: 16px;
+                height: 16px;
+                background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-down-16.png") 0 0 no-repeat;
+            }
+            
+            .expanded .expander {
+                background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-up-16.png") 0 0 no-repeat;
+            }
+            
+            .prizes-list {
+                display: none;
+                margin-top: 6px;
+            }
+            .expanded .prizes-list {
+                display: block;
+            }
+            
+            .prize {
+                overflow: hidden;
+                
+                background: #fff;
+                padding: 4px;
+                border: 1px solid #ccc;
+                margin: 2px 0 4px;
+                
+                .prize-odds {
+                    float: right;
+                }
+                
+                .prize-name {
+                    font-weight: bold;
+                }
+                .prize-details {
+                    font-size: 11px;
+                    color: #777;
+                    .val {
+                        color: #333;
+                    }
+                }
+                span { display: block; }
+                .plabel {
+                    float: left;
+                    width: 95px;
+                }
+                .val {
+                    margin-left: 100px;
+                }
+            }
+        }
     }
 }
 
@@ -1050,29 +1148,47 @@ fieldset{
     }
 }
 
-.prizes-odds {
+.odds-tables {
     border: 1px solid #ccc;
     background: #fff;
     padding: 10px;
+    .box_shadow(0,0,20px,#999);
     
     h3 {
+        font-family: "ArvoRegular";
         text-align: center;
+        font-size: 13px;
         margin-bottom: 1em;
-        color: #666;
+        color: #999;
+        font-weight: normal;
     }
     
     color: #333;
     
     table {
+        margin-bottom: 10px;
+        font-size: 11px;
         width: 100%;
+        border: 1px solid #ccc;
         th {
             background: #e8e8e8;
             font-weight: bold;
-            padding: 6px;
+            padding: 3px 6px;
             text-align: left;
         }
         td{
             padding: 6px;
+        }
+        tr.footer {
+            th {
+                border-top: 1px solid #ccc;
+            }
+            td {
+                font-weight: bold;
+                background: #f3f3f3;
+                border-top: 1px solid #ccc;
+                padding: 3px 6px;
+            }
         }
     }
 }

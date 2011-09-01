@@ -544,7 +544,7 @@ exports.routes = {
                 var user = req.session.user,
                     tzOffset = -1*parseInt(req.param('timezoneOffset', 10))/60,
                     time = req.param('time') || 'week-1',
-                    from, interval, now = new Date(),
+                    from, interval, now = new Date(), fillBlanks=true,
                     options = {},
                     query = {
                         page_id: {$in: user.manages}
@@ -564,12 +564,19 @@ exports.routes = {
                 switch( time[0] ){
                     case 'year':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -365 * time[1] )
-                        interval = 'Date';
+                        fillBlanks = false;
+                        interval = 'Month';
                         break;
                     
                     case 'month':
                         from = DateUtil.add( new Date(), DateUtil.DAY, -30 * time[1] )
-                        interval = 'Date';
+                        if( time[1] > 2 ){
+                            fillBlanks = false;
+                            interval = 'Month';
+                        }
+                        else{
+                            interval = 'Date';
+                        }
                         break;
                     
                     case 'week':
@@ -598,6 +605,7 @@ exports.routes = {
                     timezoneOffset: tzOffset,
                     interval: interval,
                     query: query,
+                    fillBlanks: fillBlanks,
                     model: model,
                     from: from
                 };
