@@ -523,7 +523,7 @@ exports.routes = {
         }
     },
     
-    '/beta/page/image' : {
+    '/admin/page/image' : {
         post : {
             handler : function(req, res){
                 
