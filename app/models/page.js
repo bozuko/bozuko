@@ -226,6 +226,9 @@ Page.method('canUserCheckin', function(user, callback){
 
     var self = this;
     
+    // During load tests always allow the checkin
+    if (Bozuko.config.test_mode && Bozuko.env() == 'development') return callback(null, true);
+
     var page_thresh = Date.now() - Bozuko.cfg('checkin.duration.page', DateUtil.HOUR * 4 ),
         user_thresh = Date.now() - Bozuko.cfg('checkin.duration.user', DateUtil.MINUTE * 15 ),
         travel_thresh = Date.now() - Bozuko.cfg('checkin.travel.reset', DateUtil.HOUR * 10 )
