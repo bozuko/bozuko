@@ -80,7 +80,7 @@ module.exports = {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
             secret: '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',
-            bucket: 'bozuko_playground'
+            bucket: 'bozukopg'
         }
     },
 
