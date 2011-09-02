@@ -103,7 +103,6 @@ exports.routes = {
                         '/css/desktop/business/style.css?v2',
                         '/css/desktop/admin/app.css'
                     );
-                    
                     return res.render('beta/index.jade');
                 });
             }
