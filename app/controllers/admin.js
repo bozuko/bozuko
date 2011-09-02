@@ -581,11 +581,12 @@ exports.routes = {
                             sy = h > w ? parseInt((h-w)/2,10) : 0,
                             img = GD.createTrueColor(s,s);
                         
-                        var color = img.colorAllocate(245,245,245);
-                        img.filledRectangle(0,0,s,s,color);
+                        //var color = img.colorAllocate(245,245,245);
+                        //img.filledRectangle(0,0,s,s,color);
                         image.copyResampled(img, 0, 0, sx, sy, s, s, sw, sh);
-                        var savedPath = file.path.replace(/\..*$/, '-processed.jpeg');
-                        return img.saveJpeg(savedPath, 100, function(error){
+                        image.saveAlpha(1);
+                        var savedPath = file.path.replace(/\..*$/, '_processed.png');
+                        return img.savePng(savedPath, 1, function(error){
                             if( error ){
                                 return res.sendEncoded( {success: false, err: "error saving the image"} );
                             }
@@ -593,7 +594,7 @@ exports.routes = {
                             var path = '/pages/'+id+'/image/'+Path.basename(savedPath);
                             return s3.put(savedPath, path, {
                                 'x-amz-acl':'public-read',
-                                'Content-Type':'image/jpeg'
+                                'Content-Type':'image/png'
                             }, function(error, url){
                                 
                                 fs.unlinkSync(file.path);
