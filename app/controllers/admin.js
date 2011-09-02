@@ -878,8 +878,6 @@ exports.routes = {
                                         prizes.forEach(function(prize){
                                             
                                             var user = user_map[String(prize.user_id)];
-                                            
-                                            console.error( require('util').inspect(user));
                                             if( !user || !user.service || !user.service('facebook') ){
                                                 console.error('User without a facebook account? '+user.name+' ('+user._id+')');
                                                 return;
