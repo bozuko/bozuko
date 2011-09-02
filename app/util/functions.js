@@ -19,7 +19,7 @@ function clone(obj) {
 
 function filter(data){
     
-    if( data && data.toJSON ) original_data = data.toJSON();
+    if( data && data.toJSON ) data = data.toJSON();
     
     if( arguments.length > 1 && data){
         var tmp={};
