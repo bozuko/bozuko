@@ -9,11 +9,13 @@ function indexOf(haystack, needle){
 }
 
 
-function filter(data){
+function filter(_data){
     
-    if( data && data.toJSON ) data = data.toJSON();
+    var ret, data;
+    
+    if( _data && _data.toJSON ) data = _data.toJSON();
 
-    if( arguments.length > 1 && data){
+    if( arguments.length > 1 && _data){
         var tmp={};
         [].slice.call(arguments,1).forEach(function(field){
             tmp[field] = data[field];
@@ -21,13 +23,17 @@ function filter(data){
         data = tmp;
     }
 
-    if( Array.isArray(data)){
-        data.forEach(function(item){filter(item);});
+    if( Array.isArray(_data)){
+        data = [];
+        _data.forEach(function(item){
+            data.push(filter(item));
+        });
     }
-    else if( data && 'object' === typeof data ){
-        Object.keys(data).forEach(function(key){
+    else if( _data && 'object' === typeof _data ){
+        data = {};
+        Object.keys(_data).forEach(function(key){
             if( ~key.indexOf('.') ){
-                delete data[key];
+                return;
             }
             else{
                 data[key] = filter(data[key]);
