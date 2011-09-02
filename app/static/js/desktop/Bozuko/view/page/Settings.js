@@ -243,6 +243,9 @@ Ext.define('Bozuko.view.page.Settings' ,{
                                 // do something..
                                 // me._imageDialog.close();
                                 me.record.set('image', action.result.url);
+                                if( me.down('[name=image]') ){
+                                    me.down('[name=image]').setValue( action.result.url );
+                                }
                                 me.fireEvent('save', me);
                                 me._imageDialog.close();
                             },

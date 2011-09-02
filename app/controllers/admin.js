@@ -4,6 +4,10 @@ var facebook    = Bozuko.require('util/facebook'),
     url         = require('url'),
     spawn       = require('child_process').spawn,
     sys         = require('sys'),
+    Path        = require('path'),
+    s3          = Bozuko.require('util/s3'),
+    GD          = require('node-gd'),
+    fs          = require('fs'),
     ObjectId    = require('mongoose').Types.ObjectId,
     filter      = Bozuko.require('util/functions').filter,
     merge       = Bozuko.require('util/functions').merge,
@@ -553,8 +557,6 @@ exports.routes = {
                     if( ext == '.jpg') ext = '.jpeg';
                     ext = ext.replace(/\./,'').replace(/^[a-z]/, function(m0){ return m0.toUpperCase();} );
                     
-                    console.error('openning with function open'+ext+' path: '+file.path);
-                    
                     // resize as necessary and crop off any extra
                     return GD['open'+ext]( file.path, function(err, image, path){
                         if( err ){
@@ -565,11 +567,11 @@ exports.routes = {
                             h = image.height;
                             
                         if( w < 50 || h < 50 ){
-                            return res.send( htmlEntities(JSON.stringify({success: false, err: 'Image is too small'})) );
+                            return res.sendEncoded({success: false, err: 'Image is too small'});
                         }
                         // guess it can't really too big, for now...
                         if( w > 1400 || h > 1400 ){
-                            return res.send( htmlEntities(JSON.stringify({success: false, err: 'Image is too big.'})) );
+                            return res.sendEncoded({success: false, err: 'Image is too big.'});
                         }
                         
                         var s = Math.min( w, h, 100 ),
