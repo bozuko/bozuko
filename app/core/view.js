@@ -10,12 +10,12 @@ var http            = require('http'),
 var expressRender = http.ServerResponse.prototype.render;
 http.ServerResponse.prototype.render = function(view, locals, fn, parent){
     
-    var global_locals = {
-        user            :this.req.session.user||false
-    };
-    locals = merge(global_locals, locals || {} );
+    locals = locals || {};
+    locals.user = this.req.session.user||false
+    
     var device = locals.device || this.req.session.device;    
     view = device+'/'+view;
+    
     return expressRender.call( this, view, locals, fn, parent );
 };
 
