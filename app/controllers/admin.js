@@ -1020,7 +1020,7 @@ exports.routes = {
                     objects.entries.forEach(function(entry){
                         var result = filter(entry),
                             user = objects.user_map[String(entry.user_id)],
-                            rfiltered_user = filter( user, 'name', 'image' )
+                            filtered_user = filter( user, 'name', 'image' )
                             ;
                         
                         result.user = filtered_user;
