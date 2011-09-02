@@ -34,22 +34,57 @@ Ext.define('Bozuko.view.page.Settings' ,{
                 }],
                 items:[{
                     title           :'Basic Information',
-                    defaults        :{
-                        border          :false,
-                        anchor          :'0'
-                    },
+                    layout          :'hbox',
+                    
                     items: [{
-                        xtype           :'textfield',
-                        name            :'name',
-                        fieldLabel      :'Name'
-                    },{
-                        xtype           :'textfield',
-                        name            :'category',
-                        fieldLabel      :'Category'
-                    },{
-                        xtype           :'textfield',
-                        name            :'website',
-                        fieldLabel      :'Website'
+                        xtype           :'container',
+                        border          :false,
+                        autoHeight      :true,
+                        layout          :'anchor',
+                        flex            :1,
+                        defaults        :{
+                            border          :false,
+                            anchor          :'0'
+                        },
+                        items:[{
+                        },{
+                            xtype           :'textfield',
+                            name            :'name',
+                            fieldLabel      :'Name'
+                        },{
+                            xtype           :'textfield',
+                            name            :'category',
+                            fieldLabel      :'Category'
+                        },{
+                            xtype           :'textfield',
+                            name            :'website',
+                            fieldLabel      :'Website'
+                        }]
+                    },{xtype:'splitter', width:10},{
+                        xtype           :'container',
+                        ref             :'profile-pic-ct',
+                        border          :false,
+                        fieldLabel      :'Profile Image',
+                        layout          :{
+                            type            :'vbox',
+                            align           :'center'
+                        },
+                        autoHeight      :true,
+                        labelAlign      :'top',
+                        width           :100,
+                        height          :106,
+                        items : [{
+                            xtype           :'component',
+                            ref             :'profile-pic',
+                            tpl             :[
+                                '<img src="{image}" height="80" />'
+                            ]
+                        },{
+                            xtype           :'button',
+                            text            :'Change Image',
+                            handler         :me.openImageDialog,
+                            scope           :me
+                        }]
                     }]
                 },{
                     title           :'Address',
@@ -132,9 +167,101 @@ Ext.define('Bozuko.view.page.Settings' ,{
         me.callParent(arguments);
         if( me.record ){
             me.loadRecord( me.record );
+            
+            var fixProfilePic = Ext.Function.createBuffered(function(){
+                me.down('[ref=profile-pic-ct]').doLayout();
+                me.down('[ref=profile-pic-ct]').doComponentLayout();
+            },200);
+            
+            me.record.on('save', fixProfilePic);
+            me.on('destroy', function(){
+                me.record.un('save', fixProfilePic);
+            });
         }
         var pp = me.down('pagepreview');
         me.on('activate', pp.fixImage, pp);
+    },
+    
+    openImageDialog : function(){
+        var me = this;
+        if( !me._imageDialog ){
+            me._imageDialog = Ext.create('Ext.window.Window',{
+                title           :'Change Profile Picture',
+                layout          :'fit',
+                width           :450,
+                modal           :true,
+                autoHeight      :true,
+                items           :[{
+                    xtype           :'form',
+                    layout          :'hbox',
+                    url             :Bozuko.Router.route('/page/image?'+Date.now()),
+                    baseParams      :{
+                        page_id         :me.record.get('_id')
+                    },
+                    autoHeight      :true,
+                    bodyPadding     :10,
+                    border          :false,
+                    items           :[{
+                        xtype           :'component',
+                        width           :100,
+                        tpl             :new Ext.XTemplate(
+                            '<img src="{image}" height="70" />'
+                        ),
+                        data            :me.record.data
+                    },{
+                        xtype           :'container',
+                        flex            :1,
+                        autoHeight      :true,
+                        border          :false,
+                        layout          :'anchor',
+                        defaults        :{anchor: '0'},
+                        items :[{
+                            xtype           :'component',
+                            html            :'Please choose a new profile image from your computer and then hit "Upload". '+
+                                             '<br /><br /><span style="font-size:11px; color: #666;">The image should be 100px x 100px.</span><br />'
+                        },{
+                            xtype           :'filefield',
+                            name            :'image',
+                            hideLabel       :true,
+                            buttonText      :'Select Image...'
+                        }]
+                    }]
+                }],
+                
+                buttons: [{
+                    text            :'Cancel',
+                    handler         :function(){
+                        me._imageDialog.close();
+                    }
+                },{
+                    text            :'Upload',
+                    handler         :function(){
+                        me._imageDialog.setLoading('Uploading...');
+                        me._imageDialog.down('form').submit({
+                            success : function(form, action){
+                                me._imageDialog.setLoading(false);
+                                // do something..
+                                // me._imageDialog.close();
+                                me.record.set('image', action.result.url);
+                                me.fireEvent('save', me);
+                                me._imageDialog.close();
+                            },
+                            failure : function(form, action){
+                                me._imageDialog.setLoading(false);
+                                alert(action.result.err);
+                            }
+                        })
+                    }
+                }],
+                
+                listeners : {
+                    destroy         :function(){
+                        delete me._imageDialog;
+                    }
+                }
+            });
+        }
+        me._imageDialog.show();
     },
     
     loadRecord : function( record ){
@@ -143,6 +270,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
         me.callParent(arguments );
         // lets fill out the sub stuff too
         me.record = record;
+        me.down('[ref=profile-pic]').update(me.record.data);
         
         var location = record.get('location');
         var values = {};

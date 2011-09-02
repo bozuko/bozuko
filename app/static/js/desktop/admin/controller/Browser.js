@@ -199,7 +199,7 @@ Ext.define('Browser.controller.Browser' ,{
             methodCombo = this.methodCombo;
             
         
-        var pos = formPanel.items.indexOf( methodCombo );
+        var pos = Ext.Array.indexOf(formPanel.items, methodCombo );
         
         while(formPanel.items.length > pos+1){
             var item = formPanel.items.items[pos+1];

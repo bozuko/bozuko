@@ -36,6 +36,7 @@ Ext.define('Bozuko.lib.form.field.Duration', {
                 width           :80,
                 ref             :'unit',
                 xtype           :'combo',
+                mode            :'local',
                 triggerAction   :'all',
                 editable        :false,
                 forceSelection  :true,

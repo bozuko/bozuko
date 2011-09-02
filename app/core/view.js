@@ -1,4 +1,5 @@
 var http            = require('http'),
+    htmlEntities    = Bozuko.require('util/functions').htmlEntities,
     merge           = require('connect').utils.merge;
 
 /**
@@ -28,3 +29,9 @@ http.ServerResponse.prototype.partial = function(){
     return ret;
 };
 */
+
+
+// also, lets add a utility function for sending encoded json
+http.ServerResponse.prototype.sendEncoded = function(data){
+    return this.send( htmlEntities( JSON.stringify(data) ) );
+};

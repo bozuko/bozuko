@@ -251,6 +251,40 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 }],
             'image' : [],
             'barcode' : [{
+                    xtype               :'combo',
+                    name                :'barcode_type',
+                    fieldLabel          :'Barcode Format',
+                    emptyText           :'What is the barcode format',
+                    allowBlank          :false,
+                    editable            :false,
+                    forceSelection      :true,
+                    displayField        :'display',
+                    valueField          :'value',
+                    mode                :'local',
+                    allowBlank          :false,
+                    store               :Ext.create('Ext.data.Store',{
+                        fields              :['value','display'],
+                        data                :[
+                            {value: 'ean',          display:'EAN-8, EAN-13'},
+                            {value: 'upc',          display:'UPC'},
+                            {value: 'isbn',         display:'ISBN'},
+                            {value: '39',           display:'Code 39'},
+                            {value: '93',           display:'Code 93'},
+                            {value: '128c',         display:'Code 128 C'},
+                            {value: '128b',         display:'Code 128 B'},
+                            {value: '128',          display:'Code 128'},
+                            {value: 'i25',          display:'Interleaved 2 of 5'},
+                            {value: 'cbr',          display:'Codabar'},
+                            {value: 'msi',          display:'MSI'},
+                            {value: 'pls',          display:'Plessey'}
+                        ]
+                    }),
+                    helpText            :[
+                        "<p>",
+                            "Please choose the format for your barcodes.",
+                        '</p>'
+                    ]
+                },{
                     xtype               :'codes',
                     name                :'barcodes',
                     fieldLabel          :'Barcodes',
@@ -277,7 +311,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                             '<tr><th>{code}</th><td>The code</td></tr>',
                             '<tr><th>{prize}</th><td>The prize name.</td></tr>',
                             '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
-                            '<tr><th>{email}</th><td>The users\s email.</td></tr>',
+                            '<tr><th>{email}</th><td>The user\s email.</td></tr>',
                         '</table>'
                     ]
                 },{
@@ -296,7 +330,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                             '<tr><th>{code}</th><td>The code</td></tr>',
                             '<tr><th>{prize}</th><td>The prize name.</td></tr>',
                             '<tr><th>{name}</th><td>The user\'s name.</td></tr>',
-                            '<tr><th>{email}</th><td>The users\s email.</td></tr>',
+                            '<tr><th>{email}</th><td>The user\s email.</td></tr>',
                         '</table>'
                     ]
                 },{
@@ -469,7 +503,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         }
         
         if( type == 'email'){
-            if( !~values.email_body.indexOf('{code}') ){
+            if( !~Ext.Array.indexOf(values.email_body,'{code}') ){
                 me.down('[name=email_body]').markInvalid();
                 return {
                     title: 'Email Code',

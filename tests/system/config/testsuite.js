@@ -167,7 +167,7 @@ var add_users = function(callback) {
 var pages = [
     // hookslides
     '181069118581729', 	// owl watch
-    '147180168638415', 	// middlesex
+    '103621403038522', 	// middlesex
     "111730305528832", 	// dunks
     // boston
     "108123539229568",	// hard rock
@@ -248,7 +248,7 @@ var add_contests = function(callback) {
 				contest.win_frequency = 1;
 				contest.entry_config.push({
 					type: 'facebook/checkin',
-					tokens: 3,
+					tokens: 3,	
 					enable_like: false,
 					duration: 1000 * 5
 				});

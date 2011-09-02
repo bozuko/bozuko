@@ -212,7 +212,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         var me = this;
         var buttons = [];
         
-        if( ~btns.indexOf('back') ) buttons.push({
+        if( ~Ext.Array.indexOf(btns,'back') ) buttons.push({
             text: 'Back',
             handler: function(){
                 me.fireEvent('back', me);
@@ -222,7 +222,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
         
         buttons.push('->');
         
-        if( ~btns.indexOf('next') ) buttons.push({
+        if( ~Ext.Array.indexOf(btns,'next') ) buttons.push({
             text: "Next",
             style: 'margin-right: 0',
             handler: function(){
@@ -231,7 +231,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/arrow-right-24.png'
         });
         
-        if( ~btns.indexOf('save') ) buttons.push({
+        if( ~Ext.Array.indexOf(btns,'save') ) buttons.push({
             text: 'Save',
             ref: 'save',
             style: 'margin-right: 0',
@@ -241,7 +241,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png'
         });
         
-        if( ~btns.indexOf('save-draft') ) buttons.push({
+        if( ~Ext.Array.indexOf(btns,'save-draft') ) buttons.push({
             text: 'Save as Draft',
             ref: 'save',
             style: 'margin-right: 0',
@@ -251,7 +251,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png'
         });
         
-        if( ~btns.indexOf('publish') ) buttons.push({
+        if( ~Ext.Array.indexOf(btns,'publish') ) buttons.push({
             text: 'Publish',
             style: 'margin-right: 0',
             handler: function(){

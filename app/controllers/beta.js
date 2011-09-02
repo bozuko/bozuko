@@ -7,6 +7,10 @@ var Content     = Bozuko.require('util/content'),
     indexOf     = Bozuko.require('util/functions').indexOf,
     filter      = Bozuko.require('util/functions').filter,
     array_map   = Bozuko.require('util/functions').map,
+    s3          = Bozuko.require('util/s3'),
+    GD          = require('node-gd'),
+    fs          = require('fs'),
+    Path        = require('path'),
     ObjectId    = require('mongoose').Types.ObjectId,
     XRegExp     = Bozuko.require('util/xregexp'),
     crypto      = require('crypto')
@@ -90,7 +94,7 @@ exports.routes = {
                     res.locals.user = user;
                     res.locals.page = page;
                     res.locals.scripts.unshift(
-                        '/js/ext-4.0/lib/ext-all-debug.js',
+                        '/js/ext-4.0/lib/ext-all.js',
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(
@@ -679,6 +683,93 @@ exports.routes = {
                         return res.send( {items: [page]} );
                     });
                 })
+            }
+        }
+    },
+    
+    '/beta/page/image' : {
+        post : {
+            handler : function(req, res){
+                
+                if( !req.form ){
+                    return res.sendEncoded({success:false, err:'no form'});
+                }
+                
+                return req.form.processed( function(err, fields, files){
+                    
+                    if( err ){
+                        return res.sendEncoded({success:false,err:err});
+                    }
+                    
+                    var id = fields['page_id'];
+                    if( !id ){
+                        return res.sendEncoded({success: false,err:'no page_id'});
+                    }
+                    if( !files['image'] ){
+                        return res.send({success: false,err:'no image uploaded'});
+                    }
+                    // lets just save this for now...
+                    var file = files['image'];
+                        
+                    // we need to do a couple things here...
+                    
+                    if( !~['.png','.jpg','.jpeg','.gif'].indexOf(Path.extname( file.filename ).toLowerCase()) ){
+                        return res.sendEncoded({success: false, err:'invalid image type'});
+                    }
+                    
+                    var ext = Path.extname( file.filename );
+                    if( ext == '.jpg') ext = '.jpeg';
+                    ext = ext.replace(/\./,'').replace(/^[a-z]/, function(m0){ return m0.toUpperCase();} );
+                    
+                    console.error('openning with function open'+ext+' path: '+file.path);
+                    
+                    // resize as necessary and crop off any extra
+                    return GD['open'+ext]( file.path, function(err, image, path){
+                        if( err ){
+                            return res.sendEncoded({success: false, err:'Error openning image'});
+                        }
+                        // lets get the size of this bad boy.
+                        var w = image.width,
+                            h = image.height;
+                            
+                        if( w < 50 || h < 50 ){
+                            return res.send( htmlEntities(JSON.stringify({success: false, err: 'Image is too small'})) );
+                        }
+                        // guess it can't really too big, for now...
+                        if( w > 1400 || h > 1400 ){
+                            return res.send( htmlEntities(JSON.stringify({success: false, err: 'Image is too big.'})) );
+                        }
+                        
+                        var s = Math.min( w, h, 100 ),
+                            sw = w > h ? h : w,
+                            sh = h > w ? w : h,
+                            sx = w > h ? parseInt((w-h)/2,10) : 0,
+                            sy = h > w ? parseInt((h-w)/2,10) : 0,
+                            img = GD.createTrueColor(s,s);
+                        
+                        var color = img.colorAllocate(245,245,245);
+                        img.filledRectangle(0,0,s,s,color);
+                        image.copyResampled(img, 0, 0, sx, sy, s, s, sw, sh);
+                        img.saveAlpha(1);
+                        var savedPath = file.path.replace(/\..*$/, '-processed.png');
+                        return img.savePng(savedPath, 0, function(error){
+                            if( error ){
+                                return res.sendEncoded( {success: false, err: "error saving the image"} );
+                            }
+                            
+                            var path = '/pages/'+id+'/image/'+Path.basename(savedPath);
+                            return s3.put(savedPath, path, {'x-amz-acl':'public-read'}, function(error, url){
+                                
+                                fs.unlinkSync(file.path);
+                                fs.unlinkSync(savedPath);
+                                
+                                return res.sendEncoded( {success: true, url: url} );
+                            });
+                        });
+                    });
+                    
+                    
+                });
             }
         }
     },

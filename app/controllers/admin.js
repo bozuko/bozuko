@@ -971,6 +971,9 @@ exports.routes = {
                     options ={}
                     ;
                     
+                // handle the timezoneoffset
+                now.setHours(now.getHours() + -1*(parseInt(req.param('timezoneOffset', 0),10)/ 60) ); 
+                    
                 if( req.param('page_id') ){
                     query.page_id = new ObjectId(req.param('page_id'));
                 }
@@ -984,7 +987,8 @@ exports.routes = {
                 
                 switch( time[0] ){
                     case 'year':
-                        from = DateUtil.add( new Date(), DateUtil.DAY, -365 * time[1] )
+                        DateUtil.add( new Date(), DateUtil.DAY, -365 * time[1] );
+                        from = new Date(now.getYear()-(time[1]),0,0);
                         fillBlanks = false;
                         interval = 'Month';
                         break;

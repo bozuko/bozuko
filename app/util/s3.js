@@ -1,26 +1,34 @@
 var knox = require('knox'),
+	merge = knox.utils.merge,
     fs = require('fs'),
     EventEmitter = require('events').EventEmitter
 ;
 
-var Client = module.exports = function() {
+var Client = function() {
     this.client = knox.createClient(Bozuko.config.amazon.s3);
 };
 
-exports.createClient = function() {
-    return new Client();
-};
-
-Client.prototype.put = function(filename, path, callback) {
+Client.prototype.put = function(filename, path, headers, callback) {
     var self = this;
+	
+	if( !callback && typeof headers == 'function' ){
+		callback = headers;
+		headers = {};
+	}
+	
     fs.readFile(filename, function(err, buf) {
         if (err) return callback(err);
+		
+		var h = merge({
+			'x-amz-acl':'private'
+		}, headers);
+		
+		h = merge(h,{
+			'Content-Length': buf.length,
+            'Content-Type': 'image/png'
+		});
 
-        var req = self.client.put(path, {
-            'Content-Length': buf.length,
-            'Content-Type': 'image/png',
-            'x-amz-acl': 'private'
-        });
+        var req = self.client.put(path, h);
 
         req.on('response', function(res) {
             if (res.statusCode != 200) {
@@ -28,7 +36,7 @@ Client.prototype.put = function(filename, path, callback) {
                 return callback(Bozuko.error('s3/put', path));
             }
 
-            return callback(null);
+            return callback(null, req.url, res);
         });
 
         req.on('error', function(err) {
@@ -36,7 +44,7 @@ Client.prototype.put = function(filename, path, callback) {
             return callback(Bozuko.error('s3/put', path));
         });
 
-        req.end(buf);
+        return req.end(buf);
     });
 };
 
@@ -64,7 +72,6 @@ Client.prototype.get = function(path, wstream) {
         res.on('error', function(error) {
             return err();
         });
-
     });
 
     req.on('error', function(error) {
@@ -95,4 +102,10 @@ Client.prototype.head = function(path, callback) {
     });
 
     req.end();
+};
+
+module.exports = new Client();
+module.exports.Client = Client;
+module.exports.createClient = function() {
+    return new Client();
 };
