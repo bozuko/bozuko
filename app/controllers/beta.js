@@ -757,7 +757,7 @@ exports.routes = {
                         image.copyResampled(img, 0, 0, sx, sy, s, s, sw, sh);
                         img.saveAlpha(1);
                         var savedPath = file.path.replace(/\..*$/, '-processed.png');
-                        return img.savePng(savedPath, 0, function(error){
+                        return img.savePng(savedPath, 1, function(error){
                             if( error ){
                                 return res.sendEncoded( {success: false, err: "error saving the image"} );
                             }
