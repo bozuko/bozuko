@@ -395,15 +395,17 @@ exports.routes = {
                                         var winners = [];
                                         prizes.forEach(function(prize){
                                             
-                                            var user = filter(user_map[String(prize.user_id)],'_id','name','image','email');
-                                            user.facebook_link = user_map[String(prize.user_id)].service('facebook').data.link;
-                                            user.friend_count = user_map[String(prize.user_id)].service('facebook').internal.friend_count;
+                                            var user = user_map[String(prize.user_id)],
+                                                filtered_user = filter(user,'_id','name','image','email');
+                                                
+                                            filtered_user.facebook_link = user.service('facebook').data.link;
+                                            filtered_user.friend_count = user.service('facebook').internal.friend_count;
                                             
                                             // create a winner object
                                             winners.push({
                                                 _id: prize.id,
                                                 prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
-                                                user: user,
+                                                user: filtered_user,
                                                 page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
                                                 contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
                                             });
@@ -527,10 +529,14 @@ exports.routes = {
                 }, function finish(error){
                     if( error ) return error.send( res );
                     objects.entries.forEach(function(entry){
-                        var result = filter(entry);
-                        result.user = filter( objects.user_map[String(entry.user_id)], 'name', 'image' );
-                        result.user.facebook_link = objects.user_map[String(entry.user_id)].service('facebook').data.link;
-                        result.user.friend_count = objects.user_map[String(entry.user_id)].service('facebook').internal.friend_count;
+                        var result = filter(entry),
+                            user = objects.user_map[String(entry.user_id)],
+                            rfiltered_user = filter( user, 'name', 'image' )
+                            ;
+                        
+                        result.user = filtered_user;
+                        result.user.facebook_link = user.service('facebook').data.link;
+                        result.user.friend_count = user.service('facebook').internal.friend_count;
                         result.contest = filter( objects.contest_map[String(entry.contest_id)], 'name' );
                         result.page = filter( objects.page_map[String(entry.page_id)], 'name' );
                         results.push(result);
