@@ -80,7 +80,7 @@ Ext.define('Bozuko.lib.PubSub',{
         var listener = me.listeners[event];
         if( listener[filterKey] ){
             // check for dups
-            if( !~listener[filterKey].callbacks.indexOf(callback) ){
+            if( !~Ext.Array.indexOf(listener[filterKey].callbacks,callback) ){
                 listener[filterKey].callbacks.push( callback );
             }
         }
@@ -111,7 +111,7 @@ Ext.define('Bozuko.lib.PubSub',{
             return;
         }
         var index = -1;
-        if( ~(index = listener[filterKey].callbacks.indexOf(callback)) ){
+        if( ~(index = Ext.Array.indexOf(listener[filterKey].callbacks,callback)) ){
             listener[filterKey].callbacks.splice(index,1);
         }
         if( !listener[filterKey].callbacks.length ){
@@ -127,8 +127,8 @@ Ext.define('Bozuko.lib.PubSub',{
             callbacks = [];
         // forget it
         if( !me.listening ) return;
-        if( ~me.canceled.indexOf(response.requestId) ){
-            me.canceled.splice( me.canceled.indexOf(response.requestId), 1);
+        if( ~Ext.Array.indexOf(me.canceled,response.requestId) ){
+            me.canceled.splice( Ext.Array.indexOf(me.canceled,response.requestId), 1);
             return;
         }
         if( success ){

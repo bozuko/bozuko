@@ -45,6 +45,11 @@ function map(ar, key){
     return _map;
 }
 
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+exports.htmlEntities = htmlEntities;
 exports.indexOf = indexOf;
 exports.filter = filter;
 exports.merge = object.merge;

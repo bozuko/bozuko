@@ -204,7 +204,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 break;
 
             case 'publish':
-                var url = '/admin/contests/'+record.getId()+'/publish';
+                var url = Bozuko.Router.route('/contests/'+record.getId()+'/publish');
                 Ext.Msg.confirm(
                     'Are you sure?',
                     'Are you sure you want to publish this campaign?',
@@ -305,7 +305,7 @@ Ext.define('Bozuko.controller.Contests' ,{
 
             case 'cancel':
 
-                var url = '/admin/contests/'+record.getId()+'/cancel';
+                var url = Bozuko.Router.route('/contests/'+record.getId()+'/cancel');
                  Ext.Msg.confirm(
                     'Are you sure?',
                     'Are you sure you want to cancel this campaign?',
@@ -474,7 +474,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                         contestsPanel.getLayout().setActiveItem(0);
                         contestsPanel.remove(activeBuilder);
                         
-                        var url = '/admin/contests/'+builder.contest.getId()+'/publish';
+                        var url = Bozuko.Router.route('/contests/'+builder.contest.getId()+'/publish');
                         contestsPanel.setLoading("Publishing... This may take a minute, please be patient");
                         
                         Ext.Ajax.request({

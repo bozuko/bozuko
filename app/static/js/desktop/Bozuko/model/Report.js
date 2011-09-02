@@ -14,7 +14,7 @@ Ext.define('Bozuko.model.Report', {
     
     fields: [
         {name:'_id',        type:'String'},
-        {name:'timestamp',  type:'Date'},
+        {name:'timestamp',  type:'Date',        dateFormat:'c'},
         {name:'count',      type:'Number',      defaultValue: 0}
     ]
 }, function(){

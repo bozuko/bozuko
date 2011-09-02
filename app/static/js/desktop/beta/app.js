@@ -2,7 +2,7 @@ Ext.Loader.setConfig({enabled:true});
 Ext.Loader.setPath('Ext.ux', '/js/ext-4.0/ux');
 Ext.Loader.setPath('Bozuko', '/js/desktop/Bozuko');
 
-Ext.Loader.require('Bozuko.lib.Router', function(){
+Ext.Loader.require(['Bozuko.lib.Overrides','Bozuko.lib.Router'], function(){
     Bozuko.Router.setBasePath('/beta');
     Ext.Loader.require('Bozuko.model.Page', function(){
         Bozuko.model.Page.load( Bozuko.beta.page_id, {
