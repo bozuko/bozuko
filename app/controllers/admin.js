@@ -617,7 +617,7 @@ exports.routes = {
                     prizes.forEach(function(prize, i){
                         var old, doc;
                         if( prize._id && (old = contest.prizes.id(prize._id)) ){
-                            doc = old.doc;
+                            doc = old._doc;
                             for( var p in prize ){
                                 if( prize.hasOwnProperty(p) ){
                                     doc[p] = prize[p];
@@ -630,7 +630,7 @@ exports.routes = {
                     consolation_prizes.forEach(function(consolation_prize, i){
                         var old, doc;
                         if( consolation_prize._id && (old = contest.consolation_prizes.id(consolation_prize._id)) ){
-                            doc = old.doc;
+                            doc = old._doc;
                             for( var p in consolation_prize ){
                                 if( consolation_prize.hasOwnProperty(p) ){
                                     doc[p] = consolation_prize[p];

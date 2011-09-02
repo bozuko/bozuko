@@ -19,6 +19,7 @@ Sequence.static('next', function(name, callback){
         },
         function(error, object){
             if( error ) return callback( error );
+            if (!object) return callback(new Error('Failed to retrieve object'));
             return callback(null, object.value);
         }
     );
