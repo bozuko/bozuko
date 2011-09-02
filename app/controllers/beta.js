@@ -765,7 +765,7 @@ exports.routes = {
                             var path = '/pages/'+id+'/image/'+Path.basename(savedPath);
                             return s3.put(savedPath, path, {
                                 'x-amz-acl':'public-read',
-                                'Content-Type':'image/'+ext.replace(/\./,'')
+                                'Content-Type':'image/png'
                             }, function(error, url){
                                 
                                 fs.unlinkSync(file.path);
