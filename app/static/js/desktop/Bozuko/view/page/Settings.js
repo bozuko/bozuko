@@ -76,9 +76,14 @@ Ext.define('Bozuko.view.page.Settings' ,{
                         items : [{
                             xtype           :'component',
                             ref             :'profile-pic',
-                            tpl             :[
-                                '<img src="{image}" height="80" />'
-                            ]
+                            tpl             :new Ext.XTemplate(
+                                '<img src="{[this.image(values.image)]}" height="60" />',
+                                {
+                                    image:function(value){
+                                        return value.replace(/type=large/,'type=square');
+                                    }
+                                }
+                            )
                         },{
                             xtype           :'button',
                             text            :'Change Image',

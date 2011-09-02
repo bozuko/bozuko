@@ -713,7 +713,7 @@ exports.routes = {
                         return res.sendEncoded({success: false,err:'no page_id'});
                     }
                     if( !files['image'] ){
-                        return res.send({success: false,err:'no image uploaded'});
+                        return res.sendEncoded({success: false,err:'no image uploaded'});
                     }
                     // lets just save this for now...
                     var file = files['image'];
