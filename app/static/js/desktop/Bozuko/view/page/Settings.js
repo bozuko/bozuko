@@ -72,7 +72,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
                         autoHeight      :true,
                         labelAlign      :'top',
                         width           :100,
-                        height          :106,
+                        height          :90,
                         items : [{
                             xtype           :'component',
                             ref             :'profile-pic',
@@ -210,7 +210,12 @@ Ext.define('Bozuko.view.page.Settings' ,{
                         xtype           :'component',
                         width           :100,
                         tpl             :new Ext.XTemplate(
-                            '<img src="{image}" height="70" />'
+                            '<img src="{[this.image(values.image)]}" height="70" />',
+                            {
+                                image:function(value){
+                                    return value.replace(/type=large/,'type=square');
+                                }
+                            }
                         ),
                         data            :me.record.data
                     },{
