@@ -875,6 +875,10 @@ exports.routes = {
                                         prizes.forEach(function(prize){
                                             
                                             var user = filter(user_map[String(prize.user_id)],'_id','name','image','email');
+                                            if( !user.service('facebook') ){
+                                                console.error('User without a facebook account? '+user.name+' ('+user._id+')');
+                                                return;
+                                            }
                                             user.facebook_link = user_map[String(prize.user_id)].service('facebook').data.link;
                                             user.friend_count = user_map[String(prize.user_id)].service('facebook').internal.friend_count;
                                             
