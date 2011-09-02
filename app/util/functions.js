@@ -36,7 +36,7 @@ function filter(_data){
                 return;
             }
             else{
-                data[key] = filter(data[key]);
+                data[key] = filter(_data[key]);
             }
         });
     }
