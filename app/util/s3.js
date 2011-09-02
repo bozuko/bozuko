@@ -20,12 +20,12 @@ Client.prototype.put = function(filename, path, headers, callback) {
         if (err) return callback(err);
 		
 		var h = merge({
-			'x-amz-acl':'private'
+			'x-amz-acl':'private',
+			'Content-Type': 'image/png'
 		}, headers);
 		
 		h = merge(h,{
-			'Content-Length': buf.length,
-            'Content-Type': 'image/png'
+			'Content-Length': buf.length
 		});
 
         var req = self.client.put(path, h);
