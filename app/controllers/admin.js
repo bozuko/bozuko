@@ -584,7 +584,6 @@ exports.routes = {
                         var color = img.colorAllocate(245,245,245);
                         img.filledRectangle(0,0,s,s,color);
                         image.copyResampled(img, 0, 0, sx, sy, s, s, sw, sh);
-                        img.saveAlpha(1);
                         var savedPath = file.path.replace(/\..*$/, '-processed.jpeg');
                         return img.saveJpeg(savedPath, 100, function(error){
                             if( error ){
