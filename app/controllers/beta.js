@@ -93,6 +93,7 @@ exports.routes = {
                     res.locals.html_classes.push('beta-app');
                     res.locals.user = user;
                     res.locals.page = page;
+                    
                     res.locals.scripts.unshift(
                         '/js/ext-4.0/lib/ext-all.js',
                         '/js/desktop/beta/app.js'
@@ -102,7 +103,8 @@ exports.routes = {
                         '/css/desktop/business/style.css?v2',
                         '/css/desktop/admin/app.css'
                     );
-                    return res.render('beta/index');
+                    
+                    return res.render('beta/index.jade');
                 });
             }
         }
@@ -721,8 +723,6 @@ exports.routes = {
                     if( ext == '.jpg') ext = '.jpeg';
                     ext = ext.replace(/\./,'').replace(/^[a-z]/, function(m0){ return m0.toUpperCase();} );
                     
-                    console.error('openning with function open'+ext+' path: '+file.path);
-                    
                     // resize as necessary and crop off any extra
                     return GD['open'+ext]( file.path, function(err, image, path){
                         if( err ){
@@ -733,11 +733,11 @@ exports.routes = {
                             h = image.height;
                             
                         if( w < 50 || h < 50 ){
-                            return res.send( htmlEntities(JSON.stringify({success: false, err: 'Image is too small'})) );
+                            return res.sendEncoded({success: false, err: 'Image is too small'});
                         }
                         // guess it can't really too big, for now...
                         if( w > 1400 || h > 1400 ){
-                            return res.send( htmlEntities(JSON.stringify({success: false, err: 'Image is too big.'})) );
+                            return res.sendEncoded({success: false, err: 'Image is too big.'});
                         }
                         
                         var s = Math.min( w, h, 100 ),
