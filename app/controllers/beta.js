@@ -756,7 +756,7 @@ exports.routes = {
                         img.filledRectangle(0,0,s,s,color);
                         image.copyResampled(img, 0, 0, sx, sy, s, s, sw, sh);
                         img.saveAlpha(1);
-                        var savedPath = file.path.replace(/\..*$/, '-processed.png');
+                        var savedPath = file.path.replace(/\..*$/, '-processed.jpeg');
                         return img.savePng(savedPath, 100, function(error){
                             if( error ){
                                 return res.sendEncoded( {success: false, err: "error saving the image"} );
@@ -765,7 +765,7 @@ exports.routes = {
                             var path = '/pages/'+id+'/image/'+Path.basename(savedPath);
                             return s3.put(savedPath, path, {
                                 'x-amz-acl':'public-read',
-                                'Content-Type':'image/png'
+                                'Content-Type':'image/jpeg'
                             }, function(error, url){
                                 
                                 fs.unlinkSync(file.path);
