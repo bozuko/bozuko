@@ -726,10 +726,10 @@ exports.routes = {
                     
                     var ext = Path.extname( file.filename );
                     if( ext == '.jpg') ext = '.jpeg';
-                    ext = ext.replace(/\./,'').replace(/^[a-z]/, function(m0){ return m0.toUpperCase();} );
+                    var Ext = ext.replace(/\./,'').replace(/^[a-z]/, function(m0){ return m0.toUpperCase();} );
                     
                     // resize as necessary and crop off any extra
-                    return GD['open'+ext]( file.path, function(err, image, path){
+                    return GD['open'+Ext]( file.path, function(err, image, path){
                         if( err ){
                             return res.sendEncoded({success: false, err:'Error openning image'});
                         }
@@ -763,7 +763,10 @@ exports.routes = {
                             }
                             
                             var path = '/pages/'+id+'/image/'+Path.basename(savedPath);
-                            return s3.put(savedPath, path, {'x-amz-acl':'public-read'}, function(error, url){
+                            return s3.put(savedPath, path, {
+                                'x-amz-acl':'public-read',
+                                'content-type':'image/'+ext.replace(/\./,'')
+                            }, function(error, url){
                                 
                                 fs.unlinkSync(file.path);
                                 fs.unlinkSync(savedPath);
