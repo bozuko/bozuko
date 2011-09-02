@@ -34,7 +34,7 @@ exports.routes = {
                     transfer_objects[key] = {
                         doc: transfer.doc,
                         def: transfer.def
-                    }
+                    };
                 });
                 
                 Object.keys(Bozuko.links()).forEach(function(key){

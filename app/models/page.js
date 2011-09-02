@@ -46,7 +46,8 @@ var Page = module.exports = new Schema({
         signed              :{type:Boolean, default: false},
         signed_by           :{type:ObjectId},
         signed_date         :{type:Date}
-    }
+    },
+    registered          :{type:Boolean}
 }, {safe:null});
 
 Page.index({admins: 1});
@@ -683,7 +684,7 @@ Page.static('search', function(options, callback){
             if( options.user ){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
-            if( page.doc ){
+            if( page._doc ){
                 page.registered = true;
             }
             if (!page.active && page._id) {
