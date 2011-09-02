@@ -8,14 +8,20 @@ function indexOf(haystack, needle){
     return found ? i+0 : -1;
 }
 
+function clone(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
 
-function filter(_data){
+function filter(data){
     
-    var ret, data;
+    if( data && data.toJSON ) original_data = data.toJSON();
     
-    if( _data && _data.toJSON ) data = _data.toJSON();
-
-    if( arguments.length > 1 && _data){
+    if( arguments.length > 1 && data){
         var tmp={};
         [].slice.call(arguments,1).forEach(function(field){
             tmp[field] = data[field];
@@ -23,20 +29,16 @@ function filter(_data){
         data = tmp;
     }
 
-    if( Array.isArray(_data)){
-        data = [];
-        _data.forEach(function(item){
-            data.push(filter(item));
-        });
+    if( Array.isArray(data)){
+        data.forEach(function(item){filter(item);});
     }
-    else if( _data && 'object' === typeof _data ){
-        data = {};
-        Object.keys(_data).forEach(function(key){
+    else if( data && 'object' === typeof data ){
+        Object.keys(data).forEach(function(key){
             if( ~key.indexOf('.') ){
-                return;
+                delete data[key];
             }
             else{
-                data[key] = filter(_data[key]);
+                data[key] = filter(data[key]);
             }
         });
     }
