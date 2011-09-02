@@ -874,20 +874,26 @@ exports.routes = {
                                         var winners = [];
                                         prizes.forEach(function(prize){
                                             
-                                            var user = filter(user_map[String(prize.user_id)],'_id','name','image','email');
+                                            var user = user_map[String(prize.user_id)];
+                                            
                                             console.error( require('util').inspect(user));
                                             if( !user || !user.service || !user.service('facebook') ){
                                                 console.error('User without a facebook account? '+user.name+' ('+user._id+')');
                                                 return;
                                             }
-                                            user.facebook_link = user_map[String(prize.user_id)].service('facebook').data.link;
-                                            user.friend_count = user_map[String(prize.user_id)].service('facebook').internal.friend_count;
+                                            
+                                            var filtered_user = filter(user_map[String(prize.user_id)],'_id','name','image','email');
+                                            
+                                            filtered_user.facebook_link = user_map[String(prize.user_id)].service('facebook').data.link;
+                                            filtered_user.friend_count = user_map[String(prize.user_id)].service('facebook').internal.friend_count;
+                                            
+                                            
                                             
                                             // create a winner object
                                             winners.push({
                                                 _id: prize.id,
                                                 prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
-                                                user: user,
+                                                user: filtered_user,
                                                 page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
                                                 contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
                                             });
