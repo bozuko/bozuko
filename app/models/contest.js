@@ -1027,19 +1027,19 @@ Contest.method('savePlay', function(opts, callback) {
     opts.play = play;
 
     return play.save(function(err) {
-        Bozuko.publish('contest/play', play.doc );
+        Bozuko.publish('contest/play', play._doc );
         if( !play.win ){
-            Bozuko.publish('contest/lose', play.doc );
+            Bozuko.publish('contest/lose', play._doc );
             if( play.consolation ){
-                Bozuko.publish('contest/consolation', play.doc );
+                Bozuko.publish('contest/consolation', play._doc );
             }
         }
         else{
             if( play.free_play ){
-                Bozuko.publish('contest/free_play', play.doc );
+                Bozuko.publish('contest/free_play', play._doc );
             }
             else{
-                Bozuko.publish('contest/win', play.doc );
+                Bozuko.publish('contest/win', play._doc );
             }
         }
         console.log("play save error = "+inspect(err));
