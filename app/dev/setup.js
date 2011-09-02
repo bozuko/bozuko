@@ -201,7 +201,7 @@ function setupPlace(place, featured, cb){
                         prize.duration = 1000*60*60*24;
                     });
                     contest2.generateResults(function(error){
-                        if( error ) console.error(error, contest2.doc );
+                        if( error ) console.error(error, contest2._doc );
                         cb();
                     });
 
