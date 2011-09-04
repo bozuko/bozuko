@@ -88,10 +88,12 @@ Restart ssh for the changes to take effect.
     restart ssh
 
 ### Configure bozuko upstart script for the proper user
+*Remove this file if this is a db server.*
 
     emacs /etc/init/bozuko.conf
 
 ### Configure bozuko logrotate script for the proper user
+*Remove this file if this is a db server.*
 
     emacs /etc/logrotate.d/bozuko
 
