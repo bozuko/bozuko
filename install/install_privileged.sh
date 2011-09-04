@@ -1,6 +1,7 @@
 if [ $1 ]; then
     cluster=$1
 else
+    "cluster not set for install. Defaulting to 'playground'"
     cluster=playground
 fi
 

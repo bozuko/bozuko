@@ -1,27 +1,22 @@
 ## Privileged Install (root)
 Run the following as root to setup a brand new image
-This page will use **api** as the example user and **db1** as the hostname
-
+This page will use **playground** as the example user and **db1** as the hostname
 
 #### Install emacs
     apt-get install emacs
 
-#### Create proper user (bozuko, api, etc...)
-     adduser api 
+#### Create proper user (bozuko, playground, etc...)
+     adduser playground 
 
 #### Give the user sudo privileges
 
 Add the user to the sudo group by editing **/etc/group**
 
-    sudo:x:37:api
+    sudo:x:37:playground
 
 #### Set the hostname
     echo db1 > /etc/hostname
     hostname -F /etc/hostname
-
-Open /etc/hosts and add the hostname to the end of the localhost line
-
-    127.0.0.1 localhost db1 db1.bozuko.com
 
 #### Prevent DHCP from setting the hostname
     emacs /etc/default/dhcpcd 
@@ -42,12 +37,13 @@ http://help.github.com/linux-key-setup/
 
     cat ~/.ssh/id_rsa.pub
 
-#### Clone the bozuko repo and install all dependencies that require root privileges
-    BOZ_DIR=~api/bozuko
-    git clone git@github.com:bozuko/bozuko.git $BOZ_DIR
-    chown -hR api:api $BOZ_DIR
-    cd $BOZ_DIR/install
-    ./install_privileged.sh
+#### Clone the bozuko repo and install all dependencies that require root privileges 
+
+Ensure you call install_priveleged.sh with either **playground** or **production**. Install defaults to playground.
+    
+    git clone git@github.com:bozuko/bozuko.git
+    cd bozuko/install
+    ./install_privileged.sh playground
 
 #### Setup static networking for the private IP 
 
@@ -59,18 +55,17 @@ Add the following to **/etc/network/interfaces**. Use the address and netmask fr
     netmask Y.Y.Y.Y
 
 Restart networking for the changes to take effect.
-
     /etc/init.d/networking restart
+
 
 ### Lock Down SSH
 
-First you need to create a .ssh directory for the user since he hasn't logged in yet.
+First you need to create a .ssh directory for the user since he hasn't logged in yet. Note for dbs, the user doesn't need a key on this machine as Bozuko will not be installed there.
 
-    mkdir ~api/.ssh && chown -hR api:api ~api/.ssh
-
-Setup ssh keys for login on your local machine and install them as authorized keys for the appropriate user.
-
-Follow the instructions on the [Security](https://github.com/bozuko/bozuko/wiki/Security) wiki page.
+    SSH_DIR=~playground/.ssh 
+    mkdir $SSH_DIR
+    cp ~/bozuko/install/config/playground/authorized_keys $SSH_DIR/authorized_keys
+    chown -hR playground:playground $SSH_DIR
 
 Edit **/etc/ssh/sshd_config** for the following operations.
 
@@ -87,44 +82,9 @@ Restart ssh for the changes to take effect.
 
     restart ssh
 
-### Configure bozuko upstart script for the proper user
-*Remove this file if this is a db server.*
 
-    emacs /etc/init/bozuko.conf
-
-### Configure bozuko logrotate script for the proper user
-*Remove this file if this is a db server.*
-
-    emacs /etc/logrotate.d/bozuko
-
-## User Install
-
-Login as the appropriate user and run the following commands
-
-
-#### Generate ssh keys for your user. **Always use a password!**
-    
-    ssh-keygen -t rsa -b 4096 -C "api@db1.bozuko.com"
-
-#### Add the key to the bozuko github account.
-    
-    cat ~/.ssh/id_rsa.pub
-
-####Install bozuko
-
-    cd ~/bozuko/install
-    ./install.sh
-    . ~/.bashrc
-
-
-## DB configuration
-
-All DB configruation should be done as root. The replica set name is **production** in this example.
-
-If this server is not a DB, config server or arbiter you should uninstall mongodb. 
-
-    apt-get remove mongodb-10gen
-
+## Configure the DB
+All DB configruation should be done as root. The replica set name is **playground** in this example.
 
 #### Configure mongodb to start in replica set mode
 
@@ -132,7 +92,7 @@ Add *--replSet* parameter to mongod in **/etc/init/mongodb.conf**
 
 Also bind on **private** IP and localhost. Ensure the --bind_ip argument doesn't have any spaces!
 
-    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet production --bind_ip '127.0.0.1,X.X.X.X'
+    --exec  /usr/bin/mongod -- --config /etc/mongodb.conf --replSet playground --bind_ip '127.0.0.1,X.X.X.X'
 
 Restart mongodb ensuring it re-reads it's config
 
@@ -141,13 +101,13 @@ Restart mongodb ensuring it re-reads it's config
 
 #### Configure the replica set on the proposed master
 
-Use only **Private IPs** to configure your replSet. Use the primary application server as an arbiter.
+Use only **Private IPs or Host Names** to configure your replSet. Use the primary application server as an arbiter.
 
 You must configure your replica set inside the mongo shell on the proposed master. Wait a second to get the response from rs.initiate().
 
     mongo
     > Config = {
-    ... _id: 'production', members: [
+    ... _id: 'playground', members: [
     ... {_id: 0, host: 'X.X.X.X'},
     ... {_id: 1, host: 'Y.Y.Y.Y'},
     ... {_id: 2, host: 'Z.Z.Z.Z', arbiterOnly: true}]}
@@ -156,9 +116,9 @@ You must configure your replica set inside the mongo shell on the proposed maste
  
  Wait a minute and keep checking the status. You should see a Primary, Secondary and Arbiter.
 
-    production:PRIMARY> rs.status()
+    playground:PRIMARY> rs.status()
     {
-        "set" : "production",
+        "set" : "playground",
         "date" : ISODate("2011-06-27T00:28:24Z"),
         "myState" : 1,
         "members" : [
@@ -205,11 +165,3 @@ You must configure your replica set inside the mongo shell on the proposed maste
           ], 
          "ok" : 1
      }
-
-#### Ensure that the bozuko config is correct for the dbs. Change it and push to github.
-
-See the [api config](https://github.com/bozuko/bozuko/blob/master/config/api.js) for an example.
-
-## Run bozuko as the given user on the app server
-
-    ./run_bozuko api

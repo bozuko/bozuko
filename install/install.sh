@@ -1,18 +1,9 @@
 #!/bin/bash -e
 
-if [ $1 ]; then
-    cluster=$1
-else
-    cluster=playground
-fi
-
 # source the common stuff.
 . $(pwd)/common.sh
 
 echo "NODE_VER = $NODE_VER"
-
-# install authorized keys
-cp config/$cluster/authorized_keys ~/.ssh
 
 # node version manager (nvm)
 install_nvm
