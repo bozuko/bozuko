@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-if ($1) then
+if [ $1 ]; then
     cluster=$1
 else
     cluster=playground
