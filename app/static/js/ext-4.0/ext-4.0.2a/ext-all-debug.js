@@ -13040,13 +13040,13 @@ Ext.core.Element.addMethods(
                 
                 
                 
-                if (!Ext.supports.IncludePaddingInWidthCalculation && setExpression) {
+                if (!Ext.supports.IncludePaddingInWidthCalculation && Ext.isFunction(setExpression) ) {
                     mask.dom.style.setExpression('width', 'this.parentNode.offsetWidth + "px"');
                 }
 
                 
                 
-                if (!Ext.supports.IncludePaddingInHeightCalculation && setExpression) {
+                if (!Ext.supports.IncludePaddingInHeightCalculation && Ext.isFunction(setExpression)) {
                     mask.dom.style.setExpression('height', 'this.parentNode.offsetHeight + "px"');
                 }
                 

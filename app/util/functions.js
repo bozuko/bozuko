@@ -8,11 +8,19 @@ function indexOf(haystack, needle){
     return found ? i+0 : -1;
 }
 
+function clone(obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
 
 function filter(data){
     
     if( data && data.toJSON ) data = data.toJSON();
-
+    
     if( arguments.length > 1 && data){
         var tmp={};
         [].slice.call(arguments,1).forEach(function(field){
@@ -45,6 +53,11 @@ function map(ar, key){
     return _map;
 }
 
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+exports.htmlEntities = htmlEntities;
 exports.indexOf = indexOf;
 exports.filter = filter;
 exports.merge = object.merge;

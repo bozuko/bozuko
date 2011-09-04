@@ -626,6 +626,7 @@ Page.static('search', function(options, callback){
         var user = options.user;
         bozukoSearch.selector._id = {$in:user.favorites||[]};
         bozukoSearch.selector.coords = {$nearSphere: options.ll};
+        bozukoSearch.limit = 25;
 
         serviceSearch = false;
     }
@@ -728,6 +729,9 @@ Page.static('search', function(options, callback){
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
+            
+            console.error( require('util').inspect(bozukoSearch) );
+            
             pages = featured.concat(pages);
             
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){

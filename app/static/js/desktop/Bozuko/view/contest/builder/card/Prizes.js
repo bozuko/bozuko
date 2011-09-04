@@ -48,7 +48,7 @@ Ext.define('Bozuko.view.contest.builder.card.Prizes', {
     
     addPrize : function(){
         var me = this;
-        var prize = new Bozuko.model.Prize();
+        var prize = new Bozuko.model.Prize({email_format:'text/html'});
         me.prizes.add( prize );
         me.addPrizeForm(prize).focusFirstField();
         

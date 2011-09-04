@@ -22,7 +22,7 @@ Ext.define('Bozuko.model.Entry', {
         {name:'_id',                type:'String'},
         {name:'type',               type:'String'},
         {name:'tokens',             type:'Number'},
-        {name:'timestamp',          type:'Date'},
+        {name:'timestamp',          type:'Date',        dateFormat:'c'},
         {name:'contest',            type:'Object'},
         {name:'page',               type:'Object'},
         {name:'user',               type:'Object'}

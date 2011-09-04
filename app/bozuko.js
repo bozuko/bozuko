@@ -1,6 +1,6 @@
 var fs = require('fs'),
     async  = require('async'),
-    existsSync = require('path').existsSync,
+	existsSync = require('path').existsSync,
     Profiler = require('./util/profiler')
 ;
 
@@ -35,6 +35,7 @@ var self = this;
 var http            = Bozuko.require('util/http'),
     create_url      = Bozuko.require('util/url').create,
     express         = require('express'),
+	connectForm		= require('connect-form'),
     Schema          = require('mongoose').Schema,
     BozukoStore     = Bozuko.require('core/session/store'),
     Monomi          = require('monomi'),
@@ -223,11 +224,9 @@ function initApplication(app){
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/profiler')({
 			ignore: [
-				/*
 				'/listen',
 				'/alive',
 				'/data'
-				*/
 			]
 		}));
     }
@@ -243,8 +242,52 @@ function initApplication(app){
 
     app.set('view engine', 'jade');
     app.set('views', __dirname + '/views');
-
-    app.use(express.bodyParser());
+	
+	// create our upload folder if it doesn't exist
+	var uploadDir = __dirname + '/../uploads';
+	if( !existsSync( uploadDir ) ){
+		fs.mkdirSync( uploadDir, 0755 );
+	}
+	
+	app.use((function(){
+		var form = connectForm({
+			keepExtensions:true,
+			uploadDir: uploadDir
+		});
+		return function(req, res, next){
+			
+			return form(req, res, function(){
+				
+				if( !req.form ) return next();
+				
+				var complete = false, error, fields, files;
+			
+				function finish(cb){
+					return cb(error, fields, files);
+				};
+				req.form.processed = function(cb){
+					if( !complete ) {
+						return req.form.on('processed', function(){
+							finish(cb);
+						});
+					}
+					return finish(cb);
+				};
+				
+				// start this right away.
+				req.form.complete(function(_error, _fields, _files){
+					error = _error;
+					fields = _fields;
+					files = _files;
+					complete = true;
+					req.form.emit('processed');
+				});
+				return next();
+			});
+		};
+	})());
+	
+	app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
 
@@ -278,6 +321,7 @@ function initApplication(app){
     }
 
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
+	
     app.use(app.router);
 
 
