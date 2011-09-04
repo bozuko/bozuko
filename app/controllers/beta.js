@@ -7,6 +7,10 @@ var Content     = Bozuko.require('util/content'),
     indexOf     = Bozuko.require('util/functions').indexOf,
     filter      = Bozuko.require('util/functions').filter,
     array_map   = Bozuko.require('util/functions').map,
+    s3          = Bozuko.require('util/s3'),
+    GD          = require('node-gd'),
+    fs          = require('fs'),
+    Path        = require('path'),
     ObjectId    = require('mongoose').Types.ObjectId,
     XRegExp     = Bozuko.require('util/xregexp'),
     crypto      = require('crypto')
@@ -89,8 +93,9 @@ exports.routes = {
                     res.locals.html_classes.push('beta-app');
                     res.locals.user = user;
                     res.locals.page = page;
+                    
                     res.locals.scripts.unshift(
-                        '/js/ext-4.0/lib/ext-all-debug.js',
+                        '/js/ext-4.0/lib/ext-all.js',
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(
@@ -98,7 +103,7 @@ exports.routes = {
                         '/css/desktop/business/style.css?v2',
                         '/css/desktop/admin/app.css'
                     );
-                    return res.render('beta/index');
+                    return res.render('beta/index.jade');
                 });
             }
         }
@@ -390,15 +395,17 @@ exports.routes = {
                                         var winners = [];
                                         prizes.forEach(function(prize){
                                             
-                                            var user = filter(user_map[String(prize.user_id)],'_id','name','image','email');
-                                            user.facebook_link = user_map[String(prize.user_id)].service('facebook').data.link;
-                                            user.friend_count = user_map[String(prize.user_id)].service('facebook').internal.friend_count;
+                                            var user = user_map[String(prize.user_id)],
+                                                filtered_user = filter(user,'_id','name','image','email');
+                                                
+                                            filtered_user.facebook_link = user.service('facebook').data.link;
+                                            filtered_user.friend_count = user.service('facebook').internal.friend_count;
                                             
                                             // create a winner object
                                             winners.push({
                                                 _id: prize.id,
                                                 prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
-                                                user: user,
+                                                user: filtered_user,
                                                 page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
                                                 contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
                                             });
@@ -522,10 +529,14 @@ exports.routes = {
                 }, function finish(error){
                     if( error ) return error.send( res );
                     objects.entries.forEach(function(entry){
-                        var result = filter(entry);
-                        result.user = filter( objects.user_map[String(entry.user_id)], 'name', 'image' );
-                        result.user.facebook_link = objects.user_map[String(entry.user_id)].service('facebook').data.link;
-                        result.user.friend_count = objects.user_map[String(entry.user_id)].service('facebook').internal.friend_count;
+                        var result = filter(entry),
+                            user = objects.user_map[String(entry.user_id)],
+                            filtered_user = filter( user, 'name', 'image' )
+                            ;
+                        
+                        result.user = filtered_user;
+                        result.user.facebook_link = user.service('facebook').data.link;
+                        result.user.friend_count = user.service('facebook').internal.friend_count;
                         result.contest = filter( objects.contest_map[String(entry.contest_id)], 'name' );
                         result.page = filter( objects.page_map[String(entry.page_id)], 'name' );
                         results.push(result);
@@ -679,6 +690,94 @@ exports.routes = {
                         return res.send( {items: [page]} );
                     });
                 })
+            }
+        }
+    },
+    
+    '/beta/page/image' : {
+        post : {
+            handler : function(req, res){
+                
+                if( !req.form ){
+                    return res.sendEncoded({success:false, err:'no form'});
+                }
+                
+                return req.form.processed( function(err, fields, files){
+                    
+                    if( err ){
+                        return res.sendEncoded({success:false,err:err});
+                    }
+                    
+                    var id = fields['page_id'];
+                    if( !id ){
+                        return res.sendEncoded({success: false,err:'no page_id'});
+                    }
+                    if( !files['image'] ){
+                        return res.sendEncoded({success: false,err:'no image uploaded'});
+                    }
+                    // lets just save this for now...
+                    var file = files['image'];
+                        
+                    // we need to do a couple things here...
+                    
+                    if( !~['.png','.jpg','.jpeg','.gif'].indexOf(Path.extname( file.filename ).toLowerCase()) ){
+                        return res.sendEncoded({success: false, err:'invalid image type'});
+                    }
+                    
+                    var ext = Path.extname( file.filename );
+                    if( ext == '.jpg') ext = '.jpeg';
+                    var Ext = ext.replace(/\./,'').replace(/^[a-z]/, function(m0){ return m0.toUpperCase();} );
+                    
+                    // resize as necessary and crop off any extra
+                    return GD['open'+Ext]( file.path, function(err, image, path){
+                        if( err ){
+                            return res.sendEncoded({success: false, err:'Error openning image'});
+                        }
+                        // lets get the size of this bad boy.
+                        var w = image.width,
+                            h = image.height;
+                            
+                        if( w < 50 || h < 50 ){
+                            return res.sendEncoded({success: false, err: 'Image is too small'});
+                        }
+                        // guess it can't really too big, for now...
+                        if( w > 1400 || h > 1400 ){
+                            return res.sendEncoded({success: false, err: 'Image is too big.'});
+                        }
+                        
+                        var s = Math.min( w, h, 100 ),
+                            sw = w > h ? h : w,
+                            sh = h > w ? w : h,
+                            sx = w > h ? parseInt((w-h)/2,10) : 0,
+                            sy = h > w ? parseInt((h-w)/2,10) : 0,
+                            img = GD.createTrueColor(s,s);
+                        
+                        var color = img.colorAllocate(255,255,255);
+                        img.filledRectangle(0,0,s,s,color);
+                        image.copyResampled(img, 0, 0, sx, sy, s, s, sw, sh);
+                        image.saveAlpha(1);
+                        var savedPath = file.path.replace(/\..*$/, '_processed.png');
+                        return img.savePng(savedPath, 1, function(error){
+                            if( error ){
+                                return res.sendEncoded( {success: false, err: "error saving the image"} );
+                            }
+                            
+                            var path = '/pages/'+id+'/image/'+Path.basename(savedPath);
+                            return s3.put(savedPath, path, {
+                                'x-amz-acl':'public-read',
+                                'Content-Type':'image/png'
+                            }, function(error, url){
+                                
+                                fs.unlinkSync(file.path);
+                                fs.unlinkSync(savedPath);
+                                
+                                return res.sendEncoded( {success: true, url: url} );
+                            });
+                        });
+                    });
+                    
+                    
+                });
             }
         }
     },

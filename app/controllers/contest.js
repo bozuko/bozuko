@@ -276,8 +276,7 @@ exports.routes = {
 //            access: 'mobile',
 
             handler: function(req, res) {
-                var s3 = new S3();
-                return s3.get(url.parse(req.url).pathname, res);
+                return S3.get(url.parse(req.url).pathname, res);
             }
         }
 
@@ -288,8 +287,7 @@ exports.routes = {
   //          access: 'mobile',
 
             handler: function(req, res) {
-                var s3 = new S3();
-                return s3.get(url.parse(req.url).pathname, res);
+                return S3.get(url.parse(req.url).pathname, res);
             }
         }
     },

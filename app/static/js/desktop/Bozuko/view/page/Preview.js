@@ -30,13 +30,19 @@ Ext.define( 'Bozuko.view.page.Preview', {
     
     fixImage : function(){
         // lets get that darn image.
-        if( !this.getEl() ) return;
-        var img = Ext.DomQuery.selectNode('.img img', this.getEl().dom);
+        var me = this;
+        if( !me.getEl() ) return;
+        
+        var img = Ext.DomQuery.selectNode('.img img', me.getEl().dom);
         if( !img ) return;
-        img = Ext.fly(img);
-        img.setStyle({
-            'margin-top': (-img.getHeight() / 2)+'px',
-            'margin-left': (-img.getWidth() / 2)+'px'
-        });
+        var fix = function(){
+            img = Ext.fly(img);
+            img.setStyle({
+                'margin-top': (-img.getHeight() / 2)+'px',
+                'margin-left': (-img.getWidth() / 2)+'px'
+            });
+        };
+        if( img.complete ) fix();
+        else img.onload = fix;
     }
 });

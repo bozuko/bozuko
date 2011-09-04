@@ -152,13 +152,12 @@ Contest.method('validatePrizes', function(isConsolation, callback) {
 
     // Check S3 to see if all barcodes are there
     async.forEach(barcode_prizes, function(index, cb) {  
-	var s3 = new S3();
         var prize = self.prizes[index];
         var ct = 0;
         async.forEachSeries(prize.barcodes, function(barcode, cb) {
             var path = '/game/'+self._id+'/prize/'+index+'/barcode/'+ct;
 			ct++;
-            s3.head(path, cb);
+            S3.head(path, cb);
         }, function(err) {
 			if (err) {
 				status.errors.push(Bozuko.error('validate/contest/barcodes_s3', prize.name));
@@ -293,8 +292,7 @@ Contest.method('generateResults', function(callback){
 
 Contest.method('createAndSaveBarcodes', function(prize, cb) {
     var self = this;
-    var s3 = new S3();
-
+    
     var i = 0;
     async.whilst(
         function() { return i < prize.prize.total; },
@@ -311,7 +309,7 @@ Contest.method('createAndSaveBarcodes', function(prize, cb) {
             barcode.create_png(prize.prize.barcodes[i], prize.prize.barcode_type, filename, function(err) {
                 if (err) return callback(err);
                 // load the barcode image into s3
-                return s3.put(filename+'.png', path, function(err) {
+                return S3.put(filename+'.png', path, function(err) {
                     if (err) return callback(err);
                     i++;
                     // remove the barcode files from /tmp

@@ -135,7 +135,8 @@ Controller.prototype = {
                             }
                             locals['req'] = req;
                             // combine any locals that were provided
-                            args[1] = merge( merge({}, locals), args[1] || {}, ignores );
+							var merge = require('connect').utils.merge;
+                            args[1] = merge( merge({}, locals), args[1] || {} );
                             return _render.apply(res, args);
                         }
                         $handler.apply(self,arguments);

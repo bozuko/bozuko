@@ -33,6 +33,12 @@ Ext.define('Bozuko.controller.Pages' ,{
             },
             'pagesettings [action=save]' : {
                 'click' : me.saveSettings
+            },
+            'pagesettings' : {
+                'save'  : function(pagesettings){
+                    console.log('yo?');
+                    me.saveSettings(pagesettings.down('button[action=save]'));
+                }
             }
         });
     },
@@ -54,6 +60,11 @@ Ext.define('Bozuko.controller.Pages' ,{
             pagePanel.down('[ref=statusField]').setValue( page.get('announcement') );
             pagePanel.down('pagesettings').loadRecord( page );
             pagePanel.successStatus('Page Saved');
+            
+            Ext.select('.page-info img').each(function(img){
+                img.dom.src = page.get('image');
+            });
+            
         };
         page.on('beforesave', beforesave);
         page.on('save', save);

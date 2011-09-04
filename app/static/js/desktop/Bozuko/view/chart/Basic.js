@@ -167,19 +167,19 @@ Ext.define('Bozuko.view.chart.Basic', {
             model = function(){ return me.modelField.getValue() }
             callbacks = {
                 entry: function(item, callback){
-                    if( ~['Entry','Share'].indexOf(model()) ) me.loadStore(callback);
+                    if( ~Ext.Array.indexOf(['Entry','Share'],model()) ) me.loadStore(callback);
                     else callback();
                 },
                 play : function(item, callback){
-                    if( ~['Play'].indexOf(model()) ) me.loadStore(callback);
+                    if( ~Ext.Array.indexOf(['Play'],model()) ) me.loadStore(callback);
                     else callback();
                 },
                 win : function(item, callback){
-                    if( ~['Prize'].indexOf(model()) )me.loadStore(callback);
+                    if( ~Ext.Array.indexOf(['Prize'],model()) )me.loadStore(callback);
                     else callback();
                 },
                 redeemed : function(item, callback){
-                    if( ~['Redeemed Prizes', 'Share'].indexOf(model()) ) me.loadStore(callback);
+                    if( ~Ext.Array.indexOf(['Redeemed Prizes', 'Share'], model()) ) me.loadStore(callback);
                     else callback();
                 }
             };

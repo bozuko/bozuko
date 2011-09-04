@@ -86,6 +86,7 @@ Ext.define('Bozuko.view.contest.Overview',{
         if( me.record ){
             me.initPubSub();
         }
+        me.on('destroy', me.unPubSub, me);
     },
     
     afterRender : function(){

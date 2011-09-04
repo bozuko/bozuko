@@ -23,7 +23,8 @@ SlotsTheme.prototype.icons = {
     'shamrock'  :'shamrock.png',
     'strawberry':'strawberry.png',
     'watermelon':'watermelon.png',
-    'free_spin' :'free_spin.png',
+    'free_spin' :'free_spin.png'
 };
+
 SlotsTheme.prototype.base = '';
 SlotsTheme.prototype.name = '';

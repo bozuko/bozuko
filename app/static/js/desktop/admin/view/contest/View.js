@@ -58,23 +58,23 @@ Ext.define('Admin.view.contest.View' ,{
             {
                 
                 canEdit : function(values){
-                    return true || ~['draft', 'published'].indexOf(values.state);
+                    return true || ~Ext.Array.indexOf(['draft', 'published'], values.state);
                 },
                 
                 canPublish : function(values){
-                    return ~['draft'].indexOf(values.state);
+                    return ~Ext.Array.indexOf(['draft'],values.state);
                 },
                 
                 canDelete : function(values){
-                    return ~['draft','published'].indexOf(values.state);
+                    return ~Ext.Array.indexOf(['draft','published'],values.state);
                 },
                 
                 canCancel : function(values){
-                    return ~['active'].indexOf(values.state);
+                    return ~Ext.Array.indexOf(['active'], values.state);
                 },
                 
                 canReport : function(values){
-                    return ~['active','complete','cancelled'].indexOf(values.state);
+                    return ~Ext.Array.indexOf(['active','complete','cancelled'],values.state);
                 },
                 
                 getTitle : function(name){

@@ -91,7 +91,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '<tpl if="this.canEdit(values)">',
                             '<li><a href="javascript:;" class="edit">Edit</a></li>',
                         '</tpl>',
-                        '<tpl if="this.canEdit(values) && this.canUseBuilder()">',
+                        '<tpl if="this.canUseBuilder()">',
                             '<li><a href="javascript:;" class="edit builder">Open with Builder</a></li>',
                         '</tpl>',
                         '<tpl if="this.canCopy(values)">',
@@ -111,10 +111,10 @@ Ext.define('Bozuko.view.contest.List' ,{
                 {
                     
                     canEdit : function(values){
-                        if( me.actionButtons && !~me.actionButtons.indexOf('edit')){
-                            return this.canUseBuilder();
+                        if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'edit')){
+                            return false;
                         }
-                        return ~['draft', 'published', 'active'].indexOf(values.state);
+                        return ~Ext.Array.indexOf(['draft', 'published', 'active'], values.state);
                     },
                     
                     canUseBuilder : function(){
@@ -122,28 +122,28 @@ Ext.define('Bozuko.view.contest.List' ,{
                     },
                     
                     canCopy : function(values){
-                        if( me.actionButtons && !~me.actionButtons.indexOf('copy')) return '';
+                        if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'copy')) return '';
                         return true;
                     },
                     
                     canPublish : function(values){
-                        if( me.actionButtons && !~me.actionButtons.indexOf('publish')) return '';
-                        return ~['draft'].indexOf(values.state);
+                        if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'publish')) return '';
+                        return ~Ext.Array.indexOf(['draft'],values.state);
                     },
                     
                     canDelete : function(values){
-                        if( me.actionButtons && !~me.actionButtons.indexOf('delete')) return '';
-                        return ~['draft','published'].indexOf(values.state);
+                        if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'delete')) return '';
+                        return ~Ext.Array.indexOf(['draft','published'],values.state);
                     },
                     
                     canCancel : function(values){
-                        if( me.actionButtons && !~me.actionButtons.indexOf('cancel')) return '';
-                        return ~['active'].indexOf(values.state);
+                        if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'cancel')) return '';
+                        return ~Ext.Array.indexOf(['active'],values.state);
                     },
                     
                     canReport : function(values){
-                        if( me.actionButtons && !~me.actionButtons.indexOf('report')) return '';
-                        return ~['active','complete','cancelled'].indexOf(values.state);
+                        if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'report')) return '';
+                        return ~Ext.Array.indexOf(['active','complete','cancelled'],values.state);
                     }
                 }
             ),
@@ -157,6 +157,7 @@ Ext.define('Bozuko.view.contest.List' ,{
         });
         
         me.callParent(arguments);
+        me.on('destroy', me.unPubSub, me);
     },
     
     onRefresh : function(){

@@ -134,6 +134,8 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         // add new stuff
         me.currentGame = me.contest.get('game');
         me.addThemeChooser( me.currentGame );
+        // also want to add our custom theme / icon field
+        
     },
     
     loadContest : function(){

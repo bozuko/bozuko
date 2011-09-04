@@ -114,8 +114,7 @@ Ext.define('Bozuko.view.contest.Winners' ,{
                     },
                     
                     getFormattedDate : function(str){
-                        var date = new Date();
-                        date.setTime( Date.parse(str) );
+                        var date = Ext.Date.parse(str,'c');
                         return Ext.Date.format(date, 'm/d/Y h:i a');
                     },
                     
