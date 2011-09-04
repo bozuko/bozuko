@@ -1,3 +1,9 @@
+if ($1) then
+    cluster=$1
+else
+    cluster=playground
+fi
+
 # Add add-apt-repository command
 apt-get update
 apt-get install -y python-software-properties
@@ -25,6 +31,9 @@ cp upstart/* /etc/init
 
 # install all logrotate config files
 cp logrotate/* /etc/logrotate.d
+
+# Setup DNS for the private network
+cp config/$cluster/hosts /etc/hosts
 
 # don't let ssh timeout
 echo "ClientAliveInterval 30" >> /etc/ssh/sshd_config

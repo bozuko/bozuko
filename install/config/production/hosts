@@ -1,0 +1,16 @@
+# Configuration for internal playground network
+
+127.0.0.1             localhost.localdomain   localhost
+192.168.175.154       app1.bozuko.com         app1
+192.168.140.206       dashboard.bozuko.com    dashboard
+192.168.175.159       db1.bozuko.com          db1
+192.168.175.161       db2.bozuko.com          db2
+192.168.175.225       site1.bozuko.com        site1
+
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
