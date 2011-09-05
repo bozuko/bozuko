@@ -51,10 +51,9 @@ Bozuko.env = function(){
 
 Bozuko.getConfig = function(){
     return require(Bozuko.dir+'/config/'+this.env());
-}
+};
 
 Bozuko.config = Bozuko.getConfig();
-Bozuko.config.maintenance_mode = false;
 
 Bozuko.getConfigValue = function(key, defaultValue){
 	
@@ -231,7 +230,7 @@ function initApplication(app){
 		}));
     }
 
-    app.use(Bozuko.require('middleware/maintenance'));
+//    app.use(Bozuko.require('middleware/maintenance'));
 
     // setup basic authentication for development
     if( Bozuko.config.server.auth ){
