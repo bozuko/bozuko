@@ -36,7 +36,7 @@ var Prize = module.exports = new Schema({
     is_barcode              :{type:Boolean, default:false},
     barcode_image           :{type:String},
     consolation             :{type:Boolean, default:false}
-}, {safe:null});
+},  {safe: {w:2, wtimeout: 5000}});
 
 // setup our constants
 Prize.REDEEMED = 'redeemed';

@@ -29,7 +29,7 @@ var User = module.exports = new Schema({
     last_internal_update:{type:Date},
     can_manage_pages    :{type:Boolean},
     manages             :[ObjectId]
-}, {safe:null});
+}, {safe: {w:2, wtimeout: 5000}});
 
 User.plugin(Services);
 User.plugin(Native);

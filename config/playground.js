@@ -41,7 +41,7 @@ module.exports = {
         options: {
             server: {poolSize: 100},
             replset: {},
-            db: {strict: {w:2, wtimeout: 5000}}
+            db: {}
         }
     },
 

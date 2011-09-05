@@ -48,7 +48,7 @@ var Page = module.exports = new Schema({
         signed_date         :{type:Date}
     },
     registered          :{type:Boolean}
-}, {safe:null});
+}, {safe: {w:2, wtimeout: 5000}});
 
 Page.index({admins: 1});
 
