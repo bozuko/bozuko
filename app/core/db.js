@@ -15,13 +15,13 @@ function getConnection(){
             console.log("Mongoose opening "+uri);
         });
         mongoose.connection.on('close', function() {
-            console.log("Mongoose closed connection to "+uri);
+            console.error("Mongoose closed connection to "+uri);
         });
         mongoose.connection.on('open', function() {
             console.log("Mongoose connected to "+uri);
         });
         mongoose.connection.on('error', function(err) {
-            console.log("Mongoose connection error: "+err);
+            console.error("Mongoose connection error: "+err);
         });
         if (Bozuko.config.db.replicaSet) {
             var str = '';
