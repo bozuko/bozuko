@@ -48,7 +48,7 @@ var Contest = module.exports = new Schema({
     play_cursor             :{type:Number, default: -1},
     token_cursor            :{type:Number, default: 0},
     winners                 :[ObjectId]
-}, {safe:null});
+}, {safe: {w:2, wtimeout: 5000}});
 
 Contest.ACTIVE = 'active';
 Contest.PUBLISHED = 'published';

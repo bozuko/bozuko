@@ -16,4 +16,4 @@ var Entry = module.exports = new Schema({
     wall_posts              :{type:Number,      default: 0},
     tokens                  :{type:Number},
     initial_tokens          :{type:Number}
-}, {safe:null});
+}, {safe: {w:2, wtimeout: 5000}});
