@@ -14,6 +14,8 @@ var auth;
 var ll1 = '29.32855,-81.0579';
 var ll2 = '42.650,-71.310';
 
+console.log("Token = "+token+"\n\n");
+
 exports.setup = function(test) {
     testsuite.setup(test.done);
     auth = Bozuko.require('core/auth');
@@ -22,6 +24,7 @@ exports.setup = function(test) {
 var link = '/api';
 
 exports.get_root = function(test) {
+    token = assert.token;
     assert.response(test, Bozuko.app,
         {url: link},
         ok,
