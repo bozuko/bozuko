@@ -1,7 +1,7 @@
 module.exports = {
     generic: {
         code: 500,
-        title: 'Maintenance Mode',
-        message: 'Bozuko is currently having trouble serving requests. Please try again later.'
+        title: 'Under Maintenance',
+        message: 'Bozuko is currently unvailable. Please try again later.'
     }    
 };
