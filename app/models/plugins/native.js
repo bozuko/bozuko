@@ -53,6 +53,7 @@ var NativePlugin = module.exports = function NativePlugin(schema, options){
         var self = this;
         var cb = arguments[arguments.length-1];
         arguments[arguments.length-1] = function(error, doc){
+            if (error && error.err == 'timeout') return cb(Bozuko.error('maintenance/generic'));
             if (error) return cb(error);
 
             // convert to model object
