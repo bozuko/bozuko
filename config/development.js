@@ -45,7 +45,7 @@ module.exports = {
     db:{
         name: 'bozuko_dev'+port,
         replicaSet: true,
-        hosts: ['pgdb1', 'pgdb2'],
+        hosts: ['pgdb3', 'pgdb4'],
         options: {
             server: {poolSize: 100},
             replset: {},
@@ -59,11 +59,11 @@ module.exports = {
             secret:'df03acad0cda5e6f2ec2161c00cf5bf3',
             access_token:'166078836756369|5PhifMaZ8cZzgdlY4ZhfFPvGtOk',
             pubsub_verify:'12kg0a8b9123kab91831laa9sb'
-            /*
-            id:'225077010865990',
-            secret:'e6d03c37d46db15dacdfd8690536157f',
-            access_token:'225077010865990|9pz_ejdAow5uXxnE1iK3uOGMPe0',
-            pubsub_verify:'12kg0a8b9123kab91831laa9sb'*/
+            
+            //id:'225077010865990',
+            //secret:'e6d03c37d46db15dacdfd8690536157f',
+            //access_token:'225077010865990|9pz_ejdAow5uXxnE1iK3uOGMPe0',
+            //pubsub_verify:'12kg0a8b9123kab91831laa9sb'
         },
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access,user_likes",
