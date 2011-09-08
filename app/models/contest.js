@@ -20,6 +20,7 @@ var mongoose = require('mongoose'),
     burl = Bozuko.require('util/url').create,
     inspect = require('util').inspect
 ;
+var safe = {w:2, wtimeout:5000};
 
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
@@ -609,7 +610,7 @@ Contest.method('addEntry', function(tokens, callback) {
         { _id: this._id, token_cursor: {$lte : this.total_plays - this.total_free_plays - tokens}},
         [],
         {$inc : {'token_cursor': tokens}},
-        {new: true, fields: {plays: 0, results: 0}},
+        {new: true, fields: {plays: 0, results: 0}, safe: safe},
         function(err, contest) {
             prof.stop();
             console.log("addEntry err = "+inspect(err));
@@ -671,7 +672,7 @@ Contest.method('startPlay', function(user, callback) {
         {contest_id: self._id, user_id: user_id, timestamp: {$gt :min_expiry_date}, tokens: {$gt : 0}},
         [],
         {$inc: {tokens : -1}},
-        {new: true},
+        {new: true, safe: safe},
         function(err, entry) {
             if (err && !err.message.match(no_matching_re)) return callback(err);
             if (!entry) return callback(Bozuko.error("contest/no_tokens"));
@@ -683,7 +684,7 @@ Contest.method('startPlay', function(user, callback) {
                [],
                 {$inc : {play_cursor: 1},
                     $push : {plays: {timestamp: now, active: false, uuid: _uuid, user_id: user_id}}},
-                {new: true, fields: {plays: 0, results: 0}},
+                {new: true, fields: {plays: 0, results: 0}, safe: safe},
                 function(err, contest) {
                     prof.stop();
                     if (err && !err.message.match(no_matching_re)) return callback(err);
@@ -703,7 +704,7 @@ Contest.method('startPlay', function(user, callback) {
                         {_id: self._id, 'plays.uuid': _uuid},
                         [],
                         {$set : {'plays.$.active': true, 'plays.$.cursor': contest.play_cursor}},
-                        {new: true, fields: {plays: 0, results: 0}},
+                        {new: true, fields: {plays: 0, results: 0}, safe: safe},
                         function(err, contest) {
                             if (err && !err.message.match(no_matching_re)) return callback(err);
                             if (!contest) return callback(Bozuko.error("contest/play_not_found"));
@@ -764,7 +765,7 @@ Contest.method('claimConsolation', function(opts, callback) {
         { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total-1}}}},
         [],
         {$inc : {'consolation_prizes.$.claimed': 1}},
-        {new: true, fields: {plays: 0, results:0}},
+        {new: true, fields: {plays: 0, results:0}, safe: safe},
         function(err, contest) {
             prof.stop();
             if( err && !err.message.match(no_matching_re) ) console.error(err);
@@ -1075,7 +1076,7 @@ Contest.method('endPlay', function(opts, callback) {
             {contest_id: this._id, user_id: opts.user_id, timestamp: {$gt :min_expiry_date}},
             [],
             {$inc: {tokens: 1}},
-            {new: true},
+            {new: true, safe: safe},
             function(err, entry) {
                 prof.stop();
                 if (err && !err.message.match(/no\smatching\sobject/i)) return callback(err);
@@ -1092,7 +1093,7 @@ Contest.method('endPlay', function(opts, callback) {
                     {_id: self._id, 'plays.uuid': opts.uuid},
                     [],
                     {$pull: {plays: {uuid: opts.uuid}}},
-                    {new: true, fields: {plays: 0, results:0}},
+                    {new: true, fields: {plays: 0, results:0}, safe: safe},
                     function(err, contest) {
                         prof2.stop();
                         if( err && err.message.match(/no\smatching\sobject/i) ) err = null;
@@ -1108,7 +1109,7 @@ Contest.method('endPlay', function(opts, callback) {
         {_id: this._id, 'plays.uuid': opts.uuid},
         [],
         {$pull: {plays: {uuid: opts.uuid}}},
-        {new: true, fields: {plays: 0, results:0}},
+        {new: true, fields: {plays: 0, results:0}, safe: safe},
         function(err, contest) {
             prof.stop();
             handler(err, contest);
