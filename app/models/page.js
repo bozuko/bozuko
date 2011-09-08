@@ -685,8 +685,6 @@ Page.static('search', function(options, callback){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
             
-            console.log(page);
-            
             if( page._doc ){
                 page.registered = true;
             }

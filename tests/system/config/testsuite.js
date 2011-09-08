@@ -13,7 +13,7 @@ var users = {
     },
     b: {
         'id': '100001863668743',
-        'auth' : '225077010865990|379bc114f914fa3983c0129f.1-100001863668743|xh3EcHoiXpVtzyeOavrFJUZlnbE'
+        'auth' : "AAADMtNNHn0YBAHhT3UOiyzlIW2fmL3fZABOPoV4PSd1a50HzM691VuaSCBDvOyZBDlRK8HMYPCDUlimm3ZAonRAfWEk714gL9Xo0ClRCAZDZD"
     }
 };
 
@@ -169,7 +169,7 @@ var pages = [
     // hookslides
     '181069118581729', 	// owl watch
     '103621403038522', 	// middlesex
-    "111730305528832", 	// dunks
+    "120199624663908", 	// dunks
     // boston
     "108123539229568",	// hard rock
     //"75568770316", 		// black rose
@@ -203,9 +203,8 @@ function add_page(id, callback){
             if( !page ){
                 return callback(new Error("WTF!!!"));
             }
-	    page.active = true;
-	    page.security_img = '/security/image.png';
-            page.save(function(){callback(null,'');});
+			page.active = true;
+            return page.save(function(){callback(null,'');});
         });
     });
 }
