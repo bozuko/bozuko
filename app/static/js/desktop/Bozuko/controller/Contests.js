@@ -52,6 +52,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 click           :this.onBuilderButtonClick
             },
             'contestspanel contestbuilder' : {
+                apply           :this.onApplyFromBuilder,
                 save            :this.onSaveFromBuilder,
                 publish         :this.onPublishFromBuilder
             }
@@ -407,6 +408,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 border: false,
                 xtype: 'contestbuilder',
                 contest: record,
+                review: true,
                 listeners : {
                     destroy : function(){
                         delete panel.builders[record.get('_id')];
@@ -418,12 +420,16 @@ Ext.define('Bozuko.controller.Contests' ,{
         panel.doComponentLayout();
     },
     
-    onSaveFromBuilder : function(builder, callback){
+    onApplyFromBuilder : function(builder, callback){
+        this.onSaveFromBuilder(builder, callback, true);
+    },
+    
+    onSaveFromBuilder : function(builder, callback, apply){
         
         var contestsPanel = builder.up('contestspanel'),
             activeBuilder = contestsPanel.getLayout().getActiveItem(),
             pagePanel = contestsPanel.up('pagepanel'),
-            btn = builder.down('button[ref=save]'),
+            btn = builder.down('contestbuildercard{isVisible()} button[ref='+(apply?'apply':'save')+']'),
             contestsView = contestsPanel .down('contestlist'),
             isNew = !!builder.contest.get('_id');
         
@@ -432,23 +438,29 @@ Ext.define('Bozuko.controller.Contests' ,{
         btn.disable();
         btn.setText('Saving...');
         
-        builder.contest.save({
-            success : function(){
-                // close the builder and refresh the list
-                contestsPanel.getLayout().setActiveItem(0);
-                contestsView.store.load();
-                contestsPanel.remove( activeBuilder );
-            },
-            callback: function(){
-                pagePanel.successStatus('Contest Saved');
-                /*
-                if( btn ){
-                    btn.setText('Save');
-                    btn.enable();
+        setTimeout(function(){
+            builder.contest.save({
+                success : function(){
+                    // close the builder and refresh the list
+                    if( !apply ){
+                        contestsPanel.getLayout().setActiveItem(0);
+                        contestsView.store.load();
+                        contestsPanel.remove( activeBuilder );
+                    }
+                },
+                callback: function(){
+                    pagePanel.successStatus('Contest Saved');
+                    
+                    try{
+                        btn.setText(apply?'Save':'Save and Close');
+                        btn.enable();
+                    }catch(e){
+                        // btn has been destroyed
+                    }
+                    
                 }
-                */
-            }
-        });
+            });
+        }, 100);
     },
     
     onPublishFromBuilder : function(builder){

@@ -114,6 +114,60 @@ Ext.define('Bozuko.view.page.Settings' ,{
                         fieldLabel      :'Zip'
                     }]
                 },{
+                    title           :'Security Image',
+                    items           :[{
+                        xtype           :'dataview',
+                        ref             :'security-image-view',
+                        
+                        trackOver       :true,
+                        singleSelect    :true,
+                        
+                        itemSelector    :'.item',
+                        overItemCls     :'item-over',
+                        selectedItemCls :'item-selected',
+                        
+                        tpl             :new Ext.XTemplate(
+                            '<div class="security-images">',
+                                '<div class="scroller">',
+                                    '<tpl for=".">',
+                                        '<div class="item" style="left: {[(xindex-1)*75]}px">',
+                                            '<img src="{signedUrl}" />',
+                                        '</div>',
+                                    '</tpl>',
+                                '</div>',
+                            '</div>'
+                        ),
+                        store           :Ext.create('Ext.data.Store', {
+                            fields : ['signedUrl', 'path'],
+                            proxy : {
+                                type: 'rest',
+                                url: Bozuko.Router.route('/security/images'),
+                                reader : {
+                                    type: 'json',
+                                    root: 'items'
+                                }
+                            },
+                            autoLoad : true
+                        }),
+                        listeners : {
+                            beforecontainerclick : function(view, e){
+                                return false;
+                            },
+                            selectionchange : function(view, selections){
+                                if( selections && selections.length ){
+                                    me.record.set('security_img', selections[0].get('path') );
+                                }
+                            },
+                            refresh : function(view){
+                                // select and scroll to the right place
+                                var r = view.store.findRecord('path', me.record.get('security_img') || 'security/sun.png' );
+                                if( r ){
+                                    view.select(r);
+                                }
+                            }
+                        }
+                    }]
+                },{
                     title           :'Business',
                     defaults        :{
                         anchor          :'0'
@@ -184,7 +238,22 @@ Ext.define('Bozuko.view.page.Settings' ,{
             });
         }
         var pp = me.down('pagepreview');
-        me.on('activate', pp.fixImage, pp);
+        me.on('activate', me.onActivate, me);
+    },
+    
+    onActivate : function(){
+        var me  = this,
+            pp = me.down('pagepreview'),
+            view = me.down('[ref=security-image-view]'),
+            nodes = view.getSelectedNodes();
+            
+        if( !nodes || !nodes.length ) return;
+        var node = Ext.get(nodes[0]),
+            scroller = Ext.fly(node).up('.scroller'),
+            left = node.getLeft(true),
+            width = scroller.getWidth();
+            
+        scroller.scrollTo('l',left-(width/2)+35);
     },
     
     openImageDialog : function(){

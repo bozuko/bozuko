@@ -45,7 +45,7 @@ module.exports = {
     db:{
         name: 'bozuko_dev'+port,
         replicaSet: true,
-        hosts: ['pgdb3', 'pgdb4'],
+        hosts: ['pgdb1', 'pgdb2'],
         options: {
             server: {poolSize: 100},
             replset: {},
@@ -86,7 +86,7 @@ module.exports = {
         s3:{
             key:'AKIAJD7BVQJST2HCCPGA',
             secret: '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',
-            bucket: 'bozuko_dev'
+            bucket: 'bozukodev'
         }
     },
 

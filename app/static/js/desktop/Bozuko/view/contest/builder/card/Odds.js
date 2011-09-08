@@ -189,7 +189,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         
         me.callParent(arguments);
         me.intro = me.down('[ref=intro]');
-        var delayedUpdate = Ext.Function.createDelayed(me.onStoreUpdate, 10, me);
+        var delayedUpdate = Ext.Function.createBuffered(me.onStoreUpdate, 10, me);
         me.contest.prizes().on('update', delayedUpdate);
         me.contest.prizes().on('add', delayedUpdate);
         me.contest.prizes().on('remove', delayedUpdate);
@@ -242,7 +242,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
     },
     
     onStoreUpdate : function(){
-        this.down('dataview').refresh();
+        this.updateContest();
+        //this.down('dataview').refresh();
     },
     
     switchMode : function(){

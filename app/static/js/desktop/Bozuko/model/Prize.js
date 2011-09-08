@@ -57,5 +57,17 @@ Ext.define('Bozuko.model.Prize', {
                 break;
         }
         return instructions;
+    },
+    
+    getDefaultEmailSubject : function(){
+        return this.get('email_subject') || 'Congratulations! you won a {prize}';
+    },
+    
+    getDefaultEmailBody : function(){
+        return this.get('email_body') || [
+            '<p>Hi {name}</p>',
+            '<p>Congratulations! You have won a {prize}. Here is your gift code:</p>',
+            '<p>{code}</p>'
+        ].join('');
     }
 });

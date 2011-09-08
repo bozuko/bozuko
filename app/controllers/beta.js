@@ -314,6 +314,16 @@ exports.routes = {
         }
     },
     
+    '/beta/security/images' : {
+        get : {
+            handler : function( req, res ){
+                return s3.ls('security/', function(error, files){
+                    return res.send({items:files});
+                });
+            }
+        }
+    },
+    
     '/beta/winners' : {
 
         get : {

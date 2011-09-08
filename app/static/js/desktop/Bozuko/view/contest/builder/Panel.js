@@ -50,16 +50,8 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
             },' ',{
                 xtype       :'tbtext',
                 ref         :'edit-campaign-text',
-                text        :'Build a Campaign'
-            }]
-        },{
-            ref         :'steps',
-            xtype       :'toolbar',
-            dock        :'top',
-            defaults    :{
-                scale       :'medium'
-            },
-            items       :[]
+                text        :me.contest.get('name') || 'Build a Campaign'
+            },'->']
         }];
         
         Ext.apply(me,{
@@ -102,7 +94,7 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
         // lets take a peak and initialize our stuff
         
         me.preview = me.down('contestbuilderpreview');
-        me.stepToolbar = me.down('toolbar[ref=steps]');
+        me.stepToolbar = me.down('toolbar[ref=contestform-navbar]');
         me.centerPanel = me.down('[region=center]');
         
         me.centerPanel.items.each(function(card, i){
@@ -112,6 +104,7 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                 if( i > 0 ) buttons.push('back');
                 if( i !== me.centerPanel.items.getCount()-1 ){
                     if( me.contest.get('_id') ){
+                        buttons.push('apply');
                         buttons.push('save');
                         if( !me.contest.get('active') ){
                             // buttons.push('publish');
@@ -122,6 +115,7 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                 else{
                     // this is the last card... lets add the approriate buttons
                     if( me.contest.get('active') ){
+                        buttons.push('apply');
                         buttons.push('save');
                     }
                     else{
@@ -138,6 +132,7 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
             var isNew = !me.contest.get('_id');
             
             me.stepToolbar.add({
+                ref: 'step-btn',
                 text: (i+1)+'. '+card.name,
                 disabled: isNew ? i!==0 : false,
                 toggled: i===0,
@@ -151,10 +146,18 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
             card.on('next', me.next, me);
             card.on('finish', me.finish, me);
             card.on('save', me.save, me);
+            card.on('apply', me.apply, me);
             card.on('publish', me.publish, me);
         });
         
-        me.stepButtons = me.stepToolbar.query('button');
+        /*
+        if( me.review ){
+            me.down('contestbuilderreview').on('render')
+        }
+        */
+        
+        me.stepButtons = me.stepToolbar.query('button[ref=step-btn]');
+        me.stepToolbar.add(' ');
     },
     
     onCardActivate : function(card){
@@ -225,6 +228,11 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
     save : function(){
         if( this.validate() ){
             this.fireEvent('save', this);
+        }
+    },
+    apply : function(){
+        if( this.validate() ){
+            this.fireEvent('apply', this);
         }
     },
     publish : function(){

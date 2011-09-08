@@ -233,7 +233,10 @@ var add_contests = function(callback) {
 		},
 		end: end,
 		total_entries: 30,
-        free_play_pct: 50
+        free_play_pct: 50,
+		engine_options: {
+			mode : 'odds'
+		}
     };
 
     Bozuko.models.Page.find({name:/owl/i}, function(error, pages){
@@ -287,6 +290,8 @@ var add_contests = function(callback) {
 						});
 					});
 				});
+				
+				console.log('added contest for page '+page.name);
 			},
 
 			function finish(err){

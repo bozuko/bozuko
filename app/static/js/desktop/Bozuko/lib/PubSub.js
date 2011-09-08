@@ -13,6 +13,7 @@ Ext.define('Bozuko.lib.PubSub',{
         this.listeners = {};
         this.canceled = [];
         this.fails = 0;
+        this.failThreshold = 3;
         this.workers = 0;
         this._requestTimeout = 0;
     },
@@ -38,7 +39,7 @@ Ext.define('Bozuko.lib.PubSub',{
     request : function(){
         var me = this;
         
-        if( !me.listening ) return;
+        if( !me.listening || (me.activeRequest && me.activeRequest.xhr) ) return;
         
         var listeners = me.getListeners();
         if( !listeners || !Ext.Object.getKeys(listeners).length ) return;
@@ -145,6 +146,7 @@ Ext.define('Bozuko.lib.PubSub',{
                         console.log(e, e.stack);
                     }
                 });
+                me.fails = 0;
             }
             catch(e){
                 console.log(e);
@@ -155,9 +157,16 @@ Ext.define('Bozuko.lib.PubSub',{
         else{
             me.fails++;
         }
-        me.processCallbacks(callbacks, function(){
-            me.request();
-        });
+        if( me.fails > me.failThreshold ){
+            // wait for another minute
+            var delayedRequest = Ext.Function.createDelayed( me.request, 1000 * 60, me );
+            delayedRequest();
+        }
+        else {
+            me.processCallbacks(callbacks, function(){
+                me.request();
+            });
+        }
     },
     
     onItem : function(item, last){

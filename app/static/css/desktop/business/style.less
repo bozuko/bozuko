@@ -663,6 +663,7 @@ fieldset{
             margin-bottom: 10px;
         }
         .card-nav-toolbar{
+            zoom: 1;
             background-color: #f2f2f2;
             background-image: url("/images/desktop/app/builder/builder-card-bg-right.png?v3");
             background-position: 100% 0;
@@ -1050,11 +1051,11 @@ fieldset{
                 float: right;
                 width: 16px;
                 height: 16px;
-                background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-down-16.png") 0 0 no-repeat;
+                background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-up-16.png") 0 0 no-repeat;
             }
             
             .expanded .expander {
-                background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-up-16.png") 0 0 no-repeat;
+                background: transparent url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-down-16.png") 0 0 no-repeat;
             }
             
             .prizes-list {
@@ -1063,13 +1064,15 @@ fieldset{
             }
             .expanded .prizes-list {
                 display: block;
+                margin-left: -104px;
+                
             }
             
             .prize {
                 overflow: hidden;
                 
                 background: #fff;
-                padding: 4px;
+                padding: 6px;
                 border: 1px solid #ccc;
                 margin: 2px 0 4px;
                 
@@ -1079,10 +1082,12 @@ fieldset{
                 
                 .prize-name {
                     font-weight: bold;
+                    margin-bottom: .4em;
                 }
                 .prize-details {
                     font-size: 11px;
                     color: #777;
+                    padding: 0 2px;
                     .val {
                         color: #333;
                     }
@@ -1189,6 +1194,37 @@ fieldset{
                 border-top: 1px solid #ccc;
                 padding: 3px 6px;
             }
+        }
+    }
+}
+
+.security-images {
+    position: relative;
+    .scroller {
+        position: relative;
+        overflow: auto;
+        height: 98px;
+        .item {
+            cursor: pointer;
+            .border_radius(5px);
+            position: absolute;
+            padding: 5px;
+            top: 0;
+            left: 0;
+            img {
+                height: 60px;
+                width: 60px;
+            }
+        }
+        .item-over {
+            padding: 3px;
+            border: 2px solid #ccc;
+            background-color: #fff;
+        }
+        .item-selected{
+            padding: 3px;
+            border: 2px solid @brand_color;
+            background-color: #fff;
         }
     }
 }
