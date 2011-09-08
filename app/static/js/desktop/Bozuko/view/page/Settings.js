@@ -307,7 +307,20 @@ Ext.define('Bozuko.view.page.Settings' ,{
                     }]
                 }],
                 
+                buttonAlign: 'left',
+                
                 buttons: [{
+                    text            :'Use Facebook Picture',
+                    handler         :function(){
+                        var fb_url = 'https://graph.facebook.com/'+me.record.service('facebook').sid+'/picture?type=large';
+                        if( me.down('[name=image]') ){
+                            me.down('[name=image]').setValue( fb_url );
+                        }
+                        me.record.set('image', fb_url);
+                        me.fireEvent('save', me);
+                        me._imageDialog.close();
+                    }
+                },'->',{
                     text            :'Cancel',
                     handler         :function(){
                         me._imageDialog.close();
