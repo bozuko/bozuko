@@ -29,7 +29,7 @@ module.exports = {
     db:{
         name: 'bozuko_test'+port,
         replicaSet: true,
-        hosts: ['192.168.175.164', '192.168.175.163', '192.168.174.86'],
+        hosts: ['pgdb1', 'pgdb2'],
         options: {
             server: {poolSize: 100},
             replset: {},
@@ -107,7 +107,7 @@ module.exports = {
     server: {
         ssl: false,
         auth: false,
-        host: 'bonobo.bozuko.com',
+        host: 'playground.bozuko.com',
         port: port
     },
 

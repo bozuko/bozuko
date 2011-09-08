@@ -19,7 +19,7 @@ var users = {
 
 var user = users.b;
 
-assert.token = "43a9d844542c6570a1b267e2c88a9f11d00556d51e4768c5b33364d78c4324ac17e5eee3f37a9ccea374fda76dfb44ec714ea533567e12cdadefbc0b44ea1e7e";
+//assert.token = "43a9d844542c6570a1b267e2c88a9f11d00556d51e4768c5b33364d78c4324ac17e5eee3f37a9ccea374fda76dfb44ec714ea533567e12cdadefbc0b44ea1e7e";
 
 assert.page_id = "181069118581729";
 
@@ -156,9 +156,10 @@ var add_users = function(callback) {
 			user.service('facebook').internal = {likes : ['181069118581729']};
 
 			return user.save( function(error){
-                if( error ) return callback( error );
-                console.log('added users');
-				return callback( null, user);
+                            if( error ) return callback( error );
+                            console.log('added users');
+                            assert.token = user.token;
+			    return callback( null, user);
 			});
 		});
     });
@@ -202,22 +203,12 @@ function add_page(id, callback){
             if( !page ){
                 return callback(new Error("WTF!!!"));
             }
-            return Bozuko.models.User.findOne({name: /bozuko/i}, function(err, user) {
-                if (user) {
-                    assert.uid = ''+user._id;
-                    page.owner_id = user._id;
-					page.active = true;
-					page.security_img = '/security/image.png';
-                    page.save(function(){callback(null,'');});
-                } else {
-                    callback(new Error("Can't find Bobby!"));
-                }
-            });
+	    page.active = true;
+	    page.security_img = '/security/image.png';
+            page.save(function(){callback(null,'');});
         });
     });
 }
-
-
 
 var add_contests = function(callback) {
     var start = new Date();
