@@ -36,7 +36,6 @@ Ext.define('Bozuko.controller.Pages' ,{
             },
             'pagesettings' : {
                 'save'  : function(pagesettings){
-                    console.log('yo?');
                     me.saveSettings(pagesettings.down('button[action=save]'));
                 }
             }

@@ -81,6 +81,9 @@ Ext.define('Bozuko.view.page.Panel', {
         });
         me.callParent(arguments);
         me.statusText = me.down('[ref=navigation] [ref=status-text]');
+        me.on('destroy', function(){
+            clearTimeout( me.statusTextTimeout );
+        });
     },
     
     updateStatus : function(text){
@@ -94,11 +97,11 @@ Ext.define('Bozuko.view.page.Panel', {
     },
     
     successStatus : function(text){
-        this.updateStatus( '<div style="color: #999; line-height: 16px;"><img style="float: right; margin: 0 0 0 10px;" width="16" height="16" src="/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-check-16.png" />'+text+' </div>')
+        this.updateStatus( '<div style="color: #999; line-height: 20px;">'+text+'<img style="margin: 0 0 0 4px; vertical-align:middle;" width="16" height="16" src="/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-check-16.png" /></div>')
     },
     
     failureStatus : function(text){
-        this.updateStatus( '<div style="color: #999; line-height: 16px;"><img style="float: right; margin: 0 0 0 10px;" width="16" height="16" src="/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-cross-16.png" />'+text+'</div>')
+        this.updateStatus( '<div style="color: #999; line-height: 20px;">'+text+'<img style="margin: 0 0 0 4px; vertical-align:middle;" width="16" height="16" src="/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-cross-16.png" /></div>')
     }
     
 });

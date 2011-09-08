@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
+    s3 = Bozuko.require('util/s3'),
     burl = Bozuko.require('util/url').create,
     LastUpdatedPlugin = require('./plugins/lastupdated'),
     JSONPlugin = require('./plugins/json'),
@@ -91,9 +92,18 @@ Prize.method('redeem', function(user, callback){
             if( error ) return callback( error );
             self.user = user;
             self.page = page;
+            
+            var security_img;
+            if( page.security_img ){
+                security_img = s3.client.signedUrl('/'+page.security_img, new Date(Date.now()+(1000*60*2)) );
+            }
+            else{
+                security_img = burl('/images/security_image.png');
+            }
+            
             Bozuko.publish('prize/redeemed', {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
             return callback(null, {
-                security_image: page.security_img || burl('/images/security_image.png'),
+                security_image: security_img,
                 prize: self
             });
         });

@@ -231,8 +231,18 @@ Ext.define('Bozuko.view.contest.builder.Card', {
             icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/arrow-right-24.png'
         });
         
-        if( ~Ext.Array.indexOf(btns,'save') ) buttons.push({
+        if( ~Ext.Array.indexOf(btns,'apply') ) buttons.push({
             text: 'Save',
+            ref: 'apply',
+            style: 'margin-right: 0',
+            handler: function(){
+                me.fireEvent('apply', me);
+            },
+            icon: '/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/check-24.png'
+        });
+        
+        if( ~Ext.Array.indexOf(btns,'save') ) buttons.push({
+            text: 'Save and Close',
             ref: 'save',
             style: 'margin-right: 0',
             handler: function(){

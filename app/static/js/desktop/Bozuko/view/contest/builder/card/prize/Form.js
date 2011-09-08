@@ -10,6 +10,21 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         'Bozuko.lib.form.field.Codes'
     ],
     
+    barcodeRegex : {
+        'ean'   :/^([0-9]{8}|[0-9]{13})$/,
+        'upc'   :/^[0-9]{12}$/,
+        'isbn'  :/.*/,
+        '39'    :/^[0-9a-zA-Z\-\.\s\$\/\+\%]+$/,
+        '93'    :/^[0-9a-zA-Z\-\.\s\$\/\+\%!"§&]+$/,
+        '128c'  :/.*/,
+        '128b'  :/.*/,
+        '128'   :/.*/,
+        'i25'   :/.*/,
+        'cbr'   :/.*/,
+        'msi'   :/.*/,
+        'pls'   :/.*/
+    },
+    
     initComponent : function(){
         var me = this;
         
@@ -198,7 +213,8 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         icon                :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-up-24.png',
                         handler             :function(){
                             // cancel!
-                            me.getForm().setValues(me.prize.data);
+                            me.getForm().setValues(me._original_values);
+                            me.updateRecord();
                             me.switchMode();
                         }
                     },{xtype:'splitter'},{
@@ -221,6 +237,8 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             }]
         });
         
+        me._original_values = Ext.Object.merge({}, me.prize.data);
+        
         me.callParent(arguments);
         
         var updateSummary = function(){
@@ -231,8 +249,6 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         me.on('destroy', function(){
             me.prize.un('modify', updateSummary);
         });
-        
-        me.initFieldEvents();
         
         me.redemption_fields = {
             'common' : [{
@@ -357,6 +373,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         me.on('render', function(){
             me.body.addCls('mode-'+me.mode);
         });
+        me.initFieldEvents();
     },
     
     switchMode : function(){
@@ -395,6 +412,9 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
             field.on('blur', function(){
                 me.card.onFieldBlur(field);
             });
+            field.on('change', function(field){
+                me.onChange(field);
+            });
         });
         
         Ext.Array.each( (ct||me).query('htmleditor'), function(field){
@@ -432,6 +452,10 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         // update instructions
         if( type != me.prize.get('redemption_type') ){
             me.down('[name=instructions]').setValue(me.prize.getDefaultInstructions(type));
+            if( type == 'email' ){
+                me.down('[name=email_subject]').setValue(me.prize.getDefaultEmailSubject());
+                me.down('[name=email_body]').setValue(me.prize.getDefaultEmailBody());
+            }
         }
         
         me.initFieldEvents( ct );
@@ -484,6 +508,10 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         return values;
     },
     
+    onChange : function(){
+        this.updateRecord();
+    },
+    
     validate : function(){
         var me = this,
             type = me.getValues().redemption_type,
@@ -508,6 +536,21 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 return {
                     title: 'Email Code',
                     message: 'The email body does not contain {code}. You must include this somewhere to be populated with the unique email codes.'
+                };
+            }
+        }
+        if( type == 'barcode' ){
+            var barcode_type = me.down('[name=barcode_type]').getValue(),
+                re = me.barcodeRegex[barcode_type]
+                ;
+                
+            var result = Ext.Array.each(codes, function(code){
+                return re.test(code);
+            });
+            if( Ext.isNumeric(result) ){
+                return {
+                    title: 'Barcode Format Error',
+                    message: 'One of the barcodes does not match the selected format.'
                 };
             }
         }

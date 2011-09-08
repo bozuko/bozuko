@@ -48,6 +48,7 @@ var ServicesPlugin = module.exports = function(schema, opts){
         if( conditions ){
             merge(params, conditions);
         }
+        console.log(params);
         return this[fn](params, callback);
     });
     

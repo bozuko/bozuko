@@ -6,7 +6,7 @@ Ext.define('Bozuko.view.contest.builder.card.Review', {
     requires        :[
         'Bozuko.view.contest.builder.Card',
     ],
-    name            :"Review",
+    name            :"Review and Publish",
     overview        :'Please review your campaign to make sure everything is entered correctly.',
     
     durations: [
@@ -21,6 +21,7 @@ Ext.define('Bozuko.view.contest.builder.card.Review', {
     
     initComponent : function(){
         var me = this;
+        if( me.contest && me.contest.get('active') ) me.name = 'Review';
         Ext.apply( me.form, {
             tpl : new Ext.XTemplate(
                 '<div class="campaign-overview">',

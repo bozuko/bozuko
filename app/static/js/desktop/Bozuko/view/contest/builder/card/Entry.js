@@ -204,6 +204,8 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
             });
         }
         config.duration = me.form.down('[name=entry_config.duration]').getValue();
+        me.contest.set('entry_config',[config]);
+        
     },
     
     onSelectionChange : function(view, selections){

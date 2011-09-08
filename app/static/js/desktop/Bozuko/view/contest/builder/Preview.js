@@ -69,7 +69,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                         
                         var builder = me.up('contestbuilder');
                         var i = builder.down('[region=center]').items.indexOf(builder.down('contestbuilderentry'));
-                        if( builder.down('[ref=steps]').items.getAt(i).isDisabled() ) return '';
+                        if( builder.query('[ref=step-btn]')[i].isDisabled() ) return '';
                         
                         var cfg = me.contest.getEntryConfig();
                         if( !cfg || cfg.type === '') return false;
@@ -79,7 +79,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                         
                         var builder = me.up('contestbuilder');
                         var i = builder.down('[region=center]').items.indexOf(builder.down('contestbuildergame'));
-                        if( builder.down('[ref=steps]').items.getAt(i).isDisabled() ) return '';
+                        if( builder.query('[ref=step-btn]')[i].isDisabled() ) return '';
                         
                         if( !me.contest.get('game') ) return false;
                         return me.contest.getGameName();
@@ -98,7 +98,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                         
                         var builder = me.up('contestbuilder');
                         var i = builder.down('[region=center]').items.indexOf(builder.down('contestbuilderodds'));
-                        if( builder.down('[ref=steps]').items.getAt(i).isDisabled() ) return '';
+                        if( builder.query('[ref=step-btn]')[i].isDisabled() ) return '';
                         
                         return [
                             '1 in '+me.contest.get('win_frequency').toFixed(1)+' entries will win',
@@ -112,15 +112,17 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
         
         me.callParent(arguments);
         me.contest.on('modify', me.onContestModify, me);
+        me.contest.prizes().on('update', me.onContestModify, me);
         me.on('destroy', function(){
             me.contest.un('modify', me.onContestModify, me);
+            me.contest.prizes().un('update', me.onContestModify, me);
         });
         me.on('render', me.update, me);
     },
     
-    onContestModify : function(record){
+    onContestModify : function(){
         var me = this;
-        me.update(record ? record.raw : me.contest.raw);
+        me.update(me.contest.raw);
     }
     
 });
