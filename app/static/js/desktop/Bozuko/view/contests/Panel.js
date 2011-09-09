@@ -25,19 +25,11 @@ Ext.define('Bozuko.view.contests.Panel', {
             }]
         });
         
-        if( !Bozuko.beta ){
-            tbar.add(' ','-',' ',{
-                action          :'create',
-                text            :'Create Campaign',
-                icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png"
-            });
-        }
-        
-        if( window.location.hostname.match(/playground/) ) tbar.add('-',{
+        tbar.add('-',{
             hidden          :false,
             action          :'builder',
-            text            :'Build a Campaign (Beta)',
-            icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-plus-24.png"
+            text            :'Create a Campaign',
+            icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png"
         });
         
         Ext.apply(me, {
@@ -53,7 +45,7 @@ Ext.define('Bozuko.view.contests.Panel', {
                     xtype           :'contestlist',
                     store           :me.store,
                     autoScroll      :true,
-                    actionButtons   :Bozuko.beta?['report']:null
+                    actionButtons   :Bozuko.beta?['report','edit','copy']:null
                 }]
             }]    
         });

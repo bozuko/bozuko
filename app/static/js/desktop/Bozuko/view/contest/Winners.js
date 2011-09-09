@@ -85,7 +85,14 @@ Ext.define('Bozuko.view.contest.Winners' ,{
                         '<div class="user-name">{[this.getUserName(values)]}</div>',
                         '<div class="user-friend-count">{[this.getFriendCount(values)]} Friends</div>',
                         '<div class="prize-name">{prize.name}</div>',
-                        '<div class="prize-timestamp">{[this.getFormattedDate(values.prize.timestamp)]}</div>',
+                        '<div class="prize-code">{prize.code}</div>',
+                        '<tpl if="prize.redeemed">',
+                            '<div class="prize-timestamp">',
+                            '<span class="label">Redeemed:</span> {[this.getFormattedDate(values.prize.redeemed_time)]}',
+                            '</div>',
+                        '</tpl>',
+                        '<div class="prize-timestamp"><span class="label">Won:</span>{[this.getFormattedDate(values.prize.timestamp)]}</div>',
+                        
                     '</div>',
                 '</div>',
                 {

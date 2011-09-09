@@ -22,7 +22,18 @@ Ext.define('Bozuko.model.User', {
         {name:'blocked',        type:'Boolean',     defaultValue: false},
         {name:'allowed',        type:'Boolean',     defaultValue: false},
         {name:'services',       type:'Array'}
-    ]
+    ],
+    
+    service : function(name){
+        var me = this,
+            services = this.get('services');
+        
+        for(var i=0; i<services.length; i++){
+            if( services[i].name == name ) return services[i];
+        }
+        return false;
+    }
+    
 }, function(){
     this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });

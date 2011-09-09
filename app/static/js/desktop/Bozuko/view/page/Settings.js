@@ -297,7 +297,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
                         items :[{
                             xtype           :'component',
                             html            :'Please choose a new profile image from your computer and then hit "Upload". '+
-                                             '<br /><br /><span style="font-size:11px; color: #666;">The image should be 100px x 100px.</span><br />'
+                                             '<br /><br /><span style="font-size:11px; color: #666;">The image should be at least 150px x 150px.</span><br />'
                         },{
                             xtype           :'filefield',
                             name            :'image',

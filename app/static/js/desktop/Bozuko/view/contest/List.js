@@ -88,11 +88,11 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '<tpl if="this.canReport(values)">',
                             '<li><a href="javascript:;" class="reports">Reports</a></li>',
                         '</tpl>',
-                        '<tpl if="this.canEdit(values)">',
-                            '<li><a href="javascript:;" class="edit">Edit</a></li>',
+                        '<tpl if="this.canEdit(values) && this.isAdmin()">',
+                            '<li><a href="javascript:;" class="edit">Edit (Admin)</a></li>',
                         '</tpl>',
-                        '<tpl if="this.canUseBuilder()">',
-                            '<li><a href="javascript:;" class="edit builder">Open with Builder</a></li>',
+                        '<tpl if="this.canEdit(values)">',
+                            '<li><a href="javascript:;" class="edit builder">Edit</a></li>',
                         '</tpl>',
                         '<tpl if="this.canCopy(values)">',
                             '<li><a href="javascript:;" class="copy">Copy</a></li>',
@@ -109,6 +109,10 @@ Ext.define('Bozuko.view.contest.List' ,{
                     '</ul>',
                 '</div>',
                 {
+                    
+                    isAdmin : function(){
+                        return window.location.pathname.match(/^\/admin/);
+                    },
                     
                     canEdit : function(values){
                         if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'edit')){
