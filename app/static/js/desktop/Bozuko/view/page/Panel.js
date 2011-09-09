@@ -7,6 +7,8 @@ Ext.define('Bozuko.view.page.Panel', {
         'Bozuko.view.page.Dashboard',
         'Bozuko.view.contests.Panel',
         'Bozuko.view.page.Settings',
+        'Bozuko.view.page.Resources',
+        'Bozuko.view.page.Account',
         'Bozuko.store.Contests'
     ],
     
@@ -47,6 +49,16 @@ Ext.define('Bozuko.view.page.Panel', {
                     page        :'settings',
                     group       :'page',
                     icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png'
+                },{
+                    text        :'Resources',
+                    page        :'resources',
+                    group       :'page',
+                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-24.png'
+                },{
+                    text        :'Account',
+                    page        :'account',
+                    group       :'page',
+                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-profile-24.png'
                 },'->',{
                     ref         :'status-text',
                     xtype       :'tbtext',
@@ -76,6 +88,16 @@ Ext.define('Bozuko.view.page.Panel', {
                     xtype           :'pagesettings',
                     border          :false,
                     record          :me.page
+                },{
+                    ref             :'resources',
+                    xtype           :'pageresources',
+                    border          :false,
+                    page            :me.page
+                },{
+                    ref             :'account',
+                    xtype           :'pageaccount',
+                    border          :false,
+                    page            :me.page
                 }]
             }]
         });

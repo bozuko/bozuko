@@ -245,7 +245,6 @@ exports.routes = {
                         logout: "/user/logout",
                         favorites: "/user/favorites"
                     };
-                    console.error('user = '+inspect(user));
                     return Bozuko.transfer('user', user, user, function(error, result){
                         if (result) {
                             console.error('\nuser transfer = '+inspect(result)+'\n\n');
