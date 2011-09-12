@@ -37,7 +37,7 @@ module.exports = {
         replicaSet: true,
         hosts: ['192.168.175.159', '192.168.175.161'],
         options: {
-            server: {poolSize: 100},
+            server: {poolSize: 25},
             replset: {},
             db: {}
         }

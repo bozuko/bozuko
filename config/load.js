@@ -1,5 +1,5 @@
 //var port = 6999 + process.getuid();
-var port = 8004
+var port = 8004;
 
 module.exports = {
 
@@ -33,9 +33,9 @@ module.exports = {
     db:{
         name: 'bozuko_dev'+port,
         replicaSet: true,
-        hosts: ['192.168.175.164', '192.168.175.163', '192.168.174.86'],
+        hosts: ['pgdb1', 'pgdb2'],
         options: {
-            server: {poolSize: 100},
+            server: {poolSize: 25},
             replset: {},
             db: {}
         }
