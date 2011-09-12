@@ -118,7 +118,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                         if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'edit')){
                             return false;
                         }
-                        return ~Ext.Array.indexOf(['draft', 'published', 'active'], values.state);
+                        return this.isAdmin() || ~Ext.Array.indexOf(['draft', 'published'], values.state);
                     },
                     
                     canUseBuilder : function(){

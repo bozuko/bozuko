@@ -18,7 +18,7 @@ source ~/.bashrc
 echo "*** Installing node packages with npm"
 cd ~ && npm install connect connect-auth express jade less mongodb mongoose@2.1.0 monomi   \
     qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date    \
-    cluster imap node-uuid node-gd knox validator charm connect-form xml2json
+    cluster imap node-uuid node-gd knox validator charm connect-form xml2json pdfkit
 
 # install my version of mongoose so safe values get passed through properly.
 git clone git@github.com:andrewjstone/mongoose.git

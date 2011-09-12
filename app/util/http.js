@@ -10,6 +10,11 @@ exports.request = function(config, callback){
     if( config instanceof String){
         config = {url:config};
     }
+    
+    if( !config.retry ) config.retry = 0;
+    if( config.retry > 10 ){
+        return callback(new Error("Too many retries"));
+    }
 
     if( !callback ) {
         callback = function(){};
@@ -20,6 +25,7 @@ exports.request = function(config, callback){
     }
 
     var url_parsed = url.parse(config.url);
+    console.error( JSON.stringify(url_parsed, null,'  '));
 
     var port = config.port || url_parsed.port || (url_parsed.protocol==='https:' ? 443 : 80);
     var ssl = config.ssl || (url_parsed.protocol === 'https:' ? true : false);
@@ -62,43 +68,60 @@ exports.request = function(config, callback){
             headers: headers,
             method: method
         };
-
+        
+    console.error(JSON.stringify(config, null, '  '));
+    
     var request = http_.request(request_opts, function(response){
-
-        var data = '';
-        response.setEncoding('utf8');
-        response.on('data', function(chunk){
-            data+=chunk;
-        });
-        response.on('end', function(){
-
-            clearTimeout(tid);
-
-            // we should have the data
-            var result = data;
-            if( config.returnJSON ){
-                try{
-                    result = JSON.parse(data);
-                }catch(e){
-                    return callback(Bozuko.error('http/json', method+" "+config.url));
-                }
-            }
-            return callback(null, result);
-        });
+        
+        switch( response.statusCode ){
+            case 302:
+                // lets do another one!
+                
+                config.url = response.headers.location;
+                config.retry++;
+                clearTimeout( tid );
+                
+                return exports.request(config, callback);
+                
+            case 404:
+                clearTimeout( tid );
+                return callback(new Error("File not found"));
+                
+            case 200:
+                var data = '';
+                response.setEncoding( config.encoding || 'utf8');
+                response.on('data', function(chunk){
+                    data+=chunk;
+                });
+                response.on('end', function(){
+                    
+                    clearTimeout(tid);
+                    
+                    // we should have the data
+                    var result = data;
+                    if( config.returnJSON ){
+                        try{
+                            result = JSON.parse(data);
+                        }catch(e){
+                            return callback(Bozuko.error('http/json', method+" "+config.url, response));
+                        }
+                    }
+                    return callback(null, result, response);
+                });
+        }
+        return false;
     });
-
-    request.on('error', function(error) {
-        console.error("util/http: "+error);
-        return callback(Bozuko.error('http/error_event', error));
-    });
-
+    
     tid = setTimeout(function() {
         console.error("http timeout: "+method+" "+config.url);
         request.abort();
         return callback(Bozuko.error('http/timeout', method+" "+config.url));
     }, config.timeout || 10000);
-
-
+    
+    request.on('error', function(error) {
+        console.error("util/http: "+error);
+        return callback(Bozuko.error('http/error_event', error));
+    });
 
     /**
      * Not entirely sure what the upgrade event is.

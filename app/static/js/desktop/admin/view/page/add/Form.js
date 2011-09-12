@@ -19,17 +19,17 @@ Ext.define('Admin.view.page.add.Form' ,{
             data            :{},
             bodyPadding     :10,
             margin          :'0 0 4',
-            tpl             :[
-                '<tpl if="name">',
+            tpl             :new Ext.XTemplate(
+                '<tpl if="values.name">',
                     '<img src="{image}&type=square" height="80" style="float: left; margin: 0 10px 10px 0" />',
                     '<div style="font-weight: bold;">{name}</div>',
                     '<div>{category}</div>',
-                    '<div>{location.city}, {location.state}</div>',
+                    '<tpl if="values.location"><div>{location.city}, {location.state}</div></tpl>',
                 '</tpl>',
                 '<tpl if="!name">',
                     '<h3>Find a place or page in the left panel</h3>',
                 '</tpl>'
-            ]
+            )
         }];
         me.callParent( arguments );
     },
