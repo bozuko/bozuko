@@ -194,11 +194,22 @@
 .winners-list .prize-name {
   font-size: 14px;
   font-weight: bold;
-  margin-bottom: .4em;
+  margin-bottom: .2em;
+}
+.winners-list .prize-code {
+  font-weight: normal;
+  font-family: "courier new";
+  font-size: 12px;
+  margin-bottom: .2em;
+  color: #666;
 }
 .winners-list .prize-timestamp {
-  font-size: 12px;
+  text-align: right;
+  font-size: 11px;
   color: #999;
+}
+.winners-list .prize-timestamp .label {
+  float: left;
 }
 .winners-list .winner-body {
   padding: 6px 6px 6px 44px;
@@ -1109,4 +1120,14 @@ textarea.x-form-field {
 }
 strong {
   font-weight: bold;
+}
+.page-h3 {
+  font-family: "ArvoRegular";
+  font-size: 18px;
+  color: #00a24f;
+  line-height: 1.4em;
+  font-weight: normal;
+}
+p {
+  margin: .6em 0;
 }

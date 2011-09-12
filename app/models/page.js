@@ -730,8 +730,6 @@ Page.static('search', function(options, callback){
 
             if( error ) return callback(error);
             
-            console.error( require('util').inspect(bozukoSearch) );
-            
             pages = featured.concat(pages);
             
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
