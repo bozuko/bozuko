@@ -32,7 +32,11 @@ Error.prototype.send = function(res){
     
     if( this.name === 'http/timeout' && this.message.match(/graph\.facebook\.com/) ){
         this.title = 'Facebook Timeout';
-        this.message = 'Facebook is taking forever! Sorry, please try again in a little bit.'
+        this.message = 'Facebook is taking forever! Sorry, please try again in a little bit.';
+    }
+
+    if (this.name === 'MongoError') {
+        return Bozuko.error('maintenance/generic').send(res);
     }
     
     console.error('send '+this.name+": "+this.message+"\n"+this.stack);
@@ -46,6 +50,5 @@ Error.prototype.send = function(res){
 // sometimes the native mongo drivers return Strings instead of errors,
 // so lets extend the string prototype with the "send" method
 String.prototype.send = function(res){
-    var error = new Error(this);
-    return error.send(res);
+    Bozuko.error('maintenance/generic').send(res);
 };
