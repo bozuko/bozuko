@@ -21,6 +21,8 @@ var facebook    = Bozuko.require('util/facebook'),
 
 exports.access = 'admin';
 
+exports.restrictToUser = false;
+
 exports.routes = {
 
     '/dev/reset' : {

@@ -726,6 +726,11 @@ exports.routes = {
                 if( this.restrictToUser ){
                     selector._id = {$in: req.session.user.manages};
                 }
+                else{
+                    if( !req.param('showInactive') ) {
+                        selector.active = true;
+                    }
+                }
                 if( req.param('id') && ~indexOf( req.session.user.manages, req.param('id') ) ){
                     selector._id = req.param('id');
                 }
@@ -739,8 +744,6 @@ exports.routes = {
         /* update */
         put : {
             handler : function(req,res){
-                
-                console.log( [req.session.user.manages, req.param('id')] );
                 
                 if( this.restrictToUser && !~indexOf( req.session.user.manages, req.param('id') ) ){
                     return Bozuko.error('bozuko/auth').send(res);
