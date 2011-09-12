@@ -1,7 +1,8 @@
 /**
  * Module Dependencies
  */
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Db = mongoose.mongo.Db;
 
 /**
  * Global Variables
@@ -31,7 +32,7 @@ function getConnection(){
                     str+=",";
                 }
             };
-			uri = str;
+            uri = str;
             _db = mongoose.connectSet(str, Bozuko.config.db.options);
         } else {
             uri = 'mongodb://'+Bozuko.config.db.host+'/'+Bozuko.config.db.name;
@@ -58,4 +59,20 @@ mongoose.SchemaTypes.Array.prototype.$conditionalHandlers['$near'] = function (v
 };
 mongoose.SchemaTypes.Array.prototype.$conditionalHandlers['$nearSphere'] = function (val) {
     return this.cast(val);
+};
+
+var executeCommand = Db.prototype.executeCommand;
+Db.prototype.executeCommand = function(db_command, options, callback)
+{
+    var timed_out = false,
+        timeout = setTimeout(function(){
+            timed_out = true;
+            return callback( Bozuko.error('db/timeout') );
+        }, 5000);
+        
+    executeCommand.call(this, db_command, options, function(){
+        clearTimeout(timeout);
+        if( !timed_out ) return callback.apply(this, arguments);
+        return false;
+    });
 };
