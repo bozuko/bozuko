@@ -11,9 +11,9 @@ exports.request = function(config, callback){
         config = {url:config};
     }
     
-    if( !config.retry ) config.retry = 0;
-    if( config.retry > 10 ){
-        return callback(new Error("Too many retries"));
+    if( !config.redirect ) config.redirect = 0;
+    if( typeof config.redirect !== 'boolean' && config.redirect > (config.maxRedirects || 10) ){
+        return callback(new Error("Too many redirects"));
     }
 
     if( !callback ) {
@@ -25,7 +25,6 @@ exports.request = function(config, callback){
     }
 
     var url_parsed = url.parse(config.url);
-    console.error( JSON.stringify(url_parsed, null,'  '));
 
     var port = config.port || url_parsed.port || (url_parsed.protocol==='https:' ? 443 : 80);
     var ssl = config.ssl || (url_parsed.protocol === 'https:' ? true : false);
@@ -77,8 +76,12 @@ exports.request = function(config, callback){
             case 302:
                 // lets do another one!
                 
+                if( config.redirect === false ){
+                    return callback(new Error("Too many redirects"));
+                }
+                
                 config.url = response.headers.location;
-                config.retry++;
+                config.redirect++;
                 clearTimeout( tid );
                 
                 return exports.request(config, callback);
