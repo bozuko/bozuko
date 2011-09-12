@@ -68,8 +68,6 @@ exports.request = function(config, callback){
             method: method
         };
         
-    console.error(JSON.stringify(config, null, '  '));
-    
     var request = http_.request(request_opts, function(response){
         
         switch( response.statusCode ){
