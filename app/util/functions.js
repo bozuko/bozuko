@@ -5,7 +5,7 @@ function indexOf(haystack, needle){
     for(; i< haystack.length && !found; i++ ){
         found = JSON.stringify(haystack[i]) == JSON.stringify(needle);
     }
-    return found ? i+0 : -1;
+    return found ? Number(i) : -1;
 }
 
 function clone(obj) {
