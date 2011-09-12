@@ -915,6 +915,7 @@ Contest.method('savePrize', function(opts, callback) {
         if( prize.won || prize.won === 0) Bozuko.models.Contest.collection.update(
             {'prizes._id':prize._id},
             {$inc: {'prizes.$.won':1}},
+	    {safe: {w:2, wtimeout: 5000}},
             function(error){
                 if( error ) console.error( error );
             }
