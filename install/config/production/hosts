@@ -1,7 +1,7 @@
 # Configuration for internal playground network
 
 127.0.0.1             localhost.localdomain   localhost
-192.168.175.154       app1.bozuko.com         app1
+192.168.175.154       app1.bozuko.com         app1        api
 192.168.140.206       dashboard.bozuko.com    dashboard
 192.168.175.159       db1.bozuko.com          db1
 192.168.175.161       db2.bozuko.com          db2
