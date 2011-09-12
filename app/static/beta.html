@@ -1,0 +1,54 @@
+
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="https://www.facebook.com/2008/fbml" lang="en" class="beta-app"><head><title>Bozuko Beta</title><meta name="charset" content="utf-8"><meta name="author" content="Bozuko Inc."><meta name="description" content="Bozuko Beta Customer Area."><meta name="robots" content="noindex,nofollow"><link rel="stylesheet" type="text/css" href="/js/ext-4.0/lib/resources/css/ext-all-gray.css"><link rel="stylesheet" type="text/css" href="/css/desktop/business/style.css?v2"><link rel="stylesheet" type="text/css" href="/css/desktop/admin/app.css"><link rel="stylesheet" type="text/css" href="/css/desktop/style.css"><link rel="stylesheet" type="text/css" href="/css/desktop/layout.css"><link rel="stylesheet" type="text/css" href="/css/desktop/beta/style.css"></head><body><div class="page"><div class="hd"><div class="page-width"><h1 class="logo"><a href="/beta" title="Bozuko Beta">bozuko</a></h1><h3 class="tagline">beta</h3><div class="right-side"><div class="user-profile">Logged in as Mark Fabrizio, <a onclick="beta_logout();" href="/beta/logout" class="logout">Logout</a></div><div class="page-info"><img src="http://bozukodev.s3.amazonaws.com/pages/4e403b571bd34f1354000032/image/38079fda26f69969c6be49ef04fc82ae_processed.png"><h3>Owl Watch Lowell</h3></div></div></div></div><div class="bd"><div class="top-line"></div><div class="page-width"><div class="wrap"><div class="content"><div id="beta" class="beta-loading"><div class="loading-box"><span>Loading Bozuko Beta...</span></div></div><div style="display:none" class="hidden"><div id="preview-tmpl"><div class="heading block"><div class="img"><img src="{page.image}"/></div><div class="top"><h4>{page.name}</h4><h5>{page.category}</h5></div><div class="bottom"><div>{page.location.street}&nbsp;</div><div>{page.location.city}, {page.location.state}&nbsp;</div></div></div><tpl if="page.announcement != ''"><div class="announcement block">{page.announcement}</div></tpl><div class="facebook block"><div class="checkin">Facebook Check In</div><div class="like">Like us on Facebook</div></div><div class="sharing block"><div class="feedback">Feedback</div><div class="share"><a target="_blank" href="/p/{page._id}">Share</a></div></div></div></div><script>if( !window.Bozuko ) Bozuko = {};
+Bozuko.beta = {
+  user_id: '4e40112cc34323a84e000006',
+  page_id:'4e403b571bd34f1354000032',
+  user_pages: ["4e403b571bd34f1354000032"]
+};
+
+</script></div></div></div><div class="bottom-line"></div></div><div class="ft"><div class="page-width"><div class="line"><div class="unit size1of4"><ul><li><a href="/">Home </a></li><li><a href="/how-to-play">How to Play </a></li><li><a href="/bozuko-for-business">Bozuko for Business </a></li><li><a href="/contact">Contact </a></li><li><a href="http://getsatisfaction.com/bozuko" onclick="feedback_widget.show(); return false;">Feedback &amp; Support</a></li></ul></div><div class="unit size1of4"><ul><li><a href="http://blog.bozuko.com">Blog</a></li><li><a href="/about">About</a></li><li><a href="/beta/terms-of-use">Beta Agreement</a></li><li><a href="/terms-of-use">Site Terms of Use</a></li><li><a href="/privacy-policy">Privacy Policy</a></li></ul></div><div class="unit size1of4"><ul class="social"><li><a href="http://www.facebook.com/pages/Bozuko/223851717629478" class="facebook">Facebook</a></li><li><a href="http://twitter.com/BozukoBiz" class="twitter">Twitter</a></li></ul></div><div class="unit size1of4 lastUnit downloadUnit"><div class="content"><h3>Download</h3><ul class="download"><li><a href="#" title="Download for iPhone" class="download app-store"><img src="/images/desktop/site/icon_app-store.png" title="Download for iPhone"></a></li><li><a href="#" title="Download for Android" class="download android-market"><img src="/images/desktop/site/icon_android-market.png" title="Download for Android"></a></li></ul></div></div></div></div></div><div class="copyright"><div class="page-width">&copy; 2011 Bozuko, Inc.
+<ul><li><a href="/beta/terms-of-use" class="agreement">Beta Agreement</a></li><li><a href="http://getsatisfaction.com/bozuko" onclick="feedback_widget.show(); return false;">Feedback &amp; Support</a></li><li><a href="/">Bozuko.com</a></li></ul></div></div></div><script type="text/javascript" src="/js/ext-4.0/lib/ext-all.js"></script><script type="text/javascript" src="/js/desktop/beta/app.js"></script><div id="fb-root"></div><script type="text/javascript" src="https://connect.facebook.net/en_US/all.js"></script><script>FB.init({
+  appId  : '166078836756369',
+  status : true, // check login status
+  cookie : true, // enable cookies to allow the server to access the session
+  xfbml  : true // parse XFBML
+});
+function beta_logout(link){
+  // attach facebook logout to logout button
+  FB.logout(function(){
+    window.location = link.href;
+  });
+  return false;
+}
+// wait till loade      
+window.onload=function(){
+  if(document.getElementById('welcome-logged-in-as') ){
+    FB.getLoginStatus(function(response) {
+
+      if(response.session) {
+        FB.api('/me', function(data){
+          document.getElementById('welcome-logged-in-as').innerHTML =[
+            '<div style="padding: 10px 0; color: #666;">',
+            '<img src="https://graph.facebook.com/'+data.id+'/picture" height="25" style="vertical-align:middle; margin: 0 10px 0 0;" />',
+            'You are currently logged into Facebook as ',
+            '<span style="color: #000;">',data.name,'</span>',
+            '. <a onclick="javascript:beta_logout(this)" href="/beta/logout">Not You?</a>',
+            '</div>'
+          ].join('');
+        });
+      }
+    });
+  }
+}
+
+</script><script type="text/javascript" charset="utf-8" src="https://s3.amazonaws.com/getsatisfaction.com/javascripts/feedback-v2.js"></script><script type="text/javascript" charset="utf-8">var feedback_widget_options = {};
+
+feedback_widget_options.display = "overlay";  
+feedback_widget_options.company = "bozuko";
+feedback_widget_options.placement = "hidden";
+feedback_widget_options.color = "#308e50";
+feedback_widget_options.style = "question";
+
+var feedback_widget = new GSFN.feedback_widget(feedback_widget_options);
+
+</script></body></html>

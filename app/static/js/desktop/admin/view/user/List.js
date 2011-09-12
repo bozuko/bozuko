@@ -35,7 +35,7 @@ Ext.define('Admin.view.user.List' ,{
             itemTpl :new Ext.XTemplate(
                 '<div class="user-{[values.blocked&&!values.allowed?"blocked":"allowed"]}">',
                     '<img src="{[this.getImage(values.image)]}" />',
-                    '<span class="title">{name}</span>',
+                    '<span class="title"><a href="{[this.getFacebookLink(values)]}" target="_blank">{name}</a></span>',
                     '<div class="sub">',
                         'Friend Count: {[this.getFriendCount(values)]}<br />',
                         '<tpl if="blocked == true && allowed != true"><span style="color: red;">Blocked</span></tpl>',
@@ -59,6 +59,17 @@ Ext.define('Admin.view.user.List' ,{
                             return true;
                         });
                         return count;
+                    },
+                    getFacebookLink: function(values){
+                        var link = '#';
+                        Ext.Array.each( values.services, function(service){
+                            if( service.name == 'facebook' ){
+                                link = service.data.link;
+                                return false;
+                            }
+                            return true;
+                        });
+                        return link;
                     }
                 }
             )

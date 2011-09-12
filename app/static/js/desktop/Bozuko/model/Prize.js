@@ -47,14 +47,16 @@ Ext.define('Bozuko.model.Prize', {
         if( instructions !== '' ) return instructions;
         
         switch( type ){
+            
             case 'email':
                 instructions = 'Press "Redeem" and your prize will be emailed to you.';
                 break;
             
             case 'barcode':
             case 'image':
-                instructions = 'Please show this screen to an employee and then press "Redeem".';
+                instructions = 'Please show this screen to an employee before pressing "Redeem".';
                 break;
+            
         }
         return instructions;
     },

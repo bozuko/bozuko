@@ -23,6 +23,8 @@ Ext.define('Bozuko.view.chart.Basic', {
             
             layout: 'anchor',
             
+            dateFormat: 'D M d',
+            
             items : [{
                 xtype           :'panel',
                 border          :'false',
@@ -73,15 +75,16 @@ Ext.define('Bozuko.view.chart.Basic', {
                     store           :Ext.create('Ext.data.Store',{
                         fields          :['text','value'],
                         data            :[
-                            {text:'Last Minute', value:'minute-1'},
+                            {text:'Last Minute',    value:'minute-1'},
                             {text:'Last 10 Minutes', value:'minute-10'},
-                            {text:'Last Day', value:'day-1'},
-                            {text:'Last Two Days', value:'day-2'},
+                            {text:'Last Day', value:'hour-24'},
+                            {text:'Last Two Days', value:'hour-48'},
                             {text:'Last Week', value:'week-1'},
                             {text:'Last Two Weeks', value:'week-2'},
-                            {text:'Last Month', value:'month-1'},
+                            {text:'Last Month', value:'week-4'},
                             {text:'Last 6 Months', value:'month-6'},
-                            {text:'Last Year', value: 'month-12'}
+                            {text:'Last Year', value: 'month-12'},
+                            {text:'Last 5 Years', value: 'year-5'},
                         ]
                     }),
                     
@@ -128,14 +131,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                         width: 150,
                         height: 50,
                         renderer: function(storeItem, item) {
-                            
-                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'),
-                                (/day/i.test(me.timeField.getValue()) ?'ga':
-                                    (/year/i.test(me.timeField.getValue()) ? 'M y' :
-                                        'D M d'
-                                    )
-                                )
-                            ));
+                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'),me.dateFormat));
                             this.update( storeItem.get('count')+' '+me.modelField.getRawValue() );
                         }
                     },
@@ -219,27 +215,51 @@ Ext.define('Bozuko.view.chart.Basic', {
         if( me.chart.axes.get(0).setTitle ){
             me.chart.axes.get(0).setTitle(me.modelField.getRawValue());
             var time = me.timeField.getValue().split('-');
+            time[1] = parseInt( time[1], 10 );
             if( /year/i.test(time[0]) ){
-                me.chart.axes.get(1).dateFormat='M y';
+                if( time[1] > 1 ){
+                    me.dateFormat = me.chart.axes.get(1).dateFormat='Y';
+                    me.chart.axes.get(1).groupBy = 'year';
+                }
+                else{
+                    me.dateFormat = me.chart.axes.get(1).dateFormat='M Y';
+                    me.chart.axes.get(1).groupBy = 'year,month';
+                }
+            }
+            else if( /month/i.test(time[0]) && time[1] > 1 ){
+                
+                me.dateFormat = me.chart.axes.get(1).dateFormat='M Y';
                 me.chart.axes.get(1).groupBy = 'year,month';
             }
             else if( /day/i.test(time[0])){
-                me.chart.axes.get(1).dateFormat='ga';
+                
+                me.dateFormat = me.chart.axes.get(1).dateFormat='ga';
                 me.chart.axes.get(1).groupBy = 'year,month,day,hour';
+                
+            }
+            else if( /hour/i.test(time[0])){
+                if( time[1] > 1 ){
+                    me.dateFormat = me.chart.axes.get(1).dateFormat='ga';
+                    me.chart.axes.get(1).groupBy = 'year,month,day,hour';
+                }
+                else{
+                    me.dateFormat = me.chart.axes.get(1).dateFormat='g:i a';
+                    me.chart.axes.get(1).groupBy = 'year,month,day,hour,minute';
+                }
                 
             }
             else if( /minute/i.test(time[0])){
                 if( time[1] > 1 ){
-                    me.chart.axes.get(1).dateFormat='g:ia';
+                    me.dateFormat = me.chart.axes.get(1).dateFormat='g:ia';
                     me.chart.axes.get(1).groupBy = 'year,month,day,hour,minute';
                 }
                 else{
-                    me.chart.axes.get(1).dateFormat='g:i:sa';
+                    me.dateFormat = me.chart.axes.get(1).dateFormat='g:i:sa';
                     me.chart.axes.get(1).groupBy = 'year,month,day,hour,minute,second';
                 }
             }
             else{
-                me.chart.axes.get(1).dateFormat='d M';
+                me.dateFormat = me.chart.axes.get(1).dateFormat='d M';
                 me.chart.axes.get(1).groupBy = 'year,month,day';
             }
         }

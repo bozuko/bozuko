@@ -153,6 +153,23 @@ exports.routes = {
         }
     },
     
+    '/beta/redemption/instructions/:id' : {
+        get : {
+            handler : function(req, res){
+                var id = req.param('id');
+                // get the page...
+                Bozuko.models.Page.findById(id, function(error, page){
+                    
+                    if( error || !page ) return res.send("Page not found");
+                    
+                    res.locals.page = page;
+                    res.locals.layout = false;
+                    return res.render('beta/redemption/instructions');
+                });
+            }
+        }
+    },
+    
     '/beta/prizes/expired' : {
         get : {
             handler : function(req, res){
@@ -414,7 +431,7 @@ exports.routes = {
                                             // create a winner object
                                             winners.push({
                                                 _id: prize.id,
-                                                prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
+                                                prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','code','redeemed','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
                                                 user: filtered_user,
                                                 page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
                                                 contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
@@ -562,16 +579,17 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 
-                var user = req.session.user,
-                    tzOffset = -1*parseInt(req.param('timezoneOffset', 10))/60,
-                    time = req.param('time') || 'week-1',
-                    from, interval, now = new Date(), fillBlanks=true,
-                    options = {},
-                    query = {
-                        page_id: {$in: user.manages}
-                    };
+                var time = req.param('time') || 'week-1',
+                    tzOffset = parseInt(req.param('timezoneOffset', 0), 10),
+                    query = {},
+                    options ={},
+                    model = req.param('model') || 'Entry'
+                    ;
                 
-                if( req.param('page_id') ){
+                var user = req.session.user;
+                query.page_id = {$in: user.manages};
+                
+                if( req.param('page_id') && ~indexOf(req.param('page_id'), user.manages) ){
                     query.page_id = new ObjectId(req.param('page_id'));
                 }
                 if( req.param('contest_id') ){
@@ -582,61 +600,76 @@ exports.routes = {
                 if( time.length != 2 ) throw new Error('Invalid time argument');
                 time[1] = parseInt( time[1], 10 );
                 
+                options.interval = time[0].substr(0,1).toUpperCase()+time[0].substr(1);
+                options.length = time[1];
+                
                 switch( time[0] ){
                     case 'year':
-                        from = DateUtil.add( new Date(), DateUtil.DAY, -365 * time[1] )
-                        fillBlanks = false;
-                        interval = 'Month';
+                        if( time[1] > 1 ){
+                            options.unit = 'Year';
+                        }
+                        else{
+                            options.unit = 'Month';
+                        }
                         break;
                     
                     case 'month':
-                        from = DateUtil.add( new Date(), DateUtil.DAY, -30 * time[1] )
                         if( time[1] > 2 ){
                             fillBlanks = false;
-                            interval = 'Month';
+                            options.unit = 'Month';
                         }
                         else{
-                            interval = 'Date';
+                            options.unit = 'Day';
                         }
                         break;
                     
                     case 'week':
-                        from = DateUtil.add( new Date(), DateUtil.DAY, -7 * time[1] )
-                        interval = 'Date';
+                        options.unit = 'Day';
+                        break;
+                    
+                    case 'hour':
+                        if( time[1] > 1 ){
+                            options.unit = 'Hour';
+                        }
+                        else{
+                            options.unit = 'Minute';
+                        }
                         break;
                     
                     case 'day':
-                        from = DateUtil.add( new Date(), DateUtil.DAY, -1 * time[1] )
-                        interval = 'Hours';
+                        if( time[1] > 3 ){
+                            options.unit = 'Day';
+                        }
+                        else{
+                            options.unit = 'Hour';
+                        }
                         break;
                     
                     case 'minute':
-                        from = DateUtil.add( new Date(), DateUtil.MINUTE, -1 * time[1] )
-                        interval = 'Minutes';
+                        options.unit = 'Minute';
                         if( time[1] == 1 ){
-                            interval = 'Seconds';
+                            options.interval = 'Second';
+                            options.length = 60;
+                            options.unit = 'Second';
+                            options.unitInterval = 5;
                         }
                         break;
                 }
                 
                 var model = req.param('model') || 'Entry';
-                if( !~['Prize','Redeemed Prizes','Entry','Play','Share','Likes','Checkins'].indexOf(model) ) throw "Invalid model";
+                if( !~['Prize','Redeemed Prizes','Entry','Play','Share','Checkins','Likes'].indexOf(model) ) throw "Invalid model";
                 
-                options = {
-                    timezoneOffset: tzOffset,
-                    interval: interval,
-                    query: query,
-                    fillBlanks: fillBlanks,
-                    model: model,
-                    from: from
-                };
+                options.timezoneOffset = tzOffset;
+                options.query = query;
+                options.model = model;
                 
                 if( model == 'Redeemed Prizes'){
                     options.model = "Prize";
                     query.redeemed = true;
+                    options.timeField= 'redeemed_time';
                 }
                 else if(model == 'Share'){
-                    options.countField = 'visibility';
+                    options.sumField = 'visibility';
                 }
                 else if( model == 'Likes'){
                     options.model = 'Share';
@@ -645,12 +678,15 @@ exports.routes = {
                 }
                 else if( model == 'Checkins'){
                     options.model = 'Share';
-                    query.service = 'facebook';
+                    query.type = 'facebook';
                     query.type = 'checkin';
                 }
                 
-                return Report.run('counts', options, function(error, results){
-                    if( error ) return error.send( res );
+                return Report.run( 'interval', options, function(error, results){
+                    if( error ){
+                        console.error(require('util').inspect(error));
+                        return error.send( res );
+                    }
                     return res.send( {items: results} );
                 });
             }
@@ -734,7 +770,7 @@ exports.routes = {
                         return res.sendEncoded({success: false, err:'invalid image type'});
                     }
                     
-                    var ext = Path.extname( file.filename );
+                    var ext = Path.extname( file.filename ).toLowerCase();
                     if( ext == '.jpg') ext = '.jpeg';
                     var Ext = ext.replace(/\./,'').replace(/^[a-z]/, function(m0){ return m0.toUpperCase();} );
                     
@@ -755,7 +791,7 @@ exports.routes = {
                             return res.sendEncoded({success: false, err: 'Image is too big.'});
                         }
                         
-                        var s = Math.min( w, h, 100 ),
+                        var s = Math.min( w, h, 150 ),
                             sw = w > h ? h : w,
                             sh = h > w ? w : h,
                             sx = w > h ? parseInt((w-h)/2,10) : 0,
