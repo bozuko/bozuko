@@ -13,7 +13,7 @@ http.ServerResponse.prototype.render = function(view, locals, fn, parent){
     locals = locals || {};
     locals.user = this.req.session && this.req.session.user ? this.req.session.user : false;
     
-    var device = locals.device || this.req.session ? this.req.session.device : '';
+    var device = locals.device || this.req.session && this.req.session.device ? this.req.session.device : 'desktop';
     view = device+'/'+view;
     
     return expressRender.call( this, view, locals, fn, parent );
