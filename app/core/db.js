@@ -67,6 +67,7 @@ Db.prototype.executeCommand = function(db_command, options, callback)
     var timed_out = false,
         timeout = setTimeout(function(){
             timed_out = true;
+            if (!callback) return false;
             return callback( Bozuko.error('maintenance/generic') );
         }, 5000);
         
