@@ -330,7 +330,8 @@ exports.routes = {
                                     }
                                     else{
                                         return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
-                                            console.error('error posting');
+                                            console.error('error posting to facebook wall: user_id = '+req.session.user._id+
+                                                          ' user name = '+req.session.user.name);
                                             res.send( error || result );
                                         });
                                     }

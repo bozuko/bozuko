@@ -614,7 +614,7 @@ Contest.method('addEntry', function(tokens, callback) {
         function(err, contest) {
             prof.stop();
             console.log("addEntry err = "+inspect(err));
-            if (err && !err.message.match(no_matching_re)) return callback(err);
+            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
             if (!contest) {
                 return callback(Bozuko.error('entry/not_enough_tokens'));
             }
@@ -674,7 +674,7 @@ Contest.method('startPlay', function(user, callback) {
         {$inc: {tokens : -1}},
         {new: true, safe: safe},
         function(err, entry) {
-            if (err && !err.message.match(no_matching_re)) return callback(err);
+            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
             if (!entry) return callback(Bozuko.error("contest/no_tokens"));
             // If we crash here the user will lose a token. Don't worry about it now.
             console.log("OPLOG startPlay: entry._id = "+entry._id+" tokens = "+entry.tokens);
@@ -687,7 +687,7 @@ Contest.method('startPlay', function(user, callback) {
                 {new: true, fields: {plays: 0, results: 0}, safe: safe},
                 function(err, contest) {
                     prof.stop();
-                    if (err && !err.message.match(no_matching_re)) return callback(err);
+                    if (err && !err.errmsg.match(no_matching_re)) return callback(err);
                     if (!contest) return callback(Bozuko.error("contest/no_tokens"));
                     console.log("OPLOG startPlay: contest._id = "+contest._id+", play_cursor = "+contest.play_cursor);
                     var opts = {
@@ -706,7 +706,7 @@ Contest.method('startPlay', function(user, callback) {
                         {$set : {'plays.$.active': true, 'plays.$.cursor': contest.play_cursor}},
                         {new: true, fields: {plays: 0, results: 0}, safe: safe},
                         function(err, contest) {
-                            if (err && !err.message.match(no_matching_re)) return callback(err);
+                            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
                             if (!contest) return callback(Bozuko.error("contest/play_not_found"));
                             return contest.getResult(opts, callback);
                         }
@@ -768,7 +768,7 @@ Contest.method('claimConsolation', function(opts, callback) {
         {new: true, fields: {plays: 0, results:0}, safe: safe},
         function(err, contest) {
             prof.stop();
-            if( err && !err.message.match(no_matching_re) ) console.error(err);
+            if( err && !err.errmsg.match(no_matching_re) ) console.error(err);
             if (!contest) {
                 opts.consolation = false;
                 return callback(null);
@@ -915,6 +915,7 @@ Contest.method('savePrize', function(opts, callback) {
         if( prize.won || prize.won === 0) Bozuko.models.Contest.collection.update(
             {'prizes._id':prize._id},
             {$inc: {'prizes.$.won':1}},
+	    {safe: {w:2, wtimeout: 5000}},
             function(error){
                 if( error ) console.error( error );
             }
@@ -1079,7 +1080,7 @@ Contest.method('endPlay', function(opts, callback) {
             {new: true, safe: safe},
             function(err, entry) {
                 prof.stop();
-                if (err && !err.message.match(/no\smatching\sobject/i)) return callback(err);
+                if (err && !err.errmsg.match(/no\smatching\sobject/i)) return callback(err);
                 // There isn't an active entry to give a token to. Log it and don't give out a free play.
                 console.log("OPLOG endPlay: entry._id = "+entry._id+", user_id = "+opts.user_id+", entry.tokens = "+entry.tokens);
                 if (!entry) {
@@ -1096,7 +1097,7 @@ Contest.method('endPlay', function(opts, callback) {
                     {new: true, fields: {plays: 0, results:0}, safe: safe},
                     function(err, contest) {
                         prof2.stop();
-                        if( err && err.message.match(/no\smatching\sobject/i) ) err = null;
+                        if( err && err.errmsg.match(/no\smatching\sobject/i) ) err = null;
                         handler(err, contest);
                     }
                 );
