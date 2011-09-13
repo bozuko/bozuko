@@ -81,6 +81,7 @@ Prize.method('redeem', function(user, callback){
         if( self.prize_id ) Bozuko.models.Contest.collection.update(
             {'prizes._id':self.prize_id},
             {$inc: {'prizes.$.redeemed':1}},
+	    {safe: {w:2, wtimeout: 5000}},
             function(error){
                 if( error ) console.error( error );
                 else console.log('updated redeemed');
