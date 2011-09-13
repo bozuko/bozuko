@@ -298,7 +298,7 @@ exports.routes = {
                                 
                                 var gameName = contest.getGame().getName();
                                 
-                                var a = /^(a|an|the)\s/i.test(String(prize.name)) ? '' : (String(prize.name).match(/^[aeiou]/i) ? 'an ' : 'a ');
+                                var a = /^([0-9\$]|a|an|the)\s/i.test(String(prize.name)) ? '' : (String(prize.name).match(/^[aeiou]/i) ? 'an ' : 'a ');
                                 options.name = req.session.user.name+' just won '+a+prize.name+'!';
                                 options.description = 'You could too! Play '+gameName+' at '+page.name+' with Bozuko for your chance to win!';
                                 

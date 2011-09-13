@@ -72,7 +72,8 @@ exports.request = function(config, callback){
         
         switch( response.statusCode ){
             case 302:
-                // lets do another one!
+                
+                clearTimeout( tid );
                 
                 if( config.redirect === false ){
                     return callback(new Error("Too many redirects"));

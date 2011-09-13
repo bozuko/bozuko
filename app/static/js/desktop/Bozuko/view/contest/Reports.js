@@ -61,6 +61,12 @@ Ext.define('Bozuko.view.contest.Reports', {
                     title           :'Prizes',
                     xtype           :'contestprizes',
                     contest         :me.record
+                },{
+                    title           :'Review',
+                    xtype           :'contestreview',
+                    contest         :me.record,
+                    bodyPadding     :20,
+                    autoScroll      :true
                 }]
             },{
                 xtype           :'contestplayers',

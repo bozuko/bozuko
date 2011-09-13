@@ -343,6 +343,25 @@ exports.routes = {
         }
     },
     
+    '/themes/:game/:name/image' : {
+        get : {
+            handler : function( req, res ){
+                try{
+                    var themes = Bozuko.games[req.param('game')].themes;
+                    for(var i=0; i<themes.length; i++){
+                        var theme = themes[i];
+                        if( theme.theme == req.param('name') ){
+                            return res.redirect( theme.icon );
+                        }
+                    }
+                }catch( e ){
+                    
+                }
+                return res.send('Invalid Theme');
+            }
+        }
+    },
+    
     '/security/images' : {
         get : {
             handler : function( req, res ){
