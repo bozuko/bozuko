@@ -5,7 +5,8 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
     
     requires        :[
         'Bozuko.view.contest.builder.Card',
-        'Bozuko.lib.form.field.Duration'
+        'Bozuko.lib.form.field.Duration',
+        'Bozuko.store.EntryTypes'
     ],
     name            :"Entry Method",
     overview        :[
@@ -46,42 +47,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                     '<div class="entry-description selection-description"></div>'
                 ),
                 
-                store : Ext.create('Ext.data.Store', {
-                    fields : ['img','title','description','type','options'],
-                    data : [{
-                        type: 'facebook/checkin',
-                        title: 'Facebook Check in',
-                        img:'/images/desktop/app/builder/entry/facebook-checkin-fit.png',
-                        description: [
-                            '<p>A player must be present at your location and all entries post to player\'s walls.  Using the Bozuko app, players can "check in and play" with a single button.</p>'
-                        ].join(''),
-                        options: [
-                            '<input type="checkbox" name="enable_like" id="',like_id,'" value="true" /> ',
-                            '<label for="',like_id,'">Enable Bonus Plays if the user likes your Facebook Page</label>'
-                        ].join('')
-                    },{
-                        type: 'facebook/like',
-                        title: 'Facebook Like',
-                        img:'/images/desktop/app/builder/entry/facebook-like-fit.png',
-                        description: [
-                            '<p>A player must first Facebook "Like" your business on in order to play the game.  The Bozuko application makes Liking your business easy by presenting the user an integrated Like button on your game page.</p>'
-                        ].join('')
-                    },{
-                        type: 'bozuko/checkin',
-                        title: 'Bozuko Check in',
-                        img:'/images/desktop/app/builder/entry/bozuko-checkin-fit.png',
-                        description: [
-                            "<p>A user must be at your location to play the game.</p>"
-                        ].join('')
-                    },{
-                        type: 'bozuko/nothing',
-                        title: 'No Requirement',
-                        img:'/images/desktop/app/builder/entry/bozuko-play-fit.png',
-                        description: [
-                            "<p>There is no requirement on players outside of play frequency.</p>"
-                        ].join('')
-                    }]
-                }),
+                store : Ext.create('Bozuko.store.EntryTypes'),
                 
                 listeners : {
                     selectionchange     :me.onSelectionChange,
