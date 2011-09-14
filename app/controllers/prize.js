@@ -3,6 +3,7 @@ var dateFormat = require('dateformat'),
     URL = require('url'),
     burl = Bozuko.require('util/url').create,
     qs = require('querystring'),
+    s3 = Bozuko.require('util/s3'),
     PrizeSchema = Bozuko.models.Prize.schema;
 
 exports.transfer_objects = {
@@ -46,6 +47,17 @@ exports.transfer_objects = {
                 o.win_time = prize.timestamp;
                 o.business_img = prize.page.image;
                 o.user_img = prize.user.image.replace(/type=large/, 'type=square');
+                
+                if( o.is_barcode ){
+                    var url = o.barcode_image;
+                    if( url.match(/^https?\:\/\//) ){
+                        url.replace(/^https?\:\/\//, '');
+                        url = url.substr(url.indexOf('/') );
+                    }
+                    var expires = new Date( Date.now() + Bozuko.cfg('barcode.url_expiration',1000*60*60*24 ) );
+                    o.barcode_image = s3.client.signedUrl(url, expires);
+                }
+                
                 /**
                  * TODO - pull this from the contest / prize / page
                  */
