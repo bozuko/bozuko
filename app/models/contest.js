@@ -905,9 +905,9 @@ Contest.method('savePrize', function(opts, callback) {
         }
         if (prize.is_barcode) {
             if (opts.consolation) {
-                user_prize.barcode_image = burl('/game/'+self._id+'/consolation_prize/0/barcode'+opts.consolation_prize_count);
+                user_prize.barcode_image = '/game/'+self._id+'/consolation_prize/0/barcode'+opts.consolation_prize_count;
             } else {
-                user_prize.barcode_image = burl('/game/'+self._id+'/prize/'+opts.prize_index+'/barcode/'+opts.prize_count);
+                user_prize.barcode_image = '/game/'+self._id+'/prize/'+opts.prize_index+'/barcode/'+opts.prize_count;
             }
         }
 

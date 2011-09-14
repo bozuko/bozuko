@@ -405,6 +405,8 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         
         var me = this;
         
+        var bufferedOnChange = Ext.Function.createBuffered( me.onChange, 700, me );
+        
         Ext.Array.each( (ct||me).query('field'), function(field){
             field.on('focus', function(){
                 me.card.onFieldFocus(field);
@@ -413,7 +415,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 me.card.onFieldBlur(field);
             });
             field.on('change', function(field){
-                me.onChange(field);
+                bufferedOnChange(field);
             });
         });
         
