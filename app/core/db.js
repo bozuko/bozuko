@@ -73,7 +73,7 @@ Db.prototype.executeCommand = function(db_command, options, callback)
         
     executeCommand.call(this, db_command, options, function(){
         clearTimeout(timeout);
-        if( !timed_out ) return callback.apply(this, arguments);
+        if( !timed_out && callback ) return callback.apply(this, arguments);
         return false;
     });
 };
