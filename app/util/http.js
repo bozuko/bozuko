@@ -85,11 +85,7 @@ exports.request = function(config, callback){
                 
                 return exports.request(config, callback);
                 
-            case 404:
-                clearTimeout( tid );
-                return callback(new Error("File not found"));
-                
-            case 200:
+            default:
                 var data = '';
                 response.setEncoding( config.encoding || 'utf8');
                 response.on('data', function(chunk){
