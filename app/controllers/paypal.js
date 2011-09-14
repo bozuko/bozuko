@@ -5,7 +5,7 @@ exports.routes = {
     '/ipn': {
         post: {
             handler: function(req, res) {
-                if (Bozuko.env === 'playground') {
+                if (Bozuko.env() === 'playground') {
                     http.request({
                         url: 'https://playground.bozuko.com:8004/ipn',
                         method: 'POST',
@@ -13,6 +13,7 @@ exports.routes = {
                         body: req.rawBody
                     }, function() {
                         console.log("Proxied IPN req to dev because Paypal sucks");
+                        res.end();
                     });
                 } else {
                     console.log("IPN = "+inspect(req));
