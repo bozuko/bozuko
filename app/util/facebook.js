@@ -85,6 +85,8 @@ exports.graph = function(path, options, callback){
             if( result.error.message.match(/changed the password/i) ){
                 return callback( Bozuko.error('facebook/auth') );
             }
+            // log the error...
+            console.error( JSON.stringify( result.error, null, '  ') );
             return callback( Bozuko.error('facebook/api', result.error ));
         }
 

@@ -7,8 +7,7 @@ if (process.env.USER === 'docs') port = 7002;
 
 module.exports = {
 
-//    test_mode: false,
-    test_mode: true,
+    test_mode: false,
 
     controllers: {
         except: [
