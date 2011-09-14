@@ -1,5 +1,5 @@
 module.exports = {
-    title: 'Nautical',
-    description: 'Nautical Theme',
-    preview: 'preview.jpg'
+    title       :'Nautical',
+    description :'Nautical Theme',
+    preview     :'preview.jpg'
 };
