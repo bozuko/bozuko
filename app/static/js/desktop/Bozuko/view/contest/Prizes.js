@@ -26,7 +26,7 @@ Ext.define('Bozuko.view.contest.Prizes', {
         // me.contest.on('update', me.getExpired, me);
         
         // delay getting the expired stuff
-        var updateExpired = Ext.Function.createBuffered( me.updateExpired, 100, me);
+        var updateExpired = Ext.Function.createBuffered( me.updateExpired, 2000, me);
         
         me.on('render', updateExpired);
         me.prizes.on('update', updateExpired);

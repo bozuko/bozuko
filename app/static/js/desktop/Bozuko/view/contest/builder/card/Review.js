@@ -25,5 +25,6 @@ Ext.define('Bozuko.view.contest.builder.card.Review', {
         me.form.refresh();
     },
     loadContest : function(){},
-    updateRecord: function(){}
+    updateRecord: function(){},
+    validate : function(){ return true; }
 });

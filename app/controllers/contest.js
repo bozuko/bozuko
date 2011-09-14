@@ -270,7 +270,7 @@ exports.routes = {
         }
 
     },
-
+/*
     '/game/:id/prize/:prize_index/barcode/:barcode_index': {
         get: {
 //            access: 'mobile',
@@ -291,6 +291,7 @@ exports.routes = {
             }
         }
     },
+*/
 
     /**
      * Play a game here. The result is pulled off the generic result list generated for the contest
