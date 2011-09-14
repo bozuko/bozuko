@@ -80,6 +80,8 @@ exports.request = function(config, callback){
                 }
                 
                 config.url = response.headers.location;
+                config.method = 'get';
+                config.params = {};
                 config.redirect++;
                 clearTimeout( tid );
                 
@@ -168,7 +170,6 @@ exports.stream = function stream( _url, res, options, callback ){
 
     return require(ssl ? 'https' : 'http').get( opts, function(response){
         var headers = response.headers || {};
-        console.log(headers);
         if( headers.location ){
             return stream( headers.location, res, options, callback );
         }
@@ -183,7 +184,7 @@ exports.stream = function stream( _url, res, options, callback ){
         .forEach(function(header){
             if( headers[header] ) res.header(header, headers[header] );
         });
-
+        
         return response.pipe( res );
     });
 };
