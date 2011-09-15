@@ -30,7 +30,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 border          :'false',
                 anchor          :'0',
                 layout          :'hbox',
-                items           :[{
+                items           :[{xtype:'splitter', width: 65},{
                     xtype           :'combo',
                     hideLabel       :true,
                     forceSelection  :true,
@@ -90,7 +90,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 },{
                     xtype           :'component',
                     flex            :1,
-                    style           :'text-align:right; line-height: 20px; font-size: 16px; font-weight: bold; font-family: Tahoma',
+                    style           :'text-align:right; line-height: 20px; font-size: 16px; font-weight: bold; font-family: Tahoma; padding-right: 10px;',
                     border          :false,
                     ref             :'chart-total'
                 }]
