@@ -33,7 +33,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 items           :[{
                     xtype           :'component',
                     flex            :1,
-                    style           :'text-align:right; line-height: 20px; font-size: 18px; font-weight: bold;',
+                    style           :'text-align:left; line-height: 20px; font-size: 18px; font-weight: bold;',
                     border          :false,
                     ref             :'chart-total'
                 },{xtype:'splitter'},{
@@ -228,11 +228,24 @@ Ext.define('Bozuko.view.chart.Basic', {
         return callbacks[name];
     },
     
+    addCommas : function(nStr){
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    },
+    
     onChartRefresh : function(){
         var me = this;
         // add up everything...
-        var total = me.chartStore.sum('count');
-        me.down('[ref=chart-total]').update(String(total)+' Total');
+        var total = String(me.chartStore.sum('count'));
+        
+        me.down('[ref=chart-total]').update(me.addCommas(total)+' <span style="font-weight: normal;">Total</span>');
     },
     
     loadStore : function(callback){
