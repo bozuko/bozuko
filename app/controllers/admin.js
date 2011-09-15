@@ -347,30 +347,6 @@ exports.routes = {
             }
         }
 
-    },
-    
-    '/admin/stats/misc' : {
-        // lets get a bunch of miscellaneous stats
-        get : {
-            handler : function(req, res){
-                
-                var selector = {},
-                    contest_id = req.param('contest_id'),
-                    page_id = req.param('page_id')
-                    ;
-                    
-                if( contest_id ) selector.contest_id = new ObjectId(contest_id);
-                if( page_id ) selector.page_id = new ObjectId(page_id);
-                
-                // very simple distinct / count function...
-                Bozuko.models.Entry.collection.distinct('user_id', selector, function(error, user_ids){
-                    if( error ) return res.send ( error );
-                    return res.send({
-                        users: user_ids.length
-                    });
-                });
-            }
-        }
     }
 };
 
