@@ -63,12 +63,7 @@ Ext.define('Bozuko.view.page.Dashboard', {
         });
         
         me.callParent(arguments);
-        me.on('deactivate', function(){
-            me.down('bozukochartbasic').pause();
-        });
-        me.on('activate', function(){
-            me.down('bozukochartbasic').resume();
-        });
+        
     }
     
 });

@@ -249,7 +249,7 @@ Affairs in writing at 400 R Street, Suite 1080, Sacramento, California 95814, or
 15. **Contacting Us**
 
     If you have any questions about Bozuko generally, these Terms of Use or the Site, please feel free to contact us at
-list-style: lower-alpha;.
+[questions@bozuko.com].
 
 
 Copyright © 2011 Bozuko, Inc. All rights reserved.

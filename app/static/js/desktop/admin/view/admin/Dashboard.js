@@ -103,12 +103,8 @@ Ext.define('Admin.view.admin.Dashboard' ,{
         me.queuedItems = [];
         
         me.on('activate', function(){
-            me.down('bozukochartbasic').resume();
             while( me.queuedItems.length ) me.addEventToLog( me.queuedItems.shift() );
         });
-        me.on('deactivate', function(){
-            me.down('bozukochartbasic').pause();
-        })
         
         Bozuko.PubSub.subscribe('*', true, function(item, callback){
             
