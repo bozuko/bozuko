@@ -145,6 +145,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                     refresh         :me.onChartRefresh
                 }
             },{
+            
                 xtype           :'component',
                 ref             :'stats-block',
                 tpl             :new Ext.XTemplate(
