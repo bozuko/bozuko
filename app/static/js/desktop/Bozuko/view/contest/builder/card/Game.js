@@ -103,7 +103,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 ],
                 layout              :'hbox',
                 items               :[{
-                    xtype               :'numberfield',
+                    xtype               :'combo',
                     ref                 :'last-field',
                     name                :'entry_config.tokens',
                     hideLabel           :true,
@@ -111,7 +111,15 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     maxValue            :20,
                     width               :50,
                     allowBlank          :false,
-                    regexText           :'Please enter a number greater than zero'
+                    editable            :false,
+                    forceSelection      :true,
+                    displayField        :'value',
+                    valueField          :'value',
+                    queryMode           :'local',
+                    store               :Ext.create('Ext.data.Store',{
+                        fields              :['value'],
+                        data                :[{value:1},{value:2},{value:3},{value:4},{value:5}]
+                    })
                 }]
             }]
         });
@@ -267,7 +275,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 fields : ['title','preview','description','theme','icon'],
                 proxy : {
                     type: 'rest',
-                    url: Bozuko.Router.route('/themes/'+type),
+                    url: Bozuko.Router.route('/themes/'+type+'/'+encodeURIComponent(me.up('pagepanel').page.get('name'))),
                     reader : {
                         type: 'json',
                         root: 'items'

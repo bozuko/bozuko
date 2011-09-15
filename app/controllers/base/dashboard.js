@@ -330,11 +330,86 @@ exports.routes = {
         }
     },
     
-    '/themes/:game' : {
+    '/prizes/:id/expired.txt' : {
+        get : {
+            handler : function(req, res){
+                
+                var prize_id = req.param('id');
+                
+                var selector = {
+                    'prizes._id'        :new ObjectId(prize_id)
+                };
+                if( this.restrictToUser ){
+                    selector.page_id = {$in: req.session.user.manages};
+                }
+                
+                res.contentType('text/plain');
+                res.header('Content-Disposition', 'attachment; filename="Expired_Prizes.txt";');
+                
+                return Bozuko.models.Contest.findOne(selector ,{prizes: 1}, function(error, contest){
+                    
+                    if( error ) return error.send( res );
+                    if( !contest ) return res.send('')
+                    
+                    // first find the prize
+                    var prize = contest.prizes.id(prize_id),
+                        is_email = prize.is_email,
+                        is_barcode = prize.is_barcode;
+                        
+                    if( !is_email && !is_barcode ){
+                        return res.send('');
+                    }
+                    
+                    var codes = [];
+                    
+                    return Bozuko.models.Prize.find( {
+                        prize_id        :prize._id,
+                        redeemed        :false,
+                        expires         :{$lt: new Date()}
+                    }, function(error, prizes){
+                        if( error ) return error.send(res);
+                        
+                        prizes.forEach(function(expired){
+                            var code;
+                            if( is_barcode ){
+                                var i = String(expired.barcode_image).split('/').pop();
+                                code = prize.barcodes[i];
+                            }
+                            else{
+                                code = expired.email_code;
+                            }
+                            codes.push(code);
+                        });
+                        
+                        return res.send( codes.join('\r\n') );
+                    });
+                    
+                });
+            }
+        }
+    },
+    
+    '/themes/:game/:page_name?' : {
         get : {
             handler : function( req, res ){
                 try{
-                    return res.send( {items: Bozuko.games[req.param('game')].themes} );
+                    var page_name = req.param('page_name');
+                    var themes = [];
+                    Bozuko.games[req.param('game')].themes.forEach(function(theme){
+                        if( !page_name || !theme.pages ){
+                            themes.push(theme);
+                        }
+                        else{
+                            for(var i =0, found=false; i<theme.pages.length && !found ; i++){
+                                var re = theme.pages[i];
+                                if( re.test(page_name) ){
+                                    found = true;
+                                    themes.push(theme);
+                                }
+                            }
+                        }
+                    });
+                    return res.send( {items: themes} );
                 }catch(e){
                     console.error(e);
                     return res.send({items:[]});

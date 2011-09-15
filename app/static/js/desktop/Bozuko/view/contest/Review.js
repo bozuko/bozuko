@@ -238,7 +238,7 @@ Ext.define('Bozuko.view.contest.Review', {
             d = '';
             l = l.replace(/s$/,'');
         }
-        return (d||0)+' '+((l||'seconds').toLowerCase());
+        return d+' '+((l||'seconds').toLowerCase());
     },
     
     isTwoDecimalPlacesOrLess : function(n){

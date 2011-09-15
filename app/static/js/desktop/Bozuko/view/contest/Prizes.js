@@ -19,7 +19,12 @@ Ext.define('Bozuko.view.contest.Prizes', {
                 {header: 'Active',          dataIndex: 'won',           width: 70,      renderer:me.renderers.active},
                 {header: 'Expired',         dataIndex: 'won',           width: 70,      renderer:me.renderers.expired},
                 {header: 'Redeemed',        dataIndex: 'redeemed',      width: 70}
-            ]
+            ],
+            
+            listeners : {
+                scope           :me,
+                itemclick       :me.onItemClick
+            }
         });
         me.callParent(arguments);
         // TODO - we should subscribe to wins / redemptions
@@ -34,6 +39,12 @@ Ext.define('Bozuko.view.contest.Prizes', {
         me.on('destroy', function(){
             me.prizes.un('update', updateExpired);
         });
+    },
+    
+    onItemClick : function(view, record, el, index, ev){
+        if( ev.getTarget('.download-expired') ){
+            window.open(Bozuko.Router.route('/prizes/'+record.get('_id')+'/expired.txt'));
+        }
     },
     
     renderers : {
@@ -76,8 +87,16 @@ Ext.define('Bozuko.view.contest.Prizes', {
                     // find and update
                     prize.expired_count = expired;
                     prize.active_count = active;
+                    
+                    var expired_str = String(expired);
+                    var is_code = prize.get('is_barcode') || prize.get('is_email');
+                    
+                    if( expired > 0 && is_code ){
+                        expired_str = '<a href="javascript:;" class="download-expired">'+expired_str+'</a>';
+                    }
+                    
                     me.getEl().down('.'+id+'-active').update(String(active));
-                    me.getEl().down('.'+id+'-expired').update(String(expired));
+                    me.getEl().down('.'+id+'-expired').update( expired_str );
                 });
             }
         });

@@ -29,15 +29,16 @@ Ext.define('Bozuko.lib.form.field.Duration', {
             items: [{
                 width           :40,
                 xtype           :'textfield',
-                ref             :'value'
+                ref             :'value',
+                allowBlank      :false,
+                regexMask       :/[0-9\.]/
             },{
                 xtype           :'splitter'
             },{
                 width           :80,
                 ref             :'unit',
                 xtype           :'combo',
-                mode            :'local',
-                triggerAction   :'all',
+                queryMode       :'local',
                 editable        :false,
                 forceSelection  :true,
                 displayField    :'label',
@@ -57,7 +58,11 @@ Ext.define('Bozuko.lib.form.field.Duration', {
     },
     
     focus : function(){
-        me.valueField.focus();
+        this.valueField.focus();
+    },
+    
+    isValid : function(){
+        return this.valueField.isValid();
     },
     
     setValue : function(v){

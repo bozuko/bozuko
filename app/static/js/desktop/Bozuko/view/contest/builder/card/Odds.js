@@ -134,7 +134,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                                     '</tr>',
                                 '</tpl>',
                                 '<tr class="footer">',
-                                    '<th>Summary</th>',
+                                    '<th>Total</th>',
                                     '<td>{[this.totalPrizes()]}</td>',
                                     '<td>{[this.overallPlayOdds()]}</td>',
                                     '<td>{[this.overallEntryOdds()]}</td>',
