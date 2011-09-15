@@ -106,6 +106,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   else{
                     img.src="/images/assets/facebook/like-btn.png";
                     img.onclick = function(){
+                      window.location='bozuko://facebook/no_session';
                       alert("Sorry - your Facebook session for Bozuko is no longer valid. You must go to the Bozuko page, and Log out and back in.");
                     }
                     document.body.appendChild(img);
