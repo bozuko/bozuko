@@ -31,12 +31,6 @@ Ext.define('Bozuko.view.chart.Basic', {
                 anchor          :'0',
                 layout          :'hbox',
                 items           :[{
-                    xtype           :'component',
-                    flex            :1,
-                    style           :'text-align:left; line-height: 20px; font-size: 18px; font-weight: bold;',
-                    border          :false,
-                    ref             :'chart-total'
-                },{xtype:'splitter'},{
                     xtype           :'combo',
                     hideLabel       :true,
                     forceSelection  :true,
@@ -93,6 +87,12 @@ Ext.define('Bozuko.view.chart.Basic', {
                         scope           :me,
                         change          :me.updateChart
                     }
+                },{
+                    xtype           :'component',
+                    flex            :1,
+                    style           :'text-align:right; line-height: 20px; font-size: 16px; font-weight: bold; font-family: Tahoma',
+                    border          :false,
+                    ref             :'chart-total'
                 }]
             },{
                 xtype: 'chart',
