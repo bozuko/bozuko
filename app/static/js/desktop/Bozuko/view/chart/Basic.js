@@ -246,31 +246,53 @@ Ext.define('Bozuko.view.chart.Basic', {
         Bozuko.PubSub.subscribe('contest/play', filter, me.getCallback('play') );
         Bozuko.PubSub.subscribe('contest/win', filter, me.getCallback('win') );
         Bozuko.PubSub.subscribe('prize/redeemed', filter, me.getCallback('redeemed') );
+        
+        me.on('deactivate', function(){
+            me.pause();
+        });
+        me.on('activate', function(){
+            me.resume();
+        });
+    },
+    
+    resume : function(){
+        this.paused = false;
+        this.loadStore();
+        this.updateStats();
+    },
+    
+    pause : function(){
+        this.paused = true;
     },
     
     getCallback : function(name){
         var me = this,
+            paused = me.paused,
             model = function(){ return me.modelField.getValue() }
             callbacks = {
                 entry: function(item, callback){
+                    callback();
+                    if( paused || !me.isVisible() ) return;
                     me.updateStats();
-                    if( ~Ext.Array.indexOf(['Entry','Share'],model()) ) me.loadStore(callback);
-                    else callback();
+                    if( ~Ext.Array.indexOf(['Entry','Share'],model()) ) me.loadStore();
                 },
                 play : function(item, callback){
+                    callback();
+                    if( paused || !me.isVisible() ) return;
+                        
                     me.updateStats();
-                    if( ~Ext.Array.indexOf(['Play'],model()) ) me.loadStore(callback);
-                    else callback();
+                    if( ~Ext.Array.indexOf(['Play'],model()) ) me.loadStore();
                 },
                 win : function(item, callback){
-                    me.updateStats();
-                    if( ~Ext.Array.indexOf(['Prize'],model()) )me.loadStore(callback);
-                    else callback();
+                    callback();
+                    if( paused || !me.isVisible() ) return;
+                    if( ~Ext.Array.indexOf(['Prize'],model()) )me.loadStore();
                 },
                 redeemed : function(item, callback){
+                    callback();
+                    if( paused || !me.isVisible() ) return;
                     me.updateStats();
-                    if( ~Ext.Array.indexOf(['Redeemed Prizes', 'Share'], model()) ) me.loadStore(callback);
-                    else callback();
+                    if( ~Ext.Array.indexOf(['Redeemed Prizes', 'Share'], model()) ) me.loadStore();
                 }
             };
         return callbacks[name];
@@ -296,9 +318,8 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.down('[ref=chart-total]').update(me.addCommas(total)+' <span style="font-weight: normal;">Total</span>');
     },
     
-    loadStore : function(callback){
+    loadStore : function(){
         var me  = this;
-        if( callback ) callback();
         if( me.isLoading ){
             me.loadAgain = true;
             return;
