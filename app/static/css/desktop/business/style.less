@@ -1246,26 +1246,47 @@ fieldset{
     text-align: center;
     margin-top: 10px;
     table {
-        border: 1px solid #ccc;
         margin: 0 auto;
-        th {
-            background: #e8e8e8;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        th,td{
-            text-align: center;
-            padding: 4px;
-        }
-        td {
-            font-size: 12px;
-            width: 8%;
-        }
-        td.label {
-            font-size: 18px;
+        
+        table {
+            margin-right: 10px;
+            
+            thead {
+                th {
+                    font-size: 22px;
+                    text-align: left;
+                    font-family: "ArvoRegular";
+                    padding-bottom: 4px;
+                    font-weight: normal;
+                    color: #666;
+                }
+            }
+            tbody {
+                th,td{
+                    padding: 4px;
+                }
+                th {
+                    white-space: nowrap;
+                    font-weight: bold;
+                    text-align: left;
+                }
+                td {
+                    padding-right: 0;
+                    padding-bottom: 4px;
+                    text-align: left;
+                }
+            }
         }
         
+        td {
+            padding-right: 70px;
+            padding-bottom: 20px;
+        }
+        td.last-block {
+            padding-right: 0;
+        }
     }
+    
 }
 
 textarea.x-form-field {
