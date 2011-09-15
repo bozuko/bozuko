@@ -1120,24 +1120,38 @@ fieldset .x-fieldset-header {
   margin-top: 10px;
 }
 .stats-block table {
-  border: 1px solid #ccc;
   margin: 0 auto;
 }
-.stats-block table th {
-  background: #e8e8e8;
-  font-size: 12px;
-  font-weight: bold;
+.stats-block table table {
+  margin-right: 10px;
 }
-.stats-block table th, .stats-block table td {
-  text-align: center;
+.stats-block table table thead th {
+  font-size: 22px;
+  text-align: left;
+  font-family: "ArvoRegular";
+  padding-bottom: 4px;
+  font-weight: normal;
+  color: #666;
+}
+.stats-block table table tbody th, .stats-block table table tbody td {
   padding: 4px;
 }
-.stats-block table td {
-  font-size: 12px;
-  width: 8%;
+.stats-block table table tbody th {
+  white-space: nowrap;
+  font-weight: bold;
+  text-align: left;
 }
-.stats-block table td.label {
-  font-size: 18px;
+.stats-block table table tbody td {
+  padding-right: 0;
+  padding-bottom: 4px;
+  text-align: left;
+}
+.stats-block table td {
+  padding-right: 70px;
+  padding-bottom: 20px;
+}
+.stats-block table td.last-block {
+  padding-right: 0;
 }
 textarea.x-form-field {
   line-height: 15px;
