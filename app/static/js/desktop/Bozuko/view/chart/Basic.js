@@ -210,10 +210,12 @@ Ext.define('Bozuko.view.chart.Basic', {
                     else callback();
                 },
                 play : function(item, callback){
+                    me.updateStats();
                     if( ~Ext.Array.indexOf(['Play'],model()) ) me.loadStore(callback);
                     else callback();
                 },
                 win : function(item, callback){
+                    me.updateStats();
                     if( ~Ext.Array.indexOf(['Prize'],model()) )me.loadStore(callback);
                     else callback();
                 },
