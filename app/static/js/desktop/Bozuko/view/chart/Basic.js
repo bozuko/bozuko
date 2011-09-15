@@ -232,7 +232,7 @@ Ext.define('Bozuko.view.chart.Basic', {
         var me = this;
         // add up everything...
         var total = me.chartStore.sum('count');
-        me.down('[ref=chart-total]').update(String(total));
+        me.down('[ref=chart-total]').update(String(total)+' Total');
     },
     
     loadStore : function(callback){
