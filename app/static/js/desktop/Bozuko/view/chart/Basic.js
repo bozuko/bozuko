@@ -30,7 +30,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 border          :'false',
                 anchor          :'0',
                 layout          :'hbox',
-                items           :[{xtype:'splitter', width: 65},{
+                items           :[{xtype:'splitter', width: 60},{
                     xtype           :'combo',
                     hideLabel       :true,
                     forceSelection  :true,

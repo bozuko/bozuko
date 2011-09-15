@@ -1115,6 +1115,12 @@ fieldset .x-fieldset-header {
   border: 2px solid #00a24f;
   background-color: #fff;
 }
+.stats-heading {
+  font-family: "ArvoRegular";
+  font-weight: 200;
+  font-size: 18px;
+  margin-bottom: 1em;
+}
 .stats-block {
   text-align: center;
   margin-top: 10px;
