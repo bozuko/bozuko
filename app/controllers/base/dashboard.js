@@ -734,6 +734,145 @@ exports.routes = {
         }
     },
     
+    '/stats' : {
+        // lets get a bunch of miscellaneous stats
+        get : {
+            handler : function(req, res){
+                
+                var self = this,
+                    reports = {},
+                    selector = {},
+                    contest_id = req.param('contest_id'),
+                    page_id = req.param('page_id')
+                    ;
+                    
+                if( self.restrictToUser ){
+                    selector.page_id = {$in:req.session.user.manages}
+                }
+                if( contest_id ) selector.contest_id = new ObjectId(contest_id);
+                if( page_id && (!self.restrictToUser || ~indexOf(req.session.user.manages, page_id)) ) selector.page_id = new ObjectId(page_id);
+                
+                var total_shares = function(type, cb){
+                    var sel = merge({
+                        type        :type,
+                        service     :'facebook'
+                    }, selector);
+                    
+                    Bozuko.models.Share.count(sel, function(error, count){
+                        if( error ) return cb( error );
+                        return cb(null, count);
+                    });
+                }
+                
+                return async.parallel(
+                    [
+                        function distinct_users(cb){
+                            // very simple distinct / count function...
+                            
+                            var sel = merge({}, selector);
+                            
+                            Bozuko.models.Entry.collection.distinct('user_id', sel, function(error, user_ids){
+                                if( error ) return cb( error );
+                                reports.users = user_ids.length;
+                                return cb();
+                            });
+                        },
+                        
+                        function total_likes(cb){
+                            return total_shares('like', function(error, count){
+                                if( error ) return cb(error);
+                                reports.likes = count;
+                                return cb();
+                            });
+                        },
+                        
+                        function total_checkins(cb){
+                            return total_shares('checkin', function(error, count){
+                                if( error ) return cb(error);
+                                reports.checkins = count;
+                                return cb();
+                            });
+                        },
+                        
+                        function total_wall_posts(cb){
+                            var sel = merge({}, selector),
+                                split = 100;
+                                
+                                
+                            return Bozuko.models.Share.collection.find(sel, {'visibility':1}, function(error, cursor){
+                                if( error ) return cb(error);
+                                var i=0, count=0;
+                                var do_count = function(){
+                                    return cursor.nextObject(function(error, doc){
+                                        if( error ) return cb(error);
+                                        if( !doc ){
+                                            reports.wallposts = count;
+                                            return cb();
+                                        }
+                                        count += doc.visibility;
+                                        if( ++i%split === 0 ) return process.nextTick(do_count);
+                                        return do_count();
+                                    });
+                                };
+                                return do_count();
+                            });
+                        },
+                        
+                        function total_entries(cb){
+                            var sel = merge({}, selector);
+                            Bozuko.models.Entry.count(sel, function(error, count){
+                                if( error ) return cb( error );
+                                reports.entries = count;
+                                return cb();
+                            });
+                        },
+                        
+                        function total_plays(cb){
+                            var sel = merge({}, selector);
+                            Bozuko.models.Play.count(sel, function(error, count){
+                                if( error ) return cb( error );
+                                reports.plays = count;
+                                return cb();
+                            });
+                        },
+                        
+                        function total_wins(cb){
+                            var sel = merge({}, selector);
+                            Bozuko.models.Prize.count(sel, function(error, count){
+                                if( error ) return cb( error );
+                                reports.wins = count;
+                                return cb();
+                            });
+                        },
+                        
+                        function total_redeemed(cb){
+                            var sel = merge({redeemed: true}, selector);
+                            Bozuko.models.Prize.count(sel, function(error, count){
+                                if( error ) return cb( error );
+                                reports.redeemed = count;
+                                return cb();
+                            });
+                        },
+                        
+                        function total_expired(cb){
+                            var sel = merge({redeemed: false, expires:{$lt: new Date()} }, selector);
+                            Bozuko.models.Prize.count(sel, function(error, count){
+                                if( error ) return cb( error );
+                                reports.expired = count;
+                                return cb();
+                            });
+                        }
+                    ],
+                    function return_reports(error){
+                        if( error ) return error.send( res );
+                        reports.active = reports.wins - reports.redeemed - reports.expired;
+                        return res.send( reports );
+                    }
+                );
+            }
+        }
+    },
+        
     '/pages' : {
         
         alias : '/pages/:id',

@@ -33,11 +33,12 @@ Ext.define('Bozuko.view.chart.Basic', {
                 items           :[{
                     xtype           :'component',
                     flex            :1,
-                    border          :false
-                },{
+                    style           :'text-align:right; line-height: 20px; font-size: 18px; font-weight: bold;',
+                    border          :false,
+                    ref             :'chart-total'
+                },{xtype:'splitter'},{
                     xtype           :'combo',
                     hideLabel       :true,
-                    style           :'margin-right: 10px;',
                     forceSelection  :true,
                     editable        :false,
                     name            :'model',
@@ -61,7 +62,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                         scope           :me,
                         change          :me.updateChart
                     }
-                },{
+                },{xtype:'splitter'},{
                     xtype           :'combo',
                     hideLabel       :true,
                     forceSelection  :true,
@@ -138,7 +139,46 @@ Ext.define('Bozuko.view.chart.Basic', {
                     axis: 'left',
                     xField: 'timestamp',
                     yField: 'count'
-                }]
+                }],
+                listeners : {
+                    scope           :me,
+                    refresh         :me.onChartRefresh
+                }
+            },{
+                xtype           :'component',
+                ref             :'stats-block',
+                tpl             :new Ext.XTemplate(
+                    '<div class="stats-block">',
+                        '<table>',
+                            '<thead>',
+                                '<tr valign="bottom">',
+                                    '<th>Users</th>',
+                                    '<th>Likes</th>',
+                                    '<th>Check Ins</th>',
+                                    '<th>Wall Posts</th>',
+                                    '<th>Entries</th>',
+                                    '<th>Plays</th>',
+                                    '<th>Wins</th>',
+                                    '<th>Redeemed Prizes</th>',
+                                    '<th>Expired Prizes</th>',
+                                '</tr>',
+                            '</thead>',
+                            '<tbody>',
+                                '<tr>',
+                                    '<td>{users}</td>',
+                                    '<td>{likes}</td>',
+                                    '<td>{checkins}</td>',
+                                    '<td>{wallposts}</td>',
+                                    '<td>{entries}</td>',
+                                    '<td>{plays}</td>',
+                                    '<td>{wins}</td>',
+                                    '<td>{redeemed}</td>',
+                                    '<td>{expired}</td>',
+                                '</tr>',
+                            '</tbody>',
+                        '</table>',
+                    '</div>'
+                )
             }]
         });
         
@@ -149,6 +189,7 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.timeField = me.down('[name=time]');
         me.modelField = me.down('[name=model]');
         me.updateChart();
+        me.updateStats();
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
         
@@ -163,6 +204,7 @@ Ext.define('Bozuko.view.chart.Basic', {
             model = function(){ return me.modelField.getValue() }
             callbacks = {
                 entry: function(item, callback){
+                    me.updateStats();
                     if( ~Ext.Array.indexOf(['Entry','Share'],model()) ) me.loadStore(callback);
                     else callback();
                 },
@@ -175,11 +217,19 @@ Ext.define('Bozuko.view.chart.Basic', {
                     else callback();
                 },
                 redeemed : function(item, callback){
+                    me.updateStats();
                     if( ~Ext.Array.indexOf(['Redeemed Prizes', 'Share'], model()) ) me.loadStore(callback);
                     else callback();
                 }
             };
         return callbacks[name];
+    },
+    
+    onChartRefresh : function(){
+        var me = this;
+        // add up everything...
+        var total = me.chartStore.sum('count');
+        me.down('[ref=chart-total]').update(String(total));
     },
     
     loadStore : function(callback){
@@ -197,6 +247,31 @@ Ext.define('Bozuko.view.chart.Basic', {
                 me.loadStore();
             };
         });
+    },
+    
+    updateStats : function(){
+        var me = this;
+        
+        var req_opts = {
+            method          :'GET',
+            url             :Bozuko.Router.route('/stats'),
+            params          :{}
+        };
+        if( me.page_id ){
+            req_opts.params.page_id = me.page_id;
+        }
+        if( me.contest_id ){
+            req_opts.params.contest_id = me.contest_id;
+        }
+        req_opts.success = function(response){
+            try{
+                var reports = Ext.decode( response.responseText );
+                me.down('[ref=stats-block]').update( reports );
+            }catch ( e ){
+                
+            }
+        };
+        Ext.Ajax.request(req_opts);
     },
     
     updateChart : function(){

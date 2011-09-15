@@ -1115,6 +1115,30 @@ fieldset .x-fieldset-header {
   border: 2px solid #00a24f;
   background-color: #fff;
 }
+.stats-block {
+  text-align: center;
+  margin-top: 10px;
+}
+.stats-block table {
+  border: 1px solid #ccc;
+  margin: 0 auto;
+}
+.stats-block table th {
+  background: #e8e8e8;
+  font-size: 12px;
+  font-weight: bold;
+}
+.stats-block table th, .stats-block table td {
+  text-align: center;
+  padding: 4px;
+}
+.stats-block table td {
+  font-size: 12px;
+  width: 8%;
+}
+.stats-block table td.label {
+  font-size: 18px;
+}
 textarea.x-form-field {
   line-height: 15px;
 }
