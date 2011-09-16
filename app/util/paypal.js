@@ -8,6 +8,8 @@ var PayPalClient = module.exports = function() {
 
 /* Mandatory Options
  *     subscribername:    String - Full name of the person paying (limit - 32 chars)        
+ *     firstname:         String - Full name of the person paying (limit - 32 chars)        
+ *     lastname:          String - Full name of the person paying (limit - 32 chars)        
  *     profilestartdate:  DateString
  *     desc:              String - Description of recurring payment (limit - 127 chars, 
  *                                 must match billing agreement description in setExpressCheckout
@@ -36,13 +38,66 @@ PayPalClient.prototype.createRecurringPaymentsProfile = function(opts, callback)
     opts.currencycode = 'USD';
     opts.countrycode = 'US';
 
+    var self = this;
     this.client.createRecurringPaymentsProfile(opts)
     .on('success', function(result) {
         console.log("createRecurringPaymentsProfile success: "+inspect(result));
+        self.profileid = result.profileid;
         callback(null, result);
     })
    .on('failure', function(result) {
        console.log("createRecurringPaymentsProfile failure: "+inspect(result));
        callback(result);
    });
+};
+
+PayPalClient.prototype.getRecurringPaymentsProfileDetails = function(callback) {
+    this.client.getRecurringPaymentsProfileDetails({profileid: this.profileid})
+    .on('success', function(result) {
+        console.log("getRecurringPaymentsProfileDetails success: "+inspect(result));
+        callback(null, result);
+    })
+    .on('failure', function(result) {
+        console.log("getRecurringPaymentsProfileDetails failure: "+inspect(result));
+        callback(result);
+    });
+};
+
+/* Mandatory Options
+ *     action:   String - Cancel, Suspend, Reactivate
+ *     note:     String - The reason for the status change
+ */
+PayPalClient.prototype.manageRecurringPaymentsProfileStatus = function(opts, callback) {
+    opts.profileid = this.profileid;
+    this.client.manageRecurringPaymentsProfileStatus(opts)
+    .on('success', function(result) {
+        callback(null, result);
+    })
+    .on('failure', function(result) {
+        callback(result);
+    });
+};
+
+/* Mandatory Options
+ *     amt:               String: e.g. 100.00
+ *     expdate:           String - MMYYYY
+ *     firstname:         String
+ *     lastname:          String 
+ *     paymentaction:     String - (Sale, Authorization)
+ *     paymentrequest     [{items: [item]}] - item properties nested below
+ *        itemcategory:   String - (Digital, Physical)
+ *        name:           String - name of item
+ *        amt:            String - Amt without taxes/shipping (same format as opts.amt above)
+ *        qty:            Number - Any positive integer
+
+ */
+PayPalClient.prototype.doReferenceTransaction = function(opts, callback) {
+    opts.referenceid = this.profileid;
+    this.client.doReferenceTransaction(opts)
+    .on('success', function(result) {
+        callback(null, result);
+    })
+    .on('failure', function(result) {
+        callback(result);
+    });
 };
