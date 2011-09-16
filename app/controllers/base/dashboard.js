@@ -967,7 +967,11 @@ exports.routes = {
                 if( req.param('id') && ~indexOf( req.session.user.manages, req.param('id') ) ){
                     selector._id = req.param('id');
                 }
-                return Bozuko.models.Page.find(selector,{},{sort:{name:1}}, function(error, pages){
+                return Bozuko.models.Page.find(selector,{},{
+                    limit: req.param('limit')||25,
+                    skip: req.param('start')||0,
+                    sort:{name:1}
+                }, function(error, pages){
                     if( error ) return error.send(res);
                     return res.send({items:pages});
                 });
