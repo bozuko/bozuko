@@ -973,7 +973,11 @@ exports.routes = {
                     sort:{name:1}
                 }, function(error, pages){
                     if( error ) return error.send(res);
-                    return res.send({items:pages});
+                    // get the count too
+                    return Bozuko.models.Page.count(selector,function(error, count){
+                        if( error ) return error.send(res);
+                        return res.send({items:pages, total:count});
+                    });
                 });
             }
         },
