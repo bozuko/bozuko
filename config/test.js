@@ -134,6 +134,13 @@ module.exports = {
         sender: 'Bozuko Mailer <mailer@bozuko.com>'
     },
 
+    paypal : {
+        level: require('paynode').use('payflowpro').levels.sandbox,
+        user: 'test_1315951938_biz_api1.bozuko.com',
+        password: '1315952026',
+        signature: 'An5ns1Kso7MWUdW4ErQKJJJ4qi4-AtG0OnHtvcyFecpIqNG7IjnSKzkY'
+    },
+
     defaultService:'facebook',
 
     key: '7ndfde983xg&*4dp11Lcdcrn111+@adf',
