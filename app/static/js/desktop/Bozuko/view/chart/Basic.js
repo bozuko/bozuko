@@ -107,6 +107,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                     position    :'left',
                     fields      :['count'],
                     title       :'Entries',
+                    inflections :[],
                     grid: {
                         odd: {
                             opacity: .5,

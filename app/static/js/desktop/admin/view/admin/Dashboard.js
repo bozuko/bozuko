@@ -44,6 +44,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                 region: 'south',
                 autoScroll: true,
                 collapsible: true,
+                ref:'event-grid',
                 xtype: 'grid',
                 store: Ext.create('Ext.data.Store',{
                     id: 'eventStore',
@@ -103,16 +104,11 @@ Ext.define('Admin.view.admin.Dashboard' ,{
         me.queuedItems = [];
         
         me.on('activate', function(){
-            while( me.queuedItems.length ) me.addEventToLog( me.queuedItems.shift() );
+            if( me.down('[ref=event-grid]') ) me.down('[ref=event-grid]').doLayout();
         });
         
         Bozuko.PubSub.subscribe('*', true, function(item, callback){
-            
             callback();
-            if( !me.isVisible() ){
-                me.queuedItems.push(item);
-                return;
-            }
             me.addEventToLog( item );
         });
     },

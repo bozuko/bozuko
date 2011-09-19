@@ -165,21 +165,15 @@ auth.mobile = function(req, res, callback) {
 
             if ((fn = auth.mobile_algorithms[version])) {
                 result = fn(user.challenge, req);
-                if (
-                    String(result) === String(req.session.challenge_response)
-                    /**
-                     * TODO - take the following line out when we are done testing
-                     *
-                     */
-                    ||
-                    String(5127+parseInt(user.challenge)) === String(req.session.challenge_response)
-                ) {
+                if (String(result) === String(req.session.challenge_response)) {
                     return callback(null);
                 }
             }
+            
             console.error('expected: '+result);
             console.error('user name: '+user.name);
             console.error('challenge: '+user.challenge);
+            console.error('mobile_verion: '+req.session.mobile_version);
             console.error('challenge_response: '+req.session.challenge_response);
             console.error('req.url: '+req.url);
             console.error('failing on challenge question');
@@ -188,8 +182,19 @@ auth.mobile = function(req, res, callback) {
              * Disabling the authorization security on api until
              * we can figure out how it is broken
              */
-            if(Bozuko.env() == 'api') return callback(null);
-            
+            if(Bozuko.env() == 'api'){
+                // alert Bozuko peeps
+                Bozuko.require('util/mail').send({
+                    to          :'dev@bozuko.com',
+                    subject     :'Challenge Question Failure',
+                    body        :[
+                        'A request just failed the challenge question, here are the details:',
+                        '',
+                        'User Name: '+user.name,
+                        'Mobile Version: '+req.session.mobile_version
+                    ].join('\n')
+                });
+            }
             return callback(Bozuko.error('auth/mobile'));
         }
 

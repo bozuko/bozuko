@@ -95,6 +95,11 @@ div(style="float:left; width: 600px;")
       label(for="company") Company Name
       .field
         input#company(name="company", value=locals.company)
+        
+    .field-wrap
+      label(for="phone") Phone Number
+      .field
+        input#company(name="phone", value=locals.phone)
 
     .field-wrap
       label(for="city") City
@@ -115,6 +120,11 @@ div(style="float:left; width: 600px;")
       label(for="country") Country
       .field
         input#country(name="country", value=locals.country)
+        
+    .field-wrap
+      label(for="notes") Tell us more about your business
+      .field
+        textarea#notes(name="notes")!=locals.notes
 
     .buttons
       input.big-button(type="submit", value="Send")
