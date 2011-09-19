@@ -70,7 +70,8 @@ Db.prototype.executeCommand = function(db_command, options, callback)
             if (!callback) return false;
             return callback( Bozuko.error('maintenance/generic') );
         }, 5000);
-        
+
+    if (!options) options = {};
     executeCommand.call(this, db_command, options, function(){
         clearTimeout(timeout);
         if( !timed_out && callback ) return callback.apply(this, arguments);

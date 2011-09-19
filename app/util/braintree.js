@@ -4,11 +4,11 @@ var BraintreeGateway = module.exports = function() {
     this.gateway = braintree.connect(Bozuko.config.braintree);
 };
 
-BraintreeGateway.prototype.createCustomerTrData = function() {
+BraintreeGateway.prototype.createCustomerTrData = function(customerId) {
     var trData = this.gateway.transparentRedirect.createCustomerData({
         redirectUrl: 'https://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+'/braintree/confirm',
         customer: {
-            id: '12345679090'
+            id: customerId
         }
     });
     return trData;
@@ -36,3 +36,4 @@ BraintreeGateway.prototype.createCustomerForm = function(trData) {
 BraintreeGateway.prototype.confirmRedirect = function(querystring, cb) {
     this.gateway.transparentRedirect.confirm(querystring, cb);
 };
+
