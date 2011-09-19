@@ -17,9 +17,9 @@ exports.access = 'admin';
 
 exports.routes = {
 
-    '/admin/browser' : {
+    '/browser' : {
 
-        aliases: ['/browser'],
+        aliases: ['/admin/browser','/browser/index'],
         get : {
             locals : {
                 title: 'Api Browser',
@@ -67,6 +67,58 @@ exports.routes = {
                     res.render('admin/browser');
                 });
 
+            }
+        }
+    },
+    
+    '/browser/users' : {
+
+        get : {
+            handler : function(req, res){
+                 // need to get all pages
+                var id = req.param('id'),
+                    selector = {},
+                    user_filter = req.param('user_filter'),
+                    search = req.param('search') || req.param('query'),
+                    start = req.param('start') || 0,
+                    limit = req.param('limit') || 25
+                    ;
+                
+                if( search ){
+                    selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
+                }
+                switch( user_filter ){
+                    case 'blocked':
+                        selector.$or = [
+                            {allowed: false},
+                            {allowed: {$exists: false}}
+                        ];
+                        selector.blocked = true;
+                        break;
+                    case 'allowed':
+                        selector.allowed = true;
+                        break;
+                    case 'losers':
+                        selector['services.name'] = 'facebook';
+                        selector['services.internal.friend_count'] = {$lt: 10};
+                        break;
+                }
+                
+                Bozuko.models.User.find(selector,{
+                    'services.internal.likes': 0,
+                    'services.internal.friends': 0
+                },{
+                    sort:{name:1},
+                    limit: limit,
+                    skip: start
+                }, function(error, users){
+                    if( error ) return error.send( res );
+                    // get the total
+                    return Bozuko.models.User.count(selector, function(error, total){
+                        if( error ) return error.send( res );
+                        return res.send( {items: users, total: total} );
+                    });
+                });
             }
         }
     }
