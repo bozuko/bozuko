@@ -108,6 +108,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
         });
         
         Bozuko.PubSub.subscribe('*', true, function(item, callback){
+            callback();
             me.addEventToLog( item );
         });
     },
