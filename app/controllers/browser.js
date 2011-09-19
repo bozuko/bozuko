@@ -10,7 +10,8 @@ var facebook    = Bozuko.require('util/facebook'),
     array_map   = Bozuko.require('util/functions').map,
     Report      = Bozuko.require('core/report'),
     DateUtil    = Bozuko.require('util/date'),
-    async       = require('async')
+    async       = require('async'),
+    XRegExp     = Bozuko.require('util/xregexp')
 ;
 
 exports.access = 'admin';
