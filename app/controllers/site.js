@@ -250,10 +250,12 @@ exports.routes = {
                 var name = req.param('name'),
                     email = req.param('email'),
                     company = req.param('company'),
+                    phone = req.param('phone'),
                     city = req.param('city'),
                     state = req.param('state'),
                     zip = req.param('zip'),
                     country = req.param('country'),
+                    notes = req.param('notes')
 
                     token = getToken(req.session),
                     success = true
@@ -265,6 +267,7 @@ exports.routes = {
                 try{
                     validator.check(name, 'Please enter your name').notEmpty();
                     validator.check(email, 'Please enter a valid email address').isEmail();
+                    validator.check(phone, 'Please enter your Phone Number').notEmpty();
                     validator.check(company, 'Please enter your Company Name').notEmpty();
                     validator.check(city, 'Please enter your city').notEmpty();
                     validator.check(state, 'Please enter your state').notEmpty();
@@ -290,7 +293,7 @@ exports.routes = {
                     reply_to: email,
                     subject: "New Bozuko Business Inquiry",
                     body: name+' <'+email+'> would like to find out more.'+'\n'+
-                      company+'\n'+city+', '+state+'\n'+zip+'\n'+country
+                      company+'\n'+phone+'\n'+city+', '+state+'\n'+zip+'\n'+country+'\n\n'+notes
                 });
                 req.flash('info', 'Your message is on its way!');
                 return res.redirect('/business-contact');

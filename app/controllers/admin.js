@@ -245,7 +245,7 @@ exports.routes = {
                 var id = req.param('id'),
                     selector = {},
                     user_filter = req.param('user_filter'),
-                    search = req.param('search'),
+                    search = req.param('search') || req.param('query'),
                     start = req.param('start') || 0,
                     limit = req.param('limit') || 25
                     ;
