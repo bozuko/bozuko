@@ -2,7 +2,8 @@ Ext.define('Browser.controller.Browser' ,{
     extend: 'Ext.app.Controller',
     
     requires:[
-        'Bozuko.lib.Api'
+        'Bozuko.lib.Api',
+        'Bozuko.lib.Sha1'
     ],
     
     views: [
@@ -66,10 +67,6 @@ Ext.define('Browser.controller.Browser' ,{
         this.api.on('aftercall', function(){
             if( me.getBody() )me.getBody().setLoading(false);
         });
-        this.api.call('/user', 'get', {}, function(result){
-            me.user = result.data;
-        });
-        
         // listen for changes in the hash
         window.addEventListener('hashchange', function(){
             me.onHashChange();
@@ -102,15 +99,28 @@ Ext.define('Browser.controller.Browser' ,{
         
         this.usersField = formPanel.add({
             xtype:'combobox',
-            editable: false,
+            editable: true,
             forceSelection: true,
             allowBlank: false,
             autoSelect: true,
+            pageSize:25,
+            queryParam:'search',
+            queryMode:'remote',
+            minChars: 1,
             name: 'token',
             fieldLabel: 'User',
             store:Ext.create('Ext.data.Store',{
                 fields:['token','name','phones','challenge'],
-                data: this.users
+                proxy: {
+                    type: 'ajax',
+                    url : '/admin/users',
+                    reader: {
+                        type: 'json',
+                        root: 'items',
+                        totalProperty:'total'
+                    }
+                },
+                autoLoad: true
             }),
             displayField: 'name',
             valueField: 'token',
@@ -130,7 +140,8 @@ Ext.define('Browser.controller.Browser' ,{
                         this.phoneIdField.setValue(phone.unique_id);
                         this.phoneTypeField.setValue(phone.type);
                     }
-                    this.challengeField.setValue( record.get('challenge') + 5127 );
+                    this.user_challenge = record.get('challenge');
+                    this.updateChallenge();
                 }
             }
         });
@@ -194,6 +205,16 @@ Ext.define('Browser.controller.Browser' ,{
         
     },
     
+    updateChallenge : function(){
+        var me = this,
+            formPanel = me.getRequestForm(),
+            path = formPanel.getValues().path
+            ;
+        
+        formPanel.down('[name=challenge_response]').setValue( Bozuko.lib.Sha1.hash(path+me.user_challenge) );
+        
+    },
+    
     clearForm : function(){
         var formPanel = this.getRequestForm(),
             methodCombo = this.methodCombo;
@@ -227,6 +248,7 @@ Ext.define('Browser.controller.Browser' ,{
         });
         methodCombo.select( method );
         this.onMethodChange();
+        this.updateChallenge();
     },
     
     updateFromBody : function(){
@@ -275,8 +297,9 @@ Ext.define('Browser.controller.Browser' ,{
     },
     
     makeRequest : function(){
+        
         var me = this,
-            formPanel = me.getRequestForm(),            
+            formPanel = me.getRequestForm(),
             params = formPanel.getForm().getValues(),
             path = params.path,
             link = params.link,
