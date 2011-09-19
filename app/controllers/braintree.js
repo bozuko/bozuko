@@ -7,6 +7,7 @@ exports.routes = {
     '/braintree' : {
         get: {
             handler: function(req, res) {
+                var trData = gateway.createCustomerTrData('somerand'+Math.floor(Math.random()*1000));
                 res.send(gateway.createCustomerForm(trData));
             }
         }
