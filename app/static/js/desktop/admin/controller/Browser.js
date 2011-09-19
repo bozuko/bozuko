@@ -113,7 +113,7 @@ Ext.define('Browser.controller.Browser' ,{
                 fields:['token','name','phones','challenge'],
                 proxy: {
                     type: 'ajax',
-                    url : '/admin/users',
+                    url : '/browser/users',
                     reader: {
                         type: 'json',
                         root: 'items',
