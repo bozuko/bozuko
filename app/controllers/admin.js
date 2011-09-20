@@ -79,27 +79,26 @@ exports.routes = {
                                 if( !contest_prize.is_email ){
                                     return cb();
                                 }
-                                prize.is_email = true;
                                 
-                                prize.email_format = contest_prize.email_format;
-                                prize.email_body = contest_prize.email_body;
-                                
-                                prize.email_subject = contest_prize.email_subject;
-                                
-                                prize.email_code = contest_prize.email_codes[result.count];
-                                
-                                return prize.save(function(error){
+                                return Bozuko.models.User.findById( prize.user_id, function(error, user){
                                     if( error ) return cb(error);
-                                    // we need to get this user too
-                                    return Bozuko.models.User.findById( prize.user_id, function(error, user){
+                                    
+                                    if( !user ) return cb(new Error('Invalid user ID?'));
+                                    
+                                    if( test ) {
+                                        results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: prize.redeemed});
+                                        return cb();
+                                    }
+                                    
+                                    prize.is_email = true;
+                                    prize.email_format = contest_prize.email_format;
+                                    prize.email_body = contest_prize.email_body;
+                                    prize.email_subject = contest_prize.email_subject;
+                                    prize.email_code = contest_prize.email_codes[result.count];
+                                    
+                                    return prize.save(function(error){
                                         if( error ) return cb(error);
-                                        
-                                        if( !user ) return cb(new Error('Invalid user ID?'));
-                                        
-                                        if( test ) {
-                                            results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: prize.redeemed});
-                                            return cb();
-                                        }
+                                        // we need to get this user too
                                         
                                         if( !prize.redeemed ) return prize.redeem(user, function(error, result){
                                             if( error ) return cb(error);
