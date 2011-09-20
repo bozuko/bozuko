@@ -58,6 +58,8 @@ exports.routes = {
         get : {
             handler : function(req, res) {
                 
+                var test = true;
+                
                 Bozuko.models.Contest.findById( req.param('id'), function(error, contest){
                     if( error ) return error.send( res );
                     if( !contest ) return res.send({error:'no contest'});
@@ -94,15 +96,20 @@ exports.routes = {
                                         
                                         if( !user ) return cb(new Error('Invalid user ID?'));
                                         
+                                        if( test ) {
+                                            results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: prize.redeemed});
+                                            return cb();
+                                        }
+                                        
                                         if( !prize.redeemed ) return prize.redeem(user, function(error, result){
                                             if( error ) return cb(error);
-                                            results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, alread_redeemed: false});
+                                            results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: false});
                                             return cb();
                                         });
                                         
                                         else {
                                             prize.sendEmail( user );
-                                            results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, alread_redeemed: true});
+                                            results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: true});
                                             return cb();
                                         }
                                         
