@@ -127,7 +127,7 @@ exports.routes = {
                                 prize_name = "Prize Name",
                                 you_win_text = ['STEP 1: Redeem',
                                                 '',
-                                                'If a player wins a prize, they are presented a "YOU WIN!" '+
+                                                'If a player wins a prize, they are presented a "YOU WIN!" screen '+
                                                 'directing them to an employee. Ask them to press Redeem.'
                                                ].join('\n')
                                 h = (doc.page.height - doc.y),
