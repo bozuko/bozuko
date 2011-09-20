@@ -251,7 +251,7 @@ exports.routes = {
                             /**
                              * Block 3, prizes screen
                              */
-                            var prizes_text = 'Saved Prizes\n\nA player may locate all of their saved and redeemed prizes '+
+                            var prizes_text = 'A player may locate all of their saved and redeemed prizes '+
                                               'in the "Prizes" screen area of the app.'
                             
                             doc
