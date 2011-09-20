@@ -319,6 +319,54 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/places' : {
+
+        get : {
+            handler : function(req, res){
+                var options = {};
+                if( req.param('ll') ){
+                    var ll = (req.param('ll') || '').split(',');
+                    if( ll.length !== 2 ){
+                        new Error('Invalid ll').send(res);
+                    }
+                    ll.reverse();
+                    options.center = ll;
+                }
+                if( req.param('filter') ){
+                    var filter = JSON.parse( req.param('filter') );
+                    if( Array.isArray(filter) ) filter.forEach( function(f){
+                        options[f.property] = f.value;
+                    });
+                }
+                if( Object.keys( options ).length === 0 ){
+                    return res.send( {items:[]} );
+                }
+                return Bozuko.service('facebook').search(options, function(error, places){
+                    if( error ) return error.send( res );
+                    // get rid of the ones we already have...
+                    var ids = [];
+                    var map = {};
+                    places.forEach( function(place, index){
+                        ids.push(place.id);
+                        map[place.id] = index;
+                    });
+                    return Bozuko.models.Page.findByService('facebook', ids, function(error, pages){
+                        if( error ) return error.send( res );
+                        pages.forEach( function(page){
+                            var id = page.service('facebook').sid;
+                            delete map[id];
+                        });
+                        var ret = [];
+                        for(var id in map){
+                            ret.push(places[map[id]]);
+                        }
+                        return res.send( {items:ret} );
+                    });
+                });
+            }
+        }
+    },
 
     '/admin/addpage':{
 
