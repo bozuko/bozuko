@@ -20,10 +20,11 @@ var CreditCard = new Schema({
     expDate                   :{type:String},
     last4                     :{type:String},
     token                     :{type:String},
-    address                   :[Address]
+    addresses                 :[Address]
 });
 
 var Subscription = new Schema({
+    subId               :{type:String},
     planId              :{type:String, index:true},
     addons              :[String],
     discounts           :[String],
@@ -43,38 +44,66 @@ var Customer = module.exports = new Schema({
     created                   :{type:Date},
     last_modified             :{type:Date},
     cards                     :[CreditCard],
+    addresses                 :[Address],
     subscriptions             :[Subscription]
 }, {safe: {w:2, wtimeout: 5000}});
 
-
-Customer.pre('save', function(next) {
+// TODO: We need to ensure that the same customer doesn't exist remotely. Braintree Search API
+// not implemented in node yet. Therefore we should send an email if we get an error here. We
+// can cleanup manually for now since this will only happen very rarely.
+Customer.static('create', function(opts, callback) {
     var gateway = new BraintreeGateway().gateway;
-    var customer = {};
-    var self = this;
+    var customer = new Bozuko.models.Customer(opts);
+    var data = {};
     ['firstName', 'lastName', 'company', 'email', 'phone', 'website'].forEach(function(key) {
-        if (self[key]) customer[key] = self[key];
+        if (customer[key]) data[key] = customer[key];
     });
-    gateway.customer.create(customer, function(err, result) {
-        if (err) return next(err);
-        if (!result.success) return next(result);
-        self.bt_id = result.customer.id;
+    gateway.customer.create(data, function(err, result) {
+        if (err) return callback(err);
+        if (!result.success) return callback(result);
+        customer.bt_id = result.customer.id;
         var date = new Date();
-        if (!self.created) self.created = date;
-        self.last_modified = date;
-        return next();
+        customer.created = date;
+        customer.last_modified = date;
+        customer.save(function(err) {
+            // TODO: Return a specific error stating that the customer was created
+            // remotely but not locally - Send Alert Email
+            if (err) return callback(err);
+            return callback(null, customer);
+        });
     });
 });
 
+// TODO: We need to ensure the same subscription isn't created twice
 Customer.method('createSubscription', function(opts, callback) {
     var self = this;
     var gateway = new BraintreeGateway().gateway;
     gateway.subscription.create(opts, function(err, result) {
         if (err) return callback(err);
         if (!result.success) return callback(result);
-        self.subscriptions.push({planId: result.subscription.planId});
+        self.subscriptions.push({
+            planId: result.subscription.planId,
+            subId: result.subscription.id
+        });
         self.save(function(err) {
             if (err) return callback(err);
             return callback(null, result); 
         });
+    });
+});
+
+Customer.method('cancelSubscription', function(id, callback) {
+    var gateway = new BraintreeGateway().gateway;
+    gateway.subscription.cancel(id, function(err, result) {
+        if (err) return callback(err);
+        return callback(null, result);
+    });
+});
+
+Customer.static('findByGatewayId', function(id, callback) {
+    var gateway = new BraintreeGateway().gateway;
+    gateway.customer.find(id, function(err, result) {
+        if (err) return callback(err);
+        return callback(null, result);
     });
 });
