@@ -86,7 +86,7 @@ exports.routes = {
                                     if( !user ) return cb(new Error('Invalid user ID?'));
                                     
                                     if( test ) {
-                                        results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: prize.redeemed});
+                                        results.push({prize:prize.name, email_code: contest_prize.email_codes[result.count], user_name: user.name, already_redeemed: prize.redeemed});
                                         return cb();
                                     }
                                     
@@ -118,7 +118,7 @@ exports.routes = {
                             
                             function complete(error){
                                 if( error ) return error.send(res);
-                                return res.send({success: true, results: results});
+                                return res.send('<pre>'+JSON.stringify(results,null,'  ')+'</pre>');
                             }
                             
                         );
