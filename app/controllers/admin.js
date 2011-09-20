@@ -54,6 +54,75 @@ exports.routes = {
         }
     },
     
+    '/admin/checkandsend/:id' : {
+        get : {
+            handler : function(req, res) {
+                
+                Bozuko.models.Contest.findById( req.param('id'), function(error, contest){
+                    if( error ) return error.send( res );
+                    if( !contest ) return res.send({error:'no contest'});
+                    return Bozuko.models.Prize.find({contest_id: contest._id, is_email: false}, function(error, prizes){
+                        if( error ) return error.send( res );
+                        // go through each prize
+                        
+                        var results=[];
+                        
+                        return async.forEachSeries( prizes,
+                                           
+                            function iterator(prize, cb){
+                                
+                                var contest_prize = contest.prizes.id( prize.prize_id ),
+                                    result = contest.results[prize.play_cursor];
+                                    
+                                if( !contest_prize.is_email ){
+                                    return cb();
+                                }
+                                prize.is_email = true;
+                                
+                                prize.email_format = contest_prize.email_format;
+                                prize.email_body = contest_prize.email_body;
+                                
+                                prize.email_subject = contest_prize.email_subject;
+                                
+                                prize.email_code = contest_prize.email_codes[result.count];
+                                
+                                return prize.save(function(error){
+                                    if( error ) return cb(error);
+                                    // we need to get this user too
+                                    return Bozuko.models.User.findById( prize.user_id, function(error, user){
+                                        if( error ) return cb(error);
+                                        
+                                        if( !user ) return cb(new Error('Invalid user ID?'));
+                                        
+                                        if( !prize.redeemed ) return prize.redeem(user, function(error, result){
+                                            if( error ) return cb(error);
+                                            results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, alread_redeemed: false});
+                                            return cb();
+                                        });
+                                        
+                                        else {
+                                            prize.sendEmail( user );
+                                            results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, alread_redeemed: true});
+                                            return cb();
+                                        }
+                                        
+                                    });
+                                });
+                            },
+                            
+                            function complete(error){
+                                if( error ) return error.send(res);
+                                return res.send({success: true, results: results});
+                            }
+                            
+                        );
+                    });
+                });
+                
+            }
+        }
+    },
+    
     '/admin/add/search/params/:type': {
         get : {
             handler : function(req, res){

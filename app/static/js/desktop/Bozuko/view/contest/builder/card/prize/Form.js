@@ -12,7 +12,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
     
     barcodeRegex : {
         'ean'   :/^([0-9]{8}|[0-9]{13})$/,
-        'upc'   :/^[0-9]{12}$/,
+        'upc'   :/^[0-9]{11,12}$/,
         'isbn'  :/.*/,
         '39'    :/^[0-9a-zA-Z\-\.\s\$\/\+\%]+$/,
         '93'    :/^[0-9a-zA-Z\-\.\s\$\/\+\%!"§&]+$/,
