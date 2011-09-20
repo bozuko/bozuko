@@ -125,14 +125,16 @@ exports.routes = {
                             
                             var w = doc.page.width,
                                 prize_name = "Prize Name",
-                                you_win_text = "If a player wins a prize, they are presented a \"You Win!\" screen asking "+
-                                               "them to follow your instructions (ie, show it to an specified employee). The "+
-                                               "expiration time may vary between prizes.",
+                                you_win_text = ['STEP 1: Redeem',
+                                                '',
+                                                'If a player wins a prize, they are presented a "You Win!" '+
+                                                'directing them to an employee. Ask them to press REDEEM.'
+                                               ].join('\n')
                                 h = (doc.page.height - doc.y),
                                 src_width = 320,
                                 src_height = 480,
                                 block_width = w/2,
-                                block_height = h/1.85,
+                                block_height = h*.625,
                                 img_width = block_width * .6,
                                 img_height = (img_width/src_width)*src_height,
                                 img_x = (block_width - img_width)/2
@@ -180,7 +182,7 @@ exports.routes = {
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(you_win_text, (block_width - block_width * .85) / 2, y+img_height+10, {align:'left', width: block_width*.85 } )
+                                .text(you_win_text, (block_width - block_width * .85) / 2, y+img_height+20, {align:'left', width: block_width*.85 } )
                                 ;
                             
                             /**
@@ -205,8 +207,11 @@ exports.routes = {
                                 s_x = block_width + img_x + img_width * 117/320,
                                 s_y = y + img_height*277/480,
                                 s_time_y = y+img_height*358/480,
-                                redeemed_text = 'Pressing "Redeem" brings up the "Redeemed" screen. '+
-                                                'Please ensure you see your business logo on the left and the security image above.';
+                                redeemed_text = ['STEP 2: Verify',
+                                                 '',
+                                                 'Pressing "Redeem" brings up the Prize Screen. '+
+                                                 'You should see the prize, your business logo, a security image and the current time.'
+                                                ].join('\n')
                                 ;
                             
                             doc
@@ -240,7 +245,7 @@ exports.routes = {
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(redeemed_text, block_width+(block_width - block_width * .85) / 2, y+img_height+10, {align:'left', width: block_width*.85 } )
+                                .text(redeemed_text, block_width+(block_width - block_width * .85) / 2, y+img_height+20, {align:'left', width: block_width*.85 } )
                                 ;
                             
                             /**
