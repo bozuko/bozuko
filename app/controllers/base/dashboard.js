@@ -47,7 +47,7 @@ exports.routes = {
                             
                             if( error ) return callback(error);
                             
-                            if( response.headers['content-type'].match(/^image/) ){
+                            if( response.headers['content-type'] && response.headers['content-type'].match(/^image/) ){
                                 path+='.'+(response.headers['content-type'].replace('image/', '').replace('jpeg','jpg'));
                             }
                             
@@ -127,8 +127,8 @@ exports.routes = {
                                 prize_name = "Prize Name",
                                 you_win_text = ['STEP 1: Redeem',
                                                 '',
-                                                'If a player wins a prize, they are presented a "You Win!" '+
-                                                'directing them to an employee. Ask them to press REDEEM.'
+                                                'If a player wins a prize, they are presented a "YOU WIN!" '+
+                                                'directing them to an employee. Ask them to press Redeem.'
                                                ].join('\n')
                                 h = (doc.page.height - doc.y),
                                 src_width = 320,
@@ -182,7 +182,7 @@ exports.routes = {
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(you_win_text, (block_width - block_width * .85) / 2, y+img_height+20, {align:'left', width: block_width*.85 } )
+                                .text(you_win_text, img_x, y+img_height+20, {align:'left', width: img_width } )
                                 ;
                             
                             /**
@@ -245,7 +245,7 @@ exports.routes = {
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(redeemed_text, block_width+(block_width - block_width * .85) / 2, y+img_height+20, {align:'left', width: block_width*.85 } )
+                                .text(redeemed_text, block_width+img_x, y+img_height+20, {align:'left', width: img_width } )
                                 ;
                             
                             /**
@@ -255,11 +255,11 @@ exports.routes = {
                                               'in the "Prizes" screen area of the app.'
                             
                             doc
-                                .image(image_base+'/redemption/prizes.png', img_x, y+block_height, {width: img_width})
+                                .image(image_base+'/redemption/prizes.png', img_x, y+block_height+40, {width: img_width})
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(prizes_text, (block_width - block_width * .85) / 2, y+block_height+block_height*.12, {align:'left', width: block_width*.85 } )
+                                .text(prizes_text, img_x, y+block_height+block_height*.12+40, {align:'left', width: img_width} )
                                 ;
                                 
                             /**
@@ -276,7 +276,7 @@ exports.routes = {
                                     'Phone:',
                                     '415-2BOZUKO',
                                     '(415) 226-9856'
-                                ].join('\n'), block_width, y+block_height,{align: 'center', width: block_width} )
+                                ].join('\n'), block_width, y+block_height+10,{align: 'center', width: block_width} )
                                 
                             // cleanup
                             fs.unlinkSync(security_file);
