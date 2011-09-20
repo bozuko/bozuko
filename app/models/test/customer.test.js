@@ -2,15 +2,28 @@ var testsuite = require('./config/testsuite');
 var BraintreeGateway = Bozuko.require('util/braintree');
 var inspect = require('util').inspect;
 
-var customer;
-var cc_token;
+var customer, 
+    cc_token,
+    page
+;
+
+exports['create page'] = function(test) {
+    page = new Bozuko.models.Page();
+    page.active = true;
+    page.name = "Murray's Page";
+    page.save(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
 
 exports['create customer'] = function(test) {
     Bozuko.models.Customer.create({
+        page_id: page._id,
         firstName: 'Murray',
         lastName: 'Rothbard',
         company: 'UNLV',
-        email: 'rothbard@unlv.edu'        
+        email: 'rothbard@unlv.edu'
     }, function(err, newCustomer) {
         test.ok(!err);
         test.ok(newCustomer);
@@ -20,10 +33,8 @@ exports['create customer'] = function(test) {
 };
 
 exports['find customer'] = function(test) {
-    Bozuko.models.Customer.findByGatewayId(customer.bt_id, function(err, result) {
-        console.log("err = "+inspect(err));
+    Bozuko.models.Customer.findByGatewayId(page._id, function(err, result) {
         test.ok(!err);
-        console.log("result = "+inspect(result));
         test.done();
     });
 };
@@ -33,7 +44,7 @@ exports['find customer'] = function(test) {
 exports['create credit card'] = function(test) {
     var gateway = new BraintreeGateway().gateway;
     gateway.creditCard.create({
-        customerId: customer.bt_id,
+        customerId: String(customer.page_id),
         number: "5105105105105100",
         expirationDate: "05/2014",
         cardholderName: 'Murray N. Rothbard'
@@ -41,6 +52,16 @@ exports['create credit card'] = function(test) {
         test.ok(!err);
         test.ok(result.success);
         cc_token = result.creditCard.token;
+        test.done();
+    });
+};
+
+// If the user wants to update their subscriptions/cc info we must retrieve it all from braintree.
+// We don't store it in mongo.
+exports['find customer - retrieve credit card token'] = function(test) {
+    Bozuko.models.Customer.findByGatewayId(customer.page_id, function(err, result) {
+        test.ok(!err);
+        test.deepEqual(cc_token, result.creditCards[0].token);
         test.done();
     });
 };
@@ -56,20 +77,24 @@ exports['create subscription'] = function(test) {
 };
 
 exports['cancel subscription'] = function(test) {
-    customer.cancelSubscription(customer.subscriptions[0].subId, function(err, result) {
+    customer.cancelSubscription(customer.subscriptions[0], function(err, result) {
         test.ok(!err);
-        console.log('result = '+inspect(result));
         test.done();
     });
 };
 
+// Not sure we actually ever want to remove customers. We may just want to cancel subscriptions.
+// So just do it from the test for cleanup.
 exports['remove customer'] = function(test) {
     var gateway = new BraintreeGateway().gateway;
-    gateway.customer.delete(customer.bt_id, function(err, result) {
+    gateway.customer.delete(String(customer.page_id), function(err, result) {
         test.ok(!err);
         customer.remove(function(err) {
             test.ok(!err);
-            test.done();
+            page.remove(function(err) {
+                test.ok(!err);
+                test.done();
+            });
         });
     });
 };

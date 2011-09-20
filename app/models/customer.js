@@ -5,72 +5,52 @@ var mongoose = require('mongoose'),
     BraintreeGateway = Bozuko.require('util/braintree')
 ;
 
-var Address = new Schema({
-    street                    :{type:String},
-    zip                       :{type:String},
-    state                     :{type:String},
-    company                   :{type:String},
-    firstName                 :{type:String},
-    lastName                  :{type:String}
-});
-
-var CreditCard = new Schema({
-    name                      :{type:String},
-    type                      :{type:String},
-    expDate                   :{type:String},
-    last4                     :{type:String},
-    token                     :{type:String},
-    addresses                 :[Address]
-});
-
-var Subscription = new Schema({
-    subId               :{type:String},
-    planId              :{type:String, index:true},
-    addons              :[String],
-    discounts           :[String],
-    card                :{type:ObjectId}
-});
-
 var Customer = module.exports = new Schema({
-    user_id                   :{type:ObjectId},
-    page_id                   :{type:ObjectId},
-    bt_id                     :{type:String},
-    firstName                 :{type:String},
-    lastName                  :{type:String},
-    company                   :{type:String},
-    email                     :{type:String},
-    phone                     :{type:String},
-    website                   :{type:String},
+    page_id                   :{type:ObjectId, index: {unique: true}},
     created                   :{type:Date},
     last_modified             :{type:Date},
-    cards                     :[CreditCard],
-    addresses                 :[Address],
-    subscriptions             :[Subscription]
+    subscriptions             :[String]
 }, {safe: {w:2, wtimeout: 5000}});
 
-// TODO: We need to ensure that the same customer doesn't exist remotely. Braintree Search API
-// not implemented in node yet. Therefore we should send an email if we get an error here. We
-// can cleanup manually for now since this will only happen very rarely.
-Customer.static('create', function(opts, callback) {
-    var gateway = new BraintreeGateway().gateway;
-    var customer = new Bozuko.models.Customer(opts);
+Customer.static('create', function(opts, callback) 
+{
+    if (!opts.page_id) {
+        return callback(new Error('page_id required for Bozuko.models.Customer.create()'));
+    }
+    var gateway = new BraintreeGateway().gateway;   
     var data = {};
     ['firstName', 'lastName', 'company', 'email', 'phone', 'website'].forEach(function(key) {
-        if (customer[key]) data[key] = customer[key];
+        if (opts[key]) data[key] = opts[key];
     });
+    data.id = String(opts.page_id);
     gateway.customer.create(data, function(err, result) {
+        var gateway_err = null;
         if (err) return callback(err);
         if (!result.success) return callback(result);
-        customer.bt_id = result.customer.id;
+
+        var customer = new Bozuko.models.Customer({page_id: opts.page_id});
         var date = new Date();
         customer.created = date;
         customer.last_modified = date;
         customer.save(function(err) {
-            // TODO: Return a specific error stating that the customer was created
-            // remotely but not locally - Send Alert Email
-            if (err) return callback(err);
+            if (err) {
+                console.error('Couldn\'t save customer with page_id = '+
+                    customer.page_id+' after braintree creation - '+err);
+                // TODO: We probably want some sort of audit mechanism for when we get in this 
+                // scenario. Check braintree to see if the customer exists then re-save.
+                // Not sure we should even return an error here. Just log it and move on?
+                return callback(err);
+            }
             return callback(null, customer);
         });
+    });        
+});
+
+Customer.static('findByGatewayId', function(id, callback) {
+    var gateway = new BraintreeGateway().gateway;
+    gateway.customer.find(String(id), function(err, result) {
+        if (err) return callback(err);
+        return callback(null, result);
     });
 });
 
@@ -81,12 +61,17 @@ Customer.method('createSubscription', function(opts, callback) {
     gateway.subscription.create(opts, function(err, result) {
         if (err) return callback(err);
         if (!result.success) return callback(result);
-        self.subscriptions.push({
-            planId: result.subscription.planId,
-            subId: result.subscription.id
-        });
+        self.subscriptions.push(result.subscription.id);
         self.save(function(err) {
-            if (err) return callback(err);
+            if (err) {
+                console.error('Couldn\'t save customer/subscription with page_id = '+
+                    self.page_id+', subscription id = '+result.subscription.id+
+                    ' after braintree subscription creation');
+                // TODO: We probably want some sort of audit mechanism for when we get in this 
+                // scenario. Check braintree to see if the subscription exists then re-save.
+                // Not sure we should even return an error here. Just log it and move on?
+                return callback(err);
+            }
             return callback(null, result); 
         });
     });
@@ -95,14 +80,6 @@ Customer.method('createSubscription', function(opts, callback) {
 Customer.method('cancelSubscription', function(id, callback) {
     var gateway = new BraintreeGateway().gateway;
     gateway.subscription.cancel(id, function(err, result) {
-        if (err) return callback(err);
-        return callback(null, result);
-    });
-});
-
-Customer.static('findByGatewayId', function(id, callback) {
-    var gateway = new BraintreeGateway().gateway;
-    gateway.customer.find(id, function(err, result) {
         if (err) return callback(err);
         return callback(null, result);
     });
