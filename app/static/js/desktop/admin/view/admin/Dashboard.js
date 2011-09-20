@@ -103,21 +103,29 @@ Ext.define('Admin.view.admin.Dashboard' ,{
         me.callParent();
         me.queuedItems = [];
         
+        
+        var eventLog = Ext.data.StoreManager.lookup('eventStore');
+        
         me.on('activate', function(){
-            if( me.down('[ref=event-grid]') ) me.down('[ref=event-grid]').doLayout();
+            me.on('activate', function(){
+                if( me.queuedItems.length ) me.addEventToLog( me.queuedItems );
+                me.queuedItems = [];
+            });
         });
         
         Bozuko.PubSub.subscribe('*', true, function(item, callback){
             callback();
-            me.addEventToLog( item );
+            if( !me.isVisible() ){
+                me.queuedItems.push( eventLog.createModel(item) );
+                return;
+            }
+            me.addEventToLog( [eventLog.createModel(item)] );
         });
     },
     
-    addEventToLog : function(item){
-        var eventLog = Ext.data.StoreManager.lookup('eventStore'),
-        record = eventLog.createModel(item);
+    addEventToLog : function(records){
         try{
-            eventLog.insert(0,[record]);
+            eventLog.insert(0,records);
             while(eventLog.getCount() > 150 ){
                 eventLog.removeAt(150);
             }
