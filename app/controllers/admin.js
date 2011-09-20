@@ -86,7 +86,7 @@ exports.routes = {
                                     if( !user ) return cb(new Error('Invalid user ID?'));
                                     
                                     if( test ) {
-                                        results.push({prize:prize.name, email_code: contest_prize.email_codes[result.count], user_name: user.name, already_redeemed: prize.redeemed});
+                                        results.push({play_cursor: prize.play_cursor, prize:prize.name, email_code: contest_prize.email_codes[result.count], user_name: user.name, already_redeemed: prize.redeemed});
                                         return cb();
                                     }
                                     
