@@ -255,11 +255,16 @@ exports.routes = {
                                               'in the "Prizes" screen area of the app.'
                             
                             doc
-                                .image(image_base+'/redemption/prizes.png', img_x, y+block_height+40, {width: img_width})
+                                .fill('#006b37')
+                                .font('Heading Font')
+                                .fontSize(14)
+                                .text('Saved Prizes', img_x,y+block_height+15, {align:'center', width: img_width})
+                                .image(image_base+'/redemption/prizes.png', img_x, y+block_height+55, {width: img_width})
                                 // paragraph below
                                 .font('Helvetica')
+                                .fill('#000000')
                                 .fontSize(11)
-                                .text(prizes_text, img_x, y+block_height+block_height*.12+40, {align:'left', width: img_width} )
+                                .text(prizes_text, img_x, y+block_height+block_height*.12+55, {align:'left', width: img_width} )
                                 ;
                                 
                             /**
