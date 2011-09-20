@@ -86,7 +86,7 @@ exports.routes = {
                                     if( !user ) return cb(new Error('Invalid user ID?'));
                                     
                                     if( test ) {
-                                        results.push({play_cursor: prize.play_cursor, prize:prize.name, email_code: contest_prize.email_codes[result.count], user_name: user.name, already_redeemed: prize.redeemed});
+                                        results.push({play_cursor: prize.play_cursor, result: result, prize:prize.name, email_code: contest_prize.email_codes[result.count], user_name: user.name, already_redeemed: prize.redeemed});
                                         return cb();
                                     }
                                     
@@ -100,7 +100,7 @@ exports.routes = {
                                         if( error ) return cb(error);
                                         // we need to get this user too
                                         
-                                        if( !prize.redeemed ) return prize.redeem(user, function(error, result){
+                                        if( !prize.redeemed ) return prize.redeem(user, function(error){
                                             if( error ) return cb(error);
                                             results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: false});
                                             return cb();
