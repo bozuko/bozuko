@@ -6,14 +6,24 @@ var customer;
 var cc_token;
 
 exports['create customer'] = function(test) {
-    customer = new Bozuko.models.Customer({
+    Bozuko.models.Customer.create({
         firstName: 'Murray',
         lastName: 'Rothbard',
         company: 'UNLV',
         email: 'rothbard@unlv.edu'        
-    });
-    customer.save(function(err) {
+    }, function(err, newCustomer) {
         test.ok(!err);
+        test.ok(newCustomer);
+        customer = newCustomer;
+        test.done();
+    });
+};
+
+exports['find customer'] = function(test) {
+    Bozuko.models.Customer.findByGatewayId(customer.bt_id, function(err, result) {
+        console.log("err = "+inspect(err));
+        test.ok(!err);
+        console.log("result = "+inspect(result));
         test.done();
     });
 };
@@ -41,6 +51,14 @@ exports['create subscription'] = function(test) {
         planId: 'monthly_subscription'
     }, function(err, result) {
         test.ok(!err);
+        test.done();
+    });
+};
+
+exports['cancel subscription'] = function(test) {
+    customer.cancelSubscription(customer.subscriptions[0].subId, function(err, result) {
+        test.ok(!err);
+        console.log('result = '+inspect(result));
         test.done();
     });
 };
