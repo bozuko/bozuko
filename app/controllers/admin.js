@@ -58,7 +58,7 @@ exports.routes = {
         get : {
             handler : function(req, res) {
                 
-                var test = true;
+                var test = false;
                 
                 Bozuko.models.Contest.findById( req.param('id'), function(error, contest){
                     if( error ) return error.send( res );
