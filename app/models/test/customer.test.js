@@ -89,12 +89,30 @@ exports['create active subscription'] = function(test) {
     });
 };
 
+exports['create another active subscription - fail'] = function(test) {
+    customer.createActiveSubscription({
+        paymentMethodToken: cc_token,
+        planId: 'monthly_subscription'
+    }, function(err, result) {
+        test.ok(err);
+        test.done();
+    });
+};
+
 exports['cancel active subscription'] = function(test) {
     customer.cancelActiveSubscription(function(err, result) {
         test.ok(!err);
         test.done();
     });
 };
+
+exports['cancel active subscription again - fail'] = function(test) {
+    customer.cancelActiveSubscription(function(err, result) {
+        test.ok(err);
+        test.done();
+    });
+};
+
 
 // Not sure we actually ever want to remove customers. We may just want to cancel subscriptions.
 // So just do it from the test for cleanup.
