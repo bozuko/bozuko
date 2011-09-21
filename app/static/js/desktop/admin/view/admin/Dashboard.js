@@ -124,6 +124,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
     },
     
     addEventToLog : function(records){
+        var eventLog = Ext.data.StoreManager.lookup('eventStore');
         try{
             eventLog.insert(0,records);
             while(eventLog.getCount() > 150 ){
