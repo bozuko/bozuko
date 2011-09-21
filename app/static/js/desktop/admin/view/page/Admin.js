@@ -76,7 +76,7 @@ Ext.define('Admin.view.page.Admin' ,{
                     items           :[{
                         xtype           :'combo',
                         ref             :'admin-selector',
-                        width           :150,
+                        width           :210,
                         hideLabel       :true,
                         forceSelection  :true,
                         displayField    :'name',
