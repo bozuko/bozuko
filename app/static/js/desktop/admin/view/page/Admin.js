@@ -81,6 +81,7 @@ Ext.define('Admin.view.page.Admin' ,{
                         forceSelection  :true,
                         displayField    :'name',
                         valueField      :'_id',
+                        pageSize        :25,
                         minChars        :1,
                         listConfig      :{
                             emptyText       :'No Users Found'
