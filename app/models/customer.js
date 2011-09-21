@@ -21,31 +21,27 @@ Customer.static('create', function(opts, callback)
     if (!opts.page_id) {
         return callback(new Error('page_id required for Bozuko.models.Customer.create()'));
     }
-    var gateway = new BraintreeGateway().gateway;   
-    var data = {};
-    ['firstName', 'lastName', 'company', 'email', 'phone', 'website'].forEach(function(key) {
-        if (opts[key]) data[key] = opts[key];
+    var date = new Date();
+    var customer = new Bozuko.models.Customer({
+        page_id: opts.page_id,
+        created: date,
+        last_modified: date
     });
-    data.id = String(opts.page_id);
-    gateway.customer.create(data, function(err, result) {
-        var gateway_err = null;
-        if (err) return callback(err);
-        if (!result.success) return callback(result);
 
-        var customer = new Bozuko.models.Customer({page_id: opts.page_id});
-        var date = new Date();
-        customer.created = date;
-        customer.last_modified = date;
-        customer.save(function(err) {
-            if (err) {
-                console.error('Couldn\'t save customer with page_id = '+
-                    customer.page_id+' after braintree creation - '+err);
-                // TODO: We probably want some sort of audit mechanism for when we get in this 
-                // scenario. Check braintree to see if the customer exists then re-save.
-                // Not sure we should even return an error here. Just log it and move on?
-                return callback(err);
-            }
-            return callback(null, customer);
+    customer.save(function(err) {
+        if (err) return callback(err);
+        var gateway = new BraintreeGateway().gateway;   
+        var data = {};
+        ['firstName', 'lastName', 'company', 'email', 'phone', 'website'].forEach(function(key) {
+            if (opts[key]) data[key] = opts[key];
+        });
+        data.id = String(opts.page_id);
+        gateway.customer.create(data, function(err, result) {
+            // TODO: If there is an error we will need to recreate the customer on braintree
+            // at a later time.
+            if (err) return callback(err);
+            if (!result.success) return callback(result);
+            return callback(null, customer);                         
         });
     });        
 });
