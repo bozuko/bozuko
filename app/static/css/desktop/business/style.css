@@ -1183,3 +1183,30 @@ strong {
 p {
   margin: .6em 0;
 }
+.admins-view .admin {
+  position: relative;
+  float: left;
+  line-height: 30px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  background: #f3f3f3;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.admins-view .admin img {
+  float: left;
+  height: 30px;
+  margin-right: 10px;
+}
+.admins-view .admin .name {
+  float: left;
+}
+.admins-view .admin .remove {
+  float: left;
+  margin-left: 10px;
+  text-indent: -9999em;
+  cursor: pointer;
+  width: 20px;
+  height: 30px;
+  background: transparent url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-cross-16.png') 0 50% no-repeat;
+}

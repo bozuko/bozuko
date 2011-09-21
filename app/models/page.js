@@ -17,7 +17,7 @@ var _t = Bozuko.t,
 ;
 
 var Page = module.exports = new Schema({
-    tree                :{type:String},
+    children            :[ObjectId],
     category            :{type:String, index: true},
     website             :{type:String},
     phone               :{type:String},
@@ -79,6 +79,42 @@ Page.method('addAdmin', function(user, callback){
         function add_user_manages(cb){
             if( !~indexOf( user.manages, page._id ) ){
                 user.manages.push( page._id );
+                return user.save(cb);
+            }
+            return cb();
+        }
+    ], function(error){
+        callback();
+    });
+});
+
+Page.method('removeAdmin', function(user, callback){
+    var page = this;
+    async.parallel([
+        function remove_page_admin(cb){
+            var i;
+            if( ~indexOf( page.admins, user._id ) ){
+                var admins = [];
+                page.admins.forEach(function(id){
+                    if( String(id) != String(user._id) ){
+                        admins.push(id);
+                    }
+                });
+                page.admins = admins;
+                return page.save(cb);
+            }
+            return cb();
+        },
+        function remove_user_manages(cb){
+            var i;
+            if( ~indexOf( user.manages, page._id ) ){
+                var manages = [];
+                user.manages.forEach(function(id){
+                    if( String(id) != String(page._id) ){
+                        manages.push(id);
+                    }
+                });
+                user.manages = manages;
                 return user.save(cb);
             }
             return cb();

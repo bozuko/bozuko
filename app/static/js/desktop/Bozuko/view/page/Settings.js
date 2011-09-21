@@ -188,41 +188,6 @@ Ext.define('Bozuko.view.page.Settings' ,{
                 
             }]
         });
-        if( !Bozuko.beta ){
-            me.items[0].items.push({
-                title           :'Administration',
-                defaults        :{
-                    anchor          :'0'
-                },
-                items           :[{
-                    xtype           :'textfield',
-                    name            :'image',
-                    fieldLabel      :'Image'
-                },{
-                    xtype           :'checkbox',
-                    name            :'active',
-                    fieldLabel      :'Active'
-                },{
-                    xtype           :'checkbox',
-                    name            :'test',
-                    fieldLabel      :'Test page'
-                },{
-                    xtype           :'checkbox',
-                    name            :'featured',
-                    fieldLabel      :'Featured'
-                },{
-                    xtype           :'textfield',
-                    readOnly        :true,
-                    name            :'sharelink',
-                    fieldLabel      :'Share Link'
-                },{
-                    xtype           :'textfield',
-                    readOnly        :true,
-                    name            :'betalink',
-                    fieldLabel      :'Beta Link'
-                }]
-            });
-        }
         me.callParent(arguments);
         if( me.record ){
             me.loadRecord( me.record );

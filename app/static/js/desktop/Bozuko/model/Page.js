@@ -27,7 +27,8 @@ Ext.define('Bozuko.model.Page', {
         {name:'coords',         type:'Array'},
         {name:'test',           type:'Boolean'},
         {name:'security_img',   type:'String'},
-        {name:'services',       type:'Array'}
+        {name:'services',       type:'Array'},
+        {name:'admins',         type:'Array'}
     ],
     
     service : function(name){

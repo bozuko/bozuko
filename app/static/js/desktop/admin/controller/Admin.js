@@ -2,8 +2,8 @@ Ext.define('Admin.controller.Admin' ,{
     extend: 'Bozuko.lib.app.Controller',
     
     views: [
-        'page.Panel',
         'page.Add',
+        'page.Admin',
         'Bozuko.view.page.Panel'
     ],
     
@@ -39,6 +39,8 @@ Ext.define('Admin.controller.Admin' ,{
         var me = this;
         this._tabs = {};
         
+        me.BozukoPagesController = me.application.controllers.getByKey('Bozuko.controller.Pages');
+        
         this.control({
             'pagelist dataview':{
                 itemclick: this.onPageClick
@@ -72,6 +74,14 @@ Ext.define('Admin.controller.Admin' ,{
             'pagelist [ref=inactive]':{
                 toggle : function(){
                     me.getPagesStore().load();
+                }
+            },
+            'pagepanel' : {
+                render: me.onPagePanelRender
+            },
+            'pageadmin [action=save]' : {
+                click : function(btn){
+                    me.BozukoPagesController.saveSettings(btn);
                 }
             }
         });
@@ -144,6 +154,29 @@ Ext.define('Admin.controller.Admin' ,{
         this.lastUserFilter = filter;
         this.lastUserSearch = search;
         
+    },
+    
+    onPagePanelRender : function(panel){
+        var me = this,
+            nav = panel.down('toolbar[ref=navigation]'),
+            pages = panel.down('[ref=pages]'),
+            accountBtn = nav.down('button[page=account]')
+            ;
+            
+        var i = nav.items.indexOf( accountBtn );
+        nav.insert(i+1, {
+            text        :'Admin',
+            page        :'admin',
+            group       :'page',
+            icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/lightening-24.png'
+        });
+        
+        pages.add({
+            ref             :'admin',
+            xtype           :'pageadmin',
+            border          :false,
+            page            :panel.page
+        });
     },
     
     onUserContextMenu : function(view, record, item, index, event){
