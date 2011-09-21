@@ -5,11 +5,15 @@ var mongoose = require('mongoose'),
     BraintreeGateway = Bozuko.require('util/braintree')
 ;
 
+var Subscription = new Schema({
+    active                    :{type:Boolean, default: false}
+});
+
 var Customer = module.exports = new Schema({
     page_id                   :{type:ObjectId, index: {unique: true}},
     created                   :{type:Date},
     last_modified             :{type:Date},
-    subscriptions             :[String]
+    subscriptions             :[Subscription]
 }, {safe: {w:2, wtimeout: 5000}});
 
 Customer.static('create', function(opts, callback) 
@@ -54,33 +58,47 @@ Customer.static('findByGatewayId', function(id, callback) {
     });
 });
 
-// TODO: We need to ensure the same subscription isn't created twice
-Customer.method('createSubscription', function(opts, callback) {
+Customer.method('createActiveSubscription', function(opts, callback) {
     var self = this;
-    var gateway = new BraintreeGateway().gateway;
-    gateway.subscription.create(opts, function(err, result) {
+    
+    // Ensure this customer doesn't already have an active subscription
+    if (!this.subscriptions.every(function(sub) {
+        return !sub.active;
+    })) return callback(Bozuko.error('customer/active_subscription_exists'));
+
+    this.subscriptions.push({active: true});
+    this.save(function(err) {
         if (err) return callback(err);
-        if (!result.success) return callback(result);
-        self.subscriptions.push(result.subscription.id);
-        self.save(function(err) {
-            if (err) {
-                console.error('Couldn\'t save customer/subscription with page_id = '+
-                    self.page_id+', subscription id = '+result.subscription.id+
-                    ' after braintree subscription creation');
-                // TODO: We probably want some sort of audit mechanism for when we get in this 
-                // scenario. Check braintree to see if the subscription exists then re-save.
-                // Not sure we should even return an error here. Just log it and move on?
-                return callback(err);
-            }
+        var gateway = new BraintreeGateway().gateway;
+        opts.id = String(self.subscriptions[self.subscriptions.length - 1]._id);
+        gateway.subscription.create(opts, function(err, result) {
+            // TODO: If there is an error we will need to recreate the subscription on braintree
+            // at a later time.
+            if (err) return callback(err);
+            if (!result.success) return callback(result);
             return callback(null, result); 
         });
     });
 });
 
-Customer.method('cancelSubscription', function(id, callback) {
+Customer.method('cancelActiveSubscription', function(callback) {
     var gateway = new BraintreeGateway().gateway;
-    gateway.subscription.cancel(id, function(err, result) {
+    var active_sub = null;
+    var subscriptions = this.subscriptions;
+    for (var i = 0; i < subscriptions.length; i++) {
+        if (subscriptions[i].active) {
+            active_sub = subscriptions[i];
+            break;
+        }
+    }
+    if (!active_sub) return callback(Bozuko.error('customer/no_active_subscriptions'));
+                    
+    active_sub.active = false;
+    this.save(function(err) {
         if (err) return callback(err);
-        return callback(null, result);
+        gateway.subscription.cancel(active_sub._id, function(err, result) {
+            if (err) return callback(err);
+            return callback(null, result);
+        });
     });
 });
