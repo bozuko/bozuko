@@ -965,7 +965,15 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 // need to get all pages
+                
+                var search = req.get('search') || req.get('query');
+                
                 var selector = {};
+                
+                if( search ) {
+                    selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
+                }
+                
                 if( this.restrictToUser ){
                     selector._id = {$in: req.session.user.manages};
                 }
