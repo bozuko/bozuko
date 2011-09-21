@@ -1003,7 +1003,7 @@ exports.routes = {
                     if( error ) return error.send( res );
                     // else, lets bind the reqest to the page
                     var data = req.body;
-                    
+                    delete data.admins;
                     delete data._id;
                     page.set( data );
                     /**

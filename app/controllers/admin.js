@@ -236,6 +236,53 @@ exports.routes = {
         }
     },
     
+    '/admin/page/:id/admins' : {
+        alias : '/admin/page/:id/admins/:user_id',
+        get : {
+            handler : function(req, res){
+                // get the page
+                Bozuko.models.Page.findById(req.param('id'), function(error, page){
+                    if( error ) return error.send(res);
+                    return Bozuko.models.User.find({_id: {$in: page.admins}}, {name:1,image:1,_id:1}, function(error, users){
+                        if( error ) return error.send(res);
+                        return res.send(users);
+                    });
+                });
+            }
+        },
+        
+        post : {
+            handler : function(req, res){
+                if( !req.param('user_id') ) (new Error('No user')).send(res);
+                Bozuko.models.Page.findById(req.param('id'), function(error, page){
+                    if( error ) return error.send(res);
+                    return Bozuko.models.User.findById( req.param('user_id'), function(error, user){
+                        if( error ) return error.send(res);
+                        return page.addAdmin( user, function(error){
+                            if( error ) return error.send(res);
+                            return res.send({success:true});
+                        });
+                    });
+                });
+            }
+        },
+        del : {
+            handler : function(req, res){
+                if( !req.param('user_id') ) (new Error('No user')).send(res);
+                Bozuko.models.Page.findById(req.param('id'), function(error, page){
+                    if( error ) return error.send(res);
+                    return Bozuko.models.User.findById( req.param('user_id'), function(error, user){
+                        if( error ) return error.send(res);
+                        return page.removeAdmin( user, function(error){
+                            if( error ) return error.send(res);
+                            return res.send({success:true});
+                        });
+                    });
+                });
+            }
+        }
+    },
+    
     '/admin/fix/like/shares' : {
         get: {
             handler : function( req, res ){
@@ -322,11 +369,15 @@ exports.routes = {
                     user_filter = req.param('user_filter'),
                     search = req.param('search') || req.param('query'),
                     start = req.param('start') || 0,
-                    limit = req.param('limit') || 25
+                    limit = req.param('limit') || 25,
+                    exclude = req.param('exclude')
                     ;
                 
                 if( search ){
                     selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
+                }
+                if( exclude ){
+                    selector._id = {$nin: exclude.split(',')};
                 }
                 switch( user_filter ){
                     case 'blocked':
