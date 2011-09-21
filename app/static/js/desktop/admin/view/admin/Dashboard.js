@@ -108,6 +108,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
         
         me.on('activate', function(){
             me.on('activate', function(){
+                
                 if( me.queuedItems.length ) me.addEventToLog( me.queuedItems );
                 me.queuedItems = [];
             });
