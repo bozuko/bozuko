@@ -966,7 +966,7 @@ exports.routes = {
             handler : function(req, res){
                 // need to get all pages
                 
-                var search = req.get('search') || req.get('query');
+                var search = req.param('search') || req.param('query');
                 
                 var selector = {};
                 
