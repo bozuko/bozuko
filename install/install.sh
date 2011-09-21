@@ -16,7 +16,7 @@ source ~/.bashrc
 
 # node packages
 echo "*** Installing node packages with npm"
-cd ~ && npm install connect connect-auth express jade less mongodb@0.9.6-15 mongoose@2.1.2 monomi   \
+cd ~ && npm install connect connect-auth express jade less mongodb@0.9.6-17 mongoose@2.1.4 monomi   \
     qs socket.io markdown-js async sprintf nodeunit nodemailer dateformat relative-date    \
     cluster imap node-uuid node-gd knox validator charm connect-form xml2json pdfkit
 
