@@ -32,6 +32,19 @@ exports['create customer'] = function(test) {
     });
 };
 
+exports['create same customer - fail'] = function(test) {
+    Bozuko.models.Customer.create({
+        page_id: page._id,
+        firstName: 'Murray',
+        lastName: 'Rothbard',
+        company: 'UNLV',
+        email: 'rothbard@unlv.edu'
+    }, function(err, newCustomer) {
+        test.ok(err);
+        test.done();
+    });
+};
+
 exports['find customer'] = function(test) {
     Bozuko.models.Customer.findByGatewayId(page._id, function(err, result) {
         test.ok(!err);
@@ -66,8 +79,8 @@ exports['find customer - retrieve credit card token'] = function(test) {
     });
 };
 
-exports['create subscription'] = function(test) {
-    customer.createSubscription({
+exports['create active subscription'] = function(test) {
+    customer.createActiveSubscription({
         paymentMethodToken: cc_token,
         planId: 'monthly_subscription'
     }, function(err, result) {
@@ -76,8 +89,8 @@ exports['create subscription'] = function(test) {
     });
 };
 
-exports['cancel subscription'] = function(test) {
-    customer.cancelSubscription(customer.subscriptions[0], function(err, result) {
+exports['cancel active subscription'] = function(test) {
+    customer.cancelActiveSubscription(function(err, result) {
         test.ok(!err);
         test.done();
     });
