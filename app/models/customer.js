@@ -16,10 +16,34 @@ var Customer = module.exports = new Schema({
     subscriptions             :[Subscription]
 }, {safe: {w:2, wtimeout: 5000}});
 
-Customer.static('create', function(opts, callback) 
-{
+
+function getCustomerStatus(gateway, page_id, callback) {
+    var saved = {};
+    Bozuko.models.Customer.findOne({page_id: page_id}, function(err, customer) {
+        if (customer) saved.mongo = customer;
+        gateway.customer.find(String(page_id), function(err, result) {
+            if (!err) saved.braintree = result;
+            return callback(null, saved);
+        });        
+    });
+}; 
+
+function createGatewayCustomer(gateway, opts, customer, callback) {
+    var data = {};
+    ['firstName', 'lastName', 'company', 'email', 'phone', 'website'].forEach(function(key) {
+        if (opts[key]) data[key] = opts[key];
+    });
+    data.id = String(opts.page_id);
+    gateway.customer.create(data, function(err, result) {
+        if (err) return callback(err);
+        if (!result.success) return callback(result);
+        return callback(null, customer);                         
+    });
+}
+
+Customer.static('create', function(opts, callback) {
     if (!opts.page_id) {
-        return callback(new Error('page_id required for Bozuko.models.Customer.create()'));
+        return callback(Bozuko.error('customer/no_page_id'));
     }
     var date = new Date();
     var customer = new Bozuko.models.Customer({
@@ -27,31 +51,22 @@ Customer.static('create', function(opts, callback)
         created: date,
         last_modified: date
     });
+    var gateway = new BraintreeGateway().gateway;
 
-    customer.save(function(err) {
-        if (err) return callback(err);
-        var gateway = new BraintreeGateway().gateway;   
-        var data = {};
-        ['firstName', 'lastName', 'company', 'email', 'phone', 'website'].forEach(function(key) {
-            if (opts[key]) data[key] = opts[key];
-        });
-        data.id = String(opts.page_id);
-        gateway.customer.create(data, function(err, result) {
-            // TODO: If there is an error we will need to recreate the customer on braintree
-            // at a later time.
+    return getCustomerStatus(gateway, opts.page_id, function(err, saved) {
+        if (saved.mongo && saved.braintree) return callback(Bozuko.error('customer/already_exists'));
+        if (!saved.mongo) return customer.save(function(err) {
             if (err) return callback(err);
-            if (!result.success) return callback(result);
-            return callback(null, customer);                         
+            if (saved.braintree) return callback(Bozuko.error('customer/already_exists'));
+            return createGatewayCustomer(gateway, opts, customer, callback);
         });
-    });        
+        if (saved.mongo && !saved.braintree) return createGatewayCustomer(gateway, opts, saved.mongo, callback);
+    });
 });
 
 Customer.static('findByGatewayId', function(id, callback) {
     var gateway = new BraintreeGateway().gateway;
-    gateway.customer.find(String(id), function(err, result) {
-        if (err) return callback(err);
-        return callback(null, result);
-    });
+    gateway.customer.find(String(id), callback);
 });
 
 Customer.method('createActiveSubscription', function(opts, callback) {

@@ -17,7 +17,14 @@ exports['create page'] = function(test) {
     });
 };
 
-exports['create customer'] = function(test) {
+exports['find customer - fail missing'] = function(test) {
+    Bozuko.models.Customer.findByGatewayId(page._id, function(err, result) {
+        test.ok(err);
+        test.done();
+    });
+};
+
+exports['create customer - success'] = function(test) {
     Bozuko.models.Customer.create({
         page_id: page._id,
         firstName: 'Murray',
@@ -42,6 +49,17 @@ exports['create same customer - fail'] = function(test) {
     }, function(err, newCustomer) {
         test.ok(err);
         test.done();
+    });
+};
+
+exports['create same customer - success after removal from braintree'] = function(test) {
+    var gateway = new BraintreeGateway().gateway;
+    gateway.customer.delete(String(page._id), function(err) {
+        test.ok(!err);
+        Bozuko.models.Customer.findByGatewayId(page._id, function(err, result) {
+            test.ok(err);
+            exports['create customer - success'](test);
+        });
     });
 };
 
