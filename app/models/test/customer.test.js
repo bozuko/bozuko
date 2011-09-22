@@ -97,7 +97,7 @@ exports['find customer - retrieve credit card token'] = function(test) {
     });
 };
 
-exports['create active subscription'] = function(test) {
+exports['create active subscription - success'] = function(test) {
     customer.createActiveSubscription({
         paymentMethodToken: cc_token,
         planId: 'monthly_subscription'
@@ -124,9 +124,10 @@ exports['cancel active subscription'] = function(test) {
     });
 };
 
-exports['cancel active subscription again - fail'] = function(test) {
-    customer.cancelActiveSubscription(function(err, result) {
-        test.ok(err);
+// We always allow cancelling subscriptions. Only if there is a service error will an error be returned.
+exports['cancel active subscription again - success'] = function(test) {
+    customer.cancelActiveSubscription(function(err) {
+        test.ok(!err);
         test.done();
     });
 };
