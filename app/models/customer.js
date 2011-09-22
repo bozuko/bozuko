@@ -44,7 +44,7 @@ function createGatewayCustomer(gateway, opts, customer, callback) {
     });
 }
 
-Customer.static('create', function(opts, callback) {
+Customer.static('create', function(gateway, opts, callback) {
     if (!opts.page_id) {
         return callback(Bozuko.error('customer/no_page_id'));
     }
@@ -54,7 +54,6 @@ Customer.static('create', function(opts, callback) {
         created: date,
         last_modified: date
     });
-    var gateway = new BraintreeGateway().gateway;
 
     return getCustomerStatus(gateway, opts.page_id, function(err, saved) {
         if (err) return callback(err);
@@ -68,24 +67,34 @@ Customer.static('create', function(opts, callback) {
     });
 });
 
-Customer.static('findByGatewayId', function(id, callback) {
-    var gateway = new BraintreeGateway().gateway;
+Customer.static('findByGatewayId', function(gateway, id, callback) {
     gateway.customer.find(String(id), callback);
 });
 
-Customer.method('createActiveSubscription', function(opts, callback) {
-    var self = this;
-    var gateway = new BraintreeGateway().gateway;    
-    var active_sub = null;
-
-    // Ensure this customer doesn't already have an active subscription
+Customer.method('getActiveSubscription', function() {
     for (var i = 0; i < this.subscriptions.length; i++) {
         if (this.subscriptions[i].active) {
-            active_sub = this.subscriptions[i];
-            break;
+            return this.subscriptions[i];
         }
     }
+    return null;
+});
 
+Customer.method('updateActiveSubscription', function(gateway, opts, callback) {
+    var active_sub = this.getActiveSubscription();
+    if (!active_sub) return callback(Bozuko.error('customer/no_active_subscriptions'));
+    var id = String(active_sub._id);
+    gateway.subscription.update(id, opts, function(err, result) {
+        if (err) return callback(err);
+        if (!result.success) return callback(result);
+        callback(null, result);
+    });
+});
+
+Customer.method('createActiveSubscription', function(gateway, opts, callback) {
+    var self = this;
+    var active_sub = this.getActiveSubscription();
+   
     if (active_sub) {
         return gateway.subscription.find(String(active_sub._id), function(err, result) {
             if (err && err.type !== 'notFoundError') return callback(err);
@@ -136,16 +145,10 @@ function cancelGatewaySubscriptions(gateway, subscriptions, callback) {
     });
 };
 
-Customer.method('cancelActiveSubscription', function(callback) {
-    var gateway = new BraintreeGateway().gateway;
-    var active_sub = null;
+Customer.method('cancelActiveSubscription', function(gateway, callback) {
+    var active_sub = this.getActiveSubscription();
     var subscriptions = this.subscriptions;
-    for (var i = 0; i < subscriptions.length; i++) {
-        if (subscriptions[i].active) {
-            active_sub = subscriptions[i];
-            break;
-        }
-    }
+
     if (!active_sub) return cancelGatewaySubscriptions(gateway, subscriptions, callback);
                     
     active_sub.active = false;
