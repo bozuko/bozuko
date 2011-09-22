@@ -1,6 +1,7 @@
 var testsuite = require('./config/testsuite');
 var BraintreeGateway = Bozuko.require('util/braintree');
 var inspect = require('util').inspect;
+var async = require('async');
 
 var customer, 
     cc_token,
@@ -132,6 +133,49 @@ exports['cancel active subscription again - success'] = function(test) {
     });
 };
 
+exports['create another active subscription with sub on mongo but not braintree - success'] = function(test) {
+    customer.subscriptions.push({active:true});
+    customer.save(function(err) {
+        test.ok(!err);
+        customer.createActiveSubscription({
+            paymentMethodToken: cc_token,
+            planId: 'monthly_subscription'
+        }, function(err, result) {
+            test.ok(!err);
+            test.done();
+        });
+    });
+};
+
+exports['cancel subscription with active sub in braintree but no active sub in mongo - success'] = function(test) {
+    customer.subscriptions[customer.subscriptions.length-1].active = false;
+    customer.cancelActiveSubscription(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['cancel the last subscription added - success'] = function(test) {
+    customer.cancelActiveSubscription(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['verify all subscriptions are cancelled'] = function(test) {
+    var gateway = new BraintreeGateway().gateway;
+    test.equal(customer.subscriptions.length, 2);
+    async.forEach(customer.subscriptions, function(sub, cb) {
+        test.ok(!sub.active);
+        gateway.subscription.find(String(sub._id), function(err, result) {
+            test.ok(!err);
+            test.equal(result.status, 'Canceled');
+            cb(null);
+        });
+    }, function(err) {
+        test.done();
+    });
+};
 
 // Not sure we actually ever want to remove customers. We may just want to cancel subscriptions.
 // So just do it from the test for cleanup.
@@ -146,5 +190,14 @@ exports['remove customer'] = function(test) {
                 test.done();
             });
         });
+    });
+};
+
+exports['verify customer doesn\'t exist'] = function(test) {
+    Bozuko.models.Customer.findByGatewayId(customer._id, function(err, result) {
+        test.ok(err);
+        test.equal(err.type, 'notFoundError');
+        test.ok(!result);
+        test.done();
     });
 };
