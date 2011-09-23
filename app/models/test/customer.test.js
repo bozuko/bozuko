@@ -199,6 +199,48 @@ exports['update active subscription - fail'] = function(test) {
     });    
 };
 
+var addressId = null;
+exports['create address - success'] = function(test) {
+    var opts = {
+         firstName: 'Jenna',
+         lastName: 'Smith',
+         company: 'Braintree',
+         streetAddress: '1 E Main St',
+         extendedAddress: 'Suite 403',
+         locality: 'Chicago',
+         region: 'Illinois',
+         postalCode: '60607',
+         countryCodeAlpha2: 'US'
+    };
+    customer.createAddress(gateway, opts, function(err, result) {
+        test.ok(!err);
+        addressId = result.address.id;
+        test.done();
+    });
+};
+
+exports['update address - success'] = function(test) {
+    customer.updateAddress(gateway, addressId, {firstName: 'Dave'}, function(err, result) {
+        test.ok(!err);
+        test.deepEqual('Dave', result.address.firstName);
+        test.done();
+    });
+};
+
+exports['delete address - success'] = function(test) {
+    customer.deleteAddress(gateway, addressId, function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['update address - fail'] = function(test) {
+    customer.updateAddress(gateway, addressId, {firstName: 'Sarah'}, function(err, result) {
+        test.ok(err);
+        test.done();
+    });
+};
+
 // Not sure we actually ever want to remove customers. We may just want to cancel subscriptions.
 // So just do it from the test for cleanup.
 exports['remove customer'] = function(test) {

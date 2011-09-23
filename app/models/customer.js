@@ -67,6 +67,27 @@ Customer.static('create', function(gateway, opts, callback) {
     });
 });
 
+Customer.method('createAddress', function(gateway, opts, callback) {
+    opts.customerId = String(this.page_id);
+    gateway.address.create(opts, function(err, result) {
+        if (err) return callback(err);
+        if (!result.success) return callback(result);
+        return callback(null, result);
+    });
+});
+
+Customer.method('updateAddress', function(gateway, addressId, opts, callback) {
+    gateway.address.update(String(this.page_id), addressId, opts, function(err, result) {
+        if (err) return callback(err);
+        if (!result.success) return callback(result);
+        return callback(null, result);
+    });
+});
+
+Customer.method('deleteAddress', function(gateway, addressId, callback) {
+    gateway.address.delete(String(this.page_id), addressId, callback);
+});
+
 Customer.static('findByGatewayId', function(gateway, id, callback) {
     gateway.customer.find(String(id), callback);
 });
