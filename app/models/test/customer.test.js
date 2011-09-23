@@ -77,9 +77,10 @@ exports['find customer'] = function(test) {
 exports['create credit card'] = function(test) {
     gateway.creditCard.create({
         customerId: String(customer.page_id),
-        number: "5105105105105100",
+        number: "4111111111111111",
         expirationDate: "05/2014",
-        cardholderName: 'Murray N. Rothbard'
+        cardholderName: 'Murray N. Rothbard',
+        cvv: '123'
     }, function(err, result) {
         test.ok(!err);
         test.ok(result.success);
@@ -177,8 +178,50 @@ exports['cancel the last subscription added - success'] = function(test) {
     });
 };
 
+exports['create new subscription to bill immediately - success'] = function(test) {
+    customer.createActiveSubscription(gateway, {
+        paymentMethodToken: cc_token,
+        planId: 'bill_immediately'
+    }, function(err, result) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['cancel the last subscription 2 - success'] = function(test) {
+    customer.cancelActiveSubscription(gateway, function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+// DON'T DO THIS IN PRODUCTION: NOT PCI COMPLIANT - Just testing bad number
+exports['update credit card to use an invalid number - fail'] = function(test) {
+    gateway.creditCard.update(cc_token, {
+        number: "4000111111111115"
+    }, function(err, result) {
+        test.ok(!result.success);
+        test.done();
+    });
+};
+
+// Use a price in the range  $2000.00 - $2047.99 to get a processer error
+exports['create new subscription to bill immediately - fail validation'] = function(test) {
+    customer.createActiveSubscription(gateway, {
+        paymentMethodToken: cc_token,
+        planId: 'bill_immediately',
+        price: '2000.01'
+    }, function(err, result) {
+        test.ok(err);
+        // remove the failed subscription. This is only to ensure the next test passes.
+        // In production, having an active subscription in mongo but not braintree isn't an issue.
+        customer.subscriptions.pop();
+        test.done();
+    });
+}; 
+
 exports['verify all subscriptions are cancelled'] = function(test) {
-    test.equal(customer.subscriptions.length, 2);
+    test.equal(customer.subscriptions.length, 3);
     async.forEach(customer.subscriptions, function(sub, cb) {
         test.ok(!sub.active);
         gateway.subscription.find(String(sub._id), function(err, result) {
