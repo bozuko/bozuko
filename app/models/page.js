@@ -131,7 +131,7 @@ Page.method('getContests', function(callback){
 Page.method('getGoogleMapLink', function(){
     var url = "http://maps.google.com/maps?q="
             + encodeURIComponent([this.name,this.location.street,this.location.city,this.location.state].join(', '))
-            + '&ll='+this.location.coords[1]+','+this.location.coords[0];
+            + '&ll='+this.coords[1]+','+this.coords[0];
 
     return url;
 });
