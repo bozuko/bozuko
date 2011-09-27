@@ -525,6 +525,7 @@ exports.routes = {
     '/admin/export' : {
         post : {
             handler : function(req, res){
+                console.log(req.param('body'));
                 var body = JSON.parse(req.param('body')),
                     name = body.name.replace(/"/, '\\"');
                     

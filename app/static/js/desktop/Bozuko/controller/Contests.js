@@ -401,7 +401,24 @@ Ext.define('Bozuko.controller.Contests' ,{
     },
     
     exportContest : function(record) {
-        // create 
+        var data = record.getProxy().getWriter().getRecordData(record);
+        console.log(data);
+        // create a new form to submit the data with
+        var form = Ext.getBody().createChild({
+            tag: 'form',
+            action: '/admin/export',
+            method: 'post',
+            target: 'export',
+            style: 'display: none',
+            children:[{
+                tag: 'input',
+                type: 'hidden',
+                name: 'body'
+            }]
+        });
+        form.down('input').dom.value = Ext.encode(data);
+        form.dom.submit();
+        form.remove();
     },
     
     openWithBuilder : function(record, cmp){

@@ -83,6 +83,9 @@ Ext.define('Admin.controller.Admin' ,{
                 click : function(btn){
                     me.BozukoPagesController.saveSettings(btn);
                 }
+            },
+            'contestspanel' : {
+                render : me.onContestPanelRender
             }
         });
     },
@@ -210,6 +213,29 @@ Ext.define('Admin.controller.Admin' ,{
             me.menu.down('[ref=allow]').hide();
         }
         me.menu.showAt(event.getXY());
+    },
+    
+    onContestPanelRender : function(panel){
+        var tbar = panel.down('[ref=contestreport-navbar]');
+        
+        // add an import button
+        tbar.add('-', {
+            xtype: 'filefield',
+            buttonOnly: true,
+            buttonConfig : {
+                scale : 'medium',
+                text : 'Import',
+                icon: "/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-up-24.png"
+            },
+            listeners : {
+                change : function(){
+                    
+                },
+                render : function(field){
+                    field.inputEl.dom.accept = 'application/json';
+                }
+            }
+        });
     },
     
     blockUser : function(){
