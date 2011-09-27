@@ -1,4 +1,5 @@
 var DateUtil = require('../app/util/date');
+var braintree = require('braintree');
 
 var port = 6999 + process.getuid();
 
@@ -157,6 +158,13 @@ module.exports = {
             pass: "7axxn7d8"
         },
         sender: 'Bozuko Mailer <mailer@bozuko.com>'
+    },
+
+    braintree : {
+        environment: braintree.Environment.Sandbox,
+        merchantId: 'dpvm2srq5sxw662q',
+        publicKey: 'yb7fntb8zhjrk28z',
+        privateKey: 'd9r3ph7jjvfn47ft'
     },
 
     defaultService:'facebook',
