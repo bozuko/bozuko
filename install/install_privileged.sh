@@ -44,3 +44,7 @@ echo "ClientAliveCountMax 4" >> /etc/ssh/sshd_config
 # tweak kernel for servers
 echo "*		 soft    nofile          64535" >> /etc/security/limits.conf
 echo "* 	 hard	 nofile		 64535" >> /etc/security/limits.conf
+
+# Install support for braintree python library (used for searching)
+apt-get install -y python-pycurl-dbg python-pip
+pip install braintree
