@@ -339,6 +339,10 @@ Ext.define('Bozuko.controller.Contests' ,{
             case 'reports':
                 this.openContest( record, view );
                 break;
+            
+            case 'export':
+                this.exportContest( record );
+                break;
 
             default:
                 Ext.Msg.show({
@@ -396,6 +400,9 @@ Ext.define('Bozuko.controller.Contests' ,{
         panel.doComponentLayout();
     },
     
+    exportContest : function(record) {
+        // create 
+    },
     
     openWithBuilder : function(record, cmp){
         // create a new

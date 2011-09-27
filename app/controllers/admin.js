@@ -520,7 +520,19 @@ exports.routes = {
                 });
             }
         }
-
+    },
+    
+    '/admin/export' : {
+        post : {
+            handler : function(req, res){
+                var body = JSON.parse(req.param('body')),
+                    name = body.name.replace(/"/, '\\"');
+                    
+                res.contentType('application/json');
+                res.header('content-disposition', 'attachment; filename="'+name+'.json"');
+                return res.send( body );
+            }
+        }
     }
 };
 

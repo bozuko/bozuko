@@ -106,6 +106,9 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '<tpl if="this.canCancel(values)">',
                             '<li><a href="javascript:;" class="cancel">Cancel</a></li>',
                         '</tpl>',
+                        '<tpl if="this.isAdmin()">',
+                            '<li><a href="javascript:;" class="export">Export</a></li>',
+                        '</tpl>',
                     '</ul>',
                 '</div>',
                 {

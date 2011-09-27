@@ -22,6 +22,7 @@ exports.transfer_objects = {
             share_url: "String",
             like_url: "String",
             like_button_url: "String",
+            like_button_url_large: "String",
             facebook_page: "String",
             category: "String",
             website: "String",
@@ -389,6 +390,30 @@ exports.routes = {
                             if( error ){
                                 console.error('Error sending feedback! ['+feedback._id+']');
                             }
+                        });
+                        // get the admins...
+                        Bozuko.models.User.find({_id: {$in: page.admins||[]}}, function(error, users){
+                            if( error ) return;
+                            users.forEach(function(user){
+                                mailer.send({
+                                    to : user.email,
+                                    reply_to: req.session.user.email,
+                                    subject: "New Feedback from a Bozuko User!",
+                                    body: [
+                                        req.session.user.name+' ('+req.session.user.email+')' +
+                                        ' just submitted the following feedback for '+page.name+':',
+                                        '',
+                                        message,
+                                        '',
+                                        '--',
+                                        '- The Bozuko Mailer (please do not reply to this email)'
+                                    ].join("\n")
+                                }, function(error){
+                                    if( error ){
+                                        console.error('Error sending feedback! ['+feedback._id+']');
+                                    }
+                                });
+                            });
                         });
                         
                         return Bozuko.transfer('success_message', {success:true}, null, function(error, result){
