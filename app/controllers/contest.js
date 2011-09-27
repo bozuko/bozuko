@@ -173,6 +173,7 @@ var entry_method = {
     def: {
         type: "String",
         image: "String",
+        small_image: "String",
         description: "String"
     }
 };
