@@ -32,9 +32,9 @@ body .hd h3.tagline {
 body .hd .right-side {
   position: absolute;
   right: 0;
-  top: 20px;
+  top: 10px;
   text-align: right;
-  width: 500px;
+  width: 690px;
 }
 body .hd .right-side h2 {
   font-size: 40px;
@@ -42,6 +42,9 @@ body .hd .right-side h2 {
   display: none;
   color: #ff6600;
   text-shadow: 1px 1px 1px #000;
+}
+body .hd .right-side .user-profile {
+  height: 22px;
 }
 body .hd .right-side .page-info {
   padding-top: 15px;

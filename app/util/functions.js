@@ -21,18 +21,26 @@ function filter(data){
     
     if( data && data.toJSON ) data = data.toJSON();
     
-    if( arguments.length > 1 && data){
-        var tmp={};
-        [].slice.call(arguments,1).forEach(function(field){
-            tmp[field] = data[field];
+    if( Array.isArray(data)){
+        var args = [];
+        if( arguments.length > 1 ) args = [].slice.call(arguments,1);
+        data.forEach(function(item, i){
+            var ar = args.slice(0);
+            ar.unshift(item);
+            data[i] = filter.apply(this, ar);
         });
-        data = tmp;
     }
 
-    if( Array.isArray(data)){
-        data.forEach(function(item){filter(item);});
-    }
     else if( data && 'object' === typeof data ){
+        
+        if( arguments.length > 1 && data){
+            var tmp={};
+            [].slice.call(arguments,1).forEach(function(field){
+                tmp[field] = data[field];
+            });
+            data = tmp;
+        }
+        
         Object.keys(data).forEach(function(key){
             if( ~key.indexOf('.') ){
                 delete data[key];

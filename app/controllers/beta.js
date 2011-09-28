@@ -99,6 +99,7 @@ exports.routes = {
                     res.locals.user = user;
                     res.locals.page = page;
                     
+                    
                     res.locals.scripts.unshift(
                         '/js/ext-4.0/lib/ext-all.js',
                         '/js/desktop/beta/app.js'
@@ -108,7 +109,13 @@ exports.routes = {
                         '/css/desktop/business/style.css?v2',
                         '/css/desktop/admin/app.css'
                     );
-                    return res.render('beta/index.jade');
+                    
+                    // get the user pages...
+                    return Bozuko.models.Page.find({_id:{$in:user.manages}}, {name:1,_id:1,image:1}, function(error, pages){
+                        if( error ) throw error;
+                        res.locals.user_pages = filter(pages,'_id', 'name','image');
+                        return res.render('beta/index.jade');
+                    });
                 });
             }
         }
