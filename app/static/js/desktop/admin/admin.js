@@ -20,13 +20,20 @@ Ext.application({
     ],
 
     launch: function() {
-
+        var me = this;
         // setup our application wide controller stuff
         this.control({
             'button[text=Logout]': {
                 click: this.logout
             }
         }, null, this);
+        
+        // prevent unintentional leaving of the page
+        window.onbeforeunload = function(){
+            return me.preventCloseWarning
+                ? false
+                : 'If you leave this page, any unsaved worked will be lost.'
+        }
 
     },
 

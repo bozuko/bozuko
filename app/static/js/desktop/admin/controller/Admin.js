@@ -216,23 +216,59 @@ Ext.define('Admin.controller.Admin' ,{
     },
     
     onContestPanelRender : function(panel){
-        var tbar = panel.down('[ref=contestreport-navbar]');
+        var me = this,
+            tbar = panel.down('[ref=contestreport-navbar]');
         
         // add an import button
         tbar.add('-', {
             xtype: 'filefield',
             buttonOnly: true,
+            autoWidth: true,
+            hideLabel: true,
             buttonConfig : {
+                ui: 'default-toolbar',
                 scale : 'medium',
                 text : 'Import',
                 icon: "/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-up-24.png"
             },
             listeners : {
-                change : function(){
+                change : function(field){
+                    // if this is not .json lets crap out
+                    var files = field.fileInputEl.dom.files;
+                    if( !files || !files[0] ) return;
+                    var file = files[0];
+                    if( !/\.json/i.test( file.name )) return;
+                    var reader = new FileReader();
+                    reader.onload = function(e){
+                        try{
+                            var data = Ext.decode(e.target.result);
+                            if( data ){
+                                data.page_id = null;
+                                data.state = 'draft';
+                                data.active = false;
+                                data._id = null;
+                                var record = panel
+                                    .store
+                                    .getProxy()
+                                    .getReader()
+                                    .readRecords({items:[data], total:1})
+                                    .records[0]
+                                    ;
+                                panel.store.add(record);
+                                me.application.controllers.getByKey('Bozuko.controller.Contests')
+                                    .openWithBuilder(record, field)
+                                    ;
+                            }
+                            
+                        }catch(er){
+                            console.log(er);
+                        }
+                    };
+                    reader.readAsText( file );
                     
                 },
                 render : function(field){
-                    field.inputEl.dom.accept = 'application/json';
+                    field.fileInputEl.dom.setAttribute('accept','application/json');
                 }
             }
         });
