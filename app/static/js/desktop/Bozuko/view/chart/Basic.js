@@ -282,7 +282,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                     callback();
                     if( !me.isVisible() ) return;
                     me.updateStats();
-                    if( ~Ext.Array.indexOf(['Entry','Share','New Users'],model()) ) me.loadStore();
+                    if( ~Ext.Array.indexOf(['Entry','Share','New Users','Unique Users'],model()) ) me.loadStore();
                 },
                 play : function(item, callback){
                     callback();
