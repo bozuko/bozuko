@@ -783,7 +783,7 @@ exports.routes = {
                 }
                 
                 var model = req.param('model') || 'Entry';
-                if( !~['Prize','Redeemed Prizes','Entry','Play','Share','Checkins','Likes'].indexOf(model) ) throw "Invalid model";
+                if( !~['Prize','Redeemed Prizes','Entry','Play','Share','Checkins','Likes','New Users','Prize Cost'].indexOf(model) ) throw "Invalid model";
                 
                 options.timezoneOffset = tzOffset;
                 options.query = query;
@@ -806,6 +806,25 @@ exports.routes = {
                     options.model = 'Share';
                     query.type = 'facebook';
                     query.type = 'checkin';
+                }
+                else if( model == 'New Users'){
+                    options.model = 'Entry';
+                    options.distinctField = 'user_id';
+                    options.distinctFilter = function(results, opts, selector, cb){
+                        selector.timestamp.$lt = selector.timestamp.$gte;
+                        delete selector.timestamp.$gte;
+                        selector.user_id = {$in: results};
+                        Bozuko.models.Entry.distinct('user_id', selector, function(error, old){
+                            if( error ) return cb(error);
+                            return cb(null, results.length - old.length);
+                        });
+                    };
+                }
+                else if( model == 'Prize Cost'){
+                    options.model = 'Prize';
+                    query.redeemed = true;
+                    options.timeField= 'redeemed_time';
+                    options.sumField = 'value';
                 }
                 
                 return Report.run( 'interval', options, function(error, results){

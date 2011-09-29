@@ -49,7 +49,9 @@ Ext.define('Bozuko.view.chart.Basic', {
                             {text:'Total Prize Wins', value:'Prize'},
                             {text:'Redeemed Prizes', value:'Redeemed Prizes'},
                             {text:'Facebook Likes', value:'Likes'},
-                            {text:'Check Ins', value:'Checkins'}
+                            {text:'Check Ins', value:'Checkins'},
+                            {text:'New Users', value:'New Users'},
+                            {text:'Prize Cost', value:'Prize Cost'}
                         ]
                     }),
                     listeners       :{
@@ -116,6 +118,15 @@ Ext.define('Bozuko.view.chart.Basic', {
                             'stroke-width': 1
                         }
                     },
+                    label:      {
+                        renderer    :function(value){
+                            if( me.modelField.getValue().match(/cost/i) ){
+                                return Ext.util.Format.usMoney(value);
+                            }
+                            var axis = me.chart.axes.get(0);
+                            return axis.roundToDecimal(value, axis.decimals);
+                        }
+                    },
                     minimum     :0
                 },{
                     type        :'Time',
@@ -134,7 +145,10 @@ Ext.define('Bozuko.view.chart.Basic', {
                         height: 50,
                         renderer: function(storeItem, item) {
                             this.setTitle(Ext.Date.format(storeItem.get('timestamp'),me.dateFormat));
-                            this.update( storeItem.get('count')+' '+me.modelField.getRawValue() );
+                            var count = me.modelField.getValue().match(/cost/i) ?
+                                Ext.util.Format.usMoney(storeItem.get('count')) :
+                                storeItem.get('count');
+                            this.update( count+' '+me.modelField.getRawValue() );
                         }
                     },
                     axis: 'left',
@@ -267,7 +281,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                     callback();
                     if( !me.isVisible() ) return;
                     me.updateStats();
-                    if( ~Ext.Array.indexOf(['Entry','Share'],model()) ) me.loadStore();
+                    if( ~Ext.Array.indexOf(['Entry','Share','New Users'],model()) ) me.loadStore();
                 },
                 play : function(item, callback){
                     callback();
@@ -285,7 +299,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                     callback();
                     if( !me.isVisible() ) return;
                     me.updateStats();
-                    if( ~Ext.Array.indexOf(['Redeemed Prizes', 'Share'], model()) ) me.loadStore();
+                    if( ~Ext.Array.indexOf(['Redeemed Prizes', 'Share', 'Prize Cost'], model()) ) me.loadStore();
                 }
             };
         return callbacks[name];
@@ -308,7 +322,13 @@ Ext.define('Bozuko.view.chart.Basic', {
         // add up everything...
         var total = String(me.chartStore.sum('count'));
         
-        me.down('[ref=chart-total]').update(me.addCommas(total)+' <span style="font-weight: normal;">Total</span>');
+        if( me.modelField.getValue().match(/cost/i)){
+            total = Ext.util.Format.usMoney(total);
+        }
+        else{
+            total = me.addCommas(total);
+        }
+        me.down('[ref=chart-total]').update(total+' <span style="font-weight: normal;">Total</span>');
     },
     
     loadStore : function(){
