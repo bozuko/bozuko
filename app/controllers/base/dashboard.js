@@ -783,48 +783,66 @@ exports.routes = {
                 }
                 
                 var model = req.param('model') || 'Entry';
-                if( !~['Prize','Redeemed Prizes','Entry','Play','Share','Checkins','Likes','New Users','Prize Cost'].indexOf(model) ) throw "Invalid model";
-                
                 options.timezoneOffset = tzOffset;
                 options.query = query;
                 options.model = model;
                 
-                if( model == 'Redeemed Prizes'){
-                    options.model = "Prize";
-                    query.redeemed = true;
-                    options.timeField= 'redeemed_time';
-                }
-                else if(model == 'Share'){
-                    options.sumField = 'visibility';
-                }
-                else if( model == 'Likes'){
-                    options.model = 'Share';
-                    query.service = 'facebook';
-                    query.type = 'like';
-                }
-                else if( model == 'Checkins'){
-                    options.model = 'Share';
-                    query.type = 'facebook';
-                    query.type = 'checkin';
-                }
-                else if( model == 'New Users'){
-                    options.model = 'Entry';
-                    options.distinctField = 'user_id';
-                    options.distinctFilter = function(results, opts, selector, cb){
-                        selector.timestamp.$lt = selector.timestamp.$gte;
-                        delete selector.timestamp.$gte;
-                        selector.user_id = {$in: results};
-                        Bozuko.models.Entry.distinct('user_id', selector, function(error, old){
-                            if( error ) return cb(error);
-                            return cb(null, results.length - old.length);
-                        });
-                    };
-                }
-                else if( model == 'Prize Cost'){
-                    options.model = 'Prize';
-                    query.redeemed = true;
-                    options.timeField= 'redeemed_time';
-                    options.sumField = 'value';
+                switch(model){
+                    case 'Redeemed Prizes':
+                        options.model = "Prize";
+                        query.redeemed = true;
+                        options.timeField= 'redeemed_time';
+                        break;
+                    
+                    case 'Share':
+                        options.sumField = 'visibility';
+                        break;
+                    
+                    case 'Likes':
+                        options.model = 'Share';
+                        query.service = 'facebook';
+                        query.type = 'like';
+                        break;
+                    
+                    case 'Checkins':
+                        options.model = 'Share';
+                        query.type = 'facebook';
+                        query.type = 'checkin';
+                        break;
+                    
+                    case 'New Users':
+                        options.model = 'Entry';
+                        options.distinctField = 'user_id';
+                        options.distinctFilter = function(results, opts, selector, cb){
+                            selector.timestamp.$lt = selector.timestamp.$gte;
+                            delete selector.timestamp.$gte;
+                            selector.user_id = {$in: results};
+                            Bozuko.models.Entry.distinct('user_id', selector, function(error, old){
+                                if( error ) return cb(error);
+                                return cb(null, results.length - old.length);
+                            });
+                        };
+                        break;
+                    
+                    case 'Unique Users':
+                        options.model = 'Entry';
+                        options.distinctField = 'user_id';
+                        break;
+                    
+                    case 'Prize Cost':
+                        options.model = 'Prize';
+                        query.redeemed = true;
+                        options.timeField= 'redeemed_time';
+                        options.sumField = 'value';
+                        break;
+                    
+                    case 'Prize':
+                    case 'Entry':
+                    case 'Play':
+                        break;
+                    
+                    default:
+                        throw "Invalid model";
                 }
                 
                 return Report.run( 'interval', options, function(error, results){
