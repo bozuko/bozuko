@@ -29,7 +29,7 @@ var Page = module.exports = new Schema({
     twitter_id          :{type:String},
     announcement        :{type:String},
     security_img        :{type:String},
-    featured            :{type:Boolean},
+    featured            :{type:Schema.Types.Mixed, index: true},
     test                :{type:Boolean, index: true, default: false},
     active              :{type:Boolean, default: false, index: true},
     location            :{
@@ -561,65 +561,79 @@ Page.static('loadPagesContests', function(pages, user, callback){
     });
 });
 
-/**
- * Need to add our algorithm for finding featured items (by distance? how far is too far?)
- */
-Page.static('getFeaturedPages', function(num, options, callback){
+Page.static('geoNear', function(opts, callback) {
+    var cmd = {geoNear: 'pages'};
+    merge(cmd, opts);
+    Bozuko.db.conn().connection.db.executeDbCommand(cmd, function(err, result) {
+        if (err) return callback(err);
+        var doc = result.documents[0];
+        if (!doc.ok) return callback(doc);
 
+        var pages = [];
+        async.forEach(doc.results, function(page, cb) {
+            var model = new Bozuko.models.Page();
+            model.init(page.obj, function(err) {
+                if (err) return cb(err);
+                model.distance = page.dis;
+                pages.push(model);
+                return cb(null);
+            });
+        }, function(err) {
+            callback(null, pages);
+        });        
+    });
+});
+
+function filterFeaturedByDistance(pages) {
+    var featured = [];
+    pages.forEach(function(page) {
+        var distance = Geo.earth.radius.mi * page.distance;
+        if (distance <= page.featured.max_distance) {
+            featured.push(page);
+        }
+    });
+    return featured;
+}
+
+function chooseRandomFeaturedPages(num, featured) {
+    var selected = [];
+    if (num >= featured.length) return featured;
+    for (var i = 0; i < num; i++) {
+        index = rand(0, featured.length-1);
+        selected = selected.concat(featured.splice(index, 1));
+    }
+    return selected;
+}
+
+Page.static('getFeaturedPages', function(num, ll, callback){
     if( !num ) return callback( null, [] );
 
-    var find = {
-        selector: {
-            featured: true
-        },
-        options: {
-            sort: { name: 1 }
+    var distance =  Bozuko.config.search.featuredRadius/ Geo.earth.radius.mi;
+
+    return Bozuko.models.Page.find(
+        // Find nationally featured places
+        {$or : [
+             {'featured.is_featured':true, 'featured.max_distance': -1},
+             {'featured': true}
+         ]},
+        {results: 0, plays: 0}, 
+        function(error, nationalPages){
+            if( error ) return callback( error );
+
+            // Find featured places within max distance of ll
+            Bozuko.models.Page.geoNear({
+                near: ll, 
+                maxDistance: distance, 
+                spherical:true,
+                query: {'featured.is_featured':true}
+            }, function(err, pages) {
+                var localPages = filterFeaturedByDistance(pages);
+                var featured = localPages.concat(nationalPages);
+                var selected = chooseRandomFeaturedPages(num, featured);
+                callback(err, selected);
+            });
         }
-    };
-
-
-    return Bozuko.models.Page.count(find.selector, function(error, count){
-        if( error ) return callback( error );
-        if( !count ) return callback( null, [] );
-
-        var featured = [], pool=[], offsets=[], i;
-
-        for(i=0; i<count; i++) pool.push(i);
-
-        for(i=0; i<num && pool.length; i++){
-            var index = rand(0, pool.length-1);
-            offsets.push(
-                pool.splice(index, 1)[0]
-            );
-        }
-
-        return async.forEach(
-
-            offsets,
-
-            function iterator(offset, callback){
-                var opts = merge({}, find);
-                opts = merge(opts, {
-                    options: {
-                        sort: {'_id':1},
-                        limit: 1,
-                        skip: offset
-                    }
-                });
-
-                return Bozuko.models.Page.find(opts.selector, {results: 0, plays: 0}, opts.options, function(error, page){
-                    if( error ) return callback( error );
-                    if( page && page.length) featured.push(page[0]);
-                    return callback(null);
-                });
-            },
-
-            function finish(error){
-                if( error ) return callback(error);
-                return callback(null, featured);
-            }
-        );
-    });
+    );    
 });
 
 /**
@@ -748,7 +762,7 @@ Page.static('search', function(options, callback){
         callback( null, pages );
     }
 
-    return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.cfg('search.featuredResults',1) : 0, options, function(error, featured){
+    return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.cfg('search.featuredResults',1) : 0, options.ll, function(error, featured){
 
         if( error ) return callback(error);
         var featured_ids = [];
