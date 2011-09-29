@@ -152,6 +152,32 @@ CountsReport.prototype.run = function run(callback){
                 });
             }
             
+            else if( opts.distinctField ){
+                var fields = {};
+                fields[opts.sumField] = 1;
+                Bozuko.models[model].collection.distinct(opts.distinctField, selector, function(error, results){
+                    if( error ) return cb(error);
+                    var count = results.length;
+                    if( opts.distinctFilter ){
+                        return opts.distinctFilter(results, opts, selector, function(error, count){
+                            if( error ) return cb(error);
+                            reports.push({
+                                _id: interval[0].getTime(),
+                                timestamp: stamp,
+                                count: count
+                            });
+                            return cb();
+                        });
+                    }
+                    reports.push({
+                        _id: interval[0].getTime(),
+                        timestamp: stamp,
+                        count: count
+                    });
+                    return cb();
+                });
+            }
+            
             else Bozuko.models[model].count(selector, function(error, count){
                 if( error ) return cb(error);
                 reports.push({

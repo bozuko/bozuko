@@ -57,7 +57,6 @@ Contest.COMPLETE = 'complete';
 Contest.DRAFT = 'draft';
 Contest.CANCELLED = 'cancelled';
 
-Contest.plugin( Native );
 Contest.plugin( JsonPlugin );
 
 var no_matching_re = /no\smatching\sobject/i;
@@ -431,6 +430,7 @@ Contest.method('enter', function(entry, callback){
     entry.setContest(this);
     entry.configure(cfg);
     return entry.process( function(err, entry) {
+        if( !err ) self.schema.emit('entry', entry);
         callback(err, entry);
     });
 });
@@ -657,7 +657,15 @@ Contest.static('audit', function(callback) {
 });
 
 Contest.method('play', function(user, callback){
-    this.startPlay(user, callback);
+    var self = this;
+    this.startPlay(user, function(error, result){
+        if( !error ){
+            self.play_cursor = result.contest.play_cursor;
+            // ensure that everything is matched up here....
+            self.schema.emit('play', self, result);
+        }
+        return callback(error, result);
+    });
 });
 
 Contest.method('startPlay', function(user, callback) {
