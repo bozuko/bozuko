@@ -20,7 +20,8 @@ exports['add pages'] = function(test) {
         ['out_of_range', 25, [-72.3, 42.375]],
         ['in_range', -1, [-74, 50]], 
         false, 
-        ['in_range', 50, [ -71.7, 42 ]]
+        ['in_range', 50, [ -71.7, 42 ]],
+        true
     ];
     var pages = [];
     var nf_count = 0;
@@ -29,6 +30,9 @@ exports['add pages'] = function(test) {
         if (details === false) {
             page.name = 'not featured '+nf_count;
             nf_count++;
+        } else if (details === true) {
+            page.name = 'featured in_range - true';
+            page.featured = true;
         } else {
             page.name = 'featured '+details[0]+" "+details[1];
             page.featured = {
@@ -47,9 +51,10 @@ exports['add pages'] = function(test) {
 exports['getAllFeaturedPages'] = function(test) {
     Bozuko.models.Page.getFeaturedPages(3, user_loc, function(err, pages) {
         test.ok(!err);
-        test.equal(pages.length, 2);
+        test.equal(pages.length, 3);
         test.notEqual(pages[0].name.indexOf("featured in_range"), -1);
         test.notEqual(pages[1].name.indexOf("featured in_range"), -1);
+        test.notEqual(pages[2].name.indexOf("featured in_range"), -1);
         test.done();
     });
 };
@@ -58,7 +63,6 @@ exports['get one featured page'] = function(test) {
     Bozuko.models.Page.getFeaturedPages(1, user_loc, function(err, pages) {
         test.ok(!err);
         test.equal(pages.length, 1);
-        console.log("pages = "+inspect(pages));
         test.notEqual(pages[0].name.indexOf("featured in_range"), -1);
         test.done();
     });
