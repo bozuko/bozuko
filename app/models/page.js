@@ -612,7 +612,10 @@ Page.static('getFeaturedPages', function(num, ll, callback){
 
     return Bozuko.models.Page.find(
         // Find nationally featured places
-        {'featured.is_featured':true, 'featured.max_distance': -1}, 
+        {$or : [
+             {'featured.is_featured':true, 'featured.max_distance': -1},
+             {'featured': true}
+         ]},
         {results: 0, plays: 0}, 
         function(error, nationalPages){
             if( error ) return callback( error );
