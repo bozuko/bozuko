@@ -1,6 +1,7 @@
 var Report = Bozuko.require('core/report'),
     inherits = require('util').inherits,
     inspect = require('util').inspect,
+    crypto = require('crypto'),
     async = require('async'),
     merge = Bozuko.require('util/functions').merge,
     DateUtil = Bozuko.require('util/date')
@@ -134,59 +135,129 @@ CountsReport.prototype.run = function run(callback){
             
             selector = merge( selector, query );
             
-            if( opts.sumField ){
-                var fields = {};
-                fields[opts.sumField] = 1;
-                Bozuko.models[model].find(selector, fields, function(error, results){
-                    if( error ) return cb(error);
-                    var count = 0;
-                    results.forEach(function(result){
-                        count += result[opts.sumField];
-                    });
-                    reports.push({
-                        _id: interval[0].getTime(),
-                        timestamp: stamp,
-                        count: count
-                    });
-                    return cb();
+            var end = +selector[timeField].$lt-tzOffset-1000;
+            var useCache = false, cacheKey='', cacheValue;
+            if( end < Date.now() ){
+                
+                var filter = opts.distinctFilter ? opts.distinctFilter.toString() : false;
+                if( filter ) filter = crypto.createHash('sha1').update(filter).digest('hex');
+                
+                cacheKey = JSON.stringify({
+                    opts:opts, selector:selector, distinctFilter: filter
                 });
+                
+                // we can cache this...
+                useCache = true;
+                // check cache...
             }
             
-            else if( opts.distinctField ){
-                var fields = {};
-                fields[opts.sumField] = 1;
-                Bozuko.models[model].collection.distinct(opts.distinctField, selector, function(error, results){
-                    if( error ) return cb(error);
-                    var count = results.length;
-                    if( opts.distinctFilter ){
-                        return opts.distinctFilter(results, opts, selector, function(error, count){
+            async.series([
+                function try_cache(cb){
+                    if( !useCache ) return cb();
+                    return Bozuko.models.Cache.findById(cacheKey, function(error, result){
+                        if( error ) return cb(error);
+                        if( result ) cacheValue = result.value;
+                        return cb(null);
+                    });
+                },
+                function no_cache(cb){
+                    if( cacheValue !== undefined && cacheValue._id ){
+                        reports.push(cacheValue);
+                        return cb();
+                    }
+                    if( opts.sumField ){
+                        var fields = {};
+                        fields[opts.sumField] = 1;
+                        return Bozuko.models[model].find(selector, fields, function(error, results){
                             if( error ) return cb(error);
-                            reports.push({
+                            var count = 0;
+                            results.forEach(function(result){
+                                count += result[opts.sumField];
+                            });
+                            var value = {
                                 _id: interval[0].getTime(),
                                 timestamp: stamp,
                                 count: count
+                            };
+                            var cache = new Bozuko.models.Cache({
+                                _id: cacheKey,
+                                value: value
+                            });
+                            reports.push(value);
+                            return cache.save(function(error){
+                                return cb();
+                            });
+                            
+                        });
+                    }
+                    
+                    else if( opts.distinctField ){
+                        var fields = {};
+                        fields[opts.sumField] = 1;
+                        return Bozuko.models[model].collection.distinct(opts.distinctField, selector, function(error, results){
+                            if( error ) return cb(error);
+                            var count = results.length;
+                            if( opts.distinctFilter ){
+                                return opts.distinctFilter(results, opts, selector, function(error, count){
+                                    if( error ) return cb(error);
+                                    var value = {
+                                        _id: interval[0].getTime(),
+                                        timestamp: stamp,
+                                        count: count
+                                    };
+                                    reports.push(value);
+                                    var cache = new Bozuko.models.Cache({
+                                        _id: cacheKey,
+                                        value: value
+                                    });
+                                    reports.push(value);
+                                    return cache.save(function(error){
+                                        return cb();
+                                    });
+                                });
+                            }
+                            var value = {
+                                _id: interval[0].getTime(),
+                                timestamp: stamp,
+                                count: count
+                            };
+                            reports.push(value);
+                            var cache = new Bozuko.models.Cache({
+                                _id: cacheKey,
+                                value: value
+                            });
+                            reports.push(value);
+                            return cache.save(function(error){
+                                return cb();
                             });
                             return cb();
                         });
                     }
-                    reports.push({
-                        _id: interval[0].getTime(),
-                        timestamp: stamp,
-                        count: count
+                    
+                    else return Bozuko.models[model].count(selector, function(error, count){
+                        if( error ) return cb(error);
+                        var value = {
+                            _id: interval[0].getTime(),
+                            timestamp: stamp,
+                            count: count
+                        };
+                        reports.push(value);
+                        var cache = new Bozuko.models.Cache({
+                            _id: cacheKey,
+                            value: value
+                        });
+                        reports.push(value);
+                        return cache.save(function(error){
+                            return cb();
+                        });
                     });
-                    return cb();
-                });
-            }
-            
-            else Bozuko.models[model].count(selector, function(error, count){
+                }
+            ], function(error){
                 if( error ) return cb(error);
-                reports.push({
-                    _id: interval[0].getTime(),
-                    timestamp: stamp,
-                    count: count
-                });
                 return cb();
             });
+            
+            
         },
         
         function complete(error){
