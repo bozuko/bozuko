@@ -146,6 +146,8 @@ CountsReport.prototype.run = function run(callback){
                     opts:opts, selector:selector, distinctFilter: filter
                 });
                 
+                cacheKey = new Buffer(cacheKey).toString('base64');
+                
                 // we can cache this...
                 useCache = true;
                 // check cache...
