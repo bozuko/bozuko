@@ -116,6 +116,25 @@ CountsReport.prototype.run = function run(callback){
     }
     
     var reports = [];
+    var addReportRecord = function(stamp, count, useCache, cacheKey, cb){
+        var value = {
+            _id: stamp,
+            timestamp: stamp,
+            count: count
+        };
+        reports.push(value);
+        
+        if( !useCache ) return cb();
+        
+        var cache = new Bozuko.models.Cache({
+            _id: cacheKey,
+            value: value
+        });
+        
+        return cache.save(function(error){
+            return cb();
+        });
+    };
     
     return async.forEach( intervals,
         
@@ -129,7 +148,7 @@ CountsReport.prototype.run = function run(callback){
                 $lt         :interval[1]
             };
             
-            if( unit == 'Month' ){
+            if( unit == 'Month' || unit == 'Year'){
                 stamp = new Date(Date.UTC(stamp.getUTCFullYear(), stamp.getUTCMonth(), stamp.getUTCDate()+10));
             }
             
@@ -176,20 +195,7 @@ CountsReport.prototype.run = function run(callback){
                             results.forEach(function(result){
                                 count += result[opts.sumField];
                             });
-                            var value = {
-                                _id: interval[0].getTime(),
-                                timestamp: stamp,
-                                count: count
-                            };
-                            var cache = new Bozuko.models.Cache({
-                                _id: cacheKey,
-                                value: value
-                            });
-                            reports.push(value);
-                            return cache.save(function(error){
-                                return cb();
-                            });
-                            
+                            return addReportRecord(stamp, count, useCache, cacheKey, cb);
                         });
                     }
                     
@@ -202,56 +208,16 @@ CountsReport.prototype.run = function run(callback){
                             if( opts.distinctFilter ){
                                 return opts.distinctFilter(results, opts, selector, function(error, count){
                                     if( error ) return cb(error);
-                                    var value = {
-                                        _id: interval[0].getTime(),
-                                        timestamp: stamp,
-                                        count: count
-                                    };
-                                    reports.push(value);
-                                    var cache = new Bozuko.models.Cache({
-                                        _id: cacheKey,
-                                        value: value
-                                    });
-                                    reports.push(value);
-                                    return cache.save(function(error){
-                                        return cb();
-                                    });
+                                    return addReportRecord(stamp, count, useCache, cacheKey, cb);
                                 });
                             }
-                            var value = {
-                                _id: interval[0].getTime(),
-                                timestamp: stamp,
-                                count: count
-                            };
-                            reports.push(value);
-                            var cache = new Bozuko.models.Cache({
-                                _id: cacheKey,
-                                value: value
-                            });
-                            reports.push(value);
-                            return cache.save(function(error){
-                                return cb();
-                            });
-                            return cb();
+                            return addReportRecord(stamp, count, useCache, cacheKey, cb);
                         });
                     }
                     
                     else return Bozuko.models[model].count(selector, function(error, count){
                         if( error ) return cb(error);
-                        var value = {
-                            _id: interval[0].getTime(),
-                            timestamp: stamp,
-                            count: count
-                        };
-                        reports.push(value);
-                        var cache = new Bozuko.models.Cache({
-                            _id: cacheKey,
-                            value: value
-                        });
-                        reports.push(value);
-                        return cache.save(function(error){
-                            return cb();
-                        });
+                        return addReportRecord(stamp, count, useCache, cacheKey, cb);
                     });
                 }
             ], function(error){

@@ -1,0 +1,33 @@
+.line
+  .unit.size3of4
+    div(style="padding-right: 20px;")
+      h1 Create an Account
+      
+      - if( places && places.length )
+        p Select one of your pages below to create your Bozuko Account
+        form.create-account(action="?",method="post")
+          ul
+            - each place in places
+              li
+                label
+                  input(type="radio",name="place_id",value=place.id)
+                  img(src=place.image.replace(/large/,'square'),title=place.name,alt=place.name)
+                  span.info
+                    span.title!= place.name
+                    span.address
+                      span.street!= place.location.street+' '
+                      span.city!= place.location.city+', '+place.location.state
+          
+          input.medium-button.site-button-disabled(disabled=true,type="submit",value="Create Account &raquo;",)
+      - else
+        - if( user_pages && user_pages.length )
+          p You have no more places to add! Launch one of your existing dashboards from the right column.
+          p Note to Pin-Bo: I am still working on this page.
+  
+  .unit.size1of4.lastUnit
+    - if( user_pages)
+      h3 Your Accounts
+      ul
+        - each page in user_pages
+          li
+            a(href="/beta/page/"+page._id)!= page.name

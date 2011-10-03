@@ -1061,6 +1061,13 @@ exports.routes = {
                     });
                 })
             }
+        },
+        
+        del : {
+            handler : function(req, res){
+                // need logic here
+                res.send("TODO!");
+            }
         }
     },
     

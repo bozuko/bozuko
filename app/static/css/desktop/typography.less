@@ -88,7 +88,7 @@ em {
     font-style: italic;
 }
 
-.big-button {
+.site-button {
     cursor: pointer;
     display: inline-block;
     .transition(none);
@@ -96,34 +96,40 @@ em {
     border: 1px solid @dark_color;
     .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
     color: #fff;
-    padding: 8px 14px;
-    font-size: 20px;
     font-family: ArvoRegular;
     text-decoration: none;
+    
+    &:hover, &:active{
+        color: #fff;
+        .background_gradient(@brand_color, @dark_color);
+    }
 }
 
-.big-button:hover{
-    color: #fff;
-    .background_gradient(@brand_color, @dark_color);
-}
-
-.big-button:active{
-    color: #fff;
-    .background_gradient(@dark_color, @brand_color);
-}
-
-
-.big-button-disabled {
+body .site-button-disabled {
     .opacity(40);
     cursor: default;
+    
+    &:hover, &:active {
+        .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
+    }
 }
 
-.big-button-disabled:hover{
-    .background_gradient(@brand_color, @dark_color);
+.big-button {
+    .site-button;
+    padding: 7px 12px;
+    font-size: 17px;
 }
 
-.big-button-disabled:active{
-    .background_gradient(@brand_color, @dark_color);
+.medium-button {
+    .site-button;
+    padding: 5px 10px;
+    font-size: 15px;
+}
+
+.small-button {
+    .site-button;
+    padding: 4px 8px;
+    font-size: 12px;
 }
 
 .field-wrap {
@@ -200,3 +206,4 @@ ul.errors {
         padding: 0;
     }
 }
+.clear{ display: block; font-size:0; line-height: 0; height: 0; overflow: hidden; clear: both; }

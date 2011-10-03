@@ -246,6 +246,8 @@ Ext.define('Admin.controller.Admin' ,{
                                 data.page_id = null;
                                 data.state = 'draft';
                                 data.active = false;
+                                data.wins = 0;
+                                data.redeemed = 0;
                                 data._id = null;
                                 var record = panel
                                     .store

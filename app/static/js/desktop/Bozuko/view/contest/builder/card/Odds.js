@@ -90,7 +90,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                         autoEl              :{
                             tag                 :'a',
                             cls                 :'switcher',
-                            href                :'javascript:;',
+                            href                :'/',
                             style               :{
                                 position            :'absolute',
                                 right               :'0px',
@@ -220,7 +220,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
     initSwitcher : function(cmp){
         var me = this;
         cmp.update(me.mode=='odds'?'Switch to<br />Total Entry Mode':'Switch to<br />Average Odds Mode')
-        cmp.getEl().on('click', function(){
+        cmp.getEl().on('click', function(e){
+            e.preventDefault();
             me.switchMode();
         });
     },

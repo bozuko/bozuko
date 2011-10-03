@@ -60,6 +60,12 @@ Ext.Loader.require(['Bozuko.lib.Overrides','Bozuko.lib.Router'], function(){
                                 });
                             });
                             
+                            menuItems.push('-');
+                            menuItems.push({
+                                text            :'New Account',
+                                _id             :'new-account',
+                                icon            :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-plus-16.png'
+                            })
                             
                             var changeEl = Ext.fly(pi).createChild({
                                 tag         :'div',
@@ -68,12 +74,19 @@ Ext.Loader.require(['Bozuko.lib.Overrides','Bozuko.lib.Router'], function(){
                             
                             Ext.create('Ext.button.Button', {
                                 renderTo        :changeEl,
-                                text            :'Change Page',
+                                text            :'Change Account',
                                 menuAlign       :'tr-br',
                                 menu            :{
                                     items           :menuItems,
                                     listeners       :{
                                         click           :function(menu,item){
+                                            
+                                            if( item._id == 'new-account'){
+                                                me.preventCloseWarning = true;
+                                                window.location = '/beta/create-account';
+                                                return;
+                                            }
+                                            
                                             me.preventCloseWarning = true;
                                             window.location = '/beta/page/'+item._id;
                                         },
@@ -85,12 +98,14 @@ Ext.Loader.require(['Bozuko.lib.Overrides','Bozuko.lib.Router'], function(){
                                     }
                                 }
                             });
+                            
+                            
                         }
                         
                         Ext.fly('beta')
                             .removeCls('beta-loading')
                             .update('');
-                            
+                        
                         var page = Ext.DomQuery.selectNode('.page'),
                             hd = Ext.DomQuery.selectNode('.hd'),
                             ft = Ext.DomQuery.selectNode('.ft'),
@@ -98,10 +113,18 @@ Ext.Loader.require(['Bozuko.lib.Overrides','Bozuko.lib.Router'], function(){
                             ;
                             
                         Ext.fly(ft).remove();
+                        
                         this.view = Ext.create('Bozuko.view.page.Panel', {
                             renderTo: 'beta',
                             page: record
                         });
+                        Ext.fly( Ext.DomQuery.selectNode('.logo a') )
+                            .on('click', function(e){
+                                e.preventDefault();
+                                var btn = me.view.down('button[group=page]');
+                                me.controllers.getByKey('Bozuko.controller.Pages').changePage(btn);
+                            });
+                        ;
                         
                         record.on('save', function(){
                             me.titleNode.update( record.get('name') );
@@ -115,10 +138,10 @@ Ext.Loader.require(['Bozuko.lib.Overrides','Bozuko.lib.Router'], function(){
                         window.onbeforeunload = function(e){
                             if( !me.preventCloseWarning ){
                                 var msg = 'If you leave this page, any unsaved worked will be lost.';
-                                e.returnValue = msg;
+                                if( e ) e.returnValue = msg;
                                 return msg;
                             }
-                        }
+                        };
                         
                         Ext.fly(copyright).down('.agreement').on('click', function(e, el){
                             e.stopEvent();

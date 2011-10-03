@@ -27,7 +27,7 @@ html(
       .hd
         .page-width
           h1.logo
-            a(href='javascript:;', title=locals.home_title||"Bozuko - Go to Home Page") bozuko
+            a(href='/beta', title=locals.home_title||"Bozuko - Go to Home Page") bozuko
           
           h3.tagline beta
           
@@ -37,7 +37,7 @@ html(
             
             - else
               .user-profile Logged in as #{user.name}, 
-                a.logout(onclick="beta_logout();",href="/beta/logout") Logout
+                a.logout(onclick="return beta_logout(this);",href="/beta/logout") Logout
                 
               -if( locals.page )
                 .page-info
@@ -133,9 +133,10 @@ html(
       });
       function beta_logout(link){
         // attach facebook logout to logout button
-        FB.logout(function(){
-          window.location = link.href;
+        if( FB.getSession() ) FB.logout(function(){
+          window.location.href = link.href;
         });
+        else window.location.href = link.href;
         return false;
       }
       // wait till loade      

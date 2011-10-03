@@ -82,7 +82,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                             {text:'Last Month', value:'week-4'},
                             {text:'Last 6 Months', value:'month-6'},
                             {text:'Last Year', value: 'month-12'},
-                            {text:'Last 5 Years', value: 'year-5'},
+                            {text:'Last 5 Years', value: 'year-5'}
                         ]
                     }),
                     
@@ -329,7 +329,7 @@ Ext.define('Bozuko.view.chart.Basic', {
         else{
             total = me.addCommas(total);
         }
-        me.down('[ref=chart-total]').update(total+' <span style="font-weight: normal;">Total</span>');
+        me.down('[ref=chart-total]').update(total+' <span style="font-weight: normal;">in this time period</span>');
     },
     
     loadStore : function(){
