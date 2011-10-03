@@ -28,6 +28,7 @@ var User = module.exports = new Schema({
     favorites           :[ObjectId],
     last_internal_update:{type:Date},
     can_manage_pages    :{type:Boolean},
+    last_viewed_page    :{type:ObjectId},
     manages             :[ObjectId]
 }, {safe: {w:2, wtimeout: 5000}});
 

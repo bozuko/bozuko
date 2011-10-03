@@ -99,6 +99,8 @@ exports.routes = {
                     res.locals.user = user;
                     res.locals.page = page;
                     
+                    user.last_viewed_page = page._id;
+                    user.save();
                     
                     res.locals.scripts.unshift(
                         '/js/ext-4.0/lib/ext-all.js',
@@ -147,7 +149,7 @@ exports.routes = {
                 
                 if( !user ) throw Bozuko.error('bozuko/auth');
                 if( !page_id ){
-                    return res.redirect('/beta/agreement');
+                    return res.redirect('/beta/create-account');
                 }
                 
                 return Bozuko.models.Page.findById( page_id, function(error, page){
@@ -161,6 +163,101 @@ exports.routes = {
                     }
                     return res.redirect( redirect_url );
                 });
+            }
+        }
+    },
+    
+    '/beta/create-account' : {
+        
+        access : 'user',
+        
+        locals : {
+            head_scripts: [
+                'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
+                '/js/desktop/beta/create-account.js'
+            ]
+        },
+        
+        get : {
+            handler : function(req, res) {
+                var user = req.session.user;
+                // lets get this dudes pages.
+                return Bozuko.service('facebook').get_user_pages(user, function(error, facebook_pages){
+                    
+                    if( error ) throw error;
+                    
+                    // lets get this dudes currently managed pages in Bozuko
+                    return Bozuko.models.Page.find({_id:{$in:user.manages||[]}}, function(error, user_pages){
+                        if( error ) throw error;
+                        
+                        var fids = [];
+                        user_pages.forEach(function(page){
+                            var fb = page.service('facebook');
+                            if( fb ) fids.push(fb.sid);
+                        });
+                        
+                        // filter out non-place pages...
+                        var places = facebook_pages.filter(function(page){
+                            if( page.location.lat === 0 && page.location.lng === 0 ) return false;
+                            if( ~fids.indexOf(page.id) ) return false;
+                            return true;
+                        });
+                        
+                        res.locals.places = places;
+                        res.locals.user_pages = user_pages;
+                        res.locals.facebook_pages_count = facebook_pages.length;
+                        
+                        return res.render('/beta/create-account');
+                    
+                    });
+                });
+            }
+        },
+        
+        post : {
+            handler : function(req, res){
+                // get the place_id
+                var user = req.session.user,
+                    place_id = req.param('place_id');
+                    
+                if( !place_id ) throw "No Place ID passed";
+                
+                // get the place
+                // lets get this dudes pages.
+                return Bozuko.service('facebook').get_user_pages(user, function(error, facebook_pages){
+                    if( error ) throw error;
+                    
+                    // make sure that this guy is indeed a facebook admin...
+                    var facebook_page = null;
+                    for(var i=0; i<facebook_pages.length && !facebook_page; i++){
+                        if( facebook_pages[i].id == place_id ){
+                            facebook_page = facebook_pages[i];
+                        }
+                    }
+                    if( !facebook_page ) throw new Error("Not an admin...");
+                    
+                    // lets get this dudes currently managed pages in Bozuko
+                    return Bozuko.models.Page.findByService('facebook', facebook_page.id, function(error, page){
+                        if( error ) throw error;
+                        
+                        var emptyCb = function(x,cb){cb(null, page);};
+                        
+                        return (page ? emptyCb : Bozuko.models.Page.createFromServiceObject )(facebook_page, function(error, page){
+                            if( error ) throw error;
+                            
+                            // okay, added..
+                            return page.addAdmin(user, function(error){
+                                if( error ) throw error;
+                                // added as an admin... cool beans...
+                                
+                                return res.redirect('/beta/page/'+page.id);
+                            });
+                            
+                        });
+                    
+                    });
+                });
+                
             }
         }
     },
@@ -196,7 +293,12 @@ exports.routes = {
                     return Bozuko.models.Page.findOne(selector,function(error, page){
                         if( error ) throw error;
                         if( !page ){
+                            
+                            // okay, now we are left
+                            
                             return res.render('/beta/no-page');
+                            
+                            
                         }
                         if( page.beta_agreement.signed ){
                             req.session.page_id = page.id;

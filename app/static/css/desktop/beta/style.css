@@ -352,3 +352,75 @@ body .hd .right-side .page-info h3 {
   list-style: none;
   margin: 0;
 }
+.create-account {
+  padding-bottom: 20px;
+}
+.create-account ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+.create-account ul li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.create-account ul li label {
+  zoom: 1;
+  _width: 1%;
+  background-color: #f2f2f2;
+  background-image: -moz-linear-gradient(top, #f2f2f2, #e2e2e2);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f2f2f2), color-stop(1, #e2e2e2)) !important;
+  padding: 8px;
+  position: relative;
+  cursor: pointer;
+  display: block;
+  overflow: hidden;
+  border: 2px solid #ccc;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-clip: padding-box;
+  margin: 0 0 10px;
+}
+.create-account ul li label input {
+  position: absolute;
+  top: 45%;
+  left: -99999em;
+}
+.create-account ul li label.hover {
+  background-color: #ffffff;
+  background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #f2f2f2)) !important;
+}
+.create-account ul li label.selected {
+  border-color: #00a24f;
+  background-color: #fff;
+  background-image: none !important;
+  -moz-box-shadow: 0 0 12px #999999;
+  -webkit-box-shadow: 0 0 12px #999999;
+  box-shadow: 0 0 12px #999999;
+}
+.create-account ul li label img {
+  float: left;
+  margin-right: 10px;
+}
+.create-account ul li label .info {
+  display: block;
+  margin-left: 10px;
+}
+.create-account ul li label .info .title {
+  font-weight: bold;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+.create-account ul li label .info .address {
+  display: block;
+  color: #999;
+}
+.create-account ul li label .info .address .street, .create-account ul li label .info .address .city {
+  display: block;
+}

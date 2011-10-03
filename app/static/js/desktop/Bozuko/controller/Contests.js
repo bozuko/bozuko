@@ -208,7 +208,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 var url = Bozuko.Router.route('/contests/'+record.getId()+'/publish');
                 Ext.Msg.confirm(
                     'Are you sure?',
-                    'Are you sure you want to publish this campaign?',
+                    'Once the campaign is published, you will not be able to modify it. Are you sure you want to publish this campaign?',
                     function(btn){
                         if( btn != 'ok' && btn != 'yes' ) return;
                         var cp = view.up('contestspanel');

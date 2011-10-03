@@ -45,7 +45,7 @@ Ext.define('Bozuko.view.contests.Panel', {
                     xtype           :'contestlist',
                     store           :me.store,
                     autoScroll      :true,
-                    actionButtons   :Bozuko.beta?['report','edit','copy']:null
+                    actionButtons   :Bozuko.beta?['report','edit','copy','delete']:null
                 }]
             }]    
         });
