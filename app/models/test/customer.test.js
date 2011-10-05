@@ -5,10 +5,23 @@ var async = require('async');
 
 var gateway = new BraintreeGateway().gateway;
 
-var customer, 
+var customer,
+    free_customer,
     cc_token,
-    page
+    page,
+    free_page,
+    oneday = 24*60*60*1000
 ;
+
+exports['remove all pages and customers'] = function(test) {
+    Bozuko.models.Page.remove({}, function(err) {
+        test.ok(!err);
+        Bozuko.models.Customer.remove({}, function(err) {
+            test.ok(!err);
+            test.done();
+        });
+    });
+};
 
 exports['create page'] = function(test) {
     page = new Bozuko.models.Page();
@@ -20,6 +33,21 @@ exports['create page'] = function(test) {
     });
 };
 
+exports['create free user page'] = function(test) {
+    free_page = new Bozuko.models.Page({
+        active: true,
+        name: 'some free page'
+    });
+    free_page.save(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+/*
+ * CUSTOMER TESTS
+ */
+
 exports['find customer - fail missing'] = function(test) {
     Bozuko.models.Customer.findByGatewayId(gateway, page._id, function(err, result) {
         test.ok(err);
@@ -29,6 +57,7 @@ exports['find customer - fail missing'] = function(test) {
 
 exports['create customer - success'] = function(test) {
     Bozuko.models.Customer.create(gateway, {
+        type: 'premium',
         page_id: page._id,
         firstName: 'Murray',
         lastName: 'Rothbard',
@@ -44,6 +73,7 @@ exports['create customer - success'] = function(test) {
 
 exports['create same customer - fail'] = function(test) {
     Bozuko.models.Customer.create(gateway, {
+        type: 'premium',
         page_id: page._id,
         firstName: 'Murray',
         lastName: 'Rothbard',
@@ -99,6 +129,141 @@ exports['find customer - retrieve credit card token'] = function(test) {
     });
 };
 
+/*
+ * FREE CUSTOMER TESTS
+ */
+
+exports['create free customer - success'] = function(test) {
+    Bozuko.models.Customer.create(gateway, {
+        type: 'free',
+        page_id: free_page.id,
+        firstName: 'Fred',
+        lastName: 'Bastiat'
+    }, function(err, newCustomer) {
+        test.ok(!err);
+        test.ok(newCustomer);
+        free_customer = newCustomer;
+        test.done();
+    });
+};
+
+exports['ensure free customer is not on braintree'] = function(test) {
+    gateway.customer.find(free_page.id, function(err, result) {
+        test.ok(err);
+        test.equal(err.type, 'notFoundError');
+        test.done();
+    });
+};
+
+/*
+ * REPLENISH CREDITS TESTS
+ */
+exports['replenish customers that were just created - no change'] = function(test) {
+    // Both the free and premium customers should have 500 credits as no transactions have
+    // occurred yet.
+    Bozuko.models.Customer.count({credits: 500}, function(err, count) {
+        test.ok(!err);
+        test.equal(count, 2);
+
+        Bozuko.models.Customer._replenishCredits(new Date(), function(err) {
+            test.ok(!err);
+            
+            // There should be no change in credits since the customer was created within the last 
+            // 24 hrs.
+            Bozuko.models.Customer.count({credits: 500}, function(err, count) {
+                test.ok(!err);
+                test.equal(count, 2);
+                test.done();
+            });
+        });
+    });
+};
+
+exports['replenish customers on next day - no change'] = function(test) {
+    var now = new Date();
+    var tomorrow = new Date(now.getTime() + oneday);
+    Bozuko.models.Customer._replenishCredits(tomorrow, function(err) {
+        test.ok(!err);
+        
+        Bozuko.models.Customer.count({credits: 500}, function(err, count) {
+            test.ok(!err);
+            test.equal(count, 2);
+            test.done();
+        });
+    });
+};
+
+function next_month() {
+    var date = new Date();
+    var year = date.getYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+
+    if (month === 11) {
+        month = 0;
+        year++;
+    } else {
+        month++;
+    }
+
+    return new Date(year, month, day);
+}
+
+exports['replenish customers next month - success'] = function(test) {
+    Bozuko.models.Customer._replenishCredits(next_month(), function(err) {
+        test.ok(!err);
+        
+        // The free customer can never go over 500 credits
+        Bozuko.models.Customer.count({credits: 500}, function(err, count) {
+            test.ok(!err);
+            test.equal(count, 1);
+
+            Bozuko.models.Customer.count({credits: 1000}, function(err, count) {
+                test.ok(!err);
+                test.equal(count, 1);
+                test.done();
+            });
+        });
+    });
+};
+
+
+/*
+ * TRANSACTION TESTS
+ */
+
+exports['create transaction - success'] = function(test) {
+    customer.createTransaction(gateway, {
+        amount: '49.99',
+        customerId: String(customer.page_id),
+        credits: 1000,
+        paymentMethodToken: cc_token
+    }, function(err, result) {
+        test.ok(!err);
+        test.ok(result.transaction.id);
+        test.equal(result.transaction.customFields.credits, '1000');
+        test.equal(result.transaction.amount, '49.99');
+        test.equal(result.transaction.customer.id, customer.page_id);
+        test.equal(result.transaction.status, 'submitted_for_settlement');
+
+        Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
+            console.log("cust = "+inspect(cust));
+            var transaction = cust.transactions[cust.transactions.length-1];
+            test.equal(cust.transactions.length, 1);
+            test.equal(result.transaction.orderId, transaction.id);
+            test.equal(result.transaction.id, transaction.txid);
+            test.equal(cust.credits, 2000);
+            test.done();
+        });
+    });
+};
+
+
+
+/*
+ * SUBSCRIPTION TESTS
+ */
+
 exports['create active subscription - success'] = function(test) {
     customer.createActiveSubscription(gateway, {
         paymentMethodToken: cc_token,
@@ -133,7 +298,6 @@ exports['cancel active subscription again - success'] = function(test) {
         test.done();
     });
 };
-
 
 exports['create another active subscription with sub on mongo but not braintree - success'] = function(test) {
     customer.subscriptions.push({active:true});
@@ -242,6 +406,10 @@ exports['update active subscription - fail'] = function(test) {
     });    
 };
 
+/*
+ * ADDRESS TESTS
+ */
+
 var addressId = null;
 exports['create address - success'] = function(test) {
     var opts = {
@@ -283,6 +451,10 @@ exports['update address - fail'] = function(test) {
         test.done();
     });
 };
+
+/*
+ * CLEANUP TESTS
+ */
 
 // Not sure we actually ever want to remove customers. We may just want to cancel subscriptions.
 // So just do it from the test for cleanup.
