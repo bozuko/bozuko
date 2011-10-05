@@ -1,7 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
-    oid = mongoose.Types.ObjectId,
+    Oid = mongoose.Types.ObjectId,
     inspect = require('util').inspect,
     BraintreeGateway = Bozuko.require('util/braintree'),
     async = require('async')
@@ -11,6 +11,7 @@ var oneday = 24*60*60*1000;
 var free_credits = 500;
 
 var Subscription = new Schema({
+    _id               :{type:ObjectId},
     active            :{type:Boolean, default: false}
 });
 
@@ -146,7 +147,7 @@ Customer.method('createTransaction', function(gateway, opts, callback) {
     // Need to generate our own _id for the embedded transaction as findAndModify doesn't seem
     // to create them for embedded docs and the driver returns different ones on update.
     var transaction = {
-        _id: new oid(),
+        _id: new Oid(),
         credits: opts.credits, 
         amount: opts.amount,
         timestamp: timestamp
@@ -229,53 +230,79 @@ Customer.static('findByGatewayId', function(gateway, id, callback) {
     gateway.customer.find(String(id), callback);
 });
 
-Customer.method('getActiveSubscription', function() {
-    for (var i = 0; i < this.subscriptions.length; i++) {
-        if (this.subscriptions[i].active) {
-            return this.subscriptions[i];
-        }
-    }
-    return null;
-});
-
-Customer.method('updateActiveSubscription', function(gateway, opts, callback) {
-    var active_sub = this.getActiveSubscription();
-    if (!active_sub) return callback(Bozuko.error('customer/no_active_subscriptions'));
-    var id = String(active_sub._id);
-    gateway.subscription.update(id, opts, function(err, result) {
+Customer.method('getActiveSubscription', function(callback) {
+    Bozuko.models.Customer.findOne({_id: this._id}, function(err, customer) {
         if (err) return callback(err);
-        if (!result.success) return callback(result);
-        callback(null, result);
+        for (var i = 0; i < customer.subscriptions.length; i++) {
+            if (customer.subscriptions[i].active) {
+                return callback(null, customer.subscriptions[i], customer);
+            }
+        }
+        return callback(null, null, customer);
     });
 });
 
-Customer.method('createActiveSubscription', function(gateway, opts, callback) {
-    var self = this;
-    var active_sub = this.getActiveSubscription();
-   
-    if (active_sub) {
-        return gateway.subscription.find(String(active_sub._id), function(err, result) {
-            if (err && err.type !== 'notFoundError') return callback(err);
-            if (result) return callback(Bozuko.error('customer/subscription_exists'));
-            // There is an active subscription in mongo, but not on braintree. Create it.
-            opts.id = String(active_sub._id);
-            gateway.subscription.create(opts, function(err, result) {
-                if (err) return callback(err);
-                if (!result.success) return callback(result);
-                return callback(null, result); 
-            });
-        });        
-    }
-
-    this.subscriptions.push({active: true});
-    this.save(function(err) {
-        if (err) return callback(err); 
-        opts.id = String(self.subscriptions[self.subscriptions.length - 1]._id);
-        gateway.subscription.create(opts, function(err, result) {
+Customer.method('updateActiveSubscription', function(gateway, opts, callback) {
+    this.getActiveSubscription(function(err, active_sub) {
+        if (err) return callback(err);
+        if (!active_sub) return callback(Bozuko.error('customer/no_active_subscriptions'));
+        var id = String(active_sub._id);
+        gateway.subscription.update(id, opts, function(err, result) {
             if (err) return callback(err);
             if (!result.success) return callback(result);
-            return callback(null, result); 
+            callback(null, result);
         });
+    });
+});
+
+Customer.method('rollbackActiveSubscription', function(err, id, callback) {
+    var self = this;
+    return Bozuko.models.Customer.collection.update(
+        {_id: this._id},
+        {$pull: {subscriptions : {_id: id}}},
+        {safe: safe}, function(error) {
+            if (error) {
+                // Nothing we can do with it. We're already returning the gateway error.
+                // Log it for now
+                console.error('failed to rollback subscription for customer '+
+                    self._id+", subscription id = "+id);
+            }
+            return callback(err);
+        }
+    );
+});
+
+Customer.method('createActiveSubscription', function(gateway, opts, callback) {
+    if (this.type === 'free') return callback(Bozuko.error('customer/free'));
+    var self = this;
+
+    this.getActiveSubscription(function(err, active_sub) {
+        if (active_sub) {
+            return gateway.subscription.find(String(active_sub._id), function(err, result) {
+                if (err && err.type !== 'notFoundError') return callback(err);
+                if (result) return callback(Bozuko.error('customer/subscription_exists'));
+                // There is an active subscription in mongo, but not on braintree. Create it.
+                opts.id = String(active_sub._id);
+                gateway.subscription.create(opts, function(err, result) {
+                    var error = err ? err : !result.success ? result : null;
+                    if (error) return self.rollbackActiveSubscription(error, active_sub._id,callback);
+                    return callback(null, result); 
+                });
+            });        
+        }
+
+        var sub = {_id: new Oid(), active: true};
+        return Bozuko.models.Customer.update({_id: self._id},
+            {$push: {subscriptions: sub}}, {}, function(err) {
+                if (err) return callback(err); 
+                opts.id = String(sub._id);
+                gateway.subscription.create(opts, function(err, result) {
+                    var error = err ? err : !result.success ? result : null;
+                    if (error) return self.rollbackActiveSubscription(error, sub._id, callback);
+                    return callback(null, result); 
+                });
+            }
+        );
     });
 });
 
@@ -304,14 +331,18 @@ function cancelGatewaySubscriptions(gateway, subscriptions, callback) {
 };
 
 Customer.method('cancelActiveSubscription', function(gateway, callback) {
-    var active_sub = this.getActiveSubscription();
-    var subscriptions = this.subscriptions;
-
-    if (!active_sub) return cancelGatewaySubscriptions(gateway, subscriptions, callback);
-                    
-    active_sub.active = false;
-    this.save(function(err) {
+    var self = this;
+    this.getActiveSubscription(function(err, active_sub, customer) {
         if (err) return callback(err);
-        cancelGatewaySubscription(gateway, String(active_sub._id), callback);
+        var subscriptions = customer.subscriptions;
+        if (!active_sub) return cancelGatewaySubscriptions(gateway, subscriptions, callback);
+        Bozuko.models.Customer.collection.update(
+            {_id: self._id, 'subscriptions.active': true}, 
+            {$set: {'subscriptions.$.active': false}},
+            {safe: safe}, function(err) {
+                if (err) return callback(err);
+                cancelGatewaySubscription(gateway, String(active_sub._id), callback);
+            }
+        );
     });
 });

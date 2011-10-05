@@ -2,6 +2,7 @@ var testsuite = require('./config/testsuite');
 var BraintreeGateway = Bozuko.require('util/braintree');
 var inspect = require('util').inspect;
 var async = require('async');
+ObjectId = require('mongoose').Types.ObjectId;
 
 var gateway = new BraintreeGateway().gateway;
 
@@ -305,6 +306,9 @@ exports['create transaction that fails validation - ensure rollback works'] = fu
         Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
             test.equal(cust.transactions.length, 2);
             test.equal(cust.credits, 7000);
+
+            // Reset customer to what's in mongo for later tests
+            customer = cust;
             test.done();
         });
     });
@@ -313,6 +317,17 @@ exports['create transaction that fails validation - ensure rollback works'] = fu
 /*
  * SUBSCRIPTION TESTS
  */
+
+exports['create active subscription for free user - fail'] = function(test) {
+    free_customer.createActiveSubscription(gateway, {
+        paymentMethodToken: cc_token,
+        planId: 'monthly_subscription'
+    }, function(err, result) {
+        test.ok(err);
+        test.equal(err.name, 'customer/free');
+        test.done();
+    });
+};
 
 exports['create active subscription - success'] = function(test) {
     customer.createActiveSubscription(gateway, {
@@ -330,14 +345,33 @@ exports['create another active subscription - fail'] = function(test) {
         planId: 'monthly_subscription'
     }, function(err, result) {
         test.ok(err);
-        test.done();
+        
+        // Ensure there is only one currently active subscription
+        Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
+            var active_ct = 0;
+            for (var i = 0; i < cust.subscriptions.length; i++) {
+                if (cust.subscriptions[i].active) active_ct++;
+            }
+            test.equal(active_ct, 1);
+            test.done();
+        });
     });
 };
 
 exports['cancel active subscription - success'] = function(test) {
-    customer.cancelActiveSubscription(gateway, function(err, result) {
+    customer.cancelActiveSubscription(gateway, function(err) {
         test.ok(!err);
-        test.done();
+        Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
+            var active_ct = 0;
+            for (var i = 0; i < cust.subscriptions.length; i++) {
+                if (cust.subscriptions[i].active) active_ct++;
+            }
+            test.equal(active_ct, 0);
+
+            // use latest db info for customer
+            customer = cust;
+            test.done();
+        });
     });
 };
 
@@ -350,7 +384,7 @@ exports['cancel active subscription again - success'] = function(test) {
 };
 
 exports['create another active subscription with sub on mongo but not braintree - success'] = function(test) {
-    customer.subscriptions.push({active:true});
+    customer.subscriptions.push({_id: new ObjectId(), active:true});
     customer.save(function(err) {
         test.ok(!err);
         customer.createActiveSubscription(gateway, {
@@ -358,7 +392,12 @@ exports['create another active subscription with sub on mongo but not braintree 
             planId: 'monthly_subscription'
         }, function(err, result) {
             test.ok(!err);
-            test.done();
+            Bozuko.models.Customer.count({_id: customer._id, 'subscriptions.active': true}, 
+                function(err, count) {
+                    test.equal(count, 1);
+                    test.done();
+                }
+            );
         });
     });
 };
@@ -378,10 +417,23 @@ exports['update active subscription - success'] = function(test) {
 };
 
 exports['cancel subscription with active sub in braintree but no active sub in mongo - success'] = function(test) {
-    customer.subscriptions[customer.subscriptions.length-1].active = false;
-    customer.cancelActiveSubscription(gateway, function(err) {
+    Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
         test.ok(!err);
-        test.done();
+        test.ok(cust);
+        var active_ct = 0;
+        for (var i = 0; i < cust.subscriptions.length; i++) {
+            if (cust.subscriptions[i].active) active_ct++;
+        }
+        test.equal(active_ct, 1);
+        customer = cust;
+        customer.subscriptions[customer.subscriptions.length-1].active = false;
+        customer.save(function(err) {
+            test.ok(!err);
+            customer.cancelActiveSubscription(gateway, function(err) {
+                test.ok(!err);
+                test.done();
+            });
+        });
     });
 };
 
@@ -427,24 +479,24 @@ exports['create new subscription to bill immediately - fail validation'] = funct
         price: '2000.01'
     }, function(err, result) {
         test.ok(err);
-        // remove the failed subscription. This is only to ensure the next test passes.
-        // In production, having an active subscription in mongo but not braintree isn't an issue.
-        customer.subscriptions.pop();
         test.done();
     });
 }; 
 
 exports['verify all subscriptions are cancelled'] = function(test) {
-    test.equal(customer.subscriptions.length, 3);
-    async.forEach(customer.subscriptions, function(sub, cb) {
-        test.ok(!sub.active);
-        gateway.subscription.find(String(sub._id), function(err, result) {
-            test.ok(!err);
-            test.equal(result.status, 'Canceled');
-            cb(null);
+    Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
+        customer = cust;
+        test.equal(customer.subscriptions.length, 3);
+        async.forEach(customer.subscriptions, function(sub, cb) {
+            test.ok(!sub.active);
+            gateway.subscription.find(String(sub._id), function(err, result) {
+                test.ok(!err);
+                test.equal(result.status, 'Canceled');
+                cb(null);
+            });
+        }, function(err) {
+            test.done();
         });
-    }, function(err) {
-        test.done();
     });
 };
 
