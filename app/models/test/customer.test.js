@@ -95,7 +95,7 @@ exports['create same customer - success after removal from braintree'] = functio
     });
 };
 
-exports['find customer'] = function(test) {
+exports['find customer - success'] = function(test) {
     Bozuko.models.Customer.findByGatewayId(gateway, page._id, function(err, result) {
         test.ok(!err);
         test.done();
@@ -247,7 +247,6 @@ exports['create transaction - success'] = function(test) {
         test.equal(result.transaction.status, 'submitted_for_settlement');
 
         Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
-            console.log("cust = "+inspect(cust));
             var transaction = cust.transactions[cust.transactions.length-1];
             test.equal(cust.transactions.length, 1);
             test.equal(result.transaction.orderId, transaction.id);
@@ -258,7 +257,58 @@ exports['create transaction - success'] = function(test) {
     });
 };
 
+exports['create second transaction - success'] = function(test) {
+    customer.createTransaction(gateway, {
+        amount: '149.99',
+        customerId: String(customer.page_id),
+        credits: 5000,
+        paymentMethodToken: cc_token
+    }, function(err, result) {
+        test.ok(!err);
+        test.ok(result.transaction.id);
+        test.equal(result.transaction.customFields.credits, '5000');
+        test.equal(result.transaction.amount, '149.99');
+        test.equal(result.transaction.customer.id, customer.page_id);
+        test.equal(result.transaction.status, 'submitted_for_settlement');
 
+        Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
+            var transaction = cust.transactions[cust.transactions.length-1];
+            test.equal(cust.transactions.length, 2);
+            test.equal(result.transaction.orderId, transaction.id);
+            test.equal(result.transaction.id, transaction.txid);
+            test.equal(cust.credits, 7000);
+            test.done();
+        });
+    });    
+};
+
+exports['create transaction for free customer - fail'] = function(test) {
+    free_customer.createTransaction(gateway, {
+        amount: '149.99',
+        customerId: String(free_customer.page_id),
+        credits: 5000
+    }, function(err, result) {
+        test.ok(err);
+        test.equal(err.name, 'customer/free');
+        test.done();
+    });
+};
+
+exports['create transaction that fails validation - ensure rollback works'] = function(test) {
+    customer.createTransaction(gateway, {
+        amount: '2000.01',
+        customerId: String(customer.page_id),
+        credits: 5000
+    }, function(err, result) {
+        test.ok(err);
+
+        Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
+            test.equal(cust.transactions.length, 2);
+            test.equal(cust.credits, 7000);
+            test.done();
+        });
+    });
+};
 
 /*
  * SUBSCRIPTION TESTS
@@ -284,7 +334,7 @@ exports['create another active subscription - fail'] = function(test) {
     });
 };
 
-exports['cancel active subscription'] = function(test) {
+exports['cancel active subscription - success'] = function(test) {
     customer.cancelActiveSubscription(gateway, function(err, result) {
         test.ok(!err);
         test.done();
@@ -452,30 +502,3 @@ exports['update address - fail'] = function(test) {
     });
 };
 
-/*
- * CLEANUP TESTS
- */
-
-// Not sure we actually ever want to remove customers. We may just want to cancel subscriptions.
-// So just do it from the test for cleanup.
-exports['remove customer'] = function(test) {
-    gateway.customer.delete(String(customer.page_id), function(err, result) {
-        test.ok(!err);
-        customer.remove(function(err) {
-            test.ok(!err);
-            page.remove(function(err) {
-                test.ok(!err);
-                test.done();
-            });
-        });
-    });
-};
-
-exports['verify customer doesn\'t exist'] = function(test) {
-    Bozuko.models.Customer.findByGatewayId(gateway, customer._id, function(err, result) {
-        test.ok(err);
-        test.equal(err.type, 'notFoundError');
-        test.ok(!result);
-        test.done();
-    });
-};

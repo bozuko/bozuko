@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId,
+    oid = mongoose.Types.ObjectId,
     inspect = require('util').inspect,
     BraintreeGateway = Bozuko.require('util/braintree'),
     async = require('async')
@@ -14,6 +15,7 @@ var Subscription = new Schema({
 });
 
 var Transaction = new Schema({
+    _id               :{type:ObjectId},
     txid              :{type:String},
     credits           :{type:Number},
     timestamp         :{type:Date}
@@ -138,8 +140,13 @@ Customer.static('create', function(gateway, opts, callback) {
 
 Customer.method('createTransaction', function(gateway, opts, callback) {
     var self = this;
+    if (this.type === 'free') return callback(Bozuko.error('customer/free'));
     var timestamp = new Date();
+
+    // Need to generate our own _id for the embedded transaction as findAndModify doesn't seem
+    // to create them for embedded docs and the driver returns different ones on update.
     var transaction = {
+        _id: new oid(),
         credits: opts.credits, 
         amount: opts.amount,
         timestamp: timestamp
@@ -155,33 +162,38 @@ Customer.method('createTransaction', function(gateway, opts, callback) {
             if (err) return callback(err);
             var tx_index = customer.transactions.length-1;
 
-            console.log("customer = "+inspect(customer));
-
             // Make the order id equal to the key of the transaction in mongo
             // Useful for any auditing/error correction
-            opts.orderId = customer.transactions[tx_index].id;
-            console.log("orderId = "+opts.orderId);
+            opts.orderId = String(customer.transactions[tx_index]._id);
             opts.options = {submitForSettlement: true};
 
             return gateway.transaction.sale(opts, function(err, result) {
-                // TODO: If there is an error here, we should roll back the transaction
-                //
-                if (err) return callback(err);
-                if (!result.success) return callback(result);
+                var error = err ? err : !result.success ? result : null;
+                if (error) {
+                    // Rollback the last credit increase because the sale failed
+                    return Bozuko.models.Customer.findAndModify({_id: self._id}, [],
+                        {$inc: {credits: -1*transaction.credits}, $pop : {transactions: 1}},
+                        {safe: safe}, function(err) {
+                            // Nothing we can really do automatically on this error. Just log it.
+                            if (err) console.error('failed to rollback transaction for customer '+
+                                self._id+' error = '+err);
+                            return callback(error);
+                        }
+                    );
+                }
 
                 // The transaction has been processed by braintree - record the txid
+                var modifier = {};
+                modifier['transactions.'+tx_index+'.txid'] = result.transaction.id;
                 return Bozuko.models.Customer.update(
-                    {_id: self._id, 'transactions.timestamp': timestamp}, 
-                    {$set: {'transactions.$.txid': result.transaction.id}},
+                    {_id: self._id},
+                    {$set: modifier},
                     {}, 
                     function(err) {
                         if (err) {
-                            console.log("err = "+err);
-                            // really need to think about what to do here. 
-                            // The transaction was already submitted. 
-                            // send an email and fix manually for now? 
-                            // This should pretty much never happen.
-                            // Note that a crash could happen before the save also.
+                            console.error("Failed to save txid for successful transaction: "+
+                            "customer._id = "+self._id+", mongo transaction id = "+opts.orderId+
+                            ", bt transaction id = "+result.transaction.id+", err = "+err);
                         }
                         return callback(null, result); 
                     }
