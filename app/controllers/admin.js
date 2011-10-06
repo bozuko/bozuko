@@ -535,8 +535,8 @@ exports.routes = {
                 return res.send( body );
             }
         }
-    },
-    
+    }
+    /*
     '/admin/build-circles' : {
         get :{
             handler : function(req, res){
@@ -615,6 +615,7 @@ exports.routes = {
             }
         }
     }
+    */
 };
 
 Dashboard.addRoutes( exports, '/admin' );
