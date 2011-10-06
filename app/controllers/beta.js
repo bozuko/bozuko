@@ -276,6 +276,19 @@ exports.routes = {
                                 if( error ) throw error;
                                 // added as an admin... cool beans...
                                 
+                                if( Bozuko.env == 'dashboard' ) Bozuko.require('util/mail').send({
+                                    to: 'info@bozuko.com',
+                                    subject: 'Someone create a new Page',
+                                    body: [
+                                        'Sweet Beav!',
+                                        '',
+                                        'Page:          '+page.name,
+                                        'Facebook Page: '+page.service('facebook').data.link,
+                                        'User:          '+user.name
+                                    ].join('\n')
+                                });
+                                
+                                
                                 return res.redirect('/beta/page/'+page.id);
                             });
                             

@@ -1231,6 +1231,22 @@ exports.routes = {
                 var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
+                    
+                    if( Bozuko.env == 'dashboard' ) Bozuko.models.Page.findById( contest.page_id, function(error, page){
+                        if( error ) return;
+                        Bozuko.require('util/mail').send({
+                            to: 'info@bozuko.com',
+                            subject: 'New Contest Created',
+                            body: [
+                                'Check it out...',
+                                '',
+                                'Page:    '+page.name,
+                                'Contest: '+contest.name
+                            ].join('\n')
+                        });
+                    });
+                    
+                    
                     return res.send({items:[contest]});
                 });
             }
@@ -1355,6 +1371,27 @@ exports.routes = {
                     if( !contest ) return res.send({success: false});
                     return contest.publish(function(error){
                         if( error ) return error.send( res );
+                        
+                        // activate page if its not active yet
+                        Bozuko.models.Page.findById( contest.page_id, function(error, page){
+                            if( error ) return;
+                            if( !page.active ){
+                                page.active = true;
+                                page.save();
+                            }
+                            
+                            if( Bozuko.env == 'dashboard' ) Bozuko.require('util/mail').send({
+                                to: 'info@bozuko.com',
+                                subject: 'Contest Published',
+                                body: [
+                                    'A new contest was published:',
+                                    '',
+                                    'Contest Name: '+contest.name,
+                                    'Page:         '+page.name
+                                ].join('\n')
+                            });
+                        });
+                        
                         return res.send({success: true});
                     });
                 });
