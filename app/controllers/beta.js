@@ -276,7 +276,7 @@ exports.routes = {
                                 if( error ) throw error;
                                 // added as an admin... cool beans...
                                 
-                                if( Bozuko.env == 'dashboard' ) Bozuko.require('util/mail').send({
+                                if( Bozuko.env() == 'dashboard' ) Bozuko.require('util/mail').send({
                                     to: 'info@bozuko.com',
                                     subject: 'Someone create a new Page',
                                     body: [
