@@ -79,13 +79,24 @@ exports.routes = {
                     if( error ) throw error;
                     
                     if( !pages.length ){
-                        return res.render('beta/welcome');
+                        return res.redirect('/beta/create-account');
                     }
                     
                     var signed = false,
                         page;
                         
-                    while( !signed && pages.length ){
+                    if( user.last_viewed_page ){
+                        // find that page..
+                        for(var i=0; i<pages.length && !page; i++){
+                            var p = pages[i];
+                            if( String(p._id) == String(user.last_viewed_page) ){
+                                page = p;
+                                signed = page.beta_agreement.signed;
+                            }
+                        }
+                    }
+                    
+                    while( !page && !signed && pages.length ){
                         page = pages.pop();
                         signed = page.beta_agreement.signed;
                     }
@@ -104,6 +115,7 @@ exports.routes = {
                     
                     res.locals.scripts.unshift(
                         '/js/ext-4.0/lib/ext-all.js',
+                        //'/js/desktop/beta/all-classes.js',
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(
@@ -149,6 +161,13 @@ exports.routes = {
                 
                 if( !user ) throw Bozuko.error('bozuko/auth');
                 if( !page_id ){
+                    
+                    // wait... we should see if this dude can admin any places...
+                    // has this person gone to a page before?
+                    if( user.last_viewed_page && ~user.manages.indexOf( user.last_viewed_page ) ){
+                        return res.redirect('/beta/page/'+user.last_viewed_page);
+                    }
+                    
                     return res.redirect('/beta/create-account');
                 }
                 
@@ -203,8 +222,15 @@ exports.routes = {
                             return true;
                         });
                         
+                        var other_pages = facebook_pages.filter(function(page){
+                            if( ~fids.indexOf(page.id) ) return false;
+                            if( page.location.lat !== 0 && page.location.lng !== 0 ) return false;
+                            return true;
+                        });
+                        
                         res.locals.places = places;
                         res.locals.user_pages = user_pages;
+                        res.locals.other_pages = other_pages;
                         res.locals.facebook_pages_count = facebook_pages.length;
                         
                         return res.render('/beta/create-account');

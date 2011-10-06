@@ -19,8 +19,13 @@ Ext.define('Bozuko.view.page.Account' ,{
             },{
                 xtype               :'component',
                 html                :[
-                    '<p>You are currently enrolled in our invitation only program.</p>',
-                    '<p>Thank you for participating - we are looking forward to your feedback!</p>'
+                    '<div style="font-size: 14px; line-height: 1.4em;">',
+                    '<p>You are currently enrolled in our beta program. ',
+                    'Bozuko beta is totally free up to 2500 entries per month.  That\'s a lot of entries. ',
+                    'If you are interested in new features or require more volume please contact ',
+                    '<a href="mailto:info@bozuko.com">info@bozuko.com</a>.</p>',
+                    '<p>Bozuko will provide 30 days notice before ending the beta program.  Have fun and good luck!</p>',
+                    '</div>'
                 ].join('')
             }]
             

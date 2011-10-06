@@ -48,6 +48,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                     '</div>',
                     
                     '<div class="stat-block stat-block-times">',
+                        '<div class="circle" style="background-image:url({[this.getCircleUrl(xindex,"times")]})"></div>',
                         '<div class="info">',
                             '<h3>Day</h3>',
                             '<div class="stat-info">',
@@ -57,6 +58,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '</div>',
                     '</div>',
                     '<div class="stat-block stat-block-winners">',
+                        '<div class="circle" style="background-image:url({[this.getCircleUrl(xindex,"winners")]})"></div>',
                         '<div class="info">',
                             '<h3>Won Prizes</h3>',
                             '<div class="stat-info">',
@@ -66,6 +68,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '</div>',
                     '</div>',
                     '<div class="stat-block stat-block-plays">',
+                        '<div class="circle" style="background-image:url({[this.getCircleUrl(xindex,"plays")]})"></div>',
                         '<div class="info">',
                             '<h3>Plays</h3>',
                             '<div class="stat-info">',
@@ -75,6 +78,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '</div>',
                     '</div>',
                     '<div class="stat-block stat-block-entries">',
+                        '<div class="circle" style="background-image:url({[this.getCircleUrl(xindex,"entries")]})"></div>',
                         '<div class="info">',
                             '<h3>Entries</h3>',
                             '<div class="stat-info">',
@@ -112,6 +116,13 @@ Ext.define('Bozuko.view.contest.List' ,{
                     '</ul>',
                 '</div>',
                 {
+                    
+                    getCircleUrl : function(index, name){
+                        var record = me.store.getAt(index-1),
+                            percent = Math.max( 0, Math.min( 100, Math.round( me.getData(record)[name+'_percent'] * 100 ) || 0 ) );
+                            
+                        return Bozuko.Router.route('/s3/public/circles/circle-'+percent+'.png');
+                    },
                     
                     isAdmin : function(){
                         return window.location.pathname.match(/^\/admin/);
@@ -170,9 +181,6 @@ Ext.define('Bozuko.view.contest.List' ,{
     onRefresh : function(){
         var me = this;
         if( !me.rendered ) return;
-        me.store.each(function(record, index){
-            me.addCircles( index, record );
-        });
         me.initPubSub();
     },
     
@@ -186,7 +194,6 @@ Ext.define('Bozuko.view.contest.List' ,{
             });
             return;
         }
-        me.addCircles( index, record );
         me.initPubSub();
     },
     
@@ -325,61 +332,5 @@ Ext.define('Bozuko.view.contest.List' ,{
         data.times_percent = current/duration;
         
         return data;
-    },
-    
-    addCircles : function(index, record){
-        var me = this;
-        if( !me.rendered ) return;
-        var el = me.getNode(index),
-            radius = me.circleRadius || 40,
-            diameter = radius * 2;
-        Ext.each(['entries','plays','winners','times'],function(name){
-            var block = Ext.fly(el).down('.stat-block-'+name);
-            var canvas = block.createChild({
-                tag: 'canvas',
-                cls: 'circle',
-                width: diameter,
-                height: diameter
-            });
-            if( !canvas.dom.getContext ) return;
-            var percent = me.getData(record)[name+'_percent'],
-                ctx = canvas.dom.getContext('2d');
-            ctx.beginPath();
-            ctx.fillStyle = '#ffffff';
-            ctx.moveTo(radius,radius);
-            ctx.arc(radius,radius,radius,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * 1), false);
-            ctx.moveTo(radius,radius);
-            ctx.closePath();
-            ctx.fill();
-            ctx.beginPath();
-            ctx.fillStyle = me.rgb(percent);
-            ctx.moveTo(radius,radius);
-            ctx.arc(radius,radius,radius,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
-            ctx.moveTo(radius,radius);
-            ctx.closePath();
-            ctx.fill();
-            ctx.beginPath();
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.arc(radius,radius,radius,0,Math.PI*2, false);
-            ctx.closePath();
-            ctx.stroke();
-        });
-    },
-    
-    rgb : function(percent){
-        var r,g,b;
-        if( percent < .25 ){
-            r=29,g=177,b=53;
-        }
-        else if( percent < .50 ){
-            r=227,g=244,b=31;
-        }
-        else if( percent < .75 ){
-            r=255,g=127,b=0;
-        }
-        else{
-            r=255,g=0,b=0;
-        }
-        return ['rgba('+r,g,b,'.5)'].join(',');
     }
 });

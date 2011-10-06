@@ -20,6 +20,7 @@ Ext.define('Bozuko.view.contest.Overview',{
             tpl : new Ext.XTemplate(
                 
                 '<div class="stat-block stat-block-times">',
+                    '<div class="circle" style="background-image:url({[this.getCircleUrl("times")]})"></div>',
                     '<div class="info">',
                         '<h3>Day</h3>',
                         '<div class="stat-info">',
@@ -29,6 +30,7 @@ Ext.define('Bozuko.view.contest.Overview',{
                     '</div>',
                 '</div>',
                 '<div class="stat-block stat-block-winners">',
+                    '<div class="circle" style="background-image:url({[this.getCircleUrl("winners")]})"></div>',
                     '<div class="info">',
                         '<h3>Won Prizes</h3>',
                         '<div class="stat-info">',
@@ -38,6 +40,7 @@ Ext.define('Bozuko.view.contest.Overview',{
                     '</div>',
                 '</div>',
                 '<div class="stat-block stat-block-plays">',
+                    '<div class="circle" style="background-image:url({[this.getCircleUrl("plays")]})"></div>',
                     '<div class="info">',
                         '<h3>Plays</h3>',
                         '<div class="stat-info">',
@@ -47,6 +50,7 @@ Ext.define('Bozuko.view.contest.Overview',{
                     '</div>',
                 '</div>',
                 '<div class="stat-block stat-block-entries">',
+                    '<div class="circle" style="background-image:url({[this.getCircleUrl("entries")]})"></div>',
                     '<div class="info">',
                         '<h3>Entries</h3>',
                         '<div class="stat-info">',
@@ -77,7 +81,13 @@ Ext.define('Bozuko.view.contest.Overview',{
                         '<label>Entry Type:</label>',
                         '<span>{entry_type}</span>',
                     '</div>',
-                '</div>'
+                '</div>',
+                {
+                    getCircleUrl : function(name){
+                        var percent = Math.max( 0, Math.min( 100, Math.round( me.getData()[name+'_percent'] * 100 ) || 0 ) );
+                        return Bozuko.Router.route('/s3/public/circles/circle-'+percent+'.png');
+                    }
+                }
             ),
             data : me.getData()
         });
@@ -87,14 +97,6 @@ Ext.define('Bozuko.view.contest.Overview',{
             me.initPubSub();
         }
         me.on('destroy', me.unPubSub, me);
-    },
-    
-    afterRender : function(){
-        var me = this;
-        
-        me.callParent( arguments );
-        me.addCircles();
-        
     },
     
     getData : function(){
@@ -184,7 +186,6 @@ Ext.define('Bozuko.view.contest.Overview',{
             me.initPubSub();
         }
         me.callParent([me.getData()]);
-        me.addCircles();
     },
     
     unPubSub : function(){
@@ -230,54 +231,6 @@ Ext.define('Bozuko.view.contest.Overview',{
         }catch(e){
             console.log(e);
         }
-    },
-    
-    addCircles : function(){
-        var me = this;
-        if( !me.rendered ) return;
-        Ext.each(['entries','plays','winners','times'],function(name){
-            me.blocks[name] = me.getEl().down('.stat-block-'+name);
-            var canvas = me.circles[name] = me.blocks[name].createChild({
-                tag: 'canvas',
-                cls: 'circle',
-                width: 80,
-                height: 80
-            });
-            if( !canvas.dom.getContext ) return;
-            var percent = me.getData()[name+'_percent'],
-                ctx = canvas.dom.getContext('2d');
-            ctx.beginPath();
-            ctx.fillStyle = '#ffffff';
-            ctx.moveTo(40,40);
-            ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * 1), false);
-            ctx.moveTo(40,40);
-            ctx.closePath();
-            ctx.fill();
-            ctx.beginPath();
-            ctx.fillStyle = me.rgb(percent);
-            ctx.moveTo(40,40);
-            ctx.arc(40,40,40,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
-            ctx.moveTo(40,40);
-            ctx.closePath();
-            ctx.fill();
-        });
-    },
-    
-    rgb : function(percent){
-        var r,g,b;
-        if( percent < .25 ){
-            r=29,g=177,b=53;
-        }
-        else if( percent < .50 ){
-            r=227,g=244,b=31;
-        }
-        else if( percent < .75 ){
-            r=255,g=127,b=0;
-        }
-        else{
-            r=255,g=0,b=0;
-        }
-        return ['rgba('+r,g,b,'.5)'].join(',');
     }
     
 });

@@ -72,7 +72,7 @@ Ext.define('Bozuko.view.contest.Reports', {
                 xtype           :'contestplayers',
                 region          :'east',
                 style           :'border-right-width: 0 !important',
-                width           :250,
+                width           :320,
                 margin          :'0 0 0 2',
                 contest_id      :me.record.get('_id')
             }]

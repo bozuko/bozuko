@@ -4,6 +4,7 @@ var Content     = Bozuko.require('util/content'),
     Report      = Bozuko.require('core/report'),
     DateUtil    = Bozuko.require('util/date'),
     async       = require('async'),
+    Canvas      = require('canvas'),
     http        = Bozuko.require('util/http'),
     PDF         = require('pdfkit'),
     indexOf     = Bozuko.require('util/functions').indexOf,
@@ -22,6 +23,7 @@ var Content     = Bozuko.require('util/content'),
 exports.restrictToUser = false;
 
 exports.routes = {
+    
     '/redemption/instructions/:id' : {
         get : {
             handler : function(req, res){
@@ -1376,6 +1378,66 @@ exports.routes = {
         }
     },
     
+    
+    '/s3/*' : {
+        get :{
+            handler : function(req, res){
+                // get the url for this...
+                
+                if( !req.params.length ) return res.send('no path specified');
+                var path = '/'+req.params[0];
+                if( !path ) return res.send('no path specified');
+                return res.redirect( s3.client.https( path ) );
+            }
+        }
+    },
+    
+    '/blog/feed' : {
+        get : {
+            handler : function(req, res){
+                var url = Bozuko.cfg('blog.feed', 'http://blog.bozuko.com/feed/');
+                // lets get this feed...
+                return http.request({
+                    url: url
+                }, function(error, response){
+                    if( error ) return error.send(res);
+                    var json = require('xml2json').toJson(response,{object:true});
+                    var result = {items: json.rss.channel.item, count: json.rss.channel.item.length};
+                    return res.send( result );
+                });
+            }
+        }
+    },
+    
+    '/welcome/:page_id' : {
+        get : {
+            
+            locals: { layout: false },
+            
+            handler : function(req, res){
+                var page_id = req.param('page_id');
+                // lets get the page
+                
+                return Bozuko.models.Page.findById( page_id, function(error, page){
+                    if( error ) throw error;
+                    if( !page ) throw "No Page";
+                    return Bozuko.models.Contest.find({page_id: page_id},{results:0,plays:0},{sort:{active: -1, start:-1}}, function(error, contests){
+                        if( error ) throw error;
+                        // count active contests
+                        var active = 0;
+                        contests.forEach(function(contest){
+                            if( contest.state == 'active' ) active++;
+                        });
+                        res.locals.active_count = active;
+                        res.locals.contests = contests;
+                        res.locals.page = page;
+                        return res.render('beta/content/welcome');
+                    });
+                });
+                
+            }
+        }
+    }
 };
 
 function getToken(session, forceNew){

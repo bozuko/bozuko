@@ -425,6 +425,8 @@ fieldset{
             position: absolute;
             left: 50%;
             bottom: 0;
+            width: 80px;
+            height: 80px;
             margin-left: -40px;
             margin-top: -40px;
         }
@@ -716,7 +718,10 @@ fieldset{
         }
         .x-dataview-item {
             cursor: pointer;
+            position: relative;
+            zoom: 1;
             display: inline-block;
+            *display: inline;
             padding: 10px 4px 4px;
             margin-right: 4px;
             .background_gradient(#ddd, #aaa);
@@ -812,7 +817,7 @@ fieldset{
         
         .theme {
             position: relative;
-            width: 33.3%;
+            width: 33.2%;
             float: left;
             text-align: center;
             cursor: pointer;
@@ -842,6 +847,7 @@ fieldset{
         }
         
         .description {
+            display: none;
             font-size: 11px;
             position: absolute;
             bottom: 0px;
@@ -1256,7 +1262,19 @@ fieldset{
 
 .stats-block {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 20px;
+    
+    h3 {
+        background: #aaa;
+        color: #fff;
+        font-family: "ArvoRegular";
+        font-size: 14px;
+        padding: 4px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        font-weight: normal;
+    }
+    
     table {
         margin: 0 auto;
         
@@ -1348,4 +1366,104 @@ p {
             background: transparent url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-cross-16.png') 0 50% no-repeat;
         }
     }
+}
+
+.blog-panel {
+    
+    .x-panel-header {
+        border-left-width: 1px !important;
+        span {
+            font-family: "ArvoRegular";
+            font-weight: normal;
+            font-size: 18px;
+            line-height: 1.3em;
+            color: @dark_color;
+            .text_shadow(2px,2px,1px,#fff);
+        }
+    }
+    .x-panel-body {
+        border-left-width: 1px !important;
+    }
+}
+
+h1.intro {
+    font-size: 20px;
+    margin: 0 0 .5em;
+    color: @dark_color;
+}
+
+.welcome {
+    list-style: none;
+    padding: 0;
+    margin: 0 -10px 0 0;
+    
+    li {
+        
+        display: block;
+        float: left;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 50%;
+        
+        div {
+            padding: 6px 6px 10px;
+            .background_gradient(#f8f8f8, #d8d8d8);
+            .border_radius(4px);
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            * {
+                cursor: pointer; 
+            }
+            p {
+                margin-bottom: 0;
+            }
+            
+            h3 {
+                font-family: "ArvoRegular";
+                font-weight: normal;
+                font-size: 16px;
+                line-height: 24px;
+                color: #333;
+                background-position: 100% 0;
+                background-repeat: no-repeat;
+            }
+        }
+        &.hover {
+            div {
+                color: #ffffff;
+                .background_gradient(@brand_color, @dark_color);
+            }
+            
+            h3 {
+                color: #fff;
+            }
+        }
+    }
+    
+    .create-campaign h3{
+        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png");
+    }
+    .campaigns h3{
+        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png");
+    }
+    .dashboard h3{
+        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-24.png");
+    }
+    .settings h3 {
+        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png");
+    }
+    .account h3{
+        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-profile-24.png");
+    }
+    .resources h3 {
+        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-24.png");
+    }
+}
+
+.no-data div {
+    background-image: none;
+    padding-left: 10px;
 }

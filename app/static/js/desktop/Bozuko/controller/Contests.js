@@ -2,9 +2,11 @@ Ext.define('Bozuko.controller.Contests' ,{
     extend: 'Bozuko.lib.app.Controller',
     
     requires: [
+        'Bozuko.lib.app.Controller',
         'Bozuko.view.contest.Reports',
         'Bozuko.view.contest.edit.Form',
-        'Bozuko.view.contest.builder.Panel'
+        'Bozuko.view.contest.builder.Panel',
+        'Bozuko.model.Page'
     ],
     
     views: [
@@ -15,7 +17,7 @@ Ext.define('Bozuko.controller.Contests' ,{
     ],
     
     models: [
-        'Bozuko.model.Page'
+        
     ],
     
     refs : [
@@ -40,7 +42,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 click           :this.onContestBackClick
             },
             'contestbuilder button[action=back]' : {
-                click           :this.onContestBackClick
+                click           :this.onContestBuilderBackClick
             },
             'contestform panel[region=west] dataview' : {
                 itemclick       :this.onContestNavClick
@@ -84,6 +86,37 @@ Ext.define('Bozuko.controller.Contests' ,{
         panel.getLayout().setActiveItem( 0 );
         panel.doComponentLayout();
         panel.remove( active );
+    },
+    
+    onContestBuilderBackClick : function(btn){
+        var builder = btn.up('contestbuilder'),
+            panel = btn.up('contestspanel'),
+            active = panel.getLayout().getActiveItem();
+        
+        
+        var close = function(){
+            panel.getLayout().setActiveItem( 0 );
+            panel.doComponentLayout();
+            panel.remove( active );
+        }
+        
+        if( builder.contest.get('_id') ){
+            // warn about losing changes...
+            return close();
+        }
+        
+        return Ext.Msg.show({
+            title:'Are you sure?',
+            msg: 'If you go back you will lose any changes you made to this contest. Are you sure you would like to continue?',
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.Msg.QUESTION,
+            width: 350,
+            modal: true,
+            fn : function(id){
+                if( id == 'no' ) return;
+                close();
+            }
+        });
     },
     
     onContestSaveClick : function(btn){
@@ -415,9 +448,32 @@ Ext.define('Bozuko.controller.Contests' ,{
                 name: 'body'
             }]
         });
-        form.down('input').dom.value = Ext.encode(data);
-        form.dom.submit();
-        form.remove();
+        // no _ids for prizes...
+        try {
+            Ext.Array.each( data.prizes, function(prize, i){
+                delete data.prizes[i]._id;
+                delete data.prizes[i].won;
+                delete data.prizes[i].redeemed;
+            });
+            
+            Ext.Array.each( data.consolation_prizes, function(prize, i){
+                delete data.consolation_prizes[i]._id;
+                delete data.prizes[i].won;
+                delete data.prizes[i].redeemed;
+            });
+            
+            delete data._id;
+            delete data.page_id;
+            delete data.play_cursor;
+            delete data.token_cursor;
+            
+            form.down('input').dom.value = Ext.encode(data);
+            form.dom.submit();
+            form.remove();
+        }catch(e){
+            alert("Error during export");
+        }
+        
     },
     
     openWithBuilder : function(record, cmp){
