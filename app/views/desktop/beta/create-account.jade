@@ -1,7 +1,7 @@
 .line
-  .unit.size3of4
+  .unit.size2of3
     div(style="padding-right: 20px;")
-      h1 Create an Account
+      h1 Add an Account
       
       - if( places && places.length )
         p Select one of your pages below to create your Bozuko Account
@@ -12,6 +12,7 @@
                 label
                   input(type="radio",name="place_id",value=place.id)
                   img(src=place.image.replace(/large/,'square'),title=place.name,alt=place.name)
+                  span.checkbox
                   span.info
                     span.title!= place.name
                     span.address
@@ -20,14 +21,43 @@
           
           input.medium-button.site-button-disabled(disabled=true,type="submit",value="Create Account &raquo;",)
       - else
-        - if( user_pages && user_pages.length )
-          p You have no more places to add! Launch one of your existing dashboards from the right column.
-          p Note to Pin-Bo: I am still working on this page.
+        .no-places
+          - if( user_pages.length )
+            p It looks like you have already added all the Facebook Places that you manage.
+              |  You can login to one of your existing Bozuko accounts by clicking on one of the
+              |  items in the list on the right.
+            
+          - else
+            p Sorry, it looks like you are not an administrator for any Facebook Places. If you are 
+              | an administrator for a Facebook Page, you may need to claim the Place page and then
+              | merge the accounts.
+              
+            p Please see 
+              a(href="http://www.facebook.com/help?page=1154",target="_blank") this article
+              |  for more information.
+              
+            p If you have any other questions or concerns please contact us at 
+              a(href="mailto:info@bozuko.com") info@bozuko.com
+              | .
+              
+      - if( other_pages && other_pages.length )
+        .other-pages
+          - each page in other_pages
+            -if( !page.category.match(/application/i) )
+              // .other-page= page.name+' '+page.category
   
-  .unit.size1of4.lastUnit
-    - if( user_pages)
-      h3 Your Accounts
-      ul
-        - each page in user_pages
-          li
-            a(href="/beta/page/"+page._id)!= page.name
+  .unit.size1of3.lastUnit
+    - if( user_pages.length )
+      .existing-accounts
+        h3 Your Existing Accounts
+        p Open an existing account by clicking one below.
+        ul
+          - each page in user_pages
+            li
+              a(href="/beta/page/"+page._id)
+                img(src=page.image.replace(/large/,'square'),title=page.name,alt=page.name)
+                span.title= page.name
+                span.launch-dashboard Launch Dashboard
+    - else
+      p(style="text-align:center;")
+        img(src="/images/assets/bozuko_logo_clover_large.png",alt="Bozuko Clover",style="height: 210px; margin-top: 20px;")

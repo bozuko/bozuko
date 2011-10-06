@@ -22,7 +22,7 @@ apt-get install -y mongodb-10gen
 cp config/mongodb.conf /etc/mongodb.conf
 
 # install essential libraries and build tools
-apt-get install -y build-essential libssl-dev libgd2-xpm-dev g++ barcode imagemagick
+apt-get install -y build-essential libssl-dev libgd2-xpm-dev g++ barcode imagemagick libjpeg8-dev libcairo2-dev
 
 # install useful tools and utilities
 apt-get install -y emacs vim js2-mode ufw rlwrap sysstat

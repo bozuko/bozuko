@@ -243,12 +243,25 @@ Ext.define('Admin.controller.Admin' ,{
                         try{
                             var data = Ext.decode(e.target.result);
                             if( data ){
-                                data.page_id = null;
+                                delete data._id;
+                                delete data.page_id;
                                 data.state = 'draft';
                                 data.active = false;
-                                data.wins = 0;
-                                data.redeemed = 0;
-                                data._id = null;
+                                
+                                // go through
+                                try{
+                                    Ext.Array.each( data.prizes, function(prize, i){
+                                        delete data.prizes[i]._id;
+                                        delete data.prizes[i].won;
+                                        delete data.prizes[i].redeemed;
+                                    });
+                                    Ext.Array.each( data.consolation_prizes, function(prize, i){
+                                        delete data.consolation_prizes[i]._id;
+                                        delete data.consolation_prizes[i].won;
+                                        delete data.consolation_prizes[i].redeemed;
+                                    });
+                                }catch(e){}
+                                
                                 var record = panel
                                     .store
                                     .getProxy()

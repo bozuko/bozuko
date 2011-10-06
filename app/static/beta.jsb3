@@ -1,0 +1,267 @@
+{
+    "projectName": "Project Name",
+    "licenseText": "Copyright(c) 2011 Company Name",
+    "builds": [
+        {
+            "name": "All Classes",
+            "target": "all-classes.js",
+            "options": {
+                "debug": true
+            },
+            "files": [
+                {
+                    "path": "/js/desktop/Bozuko/lib/",
+                    "name": "Overrides.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/page/",
+                    "name": "Resources.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/lib/",
+                    "name": "Router.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/lib/app/",
+                    "name": "Controller.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/lib/data/",
+                    "name": "Model.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/lib/",
+                    "name": "PubSub.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/",
+                    "name": "List.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/page/",
+                    "name": "Account.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/chart/",
+                    "name": "Basic.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/",
+                    "name": "Overview.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/",
+                    "name": "Prizes.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "Game.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "Entry.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/page/",
+                    "name": "Preview.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/",
+                    "name": "Preview.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "Rules.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "Prize.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/model/",
+                    "name": "Prize.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/",
+                    "name": "Card.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/lib/form/field/",
+                    "name": "Duration.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/store/",
+                    "name": "EntryTypes.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/model/",
+                    "name": "User.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/lib/form/field/",
+                    "name": "WinFrequency.js"
+                },
+                {
+                    "path": "/js/ext-4.0/ux/picker/",
+                    "name": "DateTime.js"
+                },
+                {
+                    "path": "/js/ext-4.0/ux/data/writer/",
+                    "name": "JsonDeep.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/model/",
+                    "name": "Entry.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/lib/form/field/",
+                    "name": "Codes.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/model/",
+                    "name": "Winner.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/store/",
+                    "name": "Games.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/model/",
+                    "name": "Page.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contests/",
+                    "name": "Panel.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/page/",
+                    "name": "Settings.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "Prizes.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "ConsolationPrizes.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/model/",
+                    "name": "Contest.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/store/",
+                    "name": "Contests.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/card/",
+                    "name": "Entry.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/card/",
+                    "name": "Game.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/card/",
+                    "name": "Odds.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "Preview.js"
+                },
+                {
+                    "path": "/js/ext-4.0/ux/form/field/",
+                    "name": "DateTime.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "Details.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/edit/",
+                    "name": "Form.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/card/",
+                    "name": "General.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/card/prize/",
+                    "name": "Form.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/card/",
+                    "name": "Prizes.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/store/",
+                    "name": "Winners.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/",
+                    "name": "Winners.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/",
+                    "name": "Review.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/card/",
+                    "name": "Review.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/builder/",
+                    "name": "Panel.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/store/",
+                    "name": "Entries.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/",
+                    "name": "Entries.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/",
+                    "name": "Players.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/page/",
+                    "name": "Dashboard.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/page/",
+                    "name": "Panel.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/view/contest/",
+                    "name": "Reports.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/controller/",
+                    "name": "Contests.js"
+                },
+                {
+                    "path": "/js/desktop/Bozuko/controller/",
+                    "name": "Pages.js"
+                }
+            ]
+        },
+        {
+            "name": "Application - Production",
+            "target": "app-all.js",
+            "compress": true,
+            "files": [
+                {
+                    "path": "",
+                    "name": "all-classes.js"
+                },
+                {
+                    "path": "",
+                    "name": "app.js"
+                }
+            ]
+        }
+    ],
+    "resources": []
+}

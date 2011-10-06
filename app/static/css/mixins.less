@@ -8,11 +8,13 @@
 }
 
 .box_shadow (@x_offset: 2px, @y_offset: 2px, @blur: 0px, @color: #cccccc) {
+    -moz-box-shadow: @x_offset @y_offset @blur @color;
+    -webkit-box-shadow: @x_offset @y_offset @blur @color;
+    box-shadow: @x_offset @y_offset @blur @color;
+}
 
-    -moz-box-shadow: @x_offset @x_offset @blur @color;
-    -webkit-box-shadow: @x_offset @x_offset @blur @color;
-    box-shadow: @x_offset @x_offset @blur @color;
-
+.text_shadow(@x_offset:2px, @y_offset: 2px, @blur: 0px, @color: #ffffff ){
+    text-shadow: @x_offset @y_offset @blur @color;
 }
 
 .opacity(@op:100){

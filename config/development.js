@@ -186,5 +186,9 @@ module.exports = {
         'andrew.stone@bozuko.com',
         'jacob.epstein@bozuko.com',
         'pinbo.tsai@bozuko.com'
-    ]
+    ],
+	
+	blog: {
+		feed:'http://blog.bozuko.com/feed/'
+	}
 };

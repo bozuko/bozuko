@@ -7,6 +7,8 @@ Ext.define('Bozuko.view.chart.Basic', {
         'Bozuko.lib.PubSub'
     ],
     
+    totalsLabel : "Page Totals",
+    
     initComponent : function(){
         var me = this;
         
@@ -18,6 +20,16 @@ Ext.define('Bozuko.view.chart.Basic', {
                 }, config)]);
             }
         });
+        
+        if( me.contest_id ){
+            me.totalsLabel = 'Campaign Totals';
+        }
+        else if( me.page_id ){
+            me.totalsLabel = 'Page Totals';
+        }
+        else {
+            me.totalsLabel = 'Overall Totals';
+        }
         
         Ext.apply(me, {
             
@@ -166,7 +178,8 @@ Ext.define('Bozuko.view.chart.Basic', {
                 ref             :'stats-block',
                 tpl             :new Ext.XTemplate(
                     '<div class="stats-block">',
-                        '<table>',
+                        '<table class="main-table">',
+                            '<tr><td colspan="3" style="padding: 0;"><h3>',me.totalsLabel,'</h3></td></tr>',
                             '<tr>',
                                 '<td>',
                                     '<table>',
@@ -330,6 +343,13 @@ Ext.define('Bozuko.view.chart.Basic', {
             total = me.addCommas(total);
         }
         me.down('[ref=chart-total]').update(total+' <span style="font-weight: normal;">in this time period</span>');
+        if( total == 0 ){
+            // lets mask the chart if there is no data...
+            // me.chart.getEl().mask('There is no data to display', 'no-data');
+        }
+        else{
+            // me.chart.getEl().unmask();
+        }
     },
     
     loadStore : function(){

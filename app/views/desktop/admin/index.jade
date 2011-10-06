@@ -10,6 +10,9 @@ html
     script(type='text/javascript',src='/js/ext-4.0/lib/ext-all.js')
     script(type='text/javascript',src='/js/desktop/admin/admin.js?'+Date.now())
     script(type='text/javascript',src='https://maps.google.com/maps/api/js?sensor=true')
+    script(type='text/javascript')
+      if(!window.Bozuko) Bozuko = {};
+      Bozuko.routePath = '/admin';
     
   body
   
