@@ -385,13 +385,20 @@ Contest.method('publish', function(callback){
     if( !this.engine_options || !this.engine_options.mode || this.engine_options.mode == 'odds' ) {
         this.total_entries = Math.ceil(total_prizes * this.win_frequency);
     }
-    this.active = true;
-    this.generateResults( function(error, results){
-        if( error ) return callback(error);
-        return self.generateBarcodes(function(err) {
-            if (err) return callback(err);
-            Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
-            return callback( null, self);
+
+    // Remove this entry restriction after beta (when we have pricing)
+    Bozuko.models.Page.findOne({_id: self.page_id}, {name: 1}, function(err, page) {
+        if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && self.total_entries > 2500) {
+            return callback(Bozuko.error('contest/max_entries', 2500));
+        }
+        self.active = true;
+        self.generateResults( function(error, results){
+            if( error ) return callback(error);
+            return self.generateBarcodes(function(err) {
+                if (err) return callback(err);
+                Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
+                return callback( null, self);
+            });
         });
     });
 });
