@@ -63,5 +63,9 @@ module.exports = {
     play_not_found: {
         code: 404,
         message: "Error playing contest"
+    },
+
+    max_entries: function() {
+        return 'Cannot publish games with more than '+this.data+' entries';
     }
 };
