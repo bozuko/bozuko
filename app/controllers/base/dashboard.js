@@ -1232,7 +1232,7 @@ exports.routes = {
                 return contest.save( function(error){
                     if( error ) return error.send( res );
                     
-                    if( Bozuko.env == 'dashboard' ) Bozuko.models.Page.findById( contest.page_id, function(error, page){
+                    if( Bozuko.env() == 'dashboard' ) Bozuko.models.Page.findById( contest.page_id, function(error, page){
                         if( error ) return;
                         Bozuko.require('util/mail').send({
                             to: 'info@bozuko.com',
@@ -1380,7 +1380,7 @@ exports.routes = {
                                 page.save();
                             }
                             
-                            if( Bozuko.env == 'dashboard' ) Bozuko.require('util/mail').send({
+                            if( Bozuko.env() == 'dashboard' ) Bozuko.require('util/mail').send({
                                 to: 'info@bozuko.com',
                                 subject: 'Contest Published',
                                 body: [
