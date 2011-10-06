@@ -139,6 +139,17 @@ Customer.static('create', function(gateway, opts, callback) {
     });
 });
 
+Customer.method('spendCredits', function(credits, callback) {
+    Bozuko.models.Customer.findAndModify(
+        {_id: this._id, credits: {$gte: credits}}, [],
+        {$inc: {credits: -1*credits}},
+        {new: true, safe: safe},
+        function(err, customer) {
+            if (err) return callback(err);
+            return callback(null, customer);
+        });
+});
+
 Customer.method('createTransaction', function(gateway, opts, callback) {
     var self = this;
     if (this.type === 'free') return callback(Bozuko.error('customer/free'));

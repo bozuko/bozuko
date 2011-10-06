@@ -314,6 +314,23 @@ exports['create transaction that fails validation - ensure rollback works'] = fu
     });
 };
 
+exports['spend credits - success'] = function(test) {
+    customer.spendCredits(5000, function(err, updatedCust) {
+        test.ok(!err);
+        test.equal(updatedCust.credits, 2000);
+        customer = updatedCust;
+        test.done();
+    });
+};
+
+exports['spend credits - fail'] = function(test) {
+    customer.spendCredits(2001, function(err, updatedCust) {
+        test.ok(err);
+        test.ok(!updatedCust);
+        test.done();
+    });
+};
+
 /*
  * SUBSCRIPTION TESTS
  */
