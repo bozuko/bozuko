@@ -103,7 +103,7 @@ exports.routes = {
                     if( !signed ){
                         req.session.page_id = page.id;
                         // use the last page...
-                        return res.render('beta/welcome');
+                        return res.redirect('/beta/agreement');
                     }
                     
                     res.locals.html_classes.push('beta-app');
