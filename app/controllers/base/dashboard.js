@@ -474,13 +474,13 @@ exports.routes = {
                     ;
                 
                 if( contest_id ){
-                    selector['contest_id'] = contest_id;
+                    selector.contest_id = contest_id;
                 }
                 if( this.restrictToUser ){
-                    selector = {page_id: {$in: req.session.user.manages}}
+                    selector.page_id = {$in: req.session.user.manages};
                 }
                 if( page_id && (!this.restrictToUser || ~indexOf(req.session.user.manages, page_id)) ){
-                    selector['page_id'] = page_id;
+                    selector.page_id = page_id;
                 }
                 
                 if( search ){
