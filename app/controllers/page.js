@@ -3,6 +3,7 @@ var async = require('async'),
     http = Bozuko.require('util/http'),
     URL = require('url'),
     mailer = Bozuko.require('util/mail'),
+    indexOf = Bozuko.require('util/functions').indexOf,
     burl = Bozuko.require('util/url').create,
     Profiler = Bozuko.require('util/profiler')
 ;
@@ -64,6 +65,7 @@ exports.transfer_objects = {
                 var prof = new Profiler('/controllers/page/create_page');
                 var fid = page.registered ? page.service('facebook').sid : page.id;
                 if( !page.registered ) delete page.id;
+                
                 page.liked = false;
                 page.image = page.image;
                 page.like_url = burl('/facebook/'+fid+'/like.html');
