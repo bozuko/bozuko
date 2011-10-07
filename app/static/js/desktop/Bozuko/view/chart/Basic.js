@@ -25,7 +25,7 @@ Ext.define('Bozuko.view.chart.Basic', {
             me.totalsLabel = 'Campaign Totals';
         }
         else if( me.page_id ){
-            me.totalsLabel = 'Page Totals';
+            me.totalsLabel = 'Account Totals';
         }
         else {
             me.totalsLabel = 'Overall Totals';
@@ -41,6 +41,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 xtype           :'panel',
                 border          :'false',
                 anchor          :'0',
+                height          :30,
                 layout          :'hbox',
                 items           :[{xtype:'splitter', width: 60},{
                     xtype           :'combo',
@@ -105,7 +106,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 },{
                     xtype           :'component',
                     flex            :1,
-                    style           :'text-align:right; line-height: 20px; font-size: 16px; font-weight: bold; font-family: Tahoma; padding-right: 10px;',
+                    style           :'text-align:right; line-height: 20px; color: #666; font-size: 12px; font-weight: bold; font-family: Tahoma; padding-right: 10px;',
                     border          :false,
                     ref             :'chart-total'
                 }]
@@ -170,7 +171,8 @@ Ext.define('Bozuko.view.chart.Basic', {
                 }],
                 listeners : {
                     scope           :me,
-                    refresh         :me.onChartRefresh
+                    refresh         :me.onChartRefresh,
+                    render          :me.onChartRefresh
                 }
             },{
             
@@ -275,6 +277,29 @@ Ext.define('Bozuko.view.chart.Basic', {
         Bozuko.PubSub.subscribe('contest/play', filter, me.getCallback('play') );
         Bozuko.PubSub.subscribe('contest/win', filter, me.getCallback('win') );
         Bozuko.PubSub.subscribe('prize/redeemed', filter, me.getCallback('redeemed') );
+        
+        me.on('destroy', function(){
+            Bozuko.PubSub.unsubscribe('contest/entry', filter, me.getCallback('entry') );
+            Bozuko.PubSub.unsubscribe('contest/play', filter, me.getCallback('play') );
+            Bozuko.PubSub.unsubscribe('contest/win', filter, me.getCallback('win') );
+            Bozuko.PubSub.unsubscribe('prize/redeemed', filter, me.getCallback('redeemed') );
+        });
+        
+        me.chartStore.on('load', function(){
+            var axis = me.chart.axes.get(0);
+            var redraw = false;
+            if( !me.chartStore.sum('count') ){
+                redraw = !axis.maximum;
+                axis.minimum = 0;
+                axis.maximum = 10;
+            }
+            else{
+                redraw = axis.maximum;
+                delete axis.minimum;
+                delete axis.maximum;
+            }
+            if( redraw ) me.chart.redraw();
+        });
     },
     
     resume : function(){
@@ -342,13 +367,25 @@ Ext.define('Bozuko.view.chart.Basic', {
         else{
             total = me.addCommas(total);
         }
-        me.down('[ref=chart-total]').update(total+' <span style="font-weight: normal;">in this time period</span>');
+        me.down('[ref=chart-total]').update('<span style="color: #000;">'+total+'</span> <span style="font-weight: normal;">in this time period</span>');
         if( total == 0 ){
-            // lets mask the chart if there is no data...
-            // me.chart.getEl().mask('There is no data to display', 'no-data');
+            if( !me.chart.rendered ) return;
+            if( !me.chartMask ){
+                me.chart.getEl().setStyle('position','relative');
+                me.chartMask = me.chart.getEl().createChild({
+                    tag:'div',
+                    cls:'chart-mask',
+                    html: '<div class="bg"></div><div class="info"><div>There is no data to show for the chosen time period.</div></div>'
+                });
+                me.chartMask.setVisibilityMode( Ext.Element.DISPLAY );
+            }
+            me.chartMask.show();
         }
         else{
-            // me.chart.getEl().unmask();
+            if( me.chartMask && me.chartMask.isVisible() ){
+                me.chartMask.hide();
+                me.chart.forceComponentLayout();
+            }
         }
     },
     

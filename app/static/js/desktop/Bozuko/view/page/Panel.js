@@ -75,7 +75,9 @@ Ext.define('Bozuko.view.page.Panel', {
                 }]
             },{
                 region          :'center',
-                layout          :'card',
+                layout          :{
+                    type            :'card'
+                },
                 ref             :'pages',
                 border          :false,
                 activeItem      :0,

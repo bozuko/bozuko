@@ -49,7 +49,9 @@ Ext.define('Bozuko.controller.Pages' ,{
             },
             'pagewelcome' : {
                 'welcomeloaded' : function(panel){
+                    
                     var nav = panel.up('pagepanel').down('toolbar[ref=navigation]');
+                    
                     // attach handlers to buttons, etc
                     panel.getEl().select('.ilink').on('click', function(e, t){
                         // open this up...
@@ -57,14 +59,17 @@ Ext.define('Bozuko.controller.Pages' ,{
                             t = Ext.fly(t).up('.ilink').dom;
                         }
                         var rel = t.getAttribute('rel');
+                        
                         if( rel == 'create-campaign'){
                             var btn = nav.down('button[page=campaigns]');
                             me.changePage(btn);
-                            var builder_btn = panel.up('pagepanel').down('contestspanel button[action=builder]');
-                            builder_btn.fireEvent('click', builder_btn);
+                            return setTimeout(function(){
+                                var builder_btn = panel.up('pagepanel').down('contestspanel button[action=builder]');
+                                builder_btn.fireEvent('click', builder_btn);
+                            },0);
                         }
                         var btn = nav.down('button[page='+rel+']');
-                        me.changePage(btn);
+                        return me.changePage(btn);
                     });
                     
                     panel.getEl().select('.welcome li').addClsOnOver('hover');
@@ -199,11 +204,11 @@ Ext.define('Bozuko.controller.Pages' ,{
             width : 420,
             msg: 'Need a hand with something? We are happy to help. '+
                  'While we are working on our documentation, feel free to contact us.'+
-                 '<div style="padding-left: 40px; padding-bottom: 10px; font-family: ArvoRegular;">'+
+                 '<div style="padding-left: 40px; padding-bottom: 0px; font-family: ArvoRegular;">'+
                  '<div style="margin: 10px 0; padding-left: 40px; line-height: 24px; font-size: 16px; background: transparent url(/images/icons/24/email.png) 10px 0 no-repeat;">'+
                  '<a href="mailto:support@bozuko.com">support@bozuko.com</a>'+
                  '</div>'+
-                 '<div style="margin: 10px 0; padding-left: 40px; line-height: 24px; font-size: 16px; background: transparent url(/images/icons/24/phone.png) 10px 0 no-repeat;">'+
+                 '<div style="margin: 10px 0 0; padding-left: 40px; line-height: 24px; font-size: 16px; background: transparent url(/images/icons/24/phone.png) 10px 0 no-repeat;">'+
                  '(415) 226-9856'+
                  '</div>'+
                  '</div>'

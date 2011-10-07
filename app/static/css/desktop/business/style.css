@@ -1319,7 +1319,38 @@ h1.intro {
 .welcome .resources h3 {
   background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-24.png");
 }
-.no-data div {
-  background-image: none;
-  padding-left: 10px;
+.chart-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+.chart-mask .bg {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  z-index: 1;
+  background: #fff;
+  -moz-opacity: 0.6;
+  -khtml-opacity: 0.6;
+  opacity: 0.6;
+}
+.chart-mask .info {
+  z-index: 10;
+  position: absolute;
+  left: 20%;
+  width: 60%;
+  top: 30%;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+.chart-mask .info div {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: #f3f3f3;
 }

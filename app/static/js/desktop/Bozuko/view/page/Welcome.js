@@ -32,20 +32,23 @@ Ext.define('Bozuko.view.page.Welcome' ,{
                             }]
                         })
                         */
-                        panel.loadPage();
+                        panel.loadPage(panel);
                     }
                 },
-                loadPage : function(){
-                    var panel = this;
+                loadPage : function(panel){
+                
                     panel.setLoading(true);
                     Ext.Ajax.request({
                         url             :Bozuko.Router.route('/welcome/'+me.page.get('_id')),
                         method          :'GET',
                         success         :function(response){
                             panel.setLoading(false);
-                            panel.update(response.responseText, true, function(){
+                            panel.update(response.responseText);
+                            var deferredEvent = Ext.Function.createDelayed(function(){
                                 me.fireEvent('welcomeloaded', panel);
-                            });
+                            }, 250);
+                            if( panel.rendered ) deferredEvent();
+                            else panel.on('render', deferredEvent);
                         }
                     });
                 }

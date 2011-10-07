@@ -156,7 +156,8 @@ CountsReport.prototype.run = function run(callback){
             
             var end = +selector[timeField].$lt-tzOffset-1000;
             var useCache = false, cacheKey='', cacheValue;
-            if( end < Date.now() ){
+            // TODO - remove false and actually use caching...
+            if( false && end < Date.now() ){
                 
                 var filter = opts.distinctFilter ? opts.distinctFilter.toString() : false;
                 if( filter ) filter = crypto.createHash('sha1').update(filter).digest('hex');
