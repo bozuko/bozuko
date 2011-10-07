@@ -292,12 +292,10 @@ Ext.define('Bozuko.view.chart.Basic', {
                 
             if( !total ){
                 redraw = !axis.maximum;
-                axis.minimum = 0;
                 axis.maximum = 10;
             }
             else{
                 redraw = axis.maximum;
-                delete axis.minimum;
                 delete axis.maximum;
             }
             if( redraw ) me.chart.redraw();
