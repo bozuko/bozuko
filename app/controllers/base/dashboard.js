@@ -1375,7 +1375,7 @@ exports.routes = {
                         // activate page if its not active yet
                         Bozuko.models.Page.findById( contest.page_id, function(error, page){
                             if( error ) return;
-                            if( !page.active ){
+                            if( !page.active && page.name != 'Admin Demo' ){
                                 page.active = true;
                                 page.save();
                             }
