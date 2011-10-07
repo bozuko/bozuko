@@ -331,6 +331,32 @@ exports['spend credits - fail'] = function(test) {
     });
 };
 
+exports['audit - ensure no transactions missing txids'] = function(test) {
+    Bozuko.models.Customer.audit(function(err, customers) {
+        test.ok(!err);
+        test.equal(customers.missing_txids.length, 0);
+        test.done();
+    });
+};
+
+exports['audit - check for transactions missing txids'] = function(test) {
+    customer.transactions.push({
+        _id: new ObjectId(),
+        credits: 5000,
+        timestamp: new Date()
+    });
+    customer.save(function(err) {
+        test.ok(!err);
+        
+        Bozuko.models.Customer.audit(function(err, customers) {
+            test.ok(!err);
+            test.equal(customers.missing_txids.length, 1);
+            test.equal(String(customers.missing_txids[0]),  String(customer._id));
+            test.done();
+        });
+    });
+};
+
 /*
  * SUBSCRIPTION TESTS
  */
@@ -385,7 +411,8 @@ exports['cancel active subscription - success'] = function(test) {
     });
 };
 
-// We always allow cancelling subscriptions. Only if there is a service error will an error be returned.
+// We always allow cancelling subscriptions. Only if there is a service error
+// from braintree will an error be returned.
 exports['cancel active subscription again - success'] = function(test) {
     customer.cancelActiveSubscription(gateway, function(err) {
         test.ok(!err);

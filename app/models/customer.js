@@ -18,7 +18,7 @@ var Subscription = new Schema({
 
 var Transaction = new Schema({
     _id               :{type:ObjectId},
-    txid              :{type:String},
+    txid              :{type:String, index: true},
     credits           :{type:Number},
     timestamp         :{type:Date}
 });
@@ -157,6 +157,24 @@ Customer.method('spendCredits', function(credits, callback) {
         });
 });
 
+Customer.static('audit', function(callback) {
+    var customers = {
+        missing_txids: []
+    };
+    // Find all customers with transactions that are missing txid's
+    Bozuko.models.Customer.find(
+        {'transactions.txid': {$exists: false}, 'transactions._id': {$exists: true}}, 
+        {_id: 1}, 
+        function(err, missing_txids) {
+            if (err) return callback(err);
+            missing_txids.forEach(function(customer) {
+                customers.missing_txids.push(customer._id);
+            });
+            return callback(null, customers);        
+        }
+    );
+});
+
 Customer.method('createTransaction', function(gateway, opts, callback) {
     var self = this;
     if (this.type === 'free') return callback(Bozuko.error('customer/free'));
@@ -284,7 +302,7 @@ Customer.method('rollbackActiveSubscription', function(err, id, callback) {
     var self = this;
     return Bozuko.models.Customer.collection.update(
         {_id: this._id},
-        {$pull: {subscriptions : {_id: id}}},
+        {$pull: {subscriptions : {_id: id}}, $set: {type: 'free'}},
         {safe: safe}, function(error) {
             if (error) {
                 // ***ALERT POINT*** - This isn't really an issue, since createActiveSubscription 
