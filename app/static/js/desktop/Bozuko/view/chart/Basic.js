@@ -286,9 +286,11 @@ Ext.define('Bozuko.view.chart.Basic', {
         });
         
         me.chartStore.on('load', function(){
-            var axis = me.chart.axes.get(0);
-            var redraw = false;
-            if( !me.chartStore.sum('count') ){
+            var axis = me.chart.axes.get(0),
+                redraw = false,
+                total = String(me.chartStore.sum('count'));
+                
+            if( !total ){
                 redraw = !axis.maximum;
                 axis.minimum = 0;
                 axis.maximum = 10;
@@ -299,6 +301,40 @@ Ext.define('Bozuko.view.chart.Basic', {
                 delete axis.maximum;
             }
             if( redraw ) me.chart.redraw();
+            
+            if( me.modelField.getValue().match(/cost/i)){
+                total = Ext.util.Format.usMoney(total);
+            }
+            else{
+                total = me.addCommas(total);
+            }
+            var drawStuff = function(){
+                me.down('[ref=chart-total]').update('<span style="color: #000;">'+total+'</span> <span style="font-weight: normal;">in this time period</span>');
+                if( total == 0 ){
+                    if( !me.chart.rendered ) return;
+                    if( !me.chartMask ){
+                        me.chart.getEl().setStyle('position','relative');
+                        me.chartMask = me.chart.getEl().createChild({
+                            tag:'div',
+                            cls:'chart-mask',
+                            html: '<div class="bg"></div><div class="info"><div>There is no data to show for the chosen time period.</div></div>'
+                        });
+                        me.chartMask.setVisibilityMode( Ext.Element.DISPLAY );
+                    }
+                    me.chartMask.show();
+                }
+                else{
+                    if( me.chartMask && me.chartMask.isVisible() ){
+                        me.chartMask.hide();
+                        me.chart.forceComponentLayout();
+                    }
+                }
+            };
+            if( me.chart.rendered ){
+                drawStuff();
+            }
+            else me.chart.on('render', drawStuff);
+            
         });
     },
     
@@ -357,36 +393,7 @@ Ext.define('Bozuko.view.chart.Basic', {
     },
     
     onChartRefresh : function(){
-        var me = this;
-        // add up everything...
-        var total = String(me.chartStore.sum('count'));
         
-        if( me.modelField.getValue().match(/cost/i)){
-            total = Ext.util.Format.usMoney(total);
-        }
-        else{
-            total = me.addCommas(total);
-        }
-        me.down('[ref=chart-total]').update('<span style="color: #000;">'+total+'</span> <span style="font-weight: normal;">in this time period</span>');
-        if( total == 0 ){
-            if( !me.chart.rendered ) return;
-            if( !me.chartMask ){
-                me.chart.getEl().setStyle('position','relative');
-                me.chartMask = me.chart.getEl().createChild({
-                    tag:'div',
-                    cls:'chart-mask',
-                    html: '<div class="bg"></div><div class="info"><div>There is no data to show for the chosen time period.</div></div>'
-                });
-                me.chartMask.setVisibilityMode( Ext.Element.DISPLAY );
-            }
-            me.chartMask.show();
-        }
-        else{
-            if( me.chartMask && me.chartMask.isVisible() ){
-                me.chartMask.hide();
-                me.chart.forceComponentLayout();
-            }
-        }
     },
     
     loadStore : function(){
