@@ -724,7 +724,7 @@ Page.static('search', function(options, callback){
             // serviceSearch = false;
         }
     }
-
+    
     // utility functions
     function prepare_pages(pages, user, fn){
         var prof = new Profiler('/models/page/search/prepare_pages');
@@ -758,8 +758,23 @@ Page.static('search', function(options, callback){
                 }
             });
         }
+        
+        if( options.user && options.user.manages && options.user.manages.length ){
+            var selector = {
+                name: 'Admin Demo',
+                _id: {$in: options.user.manages}
+            }
+            return Bozuko.models.Page.findOne( selector, function(error, page){
+                if( !error && page ){
+                    pages.unshift(page);
+                    page.registered = true;
+                }
+                prof.stop();
+                return callback( null, pages );
+            });
+        }
         prof.stop();
-        callback( null, pages );
+        return callback( null, pages );
     }
 
     return Bozuko.models.Page.getFeaturedPages(getFeatured ? Bozuko.cfg('search.featuredResults',1) : 0, options.ll, function(error, featured){
@@ -774,7 +789,6 @@ Page.static('search', function(options, callback){
                 $nin: featured_ids
             };
         }
-        
         
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
@@ -810,7 +824,6 @@ Page.static('search', function(options, callback){
                 var service = options.service || Bozuko.config.defaultService;
 
                 return Bozuko.service(service).search(options, function(error, _results){
-                    
                     
                     if( error ){
 
