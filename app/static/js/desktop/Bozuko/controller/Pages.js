@@ -209,7 +209,7 @@ Ext.define('Bozuko.controller.Pages' ,{
                  '<a href="mailto:support@bozuko.com">support@bozuko.com</a>'+
                  '</div>'+
                  '<div style="margin: 10px 0 0; padding-left: 40px; line-height: 24px; font-size: 16px; background: transparent url(/images/icons/24/phone.png) 10px 0 no-repeat;">'+
-                 '(415) 2BOZUKO'+
+                 '415 - 2BOZUKO'+
                  '</div>'+
                  '</div>'
         });
