@@ -1041,7 +1041,7 @@ exports.routes = {
         /* update */
         put : {
             handler : function(req,res){
-                
+                var self = this;
                 if( this.restrictToUser && !~indexOf( req.session.user.manages, req.param('id') ) ){
                     return Bozuko.error('bozuko/auth').send(res);
                 }
@@ -1049,6 +1049,9 @@ exports.routes = {
                     if( error ) return error.send( res );
                     // else, lets bind the reqest to the page
                     var data = req.body;
+                    if( self.restrictToUser ){
+                        delete data.active;
+                    }
                     delete data.admins;
                     delete data._id;
                     page.set( data );
@@ -1375,7 +1378,7 @@ exports.routes = {
                         // activate page if its not active yet
                         Bozuko.models.Page.findById( contest.page_id, function(error, page){
                             if( error ) return;
-                            if( !page.active ){
+                            if( !page.active && page.name != 'Admin Demo' ){
                                 page.active = true;
                                 page.save();
                             }
