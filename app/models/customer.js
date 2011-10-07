@@ -4,7 +4,8 @@ var mongoose = require('mongoose'),
     Oid = mongoose.Types.ObjectId,
     inspect = require('util').inspect,
     BraintreeGateway = Bozuko.require('util/braintree'),
-    async = require('async')
+    async = require('async'),
+    mail = Bozuko.require('util/mail')
 ;
 
 var oneday = 24*60*60*1000;
@@ -41,6 +42,9 @@ var Customer = module.exports = new Schema({
 }, {safe: safe});
 
 
+/*
+ * @idempotent
+ */
 Customer.static('replenishCredits', function(callback) {
     var now = new Date();
     Bozuko.models.Customer._replenishCredits(now, callback);
@@ -102,6 +106,9 @@ function createGatewayCustomer(gateway, opts, customer, callback) {
     });
 }
 
+/*
+ * @idempotent
+ */
 Customer.static('create', function(gateway, opts, callback) {
     if (!opts.page_id) {
         return callback(Bozuko.error('customer/no_page_id'));
@@ -186,9 +193,13 @@ Customer.method('createTransaction', function(gateway, opts, callback) {
                     return Bozuko.models.Customer.findAndModify({_id: self._id}, [],
                         {$inc: {credits: -1*transaction.credits}, $pop : {transactions: 1}},
                         {safe: safe}, function(err) {
-                            // Nothing we can really do automatically on this error. Just log it.
-                            if (err) console.error('failed to rollback transaction for customer '+
-                                self._id+' error = '+err);
+                            if (err) {
+                                // ***ALERT POINT*** - This is uncrecoverable without intervention
+                                var msg = 'Failed to rollback transaction for customer '+self._id+
+                                    ", mongo transaction id = "+opts.orderId+', error = '+err;
+                                console.error(msg);
+                                sendEmail(msg);
+                            }
                             return callback(error);
                         }
                     );
@@ -203,9 +214,12 @@ Customer.method('createTransaction', function(gateway, opts, callback) {
                     {}, 
                     function(err) {
                         if (err) {
-                            console.error("Failed to save txid for successful transaction: "+
+                            //***ALERT POINT*** - This is uncrecoverable without intervention
+                            var msg = "Failed to save txid for successful transaction: "+
                             "customer._id = "+self._id+", mongo transaction id = "+opts.orderId+
-                            ", bt transaction id = "+result.transaction.id+", err = "+err);
+                            ", bt transaction id = "+result.transaction.id+", err = "+err;
+                            console.error(msg);
+                            sendEmail(msg);
                         }
                         return callback(null, result); 
                     }
@@ -273,18 +287,20 @@ Customer.method('rollbackActiveSubscription', function(err, id, callback) {
         {$pull: {subscriptions : {_id: id}}},
         {safe: safe}, function(error) {
             if (error) {
-                // Nothing we can do with it. We're already returning the gateway error.
-                // Log it for now
-                console.error('failed to rollback subscription for customer '+
-                    self._id+", subscription id = "+id);
+                // ***ALERT POINT*** - This isn't really an issue, since createActiveSubscription 
+                // will just reuse the one in mongo
+                var msg = 'failed to rollback subscription for customer '+self._id+", subscription id = "+id;
+                console.error(msg);
+                sendEmail(msg);
             }
             return callback(err);
         }
     );
 });
 
+
+// Creating a subscription changes a 'free' customer to a 'premium' customer
 Customer.method('createActiveSubscription', function(gateway, opts, callback) {
-    if (this.type === 'free') return callback(Bozuko.error('customer/free'));
     var self = this;
 
     this.getActiveSubscription(function(err, active_sub) {
@@ -304,7 +320,7 @@ Customer.method('createActiveSubscription', function(gateway, opts, callback) {
 
         var sub = {_id: new Oid(), active: true};
         return Bozuko.models.Customer.update({_id: self._id},
-            {$push: {subscriptions: sub}}, {}, function(err) {
+            {$push: {subscriptions: sub}, $set: {type: 'premium'}}, {}, function(err) {
                 if (err) return callback(err); 
                 opts.id = String(sub._id);
                 gateway.subscription.create(opts, function(err, result) {
@@ -341,6 +357,7 @@ function cancelGatewaySubscriptions(gateway, subscriptions, callback) {
     });
 };
 
+// TODO: Subtract credits? 
 Customer.method('cancelActiveSubscription', function(gateway, callback) {
     var self = this;
     this.getActiveSubscription(function(err, active_sub, customer) {
@@ -349,7 +366,7 @@ Customer.method('cancelActiveSubscription', function(gateway, callback) {
         if (!active_sub) return cancelGatewaySubscriptions(gateway, subscriptions, callback);
         Bozuko.models.Customer.collection.update(
             {_id: self._id, 'subscriptions.active': true}, 
-            {$set: {'subscriptions.$.active': false}},
+            {$set: {'subscriptions.$.active': false, type: 'free'}},
             {safe: safe}, function(err) {
                 if (err) return callback(err);
                 cancelGatewaySubscription(gateway, String(active_sub._id), callback);
@@ -357,3 +374,16 @@ Customer.method('cancelActiveSubscription', function(gateway, callback) {
         );
     });
 });
+
+function sendEmail(msg) {
+    return mail.send({
+        to: 'dev@bozuko.com',
+        subject: 'ALERT: Customer Payment',
+        body: msg
+    }, function(err, success) {
+        if (err) console.error("Email Err = "+err);
+        if (err || !success) {
+            console.error("Error sending customer payment alert email");
+        }
+    });
+}

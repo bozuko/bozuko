@@ -335,16 +335,6 @@ exports['spend credits - fail'] = function(test) {
  * SUBSCRIPTION TESTS
  */
 
-exports['create active subscription for free user - fail'] = function(test) {
-    free_customer.createActiveSubscription(gateway, {
-        paymentMethodToken: cc_token,
-        planId: 'monthly_subscription'
-    }, function(err, result) {
-        test.ok(err);
-        test.equal(err.name, 'customer/free');
-        test.done();
-    });
-};
 
 exports['create active subscription - success'] = function(test) {
     customer.createActiveSubscription(gateway, {
@@ -385,6 +375,9 @@ exports['cancel active subscription - success'] = function(test) {
             }
             test.equal(active_ct, 0);
 
+            // When a subscription is cancelled, the customer is no longer a premium customer
+            test.equal(cust.type, 'free');
+
             // use latest db info for customer
             customer = cust;
             test.done();
@@ -402,6 +395,7 @@ exports['cancel active subscription again - success'] = function(test) {
 
 exports['create another active subscription with sub on mongo but not braintree - success'] = function(test) {
     customer.subscriptions.push({_id: new ObjectId(), active:true});
+    customer.type = 'premium'; // This is what normally happens during a createActiveSubscription call
     customer.save(function(err) {
         test.ok(!err);
         customer.createActiveSubscription(gateway, {
@@ -409,7 +403,7 @@ exports['create another active subscription with sub on mongo but not braintree 
             planId: 'monthly_subscription'
         }, function(err, result) {
             test.ok(!err);
-            Bozuko.models.Customer.count({_id: customer._id, 'subscriptions.active': true}, 
+            Bozuko.models.Customer.count({_id: customer._id, 'subscriptions.active': true, type: 'premium'}, 
                 function(err, count) {
                     test.equal(count, 1);
                     test.done();
@@ -444,6 +438,7 @@ exports['cancel subscription with active sub in braintree but no active sub in m
         test.equal(active_ct, 1);
         customer = cust;
         customer.subscriptions[customer.subscriptions.length-1].active = false;
+        customer.type = 'free';
         customer.save(function(err) {
             test.ok(!err);
             customer.cancelActiveSubscription(gateway, function(err) {
@@ -457,7 +452,11 @@ exports['cancel subscription with active sub in braintree but no active sub in m
 exports['cancel the last subscription added - success'] = function(test) {
     customer.cancelActiveSubscription(gateway, function(err) {
         test.ok(!err);
-        test.done();
+        Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
+            test.ok(!err);
+            test.equal(cust.type, 'free');
+            test.done();
+        });
     });
 };
 
@@ -467,7 +466,11 @@ exports['create new subscription to bill immediately - success'] = function(test
         planId: 'bill_immediately'
     }, function(err, result) {
         test.ok(!err);
-        test.done();
+        Bozuko.models.Customer.findOne({_id: customer._id}, function(err, cust) {
+            test.ok(!err);
+            test.equal(cust.type, 'premium');
+            test.done();
+        });
     });
 };
 
