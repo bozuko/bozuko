@@ -38,7 +38,7 @@ Ext.define('Bozuko.view.contests.Panel', {
             activeItem: 0,
             items : [{
                 xtype           :'panel',
-                layout          :'fit',
+                autoScroll      :true,
                 border          :false,
                 tbar            :tbar,
                 items :[{
