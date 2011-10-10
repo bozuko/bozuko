@@ -33,8 +33,8 @@ var safe = {w:2, wtimeout: 10000};
 var Customer = module.exports = new Schema({
     type                      :{type:String, 'enum': ['free', 'premium']},
     credits                   :{type:Number, default: 0},
-    last_replenish            :{type:Date},
-    replenish_day             :{type:Number},
+    last_replenish            :{type:Date, index: true},
+    replenish_day             :{type:Number, index: true},
     page_id                   :{type:ObjectId, index: {unique: true}},
     created                   :{type:Date},
     subscriptions             :[Subscription],
@@ -59,25 +59,15 @@ Customer.static('_replenishCredits', function(now, callback) {
     // Only replenish an object if it wasn't replenished today.
     var modification_thresh = new Date(now.getTime() - oneday);
 
-    // Reset free customer credits to free_credits
     Bozuko.models.Customer.update(
-        {type: 'free', replenish_day: day, last_replenish: {$lt: modification_thresh}},
-        {$set: {credits: free_credits}},
+        {type: 'premium', replenish_day: day, last_replenish: {$lt: modification_thresh}},
+        {$inc: {credits: free_credits}},
         {multi: true},
         function(err) {
             if (err) return callback(err);
-            // Add free_credits to premium customers accounts
-            Bozuko.models.Customer.update(
-                {type: 'premium', replenish_day: day, last_replenish: {$lt: modification_thresh}},
-                {$inc: {credits: free_credits}},
-                {multi: true},
-                function(err) {
-                    if (err) return callback(err);
-                    return callback(null);
-                }
-            );
+            return callback(null);
         }
-    );        
+    );
 });
 
 function getCustomerStatus(gateway, page_id, callback) {
