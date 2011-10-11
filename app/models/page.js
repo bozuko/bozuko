@@ -759,7 +759,7 @@ Page.static('search', function(options, callback){
             });
         }
         
-        if( options.user && options.user.manages && options.user.manages.length ){
+        if( !options.favorites && options.user && options.user.manages && options.user.manages.length ){
             var selector = {
                 name: 'Admin Demo',
                 _id: {$in: options.user.manages}
