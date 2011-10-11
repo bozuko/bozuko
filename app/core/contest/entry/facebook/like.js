@@ -2,7 +2,10 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
     _t = Bozuko.t,
     DateUtil = Bozuko.require('util/date'),
     burl = Bozuko.require('util/url').create,
-    dateFormat = require('dateformat');
+    dateFormat = require('dateformat'),
+    inspect = require('util').inspect,
+    Geo = Bozuko.require('util/geo')
+;
 
 /**
  * Facebook Checkin
@@ -53,9 +56,20 @@ FacebookLikeMethod.prototype.list_message = 'Facebook Like required';
  *
  */
 FacebookLikeMethod.prototype.defaults = {
-    duration: 1000*60*60*1
+    duration: 1000*60*60*1,
+    options: {
+        radius: null
+    }
 };
 
+/**
+ * Get list message used in 'game' transfer object
+ * 
+ */
+FacebookLikeMethod.prototype.getListMessage = function(){
+    if (this.config.options.radius) return "Facebook Like and location required";
+    return this.list_message;
+};
 
 /**
  * Get Description - allow for formatting.
@@ -69,10 +83,15 @@ FacebookLikeMethod.prototype.getDescription = function(callback){
         // get the number of minutes:
         var duration = DateUtil.duration( self.config.duration, true );
         var description = "Like us on Facebook\n";
-            description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+
+        if (self.config.options.radius) {
+            description += 'You must be within '+self.config.options.radius+ ' miles\n';
+        }
+
+        description+=self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
             
         if( !self.user || (self.page && !self.user.likes(self.page))){
-            description+="\nTap Like and wait a second."
+            description+="\nTap Like and wait a second.";
         }
     
         return callback(error, description);
@@ -94,7 +113,7 @@ FacebookLikeMethod.prototype.getHtmlDescription = function(){
 };
 
 FacebookLikeMethod.prototype.getEntryRequirement = function(){
-    return 'Must "Like" this pages Facebook page to enter. ';
+    return 'Must "Like" this page\'s Facebook page to enter. ';
 };
 
 /**
@@ -124,7 +143,7 @@ FacebookLikeMethod.prototype.process = function( callback ){
 
     // lets process this...
     var self = this;
-    
+
     return EntryMethod.prototype.process.call(self, function(error, entry){
         if( error ) return callback( error );
         // this might be a share...
@@ -142,11 +161,26 @@ FacebookLikeMethod.prototype.process = function( callback ){
 
 FacebookLikeMethod.prototype.validate = function( callback ){
     var self = this;
+
     self.load(function(error){
         if( error ) return callback(error);
         if( !self.user || !self.page || !self.user.likes(self.page) ){
             return callback(null, false);
         }
+
+        // Only let this user enter the contest if they are within the like radius
+        if (self.config.options.radius) {
+            var distance = Geo.distance(self.options.ll, self.page.coords);
+            if (distance > self.config.options.radius) {
+                var data = {
+                    user: self.user,
+                    distance: Math.round(distance*10)/10,
+                    radius: self.config.options.radius
+                };
+                return callback(Bozuko.error('entry/too_far', data));
+            }
+        }
+
         return EntryMethod.prototype.validate.call(self, callback);
     });
 };
