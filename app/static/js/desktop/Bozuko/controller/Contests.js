@@ -555,8 +555,8 @@ Ext.define('Bozuko.controller.Contests' ,{
         
         Ext.Msg.confirm(
             'Are you sure?',
-            'By clicking yes, you confirm that your '+
-            'prizes abide by all State and Federal Laws. Once a contest is published '+
+            'By clicking yes, you confirm that all your available '+
+            'prizes comply with all state and federal laws. Once a contest is published '+
             'it can no longer be edited. Are you sure you want to publish this campaign?',
             function(answer){
                 if( answer != 'ok' && answer != 'yes' ) return;
