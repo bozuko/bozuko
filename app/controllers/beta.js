@@ -23,6 +23,7 @@ exports.locals = {
     home_link: '/beta',
     home_title: 'Bozuko Beta',
     layout: 'beta/layout',
+    device: 'desktop',
     title: 'Bozuko Beta',
     meta: {
         'charset':'utf-8',
