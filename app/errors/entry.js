@@ -10,6 +10,20 @@ module.exports = {
         return "User cannot enter this contest again until "+next;
     },
     db_error            : "Unknown DB error",
-    process_no_user     :"Cannot process an entry without a valid user."
+    process_no_user     :"Cannot process an entry without a valid user.",
 
+    too_far: {
+        code: 500,
+        title: "So far away...",
+        message: function(){
+            if( !this.data.user || this.data.user.phone !== 'iphone' ){
+                return "You are "+this.data.distance+" miles away. You must be within "+
+                this.data.radius+" miles.";
+            }
+            return "You are "+this.data.distance+" miles away. You must be within "+
+                this.data.radius+" miles. "+
+                "Please try going back to the Nearby list and pulling down to refresh your location.";
+        },
+        detail: "User is too far away from this location to enter the contest."
+    }
 };
