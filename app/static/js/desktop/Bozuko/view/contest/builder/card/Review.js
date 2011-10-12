@@ -15,7 +15,8 @@ Ext.define('Bozuko.view.contest.builder.card.Review', {
         if( me.contest && me.contest.get('active') ) me.name = 'Review';
         Ext.apply( me.form, {
             xtype               :'contestreview',
-            contest             :me.contest
+            contest             :me.contest,
+            editable            :true
         });
         me.callParent();
         me.on('activate', me.refresh, me);

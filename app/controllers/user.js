@@ -195,6 +195,7 @@ exports.routes = {
         get : {
 
             handler: function(req,res){
+                req.session.destroy();
                 return res.send( {success: true, title: "Logout", message: "You have been logged out"} );
             }
         }

@@ -1417,6 +1417,16 @@ exports.routes = {
         }
     },
     
+    '/contest/rules' : {
+        post : {
+            handler : function(req,res){
+                // get the contest
+                delete req.body.rules;
+                var contest = new Bozuko.models.Contest(req.body);
+                return res.send( contest.getOfficialRules() );
+            }
+        }
+    },
     
     '/s3/*' : {
         get :{

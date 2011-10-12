@@ -286,10 +286,10 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
     
     validate : function(){
         var me = this;
-        if( me.contest.get('total_entries') > 2500 ){
+        if( me.contest.get('total_entries') > 1500 ){
             // check page...
             if( !me.up('pagepanel').page.get('name').match(/(bozuko|demo)/i) ){
-                return "This contest is too large. The total number of entries must be less than 2,500";
+                return "This contest is too large. The maximum total number of entries is 1,500";
             }
         }
         return true;

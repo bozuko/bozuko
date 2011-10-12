@@ -7,6 +7,7 @@ var mongoose = require('mongoose'),
     Phone = require('./embedded/user/phone'),
     async = require('async'),
     merge = Bozuko.require('util/object').merge,
+    httpsUrl = Bozuko.require('util/functions').httpsUrl,
     DateUtil = Bozuko.require('util/date')
     ;
     
@@ -18,7 +19,7 @@ var User = module.exports = new Schema({
     challenge           :{type:Number},
     first_name          :{type:String, index: true},
     last_name           :{type:String, index: true},
-    image               :{type:String},
+    image               :{type:String, get: httpsUrl},
     gender              :{type:String},
     suspect             :{type:Boolean},
     blocked             :{type:Boolean, default: false},
