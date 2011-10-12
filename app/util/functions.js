@@ -65,9 +65,24 @@ function htmlEntities(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function httpsUrl(url){
+    if( !url ) return url;
+    if( url.match(/^http\:/) ){
+        if( url.match(/^graph\.facebook\.com/) ){
+            return url.replace(/^http\:/, 'https:');
+        }
+        if( url.match(/s3\.amazonaws\.com/) ){
+            return url.replace(/^http\:/, 'https:');
+        }
+        // we should have some type of ssl redirector
+    }
+    return url;
+}
+
 exports.htmlEntities = htmlEntities;
 exports.indexOf = indexOf;
 exports.filter = filter;
 exports.merge = object.merge;
 exports.clone = object.clone;
 exports.map = map;
+exports.httpsUrl = httpsUrl;

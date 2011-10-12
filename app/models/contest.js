@@ -208,71 +208,96 @@ Contest.method('validateResults', function(callback) {
 
 
 Contest.method('getOfficialRules', function(){
-    if( this.rules ) return this.rules;
-    if( this.auto_rules ){
-        var rules = Content.get('app/rules.txt');
-        var replacements = {
-            start_date : dateFormat(this.start, 'mmmm dd, yyyy'),
-            start_time : dateFormat(this.start, 'hh:MM TT'),
-            end_date : dateFormat(this.end, 'mmmm dd, yyyy'),
-            end_time : dateFormat(this.end, 'hh:MM TT'),
-            age_limit : 16,
-            page_url : 'https://bozuko.com/p/'+this.page_id,
-            winners_list_url : 'https://bozuko.com/p/'+this.page_id+'/winners/'+this.id
-        };
-        var map = [
-            "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth",
-            "Ninth", "Tenth", "Eleventh", "Twelvth", "Thirteenth", "Fourteenth", "Fifteenth",
-            "Sixteenth", "Seventeenth", 'Eighteenth', "Twentieth", "Twentyfirst", "Twentysecond",
-            "Twentythird", "Twentyfouth", "Twentyfifth", "Twentysixth", "Twenthseventh", "Twentyeigth",
-            "Twentyninth", "Thirtieth"
-        ];
-        var prizes = this.prizes.slice(),
-            consolation_prizes = this.consolation_prizes.slice(),
-            self = this,
-            prizes_str = '';
+    
+	var rules = Content.get('app/rules.txt');
+	var replacements = {
+		start_date : dateFormat(this.start, 'mmmm dd, yyyy'),
+		start_time : dateFormat(this.start, 'hh:MM TT'),
+		end_date : dateFormat(this.end, 'mmmm dd, yyyy'),
+		end_time : dateFormat(this.end, 'hh:MM TT'),
+		age_limit : 16,
+		page_url : 'https://bozuko.com/p/'+this.page_id,
+		winners_list_url : 'https://bozuko.com/p/'+this.page_id+'/winners/'+this.id
+	};
+	var map = [
+		"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth",
+		"Ninth", "Tenth", "Eleventh", "Twelvth", "Thirteenth", "Fourteenth", "Fifteenth",
+		"Sixteenth", "Seventeenth", 'Eighteenth', "Twentieth", "Twentyfirst", "Twentysecond",
+		"Twentythird", "Twentyfouth", "Twentyfifth", "Twentysixth", "Twenthseventh", "Twentyeigth",
+		"Twentyninth", "Thirtieth"
+	];
+	var prizes = this.prizes.slice(),
+		consolation_prizes = this.consolation_prizes.slice(),
+		self = this,
+		prizes_str = '';
 
-        prizes.sort( function(a, b){
-            return b.value - a.value;
-        });
-        consolation_prizes.sort( function(a, b){
-            return b.value - a.value;
-        });
-        var total = 0;
-        prizes.forEach(function(prize, i){
-            var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
-            prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
-            if( prize.details ) prizes_str+= prizes.details+' ';
-            var gcd = getGCD( prize.total, self.total_plays );
+	prizes.sort( function(a, b){
+		return b.value - a.value;
+	});
+	consolation_prizes.sort( function(a, b){
+		return b.value - a.value;
+	});
+	var total = 0, total_plays = this.getTotalPlays();
+	prizes.forEach(function(prize, i){
+		var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
+		prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
+		if( prize.details ) prizes_str+= prizes.details+' ';
+		var gcd = getGCD( prize.total, self.total_plays );
 
-            prizes_str+= 'Odds of winning are '+(prize.total/gcd)+' / '+ (self.total_plays/gcd)+'. ';
-            total = prize.value * prize.total;
-        });
+		prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
+		total = prize.value * prize.total;
+	});
 
-        consolation_prizes.forEach(function(prize, i){
-            var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
-            prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
-            if( prize.details ) prizes_str+= prizes.details+' ';
-            var gcd = getGCD( prize.total, self.total_plays );
+	consolation_prizes.forEach(function(prize, i){
+		var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
+		prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
+		if( prize.details ) prizes_str+= prizes.details+' ';
+		var gcd = getGCD( prize.total, self.total_plays );
 
-            prizes_str+= 'Odds of winning are '+(prize.total/gcd)+' / '+ (self.total_plays/gcd)+'. ';
-            total = prize.value * prize.total;
-        });
+		prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
+		total = prize.value * prize.total;
+	});
 
-        replacements.prizes = prizes_str;
-        replacements.arv = '$'+total;
+	replacements.prizes = prizes_str;
+	replacements.arv = '$'+total;
 
-        var config = this.entry_config[0];
-        var entryMethod = Bozuko.entry( config.type );
-        replacements.entry_requirement = entryMethod.getEntryRequirement();
+	var config = this.entry_config[0];
+	var entryMethod = Bozuko.entry( config.type );
+	replacements.entry_requirement = entryMethod.getEntryRequirement();
 
-        rules = rules.replace(/\{\{([a-zA-Z0-9_-]+)\}\}/g, function(match, key){
-            return replacements[key] || '';
-        });
-        return rules;
-    }
-    return '';
+	rules = rules.replace(/\{\{([a-zA-Z0-9_-]+)\}\}/g, function(match, key){
+		return replacements[key] || '';
+	});
+	
+	if( this.rules ){
+		rules += "\n\n----------\n\n"+this.rules;
+	}
+	
+	return rules;
 });
+
+Contest.method('getTotalPrizeCount', function(){
+	var count = 0;
+	if( me.prizes && me.prizes.length ) me.prizes.forEach(function(prize){
+		count += prize.total;
+	});
+	return count;
+});
+
+Contest.method('getTotalEntries', function(){
+	if( this.mode == 'odds' ){
+		// need to get the total
+		return Math.ceil(this.win_frequency * this.contest.getTotalPrizeCount());
+    }
+	else{
+		return this.total_entries;
+	}
+});
+
+Contest.method('getTotalPlays', function(){
+	return this.getTotalEntries() * this.entry_config[0].tokens;
+});
+
 /**
  * Create the results array
  *
@@ -388,8 +413,8 @@ Contest.method('publish', function(callback){
 
     // Remove this entry restriction after beta (when we have pricing)
     Bozuko.models.Page.findOne({_id: self.page_id}, {name: 1}, function(err, page) {
-        if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && self.total_entries > 2500) {
-            return callback(Bozuko.error('contest/max_entries', 2500));
+        if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && self.total_entries > 1500) {
+            return callback(Bozuko.error('contest/max_entries', 1500));
         }
         self.active = true;
         self.generateResults( function(error, results){

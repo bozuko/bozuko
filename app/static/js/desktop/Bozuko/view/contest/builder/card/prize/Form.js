@@ -122,7 +122,11 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         helpText            :[
                             "<p>",
                                 "Enter the prize name. Please try to keep it as short as possible.",
-                            '</p>'
+                            '</p>',
+                            '<div style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; margin: 6px 0; background: #f3f3f3;">',
+                                '<h4 style="font-weight: bold; margin-bottom: .5em; color: red; text-align: center;">Important!</h4>',
+                                '<p style="margin: .2em 0;">Available prizes must comply with state and federal laws.</p>',
+                            '</div>'
                         ]
                     },{xtype:'splitter'},{
                         name                :'value',
@@ -158,9 +162,14 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                     emptyText           :'Enter the complete prize description',
                     helpText            :[
                         "<p>",
-                            "This will be the full prize description that the user can see. You can add any ",
-                            "stipulations or restrictions here.",
-                        '</p>'
+                            "This will be the full prize description that the user can see.",
+                        '</p>',
+                        '<div style="padding: 6px; border: 1px solid #ccc; border-radius: 4px; margin: 6px 0; background: #f3f3f3;">',
+                            '<h4 style="font-weight: bold; margin-bottom: .5em; color: red; text-align: center;">Important!</h4>',
+                            '<p style="margin: .2em 0;">Add any restrictions for the prize. For example, if you were offering a <em>T-Shirt</em>, ',
+                            'a stipulation may be <strong>Sizes subject to availability</strong>. If you are operating restaurant and offering a prize of <em>$5.00 off ',
+                            'your check</em>, you could require <strong>Dine-In Only</strong>.</p>',
+                        '</div>'
                     ]
                 },{
                     xtype               :'duration',
@@ -429,7 +438,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 me.card.onFieldFocus(field);
             });
             field.on('blur', function(){
-                me.card.onFieldBlur(field);
+                // me.card.onFieldBlur(field);
             });
             field.on('change', function(field){
                 bufferedOnChange(field);

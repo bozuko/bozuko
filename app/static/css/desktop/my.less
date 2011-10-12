@@ -1,0 +1,50 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+.my-account-col {
+    
+    border-right: 1px solid #ccc;
+    font-size: 12px;
+    
+    .profile-pic {
+        max-width: 180px;
+        display: block;
+        margin-left: auto;
+        margin-bottom: 10px;
+    }
+    .name {
+        text-align: left;
+        font-weight: bold;
+    }
+    .since, .email {
+        color: #666;
+    }
+    
+    .mod{
+        .hd {
+            font-size: 13px;
+            background: @brand_color;
+            color: #fff;
+            .border_radius(8px 0 0 0);
+            border-width: 1px 0 0 1px;
+            border-color: #ccc;
+            border-style: solid;
+            margin: 0;
+            padding: 4px;
+        }
+        
+        .content {
+            background: #fff;
+            padding: 10px 4px;
+            .border_radius(0 0 0 8px );
+            border-width: 0 0 1px 1px;
+            border-color: #ccc;
+            border-style: solid;
+        }
+        
+    }
+}
+
+.my-account-main {
+    padding-left: 20px;
+}

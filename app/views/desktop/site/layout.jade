@@ -16,11 +16,26 @@ html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",c
       - each script in head_scripts
         script(type="text/javascript",src=script)
     
+    script(type="text/javascript")
+      window.BozukoData = {user:{}};
+      BozukoData.fbAppId = '#{Bozuko.cfg("facebook.app.id")}';
+      
+    - if( user )
+      script(type="text/javascript")
+        BozukoData.user.id = '#{user._id}';
+        BozukoData.user.fbId = '#{user.service("facebook").sid}';
+    
   body
     .page
-    
+      -if( Bozuko.env() != 'site' )
+        .utility
+          .page-width
+            .user-bar
+              include includes/user-bar
+            
       .hd
         .page-width
+        
           h1.logo
             a(href=locals.home_link||'/', title=locals.home_title||"Bozuko - Go to Home Page") bozuko
           

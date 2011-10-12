@@ -73,7 +73,7 @@ Ext.define('Bozuko.view.contest.builder.Card', {
                 me.onFieldFocus(field);
             });
             field.on('blur', function(field){
-                me.onFieldBlur(field);
+                // me.onFieldBlur(field);
             });
             field.on({
                 scope           :me,

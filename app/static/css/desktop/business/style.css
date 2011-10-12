@@ -12,6 +12,9 @@
   background-color: #ffffff;
   background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #e6e6e6)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e6e6e6',GradientType=0 );
+  /* IE6-9 */
+
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
@@ -645,6 +648,9 @@ fieldset .x-fieldset-header {
   background-color: #dddddd;
   background-image: -moz-linear-gradient(top, #dddddd, #aaaaaa);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #aaaaaa)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#aaaaaa',GradientType=0 );
+  /* IE6-9 */
+
   border: 1px solid #999;
   border-bottom-width: 0;
   vertical-align: bottom;
@@ -745,6 +751,9 @@ fieldset .x-fieldset-header {
   background-color: #dddddd;
   background-image: -moz-linear-gradient(top, #dddddd, #bbbbbb);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #bbbbbb)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#bbbbbb',GradientType=0 );
+  /* IE6-9 */
+
   background: #ddd;
   border: 2px solid #aaa;
   padding: 4px;
@@ -790,6 +799,9 @@ fieldset .x-fieldset-header {
   background-color: #ffffff;
   background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #f2f2f2)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f2f2f2',GradientType=0 );
+  /* IE6-9 */
+
   background: #fff;
 }
 .contest-builder .help-panel .x-panel-body {
@@ -799,6 +811,8 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .help-panel .help-text {
   padding: 10px;
+  font-size: 11px;
+  line-height: 1.4em;
 }
 .contest-builder .help-panel h3 {
   font-family: ArvoRegular;
@@ -1266,6 +1280,9 @@ h1.intro {
   background-color: #f8f8f8;
   background-image: -moz-linear-gradient(top, #f8f8f8, #d8d8d8);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f8f8f8), color-stop(1, #d8d8d8)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8f8f8', endColorstr='#d8d8d8',GradientType=0 );
+  /* IE6-9 */
+
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 4px;
   -moz-background-clip: padding-box;
@@ -1297,6 +1314,9 @@ h1.intro {
   background-color: #00a24f;
   background-image: -moz-linear-gradient(top, #00a24f, #006b37);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00a24f), color-stop(1, #006b37)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00a24f', endColorstr='#006b37',GradientType=0 );
+  /* IE6-9 */
+
 }
 .welcome li.hover h3 {
   color: #fff;

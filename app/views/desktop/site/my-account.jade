@@ -1,0 +1,26 @@
+.body
+  .leftCol.gCal
+    .my-account-col
+      img.profile-pic(src=user.image)
+      .name= user.name
+      .since Joined 
+        span.date #{dateFormat(user.sign_up_date, 'mmmm dS, yyyy')}
+      
+      .mod
+        h4.hd Your Stats!
+        .content
+          ul
+            li
+              span.number #{stats.entries} 
+              |  Contests Entries
+            li
+              span.number #{stats.wins} 
+              |  Prizes Won
+            li
+              span.number #{stats.redeemed}
+              |  Prizes Redeemed
+    
+  .main
+    .my-account-main
+      h1 my account
+  
