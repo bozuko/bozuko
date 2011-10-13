@@ -2,9 +2,11 @@
   .leftCol.gCal
     .my-account-col
       img.profile-pic(src=user.image)
-      .name= user.name
-      .since Joined 
-        span.date #{dateFormat(user.sign_up_date, 'mmmm dS, yyyy')}
+      
+      .user-info
+        .name= user.name
+        .since Joined 
+          span.date #{dateFormat(user.sign_up_date, 'mmmm dS, yyyy')}
       
       .mod
         h4.hd Your Stats!
@@ -23,4 +25,10 @@
   .main
     .my-account-main
       h1 my account
+      
+      ul.tabs
+        li
+          a(href="#") Prizes
+        li
+          a(href="#") History
   

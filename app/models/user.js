@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
     Native = require('./plugins/native'),
     crypto = require('crypto'),
     Phone = require('./embedded/user/phone'),
+    XRegExp = Bozuko.require('util/xregexp'),
     async = require('async'),
     merge = Bozuko.require('util/object').merge,
     httpsUrl = Bozuko.require('util/functions').httpsUrl,
@@ -109,7 +110,6 @@ User.method('updateInternals', function(force, callback){
     if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 60 * 60) ){
         return callback(null);
     }
-    console.log('updating internals');
     if( !self.service('facebook')) return callback( );
     return Bozuko.service('facebook').user({user:self, fields:'likes,friends'}, function(error, result){
         if( error ) return callback( error );
@@ -183,6 +183,61 @@ User.method('updateLikes', function(callback){
         if( commit ) self.commit('services');
         return self.save(callback);
     });
+});
+
+User.method('getManagedPages', function(){
+    // callback is the last argument
+    var self = this,
+        args = [].slice.apply(arguments),
+        fnArgs = [], arg,
+        param, params = ['selector', 'fields', 'options'],
+        callback = args.pop(),
+        selector = {admins:self._id}
+        ;
+    
+    while( args.length && (arg = args.shift()) && params.length && (param = params.shift()) ){
+        
+        switch( param ){
+            case 'selector':
+                fnArgs.push( merge( selector, arg ) );
+                console.log(fnArgs);
+                break;
+            default:
+                fnArgs.push( arg );
+        }
+    }
+    
+    fnArgs.push( callback );
+    Bozuko.models.Page.find.apply( Bozuko.models.Page, fnArgs );
+});
+
+User.method('getPrizes', function(options, callback){
+    
+    options = options || {};
+    
+    var self = this,
+        skip = options.skip || options.start || options.offset || 0,
+        limit = options.limit || 25,
+        state = options.state || null,
+        sort = options.sort || 'timestamp',
+        search = options.search || false,
+        query = options.query || {}
+        ;
+        
+    query.user_id = self._id;
+    
+    if( search ) {
+        query.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
+    }
+    
+    var opts = {
+        skip            :skip,
+        limit           :limit,
+        sort            :timestamp
+    };
+    
+    return Bozuko.models.Prize.find( query, options.fields || {}, opts, callback);
+    
 });
 
 User.static('updateFacebookLikes', function(ids, callback){
@@ -279,33 +334,6 @@ User.method('verify_phone', function(phone) {
         if(found) return 'match';
         return 'new';
 });
-
-User.method('getManagedPages', function(){
-    // callback is the last argument
-    var self = this,
-        args = [].slice.apply(arguments),
-        fnArgs = [], arg,
-        param, params = ['selector', 'fields', 'options'],
-        callback = args.pop(),
-        selector = {admins:self._id}
-        ;
-    
-    while( args.length && (arg = args.shift()) && params.length && (param = params.shift()) ){
-        
-        switch( param ){
-            case 'selector':
-                fnArgs.push( merge( selector, arg ) );
-                console.log(fnArgs);
-                break;
-            default:
-                fnArgs.push( arg );
-        }
-    }
-    
-    fnArgs.push( callback );
-    Bozuko.models.Page.find.apply( Bozuko.models.Page, fnArgs );
-});
-
 
 function create_token(user, salt, next) {
     var hmac = crypto.createHmac('sha512', Bozuko.config.key);
