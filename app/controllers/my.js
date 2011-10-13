@@ -66,47 +66,17 @@ exports.routes = {
     '/my/account' : {
         get : {
             handler : function(req, res){
-                var user = req.session.user,
-                    stats = {};
-                    
-                // lets stat this dude up.
-                async.series([
-                    
-                    function total_entries(cb){
-                        Bozuko.models.Entry.count({user_id: user._id}, function(error, count){
-                            if( error ) return cb(error);
-                            stats.entries = count;
-                            return cb();
-                        });
-                    },
-                    
-                    function total_plays(cb){
-                        Bozuko.models.Play.count({user_id: user._id}, function(error, count){
-                            if( error ) return cb(error);
-                            stats.plays = count;
-                            return cb();
-                        });
-                    },
-                    
-                    function total_wins(cb){
-                        Bozuko.models.Prize.count({user_id: user._id}, function(error, count){
-                            if( error ) return cb(error);
-                            stats.wins = count;
-                            return cb();
-                        });
-                    },
-                    
-                    function total_redeemed(cb){
-                        Bozuko.models.Prize.count({user_id: user._id, redeemed: true}, function(error, count){
-                            if( error ) return cb(error);
-                            stats.redeemed = count;
-                            return cb();
-                        });
-                    }
-                    
-                ],  function finish(error){
+                var user = req.session.user;
+                
+                user.getStatistics(function(error, stats){
+                    if( error ) throw error;
                     res.locals.stats = stats;
-                    return res.render('site/my-account');
+                    user.getPrizes(function(error, prizes, total){
+                        if( error ) throw error;
+                        res.locals.prizes = prizes;
+                        res.locals.total_prizes = total;
+                        return res.render('site/my-account');
+                    });
                 });
             }
         }
@@ -136,63 +106,14 @@ exports.routes = {
     '/my/friends' : {
         get : {
             handler : function(req, res){
-                var user = req.session.user,
-                    friend_ids = [],
-                    start = parseInt(req.param('start') || 0, 10),
-                    limit = parseInt(req.param('limit') || 2, 10),
-                    random = req.param('random'),
-                    total = 0,
-                    friends = user.service('facebook').internal.friends;
-                
-                if( !friends.length ){
-                    return res.send({});
-                }
-                
-                var tmp = [];
-                friends.forEach(function(friend){
-                    tmp.push(String(friend.id));
+                var user = req.session.user;
+                user.getFriendsOnBozuko({
+                    random      :true,
+                    limit       :2
+                },function(error, friends, total){
+                    if( error ) throw error;
+                    return res.send({total: total, items: friends});
                 });
-                
-                // now we need to get the ids that are in our db
-                return Bozuko.models.User.find({
-                    'services.name':'facebook',
-                    'services.sid':{$in: tmp},
-                    $or: [{blocked: {$exists:false}, allowed:{$exists:false}}, {blocked: false}, {allowed: true}]
-                }, {'_id':1}, {sort:{name:-1}}, function(error, friends){
-                    
-                    total = friends.length;
-                    
-                    if( random ) while( friends.length > 0 && friend_ids.length < limit){
-                        var i = Math.round(Math.random()*(friends.length-1));
-                        friend_ids.push(friends.splice(i,1)[0]._id);
-                    }
-                    
-                    else{
-                        friend_ids = friends.splice(start, limit);
-                    }
-                    
-                    var fields = {
-                        'services.internal.friends':0,
-                        'services.internal.likes':0,
-                        'services.auth':0,
-                        'services.data':0,
-                        'phones': 0,
-                        'token': 0,
-                        'salt' :0,
-                        'challenge':0,
-                        'can_manage_pages':0,
-                        'allowed':0,
-                        'blocked':0
-                    };
-                    
-                    return Bozuko.models.User.find({_id:{$in:friend_ids}}, fields, function(error, friends){
-                        if( error ) throw error;
-                        if( random ) friends.sort(function(){ return -1 + (Math.random()*2) });
-                        return res.send({total: total, items: friends});
-                    });
-                });
-                
-                
             }
         }
     },
