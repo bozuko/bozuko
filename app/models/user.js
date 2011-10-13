@@ -215,13 +215,14 @@ User.method('getPrizes', function(options, callback){
     
     options = options || {};
     
-    var self = this,
-        skip = options.skip || options.start || options.offset || 0,
-        limit = options.limit || 25,
-        state = options.state || null,
-        sort = options.sort || 'timestamp',
-        search = options.search || false,
-        query = options.query || {}
+    var self    = this,
+        skip    = options.skip || options.start || options.offset || 0,
+        limit   = options.limit || 25,
+        state   = options.state || null,
+        sort    = options.sort || 'timestamp',
+        dir     = parseInt(options.dir || -1, 10),
+        search  = options.search || false,
+        query   = options.query || {}
         ;
         
     query.user_id = self._id;
@@ -230,13 +231,40 @@ User.method('getPrizes', function(options, callback){
         query.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
     }
     
+    if( state ){
+        switch(state){
+            case 'active':
+                query.redeemed = false;
+                query.expires = {$gt: new Date()};
+                break;
+            case 'redeemed':
+                query.redeemed = true;
+                break;
+            case 'expired':
+                query.redeemed = false;
+                query.expires = {$lte: new Date()};
+                break;
+        }
+    }
+    
     var opts = {
         skip            :skip,
-        limit           :limit,
-        sort            :timestamp
+        limit           :limit
     };
     
-    return Bozuko.models.Prize.find( query, options.fields || {}, opts, callback);
+    opts.sort = {};
+    opts.sort[sort] = dir;
+    
+    // first lets get the count
+    return Bozuko.models.Prize.count( query, function(error, total){
+        if( error ) return callback( error );
+        return Bozuko.models.Prize.find( query, options.fields || {}, opts, function(error, prizes){
+            if( error ) return callback( error );
+            return callback( null, prizes, total );
+        });
+    });
+    
+    
     
 });
 

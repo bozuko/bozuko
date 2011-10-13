@@ -2,12 +2,11 @@ var Content = Bozuko.require('util/content'),
     validator = require('validator'),
     dateFormat = require('dateformat'),
     mailer = Bozuko.require('util/mail'),
+    auth = Bozuko.require('core/auth'),
     inspect = require('util').inspect,
     filter = Bozuko.require('util/functions').filter,
     async = require('async'),
     crypto = require('crypto');
-
-exports.access = 'user';
 
 exports.locals = {
     layout: 'site/layout',
@@ -54,6 +53,14 @@ exports.locals = {
     ],
     dateFormat: dateFormat
 };
+
+exports.filter = function(req, res, next){
+    auth.user(req, res, function(error){
+        if( req.session.user ) return next();
+        return res.render('site/noauth');
+    });
+};
+
 exports.routes = {
     
     '/my/account' : {
@@ -109,21 +116,18 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 
-                var user = req.session.user,
-                    skip = req.param('start') || 0,
-                    limit = req.param('limit') || 25,
-                    state = req.param('state'),
-                    query = {user_id: user._id}
-                    ;
+                var user = req.session.user;
                     
-                // get the count
-                Bozuko.models.Prize.count(query, function(error, total){
+                user.getPrizes({
+                    skip        :req.param('start'),
+                    limit       :req.param('limit'),
+                    state       :req.param('state'),
+                    sort        :req.param('sort'),
+                    dir         :req.param('dir'),
+                    search      :req.param('search')
+                },function(error, prizes, total){
                     if( error ) throw error;
-                    // get prizes ordered by lastModified
-                    Bozuko.models.Prize.find(query, {}, {skip: skip, limit: limit, sort:{timestamp:-1}}, function(error, prizes){
-                        if( error ) throw error;
-                        return res.send({total: total, items: prizes});
-                    });
+                    return res.send({total: total, items: prizes});
                 });
             }
         }

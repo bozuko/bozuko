@@ -112,6 +112,11 @@ Controller.prototype = {
                             }
                         };
                     }
+					
+					// add our controller middleware
+                    if (self.filter ){
+                        handler = middleware(self.filter, handler, self);
+                    }
 
                     // change the controller to use a modified version of the
                     // express "render" function
@@ -142,10 +147,6 @@ Controller.prototype = {
                         $handler.apply(self,arguments);
                     };
                     
-                    // add our controller middleware
-                    if (self.filter ){
-                        handler = middleware(self.filter, handler, self);
-                    }
                     // add our access
                     if( self.access ){
                         handler = auth.check( self.access, handler );
