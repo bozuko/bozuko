@@ -31,4 +31,14 @@
           a(href="#") Prizes
         li
           a(href="#") History
+          
+      div.panes
+        .pane
+          -each prize in prizes
+            h3= prize.name
+        .pane
+          h4 History
+          
+      script(type="text/javascript")
+        $("ul.tabs").tabs("div.panes > div.pane");
   

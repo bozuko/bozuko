@@ -71,7 +71,7 @@ exports.routes = {
                 user.getStatistics(function(error, stats){
                     if( error ) throw error;
                     res.locals.stats = stats;
-                    user.getPrizes(function(error, prizes, total){
+                    user.getPrizes({}, function(error, prizes, total){
                         if( error ) throw error;
                         res.locals.prizes = prizes;
                         res.locals.total_prizes = total;

@@ -3,7 +3,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
   head
     title= title
     meta(charset="utf-8")
-    meta(name="viewport",content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
+    meta(name="viewport",content="initial-scale=0.84, minimum-scale=0.84, maximum-scale=0.84, user-scalable=no")
     -if( locals.place )
       meta(property="og:title",content=place.name)
       meta(property="og:url",content=place.data.link)
@@ -12,11 +12,11 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       meta(property="og:site_name",content=place.name)
       meta(property="og:app_id",content=Bozuko.config.facebook.app.id)
     style(type="text/css")
-      html,body{ background: transparent; padding: 0; margin: 0; overflow: hidden; width: 50px; height: 20px !important;}
+      html,body{ background: transparent; padding: 0; margin: 0; overflow: hidden;}
       body{ overflow: hidden;}
       body.no-place{ background: #fff; }
-      #like-button{ overflow: hidden; width: 50px; height: 20px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
-      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loader.gif?v=2") 0 0 no-repeat; position: relative; z-index: 1;}
+      #like-button{ overflow: hidden; width: 54px; height: 26px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
+      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading.gif?v=2") 0 0 no-repeat; position: relative; z-index: 1;}
       iframe{ background: transparent !important; }
       .fb_edge_widget_with_comment .fb_edge_comment_widget iframe.fb_ltr { display: none !important; }
       
@@ -28,9 +28,9 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     -if( locals.place )
       -if( !locals.user || !locals.user.likes(place.data.id))
         #like-button
-          fb:like(href=place.data.link,send="false",width="50",show_faces="false",font="tahoma",layout="button_count")
+          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="tahoma")
       -else
-        img(src="/images/assets/facebook/like-btn-liked.png")
+        img(src="/images/assets/facebook/like-liked.png")
         
       #mask
       #touch-killer
@@ -105,11 +105,11 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   img.style.position = 'relative';
                   img.style.zIndex = '1';
                   if( liked ){
-                    img.src="/images/assets/facebook/like-btn-liked.png";
+                    img.src="/images/assets/facebook/like-liked.png";
                     document.body.appendChild(img);
                   }
                   else{
-                    img.src="/images/assets/facebook/like-btn.png";
+                    img.src="/images/assets/facebook/like-button.png";
                     img.onclick = function(){
                       window.location='bozuko://facebook/no_session';
                       alert("Sorry - your Facebook session for Bozuko is no longer valid. You must go to the Bozuko page, and Log out and back in.");
@@ -147,6 +147,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
             function showLikeButton(){
                 likeBtn.style.top='0px';
                 likeBtn.style.left='0px';
+                var html = document.getElementsByTagName('html')[0];
+                html.className = html.className.replace(/like_button_loading/, '');
                 try{
                   window.location = 'bozuko://facebook/like_loaded';
                 }catch(e){
@@ -170,7 +172,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               var img = document.createElement('img');
               img.style.position = 'relative';
               img.style.zIndex = '1';
-              img.src="/images/assets/facebook/like-btn-liked.png";
+              img.src="/images/assets/facebook/like-liked.png";
               document.body.appendChild(img);
               /*
               var m = document.getElementById('mask');
@@ -185,7 +187,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
           (function () {
               var e = document.createElement('script');
               e.async = true;
-              e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+              e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js#xfbml=1&appId=#{Bozuko.config.facebook.app.id}';
               document.getElementById('fb-root').appendChild(e)
           }());
       -else
