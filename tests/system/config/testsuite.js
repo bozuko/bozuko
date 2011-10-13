@@ -19,7 +19,7 @@ var users = {
 
 var user = users.b;
 
-//assert.token = "43a9d844542c6570a1b267e2c88a9f11d00556d51e4768c5b33364d78c4324ac17e5eee3f37a9ccea374fda76dfb44ec714ea533567e12cdadefbc0b44ea1e7e";
+assert.token = "43a9d844542c6570a1b267e2c88a9f11d00556d51e4768c5b33364d78c4324ac17e5eee3f37a9ccea374fda76dfb44ec714ea533567e12cdadefbc0b44ea1e7e";
 
 assert.page_id = "181069118581729";
 
@@ -151,6 +151,7 @@ var add_users = function(callback) {
 			if( error ) return callback( error );
 			user.service('facebook').auth = auth;
 			user.phones.push(assert.phone);
+			user.token = assert.token;
 			assert.challenge = user.challenge;
 
 			user.service('facebook').internal = {likes : ['181069118581729']};

@@ -1,6 +1,7 @@
 .my-account-col {
   border-right: 1px solid #ccc;
   font-size: 12px;
+  padding-bottom: 20px;
 }
 .my-account-col .profile-pic {
   max-width: 180px;
@@ -11,38 +12,50 @@
 .my-account-col .name {
   text-align: left;
   font-weight: bold;
+  font-size: 14px;
 }
 .my-account-col .since, .my-account-col .email {
   color: #666;
 }
+.my-account-col .user-info {
+  padding-left: 10px;
+  margin-bottom: 20px;
+}
 .my-account-col .mod .hd {
   font-size: 13px;
-  background: #00a24f;
+  background: #006b37;
+  font-weight: bold;
   color: #fff;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 8px 0 0 0;
+  -webkit-border-radius: 6px 0 0 0;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 8px 0 0 0;
-  border-radius: 8px 0 0 0;
+  -moz-border-radius: 6px 0 0 0;
+  border-radius: 6px 0 0 0;
   background-clip: padding-box;
   border-width: 1px 0 0 1px;
   border-color: #ccc;
   border-style: solid;
   margin: 0;
-  padding: 4px;
+  padding: 4px 10px;
 }
 .my-account-col .mod .content {
   background: #fff;
-  padding: 10px 4px;
+  padding: 10px;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 0 0 0 8px;
+  -webkit-border-radius: 0 0 0 6px;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 0 0 0 8px;
-  border-radius: 0 0 0 8px;
+  -moz-border-radius: 0 0 0 6px;
+  border-radius: 0 0 0 6px;
   background-clip: padding-box;
   border-width: 0 0 1px 1px;
   border-color: #ccc;
   border-style: solid;
+}
+.my-account-col .mod .content ul, .my-account-col .mod .content li {
+  list-style: none;
+  display: block;
+  margin: 0;
+  padding: 0;
 }
 .my-account-main {
   padding-left: 20px;

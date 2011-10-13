@@ -5,6 +5,7 @@
     
     border-right: 1px solid #ccc;
     font-size: 12px;
+    padding-bottom: 20px;
     
     .profile-pic {
         max-width: 180px;
@@ -15,31 +16,45 @@
     .name {
         text-align: left;
         font-weight: bold;
+        font-size: 14px;
     }
     .since, .email {
         color: #666;
     }
     
+    .user-info {
+        padding-left: 10px;
+        margin-bottom: 20px;
+    }
+    
     .mod{
         .hd {
             font-size: 13px;
-            background: @brand_color;
+            background: @dark_color;
+            font-weight: bold;
             color: #fff;
-            .border_radius(8px 0 0 0);
+            .border_radius(6px 0 0 0);
             border-width: 1px 0 0 1px;
             border-color: #ccc;
             border-style: solid;
             margin: 0;
-            padding: 4px;
+            padding: 4px 10px;
         }
         
         .content {
             background: #fff;
-            padding: 10px 4px;
-            .border_radius(0 0 0 8px );
+            padding: 10px;
+            .border_radius(0 0 0 6px );
             border-width: 0 0 1px 1px;
             border-color: #ccc;
             border-style: solid;
+            
+            ul,li{
+                list-style: none;
+                display: block;
+                margin: 0;
+                padding: 0;
+            }
         }
         
     }

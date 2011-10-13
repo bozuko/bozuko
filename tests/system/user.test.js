@@ -3,9 +3,9 @@ var assert = require('assert');
 var testsuite = require('./config/testsuite');
 
 var uid = assert.uid;
-var token = assert.token;
-var phone = assert.phone;
-var tokstr = "/?token="+token;
+var token;
+var phone;
+var tokstr;
 
 exports.setup = function(test) {
     testsuite.setup(test.done);
@@ -15,6 +15,9 @@ exports.setup = function(test) {
 // We don't want to hit facebook oauth everytime we run these tests. Maybe that should be a
 // separate test module in manual_tests.
 exports['GET /user/login/facebook'] = function(test) {
+	token = assert.token;
+	phone = assert.phone;
+	tokstr = '/?token='+token;
     assert.response(test, Bozuko.app,
         {url: '/user/login/facebook/'},
         {status: 302, headers: {'Content-Type': 'text/html'}},
