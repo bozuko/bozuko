@@ -16,7 +16,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       body{ overflow: hidden;}
       body.no-place{ background: #fff; }
       #like-button{ overflow: hidden; width: 54px; height: 26px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
-      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading.gif?v=2") 4px 50px no-repeat; position: relative; z-index: 1;}
+      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading.gif?v=2") 0px 0px no-repeat; position: relative; z-index: 1;}
       iframe{ background: transparent !important; }
       .fb_edge_widget_with_comment .fb_edge_comment_widget iframe.fb_ltr { display: none !important; }
       
@@ -142,8 +142,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
           window.onload = function(){
             var likeBtn = document.getElementById('like-button');
             function showLikeButton(){
-                likeBtn.style.top='4px';
-                likeBtn.style.left='4px';
+                likeBtn.style.top='0px';
+                likeBtn.style.left='0px';
                 var html = document.getElementsByTagName('html')[0];
                 html.className = html.className.replace(/like_button_loading/, '');
                 try{
