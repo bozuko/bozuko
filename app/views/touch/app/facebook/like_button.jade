@@ -12,32 +12,29 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       meta(property="og:site_name",content=place.name)
       meta(property="og:app_id",content=Bozuko.config.facebook.app.id)
     style(type="text/css")
-      html,body{ background: transparent; padding: 0; margin: 0; overflow: hidden;}
+      html,body{ background: transparent; padding: 0; margin: 0; }
       body{ overflow: hidden;}
       body.no-place{ background: #fff; }
       #like-button{ overflow: hidden; width: 54px; height: 26px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
-      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading.gif?v=2") 0 0 no-repeat; position: relative; z-index: 1;}
+      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading.gif?v=2") 4px 50px no-repeat; position: relative; z-index: 1;}
       iframe{ background: transparent !important; }
       .fb_edge_widget_with_comment .fb_edge_comment_widget iframe.fb_ltr { display: none !important; }
       
       #mask{ background: #000; display: none; position: absolute; top: 0; left: 0; width: 400px; height: 400px; z-index: 100; }
-      #touch-killer{ display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+      #touch-killer{ background: transparent; display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
       
   body
     #fb-root
     -if( locals.place )
       -if( !locals.user || !locals.user.likes(place.data.id))
         #like-button
-          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="tahoma")
+          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="arial")
       -else
         img(src="/images/assets/facebook/like-liked.png")
-        
-      #mask
-      #touch-killer
+      
       
       -if( !locals.user || !locals.user.likes(place.data.id) )
         script(type="text/javascript")
-        
           var APP_ID = #{Bozuko.config.facebook.app.id},
               mobile_version = '#{req.session.mobile_version}',
               fb_token = '#{locals.user ? locals.user.service('facebook').auth : ""}',
@@ -145,8 +142,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
           window.onload = function(){
             var likeBtn = document.getElementById('like-button');
             function showLikeButton(){
-                likeBtn.style.top='0px';
-                likeBtn.style.left='0px';
+                likeBtn.style.top='4px';
+                likeBtn.style.left='4px';
                 var html = document.getElementsByTagName('html')[0];
                 html.className = html.className.replace(/like_button_loading/, '');
                 try{
