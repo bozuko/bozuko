@@ -34,7 +34,7 @@ jQuery(function($){
             $.get('/site/user-bar',params,function(data){
                 $('.user-bar').html(data.html);
                 if( fn ) fn();
-                initUserBarEvents();
+                if( data.user ) initUserBarEvents();
             });
         });
     }
