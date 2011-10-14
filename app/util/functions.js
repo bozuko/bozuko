@@ -66,10 +66,12 @@ function htmlEntities(str) {
 }
 
 function httpsUrl(url){
+    console.log(url);
     if( !url ) return url;
     if( url.match(/^http\:/) ){
-        if( url.match(/^graph\.facebook\.com/) ){
-            return url.replace(/^http\:/, 'https:');
+        if( url.match(/graph\.facebook\.com/) ){
+            url = url.replace(/^http\:/, 'https:');
+            url+= (~url.indexOf('?')?'&':'?')+'return_ssl_resources=1';
         }
         if( url.match(/s3\.amazonaws\.com/) ){
             return url.replace(/^http\:/, 'https:');

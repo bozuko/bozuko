@@ -27,6 +27,7 @@ var User = module.exports = new Schema({
     blocked             :{type:Boolean, default: false},
     allowed             :{type:Boolean, default: false},
     email               :{type:String, index: true},
+    user_email          :{type:Boolean, default: false},
     sign_up_date        :{type:Date, default: Date.now},
     favorites           :[ObjectId],
     last_internal_update:{type:Date},
@@ -233,18 +234,32 @@ User.method('getPrizes', function(options, callback){
     }
     
     if( state ){
-        switch(state){
+        
+        var states = state.split(','),
+            $or = [];
+            
+        states.forEach(function(state){ switch(state){
             case 'active':
-                query.redeemed = false;
-                query.expires = {$gt: new Date()};
+                $or.push({
+                    redeemed: false,
+                    expires: {$gt: new Date}
+                });
                 break;
             case 'redeemed':
-                query.redeemed = true;
+                $or.push({
+                    redeemed: true
+                });
                 break;
             case 'expired':
-                query.redeemed = false;
-                query.expires = {$lte: new Date()};
+                $or.push({
+                    redeemed: false,
+                    expires: {$lte: new Date}
+                });
                 break;
+        }});
+        
+        if( $or.length > 1 ){
+            query.$or = $or;
         }
     }
     
@@ -259,6 +274,9 @@ User.method('getPrizes', function(options, callback){
     // first lets get the count
     return Bozuko.models.Prize.count( query, function(error, total){
         if( error ) return callback( error );
+        if( options.countOnly ){
+            return callback( null, total );
+        }
         return Bozuko.models.Prize.find( query, options.fields || {}, opts, function(error, prizes){
             if( error ) return callback( error );
             return callback( null, prizes, total );
@@ -376,7 +394,7 @@ User.method('getStatistics', function(options, callback){
     async.series([
         
         function total_entries(cb){
-            if( !options.entries ) return cb();
+            if( options.entries === false ) return cb();
             return Bozuko.models.Entry.count({user_id: self._id}, function(error, count){
                 if( error ) return cb(error);
                 stats.entries = count;
@@ -385,7 +403,7 @@ User.method('getStatistics', function(options, callback){
         },
         
         function total_plays(cb){
-            if( !options.plays ) return cb();
+            if( options.plays === false ) return cb();
             return Bozuko.models.Play.count({user_id: self._id}, function(error, count){
                 if( error ) return cb(error);
                 stats.plays = count;
@@ -394,7 +412,7 @@ User.method('getStatistics', function(options, callback){
         },
         
         function total_wins(cb){
-            if( !options.wins ) return cb();
+            if( options.wins === false ) return cb();
             return Bozuko.models.Prize.count({user_id: self._id}, function(error, count){
                 if( error ) return cb(error);
                 stats.wins = count;
@@ -403,7 +421,7 @@ User.method('getStatistics', function(options, callback){
         },
         
         function total_redeemed(cb){
-            if( !options.redeemed ) return cb();
+            if( options.redeemed === false ) return cb();
             return Bozuko.models.Prize.count({user_id: self._id, redeemed: true}, function(error, count){
                 if( error ) return cb(error);
                 stats.redeemed = count;
@@ -475,7 +493,8 @@ User.static('addOrModify', function(user, phone, callback) {
         u.first_name = user.first_name;
         u.last_name = user.last_name;
         u.image = user.image;
-        u.email = user.email;
+        // do not overwrite a user specified email
+        if( !user.user_email ) u.email = user.email;
         u.gender = user.gender;
 
         if (phone) {

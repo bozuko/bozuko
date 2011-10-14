@@ -12,6 +12,7 @@
         display: block;
         margin-left: auto;
         margin-bottom: 10px;
+        .border_radius(0 0 0 6px);
     }
     .name {
         text-align: left;
@@ -57,9 +58,113 @@
             }
         }
         
+        
+        .number{ font-weight: bold; }
     }
 }
 
 .my-account-main {
     padding-left: 20px;
+    
+    h1 {
+        font-weight: normal;
+        font-family: ArvoRegular;
+        font-size: 24px;
+        color: #666;
+    }
+    
+    .tabs {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+        padding: 0 0 0 5px;
+        display: block;
+        border-bottom: 2px solid @dark_color;
+        text-align: left;
+        background: #fff;
+        
+        li{
+            list-style: none;
+            display: -moz-inline-stack;
+            display: inline-block;
+            zoom: 1;
+            *display: inline;
+            vertical-align: baseline;
+            margin: 0 5px;
+            a {
+                display: -moz-inline-stack;
+                display: inline-block;
+                zoom: 1;
+                *display: inline;
+                vertical-align: baseline;
+                cursor: pointer;
+                .background_gradient(#f2f2f2, #e8e8e8);
+                .border_radius( 4px 4px 0 0 );
+                border: 1px solid #ccc;
+                border-bottom-width: 0;
+                padding: 10px 20px;
+                text-decoration: none;
+                color: #666;
+                font-size: 14px;
+                .transition(none);
+                
+                &:hover {
+                    .background_gradient(#e8e8e8, #d8d8d8);
+                    color: #333;
+                }
+                
+                &.current {
+                    .background_gradient(@brand_color, @dark_color);
+                    border-color: @dark_color;
+                    color: #fff;
+                }
+            }
+        }
+    }
+    
+    label {
+        display: block;
+        overflow: hidden;
+        border: 1px solid #ccc;
+        
+        .label {
+            color: #333;
+            background: #f3f3f3;
+            float: left;
+            display: block;
+            width: 110px;
+            padding: 8px;
+        }
+        
+        .input {
+            float: left;
+            padding: 8px;
+            input, textarea {
+                border: 0;
+                width: 400px;
+                outline: none;
+                color: #666;
+                &:focus {
+                    color: #000;
+                }
+                background: transparent;
+            }
+        }
+        &.active{
+            background: #ffffd5;
+        }
+    }
+    
+    .fields {
+        margin-bottom: 10px;
+    }
+    
+    .info {
+        border: 1px solid #66ffb3;
+        background: #d2f7d3;
+        padding: 10px;
+        .border_radius(6px);
+        margin: 10px 0;
+    }
 }
+
