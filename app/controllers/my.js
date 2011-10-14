@@ -79,6 +79,32 @@ exports.routes = {
                     });
                 });
             }
+        },
+        
+        post : {
+            handler : function(req, res){
+                var user = req.session.user;
+                user.email = req.param('email');
+                user.user_email = true;
+                user.save( function(error){
+                    if( error ) throw error;
+                    req.flash('info', "Your settings have been saved.");
+                    return res.redirect('/my/account#settings');
+                });
+            }
+        }
+    },
+    
+    '/my/stats' : {
+        get : {
+            handler : function(req, res){
+                var user = req.session.user;
+                
+                user.getStatistics(function(error, stats){
+                    if( error ) throw error;
+                    res.send(stats);
+                });
+            }
         }
     },
     

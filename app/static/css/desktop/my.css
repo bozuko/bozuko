@@ -1,3 +1,14 @@
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
 .my-account-col {
   border-right: 1px solid #ccc;
   font-size: 12px;
@@ -8,6 +19,12 @@
   display: block;
   margin-left: auto;
   margin-bottom: 10px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 0 0 0 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 0 0 0 6px;
+  border-radius: 0 0 0 6px;
+  background-clip: padding-box;
 }
 .my-account-col .name {
   text-align: left;
@@ -57,6 +74,128 @@
   margin: 0;
   padding: 0;
 }
+.my-account-col .mod .number {
+  font-weight: bold;
+}
 .my-account-main {
   padding-left: 20px;
+}
+.my-account-main h1 {
+  font-weight: normal;
+  font-family: ArvoRegular;
+  font-size: 24px;
+  color: #666;
+}
+.my-account-main .tabs {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+  padding: 0 0 0 5px;
+  display: block;
+  border-bottom: 2px solid #006b37;
+  text-align: left;
+  background: #fff;
+}
+.my-account-main .tabs li {
+  list-style: none;
+  display: -moz-inline-stack;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  vertical-align: baseline;
+  margin: 0 5px;
+}
+.my-account-main .tabs li a {
+  display: -moz-inline-stack;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  vertical-align: baseline;
+  cursor: pointer;
+  background-color: #f2f2f2;
+  background-image: -moz-linear-gradient(top, #f2f2f2, #e8e8e8);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f2f2f2), color-stop(1, #e8e8e8)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#f2f2f2',EndColorStr='#e8e8e8');
+  /* IE6-9 */
+
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px 4px 0 0;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 0 0;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  border-bottom-width: 0;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #666;
+  font-size: 14px;
+  transition: none 0.5s linear;
+  -moz-transition: none 0.5s linear;
+  -o-transition: none 0.5s linear;
+  -webkit-transition: none 0.5s linear;
+}
+.my-account-main .tabs li a:hover {
+  background-color: #e8e8e8;
+  background-image: -moz-linear-gradient(top, #e8e8e8, #d8d8d8);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #e8e8e8), color-stop(1, #d8d8d8)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#e8e8e8',EndColorStr='#d8d8d8');
+  /* IE6-9 */
+
+  color: #333;
+}
+.my-account-main .tabs li a.current {
+  background-color: #00a24f;
+  background-image: -moz-linear-gradient(top, #00a24f, #006b37);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00a24f), color-stop(1, #006b37)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#00a24f',EndColorStr='#006b37');
+  /* IE6-9 */
+
+  border-color: #006b37;
+  color: #fff;
+}
+.my-account-main label {
+  display: block;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+.my-account-main label .label {
+  color: #333;
+  background: #f3f3f3;
+  float: left;
+  display: block;
+  width: 110px;
+  padding: 8px;
+}
+.my-account-main label .input {
+  float: left;
+  padding: 8px;
+}
+.my-account-main label .input input, .my-account-main label .input textarea {
+  border: 0;
+  width: 400px;
+  outline: none;
+  color: #666;
+  background: transparent;
+}
+.my-account-main label .input input:focus, .my-account-main label .input textarea:focus {
+  color: #000;
+}
+.my-account-main label.active {
+  background: #ffffd5;
+}
+.my-account-main .fields {
+  margin-bottom: 10px;
+}
+.my-account-main .info {
+  border: 1px solid #66ffb3;
+  background: #d2f7d3;
+  padding: 10px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  margin: 10px 0;
 }

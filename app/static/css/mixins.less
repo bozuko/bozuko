@@ -71,3 +71,15 @@
     border-bottom-right-radius: @bottomRight;
     border-bottom-left-radius: @bottomLeft;
 }
+
+.cf {
+    &:before{
+        content:"";
+        display: table;
+    }
+    &:after {
+        content: "";
+        display: block;
+    }
+    zoom:1;
+}
