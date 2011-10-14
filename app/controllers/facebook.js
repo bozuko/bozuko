@@ -115,6 +115,7 @@ exports.routes = {
                     res.locals.layout = false;
                 }
                 res.locals.user = req.session.user;
+                res.locals.isAndroid = req.header('user-agent').match(/android/i);
 
                 return Bozuko.service('facebook').place({place_id: req.param('id')}, function( error, place){
                     if( error ){
