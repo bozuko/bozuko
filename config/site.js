@@ -5,6 +5,7 @@ module.exports = {
     controllers: {
         only: [
             'site',
+			'my',
             'mycroft'
         ]
     },
