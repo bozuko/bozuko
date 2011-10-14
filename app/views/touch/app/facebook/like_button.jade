@@ -16,7 +16,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       body{ overflow: hidden;}
       body.no-place{ background: #fff; }
       #like-button{ overflow: hidden; width: 54px; height: 26px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
-      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading.gif?v=2") 0px 0px no-repeat; position: relative; z-index: 1;}
+      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading-#{isAndroid?'android':'iphone'}.gif?v=2") 0px 0px no-repeat; position: relative; z-index: 1;}
       iframe{ background: transparent !important; }
       .fb_edge_widget_with_comment .fb_edge_comment_widget iframe.fb_ltr { display: none !important; }
       
@@ -28,10 +28,12 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     -if( locals.place )
       -if( !locals.user || !locals.user.likes(place.data.id))
         #like-button
-          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="arial")
+          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="tahoma")
       -else
-        img(src="/images/assets/facebook/like-liked.png")
+        img(src="/images/assets/facebook/like-liked-"+(isAndroid?'android':'iphone')+".png")
       
+      #mask
+      #touch-killer
       
       -if( !locals.user || !locals.user.likes(place.data.id) )
         script(type="text/javascript")
@@ -102,7 +104,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   img.style.position = 'relative';
                   img.style.zIndex = '1';
                   if( liked ){
-                    img.src="/images/assets/facebook/like-liked.png";
+                    img.src="/images/assets/facebook/like-liked-#{isAndroid?'android':'iphone'}.png";
                     document.body.appendChild(img);
                   }
                   else{
@@ -147,7 +149,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                 var html = document.getElementsByTagName('html')[0];
                 html.className = html.className.replace(/like_button_loading/, '');
                 try{
-                  window.location = 'bozuko://facebook/like_loaded';
+                  //window.location = 'bozuko://facebook/like_loaded';
                 }catch(e){
                   // supposed to get an error
                 }
@@ -169,7 +171,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               var img = document.createElement('img');
               img.style.position = 'relative';
               img.style.zIndex = '1';
-              img.src="/images/assets/facebook/like-liked.png";
+              img.src="/images/assets/facebook/like-liked-#{isAndroid?'android':'iphone'}.png";
               document.body.appendChild(img);
               /*
               var m = document.getElementById('mask');
