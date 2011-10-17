@@ -229,13 +229,9 @@ User.method('getPrizes', function(options, callback){
         
     query.user_id = self._id;
     
-    if( search ) {
-        query.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
-    }
-    
     if( state ){
         
-        var states = state.split(','),
+        var states = Array.isArray(state) ? state : state.split(','),
             $or = [];
             
         states.forEach(function(state){ switch(state){
@@ -258,9 +254,40 @@ User.method('getPrizes', function(options, callback){
                 break;
         }});
         
-        if( $or.length > 1 ){
+        if( $or.length ){
             query.$or = $or;
         }
+    }
+    
+    if( search ) {
+        var searcher = [{
+            name : new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
+        },{
+            page_name: new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
+        }];
+        if( query.$or ){
+            
+            var $or = query.$or,
+                $newOr = [];
+                
+            $or.forEach(function(conditions){
+                searcher.forEach(function(searchConditions){
+                    var o = {};
+                    for( var i in conditions ){
+                        if( conditions.hasOwnProperty(i)) o[i] = conditions[i];
+                    }
+                    for( var i in searchConditions ){
+                        if( searchConditions.hasOwnProperty(i)) o[i] = searchConditions[i];
+                    }
+                    $newOr.push(o);
+                });
+            });
+            query.$or = $newOr;
+        }
+        else{
+            query.$or = searcher;
+        }
+        
     }
     
     var opts = {
@@ -271,6 +298,8 @@ User.method('getPrizes', function(options, callback){
     opts.sort = {};
     opts.sort[sort] = dir;
     
+    console.log(query);
+    
     // first lets get the count
     return Bozuko.models.Prize.count( query, function(error, total){
         if( error ) return callback( error );
@@ -279,7 +308,7 @@ User.method('getPrizes', function(options, callback){
         }
         return Bozuko.models.Prize.find( query, options.fields || {}, opts, function(error, prizes){
             if( error ) return callback( error );
-            return callback( null, prizes, total );
+            return callback( null, prizes, total, opts );
         });
     });
 });

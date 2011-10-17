@@ -34,15 +34,15 @@
           
       div.panes
         .pane
-          
-          .no-prizes.hide
-            p 
-          
-          ul.prize-list.hide
-          script#list-tmpl(type="jquery-tmpl")
-            li
-              .business
-                .name ${page_name}
+          -if(!total_prizes )
+            p Looks like you have not won any prizes yet :(
+            p Play Bozuko games on your 
+              a(href=Bozuko.cfg('client.mobile.iphone.link','#')) iPhone
+              |  or
+              a(href=Bozuko.cfg('client.mobile.android.link','#')) Android
+              |  devices!
+          - else
+            include includes/prize-list
         .pane
           -var messages = req.flash('info');
           -if( messages.length )
@@ -55,7 +55,7 @@
                 span.label Email
                 .input
                   input(type="email",required="required",name="email",value=user.email)
-            input.medium-button(type="submit", value="Update Settings")
+            input.update-settings-button.medium-button(type="submit", value="Update Settings")
           
       script(type="text/javascript")
         $tabs = $("ul.tabs");
@@ -86,4 +86,11 @@
         setTimeout( function(){
           $('.fade').animate({opacity:'toggle',height:'toggle'});
         }, 3000);
+        
+        window.Prizes = {
+          total: #{count},
+          loaded: #{prizes.length}
+        };
+        
+      script(type="text/javascript",src="/js/desktop/site/my.js")
   

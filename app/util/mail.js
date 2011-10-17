@@ -47,6 +47,7 @@ EmailMessage.send = function(params, callback){
         subject: params.subject,
         body: params.body,
         html: params.html,
+        user_id: params.user_id,
         status: 'pending',
         attempt: attempts+1
     });
@@ -59,9 +60,9 @@ EmailMessage.send = function(params, callback){
             record.status = 'success';
             record.attempt = attempts+1;
             record.delivered = new Date();
-            record.save();
-            
-            return callback.apply(this, arguments);
+            return record.save(function(error){
+                return callback.call(this, true, record);
+            });
         }
         
         attempts++;
@@ -71,7 +72,7 @@ EmailMessage.send = function(params, callback){
             record.status = 'failure';
             record.attempt = attempts+1;
             record.save();
-            return callback.apply(this, arguments);
+            return callback.call(this, error, success);
         }
         
         // retry (5,10,15 minutes)
