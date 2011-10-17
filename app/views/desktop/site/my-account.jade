@@ -1,4 +1,7 @@
 .body
+  - var system = req.flash('system');
+  - if( system )
+    .info= system[0]
   .leftCol.gCal
     .my-account-col
       img.profile-pic(src=user.image)

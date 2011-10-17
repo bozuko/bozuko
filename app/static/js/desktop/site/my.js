@@ -15,6 +15,16 @@ jQuery(function(){
     $('.search').change(updateAndReplace);
     $('.search').click(updateAndReplace);
     $('.search').keyup(delayedSearch);
+    $('a.resend-email').live('click', function(e){
+        var link = e.target;
+        $.get(this.href, function(response){
+            if( response.success ){
+                $('<div />').css({color:'green', fontWeight:'bold'}).html('Email Resent!').insertAfter(link);
+                $(link).remove();
+            }
+        });
+        return false;
+    });
     
     $loadMore.click(function(e){
         e.preventDefault();

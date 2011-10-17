@@ -60,7 +60,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
     if( !code && !error_reason ){
         // we need to send this person to facebook to get the code...
-        var url = 'https://m.facebook.com/dialog/oauth?'+qs.stringify(params);
+        var url = 'https://www.facebook.com/dialog/oauth?'+qs.stringify(params);
         return res.redirect(url);
     }
     else if( error_reason ){
