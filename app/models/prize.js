@@ -34,6 +34,7 @@ var Prize = module.exports = new Schema({
     email_code              :{type:String},
     email_format            :{type:String,  default: 'text/plain'},
     email_subject           :{type:String},
+	email_history			:[ObjectId],
     is_barcode              :{type:Boolean, default:false},
     barcode_image           :{type:String},
     consolation             :{type:Boolean, default:false}
@@ -118,14 +119,18 @@ Prize.method('sendEmail', function(user) {
     var mail = Bozuko.require('util/mail');
     if( self.email_format != 'text/html') {
         return mail.send({
+			user_id: user._id,
             to: user.email,
             subject: 'You just won a Bozuko prize!',
             body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
-        }, function(err, success) {
+        }, function(err, success, record) {
             if (err) console.error("Email Err = "+err);
             if (err || !success) {
                 console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
             }
+			if( success && record._id ){
+				self.email_history.push(record._id);
+			}
         });
     }
     // do some substitutions

@@ -67,15 +67,27 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 var user = req.session.user;
-                
+                res.locals.head_scripts.push('/js/jquery/plugins/jquery.dateFormat.js');
                 user.getStatistics(function(error, stats){
                     if( error ) throw error;
                     res.locals.stats = stats;
-                    user.getPrizes({}, function(error, prizes, total){
+                    user.getPrizes({
+                        start       :req.param('start'),
+                        limit       :req.param('limit') || 5,
+                        state       :req.param('state'),
+                        sort        :req.param('sort'),
+                        dir         :req.param('dir'),
+                        search      :req.param('search')
+                    }, function(error, prizes, count){
                         if( error ) throw error;
                         res.locals.prizes = prizes;
-                        res.locals.total_prizes = total;
-                        return res.render('site/my-account');
+                        res.locals.count = count;
+                        
+                        return user.getPrizes({countOnly:true}, function(error, total){
+                            if( error ) throw error;
+                            res.locals.total_prizes = total;
+                            return res.render('site/my-account');
+                        });
                     });
                 });
             }
@@ -88,6 +100,9 @@ exports.routes = {
                 user.user_email = true;
                 user.save( function(error){
                     if( error ) throw error;
+                    if( req.xhr ){
+                        return res.send({success: true, message: "Your settings have been saved."});
+                    }
                     req.flash('info', "Your settings have been saved.");
                     return res.redirect('/my/account#settings');
                 });
@@ -113,17 +128,28 @@ exports.routes = {
             handler : function(req, res){
                 
                 var user = req.session.user;
-                    
-                user.getPrizes({
-                    skip        :req.param('start'),
-                    limit       :req.param('limit'),
+                
+                var query = {
+                    start       :req.param('start'),
+                    limit       :req.param('limit') || 5,
                     state       :req.param('state'),
                     sort        :req.param('sort'),
                     dir         :req.param('dir'),
                     search      :req.param('search')
-                },function(error, prizes, total){
+                };
+                
+                if( !query.state ) query.query = {none:true};
+                    
+                user.getPrizes(query, function(error, prizes, total, opts){
+                    
                     if( error ) throw error;
-                    return res.send({total: total, items: prizes});
+                    
+                    res.locals.prizes = prizes;
+                    res.locals.layout = false;
+                    return res.render('site/includes/prize-items',{},function(error, html){
+                        return res.send({total: total, items: prizes, html:html, opts: opts});
+                    });
+                    
                 });
             }
         }
@@ -143,6 +169,17 @@ exports.routes = {
             }
         }
     },
+    
+    '/my/page/:id/image' : {
+        get : {
+            handler : function(req, res){
+                Bozuko.models.Page.findById( req.param('id'), function(error, page){
+                    if( error || !page ) return res.send('No Place', 400);
+                    return res.redirect( page.image.replace(/type=large/,'type=square') );
+                });
+            }
+        }
+    }
 };
 
 function getToken(session, forceNew){

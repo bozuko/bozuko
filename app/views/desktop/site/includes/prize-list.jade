@@ -1,0 +1,29 @@
+- var states = req.param('state') || ['active','redeemed','expired'];
+form.prize-form(action="?",method="get")
+  
+  .filters
+    .states
+      label.prize-active
+        input(type="checkbox",name="state",value="active",checked=!!~states.indexOf('active'))
+        |  Active
+      label.prize-redeemed
+        input(type="checkbox",name="state",value="redeemed",checked=!!~states.indexOf('redeemed'))
+        |  Redeemed
+      label.prize-expired
+        input(type="checkbox",name="state",value="expired",checked=!!~states.indexOf('expired'))
+        |  Expired
+    input.reset(type="reset",value="Clear")
+    input(type="hidden",name="start",value=req.param('start'))
+    input.submit(type="submit",value="Filter")
+    input.search(type="search",name="search",value=req.param('search'),placeholder="Search...")
+    
+  
+  -if( count )
+    ul.prize-list
+      include prize-items
+    a.load-more.hidden(href="#",style="display: none;") Load More...
+      
+    .none
+      p Sorry, we could find any results for your filters above :(
+  -else
+    p Sorry, we could find any results for your filters above :(
