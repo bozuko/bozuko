@@ -3,9 +3,7 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId;
 
 var Play = module.exports = new Schema({
-    timestamp               :{type:Date},
-    active                  :{type:Boolean},
-    uuid                    :{type:String},
+    timestamp               :{type:Date, index: true},
     user_id                 :{type:ObjectId},
     cursor                  :{type:Number}
 });

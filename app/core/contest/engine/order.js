@@ -7,11 +7,9 @@ var OrderEngine = module.exports = function(){
 };
 inherits( OrderEngine, Engine );
 
-OrderEngine.prototype.default_primer_end = 0.10;
-
 OrderEngine.prototype.generateResults = function(){
-
-    options = this.contest.engine_options || {};        
+    var self = this;
+    var options = this.contest.engine_options || {};        
 
     var contest = this.contest;
     var results = {};
@@ -48,18 +46,6 @@ OrderEngine.prototype.generateResults = function(){
         for( var i=0; i<totalPlays; i++) ar.push(i);
     }
 
-    // Store all generated prize codes for this contest so we don't have dupes.
-    var codes = {'0' : true};
-
-    function letter() { return rand(0,25) + 65; }
-    function get_code() {
-        var code = '0';
-        while (codes[code]) {
-            code = String.fromCharCode(65, letter(), letter(), letter(), letter(), letter());
-        }
-        codes[code] = true;
-        return code;
-    }
 
     function pick_index(array, start) {
         var random = rand(start || 0,array.length-1);
@@ -79,20 +65,22 @@ OrderEngine.prototype.generateResults = function(){
 
         if (options.primer && prize.total === 1) {
             index = pick_index(remainder);
-            results[index] = {
+            var result = {
                 index: prize_index,
                 prize: prize._id,
-                code: get_code(),
+                code: self.getCode(),
                 count: 0
-            };         
+            };     
+            results[index] = result;
         } else if (!options.primer && prize.total === 1) {
             index = pick_index(ar, primer_end);
-            results[index] = {
+            var result = {
                 index: prize_index,
                 prize: prize._id,
-                code: get_code(),
+                code: self.getCode(),
                 count: 0
             };
+            results[index] = result;
         } else {
             for( var i = 0; i < prize.total; i++ ){
                 if (options.primer) {
@@ -104,12 +92,15 @@ OrderEngine.prototype.generateResults = function(){
                 } else {
                     index = pick_index(ar);
                 }
-                results[index] = {
+                var result = {
                     index: prize_index,
                     prize: prize._id,
-                    code: get_code(),
+                    code: self.getCode(),
                     count: i
                 };
+                var inspect = require('util').inspect;
+                results[index] = result;
+                
             }
         }
     });
