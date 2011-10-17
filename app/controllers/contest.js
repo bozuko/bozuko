@@ -1,5 +1,6 @@
 var S3 = Bozuko.require('util/s3');
 var url = require('url');
+var inspect = require('util').inspect;
 
 var game_prize = {
     doc: "A prize that can be won in a game",
@@ -319,11 +320,12 @@ exports.routes = {
                         if( error ){
                             return error.send(res);
                         }
-
+                                            
                         return result.contest.loadTransferObject( req.session.user, function(error){
                             if( error ) return error.send(res);
                             
                             if( result.prize ){
+                                console.log("result.prize = "+inspect(result.prize));
                                 return result.prize.loadTransferObject(function(error, prize){
                                     if( error ) return error.send(res);
                                     result.prize = prize;
