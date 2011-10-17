@@ -16,7 +16,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       body{ overflow: hidden;}
       body.no-place{ background: #fff; }
       #like-button{ overflow: hidden; width: 54px; height: 28px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
-      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading-#{isAndroid?'android':'iphone'}.gif?v=3") 0px 0px no-repeat; position: relative; z-index: 1;}
+      .loading-gif{ position: absolute; top: 0; left: 0; display: none;}
+      .like_button_loading .loading-gif{ display: block; }
       iframe{ background: transparent !important; }
       .fb_edge_widget_with_comment .fb_edge_comment_widget iframe.fb_ltr { display: none !important; }
       
@@ -27,6 +28,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     #fb-root
     -if( locals.place )
       -if( !locals.user || !locals.user.likes(place.data.id))
+        img.loading-gif(src="/images/assets/facebook/like-loading-#{isAndroid?'android':'iphone'}.gif?v=3",alt="Loading...")
         #like-button
           .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="tahoma")
       -else
@@ -80,11 +82,13 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                       window.location = 'bozuko://facebook/liked';
                   });
               }
+              
               function onEdgeRemove(response) {
                   updateLikes(function () {
                       window.location = 'bozuko://facebook/unliked';
                   });
-              }x
+              }
+              
               FB.Event.subscribe('edge.create', onEdgeCreate);
               FB.Event.subscribe('edge.remove', onEdgeRemove);
               
@@ -136,7 +140,6 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   
                 });
               });
-              
           };
           
           window.onload = function(){
