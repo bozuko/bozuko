@@ -16,5 +16,5 @@ li.prize-item(id='id-'+prize._id,class=prize.state)
       -if( prize.description )
         .description= prize.description
       -if( prize.is_email )
-        a(href="#") Resend Email
+        a.resend-email(href="/my/prizes/"+prize._id+"/resend") Resend Email
   

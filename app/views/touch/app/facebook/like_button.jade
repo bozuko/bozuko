@@ -16,7 +16,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       body{ overflow: hidden;}
       body.no-place{ background: #fff; }
       #like-button{ overflow: hidden; width: 54px; height: 26px; position: absolute; top: -10000px; left: -10000px; z-index: 2; }
-      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading-#{isAndroid?'android':'iphone'}.gif?v=2") 0px 0px no-repeat; position: relative; z-index: 1;}
+      .like_button_loading{ background: transparent url("/images/assets/facebook/like-loading-#{isAndroid?'android':'iphone'}.gif?v=3") 0px 0px no-repeat; position: relative; z-index: 1;}
       iframe{ background: transparent !important; }
       .fb_edge_widget_with_comment .fb_edge_comment_widget iframe.fb_ltr { display: none !important; }
       
@@ -84,20 +84,17 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   updateLikes(function () {
                       window.location = 'bozuko://facebook/unliked';
                   });
-              }
+              }x
               FB.Event.subscribe('edge.create', onEdgeCreate);
               FB.Event.subscribe('edge.remove', onEdgeRemove);
               
               FB.getLoginStatus(function(response){
                 
                 if( !response.session ){
-                  if( mobile_version == 'iphone-1.3'  ||
-                      mobile_version == 'iphone-1.4'  ||
-                      mobile_version == 'iphone-1.5'  ||
-                      mobile_version == 'android-1.1' ||
-                      mobile_version == 'android-1.2' ||
-                      mobile_version == 'android-1.2.2' ||
-                      mobile_version == 'android-1.2.3' ){
+                  if( mobile_version == 'iphone-1.3'    ||
+                      mobile_version == 'iphone-1.4'    ||
+                      mobile_version == 'iphone-1.5'    ||
+                      mobile_version == 'android-1.1'   ){
                     window.location='bozuko://facebook/no_session';
                   }
                   document.getElementById('like-button').style.display='none';

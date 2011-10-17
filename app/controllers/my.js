@@ -155,6 +155,36 @@ exports.routes = {
         }
     },
     
+    '/my/prizes/:id/resend' : {
+        get : {
+            handler : function(req, res){
+                var user = req.session.user;
+                
+                var options = {
+                    query           :{
+                        _id             :req.param('id')
+                    },
+                    limit : 1
+                };
+                
+                user.getPrizes(options, function(error, prizes){
+                    if( error ) throw error;
+                    if( !prizes.length ) throw "No error";
+                    
+                    prizes[0].sendEmail(user);
+                    if( req.xhr ){
+                        return res.send({
+                            success: true,
+                            email: user.email
+                        });
+                    }
+                    req.flash('system', 'Email Sent!');
+                    return res.redirect('/my/account');
+                });
+            }
+        }
+    },
+    
     '/my/friends' : {
         get : {
             handler : function(req, res){
