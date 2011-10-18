@@ -86,7 +86,7 @@ exports.routes = {
             },
 
             handler: function(req, res) {
-                console.log(res.locals.meta);
+                res.locals.head_scripts.push('/js/desktop/site/home.js');
                 res.render('site/index');
             }
         }
