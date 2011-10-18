@@ -521,6 +521,25 @@ exports.routes = {
             }
         }
     },
+    
+    '/faq' : {
+        get : {
+            title :'Bozuko - Frequently Asked Questions',
+
+            locals: {
+                html_classes: [
+                    'faq'
+                ],
+                content: Content.get('site/faq.md')
+            },
+
+            handler: function(req, res){
+                res.locals.content = Content.get('site/faq.md');
+                return res.render('site/content', 404);
+            }
+        }
+    },
+    
     'twitter/widget.js' : {
         get: {
             handler :  function(req,res){
