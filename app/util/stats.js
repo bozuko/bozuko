@@ -1,8 +1,9 @@
 var async = require('async'),
-    mail = Bozuko.require('util/mail')
+    mail = Bozuko.require('util/mail'),
+    XRegExp = Bozuko.require('util/xregexp')
     ;
 
-var locations = {
+var locations = exports.locations = {
     "MA - Fenway":[42.345826,-71.098365],
     "MA - Back Bay-2":[42.353406,-71.072659],
     "MA - Park Area":[42.351789,-71.068583],
@@ -121,14 +122,46 @@ var collect = exports.collect = function(service, city, center, callback) {
                     s.timestamp = new Date();
                     // collect the category
                     s.category = page.category;
-                    s.save(function(err) {
-                        if (err){
-                            counters.errors++;
-                            console.log(err);
-                        } else {
-                            counters.stats++;
+                    
+                    var save = function(){
+                        s.save(function(err) {
+                            if (err){
+                                counters.errors++;
+                                console.log(err);
+                            } else {
+                                counters.stats++;
+                            }
+                            return cb();
+                        });;
+                    };
+                    
+                    if( service !== 'facebook' ) return save();
+                    // else, lets try to get the email address
+                    
+                    return Bozuko.require('util/http').request({
+                        url: page.data.link+'?sk=info',
+                        headers:{
+                            'user-agent':'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.92 Safari/535.2',
+                            'accept':'text/html',
+                            'accept-charset':'utf-8'
                         }
-                        return cb();
+                    }, function(e, response){
+                        if( e ) return save();
+                        var start = 'Email\\u003c\\/th>\\u003ctd class=\\"data\\">\\u003cdiv class=\\"data_field\\">',
+                            startIndex = response.indexOf(start),
+                            email = '',
+                            endIndex = response.indexOf('\\u003c\\/div>', startIndex+start.length);
+                        
+                        console.log(page.data.link);
+                        console.log(startIndex);
+                        console.log(endIndex);
+                        
+                        if( ~startIndex && startIndex < endIndex ){
+                            email = response.substring(startIndex+start.length, endIndex).replace('&#64;', '@');
+                        }
+                        console.log(email);
+                        s.email = email;
+                        return save();
                     });
                 },
                 function(err) {
