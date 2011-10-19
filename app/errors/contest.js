@@ -67,5 +67,7 @@ module.exports = {
 
     max_entries: function() {
         return 'Cannot publish games with more than '+this.data+' entries';
-    }
+    },
+
+    generate_results: 'There was an error generating your contest results'
 };

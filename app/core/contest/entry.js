@@ -172,15 +172,6 @@ EntryMethod.prototype.loadEntry = function( entry, timestamp ){
 };
 
 /**
- * Test to make sure there are enough tokens left in the contest to distribute
- *
- * @returns {Boolean} If there is enough tokens
- */
-EntryMethod.prototype.ensureTokens = function(){
-    return this.contest.token_cursor + this.getTokenCount() <= this.contest.total_plays - this.contest.total_free_plays;
-};
-
-/**
  * Check to see if the configuration for this entry type is satisfied
  *
  * The callback function receives an Error object or null on success
@@ -197,8 +188,8 @@ EntryMethod.prototype.validate = function( callback ){
         // check for user
         if( !self.user ) return callback( Bozuko.error('entry/no_user') );
 
-        // check that there is enough tokens left
-        if( self.ensureTokens() === false ){
+        // check that there are enough tokens left
+        if( self.contest.ensureTokens(self) === false ){
             return callback( Bozuko.error('entry/not_enough_tokens') );
         }
 

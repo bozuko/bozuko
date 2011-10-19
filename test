@@ -1,6 +1,5 @@
 #!/bin/bash 
 nodeunit tests/system/*.js \
-         tests/mongodb/*.js \
          app/models/test/*.js \
          app/util/test/*.js \
          app/core/test/*.js \
