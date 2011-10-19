@@ -23,6 +23,7 @@ Engine.prototype.generateResults = function(contest){
  */
 Engine.prototype.play = function(contest){};
 
+
 /**
  * Generate unique codes for each prize
  */

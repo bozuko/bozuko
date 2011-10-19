@@ -5,12 +5,10 @@ var mongoose = require('mongoose'),
     ConsolationConfig = require('./embedded/contest/consolation/config'),
     Prize = require('./embedded/contest/prize'),
     Play = require('./embedded/contest/play'),
-    Result = require('./embedded/contest/result'),
     ObjectId = Schema.ObjectId,
     Native = require('./plugins/native'),
     JsonPlugin =  require('./plugins/json'),
     async = require('async'),
-    uuid = require('node-uuid'),
     Profiler = Bozuko.require('util/profiler'),
     merge = Bozuko.require('util/merge'),
     rand = Bozuko.require('util/math').rand,
@@ -308,11 +306,13 @@ Contest.method('generateResults', function(callback){
     var self = this;
 
     var prof = new Profiler('/models/contest/generateResults');
-    self.getEngine().generateResults();
-    prof.stop();
-    this.save(function(error){
-        if( error ) return callback(error);
-        return callback(null, self.results);
+    self.getEngine().generateResults(function(err) {
+        prof.stop();
+        if (err) return callback(err);
+        self.save(function(error){
+            if( error ) return callback(error);
+            return callback(null, self.results);
+        });
     });
 });
 
@@ -408,8 +408,10 @@ Contest.method('publish', function(callback){
         prize.redeemed = 0;
     });
 
-    if( !this.engine_options || !this.engine_options.mode || this.engine_options.mode == 'odds' ) {
-        this.total_entries = Math.ceil(total_prizes * this.win_frequency);
+    if (this.engine_type === 'order') {
+        if( !this.engine_options || !this.engine_options.mode || this.engine_options.mode == 'odds'){
+            this.total_entries = Math.ceil(total_prizes * this.win_frequency);
+        }
     }
 
     // Remove this entry restriction after beta (when we have pricing)
@@ -634,59 +636,12 @@ Contest.method('loadTransferObject', function(user, callback){
     });
 });
 
-Contest.method('addEntry', function(tokens, callback) {
-
-    var prof = new Profiler('/models/contest/addEntry');
-
-    var self = this;
-    Bozuko.models.Contest.findAndModify(
-        { _id: this._id, token_cursor: {$lte : this.total_plays - this.total_free_plays - tokens}},
-        [],
-        {$inc : {'token_cursor': tokens}},
-        {new: true, fields: {plays: 0, results: 0}, safe: safe},
-        function(err, contest) {
-            prof.stop();
-            console.log("addEntry err = "+inspect(err));
-            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
-            if (!contest) {
-                return callback(Bozuko.error('entry/not_enough_tokens'));
-            }
-            console.log("OPLOG Entry: contest._id = "+contest._id+", token_cursor = "+contest.token_cursor);
-            return callback(null);
-        }
-    );
+Contest.method('ensureTokens', function(entry) {
+    return this.getEngine().allowEntry(entry);
 });
 
-Contest.static('audit', function(callback) {
-    // find all contests with active plays
-    return Bozuko.models.Contest.find({'plays.active' : true}, function(err, contests) {
-        if (err) return callback(err);
-        if (!contests) return callback(null);
-        if (contests.length === 0) return callback(null);
-
-        console.log("AUDIT: "+contests.length+" contests with active plays");
-
-        return async.forEachSeries(contests, function(contest, callback) {
-
-            return async.forEachSeries(contest.plays, function(play, callback) {
-                if (!play.active) return callback(null);
-
-                return contest.getResult({
-                    user_id: play.user_id,
-                    play_cursor: play.cursor,
-                    timestamp: play.timestamp,
-                    uuid: play.uuid,
-                    audit: true
-                }, callback);
-            },
-            function(err) {
-                callback(err);
-            });
-        },
-        function(err) {
-            callback(err);
-        });
-    });
+Contest.method('addEntry', function(tokens, callback) {
+    return this.getEngine().enter(tokens, callback);
 });
 
 Contest.method('play', function(user, callback){
@@ -694,16 +649,17 @@ Contest.method('play', function(user, callback){
     var memo = {
         contest: this,
         user: user,
-        uuid: uuid(),
         timestamp: new Date()
     };
 
+    var engine = this.getEngine();
     async.reduce(
-        ['spendEntryToken', 'incrementPlayCursor', 'getResult', 'processResult',
+        ['spendEntryToken', engine.play, 'processResult',
          'savePrizes', 'savePlay'], 
         memo, 
-        function(memo, fn, callback) {
-            return memo.contest[fn](memo, callback);
+        function(memo, fn, cb) {
+            if (typeof fn === 'string') return self[fn](memo, cb);
+            return engine.play(memo, cb);
         }, function(error, result) {
             if( !error ){
                 // ensure that everything is matched up here....
@@ -731,40 +687,6 @@ Contest.method('spendEntryToken', function(memo, callback) {
             return callback(null, memo);
         }
     );
-});
-
-Contest.method('incrementPlayCursor', function(memo, callback) {
-    var prof = new Profiler('/models/contest/incrementPlayCursor');
-    return Bozuko.models.Contest.findAndModify(
-        {_id: this._id},
-        [],
-        {$inc : {play_cursor: 1}},
-        {new: true, fields: {plays: 0, results: 0}, safe: safe},
-        function(err, contest) {
-            prof.stop();
-            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
-            if (!contest) return callback(Bozuko.error("contest/no_tokens"));
-            memo.play_cursor = contest.play_cursor;
-            memo.contest = contest;
-            return callback(null, memo);
-        }
-    );
-});
-
-Contest.method('getResult', function(memo, callback) {
-    var query = {_id: this._id};
-    query['results.'+memo.play_cursor] = {$exists: true};
-    
-    var opts = {};
-    opts['results.'+memo.play_cursor] = 1;
-                   
-    return Bozuko.models.Contest.findOne(query, opts, function(err, doc) {
-        if (err) return callback(err);
-        if (doc) {
-            memo.result = doc.results[memo.play_cursor];
-        }
-        return callback(null, memo);
-    });                   
 });
 
 Contest.method('processResult', function(memo, callback) {
@@ -967,7 +889,6 @@ Contest.method('savePrize', function(opts, callback) {
             user_id: opts.user._id,
             user_name: opts.user._name,
             prize_id: prize._id,
-            uuid: opts.uuid,
             code: opts.consolation ? opts.consolation_prize_code : opts.prize_code,
             value: prize.value,
             page_name: page.name,
