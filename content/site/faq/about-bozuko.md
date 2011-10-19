@@ -9,7 +9,7 @@ Bozuko games can be found and played using the Bozuko mobile application for iPh
  
 ### Who is running Bozuko games?
 
-Bozuko games are offered by individual businesses, not Bozuko.  The game, prizes and play requirements are set by the individual business.  Selecting a business using the Bozuko mobile app lists that businesses available games, prizes and rules.
+Bozuko games are offered by individual businesses, not Bozuko. The game, prizes and play requirements are set by the individual business. Selecting a business using the Bozuko mobile app lists that business's available games, prizes and rules.
 
 ### What type of Bozuko games are there?
 
