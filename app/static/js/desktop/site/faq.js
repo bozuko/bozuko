@@ -3,7 +3,7 @@ jQuery(function($){
         $sections = $('.content .section'),
         $links = $('.leftCol li a');
     
-    $('.content h3').each(function(i, h3){
+    $('.content .main h3').each(function(i, h3){
         var $els = $(),
             $h3 = $(h3),
             $block = $('<div class="block" />').insertBefore($h3),
