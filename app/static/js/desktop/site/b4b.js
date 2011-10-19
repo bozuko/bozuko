@@ -20,6 +20,7 @@ jQuery( function($){
         ;
     
     // cool beta thing...
+    (function(){
     var h = $('.beta-notice-bd').css('height');
     $('.beta-notice-bd').css('height',0);
     setTimeout(function(){
@@ -27,6 +28,7 @@ jQuery( function($){
             height: 191
         },1600,'easeOutBounce');
     }, 100);
+    })();
     
     tabs.each( function(index, tab){
         
@@ -58,9 +60,9 @@ jQuery( function($){
     function setHeight(){
         if( imgs !== ++loaded ) return;
         slides.each(function( index, slide ){
-             h = Math.max(h, $(slide).height() );
+            h = Math.max(h, slide.scrollHeight );
         });
-        slides_ct.animate({height: h});
+        slides_ct.animate({'height':h});
     }
     
     // add next / previous arrows
