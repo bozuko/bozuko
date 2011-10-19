@@ -1326,3 +1326,123 @@ ul.public-winners-list {
         font-size: 11px;
     }
 }
+
+.faq .content {
+    
+    .leftCol {
+        width: 300px;
+        h1 {
+            .background_gradient(@brand_color, @dark_color);
+            color: #fff;
+            margin: 0;
+            padding: 10px;
+        }
+        ul, li{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        ul {
+            border-left: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+        }
+        li {
+            
+            a {
+                .transition(none);
+                color: #999;
+                display: block;
+                text-decoration: none;
+                padding: 15px 6px;
+                border-bottom: 1px solid #ccc;
+                background: #fff;
+                &:hover {
+                    .background_gradient(#ffffff, #f0f0f0);
+                    text-decoration: underline;
+                }
+                
+                &.active {
+                    font-weight: bold;
+                    color: @dark_color;
+                }
+            }
+        }
+    }
+    
+    .main-padding {
+        padding: 20px 0 20px 20px;
+    }
+    
+    h2 {
+        font-size: 20px;
+        text-transform: none;
+    }
+    
+    .block {
+        margin-bottom: 6px;
+        .question {
+            position: relative;
+            padding-left: 14px;
+            
+            .arrow {
+                position: absolute;
+                top: 50%;
+                left: 0;
+                margin-top: -2px;
+                display: block;
+                width: 9px;
+                height: 9px;
+                background: transparent url("/images/desktop/site/img_arrows.png") 1px 0 no-repeat;
+            }
+            
+            h3 {
+                font-family: Tahoma;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            cursor: pointer;
+        }
+        .answer {
+            padding-left: 14px;
+            font-size: 12px;
+            
+            .short{
+                font-size: 11px;
+                display: block;
+                color: #999;
+                
+                p {
+                    margin: .5em 0 0;
+                }
+            }
+            .full {
+                display: none;
+                
+                p {
+                    margin: .5em 0 1em;
+                }
+            }
+            ul,ol {
+                li {
+                    margin-bottom: .5em;
+                }
+            }
+            
+        }
+    }
+    .full{
+        .question {
+            .arrow {
+                background-position: 0 -9px;
+            }
+        }
+        .answer {
+            .short {
+                display: none;
+            }
+            .full {
+                display: block;
+            }
+        }
+    }
+}

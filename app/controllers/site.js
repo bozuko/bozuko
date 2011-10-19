@@ -529,13 +529,17 @@ exports.routes = {
             locals: {
                 html_classes: [
                     'faq'
-                ],
-                content: Content.get('site/faq.md')
+                ]
             },
 
             handler: function(req, res){
-                res.locals.content = Content.get('site/faq.md');
-                return res.render('site/content', 404);
+                res.locals.head_scripts.push('/js/desktop/site/faq.js');
+                res.locals.content = {
+                    about:  autoLink(Content.get('site/faq/about-bozuko.md')),
+                    create: autoLink(Content.get('site/faq/creating-games.md')),
+                    manage: autoLink(Content.get('site/faq/management.md'))
+                };
+                return res.render('site/faq', 404);
             }
         }
     },
@@ -578,6 +582,14 @@ exports.routes = {
         }
     }
 };
+
+function autoLink(html){
+    return html.replace(/(https?\:\/\/.*?)(<|\s|$)/gi, function(match, link, end){
+        return '<a href="'+link+'" target="_blank">'+link+'</a>'+end;
+    }).replace(/([^\s]+@[^\s]+\.[^\s]+?)(<|\s|$)/gi, function(match, email, end){
+        return '<a href="mailto:'+email+'">'+email+'</a>'+end;
+    });
+}
 
 function getToken(session, forceNew){
     var token;
