@@ -3,6 +3,12 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId
 ;
 
+// These are records of timestamp movements stored in result.history
+var Move = new Schema({
+    timestamp       :{type:Date},
+    move_time       :{type:Date}
+});
+
 var Result = module.exports = new Schema({
     contest_id      :{type:ObjectId, index: true},
     entry_id        :{type:ObjectId},
@@ -11,6 +17,6 @@ var Result = module.exports = new Schema({
     code            :{type:String},
     count           :{type:Number},
     timestamp       :{type:Date, index: {sparse: true}},
-    history         :[], // old timestamps so we can track movement
-    win_time        :{type:Date}
+    history         :[Move], // old timestamps so we can track movement
+    win_time        :{type:Date, index: true}
 });

@@ -4,8 +4,7 @@ var inspect = require('util').inspect;
 
 var start = new Date().getTime();
 var end = new Date();
-//end.setTime(start+(1000*1000)); // 1000 sec
-end.setTime(start+(3000));
+end.setTime(start+(10000));
 
 var user = new Bozuko.models.User(
 {
@@ -32,8 +31,8 @@ var contest = new Bozuko.models.Contest(
     },
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 3,
-        duration: 2
+        tokens: 1000,
+        duration: 0
     }],
     start: start,
     end: end,
@@ -78,9 +77,11 @@ exports['save contest'] = function(test) {
     });
 };
 
-exports['publish contest'] = function(test) {
-    contest.publish(function(err, results) {
+var results;
+exports['generate contest results'] = function(test) {
+    contest.generateResults(function(err, _results) {
         test.ok(!err);
+        results = _results;
         test.done();
     });
 };
@@ -96,24 +97,85 @@ exports['enter contest'] = function(test) {
 };
 
 var engine = contest.getEngine();
-var memo = {
-    contest: this,
-    user: user,
-    timestamp: new Date()
-};
 
-exports['play - win'] = function(test) {
-    contest.play(user, function(err, doc) {
-                     console.log(err);
+var avg_step;
+
+exports['calculate average step'] = function(test) {
+    engine.averageStep(contest._id, function(err, data) {
         test.ok(!err);
-        test.ok(doc);
+        test.equal(data.avg_step, engine.avg_step);
+        console.log("average step = "+data.avg_step);
+        results = data.results;
+        avg_step = data.avg_step;
         test.done();
     });
 };
 
+exports['play out contest with all wins'] = function(test) {
+    var numPrizes = contest.prizes[0].total;
+    var wins = 0;
+    results.sort(function(a, b) {
+        return a.timestamp.getTime() - b.timestamp.getTime();
+    });
+    async.forEachSeries(results,
+        function(result, callback) {
+            var memo = {
+                contest: contest,
+                user: user,
+                timestamp: new Date(result.timestamp.getTime()+Math.floor(engine.lookback_window/2))
+            };                
+            contest.play(memo, function(err, memo) {
+                test.ok(!err);
+                test.ok(memo.result);
+                return callback(err, memo);
+            });
+        }, function(err) {
+            test.done();
+        }
+    );
+};
+
+exports['play 10 more times and lose'] = function(test) {
+    var i = 0;
+    async.whilst(function() {
+        return i < 10;
+    }, function(cb) {
+        contest.play(user, function(err, memo) {
+            i++;
+            test.ok(!err);
+            test.ok(!memo.result);
+            return cb(null);
+        });
+    }, function(err) {
+        test.done();
+    });
+};
+
+exports['calculate average step - 0 because no more results available'] = function(test) {
+    engine.averageStep(contest._id, function(err, data) {
+        test.ok(!err);
+        test.equal(data.avg_step, engine.avg_step);
+        console.log("average step = "+data.avg_step);
+        results = data.results;
+        avg_step = data.avg_step;
+        test.equal(avg_step, 0);
+        test.done();
+    });
+};
+
+exports['reset contest'] = function(test) {
+    Bozuko.models.Result.remove(function(){
+        exports['generate contest results'](test);
+    });
+};
+
+exports['play out contest - staggered'] = function(test) {
+};
+
 function cleanup(callback) {
     var e = emptyCollection;
-    async.parallel([e('User'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize'), e('Result')], callback);
+    async.parallel([e('User'), e('Entry'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize'), 
+        e('Result')], callback);
 }
 
 function emptyCollection(name) {
