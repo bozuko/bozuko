@@ -211,7 +211,7 @@ exports.routes = {
             },
 
             handler: function(req, res) {
-                res.locals.head_scripts.push('/js/desktop/site/b4b.js');
+                res.locals.head_scripts.push('/js/desktop/site/b4b.js?v2');
                 res.render('site/bozuko-for-business');
             }
         }
