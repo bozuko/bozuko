@@ -306,12 +306,12 @@ Contest.method('generateResults', function(callback){
     var self = this;
 
     var prof = new Profiler('/models/contest/generateResults');
-    self.getEngine().generateResults(function(err) {
+    self.getEngine().generateResults(function(err, results) {
         prof.stop();
         if (err) return callback(err);
         self.save(function(error){
             if( error ) return callback(error);
-            return callback(null, self.results);
+            return callback(null, results);
         });
     });
 });
@@ -390,6 +390,14 @@ Contest.method('generateBarcodes', function(cb) {
             return cb(null);
         }
     );
+});
+
+Contest.method('totalPrizes', function() {
+    var total = 0;
+    for (var i = 0; i < this.prizes.length; i++) {
+        total += this.prizes[i].total;
+    }
+    return total;
 });
 
 /**
@@ -644,13 +652,17 @@ Contest.method('addEntry', function(tokens, callback) {
     return this.getEngine().enter(tokens, callback);
 });
 
-Contest.method('play', function(user, callback){
+Contest.method('play', function(memo, callback){
     var self = this;
-    var memo = {
-        contest: this,
-        user: user,
-        timestamp: new Date()
-    };
+
+    // the user was passed in (normal case)
+    if (!memo.timestamp) {
+        memo = {
+            contest: this,
+            user: memo,
+            timestamp: new Date()
+        };
+    }
 
     var engine = this.getEngine();
     async.reduce(
@@ -679,8 +691,7 @@ Contest.method('spendEntryToken', function(memo, callback) {
         {$inc: {tokens : -1}},
         {new: true, safe: safe},
         function(err, entry) {
-            // If we crash here the user will lose a token. Don't worry about it now.
-
+            // If we crash here the user will lose a token. Don't worry about.
             if (err && !err.errmsg.match(no_matching_re)) return callback(err);
             if (!entry) return callback(Bozuko.error("contest/no_tokens"));
             memo.entry = entry;
