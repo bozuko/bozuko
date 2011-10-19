@@ -15,4 +15,5 @@ Yes.  You can run multiple Bozuko games each with unique play requirements.
 Customers can see your Bozuko game in the mobile app under Nearby Games when they are close to your business. You can promote Bozuko by telling customers about your game and using applicable on-location material such as flyers, posters, table tents, etc.
 
 ### I would like to make a comment or suggestion about Bozuko.
+
 Go right ahead! feedback@bozuko.com

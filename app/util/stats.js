@@ -152,14 +152,9 @@ var collect = exports.collect = function(service, city, center, callback) {
                             email = '',
                             endIndex = response.indexOf('\\u003c\\/div>', startIndex+start.length);
                         
-                        console.log(page.data.link);
-                        console.log(startIndex);
-                        console.log(endIndex);
-                        
                         if( ~startIndex && startIndex < endIndex ){
                             email = response.substring(startIndex+start.length, endIndex).replace('&#64;', '@');
                         }
-                        console.log(email);
                         s.email = email;
                         return save();
                     });
@@ -238,6 +233,7 @@ exports.collect_all = function(callback) {
                 'lng',
                 'total_checkins',
                 'daily_checkins',
+                'email',
                 'timestamp',
                 'link'
             ];
