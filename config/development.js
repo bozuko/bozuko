@@ -14,12 +14,12 @@ module.exports = {
         except: [
         ]
     },
-	
-	user : {
-		block: {
-			min_friends: 4
-		}
-	},
+    
+    user : {
+        block: {
+            min_friends: 4
+        }
+    },
 
     client: {
         mobile:{
@@ -55,15 +55,15 @@ module.exports = {
 
     facebook: {
         app:{
-            id:'166078836756369',
-            secret:'df03acad0cda5e6f2ec2161c00cf5bf3',
-            access_token:'166078836756369|5PhifMaZ8cZzgdlY4ZhfFPvGtOk',
-            pubsub_verify:'12kg0a8b9123kab91831laa9sb'
-            
-            //id:'225077010865990',
-            //secret:'e6d03c37d46db15dacdfd8690536157f',
-            //access_token:'225077010865990|9pz_ejdAow5uXxnE1iK3uOGMPe0',
+            //id:'166078836756369',
+            //secret:'df03acad0cda5e6f2ec2161c00cf5bf3',
+            //access_token:'166078836756369|5PhifMaZ8cZzgdlY4ZhfFPvGtOk',
             //pubsub_verify:'12kg0a8b9123kab91831laa9sb'
+            
+            id:'225077010865990',
+            secret:'e6d03c37d46db15dacdfd8690536157f',
+            access_token:'225077010865990|9pz_ejdAow5uXxnE1iK3uOGMPe0',
+            pubsub_verify:'12kg0a8b9123kab91831laa9sb'
         },
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access,user_likes",
@@ -92,17 +92,17 @@ module.exports = {
 
     checkin: {
         
-		duration: {
+        duration: {
             // 15 minutes between any checkins per user
             user: DateUtil.SECOND * 30,
             // 4 hours between checkins at the same place
             page: DateUtil.SECOND * 10
         },
-		
-		travel : {
-			speed: 60, /* mph */
-			reset: DateUtil.HOUR * 10
-		},
+        
+        travel : {
+            speed: 60, /* mph */
+            reset: DateUtil.HOUR * 10
+        },
 
         distance : 1000 /* feet */
     },
@@ -130,11 +130,11 @@ module.exports = {
     server: {
         auth: false,
         ssl: true,
-		ssl_config:{
-			key : '/ssl/wildcard/wildcard.bozuko.com.key',
-			ca : '/ssl/wildcard/gd_bundle.crt',
-			cert: '/ssl/wildcard/bozuko.com.crt'
-		},
+        ssl_config:{
+            key : '/ssl/wildcard/wildcard.bozuko.com.key',
+            ca : '/ssl/wildcard/gd_bundle.crt',
+            cert: '/ssl/wildcard/bozuko.com.crt'
+        },
         host: 'playground.bozuko.com',
         port: port
     },
@@ -155,8 +155,16 @@ module.exports = {
             port: 465,
             ssl: true,
             use_authentication: true,
-            user: "mailer@bozuko.com",
-            pass: "7axxn7d8"
+            users: [
+                {user: 'mailer@bozuko.com',     pass: '7axxn7d8'},
+                {user: 'mailer2@bozuko.com',    pass: '7zscpk94'},
+                {user: 'mailer3@bozuko.com',    pass: '43zbbpu9'},
+                {user: 'mailer4@bozuko.com',    pass: 'fwdaz3v4'}
+            ]
+        },
+        retry:{
+            attempts: 3,
+            delay: 1000*60*5 // every 5 minutes
         },
         sender: 'Bozuko Mailer <mailer@bozuko.com>'
     },
@@ -186,5 +194,9 @@ module.exports = {
         'andrew.stone@bozuko.com',
         'jacob.epstein@bozuko.com',
         'pinbo.tsai@bozuko.com'
-    ]
+    ],
+    
+    blog: {
+        feed:'http://blog.bozuko.com/feed/'
+    }
 };

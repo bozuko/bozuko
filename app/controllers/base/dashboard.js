@@ -22,6 +22,7 @@ var Content     = Bozuko.require('util/content'),
 exports.restrictToUser = false;
 
 exports.routes = {
+    
     '/redemption/instructions/:id' : {
         get : {
             handler : function(req, res){
@@ -473,13 +474,13 @@ exports.routes = {
                     ;
                 
                 if( contest_id ){
-                    selector['contest_id'] = contest_id;
+                    selector.contest_id = contest_id;
                 }
                 if( this.restrictToUser ){
-                    selector = {page_id: {$in: req.session.user.manages}}
+                    selector.page_id = {$in: req.session.user.manages};
                 }
                 if( page_id && (!this.restrictToUser || ~indexOf(req.session.user.manages, page_id)) ){
-                    selector['page_id'] = page_id;
+                    selector.page_id = page_id;
                 }
                 
                 if( search ){
@@ -1040,7 +1041,7 @@ exports.routes = {
         /* update */
         put : {
             handler : function(req,res){
-                
+                var self = this;
                 if( this.restrictToUser && !~indexOf( req.session.user.manages, req.param('id') ) ){
                     return Bozuko.error('bozuko/auth').send(res);
                 }
@@ -1048,6 +1049,9 @@ exports.routes = {
                     if( error ) return error.send( res );
                     // else, lets bind the reqest to the page
                     var data = req.body;
+                    if( self.restrictToUser ){
+                        delete data.active;
+                    }
                     delete data.admins;
                     delete data._id;
                     page.set( data );
@@ -1230,6 +1234,22 @@ exports.routes = {
                 var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
+                    
+                    if( Bozuko.env() == 'dashboard' ) Bozuko.models.Page.findById( contest.page_id, function(error, page){
+                        if( error ) return;
+                        Bozuko.require('util/mail').send({
+                            to: 'info@bozuko.com',
+                            subject: 'New Contest Created',
+                            body: [
+                                'Check it out...',
+                                '',
+                                'Page:    '+page.name,
+                                'Contest: '+contest.name
+                            ].join('\n')
+                        });
+                    });
+                    
+                    
                     return res.send({items:[contest]});
                 });
             }
@@ -1354,6 +1374,27 @@ exports.routes = {
                     if( !contest ) return res.send({success: false});
                     return contest.publish(function(error){
                         if( error ) return error.send( res );
+                        
+                        // activate page if its not active yet
+                        Bozuko.models.Page.findById( contest.page_id, function(error, page){
+                            if( error ) return;
+                            if( !page.active && page.name != 'Admin Demo' ){
+                                page.active = true;
+                                page.save();
+                            }
+                            
+                            if( Bozuko.env() == 'dashboard' ) Bozuko.require('util/mail').send({
+                                to: 'info@bozuko.com',
+                                subject: 'Contest Published',
+                                body: [
+                                    'A new contest was published:',
+                                    '',
+                                    'Contest Name: '+contest.name,
+                                    'Page:         '+page.name
+                                ].join('\n')
+                            });
+                        });
+                        
                         return res.send({success: true});
                     });
                 });
@@ -1376,6 +1417,76 @@ exports.routes = {
         }
     },
     
+    '/contest/rules' : {
+        post : {
+            handler : function(req,res){
+                // get the contest
+                delete req.body.rules;
+                var contest = new Bozuko.models.Contest(req.body);
+                return res.send( contest.getOfficialRules() );
+            }
+        }
+    },
+    
+    '/s3/*' : {
+        get :{
+            handler : function(req, res){
+                // get the url for this...
+                
+                if( !req.params.length ) return res.send('no path specified');
+                var path = '/'+req.params[0];
+                if( !path ) return res.send('no path specified');
+                return res.redirect( s3.client.https( path ) );
+            }
+        }
+    },
+    
+    '/blog/feed' : {
+        get : {
+            handler : function(req, res){
+                var url = Bozuko.cfg('blog.feed', 'http://blog.bozuko.com/feed/');
+                // lets get this feed...
+                return http.request({
+                    url: url
+                }, function(error, response){
+                    if( error ) return error.send(res);
+                    var json = require('xml2json').toJson(response,{object:true});
+                    var result = {items: json.rss.channel.item, count: json.rss.channel.item.length};
+                    return res.send( result );
+                });
+            }
+        }
+    },
+    
+    '/welcome/:page_id' : {
+        get : {
+            
+            locals: { layout: false },
+            
+            handler : function(req, res){
+                var page_id = req.param('page_id');
+                // lets get the page
+                
+                return Bozuko.models.Page.findById( page_id, function(error, page){
+                    if( error ) throw error;
+                    if( !page ) throw "No Page";
+                    return Bozuko.models.Contest.find({page_id: page_id},{results:0,plays:0},{sort:{active: -1, start:-1}}, function(error, contests){
+                        if( error ) throw error;
+                        // count active contests
+                        var active = 0;
+                        contests.forEach(function(contest){
+                            if( contest.state == 'active' ) active++;
+                        });
+                        res.locals.active_count = active;
+                        res.locals.contests = contests;
+                        res.locals.page = page;
+                        return res.render('beta/content/welcome');
+                    });
+                });
+                
+            }
+        }
+    }
 };
 
 function getToken(session, forceNew){

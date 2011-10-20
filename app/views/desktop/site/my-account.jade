@@ -1,0 +1,99 @@
+.body
+  - var system = req.flash('system');
+  - if( system )
+    .info= system[0]
+  .leftCol.gCal
+    .my-account-col
+      img.profile-pic(src=user.image)
+      
+      .user-info
+        .name= user.name
+        .since Joined 
+          span.date #{dateFormat(user.sign_up_date, 'mmmm dS, yyyy')}
+      
+      .mod
+        h4.hd Your Stats!
+        .content
+          ul
+            li
+              span.number #{stats.entries} 
+              |  Contests Entries
+            li
+              span.number #{stats.wins} 
+              |  Prizes Won
+            li
+              span.number #{stats.redeemed}
+              |  Prizes Redeemed
+    
+  .main
+    .my-account-main
+      h1 My Bozuko Account
+      
+      ul.tabs
+        li
+          a(href="#prizes") Prize History
+        li
+          a(href="#settings") Account Settings
+          
+      div.panes
+        .pane
+          -if(!total_prizes )
+            p Looks like you have not won any prizes yet :(
+            p Play Bozuko games on your 
+              a(href=Bozuko.cfg('client.mobile.iphone.link','#')) iPhone
+              |  or
+              a(href=Bozuko.cfg('client.mobile.android.link','#')) Android
+              |  devices!
+          - else
+            include includes/prize-list
+        .pane
+          -var messages = req.flash('info');
+          -if( messages.length )
+            .info.fade= messages[0]
+        
+          p Update your settings below, there aren't many ;)
+          form.account-form(method="post",action="?")
+            .fields
+              label
+                span.label Email
+                .input
+                  input(type="email",required="required",name="email",value=user.email)
+            input.update-settings-button.medium-button(type="submit", value="Update Settings")
+          
+      script(type="text/javascript")
+        $tabs = $("ul.tabs");
+        $tabs.tabs("div.panes > div.pane",{
+          initialIndex : window.location.hash=='#settings' ? 1 : 0,
+          onClick : function(e, i){
+            var api = $tabs.data('tabs');
+            if( api ) {
+              window.location.hash = api.getCurrentTab().attr('href');
+            }
+          }
+        });
+        
+        var emailRE = /^([a-z0-9_\\.\\-\\+]+)@([\\da-z\\.\\-]+)\\.([a-z\\.]{2,6})$/i;
+        $('.account-form').submit(function(e){
+          if( !$('input[name=email]').val().match(emailRE) ){
+            e.preventDefault();
+            alert('Please enter a valid email address');
+          }
+        });
+        
+        $('.input').find('input, textarea').focus(function(){
+          $(this).parents('label').addClass('active');
+        }).blur(function(){
+          $(this).parents('label').removeClass('active');
+        });
+        
+        setTimeout( function(){
+          $('.fade').animate({opacity:'toggle',height:'toggle'});
+        }, 3000);
+        
+        window.Prizes = {
+          total: #{count},
+          loaded: #{prizes.length}
+        };
+        
+      script(type="text/javascript",src="/js/desktop/site/my.js")
+  

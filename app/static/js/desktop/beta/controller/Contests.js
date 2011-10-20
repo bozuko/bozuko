@@ -2,7 +2,9 @@ Ext.define('Beta.controller.Contests' ,{
     extend: 'Bozuko.lib.app.Controller',
     
     requires: [
-        'Bozuko.view.contest.Reports'
+        'Bozuko.lib.app.Controller',
+        'Bozuko.view.contest.Reports',
+        'Bozuko.model.Page'
     ],
     
     views: [
@@ -10,10 +12,6 @@ Ext.define('Beta.controller.Contests' ,{
     ],
     stores: [
         
-    ],
-    
-    models: [
-        'Bozuko.model.Page'
     ],
     
     refs : [

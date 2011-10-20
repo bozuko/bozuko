@@ -1,0 +1,20 @@
+li.prize-item(id='id-'+prize._id,class=prize.state)
+  .meta
+    span.date= dateFormat(prize.timestamp, 'dddd, mmmm dS, yyyy, h:MM TT')
+    a.page(target="_blank",href="/p/"+prize.page_id)= prize.page_name
+  
+  .prize-body
+    -if( prize.state == 'active' )
+      .time This prize expires #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
+    -if( prize.state == 'expired' )
+      .time This prize expired #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
+    -if( prize.state == 'redeemed' )
+      .time This prize was redeemed #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
+    img(src="/my/page/"+prize.page_id+"/image",alt=prize.page_name)
+    .prize
+      .name= prize.name
+      -if( prize.description )
+        .description= prize.description
+      -if( prize.is_email )
+        a.resend-email(href="/my/prizes/"+prize._id+"/resend") Resend Email
+  

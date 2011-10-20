@@ -1,7 +1,7 @@
 Ext.define('Bozuko.lib.Router', {
     
     extend: 'Object',
-    path: '/admin',
+    path: Bozuko.routePath || '/admin',
     
     constructor : function(){
         this.callParent(arguments);

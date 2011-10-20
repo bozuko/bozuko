@@ -72,6 +72,7 @@ exports.request = function(config, callback){
         
         switch( response.statusCode ){
             case 302:
+            case 301:
                 
                 clearTimeout( tid );
                 

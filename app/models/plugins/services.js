@@ -37,10 +37,14 @@ var ServicesPlugin = module.exports = function(schema, opts){
         return service;
     });
     
-    schema.static('findByService', function(name, id, conditions, callback){
+    schema.static('findByService', function(name, id, conditions, fields, callback){
         // what is id
         var fn = Array.isArray(id) ? 'find' : 'findOne';
         var params = {'services.name':name,'services.sid': (fn=='find' ? {$in:id} : id)};
+        if( !callback ){
+            callback = fields;
+            fields = {};
+        }
         if( !callback ){
             callback = conditions;
             conditions = null;
@@ -48,8 +52,7 @@ var ServicesPlugin = module.exports = function(schema, opts){
         if( conditions ){
             merge(params, conditions);
         }
-        console.log(params);
-        return this[fn](params, callback);
+        return this[fn](params, fields, callback);
     });
     
     schema.index({'services.name':1,'services.sid':1});

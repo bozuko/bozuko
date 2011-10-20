@@ -1,0 +1,28 @@
+#!/bin/sh
+
+BACKUP_DIR=/var/lib/mongodb_backup
+mkdir -p $BACKUP_DIR/dump
+
+mongodump --oplog --out $BACKUP_DIR/dump
+if [ ! $? ]; then
+    echo `date`: failed to backup db >> $BACKUP_DIR/errors
+    exit 127
+fi
+
+tar cvzf $BACKUP_DIR/latest.tgz $BACKUP_DIR/dump
+rm -rf $BACKUP_DIR/dump/*
+
+# we just backed up the latest db. Now rotate our logfiles
+# Store 13 hours of backups
+
+if [ -e "$BACKUP_DIR/dump12.tgz" ]; then
+    rm $BACKUP_DIR/dump12.tgz
+fi
+
+for i in `seq 11 -1 0`; do
+    if [ -e "$BACKUP_DIR/dump${i}.tgz" ]; then
+        j=$(($i+1))
+        mv $BACKUP_DIR/dump${i}.tgz $BACKUP_DIR/dump${j}.tgz
+    fi
+done
+mv $BACKUP_DIR/latest.tgz $BACKUP_DIR/dump0.tgz

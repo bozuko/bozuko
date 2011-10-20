@@ -282,6 +282,17 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         var me = this;
         mode = mode || me.mode;
         return  me[me.mode=='odds'?'oddsText':'entryText'];
+    },
+    
+    validate : function(){
+        var me = this;
+        if( me.contest.get('total_entries') > 1500 ){
+            // check page...
+            if( !me.up('pagepanel').page.get('name').match(/(bozuko|demo)/i) ){
+                return "This contest is too large. The maximum total number of entries is 1,500";
+            }
+        }
+        return true;
     }
     
 });

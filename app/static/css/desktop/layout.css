@@ -1,3 +1,14 @@
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
 html {
   background-color: #fff;
   min-height: 100%;
@@ -13,6 +24,56 @@ body {
   width: 860px;
   margin: 0 auto;
   background-color: transparent;
+}
+.utility {
+  color: #fff;
+  padding: 3px 0;
+  border-bottom: 1px solid #fff;
+  text-align: right;
+  line-height: 20px;
+  font-size: 11px;
+  background-color: #999999;
+  background-image: -moz-linear-gradient(top, #999999, #666666);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #999999), color-stop(1, #666666)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#999999',EndColorStr='#666666');
+  /* IE6-9 */
+
+}
+.utility .user-bar {
+  height: 20px;
+  overflow: hidden;
+}
+.utility ul, .utility li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.utility ul {
+  display: block;
+}
+.utility li {
+  display: inline;
+  margin-left: 10px;
+}
+.utility a {
+  color: #fff;
+  text-decoration: underline;
+  transition: none 0.5s linear;
+  -moz-transition: none 0.5s linear;
+  -o-transition: none 0.5s linear;
+  -webkit-transition: none 0.5s linear;
+}
+.utility a:hover {
+  color: #c1eeca;
+}
+.utility .user img {
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.utility a.login {
+  display: inline-block;
+  padding-right: 18px;
+  background: transparent url("/images/icons/14/facebook.png") no-repeat 100% 50%;
 }
 .hd {
   overflow: hidden;
@@ -135,18 +196,25 @@ body {
   clear: both;
 }
 .site-home .bd .page-width .hero .city {
-  background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 50%;
-}
-.site-home .bd .page-width .hero .city .border-bottom {
-  background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
+  z-index: 1;
+  position: relative;
+  background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 0;
   height: 342px;
 }
-.site-home .bd .page-width .hero .city .border-bottom .top-line {
+.site-home .bd .page-width .hero .city .bottom-line {
+  position: absolute;
+  background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
+  width: 100%;
+  z-index: 10;
+  height: 9px;
+  bottom: 0;
+}
+.site-home .bd .page-width .hero .city .top-line {
   display: block;
   z-index: 3;
   top: -5px;
 }
-.site-home .bd .page-width .hero .city .border-bottom .panels {
+.site-home .bd .page-width .hero .city .panels {
   position: relative;
   z-index: 4;
   height: 370px;
@@ -154,8 +222,59 @@ body {
   top: -28px;
   background: transparent url("/images/desktop/site/img_panels-with-shadow.png") no-repeat 50% 0;
 }
-.site-home .bd .page-width .hero .city .border-bottom .panels h1 {
+.site-home .bd .page-width .hero .city .panels h1 {
   display: none;
+}
+.site-home .bd .page-width .hero .city .notice {
+  position: absolute;
+  bottom: 0;
+  width: 468px;
+  left: 50%;
+  margin-left: -370px;
+  z-index: 8;
+  overflow: visible;
+}
+.site-home .bd .page-width .hero .city .notice .notice-hd {
+  background: transparent url("/images/desktop/site/notice/img_home-notice-banner.png") no-repeat 0 0;
+  padding: 0 24px;
+  color: #fff;
+  font-family: "ArvoRegular";
+  line-height: 39px;
+  font-size: 21px;
+  height: 39px;
+  z-index: 2;
+  position: relative;
+}
+.site-home .bd .page-width .hero .city .notice .notice-hd .toggle-indicator {
+  background: transparent url("/images/desktop/site/notice/img_home-notice-btn.png") no-repeat 0 -22px;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+}
+.site-home .bd .page-width .hero .city .notice .notice-bd {
+  display: block;
+  cursor: pointer;
+  -moz-box-shadow: 0 0 12px #333333;
+  -webkit-box-shadow: 0 0 12px #333333;
+  box-shadow: 0 0 12px #333333;
+  background: transparent url("/images/desktop/site/notice/bg_notice-bd.png") 0 0 repeat-x;
+  margin: -2px 18px 0;
+  padding-top: -2px;
+  position: relative;
+  overflow: hidden;
+}
+.site-home .bd .page-width .hero .city .notice .notice-bd .notice-padding {
+  padding: 20px 25px;
+}
+.site-home .bd .page-width .hero .city .notice .notice-bd .notice-padding .click-here {
+  float: right;
+  margin-top: 30px;
+}
+.site-home .bd .page-width .hero .city .notice-over .notice-hd .toggle-indicator {
+  background-position: 0 0;
 }
 .site-home .bd .page-width .middle {
   position: relative;
@@ -534,14 +653,32 @@ body {
   width: 860px;
   margin: 0 auto;
   position: relative;
-  background: transparent url("/images/desktop/site/b4b/img_phones.png") no-repeat 0 50%;
+}
+.site-b4b .bd .page-width .b4b-top .beta-notice {
+  display: block;
+  margin-top: 40px;
+  float: left;
+  width: 281px;
+  margin-left: -10px;
+}
+.site-b4b .bd .page-width .b4b-top .beta-notice .beta-notice-hd {
+  text-indent: -9999em;
+  height: 70px;
+  background: transparent url("/images/desktop/site/notice/img_b4b-beta-hd.png") no-repeat 50% 0;
+}
+.site-b4b .bd .page-width .b4b-top .beta-notice .beta-notice-bd {
+  text-indent: -9999em;
+  height: 191px;
+  background: transparent url("/images/desktop/site/notice/img_b4b-beta-bd.png") no-repeat 50% 100%;
 }
 .site-b4b .bd .page-width .b4b-top h2.tag {
   text-indent: -9999em;
-  background: transparent url("/images/desktop/site/b4b/img_tag.png") no-repeat 100% 50%;
+  background: transparent url("/images/desktop/site/b4b/img_tag.png?v3") no-repeat 100% 50%;
   margin: 0;
   padding: 0;
   height: 344px;
+  width: 600px;
+  margin-left: auto;
 }
 .site-b4b .bd .page-width .b4b-top a.blog {
   display: block;
@@ -805,6 +942,9 @@ body {
   background-color: #ffffff;
   background-image: -moz-linear-gradient(top, #ffffff, #e3e3e3);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #e3e3e3)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#ffffff',EndColorStr='#e3e3e3');
+  /* IE6-9 */
+
   border-bottom: 1px solid #ccc;
   border-top: 1px solid #ccc;
   margin-top: 10px;
@@ -1036,4 +1176,112 @@ ul.public-winners-list .prize-name {
 ul.public-winners-list .prize-timestamp {
   color: #999;
   font-size: 11px;
+}
+.faq .content .leftCol {
+  width: 300px;
+}
+.faq .content .leftCol h1 {
+  background-color: #00a24f;
+  background-image: -moz-linear-gradient(top, #00a24f, #006b37);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00a24f), color-stop(1, #006b37)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#00a24f',EndColorStr='#006b37');
+  /* IE6-9 */
+
+  color: #fff;
+  margin: 0;
+  padding: 10px;
+}
+.faq .content .leftCol ul, .faq .content .leftCol li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.faq .content .leftCol ul {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+.faq .content .leftCol li a {
+  transition: none 0.5s linear;
+  -moz-transition: none 0.5s linear;
+  -o-transition: none 0.5s linear;
+  -webkit-transition: none 0.5s linear;
+  color: #999;
+  display: block;
+  text-decoration: none;
+  padding: 15px 6px;
+  border-bottom: 1px solid #ccc;
+  background: #fff;
+}
+.faq .content .leftCol li a:hover {
+  background-color: #ffffff;
+  background-image: -moz-linear-gradient(top, #ffffff, #f0f0f0);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #f0f0f0)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#ffffff',EndColorStr='#f0f0f0');
+  /* IE6-9 */
+
+  text-decoration: underline;
+}
+.faq .content .leftCol li a.active {
+  font-weight: bold;
+  color: #006b37;
+}
+.faq .content .main-padding {
+  padding: 20px 0 20px 20px;
+}
+.faq .content h2 {
+  font-size: 20px;
+  text-transform: none;
+}
+.faq .content .block {
+  margin-bottom: 6px;
+}
+.faq .content .block .question {
+  position: relative;
+  padding-left: 14px;
+  cursor: pointer;
+}
+.faq .content .block .question .arrow {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  margin-top: -2px;
+  display: block;
+  width: 9px;
+  height: 9px;
+  background: transparent url("/images/desktop/site/img_arrows.png") 1px 0 no-repeat;
+}
+.faq .content .block .question h3 {
+  font-family: Tahoma;
+  font-size: 14px;
+  font-weight: bold;
+}
+.faq .content .block .answer {
+  padding-left: 14px;
+  font-size: 12px;
+}
+.faq .content .block .answer .short {
+  font-size: 11px;
+  display: block;
+  color: #999;
+}
+.faq .content .block .answer .short p {
+  margin: .5em 0 0;
+}
+.faq .content .block .answer .full {
+  display: none;
+}
+.faq .content .block .answer .full p {
+  margin: .5em 0 1em;
+}
+.faq .content .block .answer ul li, .faq .content .block .answer ol li {
+  margin-bottom: .5em;
+}
+.faq .content .full .question .arrow {
+  background-position: 0 -9px;
+}
+.faq .content .full .answer .short {
+  display: none;
+}
+.faq .content .full .answer .full {
+  display: block;
 }

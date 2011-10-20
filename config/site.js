@@ -5,6 +5,7 @@ module.exports = {
     controllers: {
         only: [
             'site',
+			'my',
             'mycroft'
         ]
     },
@@ -138,8 +139,16 @@ module.exports = {
             port: 465,
             ssl: true,
             use_authentication: true,
-            user: "mailer@bozuko.com",
-            pass: "7axxn7d8"
+            users: [
+                {user: 'mailer@bozuko.com',     pass: '7axxn7d8'},
+                {user: 'mailer2@bozuko.com',    pass: '7zscpk94'},
+                {user: 'mailer3@bozuko.com',    pass: '43zbbpu9'},
+                {user: 'mailer4@bozuko.com',    pass: 'fwdaz3v4'}
+            ]
+        },
+        retry:{
+            attempts: 3,
+            delay: 1000*60*5 // every 5 minutes
         },
         sender: 'Bozuko Mailer <mailer@bozuko.com>'
     },

@@ -58,6 +58,7 @@ exports.routes = {
                         'lng',
                         'total_checkins',
                         'daily_checkins',
+                        'email',
                         'timestamp',
                         'link'
                     ];

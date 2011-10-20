@@ -4,6 +4,7 @@ Ext.define('Bozuko.view.page.Panel', {
     alias: 'widget.pagepanel',
     
     requires: [
+        'Bozuko.view.page.Welcome',
         'Bozuko.view.page.Dashboard',
         'Bozuko.view.contests.Panel',
         'Bozuko.view.page.Settings',
@@ -35,6 +36,11 @@ Ext.define('Bozuko.view.page.Panel', {
                     iconAlign: 'left'
                 },
                 items:[{
+                    page        :'welcome',
+                    text        :'Welcome',
+                    group       :'page',
+                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/star-24.png'
+                },{
                     page        :'dashboard',
                     text        :'Dashboard',
                     group       :'page',
@@ -63,14 +69,24 @@ Ext.define('Bozuko.view.page.Panel', {
                     ref         :'status-text',
                     xtype       :'tbtext',
                     text        :' '
+                },{
+                    ref         :'help-button',
+                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/circle-blue-help-24.png'
                 }]
             },{
                 region          :'center',
-                layout          :'card',
+                layout          :{
+                    type            :'card'
+                },
                 ref             :'pages',
                 border          :false,
                 activeItem      :0,
                 items: [{
+                    ref             :'welcome',
+                    xtype           :'pagewelcome',
+                    border          :false,
+                    page            :me.page
+                },{
                     ref             :'dashboard',
                     xtype           :'pagedashboard',
                     border          :false,

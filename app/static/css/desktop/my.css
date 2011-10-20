@@ -1,0 +1,366 @@
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
+.my-account-col {
+  border-right: 1px solid #ccc;
+  font-size: 12px;
+  padding-bottom: 20px;
+}
+.my-account-col .profile-pic {
+  max-width: 180px;
+  display: block;
+  margin-left: auto;
+  margin-bottom: 10px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 0 0 0 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 0 0 0 6px;
+  border-radius: 0 0 0 6px;
+  background-clip: padding-box;
+}
+.my-account-col .name {
+  text-align: left;
+  font-weight: bold;
+  font-size: 14px;
+}
+.my-account-col .since, .my-account-col .email {
+  color: #666;
+}
+.my-account-col .user-info {
+  padding-left: 10px;
+  margin-bottom: 20px;
+}
+.my-account-col .mod .hd {
+  font-size: 13px;
+  background: #006b37;
+  font-weight: bold;
+  color: #fff;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px 0 0 0;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px 0 0 0;
+  border-radius: 6px 0 0 0;
+  background-clip: padding-box;
+  border-width: 1px 0 0 1px;
+  border-color: #ccc;
+  border-style: solid;
+  margin: 0;
+  padding: 4px 10px;
+}
+.my-account-col .mod .content {
+  background: #fff;
+  padding: 10px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 0 0 0 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 0 0 0 6px;
+  border-radius: 0 0 0 6px;
+  background-clip: padding-box;
+  border-width: 0 0 1px 1px;
+  border-color: #ccc;
+  border-style: solid;
+}
+.my-account-col .mod .content ul, .my-account-col .mod .content li {
+  list-style: none;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+.my-account-col .mod .number {
+  font-weight: bold;
+}
+.my-account-main {
+  padding: 0 10px;
+  margin-left: -1px;
+  border: 1px solid #ccc;
+  border-top-width: 0;
+  background: #fff;
+  min-height: 350px;
+  _height: 350px;
+}
+.my-account-main h1 {
+  font-weight: normal;
+  font-family: ArvoRegular;
+  font-size: 24px;
+  color: #666;
+}
+.my-account-main .tabs {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+  padding: 0 0 0 5px;
+  display: block;
+  border-bottom: 2px solid #006b37;
+  text-align: left;
+  background: #fff;
+}
+.my-account-main .tabs li {
+  list-style: none;
+  display: -moz-inline-stack;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  vertical-align: baseline;
+  margin: 0 5px;
+}
+.my-account-main .tabs li a {
+  display: -moz-inline-stack;
+  display: inline-block;
+  zoom: 1;
+  *display: inline;
+  vertical-align: baseline;
+  cursor: pointer;
+  background-color: #f2f2f2;
+  background-image: -moz-linear-gradient(top, #f2f2f2, #e8e8e8);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f2f2f2), color-stop(1, #e8e8e8)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#f2f2f2',EndColorStr='#e8e8e8');
+  /* IE6-9 */
+
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px 4px 0 0;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 0 0;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  border-bottom-width: 0;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #666;
+  font-size: 14px;
+  transition: none 0.5s linear;
+  -moz-transition: none 0.5s linear;
+  -o-transition: none 0.5s linear;
+  -webkit-transition: none 0.5s linear;
+}
+.my-account-main .tabs li a:hover {
+  background-color: #e8e8e8;
+  background-image: -moz-linear-gradient(top, #e8e8e8, #d8d8d8);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #e8e8e8), color-stop(1, #d8d8d8)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#e8e8e8',EndColorStr='#d8d8d8');
+  /* IE6-9 */
+
+  color: #333;
+}
+.my-account-main .tabs li a.current {
+  background-color: #00a24f;
+  background-image: -moz-linear-gradient(top, #00a24f, #006b37);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00a24f), color-stop(1, #006b37)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#00a24f',EndColorStr='#006b37');
+  /* IE6-9 */
+
+  border-color: #006b37;
+  color: #fff;
+}
+.my-account-main .fields {
+  margin-bottom: 10px;
+}
+.my-account-main .fields label {
+  display: block;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+.my-account-main .fields label .label {
+  color: #333;
+  background: #f3f3f3;
+  float: left;
+  display: block;
+  width: 110px;
+  padding: 8px;
+}
+.my-account-main .fields label .input {
+  float: left;
+  padding: 8px;
+}
+.my-account-main .fields label .input input, .my-account-main .fields label .input textarea {
+  border: 0;
+  width: 400px;
+  outline: none;
+  color: #666;
+  background: transparent;
+}
+.my-account-main .fields label .input input:focus, .my-account-main .fields label .input textarea:focus {
+  color: #000;
+}
+.my-account-main .fields label.active {
+  background: #ffffd5;
+}
+.my-account-main .info {
+  border: 1px solid #66ffb3;
+  background: #d2f7d3;
+  padding: 10px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  margin: 10px 0;
+}
+.my-account-main .none {
+  display: none;
+}
+.my-account-main .load-more {
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 6px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.my-account-main .load-more:hover {
+  background: #f3f3f3;
+}
+.my-account-main .prize-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 10px;
+}
+.my-account-main .prize-list li {
+  list-style: none;
+  margin: 0;
+}
+.my-account-main .prize-list .prize-item {
+  overflow: hidden;
+  _height: 1%;
+  border: 1px solid #ccc;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  margin-bottom: 10px;
+}
+.my-account-main .prize-list .prize-item .meta {
+  overflow: hidden;
+  _height: 1%;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 6px 10px;
+}
+.my-account-main .prize-list .prize-item .meta .date {
+  font-size: 11px;
+  float: right;
+  color: #777;
+}
+.my-account-main .prize-list .prize-item .meta a {
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+.my-account-main .prize-list .prize-item .prize-body {
+  background-position: 99% 50%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 0 0 6px 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 0 0 6px 6px;
+  border-radius: 0 0 6px 6px;
+  background-clip: padding-box;
+  overflow: hidden;
+  _height: 1%;
+  min-height: 60px;
+}
+.my-account-main .prize-list .prize-item .prize-body .name {
+  font-weight: bold;
+  font-size: 14px;
+}
+.my-account-main .prize-list .prize-item .prize-body .description {
+  font-size: 12px;
+  color: #666;
+}
+.my-account-main .prize-list .prize-item .prize-body .prize {
+  padding-top: 10px;
+  margin-left: 60px;
+  padding-right: 80px;
+}
+.my-account-main .prize-list .prize-item img {
+  width: 50px;
+  float: left;
+  margin: 10px;
+}
+.my-account-main .prize-list .prize-item .time {
+  clear: both;
+  padding: 2px 10px;
+  font-size: 12px;
+}
+.my-account-main .prize-list .active {
+  border-color: #9ab397;
+}
+.my-account-main .prize-list .expired {
+  border-color: #b3a1a1;
+}
+.my-account-main .prize-list .redeemed {
+  border-color: #97a3b3;
+}
+.my-account-main .prize-list .active .prize-body {
+  background-color: #dcffd7;
+  background-image: url("/images/assets/prizes/48/icon-active.png");
+}
+.my-account-main .prize-list .expired .prize-body {
+  background-color: #ffe6e6;
+  background-image: url("/images/assets/prizes/48/icon-expired.png");
+}
+.my-account-main .prize-list .redeemed .prize-body {
+  background-color: #d7e9ff;
+  background-image: url("/images/assets/prizes/48/icon-redeemed.png");
+}
+.filters {
+  padding: 4px 10px;
+  background: #f3f3f3;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  _height: 1%;
+  line-height: 32px;
+}
+.filters .search {
+  vertical-align: middle;
+  padding: 3px;
+}
+.filters .submit, .filters .reset {
+  vertical-align: middle;
+  float: right;
+  padding: 6px 4px;
+}
+.filters .states {
+  float: right;
+}
+.filters .states label {
+  display: block;
+  position: relative;
+  height: 32px;
+  line-height: 32px;
+  float: left;
+  white-space: nowrap;
+  padding-left: 38px;
+  margin-left: 34px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+.filters .states label input {
+  position: absolute;
+  top: 50%;
+  left: -20px;
+  margin-top: -6px;
+}
+.filters .states .prize-active {
+  background-image: url("/images/assets/prizes/32/icon-active.png");
+}
+.filters .states .prize-expired {
+  background-image: url("/images/assets/prizes/32/icon-expired.png");
+}
+.filters .states .prize-redeemed {
+  background-image: url("/images/assets/prizes/32/icon-redeemed.png");
+}

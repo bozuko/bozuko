@@ -12,6 +12,9 @@
   background-color: #ffffff;
   background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #e6e6e6)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e6e6e6',GradientType=0 );
+  /* IE6-9 */
+
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
@@ -215,8 +218,8 @@
   float: left;
 }
 .winners-list .winner-body {
-  padding: 6px 6px 6px 44px;
-  background: transparent none -12px 50% no-repeat;
+  padding: 6px 6px 6px 60px;
+  background: transparent none 4px 50% no-repeat;
 }
 .winners-list .prize-active .winner-body {
   background-image: url("/images/assets/prizes/48/icon-active.png");
@@ -352,6 +355,8 @@ fieldset .x-fieldset-header {
   position: absolute;
   left: 50%;
   bottom: 0;
+  width: 80px;
+  height: 80px;
   margin-left: -40px;
   margin-top: -40px;
 }
@@ -634,12 +639,18 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .select-list2 .x-dataview-item {
   cursor: pointer;
+  position: relative;
+  zoom: 1;
   display: inline-block;
+  *display: inline;
   padding: 10px 4px 4px;
   margin-right: 4px;
   background-color: #dddddd;
   background-image: -moz-linear-gradient(top, #dddddd, #aaaaaa);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #aaaaaa)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#aaaaaa',GradientType=0 );
+  /* IE6-9 */
+
   border: 1px solid #999;
   border-bottom-width: 0;
   vertical-align: bottom;
@@ -724,7 +735,7 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .theme-list .theme {
   position: relative;
-  width: 33.3%;
+  width: 33.2%;
   float: left;
   text-align: center;
   cursor: pointer;
@@ -740,6 +751,9 @@ fieldset .x-fieldset-header {
   background-color: #dddddd;
   background-image: -moz-linear-gradient(top, #dddddd, #bbbbbb);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #dddddd), color-stop(1, #bbbbbb)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#bbbbbb',GradientType=0 );
+  /* IE6-9 */
+
   background: #ddd;
   border: 2px solid #aaa;
   padding: 4px;
@@ -757,6 +771,7 @@ fieldset .x-fieldset-header {
   font-family: ArvoRegular;
 }
 .contest-builder .theme-list .description {
+  display: none;
   font-size: 11px;
   position: absolute;
   bottom: 0px;
@@ -784,6 +799,9 @@ fieldset .x-fieldset-header {
   background-color: #ffffff;
   background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #f2f2f2)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f2f2f2',GradientType=0 );
+  /* IE6-9 */
+
   background: #fff;
 }
 .contest-builder .help-panel .x-panel-body {
@@ -793,6 +811,8 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .help-panel .help-text {
   padding: 10px;
+  font-size: 11px;
+  line-height: 1.4em;
 }
 .contest-builder .help-panel h3 {
   font-family: ArvoRegular;
@@ -1133,7 +1153,17 @@ fieldset .x-fieldset-header {
 }
 .stats-block {
   text-align: center;
-  margin-top: 10px;
+  margin-top: 20px;
+}
+.stats-block h3 {
+  background: #aaa;
+  color: #fff;
+  font-family: "ArvoRegular";
+  font-size: 14px;
+  padding: 4px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-weight: normal;
 }
 .stats-block table {
   margin: 0 auto;
@@ -1212,4 +1242,135 @@ p {
   width: 20px;
   height: 30px;
   background: transparent url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-cross-16.png') 0 50% no-repeat;
+}
+.blog-panel .x-panel-header {
+  border-left-width: 1px !important;
+}
+.blog-panel .x-panel-header span {
+  font-family: "ArvoRegular";
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 1.3em;
+  color: #006b37;
+  text-shadow: 2px 2px 1px #ffffff;
+}
+.blog-panel .x-panel-body {
+  border-left-width: 1px !important;
+}
+h1.intro {
+  font-size: 20px;
+  margin: 0 0 .5em;
+  color: #006b37;
+}
+.welcome {
+  list-style: none;
+  padding: 0;
+  margin: 0 -10px 0 0;
+}
+.welcome li {
+  display: block;
+  float: left;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 50%;
+}
+.welcome li div {
+  padding: 6px 6px 10px;
+  background-color: #f8f8f8;
+  background-image: -moz-linear-gradient(top, #f8f8f8, #d8d8d8);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f8f8f8), color-stop(1, #d8d8d8)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8f8f8', endColorstr='#d8d8d8',GradientType=0 );
+  /* IE6-9 */
+
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.welcome li div * {
+  cursor: pointer;
+}
+.welcome li div p {
+  margin-bottom: 0;
+}
+.welcome li div h3 {
+  font-family: "ArvoRegular";
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 24px;
+  color: #333;
+  background-position: 100% 0;
+  background-repeat: no-repeat;
+}
+.welcome li.hover div {
+  color: #ffffff;
+  background-color: #00a24f;
+  background-image: -moz-linear-gradient(top, #00a24f, #006b37);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00a24f), color-stop(1, #006b37)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00a24f', endColorstr='#006b37',GradientType=0 );
+  /* IE6-9 */
+
+}
+.welcome li.hover h3 {
+  color: #fff;
+}
+.welcome .create-campaign h3 {
+  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png");
+}
+.welcome .campaigns h3 {
+  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png");
+}
+.welcome .dashboard h3 {
+  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-24.png");
+}
+.welcome .settings h3 {
+  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png");
+}
+.welcome .account h3 {
+  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-profile-24.png");
+}
+.welcome .resources h3 {
+  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-24.png");
+}
+.chart-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+.chart-mask .bg {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  z-index: 1;
+  background: #fff;
+  -moz-opacity: 0.6;
+  -khtml-opacity: 0.6;
+  opacity: 0.6;
+}
+.chart-mask .info {
+  z-index: 10;
+  position: absolute;
+  left: 20%;
+  width: 60%;
+  top: 30%;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+.chart-mask .info div {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: #f3f3f3;
 }

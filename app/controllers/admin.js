@@ -24,7 +24,7 @@ exports.access = 'admin';
 exports.restrictToUser = false;
 
 exports.routes = {
-
+    
     '/dev/reset' : {
         get : {
             handler: function(req, res){
@@ -535,6 +535,86 @@ exports.routes = {
             }
         }
     }
+    /*
+    '/admin/build-circles' : {
+        get :{
+            handler : function(req, res){
+                
+                var radius = parseInt(req.param('radius')||40,10),
+                    diameter = radius*2,
+                    i = 0;
+                    
+                function rgb(percent){
+                    var r,g,b;
+                    if( percent < .25 ){
+                        r=29,g=177,b=53;
+                    }
+                    else if( percent < .50 ){
+                        r=227,g=244,b=31;
+                    }
+                    else if( percent < .75 ){
+                        r=255,g=127,b=0;
+                    }
+                    else{
+                        r=255,g=0,b=0;
+                    }
+                    return ['rgba('+r,g,b,'.5)'].join(',');
+                }
+                
+                async.whilst(function(){ return i < 101; }, function(cb){
+                    var canvas = new Canvas(diameter, diameter),
+                        percent = (i/100),
+                        ctx = canvas.getContext('2d');
+                    
+                    ctx.beginPath();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.moveTo(radius,radius);
+                    ctx.arc(radius,radius,radius,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * 1), false);
+                    ctx.moveTo(radius,radius);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.fillStyle = rgb(percent);
+                    ctx.moveTo(radius,radius);
+                    ctx.arc(radius,radius,radius,Math.PI * (-0.5 + 2 * 0), Math.PI * (-0.5 + 2 * percent), false);
+                    ctx.moveTo(radius,radius);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#e0e0e0';
+                    ctx.arc(radius,radius,radius,0,Math.PI*2, false);
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.moveTo(radius,radius);
+                    
+                    var stream = canvas.createPNGStream(),
+                        tmpFile = Bozuko.dir+'/tmp/circle-'+i+'.png',
+                        tmp = fs.createWriteStream(tmpFile);
+                    
+                    i++;
+                    
+                    stream.on('data', function(chunk){
+                        tmp.write(chunk,'binary');
+                    });
+                    stream.on('end', function(){
+                        // okay, lets put the file in s3...
+                        s3.client.putFile(tmpFile, '/public/circles/'+Path.basename(tmpFile), {'x-amz-acl': 'public-read'}, function(error, response){
+                            if( error ) return cb(error);
+                            fs.unlinkSync(tmpFile);
+                            return cb();
+                        });
+                    });
+                    
+                }, function(error){
+                    // tell the browser its all good...
+                    if( error ) return res.send('there was an error dog...');
+                    return res.send('circles created');
+                });
+                
+            }
+        }
+    }
+    */
 };
 
 Dashboard.addRoutes( exports, '/admin' );

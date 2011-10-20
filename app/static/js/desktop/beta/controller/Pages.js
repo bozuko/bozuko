@@ -1,15 +1,17 @@
 Ext.define('Beta.controller.Pages' ,{
     extend: 'Bozuko.lib.app.Controller',
     
+    requires : [
+        'Bozuko.lib.app.Controller',
+        'Bozuko.model.Page'
+    ],
+    
     views: [
         
     ],
+    
     stores: [
         
-    ],
-    
-    models: [
-        'Bozuko.model.Page'
     ],
     
     refs : [

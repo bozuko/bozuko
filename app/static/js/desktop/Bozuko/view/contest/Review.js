@@ -18,6 +18,8 @@ Ext.define('Bozuko.view.contest.Review', {
         {label: 'Seconds', value: 1000}
     ],
     
+    editable: false,
+    
     initComponent : function(){
         var me = this;
         if( me.contest && me.contest.get('active') ) me.name = 'Review';
@@ -49,6 +51,12 @@ Ext.define('Bozuko.view.contest.Review', {
                         '<div class="label">Game Name:</div>',
                         '<div class="content">{[this.gameName()]}</div>',
                     '</div>',
+                    '<div class="row rules">',
+                        '<div class="label">Official Rules:</div>',
+                        '<div class="content">',
+                            '<div class="rules-content">{[this.rulesLink()]}</div>',
+                        '</div>',
+                    '</div>',
                     '{[this.gameOptions()]}',
                     '<div class="row prizes">',
                         '<div class="label">Prizes:</div>',
@@ -70,14 +78,17 @@ Ext.define('Bozuko.view.contest.Review', {
                             .findRecord('type', me.contest.getEntryConfig().type)
                             .get('img');
                         
-                        
-                        
                         return [
                             '<img src="',img,'" height="50" style="float: right; margin: 0 0 0 6px;" />',
                             me.contest.getEntryType(false),
                             '<br />',
                             'Users can play every ',me.getFormattedDuration(me.contest.getEntryConfig().duration)
                         ].join('');
+                    },
+                    
+                    rulesLink : function(){
+                        var text = me.editable ? 'View / Edit Rules' : 'View Rules';
+                        return '<a href="javascript:return false;" class="open-rules">'+text+'</a>';
                     },
                     
                     game : function(){
@@ -259,6 +270,107 @@ Ext.define('Bozuko.view.contest.Review', {
                 ct.toggleCls('expanded');
                 me.prizes_expanded = ct.hasCls('expanded');
             });
-        },300);
+            var rulesLink = me.getEl().down('.open-rules');
+            if( rulesLink ) rulesLink.on('click', function(){
+                me.openRules();
+            });
+        },10);
+    },
+    
+    openRules : function(){
+        var me = this;
+        if( me.rulesWindow ){
+            me.rulesWindow.focus();
+            return;
+        }
+        var dockedItems = null;
+        if( me.editable ) dockedItems = [{
+            xtype: 'panel',
+            border: false,
+            layout: 'hbox',
+            dock: 'bottom',
+            bodyPadding: 10,
+            items: [
+                { xtype: 'component', flex: 1 },
+                {
+                    xtype           :'button',
+                    text            :'Save',
+                    icon            :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-16.png',
+                    handler         :function(){
+                        me.contest.set('rules', me.rulesWindow.down('[name=rules]').getValue());
+                    }
+                },
+                { xtype: 'component', flex: 1 }
+            ]
+        }];
+        
+        me.rulesWindow = Ext.create('Ext.window.Window', {
+            title           :'Official Rules',
+            modal           :true,
+            width           :600,
+            height          :400,
+            layout          :'fit',
+            border          :false,
+            items           :[{
+                xtype           :'tabpanel',
+                activeTab       :0,
+                items           :[{
+                    title           :'Official Rules',
+                    ref             :'bozuko-rules',
+                    autoScroll      :true,
+                    bodyPadding     :10,
+                    listeners       :{
+                        render          :function(p){
+                            setTimeout(function(){
+                                var writer = me.contest.getProxy().getWriter(),
+                                    data = writer.getRecordData( me.contest );
+                                
+                                p.setLoading(true);
+                                Ext.Ajax.request({
+                                    url:Bozuko.Router.route('/contest/rules'),
+                                    jsonData: data,
+                                    method:'post',
+                                    success: function(response){
+                                        p.setLoading(false);
+                                        var text = response.responseText.replace(/\r?\n/g,'<br />');
+                                        p.update('<div style="font-size: 12px; font-family: \'Courier New\'">'+text+'</div>');
+                                    }
+                                })
+                            },10);
+                        }
+                    }
+                },{
+                    title           :'Customized Addendum',
+                    layout          :'anchor',
+                    bodyPadding     :10,
+                    bodyStyle       :'border-bottom-width: 0 !important;',
+                    items           :[{
+                        xtype           :'textarea',
+                        anchor          :'0 0',
+                        readOnly        :!me.editable,
+                        labelAlign      :'top',
+                        fieldLabel      :'Add any custom rules or legal stipulations below. '+
+                                         'They will be displayed after the Bozuko Official Rules',
+                        name            :'rules',
+                        value           :me.contest.get('rules')
+                    }],
+                    dockedItems         :dockedItems
+                }]
+            }],
+            buttons         :[{
+                text            :'Close',
+                handler         :function(){
+                    me.rulesWindow.close();
+                }
+            }],
+            listeners       :{
+                scope           :me,
+                destroy         :function(){
+                    delete this.rulesWindow;
+                }
+            }
+        });
+        
+        me.rulesWindow.show();
     }
 });

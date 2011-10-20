@@ -1,0 +1,24 @@
+.body
+  .leftCol
+    h1 Frequently Asked Questions
+    ul
+      li
+        a(href="#about") About Bozuko Games
+      li
+        a(href="#create") Creating Bozuko Games
+      li
+        a(href="#manage") Managing and Promting Bozuko Games
+  
+  .main
+    .main-padding
+      #about.section
+        h2 About Bozuko Games
+        != content.about
+      
+      #create.section
+        h2 Creating Bozuko Games
+        != content.create
+      
+      #manage.section
+        h2 Managing and Promoting Bozuko Games
+        != content.manage

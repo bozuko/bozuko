@@ -5,8 +5,11 @@ var mongoose = require('mongoose'),
     Native = require('./plugins/native'),
     crypto = require('crypto'),
     Phone = require('./embedded/user/phone'),
+    XRegExp = Bozuko.require('util/xregexp'),
     async = require('async'),
     merge = Bozuko.require('util/object').merge,
+    indexOf = Bozuko.require('util/object').indexOf,
+    httpsUrl = Bozuko.require('util/functions').httpsUrl,
     DateUtil = Bozuko.require('util/date')
     ;
     
@@ -18,12 +21,13 @@ var User = module.exports = new Schema({
     challenge           :{type:Number},
     first_name          :{type:String, index: true},
     last_name           :{type:String, index: true},
-    image               :{type:String},
+    image               :{type:String, get: httpsUrl},
     gender              :{type:String},
     suspect             :{type:Boolean},
     blocked             :{type:Boolean, default: false},
     allowed             :{type:Boolean, default: false},
     email               :{type:String, index: true},
+    user_email          :{type:Boolean, default: false},
     sign_up_date        :{type:Date, default: Date.now},
     favorites           :[ObjectId],
     last_internal_update:{type:Date},
@@ -108,7 +112,6 @@ User.method('updateInternals', function(force, callback){
     if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 60 * 60) ){
         return callback(null);
     }
-    console.log('updating internals');
     if( !self.service('facebook')) return callback( );
     return Bozuko.service('facebook').user({user:self, fields:'likes,friends'}, function(error, result){
         if( error ) return callback( error );
@@ -184,6 +187,283 @@ User.method('updateLikes', function(callback){
     });
 });
 
+User.method('getManagedPages', function(){
+    // callback is the last argument
+    var self = this,
+        args = [].slice.apply(arguments),
+        fnArgs = [], arg,
+        param, params = ['selector', 'fields', 'options'],
+        callback = args.pop(),
+        selector = {admins:self._id}
+        ;
+    
+    while( args.length && (arg = args.shift()) && params.length && (param = params.shift()) ){
+        
+        switch( param ){
+            case 'selector':
+                fnArgs.push( merge( selector, arg ) );
+                console.log(fnArgs);
+                break;
+            default:
+                fnArgs.push( arg );
+        }
+    }
+    
+    fnArgs.push( callback );
+    Bozuko.models.Page.find.apply( Bozuko.models.Page, fnArgs );
+});
+
+User.method('getPrizes', function(options, callback){
+    
+    options = options || {};
+    
+    var self    = this,
+        skip    = options.skip || options.start || options.offset || 0,
+        limit   = options.limit || 25,
+        state   = options.state || null,
+        sort    = options.sort || 'timestamp',
+        dir     = parseInt(options.dir || -1, 10),
+        search  = options.search || false,
+        query   = options.query || {}
+        ;
+        
+    query.user_id = self._id;
+    
+    if( state ){
+        
+        var states = Array.isArray(state) ? state : state.split(','),
+            $or = [];
+            
+        states.forEach(function(state){ switch(state){
+            case 'active':
+                $or.push({
+                    redeemed: false,
+                    expires: {$gt: new Date}
+                });
+                break;
+            case 'redeemed':
+                $or.push({
+                    redeemed: true
+                });
+                break;
+            case 'expired':
+                $or.push({
+                    redeemed: false,
+                    expires: {$lte: new Date}
+                });
+                break;
+        }});
+        
+        if( $or.length ){
+            query.$or = $or;
+        }
+    }
+    
+    if( search ) {
+        var searcher = [{
+            name : new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
+        },{
+            page_name: new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
+        }];
+        if( query.$or ){
+            
+            var $or = query.$or,
+                $newOr = [];
+                
+            $or.forEach(function(conditions){
+                searcher.forEach(function(searchConditions){
+                    var o = {};
+                    for( var i in conditions ){
+                        if( conditions.hasOwnProperty(i)) o[i] = conditions[i];
+                    }
+                    for( var i in searchConditions ){
+                        if( searchConditions.hasOwnProperty(i)) o[i] = searchConditions[i];
+                    }
+                    $newOr.push(o);
+                });
+            });
+            query.$or = $newOr;
+        }
+        else{
+            query.$or = searcher;
+        }
+        
+    }
+    
+    var opts = {
+        skip            :skip,
+        limit           :limit
+    };
+    
+    opts.sort = {};
+    opts.sort[sort] = dir;
+    
+    console.log(query);
+    
+    // first lets get the count
+    return Bozuko.models.Prize.count( query, function(error, total){
+        if( error ) return callback( error );
+        if( options.countOnly ){
+            return callback( null, total );
+        }
+        return Bozuko.models.Prize.find( query, options.fields || {}, opts, function(error, prizes){
+            if( error ) return callback( error );
+            return callback( null, prizes, total, opts );
+        });
+    });
+});
+
+User.method('getFriendsOnBozuko', function(options, callback){
+    
+    options = merge({
+        start       :0,
+        limit       :2,
+        random      :false,
+        sort        :'name',
+        search      :false,
+        full        :false,
+        dir         :-1
+    },options);
+    
+    var self        = this,
+        friend_ids  = [],
+        total       = 0,
+        opts        = {sort:{}},
+        fb_friends  = self.service('facebook').internal.friends;
+        
+    opts.sort[options.sort] = options.dir;
+    if( !options.random ){
+        opts.limit = options.limit;
+        opts.skip = options.start;
+    }
+    
+    if( !fb_friends.length ){
+        return callback(null, [], 0);
+    }
+    
+    var tmp = [];
+    fb_friends.forEach(function(fb_friend){
+        tmp.push(String(fb_friend.id));
+    });
+    
+    var query = {
+        'services.name':'facebook',
+        'services.sid':{$in: tmp},
+        $or: [{blocked: {$exists:false}, allowed:{$exists:false}}, {blocked: false}, {allowed: true}]
+    };
+    
+    if( options.search ){
+        query['name'] = new RegExp('(^|\\s)'+XRegExp.escape(options.search), "i");
+    }
+    
+    // lets get the total
+    return Bozuko.models.User.count(query, function(error, total){
+        
+        if( error ) return callback( error );
+        
+        // now we need to get the ids that are in our db
+        return Bozuko.models.User.find(query, {'_id':1}, opts, function(error, friends){
+            
+            if( error ) return callback(error);
+            
+            if( options.random ) while( friends.length > 0 && friend_ids.length < options.limit){
+                var i = Math.round(Math.random()*(friends.length-1));
+                friend_ids.push(friends.splice(i,1)[0]._id);
+            }
+            
+            else{
+                friends.foreEach(function(friend){
+                    friend_ids.push(friend._id);
+                });
+            }
+            
+            var fields = {};
+            if( !options.full ) fields = {
+                'services.internal.friends':0,
+                'services.internal.likes':0,
+                'services.auth':0,
+                'services.data':0,
+                'phones': 0,
+                'token': 0,
+                'salt' :0,
+                'challenge':0,
+                'can_manage_pages':0,
+                'allowed':0,
+                'blocked':0
+            };
+            
+            return Bozuko.models.User.find({_id:{$in:friend_ids}}, fields, function(error, friends){
+                if( error ) return callback(error);
+                if( options.random ){
+                    friends.sort(function(){ return -1 + (Math.random()*2) });
+                }
+                else{
+                    friends.sort(function(a,b){
+                        return indexOf(a._id, friend_ids) - indexOf(b._id, friend_ids);
+                    });
+                }
+                return callback(null, friends, total);
+            });
+        });
+    });
+});
+
+User.method('getStatistics', function(options, callback){
+    
+    if( !callback ){
+        callback = options;
+        options = {};
+    }
+    
+    options = options || {};
+    // lets stat this dude up.
+    var stats={},
+        self=this;
+    
+    async.series([
+        
+        function total_entries(cb){
+            if( options.entries === false ) return cb();
+            return Bozuko.models.Entry.count({user_id: self._id}, function(error, count){
+                if( error ) return cb(error);
+                stats.entries = count;
+                return cb();
+            });
+        },
+        
+        function total_plays(cb){
+            if( options.plays === false ) return cb();
+            return Bozuko.models.Play.count({user_id: self._id}, function(error, count){
+                if( error ) return cb(error);
+                stats.plays = count;
+                return cb();
+            });
+        },
+        
+        function total_wins(cb){
+            if( options.wins === false ) return cb();
+            return Bozuko.models.Prize.count({user_id: self._id}, function(error, count){
+                if( error ) return cb(error);
+                stats.wins = count;
+                return cb();
+            });
+        },
+        
+        function total_redeemed(cb){
+            if( options.redeemed === false ) return cb();
+            return Bozuko.models.Prize.count({user_id: self._id, redeemed: true}, function(error, count){
+                if( error ) return cb(error);
+                stats.redeemed = count;
+                return cb();
+            });
+        }
+        
+    ],  function finish(error){
+        if( error ) return callback(error);
+        return callback(null, stats);
+    });
+});
+
 User.static('updateFacebookLikes', function(ids, callback){
     if( !Array.isArray(ids) ) ids = [ids];
     Bozuko.models.User.findByService('facebook', ids, function(error, users){
@@ -242,7 +522,8 @@ User.static('addOrModify', function(user, phone, callback) {
         u.first_name = user.first_name;
         u.last_name = user.last_name;
         u.image = user.image;
-        u.email = user.email;
+        // do not overwrite a user specified email
+        if( !user.user_email ) u.email = user.email;
         u.gender = user.gender;
 
         if (phone) {
@@ -278,33 +559,6 @@ User.method('verify_phone', function(phone) {
         if(found) return 'match';
         return 'new';
 });
-
-User.method('getManagedPages', function(){
-    // callback is the last argument
-    var self = this,
-        args = [].slice.apply(arguments),
-        fnArgs = [], arg,
-        param, params = ['selector', 'fields', 'options'],
-        callback = args.pop(),
-        selector = {admins:self._id}
-        ;
-    
-    while( args.length && (arg = args.shift()) && params.length && (param = params.shift()) ){
-        
-        switch( param ){
-            case 'selector':
-                fnArgs.push( merge( selector, arg ) );
-                console.log(fnArgs);
-                break;
-            default:
-                fnArgs.push( arg );
-        }
-    }
-    
-    fnArgs.push( callback );
-    Bozuko.models.Page.find.apply( Bozuko.models.Page, fnArgs );
-});
-
 
 function create_token(user, salt, next) {
     var hmac = crypto.createHmac('sha512', Bozuko.config.key);

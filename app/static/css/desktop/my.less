@@ -1,0 +1,334 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+
+
+.my-account-col {
+    
+    border-right: 1px solid #ccc;
+    font-size: 12px;
+    padding-bottom: 20px;
+    
+    .profile-pic {
+        max-width: 180px;
+        display: block;
+        margin-left: auto;
+        margin-bottom: 10px;
+        .border_radius(0 0 0 6px);
+    }
+    .name {
+        text-align: left;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .since, .email {
+        color: #666;
+    }
+    
+    .user-info {
+        padding-left: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .mod{
+        .hd {
+            font-size: 13px;
+            background: @dark_color;
+            font-weight: bold;
+            color: #fff;
+            .border_radius(6px 0 0 0);
+            border-width: 1px 0 0 1px;
+            border-color: #ccc;
+            border-style: solid;
+            margin: 0;
+            padding: 4px 10px;
+        }
+        
+        .content {
+            background: #fff;
+            padding: 10px;
+            .border_radius(0 0 0 6px );
+            border-width: 0 0 1px 1px;
+            border-color: #ccc;
+            border-style: solid;
+            
+            ul,li{
+                list-style: none;
+                display: block;
+                margin: 0;
+                padding: 0;
+            }
+        }
+        
+        
+        .number{ font-weight: bold; }
+    }
+}
+
+.my-account-main {
+    padding: 0 10px;
+    margin-left: -1px;
+    border: 1px solid #ccc;
+    border-top-width: 0;
+    background: #fff;
+    min-height: 350px;
+    _height: 350px;
+    
+    h1 {
+        font-weight: normal;
+        font-family: ArvoRegular;
+        font-size: 24px;
+        color: #666;
+    }
+    
+    .tabs {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+        padding: 0 0 0 5px;
+        display: block;
+        border-bottom: 2px solid @dark_color;
+        text-align: left;
+        background: #fff;
+        
+        li{
+            list-style: none;
+            display: -moz-inline-stack;
+            display: inline-block;
+            zoom: 1;
+            *display: inline;
+            vertical-align: baseline;
+            margin: 0 5px;
+            a {
+                display: -moz-inline-stack;
+                display: inline-block;
+                zoom: 1;
+                *display: inline;
+                vertical-align: baseline;
+                cursor: pointer;
+                .background_gradient(#f2f2f2, #e8e8e8);
+                .border_radius( 4px 4px 0 0 );
+                border: 1px solid #ccc;
+                border-bottom-width: 0;
+                padding: 10px 20px;
+                text-decoration: none;
+                color: #666;
+                font-size: 14px;
+                .transition(none);
+                
+                &:hover {
+                    .background_gradient(#e8e8e8, #d8d8d8);
+                    color: #333;
+                }
+                
+                &.current {
+                    .background_gradient(@brand_color, @dark_color);
+                    border-color: @dark_color;
+                    color: #fff;
+                }
+            }
+        }
+    }
+    
+    .fields {
+        margin-bottom: 10px;
+    
+        label {
+            display: block;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            
+            .label {
+                color: #333;
+                background: #f3f3f3;
+                float: left;
+                display: block;
+                width: 110px;
+                padding: 8px;
+            }
+            
+            .input {
+                float: left;
+                padding: 8px;
+                input, textarea {
+                    border: 0;
+                    width: 400px;
+                    outline: none;
+                    color: #666;
+                    &:focus {
+                        color: #000;
+                    }
+                    background: transparent;
+                }
+            }
+            &.active{
+                background: #ffffd5;
+            }
+        }
+    }
+    
+    
+    .info {
+        border: 1px solid #66ffb3;
+        background: #d2f7d3;
+        padding: 10px;
+        .border_radius(6px);
+        margin: 10px 0;
+    }
+    
+    .none { display: none; }
+    .load-more{
+        display: block;
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 6px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        &:hover{
+            background: #f3f3f3;
+        }
+    }
+    
+    .prize-list{
+        list-style: none;
+        margin: 0;
+        padding:0;
+        
+        margin-bottom: 10px;
+        li{
+            list-style: none;
+            margin: 0;
+            
+            
+        }
+        
+        .prize-item {
+            
+            overflow: hidden;
+            _height: 1%;
+            border: 1px solid #ccc;
+            .border_radius(6px);
+            margin-bottom: 10px;
+            
+            .meta {
+                overflow: hidden;
+                _height: 1%;
+                border-bottom: 1px solid #e8e8e8;
+                padding: 6px 10px;
+                .date {
+                    font-size: 11px;
+                    float: right;
+                    color: #777;
+                }
+                a {
+                    color: #333;
+                    font-size: 14px;
+                    font-weight: bold;
+                    text-decoration: none;
+                }
+            }
+            .prize-body{
+                background-position: 99% 50%;
+                background-repeat: no-repeat;
+                .border_radius(0 0 6px 6px);
+                overflow: hidden;
+                _height: 1%;
+                min-height: 60px;
+                .name {
+                    font-weight: bold;
+                    font-size: 14px;
+                }
+                .description {
+                    font-size: 12px;
+                    color: #666;
+                }
+                .prize {
+                    padding-top: 10px;
+                    margin-left: 60px;
+                    padding-right: 80px;
+                }
+                
+            }
+            img {
+                width: 50px;
+                float: left;
+                margin: 10px;
+            }
+            .time {
+                clear: both;
+                padding: 2px 10px;
+                font-size: 12px;
+            }
+        }
+        .active {
+            border-color: @active_color * .7;
+        }
+        .expired {
+            border-color: @expired_color * .7;
+        }
+        .redeemed {
+            border-color: @redeemed_color * .7;
+        }
+        .active .prize-body{
+            background-color: @active_color;
+            background-image: url("/images/assets/prizes/48/icon-active.png");
+        }
+        .expired .prize-body{
+            background-color: @expired_color;
+            background-image: url("/images/assets/prizes/48/icon-expired.png");
+        }
+        .redeemed .prize-body{
+            background-color: @redeemed_color;
+            background-image: url("/images/assets/prizes/48/icon-redeemed.png");
+        }
+    }
+}
+
+.filters {
+    padding: 4px 10px;
+    background: #f3f3f3;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    _height: 1%;
+    line-height: 32px;
+    .search {
+        vertical-align: middle;
+        padding: 3px;
+    }
+    .submit, .reset {
+        vertical-align: middle;
+        float: right;
+        padding: 6px 4px;
+    }
+    .states{
+        float: right;
+        label {
+            display: block;
+            position: relative;
+            height: 32px;
+            line-height: 32px;
+            float: left;
+            white-space: nowrap;
+            padding-left: 38px;
+            margin-left: 34px;
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            input {
+                position: absolute;
+                top: 50%; left: -20px;
+                margin-top: -6px;
+            }
+        }
+        .prize-active {
+            background-image: url("/images/assets/prizes/32/icon-active.png");
+        }
+        .prize-expired {
+            background-image: url("/images/assets/prizes/32/icon-expired.png");
+        }
+        .prize-redeemed {
+            background-image: url("/images/assets/prizes/32/icon-redeemed.png");
+        }
+    }
+}

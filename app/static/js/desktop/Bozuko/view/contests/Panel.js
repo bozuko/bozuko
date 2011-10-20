@@ -38,14 +38,14 @@ Ext.define('Bozuko.view.contests.Panel', {
             activeItem: 0,
             items : [{
                 xtype           :'panel',
-                layout          :'fit',
+                autoScroll      :true,
                 border          :false,
                 tbar            :tbar,
                 items :[{
                     xtype           :'contestlist',
                     store           :me.store,
                     autoScroll      :true,
-                    actionButtons   :Bozuko.beta?['report','edit','copy','delete']:null
+                    actionButtons   :Bozuko.beta?['report','edit','copy','delete','cancel']:null
                 }]
             }]    
         });

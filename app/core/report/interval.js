@@ -156,7 +156,8 @@ CountsReport.prototype.run = function run(callback){
             
             var end = +selector[timeField].$lt-tzOffset-1000;
             var useCache = false, cacheKey='', cacheValue;
-            if( end < Date.now() ){
+            
+            if( end < Date.now() - 1000*60*60*24 ){
                 
                 var filter = opts.distinctFilter ? opts.distinctFilter.toString() : false;
                 if( filter ) filter = crypto.createHash('sha1').update(filter).digest('hex');

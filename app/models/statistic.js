@@ -6,6 +6,7 @@ var Statistic = module.exports = new Schema({
     service             :{type: String},
     category            :{type: String},
     name                :{type: String},
+    email               :{type: String},
     city                :{type: String},
     sid                 :{type: String},
     lat                 :{type: Number},

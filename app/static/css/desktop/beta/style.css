@@ -16,6 +16,9 @@ body .hd {
   background-color: #999999;
   background-image: -moz-linear-gradient(top, #999999, #333333);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #999999), color-stop(1, #333333)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#333333',GradientType=0 );
+  /* IE6-9 */
+
   background-color: #666;
   color: #fff;
 }
@@ -371,12 +374,15 @@ body .hd .right-side .page-info h3 {
   background-color: #f2f2f2;
   background-image: -moz-linear-gradient(top, #f2f2f2, #e2e2e2);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f2f2f2), color-stop(1, #e2e2e2)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f2f2', endColorstr='#e2e2e2',GradientType=0 );
+  /* IE6-9 */
+
   padding: 8px;
   position: relative;
   cursor: pointer;
   display: block;
   overflow: hidden;
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 4px;
   -moz-background-clip: padding-box;
@@ -390,22 +396,40 @@ body .hd .right-side .page-info h3 {
   top: 45%;
   left: -99999em;
 }
+.create-account ul li label .checkbox {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-right: 15px;
+  margin-top: -12px;
+  width: 21px;
+  height: 21px;
+  background: transparent url("/images/desktop/beta/CheckBox.png") -21px 0 no-repeat;
+}
 .create-account ul li label.hover {
   background-color: #ffffff;
   background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #f2f2f2)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f2f2f2',GradientType=0 );
+  /* IE6-9 */
+
 }
 .create-account ul li label.selected {
-  border-color: #00a24f;
+  border-color: #000;
   background-color: #fff;
   background-image: none !important;
   -moz-box-shadow: 0 0 12px #999999;
   -webkit-box-shadow: 0 0 12px #999999;
   box-shadow: 0 0 12px #999999;
 }
+.create-account ul li label.selected .checkbox {
+  background-position: 0 0;
+}
 .create-account ul li label img {
   float: left;
   margin-right: 10px;
+  height: 50px;
 }
 .create-account ul li label .info {
   display: block;
@@ -423,4 +447,66 @@ body .hd .right-side .page-info h3 {
 }
 .create-account ul li label .info .address .street, .create-account ul li label .info .address .city {
   display: block;
+}
+.existing-accounts h3 {
+  font-family: "ArvoRegular";
+  margin: .4em 0;
+  font-weight: normal;
+}
+.existing-accounts ul, .existing-accounts li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: block;
+}
+.existing-accounts li a {
+  display: block;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  _height: 1%;
+  background: #f3f3f3;
+  text-decoration: none;
+  padding: 6px;
+  margin-bottom: 6px;
+  border: 1px solid #ccc;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-clip: padding-box;
+}
+.existing-accounts li a img {
+  float: left;
+  height: 50px;
+  margin-right: 10px;
+}
+.existing-accounts li a .title {
+  text-decoration: none;
+  display: block;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 10px;
+}
+.existing-accounts li a .launch-dashboard {
+  display: none;
+  text-decoration: none;
+  color: #999;
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  line-height: 20px;
+  padding-right: 22px;
+  background: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-right-16.png') no-repeat 100% 50%;
+}
+.existing-accounts li a:hover {
+  background: #fff;
+}
+.existing-accounts li a:hover .launch-dashboard {
+  display: block;
+}
+.no-places {
+  font-size: 1.2em;
+  line-height: 1.4em;
 }

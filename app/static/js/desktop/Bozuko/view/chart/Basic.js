@@ -7,6 +7,8 @@ Ext.define('Bozuko.view.chart.Basic', {
         'Bozuko.lib.PubSub'
     ],
     
+    totalsLabel : "Page Totals",
+    
     initComponent : function(){
         var me = this;
         
@@ -19,6 +21,16 @@ Ext.define('Bozuko.view.chart.Basic', {
             }
         });
         
+        if( me.contest_id ){
+            me.totalsLabel = 'Campaign Totals';
+        }
+        else if( me.page_id ){
+            me.totalsLabel = 'Account Totals';
+        }
+        else {
+            me.totalsLabel = 'Overall Totals';
+        }
+        
         Ext.apply(me, {
             
             layout: 'anchor',
@@ -29,6 +41,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 xtype           :'panel',
                 border          :'false',
                 anchor          :'0',
+                height          :30,
                 layout          :'hbox',
                 items           :[{xtype:'splitter', width: 60},{
                     xtype           :'combo',
@@ -45,7 +58,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                         data            :[
                             {text:'Entries', value:'Entry'},
                             {text:'Plays', value:'Play'},
-                            {text:'Facebook Wall Posts', value:'Share'},
+                            {text:'Facebook Posts', value:'Share'},
                             {text:'Total Prize Wins', value:'Prize'},
                             {text:'Redeemed Prizes', value:'Redeemed Prizes'},
                             {text:'Facebook Likes', value:'Likes'},
@@ -93,7 +106,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 },{
                     xtype           :'component',
                     flex            :1,
-                    style           :'text-align:right; line-height: 20px; font-size: 16px; font-weight: bold; font-family: Tahoma; padding-right: 10px;',
+                    style           :'text-align:right; line-height: 20px; color: #666; font-size: 12px; font-weight: bold; font-family: Tahoma; padding-right: 10px;',
                     border          :false,
                     ref             :'chart-total'
                 }]
@@ -158,7 +171,8 @@ Ext.define('Bozuko.view.chart.Basic', {
                 }],
                 listeners : {
                     scope           :me,
-                    refresh         :me.onChartRefresh
+                    refresh         :me.onChartRefresh,
+                    render          :me.onChartRefresh
                 }
             },{
             
@@ -166,7 +180,8 @@ Ext.define('Bozuko.view.chart.Basic', {
                 ref             :'stats-block',
                 tpl             :new Ext.XTemplate(
                     '<div class="stats-block">',
-                        '<table>',
+                        '<table class="main-table">',
+                            '<tr><td colspan="3" style="padding: 0;"><h3>',me.totalsLabel,'</h3></td></tr>',
                             '<tr>',
                                 '<td>',
                                     '<table>',
@@ -200,7 +215,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                                         '</thead>',
                                         '<tbody>',
                                             '<tr>',
-                                                '<th>Wall Posts:</th>',
+                                                '<th>Posts:</th>',
                                                 '<td>{[this.commas(values.wallposts)]}</td>',
                                             '</tr>',
                                             '<tr>',
@@ -262,6 +277,63 @@ Ext.define('Bozuko.view.chart.Basic', {
         Bozuko.PubSub.subscribe('contest/play', filter, me.getCallback('play') );
         Bozuko.PubSub.subscribe('contest/win', filter, me.getCallback('win') );
         Bozuko.PubSub.subscribe('prize/redeemed', filter, me.getCallback('redeemed') );
+        
+        me.on('destroy', function(){
+            Bozuko.PubSub.unsubscribe('contest/entry', filter, me.getCallback('entry') );
+            Bozuko.PubSub.unsubscribe('contest/play', filter, me.getCallback('play') );
+            Bozuko.PubSub.unsubscribe('contest/win', filter, me.getCallback('win') );
+            Bozuko.PubSub.unsubscribe('prize/redeemed', filter, me.getCallback('redeemed') );
+        });
+        
+        me.chartStore.on('load', function(){
+            var axis = me.chart.axes.get(0),
+                redraw = false,
+                total = String(me.chartStore.sum('count'));
+                
+            if( !total ){
+                redraw = !axis.maximum;
+                axis.maximum = 10;
+            }
+            else{
+                redraw = axis.maximum;
+                delete axis.maximum;
+            }
+            if( redraw ) me.chart.redraw();
+            
+            if( me.modelField.getValue().match(/cost/i)){
+                total = Ext.util.Format.usMoney(total);
+            }
+            else{
+                total = me.addCommas(total);
+            }
+            var drawStuff = function(){
+                me.down('[ref=chart-total]').update('<span style="color: #000;">'+total+'</span> <span style="font-weight: normal;">in this time period</span>');
+                if( total == 0 ){
+                    if( !me.chart.rendered ) return;
+                    if( !me.chartMask ){
+                        me.chart.getEl().setStyle('position','relative');
+                        me.chartMask = me.chart.getEl().createChild({
+                            tag:'div',
+                            cls:'chart-mask',
+                            html: '<div class="bg"></div><div class="info"><div>There is no data to show for the chosen time period.</div></div>'
+                        });
+                        me.chartMask.setVisibilityMode( Ext.Element.DISPLAY );
+                    }
+                    me.chartMask.show();
+                }
+                else{
+                    if( me.chartMask && me.chartMask.isVisible() ){
+                        me.chartMask.hide();
+                        me.chart.forceComponentLayout();
+                    }
+                }
+            };
+            if( me.chart.rendered ){
+                drawStuff();
+            }
+            else me.chart.on('render', drawStuff);
+            
+        });
     },
     
     resume : function(){
@@ -319,17 +391,7 @@ Ext.define('Bozuko.view.chart.Basic', {
     },
     
     onChartRefresh : function(){
-        var me = this;
-        // add up everything...
-        var total = String(me.chartStore.sum('count'));
         
-        if( me.modelField.getValue().match(/cost/i)){
-            total = Ext.util.Format.usMoney(total);
-        }
-        else{
-            total = me.addCommas(total);
-        }
-        me.down('[ref=chart-total]').update(total+' <span style="font-weight: normal;">in this time period</span>');
     },
     
     loadStore : function(){

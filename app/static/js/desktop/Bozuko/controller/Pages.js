@@ -1,6 +1,11 @@
 Ext.define('Bozuko.controller.Pages' ,{
     extend: 'Bozuko.lib.app.Controller',
     
+    requires: [
+        'Bozuko.lib.app.Controller',
+        'Bozuko.model.Page'
+    ],
+    
     views: [
         
     ],
@@ -9,7 +14,7 @@ Ext.define('Bozuko.controller.Pages' ,{
     ],
     
     models: [
-        'Bozuko.model.Page'
+        
     ],
     
     refs : [
@@ -22,7 +27,7 @@ Ext.define('Bozuko.controller.Pages' ,{
             'pagepanel' : {
                 'render' : me.onPagePanelRender
             },
-            '[ref=navigation] button' : {
+            '[ref=navigation] button[group=page]' : {
                 'click' : me.changePage
             },
             '[ref=statusField]' : {
@@ -34,9 +39,49 @@ Ext.define('Bozuko.controller.Pages' ,{
             'pagesettings [action=save]' : {
                 'click' : me.saveSettings
             },
+            '[ref=help-button]' : {
+                'click' : me.openHelp
+            },
             'pagesettings' : {
                 'save'  : function(pagesettings){
                     me.saveSettings(pagesettings.down('button[action=save]'));
+                }
+            },
+            'pagewelcome' : {
+                'welcomeloaded' : function(panel){
+                    
+                    var nav = panel.up('pagepanel').down('toolbar[ref=navigation]');
+                    
+                    // attach handlers to buttons, etc
+                    panel.getEl().select('.ilink').on('click', function(e, t){
+                        // open this up...
+                        if( !Ext.fly(t).hasCls('ilink') ){
+                            t = Ext.fly(t).up('.ilink').dom;
+                        }
+                        var rel = t.getAttribute('rel');
+                        
+                        if( rel == 'create-campaign'){
+                            var btn = nav.down('button[page=campaigns]');
+                            me.changePage(btn);
+                            return setTimeout(function(){
+                                var builder_btn = panel.up('pagepanel').down('contestspanel button[action=builder]');
+                                builder_btn.fireEvent('click', builder_btn);
+                            },0);
+                        }
+                        var btn = nav.down('button[page='+rel+']');
+                        return me.changePage(btn);
+                    });
+                    
+                    panel.getEl().select('.welcome li').addClsOnOver('hover');
+                    var h = 0;
+                    panel.getEl().select('.welcome li div')
+                        .each(function(el){
+                            // check for the height
+                            h = Math.max(h, Ext.fly(el).getHeight());
+                        })
+                        .setStyle({height:h+'px'})
+                        ;
+                    panel.doLayout();
                 }
             }
         });
@@ -147,6 +192,26 @@ Ext.define('Bozuko.controller.Pages' ,{
             failure: function(){
                 alert('Error Saving Page');
             }
+        });
+    },
+    
+    openHelp : function(){
+        Ext.Msg.show({
+            title: 'Questions?',
+            icon: Ext.Msg.QUESTION,
+            buttons: Ext.Msg.OK,
+            modal: true,
+            width : 420,
+            msg: 'Need a hand with something? We are happy to help. '+
+                 'While we are working on our documentation, feel free to contact us.'+
+                 '<div style="padding-left: 40px; padding-bottom: 0px; font-family: ArvoRegular;">'+
+                 '<div style="margin: 10px 0; padding-left: 40px; line-height: 24px; font-size: 16px; background: transparent url(/images/icons/24/email.png) 10px 0 no-repeat;">'+
+                 '<a href="mailto:support@bozuko.com">support@bozuko.com</a>'+
+                 '</div>'+
+                 '<div style="margin: 10px 0 0; padding-left: 40px; line-height: 24px; font-size: 16px; background: transparent url(/images/icons/24/phone.png) 10px 0 no-repeat;">'+
+                 '415 - 2BOZUKO'+
+                 '</div>'+
+                 '</div>'
         });
     }
 });

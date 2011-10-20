@@ -2,6 +2,7 @@ var Content = Bozuko.require('util/content'),
     validator = require('validator'),
     mailer = Bozuko.require('util/mail'),
     inspect = require('util').inspect,
+    filter = Bozuko.require('util/functions').filter,
     async = require('async'),
     crypto = require('crypto');
 
@@ -38,7 +39,9 @@ exports.locals = {
         link: '/bozuko-for-business',
         text: 'Bozuko for Business'
     }],
-    scripts:[
+    head_scripts:[
+        'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
+        '/js/desktop/site/global.js'
     ],
     styles:[
         // Date now forces styles to refresh after a server reboot
@@ -79,14 +82,11 @@ exports.routes = {
 
             title: 'Bozuko - Instant Win Games at your Favorite Places',
             locals: {
-                html_classes: ['site-home'],
-                head_scripts: [
-
-                ]
+                html_classes: ['site-home']
             },
 
             handler: function(req, res) {
-                console.log(res.locals.meta);
+                res.locals.head_scripts.push('/js/desktop/site/home.js');
                 res.render('site/index');
             }
         }
@@ -123,22 +123,81 @@ exports.routes = {
         }
     },
     
+    '/site/user-bar' : {
+        get : {
+            locals : {
+                layout: false
+            },
+            handler : function(req, res){
+                var accessToken = req.param('accessToken');
+                
+                function respond(){
+                    res.render('site/includes/user-bar',{},function(error,  str){
+                        return res.send({
+                            'html' : str,
+                            'user' : req.session.user ? filter(req.session.user,'_id','name') : false
+                        });
+                    });
+                }
+                
+                if( accessToken ){
+                    return Bozuko.models.User.findOne({'services.auth': accessToken}, function(error, user){
+                        if( error ){
+                            return respond();
+                        }
+                        req.session.user = user;
+                        req.session.userJustLoggedIn = true;
+                        req.session.save();
+                        res.locals.user = user;
+                        return respond();
+                    });
+                }
+                return respond();
+            }
+        }
+    },
+    
+    '/site/logout' : {
+        get : {
+
+            handler: function(req,res){
+                req.session.destroy();
+                return res.redirect('/');
+            }
+        }
+    },
+    
+    '/site/login' : {
+        get : {
+
+            handler: function(req,res){
+                return Bozuko.service('facebook').login(
+                    req,
+                    res,
+                    'user',
+                    null,
+                    function(user, req, res){
+                        res.redirect('/');
+                        return false;
+                    }
+                );
+            }
+        }
+    },
+    
     '/how-to-play' : {
         get : {
 
             title: 'How to Play Bozuko',
             locals: {
                 html_classes: ['site-how-to-play'],
-                head_scripts: [
-                    'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
-                    '/js/desktop/site/how-to.js'
-                ],
                 meta: {
                     'description' : 'Play Bozuko! The games are always fun and easy to play. Spin a slot machine or try your luck at a scratch ticket for your chance to win!'
                 }
             },
 
             handler: function(req, res) {
+                res.locals.head_scripts.push('/js/desktop/site/how-to.js');
                 res.render('site/how-to-play');
             }
         }
@@ -148,14 +207,11 @@ exports.routes = {
 
             title: 'Bozuko for Business',
             locals: {
-                html_classes: ['site-b4b'],
-                head_scripts: [
-                    'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
-                    '/js/desktop/site/b4b.js'
-                ]
+                html_classes: ['site-b4b']
             },
 
             handler: function(req, res) {
+                res.locals.head_scripts.push('/js/desktop/site/b4b.js?v2');
                 res.render('site/bozuko-for-business');
             }
         }
@@ -166,10 +222,7 @@ exports.routes = {
             title: 'Bozuko - Contact us',
 
             locals: {
-                html_classes: ['contact'],
-                head_scripts: [
-                    'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'
-                ]
+                html_classes: ['contact']
             },
 
             handler: function(req, res){
@@ -228,10 +281,7 @@ exports.routes = {
             title: 'Bozuko - Contact us',
 
             locals: {
-                html_classes: ['business-contact'],
-                head_scripts: [
-                    'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'
-                ]
+                html_classes: ['business-contact']
             },
 
             handler: function(req, res){
@@ -306,10 +356,7 @@ exports.routes = {
 
             title: 'Bozuko - Business Listing',
             locals: {
-                html_classes: ['site-business-page'],
-                head_scripts: [
-
-                ]
+                html_classes: ['site-business-page']
             },
 
             handler: function(req, res) {
@@ -341,10 +388,7 @@ exports.routes = {
 
             title: 'Bozuko - Winners List',
             locals: {
-                html_classes: ['site-business-page'],
-                head_scripts: [
-
-                ]
+                html_classes: ['site-business-page']
             },
 
             handler: function(req, res) {
@@ -477,6 +521,29 @@ exports.routes = {
             }
         }
     },
+    
+    '/faq' : {
+        get : {
+            title :'Bozuko - Frequently Asked Questions',
+
+            locals: {
+                html_classes: [
+                    'faq'
+                ]
+            },
+
+            handler: function(req, res){
+                res.locals.head_scripts.push('/js/desktop/site/faq.js');
+                res.locals.content = {
+                    about:  autoLink(Content.get('site/faq/about-bozuko.md')),
+                    create: autoLink(Content.get('site/faq/creating-games.md')),
+                    manage: autoLink(Content.get('site/faq/management.md'))
+                };
+                return res.render('site/faq', 404);
+            }
+        }
+    },
+    
     'twitter/widget.js' : {
         get: {
             handler :  function(req,res){
@@ -515,6 +582,14 @@ exports.routes = {
         }
     }
 };
+
+function autoLink(html){
+    return html.replace(/(https?\:\/\/.*?)(<|\s|$)/gi, function(match, link, end){
+        return '<a href="'+link+'" target="_blank">'+link+'</a>'+end;
+    }).replace(/([^\s]+@[^\s]+\.[^\s]+?)(<|\s|$)/gi, function(match, email, end){
+        return '<a href="mailto:'+email+'">'+email+'</a>'+end;
+    });
+}
 
 function getToken(session, forceNew){
     var token;
