@@ -1,6 +1,7 @@
 var testsuite = require('./config/testsuite');
 var async = require('async');
 var inspect = require('util').inspect;
+var rand = Bozuko.require('util/math').rand;
 
 var start = new Date().getTime();
 var end = new Date();
@@ -31,7 +32,7 @@ var contest = new Bozuko.models.Contest(
     },
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 1000,
+        tokens: 5000,
         duration: 0
     }],
     start: start,
@@ -112,8 +113,6 @@ exports['calculate average step'] = function(test) {
 };
 
 exports['play out contest with all wins'] = function(test) {
-    var numPrizes = contest.prizes[0].total;
-    var wins = 0;
     results.sort(function(a, b) {
         return a.timestamp.getTime() - b.timestamp.getTime();
     });
@@ -163,13 +162,73 @@ exports['calculate average step - 0 because no more results available'] = functi
     });
 };
 
-exports['reset contest'] = function(test) {
+exports['create 1 month long contest'] = function(test) {
+    contest.prizes[0].total = 1000;
+    contest.start = new Date();
+    contest.end = new Date(contest.start.getTime()+1000*60*60*24*30);
+    engine.configure();
     Bozuko.models.Result.remove(function(){
         exports['generate contest results'](test);
     });
 };
 
+// play opts.pph*opts.hrs plays
+function play(opts, callback) {
+    var test = opts.test;
+    var hr = 1000*60*60;
+    var hrs = opts.hrs;
+    var pph = opts.pph;
+    var plays = hrs*pph;
+    var start = opts.start;
+    var end = opts.start+hr*hrs;
+    var timestamps = [];
+    for (var i = 0; i < plays; i++) {
+        timestamps.push(new Date(rand(start,end)));
+    }
+    timestamps.sort(function(a, b) {
+        return a.getTime() - b.getTime();
+    });
+    
+    var wins = 0;
+    var losses = 0;
+    
+    async.forEach(timestamps, function(ts, cb) {
+        var memo = {
+            contest: contest,
+            user: user,
+            timestamp: ts
+        };                
+        console.log("timestamp = "+ts.getTime());
+        contest.play(memo, function(err, result) {
+            test.ok(!err);
+            if (result.result) {
+                wins++;
+                process.stdout.write("X");
+            } else {
+                process.stdout.write("_");
+                losses++;
+            }
+            return cb(err);
+        });
+    },function(err) {
+        test.ok(!err);
+        process.stdout.write('\n');
+        test.equal(wins+losses, plays);
+        callback(err);
+    });
+}
+
+
 exports['play out contest - staggered'] = function(test) {
+    var opts = {
+        test: test,
+        hrs: 8,
+        pph: 50,
+        start: contest.start.getTime()
+    };
+    play(opts, function(err) {
+        test.done();
+    });
 };
 
 function cleanup(callback) {

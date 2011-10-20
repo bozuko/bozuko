@@ -9,16 +9,23 @@ var safe = {w:2, wtimeout: 5000};
 
 var TimeEngine = module.exports = function(contest) {
     Engine.call(this, contest);
-
-    // Key Variables. Can be modified at runtime to adapt to actual usage patterns. We should be able to 
-    // tweak the numbers based on past plays so that we can smooth out the odds over time.
-    this.step =  Math.floor(
-        (this.contest.end.getTime() - this.contest.start.getTime())/this.contest.totalPrizes());
-    this.lookback_window = new Date(this.step);
-    this.lookforward_window = new Date(this.step);
+    this.configure();
 };
 
 inherits(TimeEngine, Engine);
+
+TimeEngine.prototype.configure = function() {
+    this.end_margin_multiplier = 0.10;
+    
+    // Leave a buffer at the end so users can always win the last prizes.
+    this.contest_duration = Math.floor(
+        (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.end_margin_multiplier));
+    this.step =  Math.floor(
+        (this.contest_duration)/this.contest.totalPrizes());
+    this.lookback_window = new Date(this.step);
+    this.lookforward_window = new Date(this.step);    
+};
+
 
 /**
  * Generate contest results. Store in this.contest.results_array
@@ -32,7 +39,7 @@ TimeEngine.prototype.generateResults = function(callback) {
     var results = [];
     var prizes = contest.prizes;
     var start = contest.start.getTime();
-    var end = contest.end.getTime();
+    var end = start+this.contest_duration;
 
     prizes.forEach(function(prize, prize_index) {
         for (var i = 0; i < prize.total; i++) {
@@ -114,8 +121,18 @@ TimeEngine.prototype.play = function(memo, callback) {
         {new: true, safe: safe},
         function(err, result) {
             if (err) return callback(err);
-            memo.result = result;            
-            return callback(null, memo);
+            memo.result = result;
+            if (memo.result) return callback(null, memo);
+            return self.redistribute(memo, callback);
         }
     );
+};
+
+
+/**
+ * Redistribute results if they were not won and are prior to the lookback window
+ * 
+ */
+TimeEngine.prototype.redistribute = function(memo, callback) {
+    callback(null, memo);
 };
