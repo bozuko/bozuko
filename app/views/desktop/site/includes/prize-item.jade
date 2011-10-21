@@ -12,7 +12,7 @@ li.prize-item(id='id-'+prize._id,class='prize-'+prize.state)
     img.image(src=prize.page.image.replace(/type=large/i, 'type=square'),alt=prize.page.name)
     .business-content
       a.page-name(target="_blank",href="/p/"+prize.page_id)= prize.page_name
-      -if( prize.page.is_location )
+      -if( prize.page.is_location && prize.page.coords[0] && prize.page.coords[0] )
         .address
           .street= prize.page.location.street
           .city= prize.page.location.city+', '+prize.page.location.state+' '
