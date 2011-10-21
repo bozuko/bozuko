@@ -15,7 +15,7 @@ Ext.define('Bozuko.view.page.Account' ,{
             items : [{
                 xtype               :'component',
                 autoEl              :{tag:'h3',cls:'page-h3'},
-                html                :'Account'
+                html                :'My Account'
             },{
                 xtype               :'component',
                 html                :[
