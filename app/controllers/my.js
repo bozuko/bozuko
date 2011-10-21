@@ -65,6 +65,11 @@ exports.routes = {
     
     '/my/account' : {
         get : {
+            
+            locals: {
+                title: 'My Account | Bozuko'
+            },
+            
             handler : function(req, res){
                 var user = req.session.user;
                 res.locals.head_scripts.push('/js/jquery/plugins/jquery.dateFormat.js');
@@ -72,8 +77,9 @@ exports.routes = {
                     if( error ) throw error;
                     res.locals.stats = stats;
                     user.getPrizes({
+                        loadPage    :true,
                         start       :req.param('start'),
-                        limit       :req.param('limit') || 5,
+                        limit       :req.param('limit') || 20,
                         state       :req.param('state'),
                         sort        :req.param('sort'),
                         dir         :req.param('dir'),
@@ -130,8 +136,9 @@ exports.routes = {
                 var user = req.session.user;
                 
                 var query = {
+                    loadPage    :true,
                     start       :req.param('start'),
-                    limit       :req.param('limit') || 5,
+                    limit       :req.param('limit') || 20,
                     state       :req.param('state'),
                     sort        :req.param('sort'),
                     dir         :req.param('dir'),
@@ -147,7 +154,7 @@ exports.routes = {
                     res.locals.prizes = prizes;
                     res.locals.layout = false;
                     return res.render('site/includes/prize-items',{},function(error, html){
-                        return res.send({total: total, items: prizes, html:html, opts: opts});
+                        return res.send({total: total, items: filterPrizes(prizes), html:html, opts: opts});
                     });
                     
                 });
@@ -211,6 +218,22 @@ exports.routes = {
         }
     }
 };
+
+function filterPrizes(prizes){
+    var _prizes = [];
+    prizes.forEach(function(prize){
+        var _contests = [];
+        prize.page.contests.forEach(function(contest){
+            _contests.push( contest.toJSON() );
+        });
+        var _page = prize.page.toJSON(),
+            _prize = prize.toJSON();
+        _page.contests = _contests;
+        _prize.page = _page;
+        _prizes.push(_prize);
+    });
+    return _prizes;
+}
 
 function getToken(session, forceNew){
     var token;

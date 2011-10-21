@@ -1,20 +1,37 @@
-li.prize-item(id='id-'+prize._id,class=prize.state)
-  .meta
-    span.date= dateFormat(prize.timestamp, 'dddd, mmmm dS, yyyy, h:MM TT')
-    a.page(target="_blank",href="/p/"+prize.page_id)= prize.page_name
-  
-  .prize-body
+li.prize-item(id='id-'+prize._id,class='prize-'+prize.state)
+  .times
     -if( prize.state == 'active' )
-      .time This prize expires #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
+      .action Expires #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
     -if( prize.state == 'expired' )
-      .time This prize expired #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
+      .action Expired #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
     -if( prize.state == 'redeemed' )
-      .time This prize was redeemed #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
-    img(src="/my/page/"+prize.page_id+"/image",alt=prize.page_name)
-    .prize
-      .name= prize.name
-      -if( prize.description )
-        .description= prize.description
-      -if( prize.is_email )
+      .action Redeemed #{dateFormat(prize.expires, 'dddd, mmmm dS, yyyy, h:MM TT')}
+    
+    .win= dateFormat(prize.timestamp, 'dddd, mmmm dS, yyyy, h:MM TT')
+  .business
+    img.image(src=prize.page.image.replace(/type=large/i, 'type=square'),alt=prize.page.name)
+    .business-content
+      a.page-name(target="_blank",href="/p/"+prize.page_id)= prize.page_name
+      -if( prize.page.is_location && prize.page.coords[0] && prize.page.coords[0] )
+        .address
+          .street= prize.page.location.street
+          .city= prize.page.location.city+', '+prize.page.location.state+' '
+            a(style="text-decoration:none;",href=prize.page.getGoogleMapLink(),target="_blank") Map
+        
+  .prize-details
+    .prize-name= prize.name
+    -if( prize.description )
+      .description= prize.description
+    
+    
+  .redemption
+    -if( prize.state=='expired')
+      | This prize has expired
+    -else if( prize.is_email )
+      | This prize #{prize.redeemed?'was':'will be'} sent by email
+      -if( prize.redeemed )
         a.resend-email(href="/my/prizes/"+prize._id+"/resend") Resend Email
-  
+    -else if( prize.is_barcode )
+      | This prize #{prize.redeemed?'was':'will be'} redeemed by a barcode on the phone.
+    -else
+      | #{prize.redeemed?'This prize was redeemed in person':'You must redeem this prize in person'}

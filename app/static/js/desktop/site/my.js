@@ -19,7 +19,7 @@ jQuery(function(){
         var link = e.target;
         $.get(this.href, function(response){
             if( response.success ){
-                $('<div />').css({color:'green', fontWeight:'bold'}).html('Email Resent!').insertAfter(link);
+                $('<span />').css({color:'green', fontWeight:'bold'}).html('Email Resent!').insertAfter(link);
                 $(link).remove();
             }
         });
