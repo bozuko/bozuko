@@ -255,7 +255,6 @@
 }
 .my-account-main .prize-list .prize-item .business {
   float: right;
-  margin-bottom: 4px;
   width: 40%;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 6px;
@@ -266,7 +265,7 @@
   border: 1px solid #d8d8d8;
   background: #fff;
   padding: 6px;
-  margin-right: 10px;
+  margin: 4px 10px;
   font-size: 11px;
   line-height: 1.5em;
 }
@@ -274,6 +273,7 @@
   font-weight: bold;
 }
 .my-account-main .prize-list .prize-item .business .image {
+  height: 50px;
   float: right;
 }
 .my-account-main .prize-list .prize-item .business .address {
@@ -281,6 +281,8 @@
 }
 .my-account-main .prize-list .prize-item .prize-details {
   padding-left: 46px;
+  min-height: 40px;
+  _height: 40px;
   background: transparent none 5px 0px no-repeat;
 }
 .my-account-main .prize-list .prize-item .prize-details .prize-name {
@@ -291,7 +293,8 @@
 }
 .my-account-main .prize-list .prize-item .prize-details .description {
   color: #666;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.4em;
 }
 .my-account-main .prize-list .prize-item .redemption {
   clear: both;
@@ -309,7 +312,7 @@
   background-image: url("/images/assets/prizes/32/icon-active.png");
 }
 .my-account-main .prize-list .prize-active .times .action {
-  color: #006b37;
+  color: #ff0000;
 }
 .my-account-main .prize-list .prize-expired {
   border-color: #b3a1a1;
