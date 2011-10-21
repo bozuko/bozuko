@@ -1,8 +1,6 @@
 @import "app/static/css/vars";
 @import "app/static/css/mixins";
 
-
-
 .my-account-col {
     
     border-right: 1px solid #ccc;
@@ -199,8 +197,6 @@
         li{
             list-style: none;
             margin: 0;
-            
-            
         }
         
         .prize-item {
@@ -210,77 +206,98 @@
             border: 1px solid #ccc;
             .border_radius(6px);
             margin-bottom: 10px;
+            background: #f3f3f3 none 5px 5px no-repeat;
             
-            .meta {
-                overflow: hidden;
-                _height: 1%;
-                border-bottom: 1px solid #e8e8e8;
-                padding: 6px 10px;
-                .date {
-                    font-size: 11px;
+            .times {
+                padding: 1px 12px;
+                border-bottom: 1px solid #fff;
+                margin-bottom: 4px;
+                font-size: 12px;
+                color: #666;
+                .action {
                     float: right;
-                    color: #777;
-                }
-                a {
-                    color: #333;
-                    font-size: 14px;
-                    font-weight: bold;
-                    text-decoration: none;
                 }
             }
-            .prize-body{
-                background-position: 99% 50%;
-                background-repeat: no-repeat;
-                .border_radius(0 0 6px 6px);
-                overflow: hidden;
-                _height: 1%;
-                min-height: 60px;
-                .name {
+            
+            .business {
+                float: right;
+                margin-bottom: 4px;
+                width: 40%;
+                .border_radius(6px);
+                border: 1px solid #d8d8d8;
+                background: #fff;
+                padding: 6px;
+                margin-right: 10px;
+                font-size: 11px;
+                line-height: 1.5em;
+                
+                .page-name {
                     font-weight: bold;
-                    font-size: 14px;
                 }
-                .description {
-                    font-size: 12px;
-                    color: #666;
+                
+                .image {
+                    float: right;
                 }
-                .prize {
-                    padding-top: 10px;
-                    margin-left: 60px;
-                    padding-right: 80px;
+                
+                .address {
+                    color: #999;
                 }
                 
             }
-            img {
-                width: 50px;
-                float: left;
-                margin: 10px;
+            .prize-details {
+                padding-left: 46px;
+                background: transparent none 5px 0px no-repeat;
+                .prize-name {
+                    font-size: 20px;
+                    font-family: ArvoRegular;
+                    line-height: 1.1em;
+                    margin-bottom: .1em;
+                }
+                .description {
+                    color: #666;
+                    font-size: 12px;
+                }
             }
-            .time {
+            
+            .redemption {
                 clear: both;
-                padding: 2px 10px;
+                padding: 1px 12px;
+                margin-top: 8px;
+                border-top: 1px solid #fff;
                 font-size: 12px;
+                color: #666;
             }
         }
-        .active {
+        
+        .prize-active{
             border-color: @active_color * .7;
-        }
-        .expired {
-            border-color: @expired_color * .7;
-        }
-        .redeemed {
-            border-color: @redeemed_color * .7;
-        }
-        .active .prize-body{
             background-color: @active_color;
-            background-image: url("/images/assets/prizes/48/icon-active.png");
+            .prize-details{
+                background-image: url("/images/assets/prizes/32/icon-active.png");
+            }
+            .times .action {
+                color: @dark_color;
+            }
         }
-        .expired .prize-body{
+        .prize-expired{
+            border-color: @expired_color * .7;
             background-color: @expired_color;
-            background-image: url("/images/assets/prizes/48/icon-expired.png");
+            .prize-details {
+                background-image: url("/images/assets/prizes/32/icon-expired.png");
+            }
+            .times .action {
+                color: #ff0000;
+            }
         }
-        .redeemed .prize-body{
+        .prize-redeemed{
             background-color: @redeemed_color;
-            background-image: url("/images/assets/prizes/48/icon-redeemed.png");
+            border-color: @redeemed_color * 0.7;
+            .prize-details {
+                background-image: url("/images/assets/prizes/32/icon-redeemed.png");
+            }
+            .times .action {
+                color: #0000ff;
+            }
         }
     }
 }

@@ -1187,6 +1187,7 @@ ul.public-winners-list .prize-timestamp {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#00a24f',EndColorStr='#006b37');
   /* IE6-9 */
 
+  text-shadow: 2px 2px 2px #002b16;
   color: #fff;
   margin: 0;
   padding: 10px;

@@ -241,80 +241,95 @@
   border-radius: 6px;
   background-clip: padding-box;
   margin-bottom: 10px;
+  background: #f3f3f3 none 5px 5px no-repeat;
 }
-.my-account-main .prize-list .prize-item .meta {
-  overflow: hidden;
-  _height: 1%;
-  border-bottom: 1px solid #e8e8e8;
-  padding: 6px 10px;
-}
-.my-account-main .prize-list .prize-item .meta .date {
-  font-size: 11px;
-  float: right;
-  color: #777;
-}
-.my-account-main .prize-list .prize-item .meta a {
-  color: #333;
-  font-size: 14px;
-  font-weight: bold;
-  text-decoration: none;
-}
-.my-account-main .prize-list .prize-item .prize-body {
-  background-position: 99% 50%;
-  background-repeat: no-repeat;
-  -webkit-background-clip: padding-box;
-  -webkit-border-radius: 0 0 6px 6px;
-  -moz-background-clip: padding-box;
-  -moz-border-radius: 0 0 6px 6px;
-  border-radius: 0 0 6px 6px;
-  background-clip: padding-box;
-  overflow: hidden;
-  _height: 1%;
-  min-height: 60px;
-}
-.my-account-main .prize-list .prize-item .prize-body .name {
-  font-weight: bold;
-  font-size: 14px;
-}
-.my-account-main .prize-list .prize-item .prize-body .description {
+.my-account-main .prize-list .prize-item .times {
+  padding: 1px 12px;
+  border-bottom: 1px solid #fff;
+  margin-bottom: 4px;
   font-size: 12px;
   color: #666;
 }
-.my-account-main .prize-list .prize-item .prize-body .prize {
-  padding-top: 10px;
-  margin-left: 60px;
-  padding-right: 80px;
+.my-account-main .prize-list .prize-item .times .action {
+  float: right;
 }
-.my-account-main .prize-list .prize-item img {
-  width: 50px;
-  float: left;
-  margin: 10px;
+.my-account-main .prize-list .prize-item .business {
+  float: right;
+  margin-bottom: 4px;
+  width: 40%;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  border: 1px solid #d8d8d8;
+  background: #fff;
+  padding: 6px;
+  margin-right: 10px;
+  font-size: 11px;
+  line-height: 1.5em;
 }
-.my-account-main .prize-list .prize-item .time {
-  clear: both;
-  padding: 2px 10px;
+.my-account-main .prize-list .prize-item .business .page-name {
+  font-weight: bold;
+}
+.my-account-main .prize-list .prize-item .business .image {
+  float: right;
+}
+.my-account-main .prize-list .prize-item .business .address {
+  color: #999;
+}
+.my-account-main .prize-list .prize-item .prize-details {
+  padding-left: 46px;
+  background: transparent none 5px 0px no-repeat;
+}
+.my-account-main .prize-list .prize-item .prize-details .prize-name {
+  font-size: 20px;
+  font-family: ArvoRegular;
+  line-height: 1.1em;
+  margin-bottom: .1em;
+}
+.my-account-main .prize-list .prize-item .prize-details .description {
+  color: #666;
   font-size: 12px;
 }
-.my-account-main .prize-list .active {
+.my-account-main .prize-list .prize-item .redemption {
+  clear: both;
+  padding: 1px 12px;
+  margin-top: 8px;
+  border-top: 1px solid #fff;
+  font-size: 12px;
+  color: #666;
+}
+.my-account-main .prize-list .prize-active {
   border-color: #9ab397;
+  background-color: #dcffd7;
 }
-.my-account-main .prize-list .expired {
+.my-account-main .prize-list .prize-active .prize-details {
+  background-image: url("/images/assets/prizes/32/icon-active.png");
+}
+.my-account-main .prize-list .prize-active .times .action {
+  color: #006b37;
+}
+.my-account-main .prize-list .prize-expired {
   border-color: #b3a1a1;
+  background-color: #ffe6e6;
 }
-.my-account-main .prize-list .redeemed {
+.my-account-main .prize-list .prize-expired .prize-details {
+  background-image: url("/images/assets/prizes/32/icon-expired.png");
+}
+.my-account-main .prize-list .prize-expired .times .action {
+  color: #ff0000;
+}
+.my-account-main .prize-list .prize-redeemed {
+  background-color: #d7e9ff;
   border-color: #97a3b3;
 }
-.my-account-main .prize-list .active .prize-body {
-  background-color: #dcffd7;
-  background-image: url("/images/assets/prizes/48/icon-active.png");
+.my-account-main .prize-list .prize-redeemed .prize-details {
+  background-image: url("/images/assets/prizes/32/icon-redeemed.png");
 }
-.my-account-main .prize-list .expired .prize-body {
-  background-color: #ffe6e6;
-  background-image: url("/images/assets/prizes/48/icon-expired.png");
-}
-.my-account-main .prize-list .redeemed .prize-body {
-  background-color: #d7e9ff;
-  background-image: url("/images/assets/prizes/48/icon-redeemed.png");
+.my-account-main .prize-list .prize-redeemed .times .action {
+  color: #0000ff;
 }
 .filters {
   padding: 4px 10px;
