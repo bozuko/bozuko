@@ -12,7 +12,7 @@ You can get started for free. Larger volumes of players and richer features will
 
 ### Can I run a Bozuko game across multiple locations?
 
-Yup. The Bozuko engine allows you to additional locations to your Bozuko account.  For now, please email info@bozuko if you require multiple locations for your single Facebook page.
+Yup. The Bozuko engine allows you to additional locations to your Bozuko account.  For now, please email info@bozuko.com if you require multiple locations for your single Facebook page.
 
 ### How do I create a game for my business?
 
