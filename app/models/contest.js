@@ -691,9 +691,11 @@ Contest.method('spendEntryToken', function(memo, callback) {
         {$inc: {tokens : -1}},
         {new: true, safe: safe},
         function(err, entry) {
-            // If we crash here the user will lose a token. Don't worry about.
+            // If we crash here the user will lose a token. Don't worry about it.
             if (err && !err.errmsg.match(no_matching_re)) return callback(err);
-            if (!entry) return callback(Bozuko.error("contest/no_tokens"));
+            if (!entry) {
+                return callback(Bozuko.error("contest/no_tokens"));
+            }
             memo.entry = entry;
             return callback(null, memo);
         }
