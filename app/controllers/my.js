@@ -79,7 +79,7 @@ exports.routes = {
                     user.getPrizes({
                         loadPage    :true,
                         start       :req.param('start'),
-                        limit       :req.param('limit') || 5,
+                        limit       :req.param('limit') || 20,
                         state       :req.param('state'),
                         sort        :req.param('sort'),
                         dir         :req.param('dir'),
@@ -138,7 +138,7 @@ exports.routes = {
                 var query = {
                     loadPage    :true,
                     start       :req.param('start'),
-                    limit       :req.param('limit') || 5,
+                    limit       :req.param('limit') || 20,
                     state       :req.param('state'),
                     sort        :req.param('sort'),
                     dir         :req.param('dir'),
