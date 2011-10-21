@@ -308,7 +308,31 @@ User.method('getPrizes', function(options, callback){
         }
         return Bozuko.models.Prize.find( query, options.fields || {}, opts, function(error, prizes){
             if( error ) return callback( error );
-            return callback( null, prizes, total, opts );
+            if( !options.loadPage ) return callback( null, prizes, total, opts );
+            // we want to load all the page information as well
+            var page_ids = [];
+            prizes.forEach(function(prize){
+                page_ids.push(prize.page_id);
+            });
+            return Bozuko.models.Page.find({_id: {$in: page_ids}}, function(error, pages){
+                if( error ) return callback( error );
+                // setup pages to be a map
+                var page_map={};
+                return async.forEach(pages, function(page, cb){
+                    return page.getActiveContests(null, function(error, contests){
+                        if( error ) return cb(error);
+                        page.contests = contests;
+                        page_map[String(page._id)] = page;
+                        return cb();
+                    });
+                }, function(error){
+                    if( error ) return callback( error );
+                    prizes.forEach(function(prize,i){
+                        prizes[i].page = page_map[String(prize.page_id)];
+                    });
+                    return callback( null, prizes, total, opts );
+                });
+            });
         });
     });
 });
