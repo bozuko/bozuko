@@ -12,10 +12,11 @@ li.prize-item(id='id-'+prize._id,class='prize-'+prize.state)
     img.image(src=prize.page.image.replace(/type=large/i, 'type=square'),alt=prize.page.name)
     .business-content
       a.page-name(target="_blank",href="/p/"+prize.page_id)= prize.page_name
-      .address
-        .street= prize.page.location.street
-        .city= prize.page.location.city+', '+prize.page.location.state+' '
-          a(style="text-decoration:none;",href=prize.page.getGoogleMapLink(),target="_blank") Map
+      -if( prize.page.is_location )
+        .address
+          .street= prize.page.location.street
+          .city= prize.page.location.city+', '+prize.page.location.state+' '
+            a(style="text-decoration:none;",href=prize.page.getGoogleMapLink(),target="_blank") Map
         
   .prize-details
     .prize-name= prize.name
