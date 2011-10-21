@@ -2,10 +2,14 @@ var testsuite = require('./config/testsuite');
 var async = require('async');
 var inspect = require('util').inspect;
 var rand = Bozuko.require('util/math').rand;
+var Chart = require('cli-chart');
 
 var start = new Date().getTime();
 var end = new Date();
 end.setTime(start+(10000));
+
+var day = 1000*60*60*24;
+var hr = 1000*60*60;
 
 var user = new Bozuko.models.User(
 {
@@ -162,8 +166,8 @@ exports['calculate average step - 0 because no more results available'] = functi
     });
 };
 
-exports['create 1 month long contest'] = function(test) {
-    contest.prizes[0].total = 1000;
+exports['create 1 month long contest - 1 prize/hr'] = function(test) {
+    contest.prizes[0].total = 24*30;
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime()+1000*60*60*24*30);
     engine.configure();
@@ -172,15 +176,25 @@ exports['create 1 month long contest'] = function(test) {
     });
 };
 
-// play opts.pph*opts.hrs plays
-function play(opts, callback) {
-    var test = opts.test;
+exports['enter contest'] = function(test) {
+    var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
+    contest.enter(entryMethod, function(err, e) {
+        test.ok(!err);
+        if( err ) console.log(err.stack);
+        entry = e;
+        test.done();
+    });
+};
+
+// play memo.pph*memo.hrs plays
+function enter_and_play(memo, callback) {
+    var test = memo.test;
     var hr = 1000*60*60;
-    var hrs = opts.hrs;
-    var pph = opts.pph;
+    var hrs = memo.hrs;
+    var pph = memo.pph;
     var plays = hrs*pph;
-    var start = opts.start;
-    var end = opts.start+hr*hrs;
+    var start = memo.start;
+    var end = memo.start+hr*hrs;
     var timestamps = [];
     for (var i = 0; i < plays; i++) {
         timestamps.push(new Date(rand(start,end)));
@@ -188,48 +202,155 @@ function play(opts, callback) {
     timestamps.sort(function(a, b) {
         return a.getTime() - b.getTime();
     });
-    
+    memo.plays = memo.plays.concat(timestamps);
     var wins = 0;
     var losses = 0;
     
-    async.forEach(timestamps, function(ts, cb) {
-        var memo = {
-            contest: contest,
-            user: user,
-            timestamp: ts
-        };                
-        console.log("timestamp = "+ts.getTime());
-        contest.play(memo, function(err, result) {
+    var ct = 0;
+    return async.forEachSeries(timestamps, function(ts, cb) {
+        // must change entry time so we can actually play. We can't just re-enter
+        // because that uses the actual current time not our fake play time
+        //
+        entry.timestamp = new Date(ts.getTime()-10);
+        entry.save(function(err) {
             test.ok(!err);
-            if (result.result) {
-                wins++;
-                process.stdout.write("X");
-            } else {
-                process.stdout.write("_");
-                losses++;
-            }
-            return cb(err);
+            var m = {
+                contest: contest,
+                user: user,
+                timestamp: ts
+            };              
+            return contest.play(m, function(err, result) {
+                if (err) return cb(err);
+                if (result.result) {
+                    memo.wins.push(ts);
+                    wins++;
+                } else {
+                    losses++;
+                }
+                return cb(null, memo);
+            });
         });
     },function(err) {
         test.ok(!err);
-        process.stdout.write('\n');
-        test.equal(wins+losses, plays);
-        callback(err);
+        test.equal(plays, wins+losses);
+        return callback(err, memo);
     });
 }
 
+function play_one_day(memo, callback) {
+    async.series({
+        '0-2': function(cb) {
+            enter_and_play(memo, cb);
+        },
+        '2-6': function(cb) {
+            memo.start += hr*2;
+            memo.pph = 1;
+            memo.hrs = 4;
+            enter_and_play(memo, cb);
+        },
+        '6-8': function(cb) {
+            memo.start += hr*4;
+            memo.pph = 4;
+            memo.hrs = 2;
+            enter_and_play(memo, cb);
+        },
+        '8-12': function(cb) {
+            memo.start += hr* 2;
+            memo.pph = 10;
+            memo.hrs = 4;
+            enter_and_play(memo, cb);
+        },
+        '12-20': function(cb) {
+            memo.start += hr*4;
+            memo.pph = 30;
+            memo.hrs = 8;
+            enter_and_play(memo, cb);
+        },
+        '20-24': function(cb) {
+            memo.start += hr*8;
+            memo.pph = 5;
+            memo.hrs = 4;
+            enter_and_play(memo, cb);
+        }         
+    }, function(err, results) {
+        return callback(err, memo);
+    });          
+    
+};
 
 exports['play out contest - staggered'] = function(test) {
-    var opts = {
+    var memo = {
         test: test,
-        hrs: 8,
-        pph: 50,
-        start: contest.start.getTime()
+        hrs: 2,
+        pph: 2,
+        start: contest.start.getTime(),
+        plays: [],
+        wins: []
     };
-    play(opts, function(err) {
-        test.done();
-    });
+
+    var day_ct = 0;
+    async.whilst(
+        function() {
+            return day_ct < 1;
+        },
+        function(cb) {
+            memo.start = contest.start.getTime()+day*day_ct;
+            play_one_day(memo, function(err, results) {
+                test.ok(!err);
+                test.ok(results);
+                memo = results;
+                process.stdout.write('+');
+                day_ct++;
+                cb(err);
+            });
+        },
+        function(err) {
+            process.stdout.write('\n');
+            graph_plays(contest.start.getTime(), memo.plays);
+            graph_wins(contest.start.getTime(), memo.wins);
+            test.ok(!err);
+            test.done();
+        }
+    );
 };
+
+function graph_plays(start, plays) {
+    var chart = new Chart({height: 40, width: 120, direction: 'y', xlabel: 'time (hrs)', ylabel: 'plays'});
+    var buckets = new Array(12);
+    var cursor = 0;
+    for (var i = 0; i < 24; i++) {
+        buckets[i] = 0;
+        while (cursor < plays.length) {
+            if (plays[cursor].getTime() >= start+hr*i && plays[cursor] < start+hr*(i+1)) {
+                buckets[i]++;
+                cursor++;
+            } else {
+                chart.addBar(buckets[i]);
+                break;
+            }
+        }
+    }
+    chart.draw();    
+}
+
+function graph_wins(start, wins) {
+    var chart = new Chart({height: 10, width: 120, direction: 'y', xlabel: 'time (hrs)', ylabel: 'wins'});
+    var buckets = new Array(12);
+    var cursor = 0;
+    for (var i = 0; i < 24; i++) {
+        buckets[i] = 0;
+        while (cursor < wins.length) {
+            if (wins[cursor].getTime() >= start+hr*i && wins[cursor] < start+hr*(i+1)) {
+                buckets[i]++;
+                cursor++;
+            } else {
+                chart.addBar(buckets[i]);
+                break;
+            }
+        }
+    }
+    chart.draw();    
+}
 
 function cleanup(callback) {
     var e = emptyCollection;

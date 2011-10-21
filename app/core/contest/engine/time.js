@@ -16,14 +16,21 @@ inherits(TimeEngine, Engine);
 
 TimeEngine.prototype.configure = function() {
     this.end_margin_multiplier = 0.10;
-    
+
+    /*
+     * lookback_window = throwahead_window = (duration/totalPrizes)/window_divisor
+     */
+
+    // This number should work itself out to some constant
+    this.window_divisor = 10;
+
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
         (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.end_margin_multiplier));
     this.step =  Math.floor(
         (this.contest_duration)/this.contest.totalPrizes());
-    this.lookback_window = new Date(this.step);
-    this.lookforward_window = new Date(this.step);    
+    this.lookback_window = this.step;
+    this.throwahead_window = this.step;
 };
 
 
@@ -43,13 +50,14 @@ TimeEngine.prototype.generateResults = function(callback) {
 
     prizes.forEach(function(prize, prize_index) {
         for (var i = 0; i < prize.total; i++) {
-           var result = new Bozuko.models.Result({
+            var date = new Date(rand(start, end));
+            var result = new Bozuko.models.Result({
                 contest_id: contest._id,
                 index: prize_index,
                 code: self.getCode(),
                 count: i,
-                timestamp: new Date(rand(start, end)),
-                history: []
+                timestamp: date,
+                history: [{timestamp: date, move_time: new Date()}]
             });
             results.push(result);
         }
@@ -114,7 +122,7 @@ TimeEngine.prototype.play = function(memo, callback) {
     var max_lookback = new Date(now - this.lookback_window);
 
     return Bozuko.models.Result.findAndModify({contest_id:self.contest._id, $and: 
-        [{timestamp: {$gt: max_lookback}}, {timestamp: {$lte: new Date(now)}}],
+        [{timestamp: {$gt: max_lookback}}, {timestamp: {$lte: memo.timestamp}}],
             win_time: {$exists: false}},
         [['timestamp', 'asc']],
         {$set: {win_time: memo.timestamp, user_id: memo.user._id, entry_id: memo.entry._id}},
@@ -134,5 +142,21 @@ TimeEngine.prototype.play = function(memo, callback) {
  * 
  */
 TimeEngine.prototype.redistribute = function(memo, callback) {
-    callback(null, memo);
+    var start = memo.timestamp.getTime();
+    var end = start + this.throwahead_window;
+    var new_time = new Date(rand(start, end));
+    return Bozuko.models.Result.findAndModify(
+        {contest_id: this.contest._id, win_time: {$exists: false}, timestamp: {$lt: memo.timestamp}},
+        [['timestamp', 'asc']],
+        {$push: {history: {timestamp: new_time, move_time: memo.timestamp}}, $set: {timestamp: new_time}},
+        {new: false, safe: safe},
+            function(err, result) {
+            if (err) return callback(err);
+            if (result) {
+                console.log("timestamp redistributed from "+result.timestamp+" to "+new_time+
+                    " at "+memo.timestamp);
+            }
+            return callback(null, memo);
+        }
+    );
 };
