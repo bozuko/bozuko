@@ -141,16 +141,28 @@ exports.routes = {
                 }
                 
                 if( accessToken ){
-                    return Bozuko.models.User.findOne({'services.auth': accessToken}, function(error, user){
-                        if( error ){
+                    
+                    // lets not replace our good token, lets just see if we can find
+                    // someone
+                    return Bozuko.require('util/facebook').graph('/me',{
+                        params: {access_token: accessToken}
+                    }, function(error, result){
+                        
+                        if( error || !result ){
                             return respond();
                         }
-                        req.session.user = user;
-                        req.session.userJustLoggedIn = true;
-                        req.session.save();
-                        res.locals.user = user;
-                        return respond();
+                        return Bozuko.models.User.findByService('facebook', result.id, function(error, user){
+                            
+                            if( error || !user ){
+                                return respond();
+                            }
+                            req.session.user = user;
+                            req.session.userJustLoggedIn = true;
+                            req.session.save();
+                            return respond();
+                        });
                     });
+                    
                 }
                 return respond();
             }
