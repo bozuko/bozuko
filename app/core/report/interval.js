@@ -40,6 +40,10 @@ CountsReport.prototype.run = function run(callback){
         end = new Date(end.getTime() - tzOffset);
     }
     
+    if( unit === 'Week' ){
+        unitInterval = 7;
+    }
+    
     switch( interval ){
         
         case 'Year':
@@ -54,6 +58,12 @@ CountsReport.prototype.run = function run(callback){
         
         case 'Week':
             end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()+1) );
+            // check to see which day of the week this falls on..
+            var d = end.getDay();
+            if( d !== 0 ){
+                var i = 7-d;
+                end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()+i) );
+            }
             start = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()-(length*7)) );
             break;
         
@@ -94,7 +104,8 @@ CountsReport.prototype.run = function run(callback){
             case 'Month':
                 step = new Date( Date.UTC(start.getUTCFullYear(),start.getUTCMonth()+unitInterval,1) );
                 break;
-                
+            
+            case 'Week':
             case 'Day':
                 step = new Date( Date.UTC(start.getUTCFullYear(),start.getUTCMonth(),start.getUTCDate()+unitInterval) );
                 break;
@@ -114,6 +125,8 @@ CountsReport.prototype.run = function run(callback){
         intervals.push([new Date(+start+tzOffset+1000), new Date(+step+tzOffset+1000)]);
         start = step;
     }
+    
+    console.log(intervals);
     
     var reports = [];
     var addReportRecord = function(stamp, count, useCache, cacheKey, cb){

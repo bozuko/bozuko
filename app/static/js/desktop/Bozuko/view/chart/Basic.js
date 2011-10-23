@@ -54,18 +54,18 @@ Ext.define('Bozuko.view.chart.Basic', {
                     value           :'Entry',
                     valueField      :'value',
                     store           :Ext.create('Ext.data.Store',{
-                        fields          :['text','value'],
+                        fields          :['text','value','fn'],
                         data            :[
-                            {text:'Entries', value:'Entry'},
-                            {text:'Plays', value:'Play'},
-                            {text:'Facebook Posts', value:'Share'},
-                            {text:'Total Prize Wins', value:'Prize'},
-                            {text:'Redeemed Prizes', value:'Redeemed Prizes'},
-                            {text:'Facebook Likes', value:'Likes'},
-                            {text:'Check Ins', value:'Checkins'},
-                            {text:'Unique Users', value:'Unique Users'},
-                            {text:'New Users', value:'New Users'},
-                            {text:'Prize Cost', value:'Prize Cost'}
+                            {text:'Entries', value:'Entry',fn:'sum'},
+                            {text:'Plays', value:'Play',fn:'sum'},
+                            {text:'Facebook Posts', value:'Share',fn:'sum'},
+                            {text:'Total Prize Wins', value:'Prize',fn:'sum'},
+                            {text:'Redeemed Prizes', value:'Redeemed Prizes',fn:'sum'},
+                            {text:'Facebook Likes', value:'Likes',fn:'sum'},
+                            {text:'Check Ins', value:'Checkins',fn:'sum'},
+                            {text:'Unique Users', value:'Unique Users',fn:'average'},
+                            {text:'New Users', value:'New Users',fn:'sum'},
+                            {text:'Prize Cost', value:'Prize Cost',fn:'sum'}
                         ]
                     }),
                     listeners       :{
@@ -82,20 +82,22 @@ Ext.define('Bozuko.view.chart.Basic', {
                     displayField    :'text',
                     value           :'week-1',
                     valueField      :'value',
+                    width           :190,
                     
                     store           :Ext.create('Ext.data.Store',{
                         fields          :['text','value'],
                         data            :[
-                            {text:'Last Minute',    value:'minute-1'},
-                            {text:'Last 10 Minutes', value:'minute-10'},
-                            {text:'Last Day', value:'hour-24'},
-                            {text:'Last Two Days', value:'hour-48'},
-                            {text:'Last Week', value:'week-1'},
-                            {text:'Last Two Weeks', value:'week-2'},
-                            {text:'Last Month', value:'week-4'},
-                            {text:'Last 6 Months', value:'month-6'},
-                            {text:'Last Year', value: 'month-12'},
-                            {text:'Last 5 Years', value: 'year-5'}
+                            {text:'Last Minute (by Second)',    value:'minute-1'},
+                            {text:'Last 10 Minutes (by Minute)', value:'minute-10'},
+                            {text:'Last Day (by Hour)', value:'hour-24'},
+                            {text:'Last Two Days (by Hour)', value:'hour-48'},
+                            {text:'Last Week (by Day)', value:'week-1'},
+                            {text:'Last Two Weeks (by Day)', value:'week-2'},
+                            {text:'Last Month (by Day)', value:'week-4'},
+                            {text:'Last 3 Months (by Week)', value:'month-3'},
+                            {text:'Last 6 Months (by Month)', value:'month-6'},
+                            {text:'Last Year (by Month)', value: 'month-12'},
+                            {text:'Last 5 Years (by Year)', value: 'year-5'}
                         ]
                     }),
                     
@@ -143,12 +145,16 @@ Ext.define('Bozuko.view.chart.Basic', {
                     },
                     minimum     :0
                 },{
-                    type        :'Time',
+                    type        :'Category',
                     position    :'bottom',
                     fields      :'timestamp',
                     title       :'Time',
                     dateFormat  :'M d',
-                    groupBy     :'year,month,day'
+                    label       :{
+                        renderer    :function(value){
+                            return Ext.util.Format.date(value, me.dateFormat);
+                        }
+                    }
                 }],
                 series: [{
                     title: 'Count',
@@ -287,9 +293,12 @@ Ext.define('Bozuko.view.chart.Basic', {
         
         me.chartStore.on('load', function(){
             var axis = me.chart.axes.get(0),
-                redraw = false,
-                total = String(me.chartStore.sum('count'));
-                
+                redraw = false;
+            
+            var fn = me.modelField.store.findRecord('value', me.modelField.getValue()).get('fn') || 'sum';
+            var total = me.chartStore[fn]('count');
+            
+            
             if( !total ){
                 redraw = !axis.maximum;
                 axis.maximum = 10;
@@ -304,10 +313,14 @@ Ext.define('Bozuko.view.chart.Basic', {
                 total = Ext.util.Format.usMoney(total);
             }
             else{
+                // is this not a whole number?
+                if( total !== total.toFixed(1) ){
+                    total = total.toFixed(2);
+                }
                 total = me.addCommas(total);
             }
             var drawStuff = function(){
-                me.down('[ref=chart-total]').update('<span style="color: #000;">'+total+'</span> <span style="font-weight: normal;">in this time period</span>');
+                me.down('[ref=chart-total]').update('<span style="color: #000;">'+total+'</span> <span style="font-weight: normal;">'+(fn=='sum'?'total':fn)+' this time period</span>');
                 if( total == 0 ){
                     if( !me.chart.rendered ) return;
                     if( !me.chartMask ){
@@ -456,48 +469,42 @@ Ext.define('Bozuko.view.chart.Basic', {
             if( /year/i.test(time[0]) ){
                 if( time[1] > 1 ){
                     me.dateFormat = me.chart.axes.get(1).dateFormat='Y';
-                    me.chart.axes.get(1).groupBy = 'year';
                 }
                 else{
                     me.dateFormat = me.chart.axes.get(1).dateFormat='M Y';
-                    me.chart.axes.get(1).groupBy = 'year,month';
                 }
             }
             else if( /month/i.test(time[0]) && time[1] > 1 ){
-                
-                me.dateFormat = me.chart.axes.get(1).dateFormat='M Y';
-                me.chart.axes.get(1).groupBy = 'year,month';
+                if( time[1] == 3 ){
+                    me.dateFormat = me.chart.axes.get(1).dateFormat='\\Week W';
+                }
+                else{
+                    me.dateFormat = me.chart.axes.get(1).dateFormat='M Y';
+                }
             }
             else if( /day/i.test(time[0])){
-                
                 me.dateFormat = me.chart.axes.get(1).dateFormat='ga';
-                me.chart.axes.get(1).groupBy = 'year,month,day,hour';
                 
             }
             else if( /hour/i.test(time[0])){
                 if( time[1] > 1 ){
                     me.dateFormat = me.chart.axes.get(1).dateFormat='ga';
-                    me.chart.axes.get(1).groupBy = 'year,month,day,hour';
                 }
                 else{
                     me.dateFormat = me.chart.axes.get(1).dateFormat='g:i a';
-                    me.chart.axes.get(1).groupBy = 'year,month,day,hour,minute';
                 }
                 
             }
             else if( /minute/i.test(time[0])){
                 if( time[1] > 1 ){
                     me.dateFormat = me.chart.axes.get(1).dateFormat='g:ia';
-                    me.chart.axes.get(1).groupBy = 'year,month,day,hour,minute';
                 }
                 else{
                     me.dateFormat = me.chart.axes.get(1).dateFormat='g:i:sa';
-                    me.chart.axes.get(1).groupBy = 'year,month,day,hour,minute,second';
                 }
             }
             else{
                 me.dateFormat = me.chart.axes.get(1).dateFormat='d M';
-                me.chart.axes.get(1).groupBy = 'year,month,day';
             }
         }
         me.chartStore.load();
