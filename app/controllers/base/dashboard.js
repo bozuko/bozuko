@@ -742,8 +742,12 @@ exports.routes = {
                     
                     case 'month':
                         if( time[1] > 2 ){
-                            fillBlanks = false;
-                            options.unit = 'Month';
+                            if( time[1] > 5 ){
+                                options.unit = 'Month';
+                            }
+                            else{
+                                options.unit = 'Week';
+                            }
                         }
                         else{
                             options.unit = 'Day';
@@ -751,7 +755,12 @@ exports.routes = {
                         break;
                     
                     case 'week':
-                        options.unit = 'Day';
+                        if( time[1] > 4 ){
+                            options.unit = 'Week';
+                        }
+                        else{
+                            options.unit = 'Day';
+                        }
                         break;
                     
                     case 'hour':
