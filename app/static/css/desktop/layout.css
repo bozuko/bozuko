@@ -874,6 +874,95 @@ body {
 .site-b4b .bd .page-width .nav-arrow-next:hover {
   background-position: -23px -66px;
 }
+.site-b4b .bd .page-width .b4b-pricing {
+  width: 860px;
+  margin: 0 auto;
+  border-top: 4px solid #00a24f;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content {
+  border-top: 3px solid #ccc;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content h1 {
+  line-height: 1.2em;
+  margin-bottom: .3em;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content .pricing-wrap {
+  text-align: center;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content .pricing-ct {
+  margin: 0 auto 20px;
+  display: block;
+  background: #fff;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing {
+  width: 100%;
+  margin: 0 auto;
+  color: #666;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing td, .site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing th {
+  padding: 6px 20px;
+  border: 1px solid #fff;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing td {
+  background-color: #f3f3f3;
+  background-image: -moz-linear-gradient(top, #f3f3f3, #e8e8e8);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #f3f3f3), color-stop(1, #e8e8e8)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#f3f3f3',EndColorStr='#e8e8e8');
+  /* IE6-9 */
+
+  font-weight: bold;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing th {
+  color: #ccc
+                            background: #e8e8e8;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing span.included, .site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing span.not-included {
+  display: block;
+  margin: 0 auto;
+  width: 24px;
+  text-indent: -99999em;
+  height: 24px;
+  background: transparent none 0 0 no-repeat;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing span.included {
+  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png");
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing span.not-included {
+  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-cross-24.png");
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing .basic, .site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing .standard, .site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing .pro {
+  text-align: center;
+  width: 22%;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing thead th {
+  background: #f8f8f8;
+  color: #fff !important;
+  text-shadow: 2px 2px 2px #333333;
+  font-family: "ArvoRegular";
+  font-size: 20px;
+  padding: 15px  10px;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing thead th.basic {
+  background: #00e36f none !important;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing thead th.standard {
+  background: #009247 none !important;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing thead th.pro {
+  background: #0198c2 none !important;
+}
+.site-b4b .bd .page-width .b4b-pricing .b4b-pricing-content table.pricing tbody th {
+  background: #f3f3f3;
+  color: #000;
+}
 .site-business-page .bd .wrap {
   overflow: hidden;
 }
