@@ -755,7 +755,12 @@ exports.routes = {
                         break;
                     
                     case 'week':
-                        options.unit = 'Day';
+                        if( time[1] > 4 ){
+                            options.unit = 'Week';
+                        }
+                        else{
+                            options.unit = 'Day';
+                        }
                         break;
                     
                     case 'hour':

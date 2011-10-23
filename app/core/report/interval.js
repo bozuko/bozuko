@@ -42,6 +42,10 @@ CountsReport.prototype.run = function run(callback){
     
     if( unit === 'Week' ){
         unitInterval = 7;
+        if( interval == 'Month' ){
+            interval = 'Week';
+            length *= 4;
+        }
     }
     
     switch( interval ){
@@ -60,12 +64,12 @@ CountsReport.prototype.run = function run(callback){
             end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()+1) );
             // check to see which day of the week this falls on..
             var d = end.getDay();
-            /*
+            
             if( d !== 0 ){
                 var i = 7-d;
-                end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()+i+1) );
+                end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()+i) );
             }
-            */
+            
             start = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()-(length*7)) );
             break;
         
@@ -95,6 +99,7 @@ CountsReport.prototype.run = function run(callback){
     
     if( +start >= +end ) return callback( new Error("Invalid Interval") );
     
+    console.log(start,end);
     var step, intervals=[];
     while( start < end ){
         switch( unit ){
@@ -127,7 +132,6 @@ CountsReport.prototype.run = function run(callback){
         intervals.push([new Date(+start+tzOffset+1000), new Date(+step+tzOffset+1000)]);
         start = step;
     }
-    
     console.log(intervals);
     
     var reports = [];
