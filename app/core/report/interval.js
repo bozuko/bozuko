@@ -60,12 +60,12 @@ CountsReport.prototype.run = function run(callback){
             end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()) );
             // check to see which day of the week this falls on..
             var d = end.getDay();
-            
+            /*
             if( d !== 0 ){
                 var i = 7-d;
                 end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()+i+1) );
             }
-            
+            */
             start = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()-(length*7)) );
             break;
         
