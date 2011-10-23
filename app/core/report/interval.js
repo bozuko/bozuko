@@ -99,7 +99,6 @@ CountsReport.prototype.run = function run(callback){
     
     if( +start >= +end ) return callback( new Error("Invalid Interval") );
     
-    console.log(start,end);
     var step, intervals=[];
     while( start < end ){
         switch( unit ){
@@ -132,7 +131,6 @@ CountsReport.prototype.run = function run(callback){
         intervals.push([new Date(+start+tzOffset+1000), new Date(+step+tzOffset+1000)]);
         start = step;
     }
-    console.log(intervals);
     
     var reports = [];
     var addReportRecord = function(stamp, count, useCache, cacheKey, cb){
