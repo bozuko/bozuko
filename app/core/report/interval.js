@@ -66,7 +66,7 @@ CountsReport.prototype.run = function run(callback){
             var d = end.getDay();
             
             if( d !== 0 ){
-                var i = 7-d;
+                var i = 7-d-1;
                 end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()+i) );
             }
             
