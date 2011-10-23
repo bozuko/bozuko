@@ -976,6 +976,97 @@ body{
             .nav-arrow-next:hover {
                 background-position: -23px -66px;
             }
+            
+            .b4b-pricing {
+                width: @page_width;
+                margin: 0 auto;
+                border-top: 4px solid @brand_color;
+                .b4b-pricing-content{
+                    border-top: 3px solid #ccc;
+                    
+                    h1 {
+                        line-height: 1.2em;
+                        margin-bottom: .3em;
+                    }
+                    
+                    .pricing-wrap {
+                        text-align: center;
+                        
+                    }
+                    
+                    .pricing-ct{
+                        margin: 0 auto 20px;
+                        display: block;
+                        background: #fff;
+                        .border_radius(6px);
+                        border:  1px solid #ccc;
+                        padding: 6px;
+                    }
+                    
+                    table.pricing {
+                        width: 100%;
+                        margin: 0 auto;
+                        color: #666;
+                        td,th{
+                            padding: 6px 20px;
+                            border: 1px solid #fff;
+                        }
+                        td {
+                            .background_gradient(#f3f3f3, #e8e8e8);
+                            font-weight: bold;
+                        }
+                        th {
+                            color: #ccc
+                            background: #e8e8e8;
+                        }
+                        span.included,span.not-included{
+                            display: block;
+                            margin: 0 auto;
+                            width: 24px;
+                            text-indent: -99999em;
+                            height: 24px;
+                            background: transparent none 0 0 no-repeat;
+                        }
+                        span.included {
+                            background-image:url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-check-24.png");
+                        }
+                        span.not-included {
+                            background-image:url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-cross-24.png");
+                        }
+                        
+                        .basic,.standard,.pro{
+                            text-align: center;
+                            width: 22%;
+                        }
+                        
+                        thead {
+                            th{
+                                background: #f8f8f8;
+                                color: #fff !important;
+                                .text_shadow(2px,2px,2px,#333);
+                                font-family: "ArvoRegular";
+                                font-size: 20px;
+                                padding: 15px  10px;
+                            }
+                            th.basic {
+                                background: @brand_color * 1.4 none !important;
+                            }
+                            th.standard {
+                                background: @brand_color * 0.9 none !important;
+                            }
+                            th.pro{
+                                background: @blue * 0.9 none !important;
+                            }
+                        }
+                        tbody {
+                            th {
+                                background: #f3f3f3;
+                                color: #000;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
