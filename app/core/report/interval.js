@@ -57,7 +57,7 @@ CountsReport.prototype.run = function run(callback){
             break;
         
         case 'Week':
-            end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()) );
+            end = new Date( Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),end.getUTCDate()+1) );
             // check to see which day of the week this falls on..
             var d = end.getDay();
             /*
