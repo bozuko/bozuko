@@ -17,10 +17,6 @@ inherits(TimeEngine, Engine);
 TimeEngine.prototype.configure = function() {
     this.end_margin_multiplier = 0.10;
 
-    /*
-     * lookback_window = throwahead_window = (duration/totalPrizes)/window_divisor
-     */
-
     // This number should work itself out to some constant
     this.window_divisor = 10;
 
@@ -33,6 +29,10 @@ TimeEngine.prototype.configure = function() {
         (this.contest_duration)/this.contest.totalPrizes());
     this.lookback_window = this.step/this.window_divisor;
     this.throwahead_window = this.lookback_window;
+
+    if (this.contest.free_play_pct) {
+        this.free_play_odds = Math.round(1/(this.contest.free_play_pct/100));
+    }
 };
 
 
@@ -123,6 +123,15 @@ TimeEngine.prototype.play = function(memo, callback) {
     var now = memo.timestamp.getTime();
     var max_lookback = new Date(now - this.lookback_window);
 
+    // check for a free play before actually checking for win/loss
+    if (this.free_play_odds) {
+        var winning_number = 1;
+        if (rand(0, this.free_play_odds) === winning_number) {
+            memo.result = 'free_play';
+            return callback(null, memo);
+        }        
+    }
+    
     // If we are into the buffer region, then allow wins on any previous prize.
     // In other words, disregard the lookback window. We do this so that all prizes
     // get handed out before the contest expires.
