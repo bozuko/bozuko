@@ -189,14 +189,9 @@ exports['enter contest'] = function(test) {
 // play memo.pph*memo.hrs plays
 function enter_and_play(memo, callback) {
     var test = memo.test;
-    var hr = 1000*60*60;
-    var hrs = memo.hrs;
-    var pph = memo.pph;
-    var plays = hrs*pph;
+    var plays = memo.hrs*memo.pph;
     var start = memo.start;
-    console.log("start = "+new Date(start));
-    var end = memo.start+hr*hrs;
-    console.log("end = "+new Date(end));
+    var end = memo.start+hr*memo.hrs;
     var timestamps = [];
     for (var i = 0; i < plays; i++) {
         timestamps.push(new Date(rand(start,end)));
@@ -317,7 +312,6 @@ exports['play out contest - staggered'] = function(test) {
 };
 
 function graph_plays(start, plays) {
-    console.log("plays.length = "+plays.length);
     var chart = new Chart({height: 40, width: 120, direction: 'y', xlabel: 'time (hrs)', ylabel: 'plays', step: 1});
     var buckets = [];
     var cursor = 0;
@@ -326,11 +320,8 @@ function graph_plays(start, plays) {
         while (cursor < plays.length) {
             if (plays[cursor].getTime() >= start+hr*i && plays[cursor].getTime() < start+hr*(i+1)) {
                 buckets[i]++;
-                console.log("cursor = "+cursor);
                 cursor++;
             } else {
-                console.log("i = "+i);
-                console.log("buckets[i] = "+buckets[i]);
                 chart.addBar(buckets[i]);
                 break;
             }

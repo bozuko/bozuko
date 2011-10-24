@@ -22,11 +22,13 @@ TimeEngine.prototype.configure = function() {
      */
 
     // This number should work itself out to some constant
-    this.window_divisor = 4;
+    this.window_divisor = 10;
 
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
         (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.end_margin_multiplier));
+
+    this.buffer_start = new Date(this.contest.start.getTime() + this.contest_duration);
     this.step =  Math.floor(
         (this.contest_duration)/this.contest.totalPrizes());
     this.lookback_window = this.step/this.window_divisor;
@@ -121,9 +123,26 @@ TimeEngine.prototype.play = function(memo, callback) {
     var now = memo.timestamp.getTime();
     var max_lookback = new Date(now - this.lookback_window);
 
-    return Bozuko.models.Result.findAndModify({contest_id:self.contest._id, $and: 
-        [{timestamp: {$gt: max_lookback}}, {timestamp: {$lte: memo.timestamp}}],
-            win_time: {$exists: false}},
+    // If we are into the buffer region, then allow wins on any previous prize.
+    // In other words, disregard the lookback window. We do this so that all prizes
+    // get handed out before the contest expires.
+    //
+    if (now > this.buffer_start) {
+        var query = {
+            contest_id: self.contest._id, 
+            timestamp: {$lte: memo.timestamp},
+            win_time: {$exists: false}
+        };
+    } else {
+        var query = {
+            contest_id:self.contest._id, 
+            $and: [{timestamp: {$gt: max_lookback}}, {timestamp: {$lte: memo.timestamp}}],
+            win_time: {$exists: false}
+        };
+    }
+
+    return Bozuko.models.Result.findAndModify(
+        query,
         [['timestamp', 'asc']],
         {$set: {win_time: memo.timestamp, user_id: memo.user._id, entry_id: memo.entry._id}},
         {new: true, safe: safe},
@@ -142,10 +161,15 @@ TimeEngine.prototype.play = function(memo, callback) {
  * 
  */
 TimeEngine.prototype.redistribute = function(memo, callback) {
+    var self = this;
     var start = memo.timestamp.getTime();
     var end = start + this.throwahead_window;
-    var new_time = new Date(rand(start, end));
     var max_lookback = new Date(start - this.lookback_window);
+    var new_time = new Date(rand(start, end));
+
+    // Don't redistribute into the buffer
+    if (new_time.getTime() > this.buffer_start) return callback(null, memo);
+    
     return Bozuko.models.Result.findAndModify(
         {contest_id: this.contest._id, win_time: {$exists: false}, timestamp: {$lt: max_lookback}},
         [['timestamp', 'asc']],
@@ -154,11 +178,10 @@ TimeEngine.prototype.redistribute = function(memo, callback) {
             function(err, result) {
             if (err) return callback(err);
             if (result) {
-                console.log("timestamp redistributed from "+result.timestamp+" to "+new_time+
+                console.log("contest: "+self.contest._id+" timestamp redistributed from "+result.timestamp+" to "+new_time+
                     " at "+memo.timestamp);
             }
             return callback(null, memo);
         }
     );
-
 };
