@@ -1,7 +1,8 @@
 var DateUtil = require('../app/util/date');
 var braintree = require('braintree');
 
-var port = 6999 + process.getuid();
+//var port = 6999 + process.getuid();
+var port = 9005;
 
 // Reserve the docs port for our contractors.
 if (process.env.USER === 'docs') port = 7002;
@@ -43,7 +44,8 @@ module.exports = {
     },
 
     db:{
-        name: 'bozuko_dev'+port,
+//        name: 'bozuko_dev'+port,
+        name: 'bozuko_test'+port,
         replicaSet: true,
         hosts: ['pgdb1', 'pgdb2'],
         options: {
