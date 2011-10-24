@@ -168,8 +168,8 @@ exports['calculate average step - 0 because no more results available'] = functi
 
 exports['create 5 day contest - 1 prize/hr'] = function(test) {
     contest.prizes[0].total = 24*5;
-    contest.start = new Date();
-    contest.end = new Date(contest.start.getTime()+1000*60*60*24*30);
+    contest.start = new Date(Date.now() - day*5);
+    contest.end = new Date(contest.start.getTime()+1000*60*60*24*5);
     engine.configure();
     Bozuko.models.Result.remove(function(){
         exports['generate contest results'](test);
@@ -194,9 +194,9 @@ function enter_and_play(memo, callback) {
     var pph = memo.pph;
     var plays = hrs*pph;
     var start = memo.start;
+    console.log("start = "+new Date(start));
     var end = memo.start+hr*hrs;
-    console.log("start = "+start);
-    console.log("end = "+end);
+    console.log("end = "+new Date(end));
     var timestamps = [];
     for (var i = 0; i < plays; i++) {
         timestamps.push(new Date(rand(start,end)));
@@ -224,6 +224,7 @@ function enter_and_play(memo, callback) {
             return contest.play(m, function(err, result) {
                 if (err) return cb(err);
                 if (result.result) {
+                    console.log("memo.wins.length = "+memo.wins.length);
                     memo.wins.push(ts);
                     wins++;
                 } else {
@@ -242,6 +243,8 @@ function enter_and_play(memo, callback) {
 function play_one_day(memo, callback) {
     async.series({
         '0-2': function(cb) {
+            memo.hrs = 2;
+            memo.pph = 2;
             enter_and_play(memo, cb);
         },
         '2-6': function(cb) {
@@ -283,9 +286,6 @@ function play_one_day(memo, callback) {
 exports['play out contest - staggered'] = function(test) {
     var memo = {
         test: test,
-        hrs: 2,
-        pph: 2,
-        start: contest.start.getTime(),
         plays: [],
         wins: []
     };
@@ -307,7 +307,7 @@ exports['play out contest - staggered'] = function(test) {
         },
         function(err) {
             process.stdout.write('\n');
-//            test.equal(memo.wins.length, 120);
+            test.equal(memo.wins.length, 120);
             graph_plays(contest.start.getTime(), memo.plays);
             graph_wins(contest.start.getTime(), memo.wins);
             test.ok(!err);
@@ -317,16 +317,20 @@ exports['play out contest - staggered'] = function(test) {
 };
 
 function graph_plays(start, plays) {
+    console.log("plays.length = "+plays.length);
     var chart = new Chart({height: 40, width: 120, direction: 'y', xlabel: 'time (hrs)', ylabel: 'plays', step: 1});
     var buckets = [];
     var cursor = 0;
     for (var i = 0; i < 24*5; i++) {
         buckets[i] = 0;
         while (cursor < plays.length) {
-            if (plays[cursor].getTime() >= start+hr*i && plays[cursor] < start+hr*(i+1)) {
+            if (plays[cursor].getTime() >= start+hr*i && plays[cursor].getTime() < start+hr*(i+1)) {
                 buckets[i]++;
+                console.log("cursor = "+cursor);
                 cursor++;
             } else {
+                console.log("i = "+i);
+                console.log("buckets[i] = "+buckets[i]);
                 chart.addBar(buckets[i]);
                 break;
             }
@@ -342,7 +346,7 @@ function graph_wins(start, wins) {
     for (var i = 0; i < 24*5; i++) {
         buckets[i] = 0;
         while (cursor < wins.length) {
-            if (wins[cursor].getTime() >= start+hr*i && wins[cursor] < start+hr*(i+1)) {
+            if (wins[cursor].getTime() >= start+hr*i && wins[cursor].getTime() < start+hr*(i+1)) {
                 buckets[i]++;
                 cursor++;
             } else {

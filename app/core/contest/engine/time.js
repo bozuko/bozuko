@@ -22,15 +22,15 @@ TimeEngine.prototype.configure = function() {
      */
 
     // This number should work itself out to some constant
-    this.window_divisor = 10;
+    this.window_divisor = 4;
 
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
         (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.end_margin_multiplier));
     this.step =  Math.floor(
         (this.contest_duration)/this.contest.totalPrizes());
-    this.lookback_window = this.step;
-    this.throwahead_window = this.step;
+    this.lookback_window = this.step/this.window_divisor;
+    this.throwahead_window = this.lookback_window;
 };
 
 
@@ -145,8 +145,9 @@ TimeEngine.prototype.redistribute = function(memo, callback) {
     var start = memo.timestamp.getTime();
     var end = start + this.throwahead_window;
     var new_time = new Date(rand(start, end));
+    var max_lookback = new Date(start - this.lookback_window);
     return Bozuko.models.Result.findAndModify(
-        {contest_id: this.contest._id, win_time: {$exists: false}, timestamp: {$lt: memo.timestamp}},
+        {contest_id: this.contest._id, win_time: {$exists: false}, timestamp: {$lt: max_lookback}},
         [['timestamp', 'asc']],
         {$push: {history: {timestamp: new_time, move_time: memo.timestamp}}, $set: {timestamp: new_time}},
         {new: false, safe: safe},
