@@ -166,8 +166,8 @@ exports['calculate average step - 0 because no more results available'] = functi
     });
 };
 
-exports['create 1 month long contest - 1 prize/hr'] = function(test) {
-    contest.prizes[0].total = 24*30;
+exports['create 5 day contest - 1 prize/hr'] = function(test) {
+    contest.prizes[0].total = 24*5;
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime()+1000*60*60*24*30);
     engine.configure();
@@ -195,6 +195,8 @@ function enter_and_play(memo, callback) {
     var plays = hrs*pph;
     var start = memo.start;
     var end = memo.start+hr*hrs;
+    console.log("start = "+start);
+    console.log("end = "+end);
     var timestamps = [];
     for (var i = 0; i < plays; i++) {
         timestamps.push(new Date(rand(start,end)));
@@ -227,7 +229,7 @@ function enter_and_play(memo, callback) {
                 } else {
                     losses++;
                 }
-                return cb(null, memo);
+                return cb(null, result);
             });
         });
     },function(err) {
@@ -291,21 +293,21 @@ exports['play out contest - staggered'] = function(test) {
     var day_ct = 0;
     async.whilst(
         function() {
-            return day_ct < 1;
+            return day_ct < 5;
         },
         function(cb) {
             memo.start = contest.start.getTime()+day*day_ct;
             play_one_day(memo, function(err, results) {
                 test.ok(!err);
                 test.ok(results);
-                memo = results;
-                process.stdout.write('+');
+                test.deepEqual(memo, results);
                 day_ct++;
                 cb(err);
             });
         },
         function(err) {
             process.stdout.write('\n');
+//            test.equal(memo.wins.length, 120);
             graph_plays(contest.start.getTime(), memo.plays);
             graph_wins(contest.start.getTime(), memo.wins);
             test.ok(!err);
@@ -315,10 +317,10 @@ exports['play out contest - staggered'] = function(test) {
 };
 
 function graph_plays(start, plays) {
-    var chart = new Chart({height: 40, width: 120, direction: 'y', xlabel: 'time (hrs)', ylabel: 'plays'});
-    var buckets = new Array(12);
+    var chart = new Chart({height: 40, width: 120, direction: 'y', xlabel: 'time (hrs)', ylabel: 'plays', step: 1});
+    var buckets = [];
     var cursor = 0;
-    for (var i = 0; i < 24; i++) {
+    for (var i = 0; i < 24*5; i++) {
         buckets[i] = 0;
         while (cursor < plays.length) {
             if (plays[cursor].getTime() >= start+hr*i && plays[cursor] < start+hr*(i+1)) {
@@ -334,10 +336,10 @@ function graph_plays(start, plays) {
 }
 
 function graph_wins(start, wins) {
-    var chart = new Chart({height: 10, width: 120, direction: 'y', xlabel: 'time (hrs)', ylabel: 'wins'});
-    var buckets = new Array(12);
+    var chart = new Chart({height: 10, width: 120, direction: 'y', xlabel: 'time (hrs)', ylabel: 'wins', step: 1});
+    var buckets = [];
     var cursor = 0;
-    for (var i = 0; i < 24; i++) {
+    for (var i = 0; i < 24*5; i++) {
         buckets[i] = 0;
         while (cursor < wins.length) {
             if (wins[cursor].getTime() >= start+hr*i && wins[cursor] < start+hr*(i+1)) {

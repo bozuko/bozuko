@@ -57,7 +57,7 @@ TimeEngine.prototype.generateResults = function(callback) {
                 code: self.getCode(),
                 count: i,
                 timestamp: date,
-                history: [{timestamp: date, move_time: new Date()}]
+                history: [{timestamp: date}]
             });
             results.push(result);
         }
@@ -159,4 +159,5 @@ TimeEngine.prototype.redistribute = function(memo, callback) {
             return callback(null, memo);
         }
     );
+
 };
