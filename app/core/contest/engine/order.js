@@ -1,17 +1,20 @@
 var Engine = Bozuko.require('core/contest/engine'),
     rand = Bozuko.require('util/math').rand,
-    inherits = require('util').inherits;
+    inherits = require('util').inherits,
+    Profiler = Bozuko.require('util/profiler'),
+    async = require('async')
+;
+
+var safe = {w:2, wtimeout:5000};
 
 var OrderEngine = module.exports = function(){
     Engine.apply(this, arguments);
 };
 inherits( OrderEngine, Engine );
 
-OrderEngine.prototype.default_primer_end = 0.10;
-
-OrderEngine.prototype.generateResults = function(){
-
-    options = this.contest.engine_options || {};        
+OrderEngine.prototype.generateResults = function(callback){
+    var self = this;
+    var options = this.contest.engine_options || {};        
 
     var contest = this.contest;
     var results = {};
@@ -48,18 +51,6 @@ OrderEngine.prototype.generateResults = function(){
         for( var i=0; i<totalPlays; i++) ar.push(i);
     }
 
-    // Store all generated prize codes for this contest so we don't have dupes.
-    var codes = {'0' : true};
-
-    function letter() { return rand(0,25) + 65; }
-    function get_code() {
-        var code = '0';
-        while (codes[code]) {
-            code = String.fromCharCode(65, letter(), letter(), letter(), letter(), letter());
-        }
-        codes[code] = true;
-        return code;
-    }
 
     function pick_index(array, start) {
         var random = rand(start || 0,array.length-1);
@@ -67,7 +58,6 @@ OrderEngine.prototype.generateResults = function(){
         array.splice( random, 1 );
         return index;
     }
-
 
     // Distribute prizes in the results object
     var index;
@@ -79,20 +69,22 @@ OrderEngine.prototype.generateResults = function(){
 
         if (options.primer && prize.total === 1) {
             index = pick_index(remainder);
-            results[index] = {
+            var result = {
                 index: prize_index,
                 prize: prize._id,
-                code: get_code(),
+                code: self.getCode(),
                 count: 0
-            };         
+            };     
+            results[index] = result;
         } else if (!options.primer && prize.total === 1) {
             index = pick_index(ar, primer_end);
-            results[index] = {
+            var result = {
                 index: prize_index,
                 prize: prize._id,
-                code: get_code(),
+                code: self.getCode(),
                 count: 0
             };
+            results[index] = result;
         } else {
             for( var i = 0; i < prize.total; i++ ){
                 if (options.primer) {
@@ -104,12 +96,15 @@ OrderEngine.prototype.generateResults = function(){
                 } else {
                     index = pick_index(ar);
                 }
-                results[index] = {
+                var result = {
                     index: prize_index,
                     prize: prize._id,
-                    code: get_code(),
+                    code: self.getCode(),
                     count: i
                 };
+                var inspect = require('util').inspect;
+                results[index] = result;
+                
             }
         }
     });
@@ -131,9 +126,87 @@ OrderEngine.prototype.generateResults = function(){
     contest.results = results;
     contest.total_plays = totalPlays;
     contest.total_free_plays = freePlays;
+
+    return callback(null);
 };
 
-OrderEngine.prototype.play = function( user_id, callback ){
-    var tries = this.contest.total_plays - this.contest.play_cursor;
-    this.startPlay(user_id, tries, callback);
+OrderEngine.prototype.getResult = function(memo, callback) {
+    var query = {_id: memo.contest._id};
+    query['results.'+memo.play_cursor] = {$exists: true};
+    
+    var opts = {};
+    opts['results.'+memo.play_cursor] = 1;
+                   
+    return Bozuko.models.Contest.findOne(query, opts, function(err, doc) {
+        if (err) return callback(err);
+        if (doc) {
+            memo.result = doc.results[memo.play_cursor];
+        }
+        return callback(null, memo);
+    });                   
+};
+
+OrderEngine.prototype.play = function(memo, callback) {
+    var self = this;
+    async.reduce(
+        [this.incrementPlayCursor, this.getResult],
+        memo, 
+        function(memo, fn, cb) {
+            return fn.call(self, memo, cb);
+        }, function(error, result) {
+            return callback(error, result);
+        }
+    );
+};
+
+OrderEngine.prototype.incrementPlayCursor = function(memo, callback) {
+    var prof = new Profiler('/engines/order/incrementPlayCursor');
+    return Bozuko.models.Contest.findAndModify(
+        {_id: this.contest._id},
+        [],
+        {$inc : {play_cursor: 1}},
+        {new: true, fields: {plays: 0, results: 0}, safe: safe},
+        function(err, contest) {
+            prof.stop();
+            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
+            if (!contest) return callback(Bozuko.error("contest/no_tokens"));
+            memo.play_cursor = contest.play_cursor;
+            memo.contest = contest;
+            return callback(null, memo);
+        }
+    );
+};
+
+
+/**
+ * Test to make sure there are enough tokens left in the contest to distribute
+ *
+ * @returns {Boolean} If there is enough tokens
+ */
+OrderEngine.prototype.allowEntry = function(entry){
+    return this.contest.token_cursor + entry.getTokenCount() <= this.contest.total_plays - this.contest.total_free_plays;
+};
+
+/**
+ * Perform any special processing required by this engine to enter the contest
+ * 
+ */
+OrderEngine.prototype.enter = function(tokens, callback) {
+    var prof = new Profiler('/orderEngine/enter');
+    var contest = this.contest;
+
+    Bozuko.models.Contest.findAndModify(
+        { _id: contest._id, token_cursor: {$lte : contest.total_plays - contest.total_free_plays - tokens}},
+        [],
+        {$inc : {'token_cursor': tokens}},
+        {new: true, fields: {plays: 0, results: 0}, safe: safe},
+        function(err, contest) {
+            prof.stop();
+            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
+            if (!contest) {
+                return callback(Bozuko.error('entry/not_enough_tokens'));
+            }
+            return callback(null);
+        }
+    );
 };
