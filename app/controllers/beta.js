@@ -67,14 +67,14 @@ exports.routes = {
                         req.session.page_id = false;
                     }
                     res.locals.styles = [
-                        'https://fonts.googleapis.com/css?family=Cabin:400,500,700,400italic,500italic,700italic|Istok+Web:400,700,400italic,700italic|Yanone+Kaffeesatz:700,400,200',
+                        'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
                         '/css/desktop/style.css',
                         '/css/desktop/layout.css',
                         '/css/desktop/beta/landing.css',
                         '/css/desktop/beta/style.css'
                     ];
                     res.locals.head_scripts = [
-                        'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
+                        '/js/jquery/jquery.tools.min-1.2.6.js',
                         '/js/desktop/beta/welcome.js'
                     ]
                     return res.render('beta/welcome');
@@ -144,6 +144,12 @@ exports.routes = {
                     });
                 });
             }
+        }
+    },
+    
+    '/beta/form' : {
+        post : function(req, res){
+            
         }
     },
     

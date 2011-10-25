@@ -9,7 +9,8 @@
       a.facebook-button(href="/beta/login") Login with Facebook &raquo;
     #welcome-logged-in-as.small
     p
-      a(href="mailto:questions@bozuko.com") Questions?
+      // a.question-trigger.medium-button(href="/contact") Have any Questions?
+      a(href="mailto:questions@bozuko.com") Have any Questions?
 
 .beta-main
   h1 Bozuko for your Business
@@ -75,4 +76,9 @@
       p Track players, prizes, costs, repeat
         |  business, Facebook Likes and Wall
         |  posts.
-    
+
+div#welcome-form-container(style="position: absolute; top: -9999em; left: -9999em; z-index: 10000");
+  
+  #welcome-form
+    include includes/form
+  
