@@ -381,12 +381,21 @@ exports.routes = {
 
             handler : function(req,res){
                 var send = res.send,
-                    user = req.session.user;
+                    user = req.session.user,
+                    page_id = null,
+                    contest_id = req.param('id');
                     
                 res.send = function(){
                     send.apply(res, arguments);
                 };
-                return Bozuko.models.Contest.findById(req.params.id, function(error, contest){
+                
+                if( ~contest_id.indexOf('-') ){
+                    var id_parts = contest_id.split('-');
+                    contest_id = id_parts[0];
+                    page_id = id_parts[1];
+                }
+                
+                return Bozuko.models.Contest.findById(contest_id, function(error, contest){
                     if( error ){
                         return error.send(res);
                     }
@@ -411,8 +420,16 @@ exports.routes = {
                     parts[0] = parseFloat( parts[0] );
                     parts[1] = parseFloat( parts[1] );
                     
+                    var options = {
+                        ll: parts
+                    };
+                    
+                    if( page_id ){
+                        options.page_id = page_id;
+                    }
+                    
                     var config = contest.getEntryConfig();
-                    var entry = Bozuko.entry( config.type, req.session.user, {ll: parts} );
+                    var entry = Bozuko.entry( config.type, req.session.user, options );
                     
                     return user.updateInternals( function(){
                         contest.enter( entry, function(error, entry){

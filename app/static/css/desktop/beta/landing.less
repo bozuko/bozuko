@@ -1,0 +1,173 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+html {
+    background: #fff !important;
+}
+
+html body {
+    
+}
+
+html body .hd {
+    background: #fff url("/images/desktop/site/bg_header.png") repeat-x 0 0 !important;
+    h1.logo a { height: 108px;}
+    h3.tagline {
+        position: absolute;
+        text-indent: -9999em;
+        font-family: ArvoRegular;
+        top: 10px;
+        left: 280px;
+        width: 76px;
+        height: 76px;
+        background: transparent url("/images/desktop/site/beta/img_bozuko-beta-burst.png") 0 0 no-repeat;
+        padding: 0;
+        margin: 0;
+    }
+}
+html body .bd {
+    
+    background: #fff none;
+    
+    .top-line {
+        display: none;
+    }
+    .bottom-line{
+        display: none;
+    }
+    
+}
+
+html body .ft {
+    border-top: 4px solid #EEEDED;
+}
+
+.beta-right {
+    color: #656565;
+    z-index: 2;
+    position: relative;
+    float: right;
+    width: 260px;
+    text-align: center;
+    .fixed {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding-top: 120px;
+        border-left: 1px solid #ccc;
+        .get-started {
+            position: absolute;
+            top: -160px;
+            left: -74px;
+            width: 394px;
+            height: 284px;
+            background: transparent url("/images/desktop/site/beta/img_beta-get-started.png") 50% 50% no-repeat;
+        }
+        
+        .facebook-button {
+            display: block;
+            cursor: pointer;
+            width: 154px;
+            height: 22px;
+            text-indent: -99999em;
+            text-decoration: none;
+            margin: 10px auto;
+            background: transparent url("/images/desktop/site/beta/img_fb-login.png") 50% 50% no-repeat;
+        }
+        
+        p {
+            font-size: 12px;
+            line-height: 1.2em;
+            margin: .5em 0;
+        }
+        
+    }
+    
+}
+
+.beta-main {
+    margin-right: 290px;
+    color: #656565;
+    
+    h1,h2,h3,h4,h5{
+        font-style: normal;
+        font-family: 'Istok Web', sans-serif;
+        font-weight: 700;
+        color: #656565;
+        margin-top: 0;
+        margin-bottom: 0.4em;
+    }
+    
+    h1 {
+        font-size: 38px;
+    }
+    
+    h3 {
+        font-weight: 300;
+        font-size: 20px;
+        line-height: 1.3em;
+    }
+    
+    h4 {
+        font-weight: 300;
+        font-size: 17px;
+        line-height: 1.4em;
+    }
+    
+    h3.deal {
+        margin-top: 1em;
+        font-size: 30px;
+        font-weight: 800;
+    }
+    
+    .whats-the-deal {
+        width: 666px;
+        height: 1380px;
+        background: transparent url("/images/desktop/site/beta/bg_beta-steps.png") 50% 50% no-repeat;
+        position: relative;
+        
+        .step {
+            position: absolute;
+            left: 45px;
+            top: 0;
+            
+            h4 {
+                font-size: 22px;
+                line-height: 1.2em;
+                font-weight: 700;
+                .orange {
+                    font-style: italic;
+                    color: #FF6500;
+                }
+            }
+            
+            p {
+                width: 270px;
+                font-size: 16px;
+                line-height: 1.4em;
+            }
+            
+            .buttons {
+                margin: 20px 0;
+                text-align: left;
+                a{
+                    margin: 4px;
+                }
+            }
+        }
+        
+        .step1 { top: 0px; }
+        .step2 { top: 326px; }
+        .step3 { top: 604px; }
+        .step4 { top: 820px; }
+        .step5 { top: 1110px; }
+        
+    }
+    
+}
+
+.italic {
+    font-style: italic;
+    color: @blue;
+}
