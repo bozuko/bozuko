@@ -152,7 +152,7 @@ html(
               FB.api('/me', function(data){
                 document.getElementById('welcome-logged-in-as').innerHTML =[
                   '<div style="padding: 10px 0; color: #666;">',
-                  '<img src="https://graph.facebook.com/'+data.id+'/picture" height="25" style="vertical-align:middle; margin: 0 10px 0 0;" />',
+                  '<img src="https://graph.facebook.com/'+data.id+'/picture" height="25" style="float: left; margin: 0 10px 0 0;" />',
                   'You are currently logged into Facebook as ',
                   '<span style="color: #000;">',data.name,'</span>',
                   '. <a onclick="javascript:beta_logout(this)" href="/beta/logout">Not You?</a>',
