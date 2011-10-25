@@ -26,8 +26,6 @@
         
         opts = $.fn.stickyfloat.opts;
         
-        console.log(opts);
-        
 		$obj.css({ position: 'absolute' });
 		
 		if(opts.lockBottom){
