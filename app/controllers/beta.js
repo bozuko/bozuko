@@ -66,6 +66,17 @@ exports.routes = {
                     else{
                         req.session.page_id = false;
                     }
+                    res.locals.styles = [
+                        'https://fonts.googleapis.com/css?family=Cabin:400,500,700,400italic,500italic,700italic|Istok+Web:400,700,400italic,700italic|Yanone+Kaffeesatz:700,400,200',
+                        '/css/desktop/style.css',
+                        '/css/desktop/layout.css',
+                        '/css/desktop/beta/landing.css',
+                        '/css/desktop/beta/style.css'
+                    ];
+                    res.locals.head_scripts = [
+                        'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
+                        '/js/desktop/beta/welcome.js'
+                    ]
                     return res.render('beta/welcome');
                 }
                 

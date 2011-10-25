@@ -96,11 +96,11 @@ html(
                 h3 Download
                 ul.download
                   li
-                    a.download.app-store(href="#", title="Download for iPhone")
+                    a.download.app-store(href=Bozuko.cfg('client.mobile.iphone.link','#',target="_blank"), title="Download for iPhone")
                       img(src="/images/desktop/site/icon_app-store.png", title="Download for iPhone")
                   
                   li  
-                    a.download.android-market(href="#", title="Download for Android")
+                    a.download.android-market(href=Bozuko.cfg('client.mobile.android.link','#',target="_blank"), title="Download for Android")
                       img(src="/images/desktop/site/icon_android-market.png", title="Download for Android")
       
       .copyright
