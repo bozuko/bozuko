@@ -14,21 +14,10 @@ html {
 }
 html body .hd {
   background: #ffffff url("/images/desktop/site/bg_header.png") repeat-x 0 0 !important;
+  filter: none;
 }
 html body .hd h1.logo a {
   height: 108px;
-}
-html body .hd h3.tagline {
-  position: absolute;
-  text-indent: -9999em;
-  font-family: ArvoRegular;
-  top: 10px;
-  left: 280px;
-  width: 76px;
-  height: 76px;
-  background: transparent url("/images/desktop/site/beta/img_bozuko-beta-burst.png") 0 0 no-repeat;
-  padding: 0;
-  margin: 0;
 }
 html body .bd {
   background: #fff none;
@@ -165,4 +154,9 @@ html body .ft {
 .italic {
   font-style: italic;
   color: #01a9d8;
+}
+#welcome-logged-in-as {
+  line-height: 1.35em;
+  font-size: 11px;
+  text-align: left;
 }
