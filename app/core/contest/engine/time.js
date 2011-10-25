@@ -126,7 +126,7 @@ TimeEngine.prototype.play = function(memo, callback) {
     // check for a free play before actually checking for win/loss
     if (this.free_play_odds) {
         var winning_number = 1;
-        if (rand(0, this.free_play_odds) === winning_number) {
+        if (rand(1, this.free_play_odds) === winning_number) {
             memo.result = 'free_play';
             return callback(null, memo);
         }        
@@ -144,12 +144,11 @@ TimeEngine.prototype.play = function(memo, callback) {
         };
     } else {
         var query = {
-            contest_id:self.contest._id, 
+            contest_id: self.contest._id, 
             $and: [{timestamp: {$gt: max_lookback}}, {timestamp: {$lte: memo.timestamp}}],
             win_time: {$exists: false}
         };
     }
-
     return Bozuko.models.Result.findAndModify(
         query,
         [['timestamp', 'asc']],
