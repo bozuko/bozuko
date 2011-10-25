@@ -62,11 +62,15 @@ var no_matching_re = /no\smatching\sobject/i;
 
 Contest.virtual('state')
     .get(function(){
+        var now = new Date().getTime();
         if( !this.active ) return Contest.DRAFT;
-        var now = new Date();
-        if( this.play_cursor+1 >= this.total_plays ) return Contest.COMPLETE;
-        if( now > this.start && now < this.end ) return Contest.ACTIVE;
-        if( now < this.start ) return Contest.PUBLISHED;
+        if( this.engine_type === 'order' && (this.play_cursor+1 >= this.total_plays) ) {
+            return Contest.COMPLETE;
+        }
+        if( now > this.start.getTime() && now < this.end.getTime() ) {
+            return Contest.ACTIVE;
+        }
+        if( now < this.start.getTime() ) return Contest.PUBLISHED;
         return Contest.COMPLETE;
     });
 
