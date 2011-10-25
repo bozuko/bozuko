@@ -1,0 +1,18 @@
+form(action="/beta/form",method="post")
+  .field-wrap
+    label(for="name") Name
+    .field
+      input#name(name="name",value=locals.name)
+  
+  .field-wrap
+    label(for="email") Email
+    .field
+      input#email(name="email",value=locals.email)
+      
+  .field-wrap
+    label(for="message") Message
+    .field
+      textarea#message(name="message")!= locals.message
+  
+  .buttons
+    input.big-button(type="submit", value="Send")

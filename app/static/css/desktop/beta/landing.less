@@ -48,7 +48,7 @@ html body .ft {
         .get-started {
             position: absolute;
             top: -160px;
-            left: -74px;
+            left: -72px;
             width: 394px;
             height: 284px;
             background: transparent url("/images/desktop/site/beta/img_beta-get-started.png") 50% 50% no-repeat;
@@ -57,8 +57,8 @@ html body .ft {
         .facebook-button {
             display: block;
             cursor: pointer;
-            width: 154px;
-            height: 22px;
+            width: 207px;
+            height: 42px;
             text-indent: -99999em;
             text-decoration: none;
             margin: 10px auto;
@@ -81,7 +81,7 @@ html body .ft {
     
     h1,h2,h3,h4,h5{
         font-style: normal;
-        font-family: 'Istok Web', sans-serif;
+        font-family: 'Open Sans', sans-serif;
         font-weight: 700;
         color: #656565;
         margin-top: 0;
@@ -93,13 +93,13 @@ html body .ft {
     }
     
     h3 {
-        font-weight: 300;
+        font-weight: 500;
         font-size: 20px;
         line-height: 1.3em;
     }
     
     h4 {
-        font-weight: 300;
+        font-weight: 500;
         font-size: 17px;
         line-height: 1.4em;
     }
@@ -162,7 +162,21 @@ html body .ft {
 }
 
 #welcome-logged-in-as {
+    padding: 0 20px;
     line-height: 1.35em;
     font-size: 11px;
     text-align: left;
+}
+
+#welcome-form {
+    background: #fff;
+    z-index: 20000;
+    padding: 20px;
+    .border_radius( 10px );
+    
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
 }

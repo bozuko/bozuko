@@ -78,4 +78,19 @@
 
 jQuery(function($){
     $('.fixed').stickyfloat({lockBottom: true, duration: 400, offsetY: 70});
+	
+	$('#welcome-form-container').appendTo($('body'));
+	
+	// setup the welcome form
+	$('.question-trigger').overlay({
+		// some mask tweaks suitable for modal dialogs
+		mask: {
+			color: '#000',
+			loadSpeed: 200,
+			opacity: 0.8
+		},
+
+		target : $('#welcome-form')
+	})
+	
 });
