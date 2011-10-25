@@ -29,7 +29,7 @@
 		$obj.css({ position: 'absolute' });
 		
 		if(opts.lockBottom){
-			bottomPos = $obj.parent().parent().height() - $obj.outerHeight() + parentPaddingTop; //get the maximum scrollTop value
+			bottomPos = $obj.parent().parent().height() - $obj.outerHeight() + parentPaddingTop - opts.offsetY; //get the maximum scrollTop value
 			if( bottomPos < 0 )
 				bottomPos = 0;
 		}
@@ -56,14 +56,16 @@
 			
 			// if window scrolled down more than startOffset OR obj position is greater than
 			// the top position possible (+ offsetY) AND window size must be bigger than Obj size
-			if( (pastStartOffset || objFartherThanTopPos) && objBiggerThanWindow ){ 
+			if( (pastStartOffset || objFartherThanTopPos) && objBiggerThanWindow ){
+				
 				newpos = (doc.scrollTop() -startOffset + opts.offsetY );
 
-				if ( newpos > bottomPos )
+				if ( newpos > bottomPos ){
 					newpos = bottomPos;
-				if ( doc.scrollTop() < opts.startOffset ) // if window scrolled < starting offset, then reset Obj position (opts.offsetY);
+				}
+				if ( doc.scrollTop() < opts.startOffset ){ // if window scrolled < starting offset, then reset Obj position (opts.offsetY);
 					newpos = parentPaddingTop;
-				
+				}
 				$obj.delay(opts.delay).animate({ top: newpos }, opts.duration , opts.easing );
 			}
 		}
