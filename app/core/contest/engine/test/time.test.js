@@ -228,16 +228,16 @@ var win_timestamp;
 exports['play out contest randomly'] = function(test) {
     var engine = new TimeEngine(contest);
     for (var i = 0; i < 200; i++) {
-        timestamps.push(new Date(rand(contest.start.getTime(),contest.end.getTime())));
+        timestamps.push(rand(contest.start.getTime(),contest.end.getTime()));
     }
     timestamps.sort(function(a, b) {
-        return a.getTime() - b.getTime();
+        return a - b;
     });
 
     var win_ct = 0;
     async.forEachSeries(timestamps, function(timestamp, cb) {
         var memo = {
-            timestamp: timestamp,
+            timestamp: new Date(timestamp),
             user: user,
             entry: entry
         };
@@ -246,6 +246,7 @@ exports['play out contest randomly'] = function(test) {
             if (memo.result) {
                 win_ct++;
                 win_timestamp = timestamp;
+                console.log("won at "+new Date(timestamp));
             }
             cb(null);
         });
@@ -257,35 +258,12 @@ exports['play out contest randomly'] = function(test) {
 
 exports['graph 1 month / 1 prize'] = function(test) {
     var playchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (days)', 
-        ylabel: 'plays', step: 3, xmax: 40, ymax: 20});
+        ylabel: 'plays', step: 3, xmax: 30});
     var winchart = new Chart({height: 10, width: 120, direction: 'y', xlabel: 'time (days)',
-        ylabel: 'wins', step: 3, xmax: 40, ymax: 1});
+        ylabel: 'wins', step: 3, xmax: 30});
     
-    var buckets = [],
-        j = 0,
-        start = contest.start.getTime();
-
-    for (var i = 0; i < 30; i++) {
-        buckets[i] = 0;
-        
-        while (j < timestamps.length) {
-            if (timestamps[j].getTime() >= start+day*i
-                && timestamps[j].getTime() < start+day*(i+1)) {
-                buckets[i]++;
-                j++;
-            } else {
-                playchart.addBar(buckets[i]);
-                break;
-            }
-        }
-
-        if (win_timestamp >= start+day*i && win_timestamp < start+day*(i+1)) {
-            winchart.addBar(1);
-        } else {
-            winchart.addBar(0);
-        }
-        
-    }
+    playchart.bucketize(timestamps);
+    winchart.bucketize([win_timestamp], contest.start.getTime(), contest.end.getTime());
     playchart.draw();
     winchart.draw();
     test.done();
