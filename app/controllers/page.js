@@ -1,6 +1,7 @@
 var async = require('async'),
     qs = require('querystring'),
     http = Bozuko.require('util/http'),
+    Geo = Bozuko.require('util/geo'),
     URL = require('url'),
     mailer = Bozuko.require('util/mail'),
     indexOf = Bozuko.require('util/functions').indexOf,
@@ -241,6 +242,7 @@ exports.routes = {
 
             handler: function(req,res) {
                 var ll = req.param('ll');
+                var accuracy = req.param('accuracy');
                 var bounds = req.param('bounds');
                 var service = req.param('service');
                 var query = req.param('query');
@@ -312,6 +314,25 @@ exports.routes = {
                         var ret = {
                             pages:pages
                         };
+                        
+                        var dbug = [];
+                        pages.forEach(function(page){
+                            if( page.is_location ){
+                                dbug.push({
+                                    page_name: page.name,
+                                    distance: page.distance
+                                });
+                            }
+                        });
+                        
+                        Bozuko.publish('api/pages', {
+                            user: req.session.user ? req.session.user.name : 'Anonymous',
+                            ll: ll,
+                            accuracy: accuracy,
+                            pages: dbug
+                        });
+                        
+                        
                         if( pages.length ) ret.next = next;
                         return Bozuko.transfer('pages', ret, req.session.user, function(error, result){
                             profiler.mark('after transfer');
