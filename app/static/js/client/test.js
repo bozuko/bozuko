@@ -30,6 +30,11 @@ jQuery(function($){
     Scratch.prototype.height    = 415;
     Scratch.prototype.frames    = 24;
     
+    Scratch.prototype.reset = function(){
+        // lets add the ticket
+        this.ctx.drawImage(this.images.ticket,0,0);
+    };
+    
     Scratch.prototype.load = function(){
         // load mask and img
         var self = this,
@@ -57,7 +62,7 @@ jQuery(function($){
     
     Scratch.prototype.render = function(){
         // lets add the ticket
-        this.ctx.drawImage(this.images.ticket,0,0);
+        this.reset()
         this.drawPrizes();
     };
     
@@ -96,7 +101,7 @@ jQuery(function($){
         
         // this.ctx.drawImage(this.images.mask, (24 + (col*90)), (125 + (row*115)));
         
-        var i = 20, self = this;
+        var i = 1, self = this;
         
         var interval = setInterval(function(){
             self.ctx.save();
@@ -157,10 +162,14 @@ jQuery(function($){
     });
     */
     
-    window.scratch = new Scratch(
+    scratch = new Scratch(
         "https://playground.bozuko.com:8001/games/scratch/themes/default/default_theme/background-v2.png",
         "https://github.com/bozuko/iphone/raw/master/Bozuko/images/scratch/scratchMask/scratchMask_0024.png"
-    )
+    );
+    
+    $('<a href="javascript:;" />').html('Reset').click(function(e){
+        scratch.reset();
+    }).appendTo($('body'));
     
 });
 

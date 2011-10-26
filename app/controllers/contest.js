@@ -418,12 +418,16 @@ exports.routes = {
                         return Bozuko.error('contest/game_entry_requires_ll', req.params.id).send(res);
                     }
                     
+                    // try to get the accuracy too
+                    var accuracy = req.param('accuracy');
+                    
                     parts.reverse();
                     parts[0] = parseFloat( parts[0] );
                     parts[1] = parseFloat( parts[1] );
                     
                     var options = {
-                        ll: parts
+                        ll: parts,
+                        accuracy: accuracy || false
                     };
                     
                     if( page_id ){
