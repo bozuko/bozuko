@@ -75,6 +75,7 @@ exports.routes = {
                     ];
                     res.locals.head_scripts = [
                         '/js/jquery/jquery.tools.min-1.2.6.js',
+                        //'https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js',
                         '/js/desktop/beta/welcome.js'
                     ]
                     return res.render('beta/welcome');
