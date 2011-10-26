@@ -18,10 +18,12 @@
 (function($){
 	$.fn.stickyfloat = function(options, lockBottom){
 		var $obj 				= this,
-			doc					= $(document),
+			doc					= $((jQuery.browser.msie && jQuery.browser.version == 8 ) ? document.documentElement : document),
 			opts, bottomPos, pastStartOffset, objFartherThanTopPos, objBiggerThanWindow, newpos, checkTimer, lastDocPos = doc.scrollTop(),
 			parentPaddingTop 	= parseInt($obj.parent().css('padding-top')),
 			startOffset 		= $obj.parent().parent().offset().top;
+			
+		
             
         $.extend( $.fn.stickyfloat.opts, options, { startOffset:startOffset} );
         
