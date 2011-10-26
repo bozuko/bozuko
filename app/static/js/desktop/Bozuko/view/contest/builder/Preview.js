@@ -3,6 +3,8 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
     extend          :'Ext.panel.Panel',
     alias           :'widget.contestbuilderpreview',
     
+    layout          :'fit',
+    
     initComponent   :function(){
         var me = this;
         

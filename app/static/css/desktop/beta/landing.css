@@ -19,6 +19,9 @@ html body .hd {
 html body .hd h1.logo a {
   height: 108px;
 }
+html body .hd .right-side {
+  display: none;
+}
 html body .bd {
   background: #fff none;
 }
@@ -50,7 +53,7 @@ html body .ft {
 .beta-right .fixed .get-started {
   position: absolute;
   top: -160px;
-  left: -74px;
+  left: -72px;
   width: 394px;
   height: 284px;
   background: transparent url("/images/desktop/site/beta/img_beta-get-started.png") 50% 50% no-repeat;
@@ -58,8 +61,8 @@ html body .ft {
 .beta-right .fixed .facebook-button {
   display: block;
   cursor: pointer;
-  width: 154px;
-  height: 22px;
+  width: 207px;
+  height: 42px;
   text-indent: -99999em;
   text-decoration: none;
   margin: 10px auto;
@@ -70,39 +73,42 @@ html body .ft {
   line-height: 1.2em;
   margin: .5em 0;
 }
-.beta-main {
-  margin-right: 290px;
-  color: #656565;
+.beta-right .fixed .contact {
+  margin-top: 8px;
 }
-.beta-main h1,
-.beta-main h2,
-.beta-main h3,
-.beta-main h4,
-.beta-main h5 {
+body h1,
+body h2,
+body h3,
+body h4,
+body h5 {
   font-style: normal;
-  font-family: 'Istok Web', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-weight: 700;
   color: #656565;
   margin-top: 0;
   margin-bottom: 0.4em;
 }
-.beta-main h1 {
+body h1 {
   font-size: 38px;
 }
-.beta-main h3 {
-  font-weight: 300;
+body h3 {
+  font-weight: 500;
   font-size: 20px;
   line-height: 1.3em;
 }
-.beta-main h4 {
-  font-weight: 300;
+body h4 {
+  font-weight: 500;
   font-size: 17px;
   line-height: 1.4em;
 }
-.beta-main h3.deal {
+body h3.deal {
   margin-top: 1em;
   font-size: 30px;
   font-weight: 800;
+}
+.beta-main {
+  margin-right: 290px;
+  color: #656565;
 }
 .beta-main .whats-the-deal {
   width: 666px;
@@ -156,7 +162,47 @@ html body .ft {
   color: #01a9d8;
 }
 #welcome-logged-in-as {
+  padding: 0 20px;
   line-height: 1.35em;
   font-size: 11px;
   text-align: left;
+}
+#welcome-form {
+  width: 620px;
+  border: 4px solid #00a24f;
+  -moz-box-shadow: 0 0 20px #000000;
+  -webkit-box-shadow: 0 0 20px #000000;
+  box-shadow: 0 0 20px #000000;
+  background: #fff;
+  z-index: 20000;
+  padding: 10px 20px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background-clip: padding-box;
+}
+#welcome-form .close {
+  position: absolute;
+  top: -13px;
+  right: -13px;
+  width: 27px;
+  height: 27px;
+  cursor: pointer;
+  background: transparent url("/images/desktop/site/beta/img_close.png") 50% 50% no-repeat;
+}
+#welcome-form .callus {
+  margin-top: 10px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+#welcome-form .number {
+  float: right;
+  color: #01a9d8;
+}
+#welcome-form .error {
+  color: red;
+  padding: 4px;
+  font-weight: bold;
 }

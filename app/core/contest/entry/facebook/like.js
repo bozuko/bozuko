@@ -231,7 +231,7 @@ FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
 FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
     var self = this;
     if( tokens ) return callback( null, true );
-    self.getNextEntryTime( function(error, time){
+    return self.getNextEntryTime( function(error, time){
         if( error ) return callback( error );
         var enabled = true;
         var now = new Date();
@@ -244,4 +244,3 @@ FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
         return callback( null, enabled );
     });
 };
-

@@ -8,21 +8,25 @@
     p
       a.facebook-button(href="/beta/login") Login with Facebook &raquo;
     #welcome-logged-in-as.small
-    p
-      a(href="mailto:questions@bozuko.com") Questions?
+    p.contact
+      |  Have any Questions?
+      a.question-trigger.medium-button(href="/contact") Contact Us
+      // a(href="mailto:questions@bozuko.com") Have any Questions?
 
 .beta-main
   h1 Bozuko for your Business
   
-  h3 Build and publish a Bozuko game for your business right now! Our beta program is 
-    strong.blue.italic totally free!
+  h3 Build a Bozuko game for your business right now!
   
-  h4 In order to enroll in our beta program, you must have a <strong>Facebook Account</strong>
+  h3 Sign up for Bozuko Beta and run games for 
+    strong.blue.italic 3 months free!
+  
+  h4 You must have a <strong>Facebook Account</strong>
     |  and administer a <strong>Facebook Page</strong> that has a location, or
     |  <strong>Place</strong>, associated with it.
     
-  h3.deal What's the deal? 
-    span.blue.italic Literally.
+  h3.deal 5 Steps to 
+    span.blue.italic Great Bozuko Promotions
   
   .whats-the-deal
     .step.step1
@@ -75,4 +79,9 @@
       p Track players, prizes, costs, repeat
         |  business, Facebook Likes and Wall
         |  posts.
-    
+
+div#welcome-form-container(style="position: absolute; top: -9999em; left: -9999em; z-index: 10000");
+  
+  #welcome-form
+    include includes/form
+  
