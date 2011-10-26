@@ -224,6 +224,7 @@ exports['publish 1 month / 1 prize contest'] = function(test) {
 };
 
 var timestamps = [];
+var win_timestamp;
 exports['play out contest randomly'] = function(test) {
     var engine = new TimeEngine(contest);
     for (var i = 0; i < 200; i++) {
@@ -242,7 +243,10 @@ exports['play out contest randomly'] = function(test) {
         };
         engine.play(memo, function(err, memo) {
             test.ok(!err);
-            if (memo.result) win_ct++;
+            if (memo.result) {
+                win_ct++;
+                win_timestamp = timestamp;
+            }
             cb(null);
         });
     }, function(err) {
@@ -259,8 +263,7 @@ exports['graph 1 month / 1 prize'] = function(test) {
     
     var buckets = [],
         j = 0,
-        start = contest.start.getTime(),
-        win_timestamp = results[0].timestamp.getTime();
+        start = contest.start.getTime();
 
     for (var i = 0; i < 30; i++) {
         buckets[i] = 0;
@@ -288,3 +291,92 @@ exports['graph 1 month / 1 prize'] = function(test) {
     test.done();
 };
 
+exports['cleanup again'] = function(test) {
+    Bozuko.models.Result.remove(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['publish 3 hrs / 1000 prize contest'] = function(test) {
+    contest.start = new Date();
+    contest.end = new Date(contest.start.getTime() + 3*hr);
+    contest.prizes[0].total = 1000;
+    var engine = new TimeEngine(contest);
+    engine.generateResults(function(err, _results) {
+        test.ok(!err);
+        test.equal(_results.length, 1000);
+        results = _results;
+
+        Bozuko.models.Result.count(function(err, count) {
+            test.equal(count, 1000);
+            test.done();
+        });
+    });
+};
+
+// buckets are 5 minutes wide
+var play_buckets = [];
+var win_buckets = [];
+
+exports['play out 3hr contest randomly'] = function(test) {
+    var engine = new TimeEngine(contest);
+    var start = contest.start.getTime();
+    var end = contest.end.getTime();
+    var date = start;
+    var max_step = (end - start) / 1000;
+    var fivemin = 1000*60*5;
+    var plays = 0;
+    var wins = 0;
+    var total_plays = 0,
+        total_wins = 0;
+
+    async.whilst(function() {
+        return ((total_plays < 5000) && (total_wins < 1000));
+    }, function(cb) {
+        date += rand(0, max_step);
+        if (date > (start + fivemin*(play_buckets.length+1))) {
+            play_buckets.push(plays);
+            win_buckets.push(wins);
+            total_plays += plays;
+            total_wins += wins;
+            plays = 0;
+            wins = 0;
+        }
+        var memo = {
+            timestamp: new Date(date),
+            user: user,
+            entry: entry
+        };
+        engine.play(memo, function(err, memo) {
+            test.ok(!err);
+            plays++;
+            if (memo.result) {
+                wins++;
+            }
+            cb(null);
+        });
+    }, function(err) {
+        test.ok(total_plays >= 1000);
+        console.log("contest played out in "+(date-start)/(1000*60)+' minutes');
+        console.log("total plays = "+total_plays);
+        test.equal(total_wins, 1000);
+        test.done();
+    });
+};
+
+exports['graph 3 hr / 1000 prize'] = function(test) {
+    var playchart = new Chart({height: 20, width: play_buckets.length*3, direction: 'y', xlabel: 'time hrs', 
+        ylabel: 'plays', step: 3, xmax: play_buckets.length*5/60, ymax: 100});
+    var winchart = new Chart({height: 20, width: win_buckets.length*3, direction: 'y', xlabel: 'time hrs',
+        ylabel: 'wins', step: 3, xmax: win_buckets.length*5/60, ymax: 100});
+    
+    for (var i = 0; i < win_buckets.length; i++) {
+        winchart.addBar(win_buckets[i]);
+        playchart.addBar(play_buckets[i]);
+    }
+
+    playchart.draw();
+    winchart.draw();
+    test.done();
+};
