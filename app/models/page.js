@@ -390,13 +390,14 @@ Page.method('checkin', function(user, options, callback) {
         if( checkin && checkinError ){
             return callback( checkinError );
         }
-        
+        console.log( options.ll );
+        console.log( self.coords );
         Bozuko.publish('page/checkin', {
             page_name: self.name,
             user_name: user.name,
             accuracy: options.accuracy,
             ll: options.ll,
-            distance: Geo.distance( options.ll, self.coords, 'mi' )
+            distance: options.ll && options.ll.length == 2 && options.coords && self.coords.length == 2 ? Geo.distance( options.ll, self.coords, 'mi' ) : null
         });
 
         options.user = user;
