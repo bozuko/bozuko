@@ -59,7 +59,7 @@ exports.routes = {
                 var user = req.session.user,
                     page_id = req.param('page_id');
                 
-                if( !user ){
+                if( !user || !req.session.beta_session ){
                     if( req.param('page_id') ){
                         req.session.page_id = page_id;
                     }
@@ -67,14 +67,14 @@ exports.routes = {
                         req.session.page_id = false;
                     }
                     res.locals.styles = [
-                        'https://fonts.googleapis.com/css?family=Cabin:400,500,700,400italic,500italic,700italic|Istok+Web:400,700,400italic,700italic|Yanone+Kaffeesatz:700,400,200',
+                        'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
                         '/css/desktop/style.css',
                         '/css/desktop/layout.css',
                         '/css/desktop/beta/landing.css',
                         '/css/desktop/beta/style.css'
                     ];
                     res.locals.head_scripts = [
-                        'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
+                        '/js/jquery/jquery.tools.min-1.2.6.js',
                         '/js/desktop/beta/welcome.js'
                     ]
                     return res.render('beta/welcome');
@@ -147,6 +147,45 @@ exports.routes = {
         }
     },
     
+    '/beta/form' : {
+        post : {
+            handler: function(req, res){
+                // check the form...
+                var name = req.param('name'),
+                    email = req.param('email'),
+                    message = req.param('message'),
+                    success = true
+                    ;
+
+                try{
+                    validator.check(name, 'Please enter your name').notEmpty();
+                    validator.check(email, 'Please enter a valid email address').isEmail();
+                    validator.check(message, 'Message cannot be empty').notEmpty();
+                }catch(e){
+                    res.locals.token = getToken(req.session, true);
+                    res.locals.errors = [e.message];
+
+                    res.locals.name = name;
+                    res.locals.email = email;
+                    res.locals.message = message;
+
+                    return res.send({success:false});
+                }
+
+                // send an email...
+                
+                mailer.send({
+                    to: 'info@bozuko.com',
+                    reply_to: email,
+                    subject: "New Bozuko Beta Inquiry",
+                    body: name+' <'+email+'> sent the following message:\n\n'+message
+                });
+                
+                return res.send({success:true});
+            }
+        }
+    },
+    
     '/beta/login' : {
         get : function(req,res){
             Bozuko.require('core/auth').login(req,res,'business',req.session.login_redirect||'/beta/login/redirect',function(user){
@@ -172,6 +211,8 @@ exports.routes = {
                     page_id = req.session.page_id;
                 
                 if( !user ) throw Bozuko.error('bozuko/auth');
+                
+                req.session.beta_session = true;
                 if( !page_id ){
                     
                     // wait... we should see if this dude can admin any places...
