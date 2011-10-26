@@ -18,7 +18,7 @@ TimeEngine.prototype.configure = function() {
     this.end_margin_multiplier = 0.10;
 
     // This number should work itself out to some constant
-    this.window_divisor = 10;
+    this.window_divisor = 2;
 
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
