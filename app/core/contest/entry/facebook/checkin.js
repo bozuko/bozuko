@@ -148,33 +148,16 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
     EntryMethod.prototype.validate.call(self, function(error, valid){
         if( error || !valid ) return callback( error, valid );
         
-        //console.error('FacebookCheckinMethod::validate - parent::validate.valid:'+
-        //	(valid?'true':'false')
-	//);
-		
-        /**
-         * If a user cannot check in, check to make sure that the user has at least checked in here within
-         * the configured duration for a page check in
-         */
-	//console.error('FacebookCheckinMethod::validate - self.can_checkin:'+
-        //	(self.can_checkin?'true':'false')+', self.hasCheckedIn():'+
-        //	(self.hasCheckedIn()?'true':'false')
-        //);
         if( !self.can_checkin && !self.hasCheckedIn() ){
             console.error('FacebookCheckinMethod::validate - returning false');
             return callback(null, false);
         }
-        //console.error('FacebookCheckinMethod::validate - returning true');
         return callback( null, true);
     });
 };
 
 FacebookCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
-	
-    //console.error('FacebookCheckinMethod::hasCheckedIn - self.last_checkin_here:'+
-    //	(self.last_checkin_here?'true':'false')
-    //);
 	
     if( self.last_checkin_here ){
         return true;
@@ -287,11 +270,6 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
                     var time_str = DateUtil.inAgo(time);
                     return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', time_str ) );
                 }
-				
-				//console.error('FacebookCheckinMethod::getButtonText - self.can_checkin:'+
-				//	(self.can_checkin?'true':'false')+', self.hasCheckedIn():'+
-				//	(self.hasCheckedIn()?'true':'false')
-				//);
 				
                 if( self.user && !self.can_checkin && self.hasCheckedIn() ){
                     return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/facebook/enter' )  );

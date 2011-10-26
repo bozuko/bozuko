@@ -26,6 +26,7 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
             store           :Ext.create('Ext.data.Store',{
                 fields:['value', 'text'],
                 data:[
+                    {value:'facebook/likecheckin',text:'Facebook Like and Checkin'},
                     {value:'facebook/checkin',text:'Facebook Check-in'},
                     {value:'facebook/like',text:'Facebook Like'},
                     {value:'bozuko/checkin',text:'Bozuko Check-in'},
