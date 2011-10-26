@@ -5,7 +5,8 @@ exports.init = function(){
 };
 
 exports.locals = {
-    layout : '/client/layout'
+    layout : '/client/layout',
+    device : 'desktop'
 };
 
 exports.routes = {

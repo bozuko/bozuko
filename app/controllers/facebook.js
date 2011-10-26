@@ -43,6 +43,7 @@ exports.routes = {
 
                 var id = req.param('id');
                 var ll = req.param('ll');
+                var accuracy = req.param('accuracy') || false;
                 var msg = (req.param('message') || '').replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 
                 if( msg == '') msg = null;
@@ -65,6 +66,7 @@ exports.routes = {
                         page.checkin(req.session.user, {
                             service: 'facebook', // if this is omitted, try to checkin everywhere
                             ll: ll,
+                            accuracy: accuracy,
                             message: msg
                         },function(error){
                             if( error ){

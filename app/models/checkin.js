@@ -33,8 +33,8 @@ Checkin.static('process', function(options, callback){
         if( !options.ll || (options.ll[0] == 0 && options.ll[1] == 0) ){
             return callback( Bozuko.error('checkin/no_gps') );
         }
-
-        Bozuko.service( options.service ).checkin( options, function(error, result){
+        
+        return Bozuko.service( options.service ).checkin( options, function(error, result){
             if( error ) return callback( error );
             // okay, good so far, let's create a checkin object
             var checkin = new Bozuko.models.Checkin();
