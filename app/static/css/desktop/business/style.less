@@ -724,7 +724,7 @@ fieldset{
             *display: inline;
             padding: 10px 4px 4px;
             margin-right: 4px;
-            .background_gradient(#ddd, #aaa);
+            background: #ccc;
             border: 1px solid #999;
             border-bottom-width: 0;
             vertical-align: bottom;
@@ -809,7 +809,8 @@ fieldset{
         .x-item-selected {
             .transition(background,0s);
             border-color: @brand_color;
-            background: #fff;
+            background: #fff none !important;
+            filter: none;
         }
     }
     
