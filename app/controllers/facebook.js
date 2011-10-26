@@ -40,6 +40,8 @@ exports.routes = {
             access: 'mobile',
 
             handler: function(req, res) {
+                
+                console.log(req.body);
 
                 var id = req.param('id');
                 var ll = req.param('ll');

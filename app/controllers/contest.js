@@ -387,6 +387,8 @@ exports.routes = {
                     page_id = null,
                     contest_id = req.param('id');
                     
+                console.log(req.body);
+                    
                 res.send = function(){
                     send.apply(res, arguments);
                 };
@@ -427,7 +429,7 @@ exports.routes = {
                     
                     var options = {
                         ll: parts,
-                        accuracy: accuracy || false
+                        accuracy: accuracy
                     };
                     
                     if( page_id ){
