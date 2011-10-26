@@ -19,6 +19,9 @@ html body .hd {
 html body .hd h1.logo a {
   height: 108px;
 }
+html body .hd .right-side {
+  display: none;
+}
 html body .bd {
   background: #fff none;
 }
@@ -70,15 +73,14 @@ html body .ft {
   line-height: 1.2em;
   margin: .5em 0;
 }
-.beta-main {
-  margin-right: 290px;
-  color: #656565;
+.beta-right .fixed .contact {
+  margin-top: 8px;
 }
-.beta-main h1,
-.beta-main h2,
-.beta-main h3,
-.beta-main h4,
-.beta-main h5 {
+body h1,
+body h2,
+body h3,
+body h4,
+body h5 {
   font-style: normal;
   font-family: 'Open Sans', sans-serif;
   font-weight: 700;
@@ -86,23 +88,27 @@ html body .ft {
   margin-top: 0;
   margin-bottom: 0.4em;
 }
-.beta-main h1 {
+body h1 {
   font-size: 38px;
 }
-.beta-main h3 {
+body h3 {
   font-weight: 500;
   font-size: 20px;
   line-height: 1.3em;
 }
-.beta-main h4 {
+body h4 {
   font-weight: 500;
   font-size: 17px;
   line-height: 1.4em;
 }
-.beta-main h3.deal {
+body h3.deal {
   margin-top: 1em;
   font-size: 30px;
   font-weight: 800;
+}
+.beta-main {
+  margin-right: 290px;
+  color: #656565;
 }
 .beta-main .whats-the-deal {
   width: 666px;
@@ -162,9 +168,14 @@ html body .ft {
   text-align: left;
 }
 #welcome-form {
+  width: 620px;
+  border: 4px solid #00a24f;
+  -moz-box-shadow: 0 0 20px #000000;
+  -webkit-box-shadow: 0 0 20px #000000;
+  box-shadow: 0 0 20px #000000;
   background: #fff;
   z-index: 20000;
-  padding: 20px;
+  padding: 10px 20px;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
@@ -174,6 +185,24 @@ html body .ft {
 }
 #welcome-form .close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: -13px;
+  right: -13px;
+  width: 27px;
+  height: 27px;
+  cursor: pointer;
+  background: transparent url("/images/desktop/site/beta/img_close.png") 50% 50% no-repeat;
+}
+#welcome-form .callus {
+  margin-top: 10px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+#welcome-form .number {
+  float: right;
+  color: #01a9d8;
+}
+#welcome-form .error {
+  color: red;
+  padding: 4px;
+  font-weight: bold;
 }

@@ -59,7 +59,7 @@ exports.routes = {
                 var user = req.session.user,
                     page_id = req.param('page_id');
                 
-                if( !user ){
+                if( !user || !req.session.beta_session ){
                     if( req.param('page_id') ){
                         req.session.page_id = page_id;
                     }
@@ -148,8 +148,41 @@ exports.routes = {
     },
     
     '/beta/form' : {
-        post : function(req, res){
-            
+        post : {
+            handler: function(req, res){
+                // check the form...
+                var name = req.param('name'),
+                    email = req.param('email'),
+                    message = req.param('message'),
+                    success = true
+                    ;
+
+                try{
+                    validator.check(name, 'Please enter your name').notEmpty();
+                    validator.check(email, 'Please enter a valid email address').isEmail();
+                    validator.check(message, 'Message cannot be empty').notEmpty();
+                }catch(e){
+                    res.locals.token = getToken(req.session, true);
+                    res.locals.errors = [e.message];
+
+                    res.locals.name = name;
+                    res.locals.email = email;
+                    res.locals.message = message;
+
+                    return res.send({success:false});
+                }
+
+                // send an email...
+                
+                mailer.send({
+                    to: 'info@bozuko.com',
+                    reply_to: email,
+                    subject: "New Bozuko Beta Inquiry",
+                    body: name+' <'+email+'> sent the following message:\n\n'+message
+                });
+                
+                return res.send({success:true});
+            }
         }
     },
     
@@ -178,6 +211,8 @@ exports.routes = {
                     page_id = req.session.page_id;
                 
                 if( !user ) throw Bozuko.error('bozuko/auth');
+                
+                req.session.beta_session = true;
                 if( !page_id ){
                     
                     // wait... we should see if this dude can admin any places...
