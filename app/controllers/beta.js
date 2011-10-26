@@ -40,9 +40,9 @@ exports.locals = {
         
     ],
     styles: [
-        '/css/desktop/style.css',
-        '/css/desktop/layout.css',
-        '/css/desktop/beta/style.css'
+        '/css/desktop/style.css'+Date.now(),
+        '/css/desktop/layout.css'+Date.now(),
+        '/css/desktop/beta/style.css?'+Date.now()
     ]
 };
 

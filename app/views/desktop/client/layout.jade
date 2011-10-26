@@ -1,0 +1,19 @@
+!!!
+html
+  head
+    title Bozuko Client
+    
+    meta(name="viewport",content="width=device-width, initial-scale=1, maximum-scale=1")
+    
+    script(src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js")
+    script(src="/js/client/test.js")
+    style(type="text/css")
+      body{ background: #000044; padding: 0; margin: 0;}
+      .scratch-bg{ background: #ccc; position: relative;}
+      .prize{ width: 92px; height: 115px; position: absolute; z-index: 1; text-align: center; font-size: 10px; font-family: Tahoma; }
+      .prize .number{ padding: 20px 0 15px; font-size: 16px; }
+      .prize .name { font-size: 11px; padding: 0 12px; }
+      .target { position: absolute; width: 92px; height: 115px; z-index: 3; }
+      canvas{ position: absolute; top: 0; left: 0; z-index: 2;}
+      
+  body
