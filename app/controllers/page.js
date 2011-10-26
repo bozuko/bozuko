@@ -320,7 +320,7 @@ exports.routes = {
                             if( page.is_location ){
                                 dbug.push({
                                     page_name: page.name,
-                                    distance: Geo.distance(page.coords, options.ll, 'mi')
+                                    distance: page.distance
                                 });
                             }
                         });
