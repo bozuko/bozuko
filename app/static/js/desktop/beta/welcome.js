@@ -14,6 +14,7 @@
  * Copyright (c) 2009 Yair Even-Or
  * vsync.design@gmail.com
  */
+
 (function($){
 	$.fn.stickyfloat = function(options, lockBottom){
 		var $obj 				= this,
@@ -69,7 +70,6 @@
 				$obj.delay(opts.delay).animate({ top: newpos }, opts.duration , opts.easing );
 			}
 		}
-		
 		$(window).scroll(checkScroll);
 	};
 	
@@ -77,6 +77,7 @@
 })(jQuery);
 
 jQuery(function($){
+	
     $('.fixed').stickyfloat({lockBottom: true, duration: 400, offsetY: 70});
 	
 	$('#welcome-form-container').appendTo($('body'));
@@ -143,7 +144,6 @@ jQuery(function($){
 		
 		submit.val('Sending...');
 		submit.attr('disabled', true);
-		console.log(form.serialize());
 		$.post('/beta/form', form.serialize(), function(response){
 			var tmp = $('<h3 style="font-weight:bold; color: green; ">Your message has been sent!</h3>').insertBefore(submit);
 			submit.hide();
