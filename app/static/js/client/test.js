@@ -167,6 +167,25 @@ jQuery(function($){
         "https://github.com/bozuko/iphone/raw/master/Bozuko/images/scratch/scratchMask/scratchMask_0024.png"
     );
     
+    var buffer = document.createElement('canvas'),
+        mask = new Image();
+    
+    mask.onload = function(){
+        buffer.width = mask.width;
+        buffer.height = mask.height;
+        var ctx = buffer.getContext('2d');
+        ctx.drawImage(mask, 0, 0);
+        var p = document.createElement('p');
+        
+        document.body.appendChild(buffer);
+        document.body.appendChild(p);
+        ctx.save();
+        
+        var imgData = ctx.getImageData(0,0,mask.width,mask.height);
+        p.innerHTML = buffer.toDataURL('image/png');
+    };
+    mask.src = '/images/tmp/scratchMask_0024.png';
+    
     $('<a href="javascript:;" />').html('Reset').click(function(e){
         scratch.reset();
     }).appendTo($('body'));
