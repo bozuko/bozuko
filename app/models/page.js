@@ -390,6 +390,14 @@ Page.method('checkin', function(user, options, callback) {
         if( checkin && checkinError ){
             return callback( checkinError );
         }
+        
+        Bozuko.publish('page/checkin', {
+            page_name: self.name,
+            user_name: user.name,
+            accuracy: options.accuracy,
+            ll: options.ll,
+            distance: Geo.distance( options.ll, self.coords, 'mi' )
+        });
 
         options.user = user;
         if( self.service('facebook') ){
@@ -493,11 +501,11 @@ Page.static('loadPagesContests', function(pages, user, callback){
                 }
 
                 // load contest game state
-                contest.loadGameState(user, function(error){
+                return contest.loadGameState(user, function(error){
                     if (error) return cb(error);
-                    contest.loadEntryMethod(user, function(error){
+                    return contest.loadEntryMethod(user, function(error){
                         page.contests.push(contest);
-                        cb(error);
+                        return cb(error);
                     });
                 });
             },
@@ -534,17 +542,17 @@ Page.static('loadPagesContests', function(pages, user, callback){
                         // There shouldn't be more than a handful of entries to search
 
                         var page, contest;
-                        async.forEach(
+                        return async.forEach(
                             Object.keys(contest_ids),
                             function(cid, cb) {
                                 contest = exhausted_contests[String(cid)];
                                 page = page_map[contest.page_id+''];
                                 contest.loadGameState(user, function(error){
                                     if (error) return cb(error);
-                                    contest.loadEntryMethod(user, function(error){
+                                    return contest.loadEntryMethod(user, function(error){
                                         if (error) return cb(error);
                                         page.contests.push(contest);
-                                        cb(null);
+                                        return cb(null);
                                     });
                                 });
                             },
@@ -571,7 +579,7 @@ Page.static('geoNear', function(opts, callback) {
         if (!doc.ok) return callback(doc);
 
         var pages = [];
-        async.forEach(doc.results, function(page, cb) {
+        return async.forEach(doc.results, function(page, cb) {
             var model = new Bozuko.models.Page();
             model.init(page.obj, function(err) {
                 if (err) return cb(err);
@@ -622,7 +630,7 @@ Page.static('getFeaturedPages', function(num, ll, callback){
             if( error ) return callback( error );
 
             // Find featured places within max distance of ll
-            Bozuko.models.Page.geoNear({
+            return Bozuko.models.Page.geoNear({
                 near: ll, 
                 maxDistance: distance, 
                 spherical:true,

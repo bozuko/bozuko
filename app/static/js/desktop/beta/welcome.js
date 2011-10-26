@@ -14,6 +14,7 @@
  * Copyright (c) 2009 Yair Even-Or
  * vsync.design@gmail.com
  */
+
 (function($){
 	$.fn.stickyfloat = function(options, lockBottom){
 		var $obj 				= this,
@@ -50,6 +51,7 @@
 		function initFloat(){
 			$obj.stop(); // stop all calculations on scroll event
 			
+			
 			pastStartOffset			= doc.scrollTop() > opts.startOffset;	// check if the window was scrolled down more than the start offset declared.
 			objFartherThanTopPos	= $obj.offset().top > startOffset;	// check if the object is at it's top position (starting point)
 			objBiggerThanWindow 	= $obj.outerHeight() < $(window).height();	// if the window size is smaller than the Obj size, then do not animate.
@@ -69,7 +71,6 @@
 				$obj.delay(opts.delay).animate({ top: newpos }, opts.duration , opts.easing );
 			}
 		}
-		
 		$(window).scroll(checkScroll);
 	};
 	
@@ -77,6 +78,7 @@
 })(jQuery);
 
 jQuery(function($){
+	
     $('.fixed').stickyfloat({lockBottom: true, duration: 400, offsetY: 70});
 	
 	$('#welcome-form-container').appendTo($('body'));
@@ -143,7 +145,6 @@ jQuery(function($){
 		
 		submit.val('Sending...');
 		submit.attr('disabled', true);
-		console.log(form.serialize());
 		$.post('/beta/form', form.serialize(), function(response){
 			var tmp = $('<h3 style="font-weight:bold; color: green; ">Your message has been sent!</h3>').insertBefore(submit);
 			submit.hide();

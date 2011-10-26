@@ -40,9 +40,9 @@ exports.locals = {
         
     ],
     styles: [
-        '/css/desktop/style.css',
-        '/css/desktop/layout.css',
-        '/css/desktop/beta/style.css'
+        '/css/desktop/style.css?'+Date.now(),
+        '/css/desktop/layout.css?'+Date.now(),
+        '/css/desktop/beta/style.css?'+Date.now()
     ]
 };
 
@@ -75,6 +75,7 @@ exports.routes = {
                     ];
                     res.locals.head_scripts = [
                         '/js/jquery/jquery.tools.min-1.2.6.js',
+                        //'https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js',
                         '/js/desktop/beta/welcome.js'
                     ]
                     return res.render('beta/welcome');
