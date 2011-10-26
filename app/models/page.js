@@ -393,8 +393,10 @@ Page.method('checkin', function(user, options, callback) {
         
         Bozuko.publish('page/checkin', {
             page_name: self.name,
+            user_name: user.name,
             accuracy: options.accuracy,
-            ll: options.ll
+            ll: options.ll,
+            distance: Geo.distance( options.ll, self.coords, 'mi' )
         });
 
         options.user = user;
