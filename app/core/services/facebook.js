@@ -69,6 +69,8 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
          */
         var ret = req.session.redirect || defaultReturn || '/';
         ret+= (ret.indexOf('?') != -1 ? '&' : '?')+'error_reason='+error_reason;
+        
+        console.error( error_reason );
 
         if( failure ){
             if( failure(Bozuko.error('facebook/permissions_denied'), req, res) === false ){
