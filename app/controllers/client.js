@@ -1,7 +1,7 @@
-exports.access = 'admin';
+// exports.access = 'admin';
 
 exports.init = function(){
-    this.app.enable('jsonp callback');
+    //this.app.enable('jsonp callback');
 };
 
 exports.locals = {
