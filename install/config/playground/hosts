@@ -2,11 +2,8 @@
 
 127.0.0.1             localhost.localdomain   localhost
 192.168.174.86        playground.bozuko.com   playground
-192.168.170.179       load.bozuko.com         load
-192.168.175.164       pgdb1.bozuko.com        pgdb1
-192.168.175.163       pgdb2.bozuko.com        pgdb2
-192.168.152.60        pgdb3.bozuko.com        pgdb3
-192.168.175.53        pgdb4.bozuko.com        pgdb4
+192.168.189.232       pgdb1.bozuko.com        pgdb1
+192.168.189.233       pgdb2.bozuko.com        pgdb2
 
 
 # The following lines are desirable for IPv6 capable hosts
