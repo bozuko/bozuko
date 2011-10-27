@@ -52,6 +52,7 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             allowBlank          :false,
             editable            :false,
             forceSelection      :true,
+            value               :'order',
             displayField        :'text',
             valueField          :'value',
             queryMode           :'local',
