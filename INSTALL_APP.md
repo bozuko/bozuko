@@ -68,7 +68,7 @@ First you need to create a .ssh directory for the user since he hasn't logged in
 
     SSH_DIR=~api/.ssh 
     mkdir $SSH_DIR
-    cp ~/bozuko/install/config/api/authorized_keys $SSH_DIR/authorized_keys
+    cp ~api/bozuko/install/config/api/authorized_keys $SSH_DIR/authorized_keys
     chown -hR api:api $SSH_DIR
 
 Edit **/etc/ssh/sshd_config** for the following operations.
