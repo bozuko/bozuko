@@ -388,6 +388,7 @@ exports.routes = {
                     contest_id = req.param('id');
                     
                 console.log(req.body);
+                console.log(req.url.query);
                     
                 res.send = function(){
                     send.apply(res, arguments);
