@@ -23,6 +23,7 @@ var safe = {w:2, wtimeout:5000};
 
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
+    page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
     engine_type             :{type:String, default:'order'},
     engine_options          :{},
@@ -75,7 +76,7 @@ Contest.virtual('state')
     });
 
 Contest.method('getEntryConfig', function() {
-    return this.entry_config[0];		   
+    return this.entry_config[0];
 });
 
 Contest.method('validate_', function(callback) {
@@ -144,17 +145,17 @@ Contest.method('validatePrizes', function(isConsolation, callback) {
             if (prize.total != prize.barcodes.length) {
                 status.errors.push(Bozuko.error('validate/contest/barcodes_length', prize.name));
             }
-	    
+
 	    barcode_prizes.push(i);
         }
     }
 
     if (!this.active || !barcode_prizes.length) {
-	return callback(null, status);	
+	return callback(null, status);
     }
 
     // Check S3 to see if all barcodes are there
-    async.forEach(barcode_prizes, function(index, cb) {  
+    async.forEach(barcode_prizes, function(index, cb) {
         var prize = self.prizes[index];
         var ct = 0;
         async.forEachSeries(prize.barcodes, function(barcode, cb) {
@@ -168,7 +169,7 @@ Contest.method('validatePrizes', function(isConsolation, callback) {
 	    cb(null);
         });
     }, function(err) {
-	return callback(null, status);	
+	return callback(null, status);
     });
 
 });
@@ -211,7 +212,7 @@ Contest.method('validateResults', function(callback) {
 
 
 Contest.method('getOfficialRules', function(){
-    
+
     var rules = Content.get('app/rules.txt');
     var replacements = {
 	start_date : dateFormat(this.start, 'mmmm dd, yyyy'),
@@ -271,11 +272,11 @@ Contest.method('getOfficialRules', function(){
     rules = rules.replace(/\{\{([a-zA-Z0-9_-]+)\}\}/g, function(match, key){
 	return replacements[key] || '';
     });
-	
+
     if( this.rules ){
 	rules += "\n\n----------\n\n"+this.rules;
     }
-	
+
     return rules;
 });
 
@@ -322,7 +323,7 @@ Contest.method('generateResults', function(callback){
 
 Contest.method('createAndSaveBarcodes', function(prize, cb) {
     var self = this;
-    
+
     var i = 0;
     async.whilst(
         function() { return i < prize.prize.total; },
@@ -589,7 +590,7 @@ Contest.method('loadGameState', function(user, callback){
 
         function load_state(cb){
             // Contest is over for this user
-            if (state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
+            if (self.engine_type === 'order' && state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
                 state.game_over = true;
                 state.next_enter_time = 'Never';
                 state.button_text = 'Game Over';
@@ -671,8 +672,8 @@ Contest.method('play', function(memo, callback){
     var engine = this.getEngine();
     async.reduce(
         ['spendEntryToken', engine.play, 'processResult',
-         'savePrizes', 'savePlay'], 
-        memo, 
+         'savePrizes', 'savePlay'],
+        memo,
         function(memo, fn, cb) {
             if (typeof fn === 'string') return self[fn](memo, cb);
             return engine.play(memo, cb);
@@ -731,7 +732,7 @@ Contest.method('processResult', function(memo, callback) {
 
 Contest.method('savePrizes', function(memo, callback) {
     var self = this;
-   
+
     return this.getUserInfo(memo.user._id, function(err, info) {
         if (err) return callback(err);
 
