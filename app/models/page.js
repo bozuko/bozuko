@@ -173,14 +173,13 @@ Page.method('getActiveContests', function(user, callback){
 
     var selector = {
         active: true,
-        page_id: this._id,
+	$or: [{page_id: this._id}, {page_ids: this._id}],
         start: {$lt: now},
         end: {$gt: now}
     };
 
     Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, {sort: {start: -1}}, function(err, contests) {
         if (err) return callback(err);
-
 
         var exhausted_contests = {};
         var exhausted_contest_ids = [];
@@ -238,31 +237,10 @@ Page.method('getActiveContests', function(user, callback){
     });
 });
 
-Page.method('getUserGames', function(user, callback){
-    this.getActiveContests( user, function(error, contests){
-        if( error ) return callback(error);
-        var games = [];
-        return async.forEach( contests,
-
-            function iterator(contest, cb){
-                contest.loadTransferObject(user, function(error){
-                    games.push(contest.getGame());
-                    cb(null);
-                });
-            },
-
-            function ret(error){
-                return callback( error, games );
-            }
-        );
-
-    });
-});
-
 Page.method('canUserCheckin', function(user, callback){
 
     var self = this;
-    
+
     // During load tests always allow the checkin
     if (Bozuko.config.test_mode && Bozuko.env() == 'development') return callback(null, true);
 
@@ -281,54 +259,54 @@ Page.method('canUserCheckin', function(user, callback){
             // lets look at the last checkin
             if( error ) return callback( error );
             if( !checkins || !checkins.length ) return callback( null, true );
-            
+
             for( var i=0; i<checkins.length; i++){
-                
+
                 var checkin = checkins[i];
-                
+
                 var samePage = String(checkin.page_id) === String(self._id);
-                
+
                 if( samePage && +checkin.timestamp > page_thresh ){
                     return self.getNextCheckinTime( user, function(error, next_time){
                         if( error ) return callback(error);
                         return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_page', {next_time: next_time}) );
                     });
                 }
-                
+
                 if( +checkin.timestamp > user_thresh ){
                     return self.getNextCheckinTime( user, function(error, next_time){
                         if( error ) return callback(error);
                         return callback( null, false, checkin, Bozuko.error('checkin/too_many_attempts_per_user', {next_time: next_time}) );
                     });
                 }
-                
+
                 // okay, distance over time check
                 // if its the samePage, they haven't gone anywhere.
                 // or if the travel check reset duration has passed, forget it.
                 if( samePage || +checkin.timestamp < travel_thresh ){
                     return callback( null, true );
                 }
-                
+
                 // get time they could have started moving...
                 var start = +checkin.timestamp +Bozuko.cfg('checkin.duration.user', DateUtil.MINUTE * 15 );
-                    
-                
+
+
                 var hours = (Date.now()-start) / DateUtil.HOUR,
                     // allowed distance in miles
                     allowed_distance = hours * Bozuko.cfg('checkin.travel.speed', 60),
                     // total distance between places
                     distance = Geo.distance(self.coords, checkin.coords, 'mi');
                     ;
-                
+
                 if( distance > allowed_distance ){
                     // how much longer?
                     var time = (distance / Bozuko.cfg('checkin.travel.speed', 60)) * DateUtil.HOUR;
                     console.error('User can check in here '+DateUtil.inAgo( new Date(+start+time)) );
-                    
+
                     return callback( null, false, checkin, Bozuko.error('checkin/too_far_too_soon') );
                 }
             }
-            
+
             return callback( null, true );
         }
     );
@@ -341,7 +319,7 @@ Page.method('getNextCheckinTime', function(user, callback){
 
     var page_last_allowed_checkin = new Date();
     var user_last_allowed_checkin = new Date();
-    
+
     page_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.page);
     user_last_allowed_checkin.setTime(now.getTime()-Bozuko.config.checkin.duration.user);
 
@@ -361,9 +339,9 @@ Page.method('getNextCheckinTime', function(user, callback){
             // lets look at the last checkin
             if( error ) return callback( error );
             if( !checkins.length ) return callback(null, new Date() );
-            
+
             var nextTime = Date.now();
-            
+
             checkins.forEach(function(checkin){
                 var time;
                 if( String(checkin.page_id) != String(self._id) ){
@@ -460,114 +438,37 @@ Page.static('createFromServiceObject', function(place, callback){
 });
 
 Page.static('loadPagesContests', function(pages, user, callback){
-    var prof = new Profiler('/models/page/loadPagesContests/createPageMap');
-    var page_map = {}, now = new Date();
-
+    var now = new Date();
     var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
     var user_id = user ? user._id : false;
 
-    var page_ids = [];
-    pages.forEach(function(page){
-        // page_ids can't be strings, so we can't just use Object.keys on the map
-        page_ids.push(page._id);
-        page_map[page._id+''] = page;
-    });
-    prof.stop();
-
-    var selector = {
-        active: true,
-        page_id: {$in: page_ids},
-        start: {$lt: now},
-        end: {$gt: now}
-    };
-
-    Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, function( error, contests ){
-
-        var exhausted_contests = {};
-        var exhausted_contest_ids = [];
-
-        // attach active contests to pages
-        return async.forEach(contests,
-            function (contest, cb){
-                var page = page_map[contest.page_id+''];
-                if( !page.contests ){
-                    page.contests = [];
-                }
-
-                // Is contest exhausted?
-                if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
-                    exhausted_contests[String(contest._id)] = contest;
-                    exhausted_contest_ids.push(contest._id);
-                    return cb(null);
-                }
-
-                // load contest game state
-                return contest.loadGameState(user, function(error){
-                    if (error) return cb(error);
-                    return contest.loadEntryMethod(user, function(error){
-                        page.contests.push(contest);
-                        return cb(error);
-                    });
-                });
-            },
-            function (err){
-                if (err) return callback(err);
-                if (!user_id) return callback(null, pages);
-
-                // Find user entries that still have tokens for exhausted contests.
-                // That means the contest is active for this user, but not users without tokens.
-                // This is really only needed at the end of contests.
-                if (exhausted_contest_ids.length) return Bozuko.models.Entry.nativeFind(
-                    {
-                        user_id: user_id,
-                        contest_id: {$in: exhausted_contest_ids},
-                        timestamp : {$gt: min_expiry_date},
-                        tokens : {$gt: 0}
-                    }, {contest_id: 1},
-                    function(err, entries) {
-                        if (err) return callback(err);
-                        if (!entries) return callback(null, pages);
-
-                        var contest_ids = {};
-
-                        var prof = new Profiler('/models/page/loadPagesContests/exhuasted_entries');
-                        for (var i = 0; i < entries.length; i++) {
-                            var cid = entries[i].contest_id;
-                            if (!contest_ids[cid]) {
-                                contest_ids[cid] = true;
-                            }
-                        }
-                        prof.stop();
-
-                        // Add any exhausted contests with valid entries for this user to the appropriate page
-                        // There shouldn't be more than a handful of entries to search
-
-                        var page, contest;
-                        return async.forEach(
-                            Object.keys(contest_ids),
-                            function(cid, cb) {
-                                contest = exhausted_contests[String(cid)];
-                                page = page_map[contest.page_id+''];
-                                contest.loadGameState(user, function(error){
-                                    if (error) return cb(error);
-                                    return contest.loadEntryMethod(user, function(error){
-                                        if (error) return cb(error);
-                                        page.contests.push(contest);
-                                        return cb(null);
-                                    });
-                                });
-                            },
-                            function(err) {
-                                if (err) return callback(err);
-                                return callback(null, pages);
-                            }
-                        );
-                    }
-                );
-
-                return callback(null, pages);
+    async.forEach(pages, function(page, cb) {
+	Bozuko.models.Contest.find({
+	    active: true,
+	    $or: [{page_id: page._id}, {page_ids: page._id}],
+	    start: {$lt: now},
+            end: {$gt: now}
+	}, {results: 0, plays: 0},
+	function(err, contests) {
+	    if( !page.contests ){
+		page.contests = [];
             }
-        );
+	    // attach active contests to page
+            return async.forEach(contests, function (contest, cb) {
+                // load contest game state
+                return contest.loadGameState(user, function(error, state){
+                    if (error) return cb(error);
+		    if (!state.game_over) page.contests.push(contest);
+                    return cb(null);
+                });
+            }, function (err){
+		if (err) return cb(err);
+                return cb(null);
+            });
+	});
+    }, function(err) {
+	if (err) return callback(err);
+	return callback(null, pages);
     });
 });
 
@@ -590,7 +491,7 @@ Page.static('geoNear', function(opts, callback) {
             });
         }, function(err) {
             callback(null, pages);
-        });        
+        });
     });
 });
 
@@ -626,14 +527,14 @@ Page.static('getFeaturedPages', function(num, ll, callback){
              {'featured.is_featured':true, 'featured.max_distance': -1},
              {'featured': true}
          ]},
-        {results: 0, plays: 0}, 
+        {results: 0, plays: 0},
         function(error, nationalPages){
             if( error ) return callback( error );
 
             // Find featured places within max distance of ll
             return Bozuko.models.Page.geoNear({
-                near: ll, 
-                maxDistance: distance, 
+                near: ll,
+                maxDistance: distance,
                 spherical:true,
                 query: {'featured.is_featured':true}
             }, function(err, pages) {
@@ -643,7 +544,7 @@ Page.static('getFeaturedPages', function(num, ll, callback){
                 callback(err, selected);
             });
         }
-    );    
+    );
 });
 
 /**
@@ -734,7 +635,7 @@ Page.static('search', function(options, callback){
             // serviceSearch = false;
         }
     }
-    
+
     // utility functions
     function prepare_pages(pages, user, fn){
         var prof = new Profiler('/models/page/search/prepare_pages');
@@ -744,7 +645,7 @@ Page.static('search', function(options, callback){
             if( options.user ){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
-            
+
             if( page._doc ){
                 page.registered = true;
             }
@@ -768,7 +669,7 @@ Page.static('search', function(options, callback){
                 }
             });
         }
-        
+
         if( !options.favorites && options.user && options.user.manages && options.user.manages.length ){
             var selector = {
                 name: 'Admin Demo',
@@ -791,7 +692,7 @@ Page.static('search', function(options, callback){
 
         if( error ) return callback(error);
         var featured_ids = [];
-        
+
 
         if( featured.length ){
             featured.forEach(function(feature){ featured_ids.push( feature._id ); });
@@ -799,17 +700,17 @@ Page.static('search', function(options, callback){
                 $nin: featured_ids
             };
         }
-        
+
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
 
             if( error ) return callback(error);
-            
+
             pages = featured.concat(pages);
-            
+
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
-                
-                
+
+
                 var page_ids = [], fb_ids=[];
                 prepare_pages(pages, options.user, function(page){
                     var fb;
@@ -834,7 +735,7 @@ Page.static('search', function(options, callback){
                 var service = options.service || Bozuko.config.defaultService;
 
                 return Bozuko.service(service).search(options, function(error, _results){
-                    
+
                     if( error ){
 
                         console.error( error );
@@ -858,7 +759,7 @@ Page.static('search', function(options, callback){
                         _id: {$nin: page_ids}
                     }, function(error, _pages){
                         if( error ) return callback( error );
-                        
+
                         prepare_pages(_pages, options.user, function(page){
                             if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                             results.splice( results.indexOf(map[page.service(service).sid]), 1 );
@@ -875,12 +776,12 @@ Page.static('search', function(options, callback){
                         }
 
                         return Bozuko.models.Page.loadPagesContests(_pages, options.user, function(error, _pages){
-                            
+
                             if( error ) return callback( error );
 
                             var prof = new Profiler('/models/page/search/loadPagesContests');
                             pages = pages.concat(_pages);
-                            
+
                             pages.sort( function(a,b){
                                 if( a.featured && !b.featured ) return -1;
                                 if( b.featured && !a.featured ) return 1;
@@ -891,7 +792,7 @@ Page.static('search', function(options, callback){
                             pages = pages.concat(results);
 
                             prof.stop();
-                            
+
                             return return_pages(pages);
                         });
                     });
