@@ -279,18 +279,35 @@ FacebookService.prototype.checkin = function(options, callback){
 
         if( !result || !result.location ) return callback( Bozuko.error('checkin/non_location') );
         coords = [result.location.longitude, result.location.latitude];
-
-	if (Bozuko.env() === 'development' || Bozuko.env() === 'playground') {
-	    console.log("devorplayground****");
-	    var radius = options.accuracy*3.3 || Bozuko.cfg('checkin.distance', 600);
-	    radius = radius / 5280;
-	} else {
-	    console.log("someting else = "+Bozuko.env());
-	    var radius = Bozuko.cfg('checkin.distance', 600) / 5280;
-	}
         var d = Geo.distance( options.ll, coords, 'mi' );
-	console.log('accuracy = '+options.accuracy);
-	console.log('typeof accuracy = '+typeof(options.accuracy));
+
+	var accuracy = options.accuracy*1.20; // add a fudge factor of 20% to reduce false positives
+	var radius = accuracy*3.3 || Bozuko.cfg('checkin.distance', 600);
+	radius = radius / 5280;
+	if (radius > 1) radius = 1;
+	if (Bozuko.env() !== 'development' && Bozuko.env() !== 'playground') {
+	    if (Bozuko.env() === 'api') {
+		// Would the user be rejected by our accuracy algorithm? If so log it for analytics.
+		if (radius && d > radius) {
+		    var badCheckin = new Bozuko.models.BadCheckin({
+			user_id: options.user._id,
+			fb_place_id: options.place_id,
+			place: result.name,
+			timestamp: new Date(),
+			ll: options.ll,
+			distance: d,
+			accuracy: accuracy,
+			radius: radius
+		    });
+		    // no need for this to be in the performance path
+		    badCheckin.save(function(err) {
+			if (err) console.error('Error saving badCheckin: '+err);
+		    });
+		}
+	    }
+	    radius = Bozuko.cfg('checkin.distance', 600) / 5280;
+	}
+	console.log('accuracy = '+accuracy);
 	console.log("d = "+d);
 	console.log("radius = "+radius);
 
