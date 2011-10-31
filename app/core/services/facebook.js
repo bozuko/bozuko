@@ -299,6 +299,7 @@ FacebookService.prototype.checkin = function(options, callback){
 			accuracy: accuracy,
 			radius: radius
 		    });
+		    Bozuko.publish('checkin/bad', {place: result.name, user: user, accuracy: accuracy});
 		    // no need for this to be in the performance path
 		    badCheckin.save(function(err) {
 			if (err) console.error('Error saving badCheckin: '+err);
