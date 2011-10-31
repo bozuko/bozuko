@@ -543,18 +543,21 @@ exports.routes = {
                                             
                                             var user = user_map[String(prize.user_id)],
                                                 filtered_user = filter(user,'_id','name','image','email');
-                                                
-                                            filtered_user.facebook_link = user.service('facebook').data.link;
-                                            filtered_user.friend_count = user.service('facebook').internal.friend_count;
                                             
-                                            // create a winner object
-                                            winners.push({
-                                                _id: prize.id,
-                                                prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','code','redeemed','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
-                                                user: filtered_user,
-                                                page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
-                                                contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
-                                            });
+                                            
+                                            if( user ){
+                                                filtered_user.facebook_link = user.service('facebook').data.link;
+                                                filtered_user.friend_count = user.service('facebook').internal.friend_count;
+                                                
+                                                // create a winner object
+                                                winners.push({
+                                                    _id: prize.id,
+                                                    prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','code','redeemed','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
+                                                    user: filtered_user,
+                                                    page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
+                                                    contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')
+                                                });
+                                            }
                                         });
                                         return res.send({items:winners, total: total, last_updated: lastUpdated?filter(lastUpdated,'_id','last_updated'):null});
                                     });

@@ -7,7 +7,7 @@ jQuery(function($){
     var Scratch = function(ticket){
         
         this.background = document.createElement('div');
-        this.background.className = 'scratch-bg';
+        this.background.className = 'scratch-ticket';
         document.body.appendChild( this.background );
         
         this.background.style.width = this.width+'px';
