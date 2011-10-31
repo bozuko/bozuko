@@ -281,10 +281,15 @@ FacebookService.prototype.checkin = function(options, callback){
         coords = [result.location.longitude, result.location.latitude];
 
 	if (options.accuracy) console.log('accuracy = '+options.accuracy);
-	var radius = options.accuracy*3 || 600;
+	if (Bozuko.env === 'development' || Bozuko.env === 'playground') {
+	    var radius = options.accuracy*3 || Bozuko.cfg('checkin.distance', 600);
+	    radius = radius / 5280;
+	} else {
+	    var radius = Bozuko.cfg('checkin.distance', 600) / 5280;
+	}
         var d = Geo.distance( options.ll, coords, 'mi' );
 
-        if( d > Bozuko.cfg('checkin.distance', radius) / 5280 ){
+        if( d > radius ){
             // too far...
             console.error(
                 "\n\n********Too Far Away Error*********\n"+
