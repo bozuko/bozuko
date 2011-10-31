@@ -40,7 +40,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     }
 
     var protocol = (req.app.key?'https:':'http:');
-    
+
     var params = {
         'client_id' : Bozuko.config.facebook.app.id,
         'scope' : Bozuko.config.facebook.perms[scope],
@@ -48,7 +48,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                          Bozuko.config.server.port+url.pathname+
                          ((url.search||'').replace(/[&\?]code=.*$/i, ''))
     };
-    
+
     if( req.param('display')){
         params.display = req.param('display');
         req.session.display = req.param('display');
@@ -69,7 +69,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
          */
         var ret = req.session.redirect || defaultReturn || '/';
         ret+= (ret.indexOf('?') != -1 ? '&' : '?')+'error_reason='+error_reason;
-        
+
         console.error( error_reason );
 
         if( failure ){
@@ -86,12 +86,12 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
-        
+
         return http.request({
             url: 'https://graph.facebook.com/oauth/access_token',
             params: params},
             function(err, response){
-                
+
                 if (err) {
                     if( failure && failure(err, req, res) === false){
                         return false;
@@ -133,7 +133,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
                                 req.session.userJustLoggedIn = true;
                                 req.session.user = u;
-                                
+
                                 if( success ){
                                     if( success(u,req,res) === false ){
                                         return null;
@@ -270,19 +270,21 @@ FacebookService.prototype.checkin = function(options, callback){
     if( Bozuko.config.test_mode ){
         return callback(null, {id:134574646614657});
     }
-    
+
     return facebook.graph('/'+options.place_id,{
         user: options.user,
         params: {fields:'location,name'}
     },function(error, result){
         if( error ) return callback( error );
-        
+
         if( !result || !result.location ) return callback( Bozuko.error('checkin/non_location') );
         coords = [result.location.longitude, result.location.latitude];
-        
+
+	if (options.accuracy) console.log('accuracy = '+options.accuracy);
+	var radius = options.accuracy*3 || 600;
         var d = Geo.distance( options.ll, coords, 'mi' );
 
-        if( d > Bozuko.cfg('checkin.distance', 600) / 5280 ){
+        if( d > Bozuko.cfg('checkin.distance', radius) / 5280 ){
             // too far...
             console.error(
                 "\n\n********Too Far Away Error*********\n"+
@@ -309,9 +311,9 @@ FacebookService.prototype.checkin = function(options, callback){
             }
             return callback(null, result);
         });
-        
+
     });
-    
+
 };
 
 
