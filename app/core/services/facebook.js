@@ -280,14 +280,19 @@ FacebookService.prototype.checkin = function(options, callback){
         if( !result || !result.location ) return callback( Bozuko.error('checkin/non_location') );
         coords = [result.location.longitude, result.location.latitude];
 
-	if (options.accuracy) console.log('accuracy = '+options.accuracy);
-	if (Bozuko.env === 'development' || Bozuko.env === 'playground') {
+	if (Bozuko.env() === 'development' || Bozuko.env() === 'playground') {
+	    console.log("devorplayground****");
 	    var radius = options.accuracy*3 || Bozuko.cfg('checkin.distance', 600);
 	    radius = radius / 5280;
 	} else {
+	    console.log("someting else = "+Bozuko.env());
 	    var radius = Bozuko.cfg('checkin.distance', 600) / 5280;
 	}
         var d = Geo.distance( options.ll, coords, 'mi' );
+	console.log('accuracy = '+options.accuracy);
+	console.log('typeof accuracy = '+typeof(options.accuracy));
+	console.log("d = "+d);
+	console.log("radius = "+radius);
 
         if( d > radius ){
             // too far...
