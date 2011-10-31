@@ -282,7 +282,7 @@ FacebookService.prototype.checkin = function(options, callback){
 
 	if (Bozuko.env() === 'development' || Bozuko.env() === 'playground') {
 	    console.log("devorplayground****");
-	    var radius = options.accuracy*3 || Bozuko.cfg('checkin.distance', 600);
+	    var radius = options.accuracy*3.3 || Bozuko.cfg('checkin.distance', 600);
 	    radius = radius / 5280;
 	} else {
 	    console.log("someting else = "+Bozuko.env());
