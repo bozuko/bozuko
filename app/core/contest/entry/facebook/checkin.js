@@ -97,7 +97,7 @@ FacebookCheckinMethod.prototype.getHtmlDescription = function(){
         duration = DateUtil.duration(self.config.duration, true),
         description = "Check in on Facebook and get ";
         description+= self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration+'.';
-        
+
     if( self.config.options.enable_like ){
         var play = (self.config.tokens > 1 ? "plays" : "play" );
         description+= "\nGet "+self.config.tokens+" bonus "+play+" if you Like us on Facebook!";
@@ -147,7 +147,7 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
     var self = this;
     EntryMethod.prototype.validate.call(self, function(error, valid){
         if( error || !valid ) return callback( error, valid );
-        
+
         if( !self.can_checkin && !self.hasCheckedIn() ){
             console.error('FacebookCheckinMethod::validate - returning false');
             return callback(null, false);
@@ -158,7 +158,7 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
 
 FacebookCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
-	
+
     if( self.last_checkin_here ){
         return true;
     }
@@ -179,9 +179,9 @@ FacebookCheckinMethod.prototype.process = function( callback ){
     return self.validate( function(error, valid){
         if( error ) return callback( error );
         if( !valid ){
-                        
+
             if(!self.can_checkin && !self.hasCheckedIn()){
-                
+
                 return callback( self.can_checkin_error );
             }
 
@@ -194,13 +194,14 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                 contest: self.contest,
                 service: 'facebook',
                 ll: self.options.ll,
+		accuracy: self.options.accuracy,
                 message: self.options.message
             }, function(error){
                 if( error ) return callback( error );
 
                 return EntryMethod.prototype.process.call(self, function(err, entry) {
                     if (err) return callback(err);
-                                                              
+
                     var share = new Bozuko.models.Share({
                         service         :'facebook',
                         type            :'checkin',
@@ -227,28 +228,28 @@ FacebookCheckinMethod.prototype.process = function( callback ){
 
 FacebookCheckinMethod.prototype._load = function( callback ){
     var self = this;
-   
+
     if( !self.user ){
         self.can_checkin = true;
         return callback( null );
     }
-    
+
     return self.page.canUserCheckin( self.user, function(error, flag, checkin, error2){
         if( error ) return callback( error );
         self.can_checkin = flag;
 		self.can_checkin_error = error2;
-        
+
         var date = new Date(
             Date.now() - Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4)
         );
-                
+
         var selector = {
             service:'facebook',
             user_id: self.user._id,
             page_id: self.page._id,
             timestamp: {$gt: date}
         };
-                
+
         return Bozuko.models.Checkin.findOne(selector, function(error, checkin){
             if( error ) return callback( error );
             self.last_checkin_here = checkin;
@@ -270,7 +271,7 @@ FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
                     var time_str = DateUtil.inAgo(time);
                     return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', time_str ) );
                 }
-				
+
                 if( self.user && !self.can_checkin && self.hasCheckedIn() ){
                     return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/facebook/enter' )  );
                 }
