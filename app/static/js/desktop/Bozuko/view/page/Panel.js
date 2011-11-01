@@ -39,32 +39,38 @@ Ext.define('Bozuko.view.page.Panel', {
                     page        :'welcome',
                     text        :'Welcome',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/star-24.png'
+                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/star-inactive-24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     page        :'dashboard',
                     text        :'Dashboard',
                     group       :'page',
-                    icon        :'/images/icons/bozuko/dashboard_24x24.png'
+                    icon        :'/images/icons/bozuko/dashboard_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     page        :'campaigns',
                     text        :'Games',
                     group       :'page',
-                    icon        :'/images/icons/bozuko/campaign_24x24.png'
+                    icon        :'/images/icons/bozuko/campaign_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     text        :'Settings',
                     page        :'settings',
                     group       :'page',
-                    icon        :'/images/icons/bozuko/settings_24x24.png'
+                    icon        :'/images/icons/bozuko/settings_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     text        :'Resources',
                     page        :'resources',
                     group       :'page',
-                    icon        :'/images/icons/bozuko/account_resources_24x24.png'
+                    icon        :'/images/icons/bozuko/account_resources_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     text        :'Account',
                     page        :'account',
                     group       :'page',
-                    icon        :'/images/icons/bozuko/accounts_24x24.png'
+                    icon        :'/images/icons/bozuko/accounts_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },'->',{
                     ref         :'status-text',
                     xtype       :'tbtext',
@@ -122,6 +128,28 @@ Ext.define('Bozuko.view.page.Panel', {
         me.on('destroy', function(){
             clearTimeout( me.statusTextTimeout );
         });
+    },
+    
+    onBtnToggle : function(btn, state){
+        if( !btn.icon ) return;
+        if( btn.icon.match(/star/gi) ){
+            // replace with the gray star
+            if( state ){
+                btn.setIcon( btn.icon.replace(/\-inactive/, '') );
+            }
+            else{
+                btn.setIcon( btn.icon.replace(/star\-/, 'star-inactive-') );
+            }
+        }
+        else{
+            // replace with the gray star
+            if( state ){
+                btn.setIcon( btn.icon.replace(/\.png/, '_ON.png') );
+            }
+            else{
+                btn.setIcon( btn.icon.replace(/_ON.png/, '.png') );
+            }
+        }
     },
     
     updateStatus : function(text){
