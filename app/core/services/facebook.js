@@ -40,7 +40,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
     }
 
     var protocol = (req.app.key?'https:':'http:');
-    
+
     var params = {
         'client_id' : Bozuko.config.facebook.app.id,
         'scope' : Bozuko.config.facebook.perms[scope],
@@ -48,7 +48,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
                          Bozuko.config.server.port+url.pathname+
                          ((url.search||'').replace(/[&\?]code=.*$/i, ''))
     };
-    
+
     if( req.param('display')){
         params.display = req.param('display');
         req.session.display = req.param('display');
@@ -69,7 +69,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
          */
         var ret = req.session.redirect || defaultReturn || '/';
         ret+= (ret.indexOf('?') != -1 ? '&' : '?')+'error_reason='+error_reason;
-        
+
         console.error( error_reason );
 
         if( failure ){
@@ -86,12 +86,12 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
         // we should also have the user information here...
         var ret = req.session.redirect || defaultReturn;
-        
+
         return http.request({
             url: 'https://graph.facebook.com/oauth/access_token',
             params: params},
             function(err, response){
-                
+
                 if (err) {
                     if( failure && failure(err, req, res) === false){
                         return false;
@@ -133,7 +133,7 @@ FacebookService.prototype.login = function(req,res,scope,defaultReturn,success,f
 
                                 req.session.userJustLoggedIn = true;
                                 req.session.user = u;
-                                
+
                                 if( success ){
                                     if( success(u,req,res) === false ){
                                         return null;
@@ -270,19 +270,49 @@ FacebookService.prototype.checkin = function(options, callback){
     if( Bozuko.config.test_mode ){
         return callback(null, {id:134574646614657});
     }
-    
+
     return facebook.graph('/'+options.place_id,{
         user: options.user,
         params: {fields:'location,name'}
     },function(error, result){
         if( error ) return callback( error );
-        
+
         if( !result || !result.location ) return callback( Bozuko.error('checkin/non_location') );
         coords = [result.location.longitude, result.location.latitude];
-        
         var d = Geo.distance( options.ll, coords, 'mi' );
 
-        if( d > Bozuko.cfg('checkin.distance', 600) / 5280 ){
+	var accuracy = options.accuracy*1.20; // add a fudge factor of 20% to reduce false positives
+	var radius = accuracy*3.3 || Bozuko.cfg('checkin.distance', 600);
+	radius = radius / 5280;
+	if (radius > 1) radius = 1;
+	if (Bozuko.env() !== 'development' && Bozuko.env() !== 'playground') {
+	    if (Bozuko.env() === 'api') {
+		// Would the user be rejected by our accuracy algorithm? If so log it for analytics.
+		if (radius && d > radius) {
+		    var badCheckin = new Bozuko.models.BadCheckin({
+			user_id: options.user._id,
+			fb_place_id: options.place_id,
+			place: result.name,
+			timestamp: new Date(),
+			ll: options.ll,
+			distance: d,
+			accuracy: accuracy,
+			radius: radius
+		    });
+		    Bozuko.publish('checkin/bad', {place: result.name, user: options.user, accuracy: accuracy});
+		    // no need for this to be in the performance path
+		    badCheckin.save(function(err) {
+			if (err) console.error('Error saving badCheckin: '+err);
+		    });
+		}
+	    }
+	    radius = Bozuko.cfg('checkin.distance', 600) / 5280;
+	}
+	console.log('accuracy = '+accuracy);
+	console.log("d = "+d);
+	console.log("radius = "+radius);
+
+        if( d > radius ){
             // too far...
             console.error(
                 "\n\n********Too Far Away Error*********\n"+
@@ -309,9 +339,9 @@ FacebookService.prototype.checkin = function(options, callback){
             }
             return callback(null, result);
         });
-        
+
     });
-    
+
 };
 
 
