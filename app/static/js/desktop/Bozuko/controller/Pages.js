@@ -74,7 +74,7 @@ Ext.define('Bozuko.controller.Pages' ,{
                     
                     panel.getEl().select('.welcome li').addClsOnOver('hover');
                     var h = 0;
-                    panel.getEl().select('.welcome li div')
+                    panel.getEl().select('.welcome li .inner')
                         .each(function(el){
                             // check for the height
                             h = Math.max(h, Ext.fly(el).getHeight());
