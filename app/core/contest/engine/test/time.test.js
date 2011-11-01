@@ -158,7 +158,7 @@ exports['lose, but don\'t redistribute - inside buffer'] = function(test) {
                     test.done();
                 });
             }
-            test.done();
+            return test.done();
         });
     });
 };
@@ -841,6 +841,392 @@ exports['play out contest - sparse prizes/sparse play'] = function(test) {
 };
 
 exports['graph 4hr contest - sparse prizes/play'] = function(test) {
+    var playchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'plays', step: 3, xmax: 4});
+    var winchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'wins', step: 3, xmax: 4});
+
+    playchart.bucketize(timestamps, contest.start.getTime(), contest.end.getTime());
+    winchart.bucketize(wins, contest.start.getTime(), contest.end.getTime());
+    playchart.draw();
+    winchart.draw();
+    test.done();
+};
+
+exports['cleanup 9'] = function(test) {
+    Bozuko.models.Result.remove(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['4 hrs - 50 prizes - 0/25/50/100'] = function(test) {
+    contest.start = new Date();
+    contest.end = new Date(contest.start.getTime() + 4*hr);
+    contest.prizes[0].total = 50;
+    var engine = new TimeEngine(contest);
+    engine.generateResults(function(err, _results) {
+        test.ok(!err);
+        test.equal(_results.length, 50);
+        results = _results;
+
+        Bozuko.models.Result.count(function(err, count) {
+            test.equal(count, 50);
+            test.done();
+        });
+    });
+};
+
+exports['play out contest - 4 hrs - 50 prizes - 0/25/50/100'] = function(test) {
+    wins = [];
+    timestamps = [];
+    var engine = new TimeEngine(contest);
+    var start = contest.start.getTime();
+    var i = 0;
+    for (i = 0; i < 25; i++) {
+	timestamps.push(rand(start+hr, start+hr*2));
+    }
+    for (i = 0; i < 50; i++) {
+	timestamps.push(rand(start+hr*2, start+hr*3));
+    }
+    for (i = 0; i < 100; i++) {
+	timestamps.push(rand(start+hr*3, start+hr*4));
+    }
+
+    timestamps.sort(function(a, b) {
+        return a - b;
+    });
+
+    async.forEachSeries(timestamps, function(timestamp, cb) {
+        var memo = {
+            timestamp: new Date(timestamp),
+            user: user,
+            entry: entry
+        };
+        engine.play(memo, function(err, memo) {
+            test.ok(!err);
+            if (memo.result) {
+		wins.push(timestamp);
+            }
+            cb(null);
+        });
+    }, function(err) {
+	return num_redistributions(function(err, ct) {
+	    console.log("total wins = "+wins.length);
+	    console.log("lookback window = "+engine.lookback_window/1000+" sec");
+	    test.done();
+	});
+    });
+};
+
+exports['graph 4hr contest - 50 prizes - 0/25/50/100'] = function(test) {
+    var playchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'plays', step: 3, xmax: 4});
+    var winchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'wins', step: 3, xmax: 4});
+
+    playchart.bucketize(timestamps, contest.start.getTime(), contest.end.getTime());
+    winchart.bucketize(wins, contest.start.getTime(), contest.end.getTime());
+    playchart.draw();
+    winchart.draw();
+    test.done();
+};
+
+
+exports['cleanup 10'] = function(test) {
+    Bozuko.models.Result.remove(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['4 hrs - 50 prizes - 0/50/50/0'] = function(test) {
+    contest.start = new Date();
+    contest.end = new Date(contest.start.getTime() + 4*hr);
+    contest.prizes[0].total = 50;
+    var engine = new TimeEngine(contest);
+    engine.generateResults(function(err, _results) {
+        test.ok(!err);
+        test.equal(_results.length, 50);
+        results = _results;
+
+        Bozuko.models.Result.count(function(err, count) {
+            test.equal(count, 50);
+            test.done();
+        });
+    });
+};
+
+exports['play out contest - 4 hrs - 50 prizes - 0/50/50/0'] = function(test) {
+    wins = [];
+    timestamps = [];
+    var engine = new TimeEngine(contest);
+    var start = contest.start.getTime();
+    var i = 0;
+    for (i = 0; i < 50; i++) {
+	timestamps.push(rand(start+hr, start+hr*2));
+    }
+    for (i = 0; i < 50; i++) {
+	timestamps.push(rand(start+hr*2, start+hr*3));
+    }
+
+    timestamps.sort(function(a, b) {
+        return a - b;
+    });
+
+    async.forEachSeries(timestamps, function(timestamp, cb) {
+        var memo = {
+            timestamp: new Date(timestamp),
+            user: user,
+            entry: entry
+        };
+        engine.play(memo, function(err, memo) {
+            test.ok(!err);
+            if (memo.result) {
+		wins.push(timestamp);
+            }
+            cb(null);
+        });
+    }, function(err) {
+	return num_redistributions(function(err, ct) {
+	    console.log("total wins = "+wins.length);
+	    console.log("lookback window = "+engine.lookback_window/1000+" sec");
+	    test.done();
+	});
+    });
+};
+
+exports['graph 4hr contest - 50 prizes - 0/50/50/0'] = function(test) {
+    var playchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'plays', step: 3, xmax: 4});
+    var winchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'wins', step: 3, xmax: 4});
+
+    playchart.bucketize(timestamps, contest.start.getTime(), contest.end.getTime());
+    winchart.bucketize(wins, contest.start.getTime(), contest.end.getTime());
+    playchart.draw();
+    winchart.draw();
+    test.done();
+};
+
+exports['cleanup 11'] = function(test) {
+    Bozuko.models.Result.remove(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['4 hrs - 50 prizes - 100/100/100/100'] = function(test) {
+    contest.start = new Date();
+    contest.end = new Date(contest.start.getTime() + 4*hr);
+    contest.prizes[0].total = 50;
+    var engine = new TimeEngine(contest);
+    engine.generateResults(function(err, _results) {
+        test.ok(!err);
+        test.equal(_results.length, 50);
+        results = _results;
+
+        Bozuko.models.Result.count(function(err, count) {
+            test.equal(count, 50);
+            test.done();
+        });
+    });
+};
+
+exports['play out contest - 4hrs - 50 prizes - 100/100/100/100'] = function(test) {
+    wins = [];
+    timestamps = [];
+    var engine = new TimeEngine(contest);
+    var start = contest.start.getTime();
+    var i = 0;
+    for (i = 0; i < 100; i++) {
+	timestamps.push(rand(start, start+hr));
+    }
+    for (i = 0; i < 100; i++) {
+	timestamps.push(rand(start+hr, start+hr*2));
+    }
+    for (i = 0; i < 100; i++) {
+	timestamps.push(rand(start+hr*2, start+hr*3));
+    }
+    for (i = 0; i < 100; i++) {
+	timestamps.push(rand(start+hr*3, start+hr*4));
+    }
+
+    timestamps.sort(function(a, b) {
+        return a - b;
+    });
+
+    async.forEachSeries(timestamps, function(timestamp, cb) {
+        var memo = {
+            timestamp: new Date(timestamp),
+            user: user,
+            entry: entry
+        };
+        engine.play(memo, function(err, memo) {
+            test.ok(!err);
+            if (memo.result) {
+		wins.push(timestamp);
+            }
+            cb(null);
+        });
+    }, function(err) {
+	return num_redistributions(function(err, ct) {
+	    console.log("total wins = "+wins.length);
+	    console.log("lookback window = "+engine.lookback_window/1000+" sec");
+	    test.done();
+	});
+    });
+};
+
+exports['graph 4hr contest - 50 prizes - 100/100/100/100'] = function(test) {
+    var playchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'plays', step: 3, xmax: 4});
+    var winchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'wins', step: 3, xmax: 4});
+
+    playchart.bucketize(timestamps, contest.start.getTime(), contest.end.getTime());
+    winchart.bucketize(wins, contest.start.getTime(), contest.end.getTime());
+    playchart.draw();
+    winchart.draw();
+    test.done();
+};
+
+exports['cleanup 12'] = function(test) {
+    Bozuko.models.Result.remove(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['4 hrs - 100 prizes - 50/25/10/100'] = function(test) {
+    contest.start = new Date();
+    contest.end = new Date(contest.start.getTime() + 4*hr);
+    contest.prizes[0].total = 100;
+    var engine = new TimeEngine(contest);
+    engine.generateResults(function(err, _results) {
+        test.ok(!err);
+        test.equal(_results.length, 100);
+        results = _results;
+
+        Bozuko.models.Result.count(function(err, count) {
+            test.equal(count, 100);
+            test.done();
+        });
+    });
+};
+
+exports['play out contest - 4hrs - 100 prizes - 50/25/10/100'] = function(test) {
+    wins = [];
+    timestamps = [];
+    var engine = new TimeEngine(contest);
+    var start = contest.start.getTime();
+    var i = 0;
+    for (i = 0; i < 50; i++) {
+	timestamps.push(rand(start, start+hr));
+    }
+    for (i = 0; i < 25; i++) {
+	timestamps.push(rand(start+hr, start+hr*2));
+    }
+    for (i = 0; i < 10; i++) {
+	timestamps.push(rand(start+hr*2, start+hr*3));
+    }
+    for (i = 0; i < 100; i++) {
+	timestamps.push(rand(start+hr*3, start+hr*4));
+    }
+
+    timestamps.sort(function(a, b) {
+        return a - b;
+    });
+
+    async.forEachSeries(timestamps, function(timestamp, cb) {
+        var memo = {
+            timestamp: new Date(timestamp),
+            user: user,
+            entry: entry
+        };
+        engine.play(memo, function(err, memo) {
+            test.ok(!err);
+            if (memo.result) {
+		wins.push(timestamp);
+            }
+            cb(null);
+        });
+    }, function(err) {
+	return num_redistributions(function(err, ct) {
+	    console.log("total wins = "+wins.length);
+	    console.log("lookback window = "+engine.lookback_window/1000+" sec");
+	    test.done();
+	});
+    });
+};
+
+exports['graph 4hr contest - 100 prizes - 50/25/10/100'] = function(test) {
+    var playchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'plays', step: 3, xmax: 4});
+    var winchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
+        ylabel: 'wins', step: 3, xmax: 4});
+
+    playchart.bucketize(timestamps, contest.start.getTime(), contest.end.getTime());
+    winchart.bucketize(wins, contest.start.getTime(), contest.end.getTime());
+    playchart.draw();
+    winchart.draw();
+    test.done();
+};
+
+exports['cleanup 13'] = function(test) {
+    Bozuko.models.Result.remove(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['4 hrs - 1 prize - 0/0/0/1'] = function(test) {
+    contest.start = new Date();
+    contest.end = new Date(contest.start.getTime() + 4*hr);
+    contest.prizes[0].total = 1;
+    var engine = new TimeEngine(contest);
+    engine.generateResults(function(err, _results) {
+        test.ok(!err);
+        test.equal(_results.length, 1);
+        results = _results;
+
+        Bozuko.models.Result.count(function(err, count) {
+            test.equal(count, 1);
+            test.done();
+        });
+    });
+};
+
+exports['play out contest - 1 prize - 0/0/0/1'] = function(test) {
+    wins = [];
+    timestamps = [];
+    var engine = new TimeEngine(contest);
+    var start = contest.start.getTime();
+    timestamps.push(rand(start+hr*3, start+hr*4));
+
+    async.forEachSeries(timestamps, function(timestamp, cb) {
+        var memo = {
+            timestamp: new Date(timestamp),
+            user: user,
+            entry: entry
+        };
+        engine.play(memo, function(err, memo) {
+            test.ok(!err);
+            if (memo.result) {
+		wins.push(timestamp);
+            }
+            cb(null);
+        });
+    }, function(err) {
+	return num_redistributions(function(err, ct) {
+	    console.log("total wins = "+wins.length);
+	    console.log("lookback window = "+engine.lookback_window/1000+" sec");
+	    test.done();
+	});
+    });
+};
+
+exports['graph 4hr contest - 1 prize - 0/0/0/1'] = function(test) {
     var playchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
         ylabel: 'plays', step: 3, xmax: 4});
     var winchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
