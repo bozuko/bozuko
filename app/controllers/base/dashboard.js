@@ -1044,7 +1044,19 @@ exports.routes = {
                     // get the count too
                     return Bozuko.models.Page.count(selector,function(error, count){
                         if( error ) return error.send(res);
-                        return res.send({items:pages, total:count});
+                        // convert pages to json objects
+                        var pages_simple = [];
+                        return async.forEach( pages, function(page, cb){
+                            var p = page.toJSON();
+                            return Bozuko.models.Contest.count({page_id: p._id}, function(error, count){
+                                if( error ) return cb(error);
+                                p.has_contests = count?true:false;
+                                pages_simple.push(p);
+                                return cb();
+                            });
+                        }, function(){
+                            return res.send({items:pages_simple, total:count});
+                        });
                     });
                 });
             }

@@ -47,8 +47,8 @@ Ext.define('Bozuko.view.page.Welcome' ,{
                             var deferredEvent = Ext.Function.createDelayed(function(){
                                 me.fireEvent('welcomeloaded', panel);
                             }, 0);
-                            if( panel.rendered ) deferredEvent();
-                            else panel.on('render', deferredEvent);
+                            if( panel.rendered && panel.isVisible(true) ) deferredEvent();
+                            else panel.up('pagewelcome').on('activate', deferredEvent);
                         }
                     });
                 }

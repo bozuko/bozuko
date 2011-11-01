@@ -93,8 +93,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                             href                :'/',
                             style               :{
                                 position            :'absolute',
-                                right               :'0px',
-                                bottom              :'0px'
+                                left                :'-99999em',
+                                top                 :'-99999em'
                             }
                         },
                         listeners           :{

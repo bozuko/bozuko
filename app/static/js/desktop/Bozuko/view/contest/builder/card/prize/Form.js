@@ -135,6 +135,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         width               :80,
                         emptyText           :'USD',
                         allowBlank          :false,
+                        value               :0,
                         helpText            :[
                             "<p>",
                                 "Enter the value per prize for tracking purposes.",
@@ -183,12 +184,15 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         '</p>'
                     ]
                 },{
-                    xtype               :'combo',
+                    xtype               :'hidden',
                     name                :'redemption_type',
                     fieldLabel          :'Redemption Method',
                     emptyText           :'Please choose the redemption method',
+                    value               :'image'
+                    /*
                     editable            :false,
                     forceSelection      :true,
+                    value               :'image',
                     displayField        :'display',
                     valueField          :'value',
                     queryMode           :'local',
@@ -210,6 +214,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                         scope               :me,
                         change              :me.onRedemptionTypeChange
                     }
+                    */
                 },{
                     xtype               :'container',
                     layout              :'anchor',
@@ -390,13 +395,14 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 }]
         };
         
-        if( me.prize ){
-            me.loadForm(me.prize);
-        }
         if( me.prize.get('name') ){
             me.down('[ref=cancel-btn]').show();
         }
         me.on('render', function(){
+            if( me.prize ){
+                me.loadForm(me.prize);
+                me.onRedemptionTypeChange();
+            }
             me.body.addCls('mode-'+me.mode);
         });
         me.initFieldEvents();
@@ -494,7 +500,7 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         var me = this;
         // reset the form
         me.getForm().reset();
-        Ext.Array.each( me.query('[redemption_field=yes]'), function(field){ field.hide(); } );
+        //Ext.Array.each( me.query('[redemption_field=yes]'), function(field){ field.hide(); } );
         me.prize = prize;
         if( prize.get('name') ){
             // backwards compatability..
@@ -513,8 +519,16 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
                 clean_array(barcodes);
                 clean_array(email_codes);
                 prize.set('redemption_type', email_codes && email_codes.length ? 'email' : (barcodes && barcodes.length ? 'barcode' : 'image') );
+                me.getForm().loadRecord(prize);
             }
-            me.getForm().loadRecord(prize);
+        }
+        else{
+            // only set the fields we want
+            var values = {
+                duration: prize.get('duration'),
+                value: prize.get('value')
+            };
+            me.getForm().setValues(values);
         }
     },
     

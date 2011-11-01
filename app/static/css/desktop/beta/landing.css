@@ -107,8 +107,36 @@ body h3.deal {
   font-weight: 800;
 }
 .beta-main {
+  font-family: 'Open Sans', sans-serif;
   margin-right: 290px;
   color: #656565;
+}
+.beta-main .beta-top {
+  background: url("/images/desktop/site/beta/img_fb-methods.jpg") 100% 80px no-repeat;
+}
+.beta-main .beta-top h1 {
+  font-weight: 800;
+  font-size: 41px;
+}
+.beta-main .beta-top ul {
+  font-size: 24px;
+  font-weight: 700;
+  font-style: italic;
+  list-style: none;
+  margin: 1em 0;
+}
+.beta-main .beta-top ul li {
+  margin: 0;
+  list-style: none;
+  padding: 0 0 0 40px;
+  line-height: 45px;
+  background: url("/images/desktop/site/beta/img_orange-check.png") 0 50% no-repeat;
+}
+.beta-main .beta-top h3 {
+  color: #00a24f;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 32px;
 }
 .beta-main .whats-the-deal {
   width: 666px;

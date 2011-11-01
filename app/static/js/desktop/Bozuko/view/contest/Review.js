@@ -155,7 +155,7 @@ Ext.define('Bozuko.view.contest.Review', {
                         var html = [
                             '<div class="prizes-overview">',
                                 '<div class="expander"></div>',
-                                '<strong>',me.contest.prizes().count(),'</strong> Prize Types<br />',
+                                '<strong>',me.contest.prizes().count(),'</strong> Different Prizes<br />',
                                 '<strong>',
                                 me.contest.getTotalPrizeCount(),
                                 '</strong> Total Prizes<br />',
