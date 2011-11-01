@@ -263,7 +263,7 @@ FacebookLikeCheckinMethod.prototype.getButtonText = function( tokens, callback )
                     return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', time_str ) );
                 }
                 
-                if( !self.user.likes(self.page) ){
+                if( self.user && !self.user.likes(self.page) ){
                     return callback( null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' ));
                 }
                 

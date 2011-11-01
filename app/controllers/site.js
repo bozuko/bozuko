@@ -36,7 +36,7 @@ exports.locals = {
         link: '/how-to-play',
         text: 'How to Play'
     },{
-        link: '/bozuko-for-business',
+        link: '/beta',
         text: 'Bozuko for Business'
     }],
     head_scripts:[

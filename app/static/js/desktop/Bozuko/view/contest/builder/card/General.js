@@ -9,12 +9,12 @@ Ext.define('Bozuko.view.contest.builder.card.General', {
     ],
     name            :"Basic Information",
     overview        :[
-        "<p>It is easy to create a new Bozuko campaign. We will help describe each ",
+        "<p>It is easy to create a new Bozuko game. We will help describe each ",
         "step as you are filling out the form.</p>"
     ],
 
     intro           :[
-        "Please enter the basic information about your campaign below."
+        "Please enter the basic information about your game below."
     ],
     
     initComponent : function(){
@@ -23,12 +23,12 @@ Ext.define('Bozuko.view.contest.builder.card.General', {
         Ext.apply(me.form, {
             items               :[{
                 name                :'name',
-                fieldLabel          :'Campaign Name',
-                emptyText           :'Your Campaign Name',
+                fieldLabel          :'Reference Name',
+                emptyText           :'Enter a name to reference this game.',
                 allowBlank          :false,
                 helpText            :[
                     "<p>",
-                        "Enter a reference name for this campaign.  This name will not be publicly visible.",
+                        "Enter a reference name for this game.  This name will not be publicly visible.",
                     "</p>",
                     '<p>',
                         'Example: "Summer Scratch #2"',
@@ -97,7 +97,7 @@ Ext.define('Bozuko.view.contest.builder.card.General', {
                     autoHeight          :true,
                     helpText            :[
                         "<p>",
-                            'This is the cut-off date for your campaign. Your campaign ends when total entries are exhausted or this date hits.',
+                            'This is the cut-off date for your game. Your game ends when total entries are exhausted or this date hits.',
                         '</p>'
                     ],
                     

@@ -47,7 +47,7 @@ Ext.define('Bozuko.view.page.Panel', {
                     icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-24.png'
                 },{
                     page        :'campaigns',
-                    text        :'Campaigns',
+                    text        :'Games',
                     group       :'page',
                     icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png'
                 },{
@@ -80,7 +80,7 @@ Ext.define('Bozuko.view.page.Panel', {
                 },
                 ref             :'pages',
                 border          :false,
-                activeItem      :0,
+                activeItem      :me.page.get('has_contests') ? 1 : 0,
                 items: [{
                     ref             :'welcome',
                     xtype           :'pagewelcome',

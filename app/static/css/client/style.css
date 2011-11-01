@@ -1,0 +1,85 @@
+body {
+  background: #000000;
+  padding: 0;
+  margin: 0;
+  height: 460px;
+  font-family: arial;
+}
+* {
+  outline: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
+}
+.app {
+  position: relative;
+  width: 320px;
+  height: 416px;
+  margin: 0 auto;
+}
+.app .modal {
+  width: 100%;
+  height: 100%;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+}
+/**
+ * Games
+ */
+.scratch-ticket {
+  background: #bbb;
+  position: relative;
+}
+.scratch-ticket .prize {
+  position: absolute;
+  z-index: 1;
+  width: 92px;
+  height: 115px;
+  text-align: center;
+  font-family: tahoma, arial, sans;
+}
+.scratch-ticket .prize .number {
+  padding: 20px 0 15px;
+  font-size: 18px;
+}
+.scratch-ticket .prize .name {
+  font-size: 11px;
+  padding: 0 12px;
+}
+.scratch-ticket .profile-pic {
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  left: 8px;
+  width: 80px;
+  height: 80px;
+  -webkit-transform: rotate(-15deg);
+}
+.scratch-ticket .tickets-left {
+  font-family: Arial;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  position: absolute;
+  z-index: 3;
+  top: 9px;
+  width: 30px;
+  line-height: 30px;
+  text-align: center;
+  left: 107px;
+}
+.scratch-ticket .ticket {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+}
+.scratch-ticket .target {
+  position: absolute;
+  width: 92px;
+  height: 115px;
+  z-index: 3;
+}
