@@ -44,27 +44,27 @@ Ext.define('Bozuko.view.page.Panel', {
                     page        :'dashboard',
                     text        :'Dashboard',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-24.png'
+                    icon        :'/images/icons/bozuko/dashboard_24x24.png'
                 },{
                     page        :'campaigns',
                     text        :'Games',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png'
+                    icon        :'/images/icons/bozuko/campaign_24x24.png'
                 },{
                     text        :'Settings',
                     page        :'settings',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png'
+                    icon        :'/images/icons/bozuko/settings_24x24.png'
                 },{
                     text        :'Resources',
                     page        :'resources',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-24.png'
+                    icon        :'/images/icons/bozuko/account_resources_24x24.png'
                 },{
                     text        :'Account',
                     page        :'account',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-profile-24.png'
+                    icon        :'/images/icons/bozuko/accounts_24x24.png'
                 },'->',{
                     ref         :'status-text',
                     xtype       :'tbtext',

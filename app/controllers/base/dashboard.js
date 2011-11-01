@@ -1046,7 +1046,7 @@ exports.routes = {
                         if( error ) return error.send(res);
                         // convert pages to json objects
                         var pages_simple = [];
-                        return async.forEach( pages, function(page, cb){
+                        return async.forEachSeries( pages, function(page, cb){
                             var p = page.toJSON();
                             return Bozuko.models.Contest.count({page_id: p._id}, function(error, count){
                                 if( error ) return cb(error);
