@@ -28,8 +28,18 @@ exports.locals = {
     meta: {
         'charset':'utf-8',
         'author':'Bozuko Inc.',
-        'description': 'Bozuko Beta Customer Area.',
-        'robots' : 'noindex,nofollow'
+        'description': 'Bozuko is the most exciting way to win prizes at your favorite places. Download and play today!',
+        'keywords':[
+            'instant win',
+            'games',
+            'geolocation',
+            'android',
+            'iphone',
+            'game of chance',
+            'lucky',
+            'prizes'
+        ],
+        "og:image": "https://bozuko.com/images/profile-picture.png"
     },
     nav: [],
     html_classes: [],
