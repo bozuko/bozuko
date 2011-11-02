@@ -1510,6 +1510,31 @@ exports.routes = {
                 
             }
         }
+    },
+    '/howto' : {
+        get : {
+            locals : {
+                title: 'Bozuko - How To',
+                layout: 'beta/howto/layout',
+                home_link: '#',
+                home_title: 'Bozuko How To',
+                layout: 'beta/layout',
+                device: 'desktop',
+                styles: [
+                    'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
+                    '/css/desktop/typography.css',
+                    '/css/desktop/beta/howto.css'
+                ],
+                head_scripts :[
+                    '/js/jquery/jquery.tools.min-1.2.6.js',
+                    '/js/desktop/beta/howto.js'
+                ]
+            },
+            handler : function(req, res){
+                res.locals.layout = 'beta/howto/layout';
+                return res.render('beta/howto');
+            }
+        }
     }
 };
 
