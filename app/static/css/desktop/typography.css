@@ -346,3 +346,11 @@ ul.errors li {
   overflow: hidden;
   clear: both;
 }
+.x-boundlist ul {
+  list-style: none;
+  margin: 0;
+}
+.x-boundlist ul li {
+  list-style: none;
+  margin-left: 0;
+}
