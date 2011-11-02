@@ -1,0 +1,150 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+@import url("/css/oocss/core/grid/grids.css");
+
+.logo {
+    margin: 0;
+    height: 90px;
+    .name {
+        display: inline-block;
+        text-indent: -99999em;
+        width: 275px;
+        height: 90px;
+        background: transparent url("/images/desktop/site/img_logo.png") 0 0 no-repeat;
+    }
+    .tagline {
+        display: inline-block;
+        text-indent: -99999em;
+        margin-left: 10px;
+        width: 76px;
+        height: 90px;
+        background: transparent url("/images/desktop/site/beta/img_bozuko-beta-burst.png") 0 0 no-repeat;
+    }
+}
+
+.hd {
+    text-align: center;
+    
+    ul.nav {
+        font-family: "Open Sans";
+        font-weight: 800;
+        color: #999;
+        list-style: none;
+        margin: 0 0 0px 0;
+        padding: 0;
+        li {
+            display: inline;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            a {
+                text-decoration: none;
+                margin: 0 10px;
+                color: inherit;
+                &:hover {
+                    color: #333;
+                }
+                &.current{
+                    color: @blue;
+                }
+            }
+        }
+    }
+}
+
+.heading {
+    color: @orange;
+    font-weight: 800;
+    font-style: italic;
+    font-size: 24px;
+}
+.orange{
+    color: @orange;
+}
+
+.bd {
+    font-family: "Open Sans";
+    padding: 20px;
+    color: #666;
+    
+    font-size: 16px;
+    
+    h2 {
+        font-size: 30px;
+        color: #666;
+        margin-top: 0;
+        margin-bottom: .5em;
+        font-weight: 800;
+        text-transform: none;
+        font-family: "Open Sans";
+    }
+    
+    p {
+        line-height: 1.6em;
+        margin-bottom: 1.5em;
+        margin-top: .4em;
+    }
+    
+    .bold {
+        font-weight: bold;
+    }
+    .italic {
+        font-style: italic;
+    }
+    .begin-paragraph {
+        .heading;
+        display: inline-block;
+        vertical-align: baseline;
+        margin-right: 6px;
+    }
+    .prize-concepts {
+        padding-top: .5em;
+        p {
+            margin-bottom: 0;
+        }
+        ul, li{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5em;
+        }
+    }
+    
+    .image-block{
+        overflow: hidden;
+        _height: 1%;
+        margin-bottom: 20px;
+        .img {
+            float: left;
+        }
+        .text {
+            padding-top: 10px;
+            margin-left: 240px;
+        }
+        ul {
+            margin: 10px 0 1em ;
+            line-height: 1.5em;
+            padding-left: 0;
+            li {
+                margin-bottom: .4em;
+                .italic;
+                list-style: disc;
+            }
+        }
+    }
+    
+    #welcome-form {
+        margin-bottom: 20px; 
+        form {
+            width: 500px;
+        }
+        
+        .small-button, .medium-button, .big-button {
+            font-family: "Open Sans";
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+    }
+    
+}

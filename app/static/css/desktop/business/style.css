@@ -1405,3 +1405,18 @@ h1.intro {
   border: 1px solid #ccc;
   background: #f3f3f3;
 }
+.need-a-hand .x-panel-header-text {
+  font-size: 22px;
+  color: #00a24f;
+  font-family: "Open Sans";
+  font-weight: 800;
+  line-height: 1.4em;
+}
+.need-a-hand .x-panel-body {
+  font-family: "Open Sans";
+  font-size: 15px;
+  line-height: 1.5;
+}
+.need-a-hand .x-panel-body a {
+  color: #ff6600;
+}

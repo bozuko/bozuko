@@ -1,0 +1,148 @@
+@import url("/css/oocss/core/grid/grids.css");
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
+.logo {
+  margin: 0;
+  height: 90px;
+}
+.logo .name {
+  display: inline-block;
+  text-indent: -99999em;
+  width: 275px;
+  height: 90px;
+  background: transparent url("/images/desktop/site/img_logo.png") 0 0 no-repeat;
+}
+.logo .tagline {
+  display: inline-block;
+  text-indent: -99999em;
+  margin-left: 10px;
+  width: 76px;
+  height: 90px;
+  background: transparent url("/images/desktop/site/beta/img_bozuko-beta-burst.png") 0 0 no-repeat;
+}
+.hd {
+  text-align: center;
+}
+.hd ul.nav {
+  font-family: "Open Sans";
+  font-weight: 800;
+  color: #999;
+  list-style: none;
+  margin: 0 0 0px 0;
+  padding: 0;
+}
+.hd ul.nav li {
+  display: inline;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.hd ul.nav li a {
+  text-decoration: none;
+  margin: 0 10px;
+  color: inherit;
+}
+.hd ul.nav li a:hover {
+  color: #333;
+}
+.hd ul.nav li a.current {
+  color: #01a9d8;
+}
+.heading {
+  color: #ff6600;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 24px;
+}
+.orange {
+  color: #ff6600;
+}
+.bd {
+  font-family: "Open Sans";
+  padding: 20px;
+  color: #666;
+  font-size: 16px;
+}
+.bd h2 {
+  font-size: 30px;
+  color: #666;
+  margin-top: 0;
+  margin-bottom: .5em;
+  font-weight: 800;
+  text-transform: none;
+  font-family: "Open Sans";
+}
+.bd p {
+  line-height: 1.6em;
+  margin-bottom: 1.5em;
+  margin-top: .4em;
+}
+.bd .bold {
+  font-weight: bold;
+}
+.bd .italic {
+  font-style: italic;
+}
+.bd .begin-paragraph {
+  color: #ff6600;
+  font-weight: 800;
+  font-style: italic;
+  font-size: 24px;
+  display: inline-block;
+  vertical-align: baseline;
+  margin-right: 6px;
+}
+.bd .prize-concepts {
+  padding-top: .5em;
+}
+.bd .prize-concepts p {
+  margin-bottom: 0;
+}
+.bd .prize-concepts ul, .bd .prize-concepts li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5em;
+}
+.bd .image-block {
+  overflow: hidden;
+  _height: 1%;
+  margin-bottom: 20px;
+}
+.bd .image-block .img {
+  float: left;
+}
+.bd .image-block .text {
+  padding-top: 10px;
+  margin-left: 240px;
+}
+.bd .image-block ul {
+  margin: 10px 0 1em ;
+  line-height: 1.5em;
+  padding-left: 0;
+}
+.bd .image-block ul li {
+  margin-bottom: .4em;
+  font-style: italic;
+  list-style: disc;
+}
+.bd #welcome-form {
+  margin-bottom: 20px;
+}
+.bd #welcome-form form {
+  width: 500px;
+}
+.bd #welcome-form .small-button, .bd #welcome-form .medium-button, .bd #welcome-form .big-button {
+  font-family: "Open Sans";
+  text-transform: uppercase;
+  font-weight: 800;
+}
