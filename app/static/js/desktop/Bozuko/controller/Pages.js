@@ -121,7 +121,11 @@ Ext.define('Bozuko.controller.Pages' ,{
         var item = pagePanel.down('[ref=pages]').getLayout().getActiveItem();
         
         var pageBtn = pagePanel.down('[ref=navigation] button[page='+item.ref+']');
-        pageBtn.on('render', pageBtn.toggle, pageBtn);
+        pageBtn.on('render', function(){
+            setTimeout(function(){
+                pageBtn.toggle();
+            }, 100)
+        });
     },
     
     onStatusFieldRender : function(field){

@@ -144,8 +144,8 @@ exports.routes = {
                     res.locals.styles.unshift(
                         'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
                         '/js/ext-4.0/lib/resources/css/ext-all-gray.css',
-                        '/css/desktop/business/style.css?v2',
-                        '/css/desktop/admin/app.css'
+                        '/css/desktop/business/style.css?'+Date.now(),
+                        '/css/desktop/admin/app.css'+Date.now()
                     );
                     
                     // get the user pages...

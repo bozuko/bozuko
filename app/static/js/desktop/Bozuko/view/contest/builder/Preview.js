@@ -14,7 +14,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                 '<div class="contest-preview">',
                     '<h3>Your Game</h3>',
                     '<tpl if="this.noInfo()">',
-                        '<p>A campaign preview will update here as you complete each step.</p>',
+                        '<p>A preview of your game will update here as you complete each step.</p>',
                     '</tpl>',
                     '<tpl if="!this.noInfo()">',
                         '<div class="info-row">',
