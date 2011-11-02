@@ -131,14 +131,15 @@ Ext.define('Bozuko.view.page.Panel', {
     },
     
     onBtnToggle : function(btn, state){
+        console.log(btn.icon);
         if( !btn.icon ) return;
         if( btn.icon.match(/star/gi) ){
             // replace with the gray star
             if( state ){
-                btn.setIcon( btn.icon.replace(/\-inactive/, '') );
+                btn.setIcon( btn.icon.replace(/star\-inactive\-24/, 'star-24') );
             }
             else{
-                btn.setIcon( btn.icon.replace(/star\-/, 'star-inactive-') );
+                btn.setIcon( btn.icon.replace(/star\-24/, 'star-inactive-24') );
             }
         }
         else{
