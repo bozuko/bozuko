@@ -44,8 +44,8 @@ html(
               
               .line
                 .unit.size2of5.download
-                  a.iphone(href=Bozuko.cfg('client.mobile.iphone.link','#'), title="Available in the App Store") Available in the App Store
-                  a.android(href=Bozuko.cfg('client.mobile.android.link','#'), title="Available in the Android Market") Available in the Android Market
+                  a.iphone(target="_top",href=Bozuko.cfg('client.mobile.iphone.link','#'), title="Available in the App Store") Available in the App Store
+                  a.android(target="_top",href=Bozuko.cfg('client.mobile.android.link','#'), title="Available in the Android Market") Available in the Android Market
                 
                 .unit.size1of5
                   p.or OR
@@ -57,7 +57,7 @@ html(
             .ad-block.biz-block
               h2 Are you a Business?
               
-              a.learn-more(href="https://bozuko.com/beta", title="Learn More") Learn More
+              a.learn-more(target="_top",href="https://bozuko.com/beta", title="Learn More") Learn More
       
     - if( !Bozuko.config.test_mode )
       script(type="text/javascript")
