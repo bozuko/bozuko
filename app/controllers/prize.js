@@ -271,12 +271,12 @@ exports.routes = {
 
             handler: function(req,res){
                 var user = req.session.user;
-                var email = req.param('email');
+                var email_prize_screen = req.param('email_prize_screen');
 
                 return Bozuko.models.Prize.findById(req.param('id'), function(error, prize){
                     if( error ) return error.send(res);
 
-                    return prize.redeem(req.session.user, email, function(error, redemption){
+                    return prize.redeem(req.session.user, email_prize_screen, function(error, redemption){
 
                         console.log('redemption = '+require('util').inspect(redemption));
 

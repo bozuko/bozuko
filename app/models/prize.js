@@ -110,9 +110,9 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
                 security_img = burl('/images/security_image.png');
             }
 
-//            if (email_prize_screen && !self.is_email) {
+            //if (email_prize_screen && !self.is_email) {
                 self.emailPrizeScreen(user, security_img);
-  //          }
+            //}
 
             Bozuko.publish('prize/redeemed', {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
             return callback(null, {
@@ -271,24 +271,19 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
         var pdf = self.createPrizeScreenPdf(user, images);
         var attachments = [{
             filename: 'bozuko_prize.pdf',
-            contents: pdf
+            contents: new Buffer(pdf, 'binary')
         }];
-        // var filed = require('filed');
-        // var file = filed('/home/ajs/generatedPdf.pdf');
-        // file.write(pdf);
-        // file.end();
-        // return mail.send({
-        //     user_id: user._id,
-        //     to: user.email,
-        //     subject: 'You just won a Bozuko prize!',
-        //     body: 'Please see the attachment for your prize',
-        //     attachments: attachments
-        // }, function(err, success, record) {
-        //     if (err || !success) {
-        //         console.error('Error emailing prize screen: '+err);
-        //     }
-        // });
-
+        return mail.send({
+            user_id: user._id,
+            to: user.email,
+            subject: 'You just won a Bozuko prize!',
+            body: 'Please see the attachment for your prize',
+            attachments: attachments
+        }, function(err, success, record) {
+            if (err || !success) {
+                console.error('Error emailing prize screen: '+err);
+            }
+        });
     });
 });
 
@@ -356,6 +351,7 @@ Prize.method('createPrizeScreenPdf', function(user, images) {
     doc.fill('#D3D3D3')
        .fontSize(16)
        .text('Code:', doc.x, doc.y+20)
+       .fill('black')
        .text(this.code)
     ;
 
@@ -399,8 +395,7 @@ Prize.method('createPrizeScreenPdf', function(user, images) {
        .text('THANK YOU', {align: 'center'})
     ;
 
-
-    return doc.write('/home/ajs/generatedPdf.pdf');
+    return doc.output();
 });
 
 function download(url, path, callback) {
@@ -409,9 +404,6 @@ function download(url, path, callback) {
         encoding:'binary'
     }, function(error, result, response){
         if( error ) return callback(error);
-
-         fs.writeFile(path, result, 'binary', function(err) {
-            return callback(err);
-        });
+        fs.writeFile(path, result, 'binary', callback);
     });
 }

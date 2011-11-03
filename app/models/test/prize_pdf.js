@@ -1,6 +1,7 @@
 var testsuite = require('./config/testsuite');
 var Oid = require('mongoose').Types.ObjectId;
 var Prize = require('../prize');
+var fs = require('fs');
 
 // Mock User
 var user = {};
@@ -33,7 +34,10 @@ exports['createPrizeScreenPdf'] = function(test) {
             path: img_base+'/security_image.png'
         }
     };
-    prize.createPrizeScreenPdf(user, images);
-    test.done();
+    var pdf = prize.createPrizeScreenPdf(user, images);
+    fs.writeFile('generated.pdf', pdf, 'binary', function(err) {
+        test.ok(!err);
+        test.done();
+    });
 };
 
