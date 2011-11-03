@@ -17,10 +17,12 @@ body {
   font-family: "Open Sans";
   color: #666;
   line-height: 1.4em;
+  margin: 0;
+  padding: 0;
 }
 h1 {
   font-size: 40px;
-  margin: 0 0 10px;
+  margin: 10px 0 16px;
   color: #666;
   font-weight: 800;
 }
