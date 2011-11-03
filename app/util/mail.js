@@ -1,11 +1,11 @@
 var nm = require('nodemailer'),
     inspect = require('util').inspect;
-    
+
 var userIndex = 0;
 
 var EmailMessage = module.exports = function(params){
     params = params || {};
-    
+
     var smtp = Bozuko.cfg('email.smtp');
     params.server = {
         host                :smtp.host,
@@ -13,7 +13,7 @@ var EmailMessage = module.exports = function(params){
         ssl                 :smtp.ssl,
         use_authentication  :smtp.use_authentication
     };
-    
+
     var user;
     if( smtp.users ){
         // get the next guy...
@@ -26,7 +26,7 @@ var EmailMessage = module.exports = function(params){
     }
     params.server.user = user.user;
     params.server.pass = user.pass;
-    
+
     nm.EmailMessage.call(this, params);
     if( !this.sender ){
         this.sender = Bozuko.cfg('email.sender', 'Bozuko Mailer');
@@ -37,10 +37,10 @@ EmailMessage.prototype.__proto__ = nm.EmailMessage.prototype;
 
 // static method (emulate the nodemailer send_mail)
 EmailMessage.send = function(params, callback){
-    
+
     var em = new EmailMessage(params),
         attempts = 0;
-    
+
     var record = new Bozuko.models.Email({
         user: em.SERVER.user,
         to: params.to,
@@ -52,9 +52,9 @@ EmailMessage.send = function(params, callback){
         attempt: attempts+1
     });
     record.save();
-    
+
     var attempt = function(error, success){
-        
+
         if( !error && success){
             //console.error("Email Send: success; arguments = "+inspect(arguments));
             record.status = 'success';
@@ -64,9 +64,9 @@ EmailMessage.send = function(params, callback){
                 return callback.call(this, true, record);
             });
         }
-        
+
         attempts++;
-        var max = Bozuko.cfg('email.retry.attempts', 3)
+        var max = Bozuko.cfg('email.retry.attempts', 3);
         if( attempts > max ){
             //console.error("Email Send: attempts > max; arguments = "+inspect(arguments));
             record.status = 'failure';
@@ -74,15 +74,15 @@ EmailMessage.send = function(params, callback){
             record.save();
             return callback.call(this, error, success);
         }
-        
+
         // retry (5,10,15 minutes)
         return setTimeout(function(){
             record.attempt = attempts+1;
             record.save();
             em.send(attempt);
         }, attempts * Bozuko.cfg('email.retry.delay', 1000 * 60 * 5) );
-        
+
     };
-    
+
     em.send(attempt);
 };

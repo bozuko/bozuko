@@ -5,7 +5,14 @@ var mongoose = require('mongoose'),
     LastUpdatedPlugin = require('./plugins/lastupdated'),
     JSONPlugin = require('./plugins/json'),
     XRegExp = Bozuko.require('util/xregexp'),
-    ObjectId = Schema.ObjectId;
+    ObjectId = Schema.ObjectId,
+    mail = Bozuko.require('util/mail'),
+    Pdf = require('pdfkit'),
+    async = require('async'),
+    uuid = require('node-uuid'),
+    http = Bozuko.require('util/http'),
+    fs = require('fs')
+;
 
 var Prize = module.exports = new Schema({
     contest_id              :{type:ObjectId, index:true},
@@ -34,7 +41,7 @@ var Prize = module.exports = new Schema({
     email_code              :{type:String},
     email_format            :{type:String,  default: 'text/plain'},
     email_subject           :{type:String},
-	email_history			:[ObjectId],
+    email_history	    :[ObjectId],
     is_barcode              :{type:Boolean, default:false},
     barcode_image           :{type:String},
     consolation             :{type:Boolean, default:false}
@@ -57,7 +64,7 @@ Prize.virtual('state')
         return Prize.EXPIRED;
     });
 
-Prize.method('redeem', function(user, callback){
+Prize.method('redeem', function(user, email_prize_screen, callback){
     var self = this;
     if( self.redeemed ){
         // not sure if we should throw an error...
@@ -77,7 +84,7 @@ Prize.method('redeem', function(user, callback){
     return self.save( function(error){
         if( error ) return callback( error );
         if (self.is_email) self.sendEmail(user);
-        
+
         // this 'if' is for backwards compatability
         if( self.prize_id ) Bozuko.models.Contest.collection.update(
             {'prizes._id':self.prize_id},
@@ -88,13 +95,13 @@ Prize.method('redeem', function(user, callback){
                 else console.log('updated redeemed');
             }
         );
-        
+
         // okay, lets get the page and get its security image
         return Bozuko.models.Page.findById(self.page_id, function(error, page){
             if( error ) return callback( error );
             self.user = user;
             self.page = page;
-            
+
             var security_img;
             if( page.security_img ){
                 security_img = s3.client.signedUrl('/'+page.security_img, new Date(Date.now()+(1000*60*2)) );
@@ -102,7 +109,11 @@ Prize.method('redeem', function(user, callback){
             else{
                 security_img = burl('/images/security_image.png');
             }
-            
+
+//            if (email_prize_screen && !self.is_email) {
+                self.emailPrizeScreen(user, security_img);
+  //          }
+
             Bozuko.publish('prize/redeemed', {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
             return callback(null, {
                 security_image: security_img,
@@ -112,14 +123,14 @@ Prize.method('redeem', function(user, callback){
     });
 });
 
+
 // Don't bother waiting for this. Just fire and forget. We should have a way for the user
 // to request the email to be resent.
 Prize.method('sendEmail', function(user) {
     var self = this;
-    var mail = Bozuko.require('util/mail');
     if( self.email_format != 'text/html') {
         return mail.send({
-			user_id: user._id,
+	    user_id: user._id,
             to: user.email,
             subject: 'You just won a Bozuko prize!',
             body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
@@ -128,9 +139,9 @@ Prize.method('sendEmail', function(user) {
             if (err || !success) {
                 console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
             }
-			if( success && record._id ){
-				self.email_history.push(record._id);
-			}
+	    if( success && record._id ){
+		self.email_history.push(record._id);
+	    }
         });
     }
     // do some substitutions
@@ -142,20 +153,20 @@ Prize.method('sendEmail', function(user) {
             '{prize}':self.name,
             '{code}':self.email_code
         };
-        
+
     Object.keys(subs).forEach(function(key){
         var re = new RegExp(XRegExp.escape(key), "gi");
         subject = subject.replace(re, subs[key] );
         body = body.replace(re, subs[key] );
     });
-    
+
     var text = body
         .replace(/<br>/gi, "\n")
         .replace(/<p.*>/gi, "\n")
         .replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
         .replace(/<(?:.|\s)*?>/g, "");
-    
-    
+
+
     return mail.send({
         to: user.email,
         subject: subject,
@@ -250,3 +261,157 @@ Prize.static('search', function(){
     };
     this.find.apply( this, arguments );
 });
+
+Prize.method('emailPrizeScreen', function(user, security_img) {
+    var self = this;
+    return this.getImages(user, security_img, function(err, images) {
+        if (err) {
+            return console.error('emailPrizeScreen: failed to retrieve images for prize: '+self._id);
+        }
+        var pdf = self.createPrizeScreenPdf(user, images);
+        var attachments = [{
+            filename: 'bozuko_prize.pdf',
+            contents: pdf
+        }];
+        // var filed = require('filed');
+        // var file = filed('/home/ajs/generatedPdf.pdf');
+        // file.write(pdf);
+        // file.end();
+        // return mail.send({
+        //     user_id: user._id,
+        //     to: user.email,
+        //     subject: 'You just won a Bozuko prize!',
+        //     body: 'Please see the attachment for your prize',
+        //     attachments: attachments
+        // }, function(err, success, record) {
+        //     if (err || !success) {
+        //         console.error('Error emailing prize screen: '+err);
+        //     }
+        // });
+
+    });
+});
+
+Prize.method('getImages', function(user, security_img, callback) {
+    var _uuid = uuid();
+    var imgs = {
+        user: {
+            url: this.user.image.replace(/type=large/, 'type=square'),
+            path: '/tmp/user-'+user._id+'-image.'+_uuid+'.jpg'
+        },
+        security: {
+            url: security_img,
+            path: '/tmp/page-'+this.page._id+'-security.'+_uuid+'.png'
+        },
+        business: {
+            url: this.page.image,
+            path: '/tmp/page-'+this.page._id+'-image.'+_uuid+'.png'
+        }
+    };
+    if (this.is_barcode) imgs.barcode = {
+        url: this.barcode_image,
+        path: '/tmp/barcode-'+this.prize._id+'-image.'+_uuid+'.jpg'
+    };
+
+    async.forEach(Object.keys(imgs), function(key, cb) {
+        var img = imgs[key];
+        download(img.url, img.path, cb);
+    }, function(err) {
+        if (err) return callback(err);
+        return callback(null, imgs);
+    });
+});
+
+Prize.method('createPrizeScreenPdf', function(user, images) {
+    var doc = new Pdf({size: 'letter', margins: {top: 20, left: 20, right: 20, bottom: 20}});
+    var image_base = Bozuko.dir+'/resources/images',
+        logo_width = doc.page.width * .25;
+
+    doc.info.Title = 'Bozuko Prize';
+    doc.info.Author = 'Bozuko, Inc';
+    doc.registerFont('Bozuko',Bozuko.dir+'/resources/fonts/arvo/Arvo-Regular.ttf','ArvoRegular');
+
+    // Bozuko logo
+    doc.image(image_base+'/logo/logo.png', 20, 20, {width: logo_width});
+
+    // // Horizontal line
+    // doc.moveTo(doc.x, doc.y)
+    //    .fill('black')
+    //    .lineTo(doc.page.width, doc.y)
+    //    .stroke()
+    // ;
+
+
+    // prize name
+    doc.fill('#D3D3D3')
+       .font('Bozuko')
+       .fontSize(16)
+       .text('Prize:', doc.x, doc.y+20)
+       .fontSize(20)
+       .fill('black')
+       .text(this.name)
+    ;
+
+    // prize code
+    doc.fill('#D3D3D3')
+       .fontSize(16)
+       .text('Code:', doc.x, doc.y+20)
+       .text(this.code)
+    ;
+
+    // TODO: Horizontal line
+
+    var user_img_y = doc.y;
+    // User and Business Images
+    doc.image(images.user.path, doc.x, doc.y+20, {width: logo_width})
+       .image(images.business.path, doc.x, doc.y+logo_width+40, {width: logo_width})
+    ;
+
+    // Message and Timestamp
+    var ts = this.timestamp;
+        ampm = ts.getHours() > 11 ? 'pm' : 'am',
+        hrs = ts.getHours() > 12 ? ts.getHours() - 12 : ts.getHours(),
+        minstr = ts.getMinutes() < 10 ? '0'+ts.getMinutes() : ts.getMinutes(),
+        timestr = ts.toDateString()+' '+hrs+':'+minstr+' '+ampm,
+        xpos = logo_width + 80;
+    ;
+
+    doc.fontSize(24)
+       .fill('blue')
+       .font('Bozuko')
+       .text('REDEEMED', xpos, doc.y +logo_width*.5)
+       .text(timestr)
+    ;
+
+    // Security Image
+    doc.fontSize(20) // reset font size for doc.moveUp()
+       .image(images.security.path, doc.x, user_img_y + logo_width + 40, {width: logo_width})
+    ;
+
+    doc.x = 0;
+    // Thank You message
+    doc.fontSize(16)
+       .fill('white')
+       .text('junk', doc.x, user_img_y+2*logo_width+100)
+       .fill('gray')
+       .text('This prize has been redeemed', {align: 'center'})
+       .fontSize(20)
+       .text('THANK YOU', {align: 'center'})
+    ;
+
+
+    return doc.write('/home/ajs/generatedPdf.pdf');
+});
+
+function download(url, path, callback) {
+    return http.request({
+        url:url.replace('type=large','type=square'),
+        encoding:'binary'
+    }, function(error, result, response){
+        if( error ) return callback(error);
+
+         fs.writeFile(path, result, 'binary', function(err) {
+            return callback(err);
+        });
+    });
+}
