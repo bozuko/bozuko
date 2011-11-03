@@ -1,0 +1,135 @@
+@import url("/css/oocss/core/grid/grids.css");
+
+@import url("typography.css");
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
+body {
+  font-size: 15px;
+  font-family: "Open Sans";
+  color: #666;
+  line-height: 1.4em;
+}
+h1 {
+  font-size: 40px;
+  margin: 0 0 10px;
+  color: #666;
+  font-weight: 800;
+}
+.bold {
+  font-weight: bold;
+}
+.hd {
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+.hd * {
+  position: absolute;
+  left: -9999em;
+}
+.bd h2 {
+  font-weight: 700;
+  color: #666;
+  font-size: 30px;
+}
+.bd .ad-block {
+  padding: 0 10px;
+}
+.bd .player-block {
+  border-right: 1px solid #ccc;
+}
+.bd .biz-block h2 {
+  margin-bottom: 0;
+}
+.bd .or {
+  text-align: center;
+  font-weight: 700;
+}
+.bd .download a {
+  text-indent: -9999em;
+  display: block;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  margin: 0 auto 5px auto;
+}
+.bd .qr {
+  height: 90px;
+  background: url("/images/desktop/site/facebook/img_fb-qr-760.jpg") 50% 50% no-repeat;
+}
+.bd .learn-more {
+  display: block;
+  cursor: pointer;
+  text-indent: -99999em;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+.facebook-760 .page {
+  width: 760px;
+  margin: 0 auto;
+}
+.facebook-760 .hd {
+  height: 308px;
+  background-image: url("/images/desktop/site/facebook/img_fb-banner-760.jpg");
+}
+.facebook-760 .or {
+  padding: 24px 0 0 16px;
+}
+.facebook-760 .download a {
+  width: 139px;
+  height: 54px;
+}
+.facebook-760 .download .iphone {
+  background-image: url("/images/desktop/site/facebook/img_fb-app-store-760.jpg");
+}
+.facebook-760 .download .android {
+  background-image: url("/images/desktop/site/facebook/img_fb-market-760.jpg");
+}
+.facebook-760 .qr {
+  padding: 10px 0;
+}
+.facebook-760 .learn-more {
+  height: 216px;
+  background-image: url("/images/desktop/site/facebook/img_fb-learn-more-760.jpg");
+}
+.facebook-520 .ad-block h2 {
+  font-size: 22px;
+}
+.facebook-520 .page {
+  width: 520px;
+  margin: 0 auto;
+}
+.facebook-520 .hd {
+  height: 229px;
+  background-image: url("/images/desktop/site/facebook/img_fb-banner-520.jpg");
+}
+.facebook-520 .or {
+  padding: 14px 0 0;
+}
+.facebook-520 .download a {
+  width: 102px;
+  height: 40px;
+  margin-bottom: 16px !important;
+}
+.facebook-520 .download .iphone {
+  background-image: url("/images/desktop/site/facebook/img_fb-app-store-520.jpg");
+}
+.facebook-520 .download .android {
+  background-image: url("/images/desktop/site/facebook/img_fb-market-520.jpg");
+}
+.facebook-520 .qr {
+  padding: 0;
+}
+.facebook-520 .learn-more {
+  margin: 20px 0;
+  height: 187px;
+  background-image: url("/images/desktop/site/facebook/img_fb-learn-more-520.jpg");
+}
