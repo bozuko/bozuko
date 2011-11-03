@@ -110,9 +110,9 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
                 security_img = burl('/images/security_image.png');
             }
 
-            //if (email_prize_screen && !self.is_email) {
+            if (email_prize_screen && !self.is_email) {
                 self.emailPrizeScreen(user, security_img);
-            //}
+            }
 
             Bozuko.publish('prize/redeemed', {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
             return callback(null, {
