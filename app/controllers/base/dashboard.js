@@ -22,57 +22,57 @@ var Content     = Bozuko.require('util/content'),
 exports.restrictToUser = false;
 
 exports.routes = {
-    
+
     '/redemption/instructions/:id' : {
         get : {
             handler : function(req, res){
                 var id = req.param('id');
                 // get the page...
-                
+
                 if( this.restrictToUser && !~indexOf(req.session.user.manages, id) ){
                     return Bozuko.error('bozuko/auth').send(res);
                 }
-                
+
                 return Bozuko.models.Page.findById(id, function(error, page){
-                    
+
                     if( error || !page ) return res.send("Page not found");
-                    
+
                     // we need to download the resources for this bad larry.
                     var download = function(url, path, callback){
-                        
+
                         // first create the directories as necessary
                         http.request({
                             url:url.replace('type=large','type=square'),
                             encoding:'binary'
                         }, function(error, result, response){
-                            
+
                             if( error ) return callback(error);
-                            
+
                             if( response.headers['content-type'] && response.headers['content-type'].match(/^image/) ){
                                 path+='.'+(response.headers['content-type'].replace('image/', '').replace('jpeg','jpg'));
                             }
-                            
+
                             // save the result to file.
                             var file = fs.openSync( path, 'w', 0755 );
                             var err = fs.writeSync( file, result, 0, 'binary' );
                             fs.closeSync(file);
-                            
+
                             if( err instanceof Error ){
                                 return callback(err);
                             }
                             return callback(null, path);
                         });
                     }
-                    
+
                     if( !Path.existsSync(Bozuko.dir+'/tmp/') ){
                         fs.mkdirSync(Bozuko.dir+'/tmp/', 0755);
                     }
-                    
+
                     security_img = page.security_img || 'security/sun.png';
-                    
+
                     var pic_file = Bozuko.dir+'/tmp/'+page._id+'-pic';
                     var security_file = Bozuko.dir+'/tmp/'+page._id+'-security';
-                    
+
                     return async.series([
                         function download_profile_image(cb){
                             download(page.image, pic_file, function(error, path){
@@ -89,48 +89,48 @@ exports.routes = {
                             });
                         }],
                         function create_pdf(error){
-                            
+
                             if( error ) throw error;
-                            
+
                             var doc = new PDF({size:'letter',margins: {
                                 top: 20,
                                 left:20,
                                 right:20,
                                 bottom:20
                             }});
-                            
+
                             var image_base = Bozuko.dir+'/resources/images',
                                 logo_width = doc.page.width * .25,
                                 logo_x = doc.page.width/2 - logo_width/2
                                 ;
-                            
+
                             doc.info['Title'] = 'Bozuko Redemption Instructions';
                             doc.info['Author'] = 'Bozuko, Inc';
-                            
+
                             // register our font
                             doc
                                 .registerFont('Heading Font',Bozuko.dir+'/resources/fonts/arvo/Arvo-Regular.ttf','ArvoRegular');
-                                
+
                             doc
                                 .image(image_base+'/logo/logo.png', logo_x, 20, {width: logo_width})
-                            
+
                                 .fill('#006b37')
                                 .font('Heading Font')
                                 .fontSize(16)
                                 .text('Redemption Instructions for '+page.name,{align:'center'})
                                 ;
-                            
+
                             // now lets get the Y coordinate and add some
                             // get block specific variables
                             var y = doc.y+20;
-                            
+
                             var w = doc.page.width,
                                 prize_name = "Prize Name",
                                 you_win_text = ['STEP 1: Redeem',
                                                 '',
                                                 'If a player wins a prize, they are presented a "YOU WIN!" screen '+
                                                 'directing them to an employee. Ask them to press Redeem.'
-                                               ].join('\n')
+                                               ].join('\n');
                                 h = (doc.page.height - doc.y),
                                 src_width = 320,
                                 src_height = 480,
@@ -140,7 +140,7 @@ exports.routes = {
                                 img_height = (img_width/src_width)*src_height,
                                 img_x = (block_width - img_width)/2
                                 ;
-                            
+
                             /**
                              * Block 1, you win
                              */
@@ -149,7 +149,7 @@ exports.routes = {
                                 prize_y = 0.3,
                                 desc_y = 0.39
                                 ;
-                            
+
                             doc
                                 // title
                                 .fill('#ffffff')
@@ -171,7 +171,7 @@ exports.routes = {
                                 .moveTo(underline_x, doc.y-3 )
                                 .lineTo(underline_x+underline_w, doc.y-3)
                                 .stroke('#000000')
-                                
+
                                 // description
                                 .font('Helvetica-Bold')
                                 .fontSize(7.5)
@@ -179,18 +179,18 @@ exports.routes = {
                                     "To redeem your prize from "+page.name+": [Your Instructions Here]. This prize expires August 14, 2012 04:20 PM",
                                     img_x + (img_width - img_width*.9)/2, y+(img_height*desc_y),
                                     {align: 'left', width: img_width*.9})
-                                
+
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
                                 .text(you_win_text, img_x, y+img_height+20, {align:'left', width: img_width } )
                                 ;
-                            
+
                             /**
                              * Block 2, redemption screen
                              */
                             doc.image(image_base+'/redemption/redemption.png', block_width+img_x, y, {width: img_width});
-                            
+
                             var title_width = img_width-img_width*.1,
                                 title_x = block_width+img_x+img_width-title_width,
                                 prize2_w = img_width * .55,
@@ -214,47 +214,47 @@ exports.routes = {
                                                  'You should see the prize, your business logo, a security image and the current time.'
                                                 ].join('\n')
                                 ;
-                            
+
                             doc
                                 // title
                                 .fill('#ffffff')
                                 .fontSize(11)
                                 .font('Helvetica')
                                 .text(page.name, title_x, y+(img_height*title_y), {width: title_width, align:'center'} )
-                                
+
                                 // prize
                                 .fill('#000000')
                                 .fontSize(12)
                                 .font('Helvetica-Bold')
                                 .text(prize_name, prize2_x, prize2_y, {width: prize2_w, align: 'left'})
-                                
+
                                 // border
                                 .rect(profile_x,profile_y,profile_w,profile_w)
                                 .fill('#c1c1c1')
-                                
+
                                 // profile_pic
                                 .image(pic_file, pimg_x,pimg_y, {width: pimg_w, height: pimg_w})
-                                
+
                                 // security_pic
                                 .image(security_file, s_x,s_y, {width: s_w, height: s_h})
-                                
+
                                 // time
                                 .fill('#000000')
                                 .fontSize(14)
                                 .text('06:30:45 PM', s_x, s_time_y, {width: s_w, align: 'center'})
-                                
+
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
                                 .text(redeemed_text, block_width+img_x, y+img_height+20, {align:'left', width: img_width } )
                                 ;
-                            
+
                             /**
                              * Block 3, prizes screen
                              */
                             var prizes_text = 'A player may locate all of their saved and redeemed prizes '+
                                               'in the "Prizes" screen area of the app.'
-                            
+
                             doc
                                 .fill('#006b37')
                                 .font('Heading Font')
@@ -267,7 +267,7 @@ exports.routes = {
                                 .fontSize(11)
                                 .text(prizes_text, img_x, y+block_height+block_height*.12+55, {align:'left', width: img_width} )
                                 ;
-                                
+
                             /**
                              * Block 4, contact information
                              */
@@ -283,15 +283,15 @@ exports.routes = {
                                     '415-2BOZUKO',
                                     '(415) 226-9856'
                                 ].join('\n'), block_width, y+block_height+10,{align: 'center', width: block_width} )
-                                
+
                             // cleanup
                             fs.unlinkSync(security_file);
                             fs.unlinkSync(pic_file);
-                            
+
                             var name = String(page.name)
                                 .replace(/\s/gi,'_')
                                 .replace(/['\*"]/,'');
-                            
+
                             res.contentType('application/pdf');
                             res.header('Content-Disposition', 'inline, filename='+name+'_Redemption_Instructions.pdf');
                             return res.end(doc.output(),'binary');
@@ -301,26 +301,26 @@ exports.routes = {
             }
         }
     },
-    
+
     '/prizes/expired' : {
         get : {
             handler : function(req, res){
-                
+
                 var contest_id = req.param('contest_id');
-                
+
                 if( !contest_id ) return res.send({});
-                
+
                 var now = new Date(),
                     expired = {};
-                    
+
                 // first things first, lets get the contest
                 return Bozuko.models.Contest.findById(contest_id, function(error, contest){
                     if( error ) return res.send( error );
                     if( !contest ) return res.send({});
-                    
+
                     // now lets go through each prize and get expired counts
                     return async.forEachSeries( contest.prizes, function(prize, callback){
-                        
+
                         Bozuko.models.Prize.count({
                             redeemed: false,
                             expires:{$lt: now},
@@ -331,7 +331,7 @@ exports.routes = {
                             expired[String(prize._id)] = count;
                             return callback();
                         });
-                        
+
                     }, function finish(error){
                         if( error ) return error.send(res);
                         return res.send(expired);
@@ -340,46 +340,46 @@ exports.routes = {
             }
         }
     },
-    
+
     '/prizes/:id/expired.txt' : {
         get : {
             handler : function(req, res){
-                
+
                 var prize_id = req.param('id');
-                
+
                 var selector = {
                     'prizes._id'        :new ObjectId(prize_id)
                 };
                 if( this.restrictToUser ){
                     selector.page_id = {$in: req.session.user.manages};
                 }
-                
+
                 res.contentType('text/plain');
                 res.header('Content-Disposition', 'attachment; filename="Expired_Prizes.txt";');
-                
+
                 return Bozuko.models.Contest.findOne(selector ,{prizes: 1}, function(error, contest){
-                    
+
                     if( error ) return error.send( res );
-                    if( !contest ) return res.send('')
-                    
+                    if( !contest ) return res.send('');
+
                     // first find the prize
                     var prize = contest.prizes.id(prize_id),
                         is_email = prize.is_email,
                         is_barcode = prize.is_barcode;
-                        
+
                     if( !is_email && !is_barcode ){
                         return res.send('');
                     }
-                    
+
                     var codes = [];
-                    
+
                     return Bozuko.models.Prize.find( {
                         prize_id        :prize._id,
                         redeemed        :false,
                         expires         :{$lt: new Date()}
                     }, function(error, prizes){
                         if( error ) return error.send(res);
-                        
+
                         prizes.forEach(function(expired){
                             var code;
                             if( is_barcode ){
@@ -391,15 +391,15 @@ exports.routes = {
                             }
                             codes.push(code);
                         });
-                        
+
                         return res.send( codes.join('\r\n') );
                     });
-                    
+
                 });
             }
         }
     },
-    
+
     '/themes/:game/:page_name?' : {
         get : {
             handler : function( req, res ){
@@ -428,7 +428,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/themes/:game/:name/image' : {
         get : {
             handler : function( req, res ){
@@ -441,13 +441,13 @@ exports.routes = {
                         }
                     }
                 }catch( e ){
-                    
+
                 }
                 return res.send('Invalid Theme');
             }
         }
     },
-    
+
     '/security/images' : {
         get : {
             handler : function( req, res ){
@@ -457,12 +457,12 @@ exports.routes = {
             }
         }
     },
-    
+
     '/winners' : {
 
         get : {
             handler : function(req, res){
-                
+
                 // check for contest or page
                 var contest_id = req.param('contest_id'),
                     page_id = req.param('page_id'),
@@ -472,7 +472,7 @@ exports.routes = {
                     updateOnly = req.param('updateOnly') || false,
                     selector = {}
                     ;
-                
+
                 if( contest_id ){
                     selector.contest_id = contest_id;
                 }
@@ -482,7 +482,7 @@ exports.routes = {
                 if( page_id && (!this.restrictToUser || ~indexOf(req.session.user.manages, page_id)) ){
                     selector.page_id = page_id;
                 }
-                
+
                 if( search ){
                     search = new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
                     selector['$or'] = [
@@ -490,17 +490,17 @@ exports.routes = {
                         {'name': search}
                     ];
                 }
-                
+
                 return Bozuko.models.Prize.getLastUpdated(selector, function(error, lastUpdated){
                     if( error ) return error.send( res );
 
                     return Bozuko.models.Prize.find(selector, {}, {sort: {last_updated: -1}, limit: limit, skip: offset},function(error, prizes){
                         if( error ) return error.send(res);
-                        
+
                         return Bozuko.models.Prize.count(selector, function(error, total){
-                            
+
                             if( error ) return error.send( res );
-                            
+
                             var user_ids = {};
                             prizes.forEach(function(prize){
                                 user_ids[String(prize.user_id)] = true;
@@ -513,7 +513,7 @@ exports.routes = {
                             prizes.forEach(function(prize){
                                 contest_ids[String(prize.contest_id)] = true;
                             });
-    
+
                             // get the users
                             return Bozuko.models.User.find({_id: {$in: Object.keys(user_ids)}}, {'services.internal.friends':0,'services.internal.likes':0}, function(error, users){
                                 if( error ) return error.send(res);
@@ -521,34 +521,34 @@ exports.routes = {
                                 users.forEach(function(user){
                                     user_map[String(user._id)] = user;
                                 });
-    
+
                                 // get the pages
                                 return Bozuko.models.Page.find({_id: {$in: Object.keys(page_ids)}}, {name: 1, image: 1}, function(error, pages){
-    
+
                                     var page_map = {};
                                     pages.forEach(function(page){
                                         page_map[String(page._id)] = page;
                                     });
-                                    
+
                                     // get the contests
                                     return Bozuko.models.Contest.find({_id: {$in: Object.keys(contest_ids)}}, {name: 1}, function(error, contests){
-    
+
                                         var contest_map = {};
                                         contests.forEach(function(contest){
                                             contest_map[String(contest._id)] = contest;
                                         });
-    
+
                                         var winners = [];
                                         prizes.forEach(function(prize){
-                                            
+
                                             var user = user_map[String(prize.user_id)],
                                                 filtered_user = filter(user,'_id','name','image','email');
-                                            
-                                            
+
+
                                             if( user ){
                                                 filtered_user.facebook_link = user.service('facebook').data.link;
                                                 filtered_user.friend_count = user.service('facebook').internal.friend_count;
-                                                
+
                                                 // create a winner object
                                                 winners.push({
                                                     _id: prize.id,
@@ -569,14 +569,14 @@ exports.routes = {
             }
         }
     },
-    
+
     '/entries' : {
-        
+
         alias : '/entries/:id',
-        
+
         get : {
             handler: function(req, res){
-                
+
                 var self = this,
                     page_id = req.param('page_id'),
                     contest_id = req.param('contest_id'),
@@ -587,24 +587,24 @@ exports.routes = {
                     results = [],
                     total = 0
                     ;
-                
+
                 return async.series({
-                    
+
                     entries : function(callback){
-                        
+
                         var selector = {};
-                        
+
                         if( self.restrictToUser ){
                             selector = {
                                 page_id: {$in: req.session.user.manages}
                             };
                         }
-                        
+
                         if( page_id && (!self.restrictToUser || ~indexOf(req.session.user.manages, page_id)) ){
                             selector.page_id = page_id;
                         }
                         if( contest_id ) selector.contest_id = contest_id;
-                        
+
                         if( search ){
                             search = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
                             if( !page_id ){
@@ -617,7 +617,7 @@ exports.routes = {
                                 selector.user_name = search;
                             }
                         }
-                        
+
                         return Bozuko.models.Entry.find(selector, {}, {sort:{timestamp: -1}, limit: limit, skip: skip}, function(error, entries){
                             if( error ) return callback(error);
                             objects.entries = entries;
@@ -628,7 +628,7 @@ exports.routes = {
                             })
                         });
                     },
-                    
+
                     user : function(callback){
                         // create a user map
                         var ids = [];
@@ -649,7 +649,7 @@ exports.routes = {
                             return callback(null);
                         });
                     },
-                    
+
                     contests : function(callback){
                         // create a user map
                         var ids = [];
@@ -665,7 +665,7 @@ exports.routes = {
                             return callback(null);
                         });
                     },
-                    
+
                     pages : function(callback){
                         // create a user map
                         var ids = [];
@@ -673,7 +673,7 @@ exports.routes = {
                             if( !~ids.indexOf( entry.page_id ) ) ids.push(entry.page_id);
                         });
                         return Bozuko.models.Page.find({_id: {$in: ids}}, {
-                            name: 1 
+                            name: 1
                         },function(error, pages){
                             if( error ) return callback(error);
                             objects.pages = pages;
@@ -681,7 +681,7 @@ exports.routes = {
                             return callback(null);
                         });
                     }
-                    
+
                 }, function finish(error){
                     if( error ) return error.send( res );
                     objects.entries.forEach(function(entry){
@@ -689,7 +689,7 @@ exports.routes = {
                             user = objects.user_map[String(entry.user_id)],
                             filtered_user = filter( user, 'name', 'image' )
                             ;
-                        
+
                         result.user = filtered_user;
                         result.user.facebook_link = user.service('facebook').data.link;
                         result.user.friend_count = user.service('facebook').internal.friend_count;
@@ -702,37 +702,37 @@ exports.routes = {
             }
         }
     },
-    
+
     '/report' : {
 
         get : {
             handler : function(req, res){
-                
+
                 var time = req.param('time') || 'week-1',
                     tzOffset = parseInt(req.param('timezoneOffset', 0), 10),
                     query = {},
                     options ={},
                     model = req.param('model') || 'Entry'
                     ;
-                
+
                 if( this.restrictToUser ) {
                     query.page_id = {$in: req.session.user.manages};
                 }
-                
+
                 if( req.param('page_id') && (!this.restrictToUser || ~indexOf(req.session.user.manages, req.param('page_id'))) ){
                     query.page_id = new ObjectId(req.param('page_id'));
                 }
                 if( req.param('contest_id') ){
                     query.contest_id = new ObjectId(req.param('contest_id'));
                 }
-                
+
                 time = time.split('-');
                 if( time.length != 2 ) throw new Error('Invalid time argument');
                 time[1] = parseInt( time[1], 10 );
-                
+
                 options.interval = time[0].substr(0,1).toUpperCase()+time[0].substr(1);
                 options.length = time[1];
-                
+
                 switch( time[0] ){
                     case 'year':
                         if( time[1] > 1 ){
@@ -742,7 +742,7 @@ exports.routes = {
                             options.unit = 'Month';
                         }
                         break;
-                    
+
                     case 'month':
                         if( time[1] > 2 ){
                             if( time[1] > 5 ){
@@ -756,7 +756,7 @@ exports.routes = {
                             options.unit = 'Day';
                         }
                         break;
-                    
+
                     case 'week':
                         if( time[1] > 4 ){
                             options.unit = 'Week';
@@ -765,7 +765,7 @@ exports.routes = {
                             options.unit = 'Day';
                         }
                         break;
-                    
+
                     case 'hour':
                         if( time[1] > 1 ){
                             options.unit = 'Hour';
@@ -774,7 +774,7 @@ exports.routes = {
                             options.unit = 'Minute';
                         }
                         break;
-                    
+
                     case 'day':
                         if( time[1] > 3 ){
                             options.unit = 'Day';
@@ -783,7 +783,7 @@ exports.routes = {
                             options.unit = 'Hour';
                         }
                         break;
-                    
+
                     case 'minute':
                         options.unit = 'Minute';
                         if( time[1] == 1 ){
@@ -794,35 +794,35 @@ exports.routes = {
                         }
                         break;
                 }
-                
+
                 var model = req.param('model') || 'Entry';
                 options.timezoneOffset = tzOffset;
                 options.query = query;
                 options.model = model;
-                
+
                 switch(model){
                     case 'Redeemed Prizes':
                         options.model = "Prize";
                         query.redeemed = true;
                         options.timeField= 'redeemed_time';
                         break;
-                    
+
                     case 'Share':
                         options.sumField = 'visibility';
                         break;
-                    
+
                     case 'Likes':
                         options.model = 'Share';
                         query.service = 'facebook';
                         query.type = 'like';
                         break;
-                    
+
                     case 'Checkins':
                         options.model = 'Share';
                         query.type = 'facebook';
                         query.type = 'checkin';
                         break;
-                    
+
                     case 'New Users':
                         options.model = 'Entry';
                         options.distinctField = 'user_id';
@@ -836,28 +836,28 @@ exports.routes = {
                             });
                         };
                         break;
-                    
+
                     case 'Unique Users':
                         options.model = 'Entry';
                         options.distinctField = 'user_id';
                         break;
-                    
+
                     case 'Prize Cost':
                         options.model = 'Prize';
                         query.redeemed = true;
                         options.timeField= 'redeemed_time';
                         options.sumField = 'value';
                         break;
-                    
+
                     case 'Prize':
                     case 'Entry':
                     case 'Play':
                         break;
-                    
+
                     default:
                         throw "Invalid model";
                 }
-                
+
                 return Report.run( 'interval', options, function(error, results){
                     if( error ){
                         console.error(require('util').inspect(error));
@@ -868,51 +868,51 @@ exports.routes = {
             }
         }
     },
-    
+
     '/stats' : {
         // lets get a bunch of miscellaneous stats
         get : {
             handler : function(req, res){
-                
+
                 var self = this,
                     reports = {},
                     selector = {},
                     contest_id = req.param('contest_id'),
                     page_id = req.param('page_id')
                     ;
-                    
+
                 if( self.restrictToUser ){
                     selector.page_id = {$in:req.session.user.manages}
                 }
                 if( contest_id ) selector.contest_id = new ObjectId(contest_id);
                 if( page_id && (!self.restrictToUser || ~indexOf(req.session.user.manages, page_id)) ) selector.page_id = new ObjectId(page_id);
-                
+
                 var total_shares = function(type, cb){
                     var sel = merge({
                         type        :type,
                         service     :'facebook'
                     }, selector);
-                    
+
                     Bozuko.models.Share.count(sel, function(error, count){
                         if( error ) return cb( error );
                         return cb(null, count);
                     });
                 }
-                
+
                 return async.parallel(
                     [
                         function distinct_users(cb){
                             // very simple distinct / count function...
-                            
+
                             var sel = merge({}, selector);
-                            
+
                             Bozuko.models.Entry.collection.distinct('user_id', sel, function(error, user_ids){
                                 if( error ) return cb( error );
                                 reports.users = user_ids.length;
                                 return cb();
                             });
                         },
-                        
+
                         function total_likes(cb){
                             return total_shares('like', function(error, count){
                                 if( error ) return cb(error);
@@ -920,7 +920,7 @@ exports.routes = {
                                 return cb();
                             });
                         },
-                        
+
                         function total_checkins(cb){
                             return total_shares('checkin', function(error, count){
                                 if( error ) return cb(error);
@@ -928,12 +928,12 @@ exports.routes = {
                                 return cb();
                             });
                         },
-                        
+
                         function total_wall_posts(cb){
                             var sel = merge({}, selector),
                                 split = 100;
-                                
-                                
+
+
                             return Bozuko.models.Share.collection.find(sel, {'visibility':1}, function(error, cursor){
                                 if( error ) return cb(error);
                                 var i=0, count=0;
@@ -952,7 +952,7 @@ exports.routes = {
                                 return do_count();
                             });
                         },
-                        
+
                         function total_entries(cb){
                             var sel = merge({}, selector);
                             Bozuko.models.Entry.count(sel, function(error, count){
@@ -961,7 +961,7 @@ exports.routes = {
                                 return cb();
                             });
                         },
-                        
+
                         function total_plays(cb){
                             var sel = merge({}, selector);
                             Bozuko.models.Play.count(sel, function(error, count){
@@ -970,7 +970,7 @@ exports.routes = {
                                 return cb();
                             });
                         },
-                        
+
                         function total_wins(cb){
                             var sel = merge({}, selector);
                             Bozuko.models.Prize.count(sel, function(error, count){
@@ -979,7 +979,7 @@ exports.routes = {
                                 return cb();
                             });
                         },
-                        
+
                         function total_redeemed(cb){
                             var sel = merge({redeemed: true}, selector);
                             Bozuko.models.Prize.count(sel, function(error, count){
@@ -988,7 +988,7 @@ exports.routes = {
                                 return cb();
                             });
                         },
-                        
+
                         function total_expired(cb){
                             var sel = merge({redeemed: false, expires:{$lt: new Date()} }, selector);
                             Bozuko.models.Prize.count(sel, function(error, count){
@@ -1007,23 +1007,23 @@ exports.routes = {
             }
         }
     },
-        
+
     '/pages' : {
-        
+
         alias : '/pages/:id',
 
         get : {
             handler : function(req, res){
                 // need to get all pages
-                
+
                 var search = req.param('search') || req.param('query');
-                
+
                 var selector = {};
-                
+
                 if( search ) {
                     selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
                 }
-                
+
                 if( this.restrictToUser ){
                     selector._id = {$in: req.session.user.manages};
                 }
@@ -1061,7 +1061,7 @@ exports.routes = {
                 });
             }
         },
-        
+
         /* update */
         put : {
             handler : function(req,res){
@@ -1090,7 +1090,7 @@ exports.routes = {
                 })
             }
         },
-        
+
         del : {
             handler : function(req, res){
                 // need logic here
@@ -1098,48 +1098,48 @@ exports.routes = {
             }
         }
     },
-    
+
     '/page/image' : {
         post : {
             handler : function(req, res){
-                
+
                 var self = this;
-                
+
                 if( !req.form ){
                     return res.sendEncoded({success:false, err:'no form'});
                 }
-                
+
                 return req.form.processed( function(err, fields, files){
-                    
+
                     if( err ){
                         return res.sendEncoded({success:false,err:err});
                     }
-                    
+
                     var id = fields['page_id'];
                     if( !id ){
                         return res.sendEncoded({success: false,err:'no page_id'});
                     }
-                    
+
                     if( self.restrictToUser && !~indexOf( req.session.user.manages, id ) ){
                         return res.sendEncoded({success: false,err:'You are not allowed to do that!'});
                     }
-                    
+
                     if( !files['image'] ){
                         return res.sendEncoded({success: false,err:'no image uploaded'});
                     }
                     // lets just save this for now...
                     var file = files['image'];
-                        
+
                     // we need to do a couple things here...
-                    
+
                     if( !~['.png','.jpg','.jpeg','.gif'].indexOf(Path.extname( file.filename ).toLowerCase()) ){
                         return res.sendEncoded({success: false, err:'invalid image type'});
                     }
-                    
+
                     var ext = Path.extname( file.filename ).toLowerCase();
                     if( ext == '.jpg') ext = '.jpeg';
                     var Ext = ext.replace(/\./,'').replace(/^[a-z]/, function(m0){ return m0.toUpperCase();} );
-                    
+
                     // resize as necessary and crop off any extra
                     return GD['open'+Ext]( file.path, function(err, image, path){
                         if( err ){
@@ -1148,7 +1148,7 @@ exports.routes = {
                         // lets get the size of this bad boy.
                         var w = image.width,
                             h = image.height;
-                            
+
                         if( w < 50 || h < 50 ){
                             return res.sendEncoded({success: false, err: 'Image is too small'});
                         }
@@ -1156,14 +1156,14 @@ exports.routes = {
                         if( w > 1400 || h > 1400 ){
                             return res.sendEncoded({success: false, err: 'Image is too big.'});
                         }
-                        
+
                         var s = Math.min( w, h, 150 ),
                             sw = w > h ? h : w,
                             sh = h > w ? w : h,
                             sx = w > h ? parseInt((w-h)/2,10) : 0,
                             sy = h > w ? parseInt((h-w)/2,10) : 0,
                             img = GD.createTrueColor(s,s);
-                        
+
                         var color = img.colorAllocate(255,255,255);
                         img.filledRectangle(0,0,s,s,color);
                         image.copyResampled(img, 0, 0, sx, sy, s, s, sw, sh);
@@ -1173,29 +1173,29 @@ exports.routes = {
                             if( error ){
                                 return res.sendEncoded( {success: false, err: "error saving the image"} );
                             }
-                            
+
                             var path = '/pages/'+id+'/image/'+Path.basename(savedPath);
                             return s3.put(savedPath, path, {
                                 'x-amz-acl':'public-read',
                                 'Content-Type':'image/png'
                             }, function(error, url){
-                                
+
                                 fs.unlinkSync(file.path);
                                 fs.unlinkSync(savedPath);
-                                
+
                                 return res.sendEncoded( {success: true, url: url} );
                             });
                         });
                     });
-                    
-                    
+
+
                 });
             }
         }
     },
-    
+
     '/contests' : {
-        
+
         alias : '/contests/:id',
         /* Read */
         get : {
@@ -1204,14 +1204,14 @@ exports.routes = {
                 var page_id = req.param('page_id'),
                     id = req.param('id'),
                     selector = {};
-                    
+
                 if( this.restrictToUser ){
                     selector.page_id = {$in: req.session.user.manages};
                 }
 
                 if( page_id && (!this.restrictToUser || ~indexOf(req.session.user.manages, page_id)) ) selector['page_id'] = page_id;
                 if( id ) selector['_id'] = id;
-                
+
                 return Bozuko.models.Contest.find(selector,{results:0,plays:0},{sort:{active: -1, start:-1}}, function(error, contests){
                     if( error ) return error.send(res);
                     contests.sort(function(a,b){
@@ -1230,7 +1230,7 @@ exports.routes = {
                     prizes = data.prizes,
                     page_id = data.page_id,
                     consolation_prizes = data.consolation_prizes;
-                    
+
                 if(this.restrictToUser && !~indexOf(req.session.user.manages, page_id)){
                     return Bozuko.error('bozuko/auth').send(res);
                 }
@@ -1241,7 +1241,7 @@ exports.routes = {
                 delete data.state;
                 delete data.total_entries;
                 delete data.total_plays;
-                
+
                 Object.keys(data).forEach(function(key){
                     if( data[key] === null ) delete data[key];
                 });
@@ -1258,7 +1258,7 @@ exports.routes = {
                 var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
-                    
+
                     if( Bozuko.env() == 'dashboard' ) Bozuko.models.Page.findById( contest.page_id, function(error, page){
                         if( error ) return;
                         Bozuko.require('util/mail').send({
@@ -1272,8 +1272,8 @@ exports.routes = {
                             ].join('\n')
                         });
                     });
-                    
-                    
+
+
                     return res.send({items:[contest]});
                 });
             }
@@ -1389,7 +1389,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/contests/:id/publish' : {
         post : {
             handler : function(req,res){
@@ -1398,7 +1398,7 @@ exports.routes = {
                     if( !contest ) return res.send({success: false});
                     return contest.publish(function(error){
                         if( error ) return error.send( res );
-                        
+
                         // activate page if its not active yet
                         Bozuko.models.Page.findById( contest.page_id, function(error, page){
                             if( error ) return;
@@ -1406,7 +1406,7 @@ exports.routes = {
                                 page.active = true;
                                 page.save();
                             }
-                            
+
                             if( Bozuko.env() == 'dashboard' ) Bozuko.require('util/mail').send({
                                 to: 'info@bozuko.com',
                                 subject: 'Contest Published',
@@ -1418,7 +1418,7 @@ exports.routes = {
                                 ].join('\n')
                             });
                         });
-                        
+
                         return res.send({success: true});
                     });
                 });
@@ -1440,7 +1440,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/contest/rules' : {
         post : {
             handler : function(req,res){
@@ -1451,12 +1451,12 @@ exports.routes = {
             }
         }
     },
-    
+
     '/s3/*' : {
         get :{
             handler : function(req, res){
                 // get the url for this...
-                
+
                 if( !req.params.length ) return res.send('no path specified');
                 var path = '/'+req.params[0];
                 if( !path ) return res.send('no path specified');
@@ -1464,7 +1464,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/blog/feed' : {
         get : {
             handler : function(req, res){
@@ -1481,16 +1481,16 @@ exports.routes = {
             }
         }
     },
-    
+
     '/welcome/:page_id' : {
         get : {
-            
+
             locals: { layout: false },
-            
+
             handler : function(req, res){
                 var page_id = req.param('page_id');
                 // lets get the page
-                
+
                 return Bozuko.models.Page.findById( page_id, function(error, page){
                     if( error ) throw error;
                     if( !page ) throw "No Page";
@@ -1507,7 +1507,7 @@ exports.routes = {
                         return res.render('beta/content/welcome');
                     });
                 });
-                
+
             }
         }
     },
@@ -1549,19 +1549,19 @@ function getToken(session, forceNew){
 }
 
 exports.addRoutes = function(module, prefix){
-    
+
     for( var route in exports.routes ){
         // add this route
         var cfg = merge({},exports.routes[route]);
         var key = prefix+route;
-        
+
         if( cfg.alias ){
             cfg.alias = prefix+cfg.alias;
         }
         if( cfg.aliases ) cfg.aliases.forEach(function(str,i){
             cfg.aliases[i] = prefix+str;
         });
-        
+
         module.routes[key] = cfg;
     }
 };
