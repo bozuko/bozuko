@@ -303,10 +303,12 @@ Prize.method('getImages', function(user, security_img, callback) {
             path: '/tmp/page-'+this.page._id+'-image.'+_uuid+'.png'
         }
     };
+    var expires = new Date( Date.now() + Bozuko.cfg('barcode.url_expiration',1000*60*60*24 ) );
     if (this.is_barcode) imgs.barcode = {
-        url: this.barcode_image,
-        path: '/tmp/barcode-'+this.prize._id+'-image.'+_uuid+'.jpg'
+        url: s3.client.signedUrl(this.barcode_image, expires),
+        path: '/tmp/barcode-'+this._id+'-image.'+_uuid+'.png'
     };
+    console.error(imgs.barcode.url);
 
     async.forEach(Object.keys(imgs), function(key, cb) {
         var img = imgs[key];
@@ -379,9 +381,9 @@ Prize.method('createPrizeScreenPdf', function(user, images) {
        .text(timestr)
     ;
 
-    // Security Image
-    doc.fontSize(20) // reset font size for doc.moveUp()
-       .image(images.security.path, doc.x, user_img_y + logo_width + 40, {width: logo_width})
+    // Security or Barcode Image
+    var path = images.barcode ? images.barcode.path : images.security.path;
+    doc.image(path, doc.x, user_img_y + logo_width + 40, {width: logo_width})
     ;
 
     doc.x = 0;

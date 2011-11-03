@@ -360,7 +360,7 @@ exports.routes = {
                 return Bozuko.models.Contest.findOne(selector ,{prizes: 1}, function(error, contest){
 
                     if( error ) return error.send( res );
-                    if( !contest ) return res.send('')
+                    if( !contest ) return res.send('');
 
                     // first find the prize
                     var prize = contest.prizes.id(prize_id),

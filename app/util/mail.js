@@ -61,7 +61,7 @@ EmailMessage.send = function(params, callback){
             record.attempt = attempts+1;
             record.delivered = new Date();
             return record.save(function(error){
-                return callback.call(this, true, record);
+                return callback.call(this, null, true, record);
             });
         }
 

@@ -22,7 +22,7 @@ prize.page = page;
 
 var img_base = Bozuko.dir+'/app/models/test/images';
 
-exports['createPrizeScreenPdf'] = function(test) {
+exports['createNormalPrizeScreenPdf'] = function(test) {
     var images = {
         user: {
             path: img_base+'/user_image.jpg'
@@ -35,7 +35,26 @@ exports['createPrizeScreenPdf'] = function(test) {
         }
     };
     var pdf = prize.createPrizeScreenPdf(user, images);
-    fs.writeFile('generated.pdf', pdf, 'binary', function(err) {
+    fs.writeFile('generatedPrizeScreen.pdf', pdf, 'binary', function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['createNormalPrizeScreenPdf'] = function(test) {
+    var images = {
+        user: {
+            path: img_base+'/user_image.jpg'
+        },
+        business: {
+            path: img_base+'/business_image.png'
+        },
+        barcode: {
+            path: img_base+'/barcode_image.png'
+        }
+    };
+    var pdf = prize.createPrizeScreenPdf(user, images);
+    fs.writeFile('generatedBarcodeScreen.pdf', pdf, 'binary', function(err) {
         test.ok(!err);
         test.done();
     });
