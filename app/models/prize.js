@@ -308,7 +308,6 @@ Prize.method('getImages', function(user, security_img, callback) {
         url: s3.client.signedUrl(this.barcode_image, expires),
         path: '/tmp/barcode-'+this._id+'-image.'+_uuid+'.png'
     };
-    console.error(imgs.barcode.url);
 
     async.forEach(Object.keys(imgs), function(key, cb) {
         var img = imgs[key];

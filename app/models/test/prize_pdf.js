@@ -41,7 +41,7 @@ exports['createNormalPrizeScreenPdf'] = function(test) {
     });
 };
 
-exports['createNormalPrizeScreenPdf'] = function(test) {
+exports['createBarcodePrizeScreenPdf'] = function(test) {
     var images = {
         user: {
             path: img_base+'/user_image.jpg'
