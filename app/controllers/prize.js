@@ -136,7 +136,7 @@ exports.links = {
                     type: "Boolean",
                     description: "Share this redemption."
                 },
-                email : {
+                email_prize_screen : {
                     type: "Boolean",
                     description: "Email the assets for this prize, even if it isn't an email prize."
                 }
