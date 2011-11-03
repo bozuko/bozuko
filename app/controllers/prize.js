@@ -47,7 +47,7 @@ exports.transfer_objects = {
                 o.win_time = prize.timestamp;
                 o.business_img = prize.page.image;
                 o.user_img = prize.user.image.replace(/type=large/, 'type=square');
-                
+
                 if( o.is_barcode ){
                     var url = o.barcode_image;
                     if( url.match(/^https?\:\/\//) ){
@@ -57,20 +57,20 @@ exports.transfer_objects = {
                     var expires = new Date( Date.now() + Bozuko.cfg('barcode.url_expiration',1000*60*60*24 ) );
                     o.barcode_image = s3.client.signedUrl(url, expires);
                 }
-                
+
                 /**
                  * TODO - pull this from the contest / prize / page
                  */
                 o.redemption_duration = 60;
                 if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
                 o.expiration_timestamp = prize.expires;
-    
+
                 o.links = {
                     prize : '/prize/'+prize.id,
                     page: '/page/'+prize.page_id,
                     user: '/user/'+prize.user_id
                 };
-    
+
                 if( o.state == 'active' ){
                     o.links.redeem = '/prize/'+prize.id+'/redemption';
                 }
@@ -135,6 +135,10 @@ exports.links = {
                 share : {
                     type: "Boolean",
                     description: "Share this redemption."
+                },
+                email : {
+                    type: "Boolean",
+                    description: "Email the assets for this prize, even if it isn't an email prize."
                 }
             },
             returns: "redemption_object"
@@ -203,7 +207,7 @@ exports.routes = {
 
                 return Bozuko.models.Prize.count(selector, function(error, count){
                     if( error ) return error.send( res );
-                    
+
                     if( !count ){
                         return Bozuko.transfer('prizes', {
                             prizes: []
@@ -211,9 +215,9 @@ exports.routes = {
                             res.send( error || result );
                         });
                     }
-                    
+
                     var hasNext = offset+limit <= count;
-                    
+
                     return Bozuko.models.Prize.search(selector, {}, {limit: limit, skip: offset, sort: {timestamp: -1}}, function(error, prizes){
                         if( error ) return error.send( res );
                         var ret = {
@@ -266,26 +270,28 @@ exports.routes = {
             access: 'mobile',
 
             handler: function(req,res){
-                // redeem the prize
                 var user = req.session.user;
-                
+                var email = req.param('email');
+
                 return Bozuko.models.Prize.findById(req.param('id'), function(error, prize){
                     if( error ) return error.send(res);
-                    
-                    return prize.redeem(req.session.user, function(error, redemption){
+
+                    return prize.redeem(req.session.user, email, function(error, redemption){
+
+                        console.log('redemption = '+require('util').inspect(redemption));
 
                         if( error ) return error.send(res);
-                    
+
                         var message = req.param('message'),
                             share = req.param('share')
                             ;
-                            
+
                         if( share == 'false' ) share = false;
-                            
+
                         if( !share ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                             res.send( error || result );
                         });
-                        
+
                         // brag to friends
                         if( /share\s+with\s+your\s+friends/i.test(message) ) message = '';
                         // build our options
@@ -295,27 +301,27 @@ exports.routes = {
                             link: 'https://bozuko.com/p/'+prize.page_id,
                             picture: burl('/page/'+prize.page_id+'/image')
                         };
-                        
+
                         // get the page
                         return Bozuko.models.Page.findById( prize.page_id, function(error, page){
-                           
+
                             // get the contest
                             Bozuko.models.Contest.findById( prize.contest_id, function(error, contest){
-                                
+
                                 if( error || !page || !contest || contest.post_to_wall !== true ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                     console.error('not gonna share');
                                     res.send( error || result );
                                 });
-                                
-                                
+
+
                                 var gameName = contest.getGame().getName();
-                                
+
                                 var a = /^([0-9\$]|a|an|the)\s/i.test(String(prize.name)) ? '' : (String(prize.name).match(/^[aeiou]/i) ? 'an ' : 'a ');
                                 options.name = req.session.user.name+' just won '+a+prize.name+'!';
                                 options.description = 'You could too! Play '+gameName+' at '+page.name+' with Bozuko for your chance to win!';
-                                
+
                                 return Bozuko.service('facebook').post(options, function(error){
-                                    
+
                                     if( !error ){
                                         // lets save this share...
                                         var share = new Bozuko.models.Share({
@@ -326,7 +332,7 @@ exports.routes = {
                                             user_id         :prize.user_id,
                                             visibility      :0
                                         });
-                                        
+
                                         try{
                                             share.visibility = user.service('facebook').internal.friends.length;
                                         }catch(e){
