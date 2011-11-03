@@ -598,7 +598,13 @@ exports.routes = {
         
         alias: '/facebook/tab',
         
-        get : {
+        get : function(req, res){
+            this.refs['facebookFn'](req, res);
+        },
+        
+        post : {
+            
+            ref : 'facebookFn',
             
             title : 'Bozuko - Facebook App',
             
