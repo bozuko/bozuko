@@ -92,6 +92,7 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                             {value:'default',text:'Default'},
                             {value:'mexican_theme',text:'Mexican'},
                             {value:'seadog',text:'Seadog'},
+                            {value:'space_invaders',text:'Space Invaders'},
                             {value:'alt',text:'Alternate'}
                         ]
                     }),
