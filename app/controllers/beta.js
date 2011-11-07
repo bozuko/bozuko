@@ -274,29 +274,57 @@ exports.routes = {
                     return Bozuko.models.Page.find({_id:{$in:user.manages||[]}}, function(error, user_pages){
                         if( error ) throw error;
                         
-                        var fids = [];
+                        var fids = [], tracking = [];
                         user_pages.forEach(function(page){
                             var fb = page.service('facebook');
                             if( fb ) fids.push(fb.sid);
                         });
+                        if( user_pages.length ){
+                            tracking.push('has-existing-pages');
+                        }
                         
                         // filter out non-place pages...
                         var places = facebook_pages.filter(function(page){
-                            if( page.location.lat === 0 && page.location.lng === 0 ) return false;
-                            if( ~fids.indexOf(page.id) ) return false;
+                            if( page.location.lat === 0 && page.location.lng === 0 ){
+                                return false;
+                            }
+                            if( ~fids.indexOf(page.id) ){
+                                if( !~tracking.indexOf('has-place') ) tracking.push('has-place');
+                                return false;
+                            }
+                            if( !~tracking.indexOf('has-place') ) tracking.push('has-place');
                             return true;
                         });
                         
                         var other_pages = facebook_pages.filter(function(page){
-                            if( ~fids.indexOf(page.id) ) return false;
-                            if( page.location.lat !== 0 && page.location.lng !== 0 ) return false;
+                            if( ~fids.indexOf(page.id) ){
+                                if( !~tracking.indexOf('has-page') ) tracking.push('has-page');
+                                return false;
+                            }
+                            if( page.location.lat !== 0 && page.location.lng !== 0 ){
+                                return false;
+                            }
+                            if( !~tracking.indexOf('has-page') ) tracking.push('has-page');
                             return true;
                         });
+                        
+                        if( tracking.indexOf('has-place') && !places.length ){
+                            tracking.push('no-places-left');
+                        }
+                        if( tracking.indexOf('has-page') && !other_pages.length ){
+                            tracking.push('no-pages-left');
+                        }
+                        
+                        if( !tracking.length ) tracking.push('no-pages-or-places');
                         
                         res.locals.places = places;
                         res.locals.user_pages = user_pages;
                         res.locals.other_pages = other_pages;
                         res.locals.facebook_pages_count = facebook_pages.length;
+                        
+                        if( !req.param('ua') ) {
+                            return res.redirect('/beta/create-account?ua='+tracking.join(','));
+                        }
                         
                         return res.render('/beta/create-account');
                     

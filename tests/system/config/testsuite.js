@@ -172,7 +172,7 @@ var pages = [
     '103621403038522', 	// middlesex
     "120199624663908", 	// dunks
     // boston
-    "108123539229568",	// hard rock
+    "106837076612",	// hard rock
     //"75568770316", 		// black rose
     // florida
     "185253393876" 		// owl watch florida
@@ -196,6 +196,9 @@ function add_page(id, callback){
         if( error ){
             return callback(error);
         }
+		if( !place ){
+			console.log(id);
+		}
         return Bozuko.models.Page.createFromServiceObject(place, function(error, page){
             if( error ){
                 return callback(error);
