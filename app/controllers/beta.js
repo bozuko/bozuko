@@ -308,10 +308,10 @@ exports.routes = {
                             return true;
                         });
                         
-                        if( tracking.indexOf('has-place') && !places.length ){
+                        if( ~tracking.indexOf('has-place') && !places.length ){
                             tracking.push('no-places-left');
                         }
-                        if( tracking.indexOf('has-page') && !other_pages.length ){
+                        if( ~tracking.indexOf('has-page') && !other_pages.length ){
                             tracking.push('no-pages-left');
                         }
                         
