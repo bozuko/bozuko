@@ -18,6 +18,8 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
         var me = this;
         
         var like_id = Ext.id();
+        var store = Ext.create('Bozuko.store.EntryTypes');
+        store.filter('type', /^facebook/);
         
         Ext.apply( me.form, {
             items : [{
@@ -47,7 +49,7 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
                     '<div class="entry-description selection-description"></div>'
                 ),
                 
-                store : Ext.create('Bozuko.store.EntryTypes'),
+                store : store,
                 
                 listeners : {
                     selectionchange     :me.onSelectionChange,

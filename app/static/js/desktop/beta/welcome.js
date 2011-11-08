@@ -153,6 +153,7 @@ jQuery(function($){
 			setTimeout(function(){
 				tmp.remove();
 				submit.show();
+				submit.val('Send');
 				$('.question-trigger').data('overlay').close();
 			}, 1500);
 		});

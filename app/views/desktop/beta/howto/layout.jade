@@ -1,0 +1,61 @@
+!!! 5
+html(
+  xmlns="http://www.w3.org/1999/xhtml",
+  xmlns:fb="https://www.facebook.com/2008/fbml",
+  class=locals.html_classes?html_classes.join(' '):'',
+  lang="en"
+)
+  head
+  
+    title= title
+    
+    - if( locals.meta )
+      - each content, name in meta
+        meta(name=name, content=content)
+    
+    -if( locals.styles && locals.styles.length)
+      - each style in styles
+        link(rel='stylesheet', type='text/css', href=style)
+    
+    - if (locals.head_scripts && locals.head_scripts.length)
+      - each script in head_scripts
+        script(type="text/javascript",src=script)
+    
+  body
+    .page
+    
+      .hd
+        .page-width
+          h1.logo
+            span.name Bozuko 
+            span.tagline Beta
+          
+          ul.nav
+            li
+              a.create-a-game(href="#create-a-game") How To Create a Game
+            li |
+            li
+              a.prize-tips(href="#prize-tips") Prize Tips and Concepts
+            li |
+            li
+              a.redeem-prizes(href="#redeem-prizes") How to Redeem a Prize
+            li |
+            li
+              a.contact(href="#contact") Contact Us
+          
+      .bd
+        != body
+        
+      
+    - if( !Bozuko.config.test_mode )
+      script(type="text/javascript")
+  
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-22885354-1']);
+        _gaq.push(['_trackPageview']);
+      
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();

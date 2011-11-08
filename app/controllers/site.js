@@ -36,7 +36,7 @@ exports.locals = {
         link: '/how-to-play',
         text: 'How to Play'
     },{
-        link: '/bozuko-for-business',
+        link: '/beta',
         text: 'Bozuko for Business'
     }],
     head_scripts:[
@@ -493,7 +493,7 @@ exports.routes = {
 
             handler: function(req, res){
                 res.locals.content = Content.get('site/about.md');
-                return res.render('site/content', 404);
+                return res.render('site/content');
             }
         }
     },
@@ -511,7 +511,7 @@ exports.routes = {
 
             handler: function(req, res){
                 res.locals.content = Content.get('site/privacy.md');
-                return res.render('site/content', 404);
+                return res.render('site/content');
             }
         }
     },
@@ -529,7 +529,7 @@ exports.routes = {
 
             handler: function(req, res){
                 res.locals.content = Content.get('site/terms.md');
-                return res.render('site/content', 404);
+                return res.render('site/content');
             }
         }
     },
@@ -551,7 +551,7 @@ exports.routes = {
                     create: autoLink(Content.get('site/faq/creating-games.md')),
                     manage: autoLink(Content.get('site/faq/management.md'))
                 };
-                return res.render('site/faq', 404);
+                return res.render('site/faq');
             }
         }
     },
@@ -590,6 +590,40 @@ exports.routes = {
             handler : function(req,res){
                 res.locals.content = Content.get('site/customers/spinners.html');
                 return res.render('site/content');
+            }
+        }
+    },
+    
+    '/facebook/app' : {
+        
+        alias: '/facebook/tab',
+        
+        get : function(req, res){
+            this.refs['facebookFn'](req, res);
+        },
+        
+        post : {
+            
+            ref : 'facebookFn',
+            
+            title : 'Bozuko - Facebook App',
+            
+            locals : {
+                device          :'desktop',
+                layout          :false,
+                head_scripts    :[],
+                html_classes    :[
+                    'facebook-760'
+                ],
+                styles:[
+                    'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
+                    '/css/desktop/facebook/style.css?'+Date.now()
+                ]
+            },
+            
+            handler : function(req, res){
+                if( req.url.match(/tab/) ) res.locals.html_classes = ['facebook-520'];
+                return res.render('site/facebook/advertisement');
             }
         }
     }

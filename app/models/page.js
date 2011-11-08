@@ -677,8 +677,13 @@ Page.static('search', function(options, callback){
             }
             return Bozuko.models.Page.findOne( selector, function(error, page){
                 if( !error && page ){
-                    pages.unshift(page);
-                    page.registered = true;
+                    // have to load the contests
+                    return page.loadContests(options.user, function(error){
+                        pages.unshift(page);
+                        page.registered = true;
+                        prof.stop();
+                        return callback( null, pages );
+                    });
                 }
                 prof.stop();
                 return callback( null, pages );

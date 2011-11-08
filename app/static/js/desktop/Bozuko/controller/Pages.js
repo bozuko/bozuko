@@ -3,6 +3,7 @@ Ext.define('Bozuko.controller.Pages' ,{
     
     requires: [
         'Bozuko.lib.app.Controller',
+        'Bozuko.lib.Util',
         'Bozuko.model.Page'
     ],
     
@@ -74,7 +75,7 @@ Ext.define('Bozuko.controller.Pages' ,{
                     
                     panel.getEl().select('.welcome li').addClsOnOver('hover');
                     var h = 0;
-                    panel.getEl().select('.welcome li div')
+                    panel.getEl().select('.welcome li .inner')
                         .each(function(el){
                             // check for the height
                             h = Math.max(h, Ext.fly(el).getHeight());
@@ -120,7 +121,11 @@ Ext.define('Bozuko.controller.Pages' ,{
         var item = pagePanel.down('[ref=pages]').getLayout().getActiveItem();
         
         var pageBtn = pagePanel.down('[ref=navigation] button[page='+item.ref+']');
-        pageBtn.on('render', pageBtn.toggle, pageBtn);
+        pageBtn.on('render', function(){
+            setTimeout(function(){
+                pageBtn.toggle();
+            }, 100)
+        });
     },
     
     onStatusFieldRender : function(field){
@@ -196,22 +201,6 @@ Ext.define('Bozuko.controller.Pages' ,{
     },
     
     openHelp : function(){
-        Ext.Msg.show({
-            title: 'Questions?',
-            icon: Ext.Msg.QUESTION,
-            buttons: Ext.Msg.OK,
-            modal: true,
-            width : 420,
-            msg: 'Need a hand with something? We are happy to help. '+
-                 'While we are working on our documentation, feel free to contact us.'+
-                 '<div style="padding-left: 40px; padding-bottom: 0px; font-family: ArvoRegular;">'+
-                 '<div style="margin: 10px 0; padding-left: 40px; line-height: 24px; font-size: 16px; background: transparent url(/images/icons/24/email.png) 10px 0 no-repeat;">'+
-                 '<a href="mailto:support@bozuko.com">support@bozuko.com</a>'+
-                 '</div>'+
-                 '<div style="margin: 10px 0 0; padding-left: 40px; line-height: 24px; font-size: 16px; background: transparent url(/images/icons/24/phone.png) 10px 0 no-repeat;">'+
-                 '415 - 2BOZUKO'+
-                 '</div>'+
-                 '</div>'
-        });
+        Bozuko.lib.Util.howto();
     }
 });

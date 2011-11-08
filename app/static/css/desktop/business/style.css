@@ -9,8 +9,22 @@
   content: "";
   display: block;
 }
+body .big-button,
+body .small-button,
+body .medium-button,
+body h1,
+body h2,
+body h3,
+body h4,
+body h5,
+body h6 {
+  font-family: "Open Sans" !important;
+}
+body .big-button, body .small-button, body .medium-button {
+  font-weight: 700;
+}
 .contestpanel h1 {
-  font-family: ArvoRegular;
+  font-family: "Open Sans";
   font-weight: normal;
   font-size: 32px;
   line-height: 1.3em;
@@ -1153,7 +1167,7 @@ fieldset .x-fieldset-header {
   background-color: #fff;
 }
 .stats-heading {
-  font-family: "ArvoRegular";
+  font-family: "Open Sans";
   font-weight: 200;
   font-size: 18px;
   margin-bottom: 1em;
@@ -1165,7 +1179,6 @@ fieldset .x-fieldset-header {
 .stats-block h3 {
   background: #aaa;
   color: #fff;
-  font-family: "ArvoRegular";
   font-size: 14px;
   padding: 4px;
   text-transform: uppercase;
@@ -1181,7 +1194,7 @@ fieldset .x-fieldset-header {
 .stats-block table table thead th {
   font-size: 22px;
   text-align: left;
-  font-family: "ArvoRegular";
+  font-family: "Open Sans";
   padding-bottom: 4px;
   font-weight: normal;
   color: #666;
@@ -1265,9 +1278,15 @@ p {
   border-left-width: 1px !important;
 }
 h1.intro {
-  font-size: 20px;
-  margin: 0 0 .5em;
-  color: #006b37;
+  font-size: 26px;
+  text-align: center;
+  margin: 0 0 1em;
+  color: #00a24f;
+  font-weight: 800;
+}
+.get-started-box {
+  text-align: center;
+  margin-bottom: 1.5em;
 }
 .welcome {
   list-style: none;
@@ -1282,7 +1301,7 @@ h1.intro {
   margin: 0;
   width: 50%;
 }
-.welcome li div {
+.welcome li div.outer {
   padding: 6px 6px 10px;
   background-color: #f8f8f8;
   background-image: -moz-linear-gradient(top, #f8f8f8, #d8d8d8);
@@ -1300,23 +1319,28 @@ h1.intro {
   margin-right: 10px;
   margin-bottom: 10px;
   cursor: pointer;
+  color: #666;
 }
-.welcome li div * {
-  cursor: pointer;
-}
-.welcome li div p {
-  margin-bottom: 0;
-}
-.welcome li div h3 {
-  font-family: "ArvoRegular";
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 24px;
-  color: #333;
+.welcome li div.outer .inner {
+  padding: 4px 80px 4px 4px;
   background-position: 100% 0;
   background-repeat: no-repeat;
 }
-.welcome li.hover div {
+.welcome li div.outer .inner * {
+  cursor: pointer;
+}
+.welcome li div.outer .inner p {
+  margin-bottom: 0;
+}
+.welcome li div.outer .inner h3 {
+  font-family: "ArvoRegular";
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #00a24f;
+}
+.welcome li.hover .outer {
   color: #ffffff;
   background-color: #00a24f;
   background-image: -moz-linear-gradient(top, #00a24f, #006b37);
@@ -1325,26 +1349,26 @@ h1.intro {
   /* IE6-9 */
 
 }
-.welcome li.hover h3 {
+.welcome li.hover .outer .inner h3 {
   color: #fff;
 }
-.welcome .create-campaign h3 {
-  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png");
+.welcome .create-campaign .inner {
+  background-image: url("/images/desktop/app/welcome/bg_welcome-create.png");
 }
-.welcome .campaigns h3 {
-  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png");
+.welcome .campaigns .inner {
+  background-image: url("/images/desktop/app/welcome/bg_welcome-games.png");
 }
-.welcome .dashboard h3 {
-  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-24.png");
+.welcome .dashboard .inner {
+  background-image: url("/images/desktop/app/welcome/bg_welcome-dashboard.png");
 }
-.welcome .settings h3 {
-  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png");
+.welcome .settings .inner {
+  background-image: url("/images/desktop/app/welcome/bg_welcome-settings.png");
 }
-.welcome .account h3 {
-  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-profile-24.png");
+.welcome .account .inner {
+  background-image: url("/images/desktop/app/welcome/bg_welcome-account.png");
 }
-.welcome .resources h3 {
-  background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-24.png");
+.welcome .resources .inner {
+  background-image: url("/images/desktop/app/welcome/bg_welcome-resources.png");
 }
 .chart-mask {
   position: absolute;
@@ -1380,4 +1404,19 @@ h1.intro {
   padding: 10px;
   border: 1px solid #ccc;
   background: #f3f3f3;
+}
+.need-a-hand .x-panel-header-text {
+  font-size: 22px;
+  color: #00a24f;
+  font-family: "Open Sans";
+  font-weight: 800;
+  line-height: 1.4em;
+}
+.need-a-hand .x-panel-body {
+  font-family: "Open Sans";
+  font-size: 15px;
+  line-height: 1.5;
+}
+.need-a-hand .x-panel-body a {
+  color: #ff6600;
 }

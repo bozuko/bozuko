@@ -172,7 +172,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                     // add it to the store
                     contestsView.store.add(record);
                     // also, lets change the text
-                    contestForm.down('[ref=edit-label-text]').setText( 'Edit Campaign:' );
+                    contestForm.down('[ref=edit-label-text]').setText( 'Edit Game:' );
                     contestsPanel.cards[record.get('_id')] = contestForm;
                     record.commit();
                     delete contestsPanel.cards[''];
@@ -223,7 +223,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             case 'delete':
                 Ext.Msg.confirm(
                     'Are you sure?',
-                    'Are you sure you want to delete this campaign?',
+                    'Are you sure you want to delete this game?',
                     function(btn){
                         if( btn != 'ok' && btn != 'yes' ) return;
                         // delete it, they said so
@@ -241,7 +241,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 var url = Bozuko.Router.route('/contests/'+record.getId()+'/publish');
                 Ext.Msg.confirm(
                     'Are you sure?',
-                    'Once the campaign is published, you will not be able to modify it. Are you sure you want to publish this campaign?',
+                    'Once the game is published, you will not be able to modify it. Are you sure you want to publish this game?',
                     function(btn){
                         if( btn != 'ok' && btn != 'yes' ) return;
                         var cp = view.up('contestspanel');
@@ -276,10 +276,10 @@ Ext.define('Bozuko.controller.Contests' ,{
 
                 var name = record.get('name');
                 if( name ) name+=' (Copy)';
-                else name = Ext.Date.parse(new Date(), 'Campaign m-d-Y');
+                else name = Ext.Date.parse(new Date(), 'Game m-d-Y');
                 Ext.Msg.prompt({
-                    title: 'Copy Campaign',
-                    msg: 'What would you like to name your new campaign?',
+                    title: 'Copy Game',
+                    msg: 'What would you like to name your new game?',
                     fn: function(btn, text){
                         if( btn !== 'ok') return;
                         var copy = record.copy();
@@ -342,7 +342,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 var url = Bozuko.Router.route('/contests/'+record.getId()+'/cancel');
                  Ext.Msg.confirm(
                     'Are you sure?',
-                    'Are you sure you want to cancel this campaign?',
+                    'Are you sure you want to cancel this game?',
                     function(btn){
                         if( btn != 'ok' && btn != 'yes' ) return;
                         Ext.Ajax.request({
@@ -556,8 +556,8 @@ Ext.define('Bozuko.controller.Contests' ,{
         Ext.Msg.confirm(
             'Are you sure?',
             'By clicking yes, you confirm that the available '+
-            'prizes comply with all state and federal laws. Once a contest is published '+
-            'it can no longer be edited. Are you sure you want to publish this campaign?',
+            'prizes comply with all state and federal laws. Once a game is published '+
+            'it can no longer be edited. Are you sure you want to publish this game?',
             function(answer){
                 if( answer != 'ok' && answer != 'yes' ) return;
                 btn.disable();
@@ -593,7 +593,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                         });
                     },
                     callback: function(){
-                        pagePanel.successStatus('Contest Saved');
+                        pagePanel.successStatus('Game Saved');
                     }
                 });
             }

@@ -3,6 +3,10 @@ Ext.define('Bozuko.view.page.Welcome' ,{
     extend          :'Ext.form.Panel',
     alias           :'widget.pagewelcome',
     
+    requires        :[
+        'Bozuko.lib.Util'
+    ],
+    
     initComponent : function(){
         var me = this;
         
@@ -47,12 +51,38 @@ Ext.define('Bozuko.view.page.Welcome' ,{
                             var deferredEvent = Ext.Function.createDelayed(function(){
                                 me.fireEvent('welcomeloaded', panel);
                             }, 0);
-                            if( panel.rendered ) deferredEvent();
-                            else panel.on('render', deferredEvent);
+                            if( panel.rendered && panel.isVisible(true) ) deferredEvent();
+                            else panel.up('pagewelcome').on('activate', deferredEvent);
                         }
                     });
                 }
             },{
+                xtype               :'panel',
+                region              :'east',
+                title               :'Need a hand?',
+                cls                 :'need-a-hand',
+                width               :320,
+                autoScroll          :true,
+                bodyPadding         :10,
+                html                :[
+                    '<ul>',
+                        '<li><a class="howto" data-article="create-a-game" href="javascript:;">How to Create a Game</a></li>',
+                        '<li><a class="howto" data-article="prize-tips" href="javascript:;">Prizes Tips and Concepts</a></li>',
+                        '<li><a class="howto" data-article="redeem-prizes" href="javascript:;">How to Redeem Prizes</a></li>',
+                        '<li><a class="howto" data-article="contact" href="javascript:;">Contact Us</a></li>',
+                    '</ul>'
+                ],
+                listeners           :{
+                    render              :function(panel){
+                        setTimeout(function(){
+                            panel.getEl().select('.howto').on('click', function(e, el){
+                                e.stopEvent();
+                                Bozuko.lib.Util.howto(el.getAttribute('data-article'));
+                            });
+                        }, 100);
+                    }
+                }
+            }/*,{
                 xtype               :'panel',
                 region              :'east',
                 title               :'From the Bozuko Blog...',
@@ -96,7 +126,7 @@ Ext.define('Bozuko.view.page.Welcome' ,{
                         }
                     )
                 }]
-            }]
+            }*/]
         });
         
         me.callParent( arguments );

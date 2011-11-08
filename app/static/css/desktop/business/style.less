@@ -1,9 +1,24 @@
 @import "app/static/css/vars";
 @import "app/static/css/mixins";
 
+body {
+    .big-button,
+    .small-button,
+    .medium-button,
+    h1,h2,h3,h4,h5,h6 {
+        font-family: "Open Sans" !important;
+    }
+    
+    .big-button,
+    .small-button,
+    .medium-button{
+        font-weight: 700;
+    }
+}
+
 .contestpanel {
     h1 {
-        font-family: ArvoRegular;
+        font-family: "Open Sans";
         font-weight: normal;
         font-size: 32px;
         line-height: 1.3em;
@@ -1257,7 +1272,7 @@ fieldset{
 }
 
 .stats-heading {
-    font-family: "ArvoRegular";
+    font-family: "Open Sans";
     font-weight: 200;
     font-size: 18px;
     margin-bottom: 1em;
@@ -1270,7 +1285,6 @@ fieldset{
     h3 {
         background: #aaa;
         color: #fff;
-        font-family: "ArvoRegular";
         font-size: 14px;
         padding: 4px;
         text-transform: uppercase;
@@ -1288,7 +1302,7 @@ fieldset{
                 th {
                     font-size: 22px;
                     text-align: left;
-                    font-family: "ArvoRegular";
+                    font-family: "Open Sans";
                     padding-bottom: 4px;
                     font-weight: normal;
                     color: #666;
@@ -1390,10 +1404,18 @@ p {
 }
 
 h1.intro {
-    font-size: 20px;
-    margin: 0 0 .5em;
-    color: @dark_color;
+    font-size: 26px;
+    text-align: center;
+    margin: 0 0 1em;
+    color: @brand_color;
+    font-weight: 800;
 }
+
+.get-started-box {
+    text-align: center;
+    margin-bottom: 1.5em;
+}
+
 
 .welcome {
     list-style: none;
@@ -1409,7 +1431,7 @@ h1.intro {
         margin: 0;
         width: 50%;
         
-        div {
+        div.outer {
             padding: 6px 6px 10px;
             .background_gradient(#f8f8f8, #d8d8d8);
             .border_radius(4px);
@@ -1417,52 +1439,62 @@ h1.intro {
             margin-right: 10px;
             margin-bottom: 10px;
             cursor: pointer;
-            * {
-                cursor: pointer; 
-            }
-            p {
-                margin-bottom: 0;
-            }
+            color: #666;
             
-            h3 {
-                font-family: "ArvoRegular";
-                font-weight: normal;
-                font-size: 16px;
-                line-height: 24px;
-                color: #333;
+            .inner{
+                padding: 4px 80px 4px 4px;
                 background-position: 100% 0;
                 background-repeat: no-repeat;
+                
+                * {
+                    cursor: pointer; 
+                }
+                p {
+                    margin-bottom: 0;
+                }
+                
+                h3 {
+                    font-family: "ArvoRegular";
+                    font-weight: normal;
+                    font-size: 18px;
+                    line-height: 24px;
+                    font-weight: 700;
+                    color: @brand_color;
+                    
+                }
             }
         }
         &.hover {
-            div {
+            .outer {
                 color: #ffffff;
                 .background_gradient(@brand_color, @dark_color);
-            }
-            
-            h3 {
-                color: #fff;
-            }
+                
+                .inner {
+                    h3 {
+                        color: #fff;
+                    }
+                }
+            }            
         }
     }
     
-    .create-campaign h3{
-        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png");
+    .create-campaign .inner{
+        background-image: url("/images/desktop/app/welcome/bg_welcome-create.png");
     }
-    .campaigns h3{
-        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png");
+    .campaigns .inner{
+        background-image: url("/images/desktop/app/welcome/bg_welcome-games.png");
     }
-    .dashboard h3{
-        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-24.png");
+    .dashboard .inner{
+        background-image: url("/images/desktop/app/welcome/bg_welcome-dashboard.png");
     }
-    .settings h3 {
-        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png");
+    .settings .inner{
+        background-image: url("/images/desktop/app/welcome/bg_welcome-settings.png");
     }
-    .account h3{
-        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-profile-24.png");
+    .account .inner{
+        background-image: url("/images/desktop/app/welcome/bg_welcome-account.png");
     }
-    .resources h3 {
-        background-image: url("/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-24.png");
+    .resources .inner{
+        background-image: url("/images/desktop/app/welcome/bg_welcome-resources.png");
     }
 }
 .chart-mask {
@@ -1494,6 +1526,24 @@ h1.intro {
             padding: 10px;
             border: 1px solid #ccc;
             background: #f3f3f3;
+        }
+    }
+}
+
+.need-a-hand {
+    .x-panel-header-text{
+        font-size: 22px;
+        color: @brand_color;
+        font-family: "Open Sans";
+        font-weight: 800;
+        line-height: 1.4em;
+    }
+    .x-panel-body {
+        font-family: "Open Sans";
+        font-size: 15px;
+        line-height: 1.5;
+        a {
+            color: @orange;
         }
     }
 }

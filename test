@@ -4,4 +4,5 @@ nodeunit tests/system/*.js \
          app/util/test/*.js \
          app/core/test/*.js \
          app/core/contest/engine/test/*.js \
-         app/games/test/*.js
+         app/games/test/*.js \
+         tests/disconnectMongo.js

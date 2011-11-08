@@ -50,7 +50,7 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
             },' ',{
                 xtype       :'tbtext',
                 ref         :'edit-campaign-text',
-                text        :me.contest.get('name') || 'Build a Campaign'
+                text        :me.contest.get('name') || 'Create a Game'
             },'->']
         }];
         

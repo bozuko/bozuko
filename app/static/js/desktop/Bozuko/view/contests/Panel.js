@@ -21,14 +21,14 @@ Ext.define('Bozuko.view.contests.Panel', {
             },
             items:[{
                 xtype       :'tbtext',
-                text        :'All Campaigns'
+                text        :'All Games'
             }]
         });
         
         tbar.add('-',{
             hidden          :false,
             action          :'builder',
-            text            :'Create a Campaign',
+            text            :'Create a Game',
             icon            :"/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/plus-24.png"
         });
         
