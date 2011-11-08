@@ -39,32 +39,38 @@ Ext.define('Bozuko.view.page.Panel', {
                     page        :'welcome',
                     text        :'Welcome',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/star-24.png'
+                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/star-inactive-24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     page        :'dashboard',
                     text        :'Dashboard',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-24.png'
+                    icon        :'/images/icons/bozuko/dashboard_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     page        :'campaigns',
-                    text        :'Campaigns',
+                    text        :'Games',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/dice-white-24.png'
+                    icon        :'/images/icons/bozuko/campaign_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     text        :'Settings',
                     page        :'settings',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/settings-24.png'
+                    icon        :'/images/icons/bozuko/settings_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     text        :'Resources',
                     page        :'resources',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/page-forum-24.png'
+                    icon        :'/images/icons/bozuko/account_resources_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },{
                     text        :'Account',
                     page        :'account',
                     group       :'page',
-                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/person-profile-24.png'
+                    icon        :'/images/icons/bozuko/accounts_24x24.png',
+                    listeners   :{toggle:me.onBtnToggle, scope:me}
                 },'->',{
                     ref         :'status-text',
                     xtype       :'tbtext',
@@ -80,7 +86,7 @@ Ext.define('Bozuko.view.page.Panel', {
                 },
                 ref             :'pages',
                 border          :false,
-                activeItem      :0,
+                activeItem      :me.page.get('has_contests') ? 1 : 0,
                 items: [{
                     ref             :'welcome',
                     xtype           :'pagewelcome',
@@ -122,6 +128,29 @@ Ext.define('Bozuko.view.page.Panel', {
         me.on('destroy', function(){
             clearTimeout( me.statusTextTimeout );
         });
+    },
+    
+    onBtnToggle : function(btn, state){
+        console.log(btn.icon);
+        if( !btn.icon ) return;
+        if( btn.icon.match(/star/gi) ){
+            // replace with the gray star
+            if( state ){
+                btn.setIcon( btn.icon.replace(/star\-inactive\-24/, 'star-24') );
+            }
+            else{
+                btn.setIcon( btn.icon.replace(/star\-24/, 'star-inactive-24') );
+            }
+        }
+        else{
+            // replace with the gray star
+            if( state ){
+                btn.setIcon( btn.icon.replace(/\.png/, '_ON.png') );
+            }
+            else{
+                btn.setIcon( btn.icon.replace(/_ON.png/, '.png') );
+            }
+        }
     },
     
     updateStatus : function(text){

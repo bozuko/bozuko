@@ -44,6 +44,22 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             xtype           :'checkbox',
             name            :'active',
             fieldLabel      :'Active'
+        },{
+            xtype               :'combo',
+            name                :'engine_type',
+            fieldLabel          :'Contest Engine',
+            width               :100,
+            allowBlank          :false,
+            editable            :false,
+            forceSelection      :true,
+            value               :'order',
+            displayField        :'text',
+            valueField          :'value',
+            queryMode           :'local',
+            store               :Ext.create('Ext.data.Store',{
+                fields              :['text','value'],
+                data                :[{value:'order',text:'Order Based'},{value:'time',text:'Time Based'}]
+            })
         }];
         me.callParent();
     }

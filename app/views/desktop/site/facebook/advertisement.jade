@@ -1,0 +1,73 @@
+!!! 5
+html(
+  xmlns="http://www.w3.org/1999/xhtml",
+  xmlns:fb="https://www.facebook.com/2008/fbml",
+  class=locals.html_classes?html_classes.join(' '):'',
+  lang="en"
+)
+  head
+  
+    title= title
+    
+    - if( locals.meta )
+      - each content, name in meta
+        meta(name=name, content=content)
+    
+    -if( locals.styles && locals.styles.length)
+      - each style in styles
+        link(rel='stylesheet', type='text/css', href=style)
+    
+    - if (locals.head_scripts && locals.head_scripts.length)
+      - each script in head_scripts
+        script(type="text/javascript",src=script)
+    
+  body
+    .page
+      
+      .top
+        h1 Play Bozuko
+      
+      .hd
+        h1 Bozuko
+        h2 Enter, Play, Win!
+        h3 Instant Win Games at Your Favorite Places!
+      .bd
+        
+        .line
+          .unit.size1of2
+            .ad-block.player-block
+              h2 Are you a Player?
+              
+              p Feeling Lucky?  Bozuko is the most exciting customer rewards program ever invented.
+  
+              p.bold Download the free app now.
+              
+              .line
+                .unit.size2of5.download
+                  a.iphone(target="_top",href=Bozuko.cfg('client.mobile.iphone.link','#'), title="Available in the App Store") Available in the App Store
+                  a.android(target="_top",href=Bozuko.cfg('client.mobile.android.link','#'), title="Available in the Android Market") Available in the Android Market
+                
+                .unit.size1of5
+                  p.or OR
+                
+                .unit.size2of5.lastUnit
+                  .qr &nbsp;
+            
+          .unit.size1of2.lastUnit
+            .ad-block.biz-block
+              h2 Are you a Business?
+              
+              a.learn-more(target="_top",href="https://bozuko.com/beta", title="Learn More") Learn More
+      
+    - if( !Bozuko.config.test_mode )
+      script(type="text/javascript")
+  
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-22885354-1']);
+        _gaq.push(['_trackPageview']);
+      
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();

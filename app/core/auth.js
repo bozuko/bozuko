@@ -18,6 +18,10 @@ function hashme(challenge, req) {
     return sha.digest('hex');
 }
 
+function no_auth(challenge, req){
+    return req.session.challenge_response;
+}
+
 auth.mobile_algorithms = {
     '1.0': hashme,
     '1.1': hashme,
@@ -25,6 +29,10 @@ auth.mobile_algorithms = {
     '1.3': hashme,
     '1.4': hashme,
     '1.5': hashme
+};
+
+auth.html5_algorithms = {
+    '1.0': no_auth
 };
 
 auth.login = function(req,res,scope,defaultReturn,success,failure){
@@ -159,12 +167,21 @@ auth.mobile = function(req, res, callback) {
 
         // Verify challenge response for the given mobile app version
         function(callback) {
-            var fn, result;
-            var version = req.session.mobile_version.split('-',2);
-            if( version.length > 1 ) version.shift();
+            var fn, result,
+                version = req.session.mobile_version.split('-',2),
+                type = 'mobile';
+            
+            
+            
+            if( version.length > 1 ){
+                type = version.shift();
+                if( type == 'iphone' || type == 'android' ){
+                    type = 'mobile';
+                }
+            }
             version = version[0];
 
-            if ((fn = auth.mobile_algorithms[version])) {
+            if ((fn = auth[type+'_algorithms'][version])) {
                 result = fn(user.challenge, req);
                 if (String(result) === String(req.session.challenge_response)) {
                     return callback(null);

@@ -1,0 +1,155 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+@import url("/css/oocss/core/grid/grids.css");
+
+@import url("typography.css");
+
+body { font-size: 15px; font-family: "Open Sans"; color: #666; line-height: 1.4em; margin: 0; padding: 0; }
+h1 { font-size: 40px; margin: 10px 0 16px; color: #666; font-weight: 800;}
+.bold { font-weight: bold; }
+
+.hd {
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    * {
+        position: absolute;
+        left: -9999em;
+    }
+}
+
+.bd {
+    h2 {
+        font-weight: 700;
+        color: #666;
+        font-size: 30px;
+    }
+    
+    .ad-block {
+        padding: 0 10px;
+    }
+    
+    .player-block {
+        border-right: 1px solid #ccc; 
+    }
+    
+    .biz-block{
+        h2 {
+            margin-bottom: 0;
+        }
+    }
+    
+    .or {
+        text-align: center;
+        font-weight: 700;
+    }
+    
+    .download {
+        a {
+            text-indent: -9999em;
+            display: block;
+            cursor: pointer;
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            margin: 0 auto 5px auto;
+        }
+    }
+    
+    .qr {
+        height: 90px;
+        background: url("/images/desktop/site/facebook/img_fb-qr-760.jpg") 50% 50% no-repeat;
+    }
+    
+    .learn-more {
+        display: block;
+        cursor: pointer;
+        text-indent: -99999em;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+    }
+}
+
+.facebook-760 {
+    .page {
+        width: 760px;
+        margin: 0 auto;
+    }
+    
+    .hd {
+        height: 308px;
+        background-image: url("/images/desktop/site/facebook/img_fb-banner-760.jpg");
+    }
+    
+    .or {
+        padding: 24px 0 0 16px;
+    }
+    
+    .download {
+        a {
+            width: 139px;
+            height: 54px;
+        }
+        .iphone {
+            background-image: url("/images/desktop/site/facebook/img_fb-app-store-760.jpg");
+        }
+        .android {
+            background-image: url("/images/desktop/site/facebook/img_fb-market-760.jpg");
+        }
+    }
+    
+    .qr {
+        padding: 10px 0;
+    }
+    
+    .learn-more {
+        height: 216px;
+        background-image: url("/images/desktop/site/facebook/img_fb-learn-more-760.jpg");
+    }
+}
+
+.facebook-520 {
+    
+    .ad-block {
+        h2{
+            font-size: 22px;
+        }
+    }
+    
+    .page {
+        width: 520px;
+        margin: 0 auto;
+    }
+    
+    .hd {
+        height: 229px;
+        background-image: url("/images/desktop/site/facebook/img_fb-banner-520.jpg");
+    }
+    
+    .or {
+        padding: 14px 0 0;
+    }
+    
+    .download {
+        a {
+            width: 102px;
+            height: 40px;
+            margin-bottom: 16px !important;
+        }
+        .iphone {
+            background-image: url("/images/desktop/site/facebook/img_fb-app-store-520.jpg");
+        }
+        .android {
+            background-image: url("/images/desktop/site/facebook/img_fb-market-520.jpg");
+        }
+    }
+    
+    .qr {
+        padding: 0;
+    }
+    
+    .learn-more {
+        margin: 20px 0;
+        height: 187px;
+        background-image: url("/images/desktop/site/facebook/img_fb-learn-more-520.jpg");
+    }
+}

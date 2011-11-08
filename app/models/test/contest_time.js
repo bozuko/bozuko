@@ -42,7 +42,7 @@ var contest = new Bozuko.models.Contest(
     start: start,
     end: end,
     free_play_pct: 0
-    
+
 });
 contest.prizes.push({
     name: 'DBC $10 giftcard',
@@ -126,7 +126,7 @@ exports['play out contest with all wins'] = function(test) {
                 contest: contest,
                 user: user,
                 timestamp: new Date(result.timestamp.getTime()+Math.floor(engine.lookback_window/2))
-            };                
+            };
             contest.play(memo, function(err, memo) {
                 test.ok(!err);
                 test.ok(memo.result);
@@ -202,7 +202,7 @@ function enter_and_play(memo, callback) {
     memo.plays = memo.plays.concat(timestamps);
     var wins = 0;
     var losses = 0;
-    
+
     var ct = 0;
     return async.forEachSeries(timestamps, function(ts, cb) {
         // must change entry time so we can actually play. We can't just re-enter
@@ -215,7 +215,7 @@ function enter_and_play(memo, callback) {
                 contest: contest,
                 user: user,
                 timestamp: ts
-            };              
+            };
             return contest.play(m, function(err, result) {
                 if (err) return cb(err);
                 if (result.result) {
@@ -271,11 +271,11 @@ function play_one_day(memo, callback) {
             memo.pph = 5;
             memo.hrs = 4;
             enter_and_play(memo, cb);
-        }         
+        }
     }, function(err, results) {
         return callback(err, memo);
-    });          
-    
+    });
+
 };
 
 exports['play out contest - staggered'] = function(test) {
@@ -322,12 +322,12 @@ function graph_plays(start, plays) {
                 buckets[i]++;
                 cursor++;
             } else {
-                chart.addBar(buckets[i]);
+                chart.addBar({size: buckets[i]});
                 break;
             }
         }
     }
-    chart.draw();    
+    chart.draw();
 }
 
 function graph_wins(start, wins) {
@@ -341,17 +341,17 @@ function graph_wins(start, wins) {
                 buckets[i]++;
                 cursor++;
             } else {
-                chart.addBar(buckets[i]);
+                chart.addBar({size: buckets[i]});
                 break;
             }
         }
     }
-    chart.draw();    
+    chart.draw();
 }
 
 function cleanup(callback) {
     var e = emptyCollection;
-    async.parallel([e('User'), e('Entry'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize'), 
+    async.parallel([e('User'), e('Entry'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize'),
         e('Result')], callback);
 }
 

@@ -28,8 +28,18 @@ exports.locals = {
     meta: {
         'charset':'utf-8',
         'author':'Bozuko Inc.',
-        'description': 'Bozuko Beta Customer Area.',
-        'robots' : 'noindex,nofollow'
+        'description': 'Bozuko is the most exciting way to win prizes at your favorite places. Download and play today!',
+        'keywords':[
+            'instant win',
+            'games',
+            'geolocation',
+            'android',
+            'iphone',
+            'game of chance',
+            'lucky',
+            'prizes'
+        ],
+        "og:image": "https://bozuko.com/images/profile-picture.png"
     },
     nav: [],
     html_classes: [],
@@ -132,9 +142,10 @@ exports.routes = {
                         '/js/desktop/beta/app.js'
                     );
                     res.locals.styles.unshift(
+                        'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
                         '/js/ext-4.0/lib/resources/css/ext-all-gray.css',
-                        '/css/desktop/business/style.css?v2',
-                        '/css/desktop/admin/app.css'
+                        '/css/desktop/business/style.css?'+Date.now(),
+                        '/css/desktop/admin/app.css'+Date.now()
                     );
                     
                     // get the user pages...
