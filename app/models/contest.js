@@ -339,7 +339,7 @@ Contest.method('createAndSaveBarcodes', function(prize, cb) {
             // save the barcode image in /tmp
             barcode.create_png(prize.prize.barcodes[i], prize.prize.barcode_type, filename, function(err) {
                 if (err) return callback(err);
-                // load the barcode image into s3
+                // loadpa the barcode image into s3
                 return S3.put(filename+'.png', path, function(err) {
                     if (err) return callback(err);
                     i++;
@@ -501,10 +501,12 @@ Contest.method('getEntryMethodDescription', function(user, callback){
     return this.getEntryMethod(user).getDescription(callback);
 });
 Contest.method('getEntryMethod', function(user){
+    if (this.entry_method) return this.entry_method;
     var config = this.entry_config[0];
     var entryMethod = Bozuko.entry( config.type, user );
     entryMethod.configure( config );
     entryMethod.setContest( this );
+    this.entry_method = entryMethod;
     return entryMethod;
 });
 
@@ -512,45 +514,6 @@ Contest.method('getEntryMethodHtmlDescription', function(){
     return this.getEntryMethod().getHtmlDescription();
 });
 
-
-Contest.method('getUserInfo', function(user_id, callback) {
-
-    var min_expiry_date = new Date(new Date().getTime() - Bozuko.config.entry.token_expiration);
-    Bozuko.models.Entry.find(
-        {contest_id: this._id, user_id: user_id, timestamp: {$gt :min_expiry_date}},
-        function(err, entries) {
-            if (err) return callback(err);
-            var tokens = 0;
-            var last_entry = null;
-            var earliest_active_entry_time = null;
-            var last_entry_time = null;
-
-            var prof = new Profiler('/models/contest/getUserInfo');
-
-            entries.forEach(function(entry) {
-                if (!earliest_active_entry_time || (entry.timestamp < earliest_active_entry_time)) {
-                    earliest_active_entry_time = entry.timestamp;
-                }
-
-                if (!last_entry_time || (entry.timestamp > last_entry_time)) {
-                    last_entry_time = entry.timestamp;
-                    last_entry = entry;
-                }
-
-                tokens += entry.tokens;
-            });
-
-            prof.stop();
-
-            return callback(null, {
-                tokens: tokens,
-                last_entry: last_entry,
-                earliest_active_entry_time: earliest_active_entry_time
-            });
-        }
-    );
-
-});
 
 Contest.method('loadGameState', function(user, callback){
 
@@ -573,7 +536,7 @@ Contest.method('loadGameState', function(user, callback){
                 return user.updateInternals(function(error){
                     if( error ) return cb(error);
 
-                    return self.getUserInfo(user._id, function(err, info){
+                    return Bozuko.models.Entry.getUserInfo(self._id, user._id, function(err, info){
                         if (err) return callback(err);
                         if (info.tokens) state.user_tokens = info.tokens;
                         return cb();
@@ -582,10 +545,6 @@ Contest.method('loadGameState', function(user, callback){
                 });
             }
             return cb();
-        },
-
-        function load_entry_method(cb){
-            self.loadEntryMethod(user, cb);
         },
 
         function load_state(cb){
@@ -598,21 +557,11 @@ Contest.method('loadGameState', function(user, callback){
                 return cb();
             }
 
-            return self.entry_method.getButtonText( state.user_tokens, function(error, text){
-                if( error ) return cb(error);
-                state.button_text= text;
-
-                return self.entry_method.getNextEntryTime( function(error, time){
-                    if( error ) return cb( error );
-                    state.next_enter_time = time;
-
-                    return self.entry_method.getButtonEnabled( state.user_tokens, function(error, enabled){
-                        if( error ) return cb( error);
-                        state.button_enabled = enabled;
-
-                        return cb();
-                    });
-                });
+            return self.getEntryMethod(user).getButtonState(state.user_tokens,  function(err, buttonState) {
+                state.button_text = buttonState.text;
+                state.next_enter_time = buttonState.next_enter_time;
+                state.button_enabled = buttonState.enabled;
+                return cb();
             });
         }
     ], function return_state(error){
@@ -621,31 +570,11 @@ Contest.method('loadGameState', function(user, callback){
 
 });
 
-Contest.method('loadEntryMethod', function(user, callback){
-    var self =this;
-
-    // we need to create an entry to see whats up...
-    var config = this.getEntryConfig();
-    var entryMethod = Bozuko.entry(config.type, user);
-    entryMethod.setContest(this);
-    entryMethod.configure(config);
-
-    self.entry_method = entryMethod;
-    self.entry_method.load( function(error){
-        if( error ) return callback(error);
-        return callback(null, entryMethod);
-    });
-
-});
-
 Contest.method('loadTransferObject', function(user, callback){
     var self = this;
     return self.loadGameState(user, function(error){
         if( error ) return callback(error);
-        return self.loadEntryMethod(user, function(error){
-            if( error ) return callback(error);
-            return callback( null, self);
-        });
+        return callback( null, self);
     });
 });
 
@@ -733,7 +662,7 @@ Contest.method('processResult', function(memo, callback) {
 Contest.method('savePrizes', function(memo, callback) {
     var self = this;
 
-    return this.getUserInfo(memo.user._id, function(err, info) {
+    return Bozuko.models.Entry.getUserInfo(this._id, memo.user._id, function(err, info) {
         if (err) return callback(err);
 
         // Should we hand out a consolation prize?

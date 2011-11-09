@@ -265,28 +265,6 @@ exports.routes = {
         }
 
     },
-/*
-    '/game/:id/prize/:prize_index/barcode/:barcode_index': {
-        get: {
-//            access: 'mobile',
-
-            handler: function(req, res) {
-                return S3.get(url.parse(req.url).pathname, res);
-            }
-        }
-
-    },
-
-    '/game/:id/consolation_prize/:prize_index/barcode/:barcode_index': {
-        get: {
-  //          access: 'mobile',
-
-            handler: function(req, res) {
-                return S3.get(url.parse(req.url).pathname, res);
-            }
-        }
-    },
-*/
 
     /**
      * Play a game here. The result is pulled off the generic result list generated for the contest

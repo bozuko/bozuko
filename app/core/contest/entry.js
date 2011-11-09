@@ -70,15 +70,15 @@ EntryMethod.prototype.getDescription = function(callback){
  */
 EntryMethod.prototype.getHtmlDescription = function(callback){
     return this.description;
-}
+};
 
 EntryMethod.prototype.getEntryRequirement = function(){
     return "Valid Bozuko Account is required to enter.";
-}
+};
 
 EntryMethod.prototype.getPlayLimitations = function(){
     return this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+DateUtil.duration(this.config.duration, true);
-}
+};
 
 /**
  * Configure the entryMethod
@@ -141,7 +141,7 @@ EntryMethod.prototype.process = function( callback ){
             return callback(error);
         }
         if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
-        
+
         var now = new Date();
         return self.contest.addEntry(self.getTokenCount(), function(error){
             if( error ) return callback(error);
@@ -217,9 +217,8 @@ EntryMethod.prototype.validate = function( callback ){
 
 EntryMethod.prototype.load = function(callback){
     var self = this,
-        prof = Profiler.create('entry.load'),
         force = false;
-        
+
     if( arguments.length > 1 ){
         callback = arguments[1];
         force = arguments[0];
@@ -246,29 +245,22 @@ EntryMethod.prototype._load = function( callback ){
 
 EntryMethod.prototype.getNextEntryTime = function( callback ){
     var self = this;
-    this.load( function(error){
-        if( error ) return callback( error );
-        if( self._nextEntryTime ) return callback(null, self._nextEntryTime );
-        var now = new Date();
-        if( !self.user ){
-            return callback(null, now);
-        }
-        return self.getLastEntry(function(err, lastEntry) {
-            if (err) return callback(err);
-            // assume we have the contest
-            if( !lastEntry ) return callback( null, new Date() );
-            // check the timestamp on this bad boy.
-            var timestamp = +lastEntry.timestamp;
-            timestamp += (self.config.duration||0);
-            now = Date.now();
-            self._nextEntryTime = new Date(timestamp > now ? timestamp : now);
-            return callback(null, self._nextEntryTime);
-        });
+    var now = new Date();
+    if( !self.user ) return callback(null, now);
+    return self.getLastEntry(function(err, lastEntry) {
+        if (err) return callback(err);
+        // assume we have the contest
+        if( !lastEntry ) return callback( null, now );
+        // check the timestamp on this bad boy.
+        var timestamp = +lastEntry.timestamp;
+        timestamp += (self.config.duration||0);
+        now = Date.now();
+        self._nextEntryTime = new Date(timestamp > now ? timestamp : now);
+        return callback(null, self._nextEntryTime);
     });
 };
 
 EntryMethod.prototype.getLastEntry = function(callback){
-    
     return Bozuko.models.Entry.find(
         {contest_id: this.contest._id, user_id: this.user._id},
         {},
@@ -280,42 +272,38 @@ EntryMethod.prototype.getLastEntry = function(callback){
     );
 };
 
-EntryMethod.prototype.getButtonText = function( tokens, callback ){
-    var self = this;
-    if( self._buttonText ) return callback( null, self._buttonText );
-    return this.load( function(error){
-        if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
-
-            if( error ) return callback( error );
-            if( !tokens ){
-                var now = new Date();
-                if( time.getTime() >= now.getTime() ){
-                    self._buttonText = _t( self.user ? self.user.lang : 'en', 'entry/bozuko/wait_duration', DateUtil.inAgo( time ) );
-                }
-                else{
-                    self._buttonText =  _t( self.user ? self.user.lang : 'en', 'entry/enter');
-                }
-            }
-            else{
-                self._buttonText = _t( self.user ? self.user.lang : 'en', 'entry/play');
-            }
-            return callback( null, self._buttonText );
-        });
-    });
+EntryMethod.prototype.getButtonText = function(nextEntryTime, tokens){
+    if( !tokens ){
+        var now = new Date();
+        if( nextEntryTime.getTime() >= now.getTime() ){
+            this._buttonText = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/wait_duration', DateUtil.inAgo( nextEntryTime ) );
+        } else{
+            this._buttonText =  _t( this.user ? this.user.lang : 'en', 'entry/enter');
+        }
+    } else{
+        this._buttonText = _t( this.user ? this.user.lang : 'en', 'entry/play');
+    }
+    return this._buttonText;
 };
 
-EntryMethod.prototype.getButtonEnabled = function( tokens, callback ){
+EntryMethod.prototype.getButtonEnabled = function( nextEntryTime, tokens ){
+    var enabled = true;
+    var now = new Date();
+    if( nextEntryTime > now && tokens === 0) enabled = false;
+    return enabled;
+};
+
+EntryMethod.prototype.getButtonState = function(tokens, callback) {
     var self = this;
-    self.getNextEntryTime( function(error, time){
-        if( error ) return callback( error );
-        var enabled = true;
-        var now = new Date();
-        if( time > now ){
-            if( tokens == 0 ){
-                enabled = false;
-            }
-        }
-        return callback( null, enabled );
+    var state = {};
+    return this.load(function(error) {
+        if (error) return callback(error);
+        return self.getNextEntryTime(function(err, time) {
+            if (err) return callback(err);
+            state.next_enter_time = time;
+            state.text = self.getButtonText(time, tokens);
+            state.enabled = self.getButtonEnabled(time, tokens);
+            return callback(null, state);
+        });
     });
 };

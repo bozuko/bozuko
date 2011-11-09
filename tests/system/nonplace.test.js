@@ -45,31 +45,3 @@ exports.get_pages = function(test) {
             test.done();
         });
 };
-
-/*
- 
- // This is redundant - use simple test
- 
-exports.facebook_checkin = function(test) {
-    var params = JSON.stringify({
-        ll: ll,
-        message: "This place is off the hook!",
-        phone_type: phone.type,
-        phone_id: phone.unique_id,
-        mobile_version: '1.0',
-        challenge_response: auth.mobile_algorithms['1.0'](assert.challenge)
-    });
-    
-    assert.response(test, Bozuko.app,
-        {url: checkin_link+"/?token="+token,
-        method: 'POST',
-        headers: headers,
-        data: params},
-        ok,
-        function(res) {
-            var facebook_checkin_result = JSON.parse(res.body);
-            test.ok(Bozuko.validate('game_state', facebook_checkin_result));
-            test.done();
-        });
-};
-*/

@@ -237,7 +237,7 @@ FacebookCheckinMethod.prototype._load = function( callback ){
     return self.page.canUserCheckin( self.user, function(error, flag, checkin, error2){
         if( error ) return callback( error );
         self.can_checkin = flag;
-		self.can_checkin_error = error2;
+        self.can_checkin_error = error2;
 
         var date = new Date(
             Date.now() - Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4)
@@ -258,27 +258,17 @@ FacebookCheckinMethod.prototype._load = function( callback ){
     });
 };
 
-FacebookCheckinMethod.prototype.getButtonText = function( tokens, callback ){
-    var self = this;
-    this.load( function(error){
-        if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
-
-            if( error ) return callback( error );
-            if( !tokens ){
-                var now = new Date();
-                if( time.getTime() > now.getTime() ){
-                    var time_str = DateUtil.inAgo(time);
-                    return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', time_str ) );
-                }
-
-                if( self.user && !self.can_checkin && self.hasCheckedIn() ){
-                    return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/facebook/enter' )  );
-                }
-                return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/checkin_to_play' ));
-            }
-            return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/play' ) );
-        });
-    });
-
+FacebookCheckinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
+    if( !tokens ){
+        var now = new Date();
+        if( nextEntryTime.getTime() > now.getTime() ){
+            var time_str = DateUtil.inAgo(nextEntryTime);
+            return  _t( this.user ? this.user.lang : 'en', 'entry/facebook/wait_duration', time_str );
+        }
+        if( this.user && !this.can_checkin && this.hasCheckedIn() ){
+            return _t( this.user ? this.user.lang : 'en', 'entry/facebook/enter' );
+        }
+        return _t( this.user ? this.user.lang : 'en', 'entry/facebook/checkin_to_play' );
+    }
+    return _t( this.user ? this.user.lang : 'en', 'entry/facebook/play' );
 };

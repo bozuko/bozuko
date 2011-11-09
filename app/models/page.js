@@ -149,11 +149,8 @@ Page.method('loadContests', function(user, callback){
             function load_contest(contest, cb){
                 contest.loadGameState(user, function(error, state){
                     if( error ) return callback( error );
-                    return contest.loadEntryMethod(user, function(error, method){
-                        if( error ) return callback( error );
-                        self.contests.push(contest);
-                        return cb(null);
-                    });
+                    self.contests.push(contest);
+                    return cb(null);
                 });
             },
 
@@ -231,7 +228,6 @@ Page.method('getActiveContests', function(user, callback){
 
             }
         );
-
 
         return callback(null, active_contests);
     });
