@@ -115,7 +115,7 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                         fields:['value', 'text'],
                         data:[
                             {value:'default',text:'Default'},
-                            {value:'rock',text:'Rock'},
+                            {value:'gold',text:'Gold'},
                             {value:'custom',text:'Custom'}
                         ]
                     }),
