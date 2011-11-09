@@ -529,6 +529,7 @@ Contest.method('loadGameState', function(user, callback){
     };
 
     self.game_state = state;
+    var last_entry = null;
     return async.series([
 
         function update_user(cb){
@@ -539,6 +540,7 @@ Contest.method('loadGameState', function(user, callback){
                     return Bozuko.models.Entry.getUserInfo(self._id, user._id, function(err, info){
                         if (err) return callback(err);
                         if (info.tokens) state.user_tokens = info.tokens;
+                        last_entry = info.last_entry;
                         return cb();
                     });
 
@@ -557,7 +559,7 @@ Contest.method('loadGameState', function(user, callback){
                 return cb();
             }
 
-            return self.getEntryMethod(user).getButtonState(state.user_tokens,  function(err, buttonState) {
+            return self.getEntryMethod(user).getButtonState(last_entry, state.user_tokens,  function(err, buttonState) {
                 state.button_text = buttonState.text;
                 state.next_enter_time = buttonState.next_enter_time;
                 state.button_enabled = buttonState.enabled;
