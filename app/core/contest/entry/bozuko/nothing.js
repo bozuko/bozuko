@@ -75,7 +75,7 @@ BozukoNothingMethod.prototype.getHtmlDescription = function(callback){
     var description = "Just login and you will receive ";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "plays" : "play" )+" every "+duration+'.';
     return description;
-}
+};
 
 
 /**
@@ -84,7 +84,7 @@ BozukoNothingMethod.prototype.getHtmlDescription = function(callback){
  */
 BozukoNothingMethod.prototype.getMaxTokens = function(){
     return this.config.tokens;
-}
+};
 
 /**
  * Get the number of tokens for this user on a successfull entry
@@ -92,24 +92,16 @@ BozukoNothingMethod.prototype.getMaxTokens = function(){
  */
 BozukoNothingMethod.prototype.getTokenCount = function(){
     return this.config.tokens;
-}
+};
 
-BozukoNothingMethod.prototype.getButtonText = function( tokens, callback ){
-    var self = this;
-    this.load( function(error){
-        if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
-
-            if( error ) return callback( error );
-            if( !tokens ){
-                var now = new Date();
-                if( time.getTime() > now.getTime() ){
-                    var time_str = DateUtil.inAgo( time );
-                    return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/wait_duration', time_str )  );
-                }
-                return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/play' ));
-            }
-            return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/play' ) );
-        });
-    });
+BozukoNothingMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
+    if( !tokens ){
+        var now = new Date();
+        if( nextEntryTime.getTime() > now.getTime() ){
+            var time_str = DateUtil.inAgo( nextEntryTime );
+            return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/wait_duration', time_str );
+        }
+        return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/play' );
+    }
+    return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/play' );
 };

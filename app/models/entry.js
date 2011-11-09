@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId
+    ObjectId = Schema.ObjectId,
+    Profiler = Bozuko.require('util/profiler')
 ;
 
 var Entry = module.exports = new Schema({
@@ -17,3 +18,42 @@ var Entry = module.exports = new Schema({
     tokens                  :{type:Number},
     initial_tokens          :{type:Number}
 }, {safe: {w:2, wtimeout: 5000}});
+
+Entry.static('getUserInfo', function(contest_id, user_id, callback) {
+
+    var min_expiry_date = new Date(new Date().getTime() - Bozuko.config.entry.token_expiration);
+    Bozuko.models.Entry.find(
+        {contest_id: contest_id, user_id: user_id, timestamp: {$gt :min_expiry_date}},
+        function(err, entries) {
+            if (err) return callback(err);
+            var tokens = 0;
+            var last_entry = null;
+            var earliest_active_entry_time = null;
+            var last_entry_time = null;
+
+            var prof = new Profiler('/models/entry/getUserInfo');
+
+            entries.forEach(function(entry) {
+                if (!earliest_active_entry_time || (entry.timestamp < earliest_active_entry_time)) {
+                    earliest_active_entry_time = entry.timestamp;
+                }
+
+                if (!last_entry_time || (entry.timestamp > last_entry_time)) {
+                    last_entry_time = entry.timestamp;
+                    last_entry = entry;
+                }
+
+                tokens += entry.tokens;
+            });
+
+            prof.stop();
+
+            return callback(null, {
+                tokens: tokens,
+                last_entry: last_entry,
+                earliest_active_entry_time: earliest_active_entry_time
+            });
+        }
+    );
+
+});

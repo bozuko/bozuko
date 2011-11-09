@@ -64,7 +64,7 @@ FacebookLikeMethod.prototype.defaults = {
 
 /**
  * Get list message used in 'game' transfer object
- * 
+ *
  */
 FacebookLikeMethod.prototype.getListMessage = function(){
     if (this.config.options.radius) return "Facebook Like and location required";
@@ -77,7 +77,7 @@ FacebookLikeMethod.prototype.getListMessage = function(){
  */
 FacebookLikeMethod.prototype.getDescription = function(callback){
     var self = this;
-    
+
     return self.load(function(error){
         // need a nice duration
         // get the number of minutes:
@@ -89,11 +89,11 @@ FacebookLikeMethod.prototype.getDescription = function(callback){
         }
 
         description+=self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-            
+
         if( !self.user || (self.page && !self.user.likes(self.page))){
             description+="\nTap Like and wait a second.";
         }
-    
+
         return callback(error, description);
     });
 };
@@ -108,7 +108,7 @@ FacebookLikeMethod.prototype.getHtmlDescription = function(){
     var duration = DateUtil.duration( self.config.duration, true );
     var description = "Like us on Facebook and get ";
         description+= self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration+'.';
-        
+
     return description;
 };
 
@@ -155,7 +155,7 @@ FacebookLikeMethod.prototype.process = function( callback ){
                 return callback( null, entry );
             });
         });
-        
+
     });
 };
 
@@ -193,54 +193,32 @@ FacebookLikeMethod.prototype._load = function( callback ){
     return callback();
 };
 
-FacebookLikeMethod.prototype.getButtonText = function( tokens, callback ){
-    var self = this;
+FacebookLikeMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     var text = '';
-    this.load( function(error){
-        if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
-
-            if( error ) return callback( error );
-            if( !tokens ){
-                
-                var now = new Date();
-                if( +time > +now ){
-                    text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', DateUtil.inAgo(time) );
-                }
-                else if( self.user ){
-                    if( !self.user.likes(self.page) ){
-                        text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
-                    }
-                    else{
-                        text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/play');
-                    }
-                }
-                else{
-                    text =  _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
-                }
+    if( !tokens ){
+        var now = new Date();
+        if( +nextEntryTime > +now ){
+            text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', DateUtil.inAgo(nextEntryTime) );
+        } else if( self.user ){
+            if( !self.user.likes(self.page) ){
+                text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
+            }  else {
+                text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/play');
             }
-            else{
-                text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/play' );
-            }
-            return callback( null, text);
-        });
-    });
-
+        } else {
+            text =  _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
+        }
+    } else {
+        text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/play' );
+    }
+    return text;
 };
 
-FacebookLikeMethod.prototype.getButtonEnabled = function( tokens, callback ){
-    var self = this;
-    if( tokens ) return callback( null, true );
-    return self.getNextEntryTime( function(error, time){
-        if( error ) return callback( error );
-        var enabled = true;
-        var now = new Date();
-        if( time > now ){
-            if( tokens == 0 ){
-                enabled = false;
-            }
-        }
-        if( enabled && self.user && !self.user.likes(self.page) ) enabled = false;
-        return callback( null, enabled );
-    });
+FacebookLikeMethod.prototype.getButtonEnabled = function( nextEntryTime, tokens){
+    if( tokens ) return true;
+    var enabled = true;
+    var now = new Date();
+    if( nextEntryTime > now && tokens === 0) enabled = false;
+    if( enabled && this.user && !this.user.likes(this.page) ) enabled = false;
+    return enabled;
 };

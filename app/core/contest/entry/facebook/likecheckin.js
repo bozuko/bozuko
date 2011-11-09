@@ -90,7 +90,7 @@ FacebookLikeCheckinMethod.prototype.getHtmlDescription = function(){
         duration = DateUtil.duration(self.config.duration, true),
         description = "Like us on Facebook and Check in to get ";
         description+= self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration+'.';
-        
+
     return description;
 };
 
@@ -136,11 +136,11 @@ FacebookLikeCheckinMethod.prototype.validate = function( callback ){
     var self = this;
     EntryMethod.prototype.validate.call(self, function(error, valid){
         if( error || !valid ) return callback( error, valid );
-        
+
         if( !self.user || !self.page || !self.user.likes(self.page) ){
             return callback(null, false);
         }
-        
+
         if( !self.can_checkin && !self.hasCheckedIn() ){
             return callback(null, false);
         }
@@ -150,7 +150,7 @@ FacebookLikeCheckinMethod.prototype.validate = function( callback ){
 
 FacebookLikeCheckinMethod.prototype.hasCheckedIn = function(){
     var self = this;
-	
+
     if( self.last_checkin_here ){
         return true;
     }
@@ -171,9 +171,9 @@ FacebookLikeCheckinMethod.prototype.process = function( callback ){
     return self.validate( function(error, valid){
         if( error ) return callback( error );
         if( !valid ){
-                        
+
             if(!self.can_checkin && !self.hasCheckedIn()){
-                
+
                 return callback( self.can_checkin_error );
             }
 
@@ -192,7 +192,7 @@ FacebookLikeCheckinMethod.prototype.process = function( callback ){
 
                 return EntryMethod.prototype.process.call(self, function(err, entry) {
                     if (err) return callback(err);
-                    
+
                     var share = new Bozuko.models.Share({
                         service         :'facebook',
                         type            :'checkin',
@@ -219,28 +219,28 @@ FacebookLikeCheckinMethod.prototype.process = function( callback ){
 
 FacebookLikeCheckinMethod.prototype._load = function( callback ){
     var self = this;
-   
+
     if( !self.user ){
         self.can_checkin = true;
         return callback( null );
     }
-    
+
     return self.page.canUserCheckin( self.user, function(error, flag, checkin, error2){
         if( error ) return callback( error );
         self.can_checkin = flag;
 		self.can_checkin_error = error2;
-        
+
         var date = new Date(
             Date.now() - Bozuko.cfg('checkin.duration.page', 1000 * 60 * 60 * 4)
         );
-                
+
         var selector = {
             service:'facebook',
             user_id: self.user._id,
             page_id: self.page._id,
             timestamp: {$gt: date}
         };
-                
+
         return Bozuko.models.Checkin.findOne(selector, function(error, checkin){
             if( error ) return callback( error );
             self.last_checkin_here = checkin;
@@ -249,48 +249,32 @@ FacebookLikeCheckinMethod.prototype._load = function( callback ){
     });
 };
 
-FacebookLikeCheckinMethod.prototype.getButtonText = function( tokens, callback ){
-    var self = this;
-    this.load( function(error){
-        if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
+FacebookLikeCheckinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
+    if( !tokens ){
+        var now = new Date();
+        if( nextEntryTime.getTime() > now.getTime() ){
+            var time_str = DateUtil.inAgo(nextEntryTime);
+            return  _t( this.user ? this.user.lang : 'en', 'entry/facebook/wait_duration', time_str );
+        }
 
-            if( error ) return callback( error );
-            if( !tokens ){
-                var now = new Date();
-                if( time.getTime() > now.getTime() ){
-                    var time_str = DateUtil.inAgo(time);
-                    return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', time_str ) );
-                }
-                
-                if( self.user && !self.user.likes(self.page) ){
-                    return callback( null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' ));
-                }
-                
-                if( self.user && !self.can_checkin && self.hasCheckedIn() ){
-                    return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/facebook/enter' ));
-                }
-                
-                return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/checkin_to_play' ));
-            }
-            return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/facebook/play' ) );
-        });
-    });
+        if( this.user && !this.user.likes(this.page) ){
+            return _t( this.user ? this.user.lang : 'en', 'entry/facebook/like_enter' );
+        }
+
+        if( this.user && !this.can_checkin && this.hasCheckedIn() ){
+            return  _t( this.user ? this.user.lang : 'en', 'entry/facebook/enter' );
+        }
+
+        return _t( this.user ? this.user.lang : 'en', 'entry/facebook/checkin_to_play' );
+    }
+    return _t( this.user ? this.user.lang : 'en', 'entry/facebook/play' );
 };
 
-FacebookLikeCheckinMethod.prototype.getButtonEnabled = function( tokens, callback ){
-    var self = this;
-    if( tokens ) return callback( null, true );
-    return self.getNextEntryTime( function(error, time){
-        if( error ) return callback( error );
-        var enabled = true;
-        var now = new Date();
-        if( time > now ){
-            if( tokens == 0 ){
-                enabled = false;
-            }
-        }
-        if( enabled && self.user && !self.user.likes(self.page) ) enabled = false;
-        return callback( null, enabled );
-    });
+FacebookLikeCheckinMethod.prototype.getButtonEnabled = function( nextEntryTime, tokens ){
+    if( tokens ) return true;
+    var enabled = true;
+    var now = new Date();
+    if( nextEntryTime > now && tokens === 0) enabled = false;
+    if( enabled && this.user && !this.user.likes(this.page) ) enabled = false;
+    return enabled;
 };
