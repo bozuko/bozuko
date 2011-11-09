@@ -15,4 +15,4 @@ GoldTheme.prototype.images = {
 };
 
 GoldTheme.prototype.base = 'https://s3.amazonaws.com/bozuko/public/scratch/themes/gold/theme';
-GoldTheme.prototype.icon = 'https://s3.amazonaws.com/bozuko/public/scratch/themes/gold/scratch.png';
+GoldTheme.prototype.icon = 'https://s3.amazonaws.com/bozuko/public/scratch/themes/gold/icon.png';
