@@ -243,33 +243,16 @@ EntryMethod.prototype._load = function( callback ){
     callback();
 };
 
-EntryMethod.prototype.getNextEntryTime = function( callback ){
+EntryMethod.prototype.getNextEntryTime = function( lastEntry ){
     var self = this;
     var now = new Date();
-    if( !self.user ) return callback(null, now);
-    return self.getLastEntry(function(err, lastEntry) {
-        if (err) return callback(err);
-        // assume we have the contest
-        if( !lastEntry ) return callback( null, now );
-        // check the timestamp on this bad boy.
-        var timestamp = +lastEntry.timestamp;
-        timestamp += (self.config.duration||0);
-        now = Date.now();
-        self._nextEntryTime = new Date(timestamp > now ? timestamp : now);
-        return callback(null, self._nextEntryTime);
-    });
-};
-
-EntryMethod.prototype.getLastEntry = function(callback){
-    return Bozuko.models.Entry.find(
-        {contest_id: this.contest._id, user_id: this.user._id},
-        {},
-        {sort: {timestamp: -1}, limit: 1},
-        function(err, entries) {
-            if (err) return callback(err);
-            return callback(null, entries.length ? entries[0] : null);
-        }
-    );
+    if( !self.user ) return now;
+    if( !lastEntry ) return now;
+    var timestamp = +lastEntry.timestamp;
+    timestamp += (self.config.duration||0);
+    now = Date.now();
+    self._nextEntryTime = new Date(timestamp > now ? timestamp : now);
+    return self._nextEntryTime;
 };
 
 EntryMethod.prototype.getButtonText = function(nextEntryTime, tokens){
@@ -293,17 +276,15 @@ EntryMethod.prototype.getButtonEnabled = function( nextEntryTime, tokens ){
     return enabled;
 };
 
-EntryMethod.prototype.getButtonState = function(tokens, callback) {
+EntryMethod.prototype.getButtonState = function(lastEntry, tokens, callback) {
     var self = this;
     var state = {};
     return this.load(function(error) {
         if (error) return callback(error);
-        return self.getNextEntryTime(function(err, time) {
-            if (err) return callback(err);
-            state.next_enter_time = time;
-            state.text = self.getButtonText(time, tokens);
-            state.enabled = self.getButtonEnabled(time, tokens);
-            return callback(null, state);
-        });
+        var time = self.getNextEntryTime(lastEntry);
+        state.next_enter_time = time;
+        state.text = self.getButtonText(time, tokens);
+        state.enabled = self.getButtonEnabled(time, tokens);
+        return callback(null, state);
     });
 };

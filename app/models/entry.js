@@ -29,7 +29,6 @@ Entry.static('getUserInfo', function(contest_id, user_id, callback) {
             var tokens = 0;
             var last_entry = null;
             var earliest_active_entry_time = null;
-            var last_entry_time = null;
 
             var prof = new Profiler('/models/entry/getUserInfo');
 
@@ -38,8 +37,7 @@ Entry.static('getUserInfo', function(contest_id, user_id, callback) {
                     earliest_active_entry_time = entry.timestamp;
                 }
 
-                if (!last_entry_time || (entry.timestamp > last_entry_time)) {
-                    last_entry_time = entry.timestamp;
+                if (!last_entry || (entry.timestamp > last_entry.timestamp)) {
                     last_entry = entry;
                 }
 
