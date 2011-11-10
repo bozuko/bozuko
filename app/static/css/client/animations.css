@@ -105,12 +105,12 @@
 
 @-webkit-keyframes stars {
     0%{
-        -webkit-transform:rotate(0deg) scale(.9,.9);
+        -webkit-transform:rotate(0deg) scale(1,1);
     }
     50% {
-        -webkit-transform:rotate(360deg) scale(1.1,1.1);
+        -webkit-transform:rotate(360deg) scale(1.2,1.2);
     }
     100% {
-        -webkit-transform:rotate(720deg) scale(.9,.9);
+        -webkit-transform:rotate(720deg) scale(1,1);
     }
 }
