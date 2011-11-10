@@ -143,6 +143,11 @@ auth.mobile = function(req, res, callback) {
 
         // Verify phone type and unique id
         function(callback) {
+            var version = req.session.mobile_version.split('-');
+            if(version.length && version[0] == 'html5'){
+                return callback(null);
+            }
+            
             if (!req.session.phone){
                 return callback(Bozuko.error('auth/mobile'));
             }

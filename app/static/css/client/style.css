@@ -1,9 +1,20 @@
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
 body {
   background: #000000;
   padding: 0;
   margin: 0;
   height: 460px;
-  font-family: arial;
+  font-family: "open sans", arial;
 }
 * {
   outline: none;
@@ -16,7 +27,7 @@ body {
   height: 416px;
   margin: 0 auto;
 }
-.app .modal {
+.mask {
   width: 100%;
   height: 100%;
   display: none;
@@ -24,7 +35,52 @@ body {
   top: 0;
   left: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.5);
+  background: #000;
+  -moz-opacity: 0.4;
+  -khtml-opacity: 0.4;
+  opacity: 0.4;
+}
+.modal {
+  width: 100%;
+  height: 100%;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1001;
+}
+.modal-window {
+  margin: 20px;
+  border: 3px solid #006b37;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  -moz-box-shadow: 0 0 20px #333333;
+  -webkit-box-shadow: 0 0 20px #333333;
+  box-shadow: 0 0 20px #333333;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background-clip: padding-box;
+}
+.modal-window .logo {
+  background: transparent url("/images/client/img_logo.png") no-repeat 50% 50%;
+  height: 70px;
+}
+.modal-window .text {
+  color: #006b37;
+  font-weight: 500;
+  text-align: center;
+}
+.facebook-login {
+  display: block;
+  width: 67px;
+  height: 22px;
+  margin: 6px auto;
+  cursor: pointer;
+  text-indent: -9999em;
+  background: transparent url("/images/client/fblogin.png") no-repeat 50% 50%;
 }
 /**
  * Games
@@ -82,4 +138,50 @@ body {
   width: 92px;
   height: 115px;
   z-index: 3;
+}
+.scratch-ticket .animations {
+  z-index: 4;
+  position: absolute;
+  overflow: hidden;
+  top: 40px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.scratch-ticket .animations .animation {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.scratch-ticket .animations .animation img {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.scratch-ticket .animations .animate {
+  display: block;
+}
+.scratch-ticket .animations .animate .bg {
+  z-index: 1;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: fadein 300ms ease-in-out, pulse 1s ease-in-out 0ms infinite alternate;
+  -moz-animation: fadein 300ms ease-in-out 0ms 1 forward, pulse 1s ease-in-out 0ms infinite alternate;
+}
+.scratch-ticket .animations .animate .txt {
+  z-index: 3;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: fadein 300ms ease-in-out, wiggle 1s ease-in-out 0s infinite alternate;
+  -moz-animation: fadein 300ms ease-in-out 0ms 1 forward, wiggle 1s ease-in-out 0s infinite alternate;
+}
+.scratch-ticket .animations .animate .stars {
+  z-index: 2;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: stars 5s linear infinite, fadein 300ms ease-in-out;
+  -moz-animation: fadein 300ms ease-in-out 0ms 1 forward, stars 5s linear infinite;
 }

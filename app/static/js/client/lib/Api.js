@@ -2,9 +2,7 @@ Ext.namespace('Bozuko.client.lib');
 Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
     
     token           :null,
-    mobile_version   :'1.0',
-    phone_type      :'web',
-    phone_id        :new Date().getTime(),
+    mobile_version   :'html5-1.0',
     
     constructor : function(base){
         var me = this;
@@ -14,10 +12,6 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
             var loc = window.location;
             me.base = loc.protocol+'//'+loc.host;
         }
-        
-        Ext.Ajax.defaultHeaders = {
-            'content-type' : 'text/json'
-        };
         
         me.history = [];
         me.addEvents({
@@ -35,7 +29,7 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
     
     buildParams : function(params){
         params = params || {};
-        params.mobile_version = 'web-1.0';
+        params.mobile_version = 'html5-1.0';
         if( this.token ) params.token = this.token;
         return params;
     },
