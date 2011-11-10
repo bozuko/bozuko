@@ -198,18 +198,18 @@ FacebookLikeMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
         var now = new Date();
         if( +nextEntryTime > +now ){
-            text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/wait_duration', DateUtil.inAgo(nextEntryTime) );
-        } else if( self.user ){
-            if( !self.user.likes(self.page) ){
-                text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
+            text = _t( this.user ? this.user.lang : 'en', 'entry/facebook/wait_duration', DateUtil.inAgo(nextEntryTime) );
+        } else if( this.user ){
+            if( !this.user.likes(this.page) ){
+                text = _t( this.user ? this.user.lang : 'en', 'entry/facebook/like_enter' );
             }  else {
-                text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/play');
+                text = _t( this.user ? this.user.lang : 'en', 'entry/facebook/play');
             }
         } else {
-            text =  _t( self.user ? self.user.lang : 'en', 'entry/facebook/like_enter' );
+            text =  _t( this.user ? this.user.lang : 'en', 'entry/facebook/like_enter' );
         }
     } else {
-        text = _t( self.user ? self.user.lang : 'en', 'entry/facebook/play' );
+        text = _t( this.user ? this.user.lang : 'en', 'entry/facebook/play' );
     }
     return text;
 };
