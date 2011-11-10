@@ -198,18 +198,19 @@ body{ background: #000000; padding: 0; margin: 0; height: 460px; font-family: "o
             }
             
             .stars {
+                
                 z-index: 2;
                 -webkit-transform-origin: 50% 50%;
                 -moz-transform-origin: 50% 50%;
                 
                 -webkit-animation:
-                    stars 5s linear infinite,
-                    fadein 300ms ease-in-out
+                    stars 2s linear infinite,
+                    fadein 300ms linear
                     ;
                 
                 -moz-animation:
-                    fadein 300ms ease-in-out 0ms 1 forward,
-                    stars 5s linear infinite
+                    stars 2s linear infinite,
+                    fadein 300ms linear
                     ;
             }
         }
