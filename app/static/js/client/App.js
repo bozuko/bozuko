@@ -1,5 +1,10 @@
 Ext.namespace('Bozuko.client');
 
+Ext.Element.prototype.update = function(html){
+    this.dom.innerHTML = html;
+};
+
+
 Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     constructor : function(config){
@@ -7,17 +12,15 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         var self = this;
         
         this.user = null;
+        this.currentView = 'start';
         
         this.config = config || {};
         Ext.apply( this, config );
-        this.$body = Ext.get(document.body).createChild({
-            cls: 'app',
-            html: "<div style='color:#fff; font-size: 22px; text-align: center; position: absolute; top: 20%; width: 100%; left: 0;'>Loading...</div>"
-        });
         
-        this.$modal = this.$body.createChild({
-            cls: 'modal'
-        });
+        this.api = new Bozuko.client.lib.Api();
+        
+        this.createElements();
+        this.showLoading('Loading...');
         
         document.body.addEventListener('touchstart', function(e){
             e.preventDefault();
@@ -25,18 +28,44 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         // scroll the window to the top
         setTimeout(function(){
-            window.scrollTo(0,1);
+            self.scrollToTop();
         }, 200);
         
-        this.api = new Bozuko.client.lib.Api();
+        this.initFacebook();
+        this.startFromPath();
         
-        this.init();
     },
     
-    init : function(){
-        var self = this,
-            api = this.api;
-            
+    createElements : function(){
+        
+        this.$body = Ext.get(document.body).createChild({
+            cls         :'app'
+        });
+        
+        this.$mask = this.$body.createChild({
+            cls         :'mask'
+        });
+        
+        this.$modal = this.$body.createChild({
+            cls         :'modal'
+        });
+        
+        this.$loading = this.$modal.createChild({
+            cls         :'modal-window loading',
+            cn: [{
+                cls         :'logo'
+            },{
+                tag         :'p',
+                cls         :'text',
+                html        :'Loading...'
+            }]
+        });
+        this.$loading.setVisibilityMode(Ext.Element.DISPLAY);
+    },
+    
+    initFacebook : function(){
+        var self = this;
+        
         //initialize facebook
         FB.init({
             appId: Bozuko.client.App.facebookApp.id, 
@@ -45,69 +74,140 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             xfbml: true,
             oauth: true
         });
-      
-        FB.Event.subscribe('auth.login', function(data){
-            self.onFacebookLogin(data)
-        });
-        FB.Event.subscribe('auth.logout', function(data){
-            self.onFacebookLogout(data)
-        });
         
         FB.getLoginStatus(function(response){
-            self.login(function(){
-                
-            });
-        });
-        
-        api.call(function(response){
-            
-            self.entry_point = response.data;
-            
-            if( !api.last().data.links.user ){
-                // self.startFromPath();
+            // check status
+            if( !response.authResponse ){
+                self.showLogin();
             }
             else{
-                api.call({path: api.last().data.links.user},function(response){
-                    self.user = response.data;
-                    api.setToken(self.user.token);
-                    // dself.startFromPath();
+                // now we need to get the user
+                self.showLoading('Logging you in...');
+                self.bozukoLogin(response.authResponse.accessToken, function(error, user){
+                    if( error ) return console.log(error.stack);
+                    // TODO - show who you are logged in as...
+                    return self.onUserConnected();
+                    
                 });
             }
         });
     },
     
-    login : function(callback){
+    onUserConnected : function(){
         var self = this;
-        this.loginCallback = callback;
-        
-        if( !this.$loginScreen ){
-            this.$loginScreen = this.$modal.createChild({
-                cls: 'modal-dialog login',
-                cn:[{
-                    cls: 'facebook-btn',
-                    tag: 'button',
-                    html: 'Login'
-                }]
-            });
-            this.$loginScreen.down('.facebook-btn').on('touchstart', function(){
-                self.fbLogin();
-            });
-            this.$modal.show();
+        if( this.currentView !== 'game' ){
+            alert("Error");
+            return;
         }
-    },
-    
-    fbLogin : function(){
-        alert('start');
-        FB.login(function(){
-            alert('done');
+        if( !this.scratch ){
+            alert("Unsupported Game Type");
+            return;
+        }
+        self.showLoading('Loading Game...');
+        self.scratch.load(function(error, loaded){
+            self.unmask();
         });
     },
     
-    onFacebookLogin : function(data){
+    bozukoLogin : function(token, callback){
+        var self = this;
         
+        Ext.Ajax.request({
+            method: 'POST',
+            url: '/client/fblogin',
+            params: {token: token},
+            success : function(response, request){
+                try{
+                    var user = Ext.decode(response.responseText);
+                    console.log(user);
+                    if( user ){
+                        self.setUser(user);
+                        return callback(null, user);
+                    }
+                }
+                catch(e){
+                    console.log(e.stack);
+                }
+                return callback(new Error('No User'));
+            }
+        })
     },
-    onFacebookLogout: function(data){
-        
+    
+    setUser : function(user){
+        this.user = user;
+        console.log(user.token);
+        this.api.setToken( user.token );
+    },
+    
+    scrollToTop : function(){
+        window.scrollTo(0,1);
+    },
+    
+    mask : function(){
+        this.$mask.show();
+        this.$modal.show();
+    },
+    
+    unmask : function(){
+        this.$mask.hide();
+        this.$modal.hide();
+    },
+    
+    showLoading : function(text){
+        this.mask();
+        if(text) this.$loading.down('.text').update(text);
+        this.showModal(this.$loading);
+    },
+    
+    hideLoading : function(){
+        this.hideModal();
+    },
+    
+    showModal : function($el){
+        this.mask();
+        this.$modal.select('.modal-window').hide();
+        $el.show();
+    },
+    
+    hideModal : function(){
+        this.unmask();
+    },
+    
+    showLogin : function(){
+        if( !this.$loginWindow ){
+            this.$loginWindow = this.$modal.createChild({
+                cls         :'modal-window loading',
+                cn: [{
+                    cls         :'logo'
+                },{
+                    cls         :'text',
+                    cn          :[{
+                        tag         :'p',
+                        html        :'Welcome to Bozuko! You must login with Facebook to play.'
+                    },{
+                        tag         :'a',
+                        cls         :'facebook-login',
+                        href        :'#;',
+                        html        :'Login With Facebook'
+                    }]
+                }]
+            });
+            
+            this.$loginWindow.child('.facebook-login').on({
+                scope: this,
+                'touchstart' : this.doLogin,
+                'click' : this.doLogin
+            });
+            
+            this.$loginWindow.setVisibilityMode( Ext.Element.DISPLAY );
+        }
+        this.showModal(this.$loginWindow);
+    },
+    
+    doLogin : function(){
+        var self = this;
+        // facebook or regular...
+        window.location.href = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
     },
     
     createModalWindow : function(cfg){
@@ -117,16 +217,13 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         return $window;
     },
     
-    showModalWindow : function(window){
-        this.$modal.show();
-    },
-    
     startFromPath : function(){
         var self = this,
             path = Bozuko.client.App.path || '/';
         
         // we only know about direct game links right now...
         if( path.match( /^\/game\/.*/ ) ){
+            this.currentView = 'game';
             this.openGame( path );
         }
         else{

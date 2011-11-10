@@ -515,8 +515,9 @@ Contest.method('getEntryMethodHtmlDescription', function(){
 Contest.method('getUserInfo', function(user_id, callback) {
 
     var min_expiry_date = new Date(new Date().getTime() - Bozuko.config.entry.token_expiration);
+	console.log(inspect({contest_id: this._id, tokens:{$gt : 0}, user_id: user_id, timestamp: {$gt :min_expiry_date}}));
     Bozuko.models.Entry.find(
-        {contest_id: this._id, user_id: user_id, timestamp: {$gt :min_expiry_date}},
+        {contest_id: this._id, tokens:{$gt : 0}, user_id: user_id, timestamp: {$gt :min_expiry_date}},
         function(err, entries) {
             if (err) return callback(err);
             var tokens = 0;
@@ -527,7 +528,8 @@ Contest.method('getUserInfo', function(user_id, callback) {
             var prof = new Profiler('/models/contest/getUserInfo');
 
             entries.forEach(function(entry) {
-                if (!earliest_active_entry_time || (entry.timestamp < earliest_active_entry_time)) {
+				
+				if (!earliest_active_entry_time || (entry.timestamp < earliest_active_entry_time)) {
                     earliest_active_entry_time = entry.timestamp;
                 }
 
@@ -535,7 +537,7 @@ Contest.method('getUserInfo', function(user_id, callback) {
                     last_entry_time = entry.timestamp;
                     last_entry = entry;
                 }
-
+				
                 tokens += entry.tokens;
             });
 
@@ -688,7 +690,10 @@ Contest.method('play', function(memo, callback){
 
 Contest.method('spendEntryToken', function(memo, callback) {
     var self = this;
-    min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.config.entry.token_expiration);
+    var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration'));
+	
+	console.log(inspect({contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}}));
+	
     Bozuko.models.Entry.findAndModify(
         {contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}},
         [],
@@ -1011,6 +1016,7 @@ Contest.method('savePlay', function(memo, callback) {
 Contest.method('incrementEntryToken', function(memo, callback) {
         var self = this;
         var prof = new Profiler('/models/contest/winEntryToken');
+		var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration',1000*60*60*24));
         return Bozuko.models.Entry.findAndModify(
             {contest_id: this._id, user_id: memo.user._id, timestamp: {$gt :min_expiry_date}},
             [],

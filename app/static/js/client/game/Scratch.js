@@ -7,7 +7,6 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     prizeWidth: 91,
     prizeHeight: 114,
     
-    bg : '/games/scratch/themes/default/default_theme/background-v2.png',
     scratchMasks: [
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAABzCAYAAAAVFWW7AAAI30lEQVR4Xu2bXWwUVRTHdz53uu12u10ssKhQP9oqFMUGSXiwCNEIoQ01VFRMRE3ggdjWFlp8EItoNEgaY6IG4pOJJgZ9M6C+WE3DE8aoIRp9EptGQmTpB9vdndkd/2fcNbBsWS+3ToQ9m0xmdvf+58785uy555x7Vwnwy1cCiq+9cWcBBu6zETBwBu4zAZ+7Ywtn4D4T8Lk7tnAG7jMBn7tjC2fgPhPwuTu2cAbuMwGfu2MLZ+A+E/C5O7ZwBu4zAZ+7Ywv/vwHv7u7WcE3a2rVrY5OTk7M4VpPJpH3o0KFpn6/1huhuTgvfuXOnEc9ktGBzczwUCsVV2w5fdJwJwzBUXde71UAgZ2ezH/f39/94Q5Dw6SbmBH7w4MFGRVEcAK7RNO1eVVUTtm3/FjLNxa7rvllVU3Pf7OzsuJPNjkxNTb03PDyc8umar+turgC+Y8cOa/Xq1Xo6nY4AbAPcx1QwGIwDfDPu9CfA7w24bhcegI4tkMvl3Gwu924ikRgE9OR1TcOHiy8GrrS1tekdHR0arDdYU1OzCFaeUqqrM1o63VAVDHYqqjoI0DV4GN7l4Xtvn7PtV3v6+1+mQx+u+7rtohi4Cis1cTehVCrlwnod0zQXLIzF4nhvBC3rGUXTnsD3xqV3nLf0GdtxuuHTP79uafhw4ZcCp2MCHslbaQZ7K2IYQVBfBv+xXqPNMNbjQVxxaaZhBFKZzJdjY2Nbjh07RtEMv0oQKACnPbkTDe4kiGMHvnoxohMD+0Xw5xr8+LOq67YD+C2lgJNryWazs/DnG2HlXzPt0gQKwNV169Yh0gsERkdH3Y0bN+qIuykcJOCr8HGdrihbAqr6SMF3lzodwsVAOpV6pe9vX86vuSwclm3Asg3AzgC8jsjEWLJkSZTaw2rvhsO+zdW0PYDfWMq6C+c1CXgmc6ynr+/xvFti6EUEPAsn4Bs2bLBg0Vny44hQtHA4XIfBsMrUtBbNNFvhv1/Ce6OchTuOM/r7+HgnZ6JzuxQFVq1VVVVpy5cv1xEKkqXPdHV1xQHvTkCOYtuma9rWq1k3nR5tAhnbHktcuNCBwfcCm/eVBLzIBJtL0Olr7CnGNmHtt1qWtQ0f2XjfYej6irLA4VKcTOb48S++ePTEiRNpBl4auIK6iR6Px4OnT5/OwHeHFlqWkrasSF1d3X5EHw8gs1wK/61fzZ3QqSk0nE2n3+3r69vNsOdwKZToTExMeGnjggUL6pHkrIBJw4uofyBE2ZZ13WfhKqh+UpYhHo6L2spTAP5R2cYV2kABcCsSiURPnjx5AT48AjcSQ8y9UHNRIgkE1iOVH4B1V5cDjjYB+PxfZs+ff3DowIGJCuVZ9raVfL3bnJmZybW2tiIo0UwMnLdUmWYTopPnYN0Pl/PdlPRQep91nBef7+19o2yvFdzAA45UPFfw40heYtXV1THE383wySOUaZYDTgkPopOvsonE1v7h4fMVzLPsrXtRCqDrjY2NQViqCvdiwq20AfST+PIJKsNezZ3QQAnYP6JwtZ0nI8ry9v5yosG6g4hScpRhIh4Px2KxxxCZ7KcY/GqwyZXg+9FUOt27d+/eH8p3xy28ohUGzjBguwQboWAXQHaB5P1wFeG5gOcHyZ9REH+op6dnnFH+OwKUZeqUZa5ZsyYawdylYpptAN6uAjr2obmA52PuTxECbv13XXErIkCDpolBM/v29u3Vky0tMUQocYBug4UfgIXXzQWcBkrHtjkqEbQjqoF7lUIUrAxEJk5DNHqnEQptgcvogZWX9OH5GZ5J17Yf7BkY+E6wz4puTv67HsWqqc7OTgOz70Gqo9TV1m7CRMN+VAhLlmPzszsfYnbnafp1VDRBwZtXBgcHwyilXtyzZ08VUvs7MIeZg7tYjdH0dVhyQ3EMToMlfgkTF5PJTfv27ftesL+Kb+4Nmk1NTQpCwVoAvxXpeQrQF8O63wH4FsD9B1JhsjibSu3uGxz8oOLpXQMALw6ngXPlypXx2traZUjx/6TVVainvI+S7KoCcG/OMpejGvdQb2/v0WvoiyX5KEVDlhmiGgpmeW6CdTfCsnMA/Bp8dRtWW3lrT8hvJ1Opt17Ai8ldOwEvtUemqSHTpCRHr6+vbwDge3B8F7ZF2OBd1Ea0uxnupm9gYOCza++Olf+4FEJx7tw5m/abN29uwq6FUnusR1kCt4KKij6B5WyfIKrh4pSE3XipPdYTBs+ePesi6XFQE6elEUujllWPKYfbHV3fAPDfYG3KGCKaXyX6YinBzvtxb+kaBkyFJpIbGhrieNtoue6UEgqtg4WfHB8f//bw4cMXmZocAQ84pe+7du3Sjx49mkOYqLS3t9cjYmkF6DOw9ubp6ekxnoWXA11QX7q20Ft5RQ9gZGTE1Bzn5kQyOY3IpRYD5S/z0x2f5TLgtNwNaX7uyJEjFnx2/ZkzZxKnTp1K4zOHUc0PgcsWcxZOOTQ0FEaYGEGt5ByvhJ0f0MUu5TJLR1yuRqPREOrks/DdtGyZX/NEwBs0sRUWnRRWXym0ihafcyVwnkCXGjTpMwJOq+3pIfBfR+YZtheRFFk4zeArtGziEqv/D7qt3FMW/+WEZuGpWFV+XVvlMpO68+I/VUmdjMXlCRS7lPIKbiFFgC1cCp+4mIGLM5NSMHApfOJiBi7OTErBwKXwiYsZuDgzKQUDl8InLmbg4sykFAxcCp+4mIGLM5NSMHApfOJiBi7OTErBwKXwiYsZuDgzKQUDl8InLmbg4sykFAxcCp+4mIGLM5NSMHApfOJiBi7OTErBwKXwiYsZuDgzKQUDl8InLmbg4sykFAxcCp+4mIGLM5NSMHApfOJiBi7OTErBwKXwiYsZuDgzKQUDl8InLmbg4sykFAxcCp+4mIGLM5NSMHApfOJiBi7OTErBwKXwiYsZuDgzKQUDl8InLmbg4sykFAxcCp+4mIGLM5NSMHApfOJiBi7OTErBwKXwiYsZuDgzKQUDl8InLmbg4sykFAxcCp+4mIGLM5NSMHApfOJiBi7OTErBwKXwiYv/AtaMypL8hGiqAAAAAElFTkSuQmCC",
         "data:image/png;base64,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",
@@ -35,6 +34,22 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAABzCAYAAAAVFWW7AAAB20lEQVR4Xu3cwWrCQABFUfP/H53WRcFNNJMZL1aO64kPTy6hrdDt5pUKbOmasRvwOALgwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7hwGOBeE7h3wS+7/v2+9rjz/TRcwqPb89bwJV9fBffAh5H86/mgMe3CzjwWCCeUzjwWCCeUzjwWCCeUzjwWCCeUzjwWCCeUzjwWCCeUzjwWCCeu1y4Lxmu3anL4NfmXAU8bgA48FggnlM48FggnlM48FggnlM48FggnlP4C/DVf8IAfgC+GvpvBrhHSiwQzykceCwQzykceCwQzykceCwQzykceCwQzykceCwQzykceCwQzykceCwQzykceCwQzyl8Enz0qzjgk+CjlwMfFZs8D3wScPRy4KNik+eBTwKOXg58VGzyPPBJwNHLgY+KTZ4HPgk4ejnwE2Kjv00+e0vgJ8BXHgG+UvPEewF/gXR/nNyPrPq33MBPVOkZfgLpU48oPL4zwIHHAvGcwoHHAvGcwoHHAg9zK3/ePvoUCo/vL3DgsUA8p3DgsUA8p3DgsUA8p3DgsUA8p3DgsUA8p3DgsUA8p/AY/AexjSh0awpTgAAAAABJRU5ErkJggg=="
     ],
     
+    resultImages : {
+        
+        'winBg' : '/images/client/scratch/scratchYouWinBg.png',
+        'winTxt': '/images/client/scratch/scratchYouWinTxt.png',
+        'winStars': '/images/client/scratch/scratchStarsBg.png',
+        
+        'loseBg' : '/images/client/scratch/scratchYouLoseBg.png',
+        'loseTxt': '/images/client/scratch/scratchYouLoseTxt.png',
+        
+        'playAgainBg': '/images/client/scratch/scratchYouLosePlayAgainBg.png',
+        'playAgainTxt': '/images/client/scratch/scratchYouLosePlayAgainTxt.png',
+        
+        'freePlayTxt': '/images/client/scratch/scratchBonusTixTxt.png',
+        'freePlayBg' : '/images/client/scratch/scratchYouWinBg.png',
+        'freePlayStars': '/images/client/scratch/scratchStarsBg.png'
+    },
     
     constructor : function(){
         Bozuko.client.game.Scratch.superclass.constructor.apply(this, arguments);
@@ -42,9 +57,15 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         this.$targets = [];
         this.images = {};
         this.positions = [];
-        this.scratched = {};
+        this.scratchedPositions = {};
         this.scratchImages = [];
         this.loaded = false;
+        
+        this.on('enter', this.onEnter, this);
+        this.on('result', this.onResult, this);
+        this.on('scratch', this.onScratch, this);
+        
+        
         this.init();
     },
     
@@ -56,7 +77,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             this.positions.push({
                 x:x,
                 y:y
-            })
+            });
         }
         
         var self = this;
@@ -66,20 +87,126 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             self.scratchImages.push(img)
         });
         
+        // load the result images
+        for(var i in this.resultImages ){
+            (function(src, key){
+                var img = new Image();
+                img.src = src;
+                self.images[key] = img;
+            })(this.resultImages[i], i);
+        }
+        
+        
+        this.images.masks = [];
+        for(var i = 0; i < this.scratchMasks.length; i++ ){
+            this.images.masks[i] = new Image();
+            this.images.masks[i].src = this.scratchMasks[i];
+        }
+        
         if( this.renderTo ){
             this.render( this.renderTo );
         }
+    },
+    
+    load : function(callback){
+        var self = this;
+        this.app.api.call(this.game.game_state.links.game_state, function(result){
+            // we need to see what the deal is...
+            self.state = result.data;
+            if( result.button_enabled === false ){
+                // we need to make it so this person likes us...
+                // if( result.entry_method)
+            }
+            else{
+                callback(null, true);
+                self.loadTicket();
+            }
+        });
+    },
+    
+    loadTicket : function(){
         
-        if( !this.user ){
-            // need to show the login
-            this.app.login(function(error){
-                self.load();
-            });
+        var self = this;
+        if( self.state.button_action == 'enter' ){
+            self.enter();
         }
-        else {
-            // lets load the game
-            this.load();
+        else{
+            self.result();
         }
+        
+    },
+    
+    onEnter : function(entry){
+        this.result();
+    },
+    
+    onResult : function(result){
+        for(var i=0; i<result.result.numbers.length; i++ ){
+            var n = result.result.numbers[i];
+            this.$prizes[i].update(
+                '<div class="number">'+n.number+'</div>'+
+                '<div class="name">'+n.text+'</div>'
+            );
+        }
+        this.reset();
+        this.loaded = true;
+        var tokens = this.state.user_tokens+(result.free_play?0:1);
+        this.$ticketsLeft.update(tokens);
+    },
+    
+    onScratch : function(i){
+        this.scratched++;
+        
+        if( this.game_result.win ){
+            var cur = this.game_result.result.numbers[i];
+            if( this.game_result.result.winning_number == cur.number ){
+                if( ++this.scratchedWins == 3 ){
+                    // do the thing!
+                    if( this.game_result.free_play ){
+                        this.showAnimation('freePlay');
+                    }
+                    else{
+                        this.showAnimation('win');
+                    }
+                }
+            }
+        }
+        else if( this.scratched == 6 ){
+            if( !this.state.user_tokens ){
+                this.showAnimation('lose');
+            }
+            else{
+                this.showAnimation('playAgain');
+            }
+        }
+    },
+    
+    showAnimation : function(name, callback){
+        
+        var self = this;
+        
+        this.$animationsCt.select('.animation').removeClass('animate');
+        this.$animationsCt.show();
+        this.$animations[name].addClass('animate');
+        
+        var cancelled = false;
+        var cancel = function(){
+            if( cancelled ) return;
+            cancelled = true;
+            self.$animations[name].removeClass('animate');
+            self.$animationsCt.hide();
+            if( callback ) {
+                callback();
+            }
+            else{
+                self.loadTicket();
+            }
+        };
+        
+        this.$animationsCt.on('touchstart', cancel);
+        this.$animationsCt.on('click', cancel);
+        
+        setTimeout(cancel, 5000);
     },
     
     render : function(parent){
@@ -134,6 +261,19 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             html        :'0'
         });
         
+        self.$animationsCt = self.$ct.createChild({
+            cls         :'animations'
+        });
+        self.$animationsCt.setVisibilityMode( Ext.Element.DISPLAY );
+        self.$animationsCt.hide();
+        
+        self.$animations = {};
+        
+        self._createAnimationDiv('lose');
+        self._createAnimationDiv('playAgain');
+        self._createAnimationDiv('freePlay', true);
+        self._createAnimationDiv('win', true);
+        
         // add the canvas
         this.$ticket = this.$ct.createChild({
             tag         :'canvas',
@@ -148,33 +288,62 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         this.images.bg.onload = function(){
             self.$ticketCtx.drawImage( bg, 0, 0, bg.width, bg.height );
         };
-        bg.src = this.bg;
+        
+        bg.src = this.game.config.theme.images.background.match(/^http\:/i) ?
+            this.game.config.theme.images.background :
+            this.game.config.theme.base+'/'+this.game.config.theme.images.background;
+    },
+    
+    _createAnimationDiv : function(name, stars){
+        var self = this;
+        
+        self.$animations[name] = self.$animationsCt.createChild({
+            cls         :'animation '+name
+        });
+        
+        self.$animations[name].setVisibilityMode( Ext.Element.DISPLAY );
+        
+        // if( name == 'win') self.$animations[name].dom.className+=' animate';
+        self.images[name+'Bg'].className = 'bg';
+        self.$animations[name].dom.appendChild(self.images[name+'Bg']);
+        
+        self.images[name+'Txt'].className = 'txt';
+        self.$animations[name].dom.appendChild(self.images[name+'Txt']);
+        
+        if( stars ){
+            self.images[name+'Stars'].className = 'stars';
+            self.$animations[name].dom.appendChild(self.images[name+'Stars']);
+        }
+    },
+    
+    reset : function(){
+        this.$ticketCtx.drawImage( this.images.bg, 0, 0, this.images.bg.width, this.images.bg.height );
+        this.loaded = false;
+        this.scratched = 0;
+        this.scratchedWins = 0;
+        this.scratchedPositions = {};
     },
     
     scratch : function(e, index){
         e.preventDefault();
-        if( !this.loaded || this.scratched[index] ) return;
-        this.scratched[index] = true;
+        if( !this.loaded || this.scratchedPositions[index] ) return;
+        this.scratchedPositions[index] = true;
         var self = this,
             pos = this.positions[index],
             ctx = this.$ticketCtx,
             frame = 0;
             
         var animate = function(){
-            var mask = new Image();
-            mask.onload = function(){
-                ctx.save();
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.drawImage(mask,pos.x,pos.y);
-                ctx.restore();
-                if(++frame >= self.scratchMasks.length){
-                    return;
-                }
-                setTimeout(animate, self.frameRate);
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.drawImage(self.images.masks[frame],pos.x,pos.y);
+            ctx.restore();
+            if(++frame >= self.scratchMasks.length){
+                self.fireEvent('scratch', index);
+                return;
             }
-            mask.src = self.scratchMasks[frame];
+            setTimeout(animate, self.frameRate);
         };
-        
         animate();
     }
 });
