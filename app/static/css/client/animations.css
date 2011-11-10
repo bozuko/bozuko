@@ -111,6 +111,6 @@
         -webkit-transform:rotate(180deg) scale(1.2,1.2);
     }
     100% {
-        -webkit-transform:rotate(360deg) scale(1,1);
+        -webkit-transform:rotate(359deg) scale(1,1);
     }
 }
