@@ -45,7 +45,7 @@ module.exports = {
         code: 500,
         title: "So far away...",
         message: function(){
-            if( !this.data.user || this.data.user.phone !== 'iphone' ){
+            if( !this.data || !this.data.user || this.data.user.phone !== 'iphone' ){
                 return "You are too far away from this place to checkin.";
             }
             return "You are too far away from this place to checkin. "+
@@ -53,7 +53,7 @@ module.exports = {
         },
         detail: "User is too far away to checkin to this location."
     },
-    
+
     too_far_too_soon : {
         code: 403,
         title: "Too far, too soon!",
