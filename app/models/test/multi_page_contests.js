@@ -4,13 +4,6 @@ var inspect = require('util').inspect;
 
 var user_loc = [-71.1061111, 42.375];
 
-exports['cleanup old pages'] = function(test) {
-    Bozuko.models.Page.remove(function(err) {
-        test.ok(!err);
-        test.done();
-    });
-};
-
 var page1 = new Bozuko.models.Page({name: 'page1', active: true});
 var page2 = new Bozuko.models.Page({name: 'page2', active: true});
 
@@ -48,6 +41,15 @@ var contest = new Bozuko.models.Contest({
     }]
 });
 
+exports['cleanup'] = function(test) {
+    async.forEach([Bozuko.models.Page, Bozuko.models.Contest],
+    function(model, cb) {
+        model.remove(cb);
+    }, function(err) {
+        test.done();
+    });
+};
+
 exports['save user'] = function(test) {
     user.save(function(err) {
         test.ok(!err);
@@ -65,6 +67,7 @@ exports['save pages'] = function(test) {
 };
 
 exports['save contest with two page_ids'] = function(test) {
+    contest.page_id = page1._id;
     contest.page_ids = [page1._id, page2._id];
     contest.save(function(err) {
         test.ok(!err);
@@ -72,13 +75,21 @@ exports['save contest with two page_ids'] = function(test) {
     });
 };
 
-// exports['ensure loadPagesContests returns the same contest for page1 and page2'] = function(test) {
-//     Bozuko.models.Page.loadPagesContests([page1, page2], user, function(err, pages) {
-//         console.log(inspect(pages));
-//         test.ok(!err);
-//         pages.forEach(function(page) {
-//             test.eql(page.contests[0]._id, contest._id);
-//         });
-//         test.done();
-//     });
-// };
+exports['publish contest'] = function(test) {
+    contest.publish(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['ensure loadPagesContests returns the same contest for page1 and page2'] = function(test) {
+    Bozuko.models.Page.loadPagesContests([page1, page2], user, function(err, pages) {
+        console.log(inspect(pages));
+        test.ok(!err);
+        pages.forEach(function(page) {
+            test.equal(page.contests[0].id, contest.id);
+        });
+        test.done();
+    });
+};
+
