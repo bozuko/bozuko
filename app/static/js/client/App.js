@@ -119,7 +119,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             success : function(response, request){
                 try{
                     var user = Ext.decode(response.responseText);
-                    console.log(user);
                     if( user ){
                         self.setUser(user);
                         return callback(null, user);
@@ -135,7 +134,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     setUser : function(user){
         this.user = user;
-        console.log(user.token);
         this.api.setToken( user.token );
     },
     
