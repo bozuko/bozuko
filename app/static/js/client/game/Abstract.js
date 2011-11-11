@@ -5,6 +5,13 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     width: 320,
     height: 415,
     
+    lang : {
+        loading : {
+            entry : 'Loading...',
+            result : 'Getting your Ticket...'
+        }
+    },
+    
     constructor : function(config){
         this.config = config;
         this.state = null;
@@ -21,15 +28,15 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     enter : function(){
         var self = this;
         
-        self.app.showLoading('Loading...');
+        self.app.showLoading(this.lang.loading.entry);
         
-        // we should get the location
-        //navigator.geolocation.getCurrentPosition(function(position){
+        // check the game - do we need to get location?
+        function do_entry(lat,lng,accuracy){
             self.app.api.call({
                 path: self.state.links.game_entry,
                 params: {
-                    ll: '1,1',
-                    accuracy: '1000'
+                    ll: lat+','+lng,
+                    accuracy: accuracy
                 },
                 method: 'post'
             },function(result){
@@ -44,14 +51,24 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     }
                 });
             });
-        /*}, function(){
-            self.app.showLoading('We need your location to play :(');
-        })*/
+        }
+        
+        if( self.game.entry_method.type.match(/checkin/)){
+            // we should get the location
+            navigator.geolocation.getCurrentPosition(function(position){
+                do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+            }, function(){
+                self.app.showLoading('We need your location to play :(');
+            })
+        }
+        else{
+            do_entry(0,0);
+        }
     },
     
     result : function(){
         var self = this;
-        self.app.showLoading('Getting Your Ticket...');
+        self.app.showLoading(this.lang.loading.result);
         self.app.api.call({
             path: self.state.links.game_result,
             method: 'post'
