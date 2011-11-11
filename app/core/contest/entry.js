@@ -134,27 +134,13 @@ EntryMethod.prototype.process = function( callback ){
     if( !this.contest ) return callback(Bozuko.error('entry/process_no_contest'));
 
     var self = this;
-    self.validate( function(error, valid){
-
-        if( error ){
-            // yikes
-            return callback(error);
-        }
+    self.validate(function(error, valid){
+        if( error ) return callback(error);
         if( !valid ) return callback( Bozuko.error('contest/invalid_entry') );
-
         var now = new Date();
-        return self.contest.addEntry(self.getTokenCount(), function(error){
-            if( error ) return callback(error);
-
-            var entry = new Bozuko.models.Entry();
-            self.loadEntry(entry, now);
-
-            return entry.save( function(error){
-                if (error) return callback(error);
-                Bozuko.publish('contest/entry', {contest_id: self.contest._id, page_id: self.contest.page_id, user_id: self.user._id});
-                return callback( error, entry );
-            });
-        });
+        var entry = new Bozuko.models.Entry();
+        self.loadEntry(entry, now);
+        return callback( error, entry );
     });
 };
 

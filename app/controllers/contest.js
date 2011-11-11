@@ -411,7 +411,9 @@ exports.routes = {
                     var config = contest.getEntryConfig();
                     var entry = Bozuko.entry( config.type, req.session.user, options );
 
-                    return user.updateInternals( function(){
+                    return user.updateInternals( function(error){
+                        if ( error ) return error.send(res);
+
                         contest.enter( entry, function(error, entry){
                             if( error ) return error.send(res);
 
