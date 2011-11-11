@@ -139,97 +139,27 @@ Page.method('getGoogleMapLink', function(){
 
 Page.method('loadContests', function(user, callback){
     var self = this;
-    self.contests = [];
-    this.getActiveContests(user, function(error, contests){
-        if( error ) return callback( error );
-
-        // else, we have contests!
-        return async.forEach( contests,
-
-            function load_contest(contest, cb){
-                contest.loadGameState(user, function(error, state){
-                    if( error ) return callback( error );
-                    self.contests.push(contest);
-                    return cb(null);
-                });
-            },
-
-            function return_contests(error){
-                return callback(error, self.contests);
-            }
-        );
-
-    });
-});
-
-Page.method('getActiveContests', function(user, callback){
     var now = new Date();
-
-    var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
-    var user_id = user ? user._id : false;
-
-    var selector = {
+    if (!this.contests) this.contests = [];
+                
+    return Bozuko.models.Contest.find({
         active: true,
 	$or: [{page_id: this._id}, {page_ids: this._id}],
-        start: {$lt: now},
+	start: {$lt: now},
         end: {$gt: now}
-    };
-
-    Bozuko.models.Contest.nativeFind(selector, {results: 0, plays: 0}, {sort: {start: -1}}, function(err, contests) {
-        if (err) return callback(err);
-
-        var exhausted_contests = {};
-        var exhausted_contest_ids = [];
-        var active_contests = [];
-        var contest;
-
-        for (var i = 0; i < contests.length; i++) {
-            contest = contests[i];
-
-            // Is contest exhausted?
-            if (contest.token_cursor >= contest.total_plays - contest.total_free_plays) {
-                exhausted_contests[String(contest._id)] = contest;
-                exhausted_contest_ids.push(contest._id);
-            } else {
-                active_contests.push(contest);
-            }
-        }
-
-        if (!user_id) return callback(null, active_contests);
-
-
-        // Find user entries that still have tokens for exhausted contests.
-        // That means the contest is active for this user, but not users without tokens.
-        // This is really only needed at the end of contests.
-        if (exhausted_contest_ids.length) return Bozuko.models.Entry.nativeFind(
-            {
-                user_id: user_id,
-                contest_id: {$in: exhausted_contest_ids},
-                timestamp : {$gt: min_expiry_date},
-                tokens : {$gt: 0}
-            }, {contest_id: 1},
-            function(err, entries) {
-                if (err) return callback(err);
-                if (!entries) return callback(null, active_contests);
-
-                var contest_ids = {};
-
-                // Add any exhausted contests with valid entries for this user on to the active list
-                // There shouldn't be more than 1 or 2 entries to search
-                for (var i = 0; i < entries.length; i++) {
-                    var cid = entries[i].contest_id;
-                    if (!contest_ids[cid]) {
-                        contest_ids[cid] = true;
-                        active_contests.push(exhausted_contests[String(cid)]);
-                    }
-                }
-
-                return callback( null, active_contests);
-
-            }
-        );
-
-        return callback(null, active_contests);
+    }, {results: 0, plays: 0},
+    function(err, contests) {
+        // attach active contests to page
+        return async.forEach(contests, function (contest, cb) {
+            // load contest game state
+            return contest.loadGameState(user, function(error, state){
+                if (error) return cb(error);
+		if (!state.game_over) self.contests.push(contest);
+                cb(null);
+            });
+        }, function(err) {
+            return callback(null, self.contests);
+        });
     });
 });
 
@@ -435,33 +365,10 @@ Page.static('createFromServiceObject', function(place, callback){
 
 Page.static('loadPagesContests', function(pages, user, callback){
     var now = new Date();
-    var min_expiry_date = new Date(now.getTime() - Bozuko.config.entry.token_expiration);
     var user_id = user ? user._id : false;
 
     async.forEach(pages, function(page, cb) {
-	Bozuko.models.Contest.find({
-	    active: true,
-	    $or: [{page_id: page._id}, {page_ids: page._id}],
-	    start: {$lt: now},
-            end: {$gt: now}
-	}, {results: 0, plays: 0},
-	function(err, contests) {
-	    if( !page.contests ){
-		page.contests = [];
-            }
-	    // attach active contests to page
-            return async.forEach(contests, function (contest, cb) {
-                // load contest game state
-                return contest.loadGameState(user, function(error, state){
-                    if (error) return cb(error);
-		    if (!state.game_over) page.contests.push(contest);
-                    return cb(null);
-                });
-            }, function (err){
-		if (err) return cb(err);
-                return cb(null);
-            });
-	});
+        page.loadContests(user, cb);
     }, function(err) {
 	if (err) return callback(err);
 	return callback(null, pages);
