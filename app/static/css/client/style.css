@@ -182,6 +182,8 @@ body {
   z-index: 2;
   -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
-  -webkit-animation: stars 5s linear infinite, fadein 300ms ease-in-out;
-  -moz-animation: fadein 300ms ease-in-out 0ms 1 forward, stars 5s linear infinite;
+  -webkit-animation: stars 4s linear 0s infinite
+                    ;
+  -moz-animation: stars 4s linear 0s infinite
+                    ;
 }

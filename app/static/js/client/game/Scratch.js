@@ -155,15 +155,22 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     },
     
     onScratch : function(i){
+        var self = this;
         this.scratched++;
         
         if( this.game_result.win ){
             var cur = this.game_result.result.numbers[i];
             if( this.game_result.result.winning_number == cur.number ){
                 if( ++this.scratchedWins == 3 ){
-                    // do the thing!
+                    
                     if( this.game_result.free_play ){
                         this.showAnimation('freePlay');
+                        //  blink...
+                        var count = 0;
+                        var interval = setInterval(function(){
+                            self.$ticketsLeft.setVisible(count++%2);
+                            if( count == 10 ) clearInterval( interval );
+                        }, 300);
                     }
                     else{
                         this.showAnimation('win');
