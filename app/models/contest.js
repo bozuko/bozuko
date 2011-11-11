@@ -462,24 +462,30 @@ Contest.method('cancel', function(callback){
 /**
  * Enter a contest
  *
- * @param {Entry}
- *
  * @public
- * Note that the entry param is not an entry model, it is an Entry with prototype in
- * core/contest/entry.js
  */
-Contest.method('enter', function(entry, callback){
+Contest.method('enter', function(entry_method, callback){
     var self = this;
     var cfg = this.getEntryConfig();
-    if( cfg.type != entry.type ){
-        return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
+    if( cfg.type != entry_method.type ){
+        return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry_method}) );
     }
 
-    entry.setContest(this);
-    entry.configure(cfg);
-    return entry.process( function(err, entry) {
+    entry_method.setContest(this);
+    entry_method.configure(cfg);
+    return entry_method.process( function(err, entry) {
+        if (err) return callback(err);
         if( !err ) self.schema.emit('entry', entry);
-        callback(err, entry);
+
+        return self.getEngine().enter(entry_method.getTokenCount(), function(error){
+            if( error ) return callback(error);
+            return entry.save( function(error){
+                if (error) return callback(error);
+                Bozuko.publish('contest/entry',
+                    {contest_id: self._id, page_id: self.page_id, user_id: entry_method.user._id});
+                callback(null, entry);
+            });
+        });
     });
 });
 
@@ -582,10 +588,6 @@ Contest.method('loadTransferObject', function(user, callback){
 
 Contest.method('ensureTokens', function(entry) {
     return this.getEngine().allowEntry(entry);
-});
-
-Contest.method('addEntry', function(tokens, callback) {
-    return this.getEngine().enter(tokens, callback);
 });
 
 Contest.method('play', function(memo, callback){
