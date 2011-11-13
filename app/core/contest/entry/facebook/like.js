@@ -13,7 +13,7 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  */
 var FacebookLikeMethod = module.exports = function(key, user, options){
     options = options || {};
-    EntryMethod.call(this,key,user);
+    EntryMethod.call(this,key,user, options.page_id);
     // set the valid options
     this.options = options;
 };
@@ -147,7 +147,7 @@ FacebookLikeMethod.prototype.process = function( callback ){
     return EntryMethod.prototype.process.call(self, function(error, entry){
         if( error ) return callback( error );
         // this might be a share...
-        return Bozuko.models.Share.findOne({page_id: self.contest.page_id, contest_id:{$exists:false}, user_id: self.user.id, service:'facebook', type:'like'}, function(error, share){
+        return Bozuko.models.Share.findOne({page_id: self.page._id, contest_id:{$exists:false}, user_id: self.user.id, service:'facebook', type:'like'}, function(error, share){
             if( error ) return callback( error );
             if( !share ) return callback(null, entry);
             share.contest_id = self.contest._id;

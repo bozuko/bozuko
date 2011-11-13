@@ -122,12 +122,12 @@ exports['play out contest with all wins'] = function(test) {
     });
     async.forEachSeries(results,
         function(result, callback) {
-            var memo = {
-                contest: contest,
+            var opts = {
+                page_id: page._id,
                 user: user,
                 timestamp: new Date(result.timestamp.getTime()+Math.floor(engine.lookback_window/2))
             };
-            contest.play(memo, function(err, memo) {
+            contest.play(opts, function(err, memo) {
                 test.ok(!err);
                 test.ok(memo.result);
                 return callback(err, memo);
@@ -143,7 +143,12 @@ exports['play 10 more times and lose'] = function(test) {
     async.whilst(function() {
         return i < 10;
     }, function(cb) {
-        contest.play(user, function(err, memo) {
+        var opts = {
+            page_id: page.id,
+            user: user,
+            timestamp: new Date(results[results.length-1].timestamp.getTime()+i*100)
+        };
+        contest.play(opts, function(err, memo) {
             i++;
             test.ok(!err);
             test.ok(!memo.result);
@@ -212,7 +217,7 @@ function enter_and_play(memo, callback) {
         entry.save(function(err) {
             test.ok(!err);
             var m = {
-                contest: contest,
+                page_id: page._id,
                 user: user,
                 timestamp: ts
             };

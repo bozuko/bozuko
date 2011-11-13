@@ -504,7 +504,12 @@ function play3times(contest, callback) {
     async.whilst(
         function() { return count < 3; },
         function(callback) {
-            contest.play(user, function(err, res) {
+            var opts = {
+                user: user,
+                timestamp: new Date(),
+                page_id: page._id
+            };
+            contest.play(opts, function(err, res) {
                 if( err ) console.log(err.stack);
                 console.log('res.play.win = '+res.play.win);
                 if (res.play.win) won = true;

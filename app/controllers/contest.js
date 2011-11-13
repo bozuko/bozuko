@@ -131,10 +131,18 @@ var game_state = {
             };
             if( game_state.user_tokens > 0 ){
                 game_state.button_action = 'play';
-                links.game_result = '/game/'+game_state.contest.id+'/result';
+                if (game_state.page_id) {
+                    links.game_result = '/game'+game_state.contest.id+'-'+game_state.page_id+'/result';
+                } else {
+                    links.game_result = '/game/'+game_state.contest.id+'/result';
+                }
             }
             if( game_state.button_enabled && game_state.button_action =='enter'){
-                links.game_entry = '/game/'+game_state.contest.id+'/entry';
+                if (game_state.page_id) {
+                    links.game_entry = '/game/'+game_state.contest.id+'-'+game_state.page_id+'/entry';
+                } else {
+                    links.game_entry = '/game/'+game_state.contest.id+'/entry';
+                }
             }
             game_state.next_enter_time_ms = Math.max(+game_state.next_enter_time - Date.now(),0);
             game_state.links = links;
@@ -277,7 +285,16 @@ exports.routes = {
             access : 'mobile',
 
             handler : function(req,res){
-                Bozuko.models.Contest.findById(req.params.id, function(error, contest){
+
+                var contest_id = req.params.id;
+                var page_id = null;
+                if( ~contest_id.indexOf('-') ){
+                    var id_parts = contest_id.split('-');
+                    contest_id = id_parts[0];
+                    page_id = id_parts[1];
+                }
+
+                Bozuko.models.Contest.findById(contest_id, function(error, contest){
                     if( error ){
                         return error.send(res);
                     }
@@ -287,7 +304,13 @@ exports.routes = {
                     if( contest.state !== contest.schema.ACTIVE ){
                         return Bozuko.error('contest/inactive').send(res);
                     }
-                    return contest.play(req.session.user, function(error, result){
+
+                    var opts = {
+                        user: req.session.user,
+                        page_id: page_id,
+                        timestamp: new Date()
+                    };
+                    return contest.play(opts, function(error, result){
                         if( error ){
                             return error.send(res);
                         }

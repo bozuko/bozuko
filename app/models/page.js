@@ -141,7 +141,7 @@ Page.method('loadContests', function(user, callback){
     var self = this;
     var now = new Date();
     if (!this.contests) this.contests = [];
-                
+
     return Bozuko.models.Contest.find({
         active: true,
 	$or: [{page_id: this._id}, {page_ids: this._id}],
@@ -152,7 +152,7 @@ Page.method('loadContests', function(user, callback){
         // attach active contests to page
         return async.forEach(contests, function (contest, cb) {
             // load contest game state
-            return contest.loadGameState(user, function(error, state){
+            return contest.loadGameState(user, self.id, function(error, state){
                 if (error) return cb(error);
 		if (!state.game_over) self.contests.push(contest);
                 cb(null);

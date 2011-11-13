@@ -12,9 +12,14 @@ var _t = Bozuko.t,
  *
  * @param {String} key The key for this entry
  */
-var EntryMethod = module.exports = function(type, /* optional */ user){
+var EntryMethod = module.exports = function(type, /* optional */user, page_id){
+    if (typeof user === 'string') {
+        page_id = user;
+        user = null;
+    }
     this.type = type;
     this.user = user;
+    this.page_id = page_id;
 };
 
 /**
@@ -52,7 +57,7 @@ EntryMethod.prototype.list_message = 'Nothing is required to play this game.';
  */
 EntryMethod.prototype.getListMessage = function(){
     return this.list_message;
-}
+};
 
 
 /**
@@ -147,7 +152,7 @@ EntryMethod.prototype.process = function( callback ){
 EntryMethod.prototype.loadEntry = function( entry, timestamp ){
     var self = this;
     entry.contest_id = self.contest._id;
-    entry.page_id = self.contest.page_id;
+    entry.page_id = self.page._id;
     entry.user_id = self.user._id;
     entry.user_name = self.user.name;
     entry.page_name = self.page.name;
@@ -212,7 +217,7 @@ EntryMethod.prototype.load = function(callback){
     // this contest should already have previous entries
     if( force || !self._loaded ){
         // always get the page
-        return Bozuko.models.Page.findById( self.contest.page_id, function(error, page){
+        return Bozuko.models.Page.findById( self.page_id || self.contest.page_id, function(error, page){
             if( error ) return callback( error );
             if( !page ) return callback( Bozuko.error('contest/page_not_found'));
             self.page = page;
