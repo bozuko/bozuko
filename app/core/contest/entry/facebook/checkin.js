@@ -13,7 +13,7 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  */
 var FacebookCheckinMethod = module.exports = function(key, user, options){
     options = options || {};
-    EntryMethod.call(this,key,user);
+    EntryMethod.call(this,key,user, options.page_id);
     // set the valid options
     this.options = options;
     this._lastCheckin = false;
@@ -206,7 +206,7 @@ FacebookCheckinMethod.prototype.process = function( callback ){
                         service         :'facebook',
                         type            :'checkin',
                         contest_id      :self.contest.id,
-                        page_id         :self.contest.page_id,
+                        page_id         :self.page._id,
                         user_id         :self.user.id,
                         visibility      :0,
                         message         :self.options.message

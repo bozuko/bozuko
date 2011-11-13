@@ -9,7 +9,7 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  */
 var BozukoNothingMethod = module.exports = function(key, user, options){
     options = options || {};
-    EntryMethod.call(this,key,user);
+    EntryMethod.call(this,key,user, options.page_id);
     // set the valid options
     this.options = options;
 };

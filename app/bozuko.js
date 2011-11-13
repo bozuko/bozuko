@@ -56,7 +56,7 @@ Bozuko.getConfig = function(){
 Bozuko.config = Bozuko.getConfig();
 
 Bozuko.getConfigValue = function(key, defaultValue){
-	
+
 	var getValue = function( keys, obj ){
 		if(keys.length > 1){
 			var key = keys.shift();
@@ -66,7 +66,7 @@ Bozuko.getConfigValue = function(key, defaultValue){
 		if( obj[keys[0]] === undefined ) return defaultValue;
 		return obj[keys[0]];
 	};
-	
+
 	return getValue( key.split('.'), Bozuko.getConfig());
 };
 
@@ -241,26 +241,26 @@ function initApplication(app){
 
     app.set('view engine', 'jade');
     app.set('views', __dirname + '/views');
-	
+
 	// create our upload folder if it doesn't exist
 	var uploadDir = __dirname + '/../uploads';
 	if( !existsSync( uploadDir ) ){
 		fs.mkdirSync( uploadDir, 0755 );
 	}
-	
+
 	app.use((function(){
 		var form = connectForm({
 			keepExtensions:true,
 			uploadDir: uploadDir
 		});
 		return function(req, res, next){
-			
+
 			return form(req, res, function(){
-				
+
 				if( !req.form ) return next();
-				
+
 				var complete = false, error, fields, files;
-			
+
 				function finish(cb){
 					return cb(error, fields, files);
 				};
@@ -272,7 +272,7 @@ function initApplication(app){
 					}
 					return finish(cb);
 				};
-				
+
 				// start this right away.
 				req.form.complete(function(_error, _fields, _files){
 					error = _error;
@@ -285,7 +285,7 @@ function initApplication(app){
 			});
 		};
 	})());
-	
+
 	app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
@@ -320,7 +320,7 @@ function initApplication(app){
     }
 
     app.use(express.compiler({ src: __dirname + '/static', enable: ['less'] }));
-	
+
     app.use(app.router);
 
 
@@ -352,14 +352,14 @@ function initModels(){
 
         // create the model
         var schema =  require('./models/'+name);
-        
+
 		// global plugins
         schema.plugin(require('./models/plugins/native'));
-		
+
 		if( existsSync( __dirname+'/models/events/'+file) ){
 			schema.plugin(require('./models/events/'+name));
 		}
-        
+
 		// add the name
         schema.static('getBozukoModel', function(){
             return Bozuko.models[Name];
@@ -444,50 +444,46 @@ function initGames(app){
         var stat = fs.statSync(dir+'/'+file);
         if( stat.isDirectory() && file != 'test'){
             var name = file.replace(/\..*?$/, '');
-            // var Name = name.charAt(0).toUpperCase()+name.slice(1);
             Bozuko.games[name] = Bozuko.require('/games/'+file);
             app.use('/games/'+name, express.static(Bozuko.dir+'/app/games/'+name+'/resources'));
             Bozuko.games[name].themes = [];
-			// check for themes
+
+            // check for themes
             var themes_dir = dir+'/'+name+'/themes';
             if( existsSync(themes_dir) ) fs.readdirSync(themes_dir).forEach( function(theme){
-				if( theme == 'test' ) return;
-				
-				var stat = fs.statSync(themes_dir+'/'+theme);
+	        if( theme == 'test' ) return;
+		var stat = fs.statSync(themes_dir+'/'+theme);
                 if( !stat.isDirectory() ) return;
-				
-				// lets listen on their resources folders
+
+		// lets listen on their resources folders
                 app.use('/games/'+name+'/themes/'+theme, express.static(themes_dir+'/'+theme+'/resources'));
-				
-				// check for the meta file
-				var meta = themes_dir+'/'+theme+'/meta.js';
-				if( existsSync( meta ) ){
-					// the meta information to our themes array
-					Bozuko.games[name].themes.push(
-						Bozuko.require('core/game').parseThemeMeta(
-							themes_dir+'/'+theme,
-							name,
-							theme,
-							require( meta )
-						)
-					);
-				}
+
+		// check for the meta file
+		var meta = themes_dir+'/'+theme+'/meta.js';
+		if( existsSync( meta ) ){
+	            // the meta information to our themes array
+	            Bozuko.games[name].themes.push(
+		        Bozuko.require('core/game').parseThemeMeta(
+		            themes_dir+'/'+theme,
+			    name,
+			    theme,
+			    require( meta )
+			)
+		    );
+		}
             });
-			
-			Bozuko.games[name].themes.sort(function(a,b){
-				if( a.theme == 'default' && b.theme != 'default'){
-					return -1;
-				}
-				if( b.theme == 'default' && a.theme != 'default'){
-					return 1;
-				}
-				return a.theme.toLowerCase() - b.theme.toLowerCase();
-			});
-			
+
+	    Bozuko.games[name].themes.sort(function(a,b){
+		if( a.theme == 'default' && b.theme != 'default'){
+	            return -1;
+		}
+		if( b.theme == 'default' && a.theme != 'default'){
+	            return 1;
+		}
+		return a.theme.toLowerCase() - b.theme.toLowerCase();
+	    });
         }
     });
-	
-	
 }
 
 // this will be called 4 times with multinode...
@@ -497,7 +493,7 @@ Bozuko.initFacebookPubSub = function(){
               Bozuko.config.facebook.app.id+
               '/subscriptions?access_token='+
               Bozuko.config.facebook.app.access_token,
-			  
+
 		pubsub_url = create_url('/facebook/pubsub')
 		;
 
@@ -553,18 +549,18 @@ Bozuko.initHttpRedirect = function(){
 	var http = require('http'),
 		config = Bozuko.getConfig()
 		;
-	
+
 	var redirect_server = http.createServer(function(req, res){
 		var ssl_url = (config.server.ssl ? 'https://' : 'http://')
 					+ config.server.host
 					+ req.url;
-					
+
 		res.writeHead(301, {
 			'Location':ssl_url
 		});
 		res.end();
 	});
-	
+
 	redirect_server.listen(80);
 };
 

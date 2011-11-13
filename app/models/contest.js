@@ -475,14 +475,14 @@ Contest.method('enter', function(entry_method, callback){
     entry_method.configure(cfg);
     return entry_method.process( function(err, entry) {
         if (err) return callback(err);
-        if( !err ) self.schema.emit('entry', entry);
 
+        self.schema.emit('entry', entry);
         return self.getEngine().enter(entry_method.getTokenCount(), function(error){
             if( error ) return callback(error);
             return entry.save( function(error){
                 if (error) return callback(error);
                 Bozuko.publish('contest/entry',
-                    {contest_id: self._id, page_id: self.page_id, user_id: entry_method.user._id});
+                    {contest_id: self._id, page_id: entry_method.page._id, user_id: entry_method.user._id});
                 callback(null, entry);
             });
         });
@@ -506,10 +506,10 @@ Contest.method('getListMessage', function(){
 Contest.method('getEntryMethodDescription', function(user, callback){
     return this.getEntryMethod(user).getDescription(callback);
 });
-Contest.method('getEntryMethod', function(user){
-    if (this.entry_method) return this.entry_method;
+Contest.method('getEntryMethod', function(user, page_id){
+    if (page_id) var options = {page_id: page_id};
     var config = this.entry_config[0];
-    var entryMethod = Bozuko.entry( config.type, user );
+    var entryMethod = Bozuko.entry( config.type, user, options );
     entryMethod.configure( config );
     entryMethod.setContest( this );
     this.entry_method = entryMethod;
@@ -520,8 +520,17 @@ Contest.method('getEntryMethodHtmlDescription', function(){
     return this.getEntryMethod().getHtmlDescription();
 });
 
+/*
+ * page_id param is optional
+ *
+ * @public
+ */
+Contest.method('loadGameState', function(user, page_id, callback){
 
-Contest.method('loadGameState', function(user, callback){
+    if (typeof page_id === 'function') {
+        callback = page_id;
+        page_id = null;
+    }
 
     var self = this,
     state = {
@@ -531,7 +540,8 @@ Contest.method('loadGameState', function(user, callback){
         button_enabled: true,
         button_action: 'enter',
         contest: self,
-        game_over: false
+        game_over: false,
+        page_id: page_id
     };
 
     self.game_state = state;
@@ -565,12 +575,15 @@ Contest.method('loadGameState', function(user, callback){
                 return cb();
             }
 
-            return self.getEntryMethod(user).getButtonState(last_entry, state.user_tokens,  function(err, buttonState) {
-                state.button_text = buttonState.text;
-                state.next_enter_time = buttonState.next_enter_time;
-                state.button_enabled = buttonState.enabled;
-                return cb();
-            });
+            return self.getEntryMethod(user, page_id).getButtonState(last_entry, state.user_tokens,
+                function(err, buttonState) {
+                    if (err) return callback(err);
+                    state.button_text = buttonState.text;
+                    state.next_enter_time = buttonState.next_enter_time;
+                    state.button_enabled = buttonState.enabled;
+                    return cb();
+                }
+            );
         }
     ], function return_state(error){
         return callback(error, state);
@@ -592,15 +605,7 @@ Contest.method('ensureTokens', function(entry) {
 
 Contest.method('play', function(memo, callback){
     var self = this;
-
-    // the user was passed in (normal case)
-    if (!memo.timestamp) {
-        memo = {
-            contest: this,
-            user: memo,
-            timestamp: new Date()
-        };
-    }
+    memo.contest = this;
 
     var engine = this.getEngine();
     async.reduce(
@@ -811,6 +816,8 @@ Contest.method('savePrize', function(opts, callback) {
     var self = this;
     var prize;
 
+    var page_id = opts.page_id || this.page_id;
+
     if( opts.prize_index === false && !opts.consolation) {
         return callback(null, null);
     }
@@ -824,7 +831,7 @@ Contest.method('savePrize', function(opts, callback) {
     if (!prize) return callback(Bozuko.error('contest/no_prize'));
 
     var prof = new Profiler('/models/contest/savePrize/find page');
-    return Bozuko.models.Page.findById( self.page_id, function(error, page){
+    return Bozuko.models.Page.findById( page_id, function(error, page){
         prof.stop();
         if( error ) return callback( error );
         if( !page ){
@@ -836,7 +843,7 @@ Contest.method('savePrize', function(opts, callback) {
         expires.setTime( expires.getTime() + prize.duration );
         var user_prize = new Bozuko.models.Prize({
             contest_id: self._id,
-            page_id: self.page_id,
+            page_id: page_id,
             user_id: opts.user._id,
             user_name: opts.user._name,
             prize_id: prize._id,
@@ -894,10 +901,11 @@ Contest.method('savePrize', function(opts, callback) {
 
 Contest.method('savePlay', function(memo, callback) {
     var self = this;
+    var page_id = memo.page_id || this.page_id;
 
     var play = new Bozuko.models.Play({
         contest_id: this._id,
-        page_id: this.page_id,
+        page_id: page_id,
         user_id: memo.user._id,
         play_cursor:  memo.play_cursor,
         timestamp: memo.timestamp,

@@ -9,7 +9,7 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  */
 var BozukoCheckinMethod = module.exports = function(key, user, options){
     options = options || {};
-    EntryMethod.call(this,key,user);
+    EntryMethod.call(this,key,user, options.page_id);
     // set the valid options
     this.options = options;
     this._lastCheckin = false;
@@ -155,8 +155,8 @@ BozukoCheckinMethod.prototype._load = function( callback ){
 BozukoCheckinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
         var now = new Date();
-        if( time.getTime() > now.getTime() ){
-            var time_str = DateUtil.inAgo( time );
+        if( nextEntryTime.getTime() > now.getTime() ){
+            var time_str = DateUtil.inAgo( nextEntryTime );
             return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/wait_duration', time_str );
         }
         if( this.user && !this.can_checkin ){
