@@ -1,4 +1,4 @@
-var EntryMethod = Bozuko.require('core/contest/entry'),
+var EntryMethod = Bozuko.require('core/entry'),
     _t = Bozuko.t,
     DateUtil = Bozuko.require('util/date'),
     dateFormat = require('dateformat');
@@ -7,10 +7,8 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  * Facebook Checkin
  *
  */
-var BozukoNothingMethod = module.exports = function(key, user, options){
-    options = options || {};
-    EntryMethod.call(this,key,user, options.page_id);
-    // set the valid options
+var BozukoNothingMethod = module.exports = function(options) {
+    EntryMethod.call(this, options);
     this.options = options;
 };
 
@@ -61,7 +59,7 @@ BozukoNothingMethod.prototype.getDescription = function(callback){
     var description = "Play Bozuko\n";
         description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
     return callback(null, description);
-}
+};
 
 /**
  * Get Description - allow for formatting.

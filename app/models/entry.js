@@ -55,3 +55,4 @@ Entry.static('getUserInfo', function(contest_id, user_id, callback) {
     );
 
 });
+

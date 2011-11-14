@@ -1,4 +1,4 @@
-var EntryMethod = Bozuko.require('core/contest/entry'),
+var EntryMethod = Bozuko.require('core/entry'),
     _t = Bozuko.t,
     DateUtil = Bozuko.require('util/date'),
     burl = Bozuko.require('util/url').create,
@@ -11,10 +11,8 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  * Facebook Checkin
  *
  */
-var FacebookLikeMethod = module.exports = function(key, user, options){
-    options = options || {};
-    EntryMethod.call(this,key,user, options.page_id);
-    // set the valid options
+var FacebookLikeMethod = module.exports = function(options) {
+    EntryMethod.call(this, options);
     this.options = options;
 };
 
@@ -78,24 +76,22 @@ FacebookLikeMethod.prototype.getListMessage = function(){
 FacebookLikeMethod.prototype.getDescription = function(callback){
     var self = this;
 
-    return self.load(function(error){
-        // need a nice duration
-        // get the number of minutes:
-        var duration = DateUtil.duration( self.config.duration, true );
-        var description = "Like us on Facebook\n";
+    // need a nice duration
+    // get the number of minutes:
+    var duration = DateUtil.duration( self.config.duration, true );
+    var description = "Like us on Facebook\n";
 
-        if (self.config.options.radius) {
-            description += 'You must be within '+self.config.options.radius+ ' miles\n';
-        }
+    if (self.config.options.radius) {
+        description += 'You must be within '+self.config.options.radius+ ' miles\n';
+    }
 
-        description+=self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+    description+=self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
 
-        if( !self.user || (self.page && !self.user.likes(self.page))){
-            description+="\nTap Like and wait a second.";
-        }
+    if( !self.user || (self.page && !self.user.likes(self.page))){
+        description+="\nTap Like and wait a second.";
+    }
 
-        return callback(error, description);
-    });
+    return callback(error, description);
 };
 
 /**

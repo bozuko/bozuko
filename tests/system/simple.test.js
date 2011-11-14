@@ -223,6 +223,7 @@ exports['game tests'] = {
     'play 3 times' : function(test) {
 
         var url = link;
+        console.log("link = "+link);
 
         var params = JSON.stringify({
             phone_type: phone.type,
@@ -450,7 +451,7 @@ exports['game tests'] = {
 
         console.log("\n\nFree plays = "+free_plays);
         var url = game_entry_link+"/?token="+token;
-
+        console.log("game_entry_link = "+game_entry_link);
         var params = JSON.stringify({
             ll: '42.646261785714,-71.303897114286',
             message: "Don't let me enter",
@@ -466,6 +467,7 @@ exports['game tests'] = {
             data: params},
             {status: 500, headers: {'Content-Type': 'application/json; charset=utf-8'}},
             function(res) {
+                console.log("body = "+res.body);
                 var facebook_checkin_result = JSON.parse(res.body);
                 test.done();
             });

@@ -56,6 +56,15 @@ contest.prizes.push({
     is_email: false
 });
 
+var entry_opts = {
+    type: 'facebook/checkin',
+    user: user,
+    contest: contest,
+    page: page,
+    ll: ll
+};
+
+
 var entry;
 
 exports['save page'] = function(test) {
@@ -82,36 +91,28 @@ exports['save contest'] = function(test) {
     });
 };
 
-var results;
 exports['generate contest results'] = function(test) {
-    contest.generateResults(function(err, _results) {
+    contest.generateResults(function(err) {
         test.ok(!err);
-        results = _results;
         test.done();
     });
 };
 
 exports['enter contest'] = function(test) {
-    var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
-    contest.enter(entryMethod, function(err, e) {
+    Bozuko.enter(entry_opts, function(err, rv) {
         test.ok(!err);
-        if( err ) console.log(err.stack);
-        entry = e;
+        entry = rv.entry;
         test.done();
     });
 };
 
 var engine = contest.getEngine();
+var results;
 
-var avg_step;
-
-exports['calculate average step'] = function(test) {
-    engine.averageStep(contest._id, function(err, data) {
+exports['get results'] = function(test) {
+    Bozuko.models.Result.find({contest_id: contest._id}, function(err, res) {
         test.ok(!err);
-        test.equal(data.avg_step, engine.avg_step);
-        console.log("average step = "+data.avg_step);
-        results = data.results;
-        avg_step = data.avg_step;
+        results = res;
         test.done();
     });
 };
@@ -159,18 +160,6 @@ exports['play 10 more times and lose'] = function(test) {
     });
 };
 
-exports['calculate average step - 0 because no more results available'] = function(test) {
-    engine.averageStep(contest._id, function(err, data) {
-        test.ok(!err);
-        test.equal(data.avg_step, engine.avg_step);
-        console.log("average step = "+data.avg_step);
-        results = data.results;
-        avg_step = data.avg_step;
-        test.equal(avg_step, 0);
-        test.done();
-    });
-};
-
 exports['create 5 day contest - 1 prize/hr'] = function(test) {
     contest.prizes[0].total = 24*5;
     contest.start = new Date(Date.now() - day*5);
@@ -178,16 +167,6 @@ exports['create 5 day contest - 1 prize/hr'] = function(test) {
     engine.configure();
     Bozuko.models.Result.remove(function(){
         exports['generate contest results'](test);
-    });
-};
-
-exports['enter contest'] = function(test) {
-    var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
-    contest.enter(entryMethod, function(err, e) {
-        test.ok(!err);
-        if( err ) console.log(err.stack);
-        entry = e;
-        test.done();
     });
 };
 
