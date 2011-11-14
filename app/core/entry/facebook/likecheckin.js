@@ -1,4 +1,4 @@
-var EntryMethod = Bozuko.require('core/contest/entry'),
+var EntryMethod = Bozuko.require('core/entry'),
     _t = Bozuko.t,
     burl = Bozuko.require('util/url').create,
     inspect = require('util').inspect,
@@ -11,10 +11,8 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  * Facebook Checkin
  *
  */
-var FacebookLikeCheckinMethod = module.exports = function(key, user, options){
-    options = options || {};
-    EntryMethod.call(this, key, user, options.page_id);
-    // set the valid options
+var FacebookLikeCheckinMethod = module.exports = function(options) {
+    EntryMethod.call(this, options);
     this.options = options;
     this._lastCheckin = false;
 };

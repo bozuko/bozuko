@@ -1,4 +1,4 @@
-var EntryMethod = Bozuko.require('core/contest/entry'),
+var EntryMethod = Bozuko.require('core/entry'),
     _t = Bozuko.t,
     burl = Bozuko.require('util/url').create,
     inspect = require('util').inspect,
@@ -11,45 +11,22 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  * Facebook Checkin
  *
  */
-var FacebookCheckinMethod = module.exports = function(key, user, options){
-    options = options || {};
-    EntryMethod.call(this,key,user, options.page_id);
-    // set the valid options
+var FacebookCheckinMethod = module.exports = function(options){
+    EntryMethod.call(this, options);
     this.options = options;
     this._lastCheckin = false;
 };
 
 FacebookCheckinMethod.prototype.__proto__ = EntryMethod.prototype;
 
-/**
- * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
- */
 FacebookCheckinMethod.prototype.name = 'Facebook Checkin';
 
-/**
- * Description of the entry type (eg, Facebook Checkin, Bozuko Checkin, Play from Anywhere)
- */
 FacebookCheckinMethod.prototype.description = 'Checkin to a Facebook Page with Bozuko';
 
-/**
- * Icon to display.
- *
- * TODO - decide if we need multiple types - mobile / admin, etc.
- */
 FacebookCheckinMethod.prototype.icon = '';
 
-
-/**
- * Icon to display.
- *
- * TODO - decide if we need multiple types - mobile / admin, etc.
- */
 FacebookCheckinMethod.prototype.image = burl('/images/entry/facebook.png');
 
-/**
- * List Message String
- *
- */
 FacebookCheckinMethod.prototype.list_message = 'Facebook check-in required';
 
 
@@ -73,19 +50,17 @@ FacebookCheckinMethod.prototype.getDescription = function(callback){
     var self = this;
     // need a nice duration
     // get the number of minutes:
-    self.load(function(error){
-        var duration = DateUtil.duration(self.config.duration, true);
-        var description = "Check In on Facebook\n";
-            description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-        if( self.config.options.enable_like ){
-            var play = (self.config.tokens > 1 ? "Plays" : "Play" );
-            description+= "\nLike us for "+self.config.tokens+" Bonus "+play+"!";
-            if( !self.user || (self.page && !self.user.likes( self.page )) ){
-                description+="\nHit back and scroll down to like us.";
-            }
+    var duration = DateUtil.duration(self.config.duration, true);
+    var description = "Check In on Facebook\n";
+    description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+    if( self.config.options.enable_like ){
+        var play = (self.config.tokens > 1 ? "Plays" : "Play" );
+        description+= "\nLike us for "+self.config.tokens+" Bonus "+play+"!";
+        if( !self.user || (self.page && !self.user.likes( self.page )) ){
+            description+="\nHit back and scroll down to like us.";
         }
-        return callback(error, description);
-    });
+    }
+    return callback(null, description);
 };
 
 /**
@@ -149,7 +124,6 @@ FacebookCheckinMethod.prototype.validate = function( callback ){
         if( error || !valid ) return callback( error, valid );
 
         if( !self.can_checkin && !self.hasCheckedIn() ){
-            console.error('FacebookCheckinMethod::validate - returning false');
             return callback(null, false);
         }
         return callback( null, true);

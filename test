@@ -3,6 +3,6 @@ nodeunit tests/system/*.js \
          app/models/test/*.js \
          app/util/test/*.js \
          app/core/test/*.js \
-         app/core/contest/engine/test/*.js \
+         app/core/engine/test/*.js \
          app/games/test/*.js \
          tests/disconnectMongo.js

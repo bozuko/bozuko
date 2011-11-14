@@ -152,7 +152,8 @@ Page.method('loadContests', function(user, callback){
         // attach active contests to page
         return async.forEach(contests, function (contest, cb) {
             // load contest game state
-            return contest.loadGameState(user, self.id, function(error, state){
+            var opts = {user: user, page: self};
+            return contest.loadGameState(opts, function(error, state){
                 if (error) return cb(error);
 		if (!state.game_over) self.contests.push(contest);
                 cb(null);

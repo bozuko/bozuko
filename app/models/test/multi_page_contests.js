@@ -110,15 +110,17 @@ exports['ensure loadPagesContests returns the same contest for page1 and page2']
 exports['ensure contest entry succeeds for each page'] = function(test) {
     async.forEach([page1, page2], function(page, cb) {
         var options = {
+            type: contest.getEntryConfig().type,
             ll: user_loc,
             accuracy: 100,
-            page_id: page._id
+            page: page,
+            user: user,
+            contest: contest
         };
 
-        var entry_method = Bozuko.entry(contest.getEntryConfig().type, user, options);
-        contest.enter(entry_method, function(error, entry) {
+        Bozuko.enter(options, function(error, rv) {
             test.ok(!error);
-            test.equal(entry.page_id, page.id);
+            test.equal(rv.entry.page_id, page.id);
             Bozuko.models.Entry.findOne(
                 {page_id: page._id, contest_id: contest._id, user_id: user._id},
                 function(err, entry) {

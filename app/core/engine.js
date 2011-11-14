@@ -1,4 +1,4 @@
-var rand = Bozuko.require('util/math').rand;
+var rand = require('../util/math').rand;
 
 /**
  * Contest Engine

@@ -1,5 +1,5 @@
 process.env.NODE_ENV='test';
-var bozuko = require('../../../../bozuko');
+var bozuko = require('../../../bozuko');
 var TimeEngine = require('../time');
 var inspect = require('util').inspect;
 var Oid = require('mongoose').Types.ObjectId;
@@ -7,28 +7,90 @@ var async = require('async');
 var rand = Bozuko.require('util/math').rand;
 var Chart = require('cli-chart');
 
-// Mock Contest
-var contest = {
-    _id:  new Oid(),
-    prizes: [{
-        _id: new Oid(),
-        total: 5
+var start = new Date().getTime();
+var end = new Date();
+end.setTime(start+(10000));
+
+var day = 1000*60*60*24;
+var hr = 1000*60*60;
+
+var user = new Bozuko.models.User(
+{
+    name: 'Charlie Sheen',
+    first_name: 'Charlie',
+    last_name: 'Sheen',
+    email: 'bozukob@gmail.com',
+    token: 'dfasaa33345353453543',
+    gender: 'male'
+});
+
+var page = new Bozuko.models.Page();
+page.active = true;
+page.name = "Test page";
+
+var ll = [42.646, -71.303];
+
+var contest = new Bozuko.models.Contest({
+    engine_type: 'time',
+    game: 'slots',
+    game_config: {
+        theme: 'default'
+    },
+    entry_config: [{
+        type: "facebook/checkin",
+        tokens: 5000,
+        duration: 0
     }],
-    totalPrizes: function() { return this.prizes[0].total;}
-};
+    start: start,
+    end: end,
+    free_play_pct: 0,
+    prizes: [{
+        name: 'stuff',
+        value: 1,
+        total: 5
+    }]
+});
 
-// Mock user
-var user = {
-    _id: new Oid()
-};
-
-// Mock entry
+// Mock entry model
 var entry = {
     _id: new Oid()
 };
 
-var hr = 1000*60*60;
-var day = hr*24;
+function emptyCollection(name) {
+    return function(callback){
+        Bozuko.models[name].remove(function(){callback(null, '');});
+    };
+};
+
+function dropdb(callback) {
+    var e = emptyCollection;
+    async.parallel([e('User'), e('Entry'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize'),
+        e('Result')], callback);
+}
+
+exports['save page'] = function(test) {
+    dropdb(function() {
+        page.save(function(err) {
+            test.ok(!err);
+            test.done();
+        });
+    });
+};
+
+exports['save user'] = function(test) {
+    user.save(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
+
+exports['save contest'] = function(test) {
+    contest.page_id = page._id;
+    contest.save(function(err) {
+        test.ok(!err);
+        test.done();
+    });
+};
 
 exports['remove results'] = function(test) {
     Bozuko.models.Result.remove(function(err) {
@@ -37,7 +99,6 @@ exports['remove results'] = function(test) {
     });
 };
 
-var results;
 var result_cursor = 0;
 
 exports['generate 5 results '] = function(test) {
@@ -45,15 +106,23 @@ exports['generate 5 results '] = function(test) {
     contest.end = new Date(contest.start.getTime() + hr);
 
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 5);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 5);
             test.done();
         });
+    });
+};
+
+var results = [];
+exports['get results'] = function(test) {
+    Bozuko.models.Result.find({}, function(err, _results) {
+        test.ok(!err);
+        results = _results;
+        test.equal(results.length, 5);
+        test.done();
     });
 };
 
@@ -211,10 +280,9 @@ exports['publish 1 month / 1 prize contest'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 30*day);
     contest.prizes[0].total = 1;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    results = [];
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 1);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 1);
@@ -302,8 +370,6 @@ exports['publish 3 hrs / 1000 prize contest'] = function(test) {
     var engine = new TimeEngine(contest);
     engine.generateResults(function(err, _results) {
         test.ok(!err);
-        test.equal(_results.length, 1000);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 1000);
@@ -396,8 +462,6 @@ exports['publish 4 hrs / 50 prize contest'] = function(test) {
     var engine = new TimeEngine(contest);
     engine.generateResults(function(err, _results) {
         test.ok(!err);
-        test.equal(_results.length, 50);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 50);
@@ -474,10 +538,8 @@ exports['publish 4 hrs / 50 prize contest - again'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 50);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 50);
@@ -553,10 +615,8 @@ exports['publish 4 hrs / 50 prize contest - again again'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 50);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 50);
@@ -636,10 +696,8 @@ exports['publish sinusoidal - 12 hrs'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 12*hr);
     contest.prizes[0].total = 100;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 100);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 100);
@@ -717,10 +775,8 @@ exports['publish 4 hrs / 50 prize contest - reverse RRS'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 50);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 50);
@@ -793,10 +849,8 @@ exports['publish 4 hrs / 3 prize contest - sparse crappy game'] = function(test)
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 3;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 3);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 3);
@@ -865,10 +919,8 @@ exports['4 hrs - 50 prizes - 0/25/50/100'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 50);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 50);
@@ -945,10 +997,8 @@ exports['4 hrs - 50 prizes - 0/50/50/0'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 50);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 50);
@@ -1021,10 +1071,8 @@ exports['4 hrs - 50 prizes - 100/100/100/100'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 50);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 50);
@@ -1103,10 +1151,8 @@ exports['4 hrs - 100 prizes - 50/25/10/100'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 100;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 100);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 100);
@@ -1185,10 +1231,8 @@ exports['4 hrs - 1 prize - 0/0/0/1'] = function(test) {
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 1;
     var engine = new TimeEngine(contest);
-    engine.generateResults(function(err, _results) {
+    engine.generateResults(function(err) {
         test.ok(!err);
-        test.equal(_results.length, 1);
-        results = _results;
 
         Bozuko.models.Result.count(function(err, count) {
             test.equal(count, 1);

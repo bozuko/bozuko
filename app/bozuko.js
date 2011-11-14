@@ -1,9 +1,8 @@
 var fs = require('fs'),
     async  = require('async'),
-	existsSync = require('path').existsSync,
+    existsSync = require('path').existsSync,
     Profiler = require('./util/profiler')
 ;
-
 // setup the global object
 Bozuko = {};
 
@@ -14,6 +13,7 @@ console.error = function(msg) {
 };
 
 Bozuko.dir = fs.realpathSync(__dirname+'/..');
+
 Bozuko.require = function(module){
     try{
         return require(Bozuko.dir+'/app/'+module);
@@ -35,12 +35,11 @@ var self = this;
 var http            = Bozuko.require('util/http'),
     create_url      = Bozuko.require('util/url').create,
     express         = require('express'),
-	connectForm		= require('connect-form'),
+    connectForm		= require('connect-form'),
     Schema          = require('mongoose').Schema,
     BozukoStore     = Bozuko.require('core/session/store'),
     Monomi          = require('monomi'),
     Controller      = Bozuko.require('core/controller'),
-    TransferObject  = Bozuko.require('core/transfer'),
     Link            = Bozuko.require('core/link'),
     Game            = Bozuko.require('core/game');
 
@@ -120,41 +119,11 @@ Bozuko.service = function(name){
 Bozuko.game = function(contest){
     return new this.games[contest.game](contest);
 };
-Bozuko.transfer = function(key, data, user, callback){
-    if( !data ) return this._transferObjects[key];
-    try{
-        if( Array.isArray(data) ){
-            var ret = [];
-            var self = this;
-			return async.forEachSeries( data,
-				function iterator(o, next){
-					return self._transferObjects[key].create(o, user, function( error, result){
-						if( error ) return next(error);
-						ret.push(result);
-						return next();
-					});
-				},
-				function cb(error){
-					if( error ) return callback( error );
-					return callback( null, ret );
-				}
-			);
-        }
-        else{
-            return this._transferObjects[key].create(data, user, function(error, result){
-				if( error ) return callback( error );
-				return callback( null, result );
-			});
-        }
-    }catch(e){
-        return callback(e);
-    }
-};
 
 Bozuko.validate = function(key, data) {
     if( !data ) return false;
     var prof = new Profiler('/bozuko/validate');
-    var ret = this._transferObjects[key].validate(data);
+    var ret = this.transfer.objects[key].validate(data);
     prof.stop();
     return ret;
 };
@@ -167,21 +136,30 @@ Bozuko.sanitize = function(key, data){
     return ret;
 };
 
+Bozuko.transfer = Bozuko.require('core/transfer');
+
 Bozuko.transfers = function(){
-    return this._transferObjects;
+    return this.transfer.objects;
 };
 
 Bozuko.link = function(key){
-    return this._links[key];
+    return this.transfer.links[key];
 };
 
 Bozuko.links = function(){
-    return this._links;
+    return this.transfer.links;
 };
 
-Bozuko.entry = function(key, user, options){
-    var Entry = this.require('core/contest/entry/'+key);
-    return new Entry(key, user, options);
+Bozuko.transfer.init({docs_dir: Bozuko.dir+'/content/docs/api'});
+
+Bozuko.enter = function(opts, callback) {
+    var entry = this.entry(opts);
+    return entry.enter(callback);
+};
+
+Bozuko.entry = function(options){
+    var Entry = this.require('core/entry/'+options.type);
+    return new Entry(options);
 };
 
 Bozuko.error = function(name, data){
@@ -369,53 +347,6 @@ function initModels(){
     });
 }
 
-function initTransferObjects(){
-    Bozuko._transferObjects = {};
-    Bozuko._links = {};
-    var controllers = [];;
-    fs.readdirSync(__dirname + '/controllers').forEach( function(file){
-
-        if( !/js$/.test(file) ) return;
-
-        var name = file.replace(/\..*?$/, '');
-        // first check for object_types and links
-        controllers.push(Bozuko.require('controllers/'+name));
-    });
-    // collect all the links first so they can be associated in the Transfer Objects
-    controllers.forEach(function(controller){
-        if( controller.links ){
-            Object.keys(controller.links).forEach(function(key){
-                var config = controller.links[key];
-                Bozuko._links[key] = Link.create(key, config);
-            });
-        }
-    });
-    controllers.forEach(function(controller){
-        if(controller.transfer_objects){
-            Object.keys(controller.transfer_objects).forEach(function(key){
-                var config = controller.transfer_objects[key];
-                Bozuko._transferObjects[key] = TransferObject.create(key, config);
-            });
-        }
-    });
-
-    // okay, one last time through the links to associate
-    // the return objects
-
-    Object.keys(Bozuko.links()).forEach(function(key){
-        var link = Bozuko.link(key);
-        Object.keys(link.methods).forEach(function(name){
-            var method = link.methods[name];
-            var r = method.returns;
-            if( r instanceof Array ){
-                r = r[0];
-            }
-            var t = Bozuko.transfer(r);
-            if( t ) t.returnedBy(link);
-        });
-    });
-}
-
 function useController(name){
 	var cfg = Bozuko.getConfig();
 	if(!cfg.controllers) return true;
@@ -588,9 +519,6 @@ function logErr(err, val) {
 
 // setup our models
 initModels();
-
-// setup out transfer objects
-initTransferObjects();
 
 
 var PubSub = Bozuko.require('core/pubsub');
