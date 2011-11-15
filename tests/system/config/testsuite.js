@@ -22,13 +22,12 @@ var user = users.b;
 
 assert.token = "43a9d844542c6570a1b267e2c88a9f11d00556d51e4768c5b33364d78c4324ac17e5eee3f37a9ccea374fda76dfb44ec714ea533567e12cdadefbc0b44ea1e7e";
 
-assert.page_id = "181069118581729";
+assert.fbpage_id = "181069118581729";
 
 assert.phone = {
     type: 'iphone',
     unique_id: '425352525232535'
 };
-
 
 /**
  * Modified version of assert.response from expresso.
@@ -108,37 +107,34 @@ assert.response = function(test, server, req, res, callback){
 var auth = user.auth;
 var profiler;
 
-exports.setup = function(fn) {
+function emptyCollection(name) {
+    return function(callback){
+        Bozuko.models[name].remove(function(){callback(null, '');});
+    };
+}
 
+function cleanup(callback) {
+    var e = emptyCollection;
+    async.parallel([e('User'), e('Entry'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize'),
+        e('Result')], callback);
+}
+
+exports.setup = function(fn) {
     if( !Bozuko.app ){
         Bozuko.getApp().listen(Bozuko.getConfig().server.port);
     }
     profiler = Bozuko.require('util/profiler').create('testsuite');
     async.series([
-        emptyCollection('User'),
-        emptyCollection('Page'),
-        emptyCollection('Contest'),
-        emptyCollection('Checkin'),
-        emptyCollection('Entry'),
-        emptyCollection('Play'),
-        emptyCollection('Prize'),
+        cleanup,
         add_users,
         add_pages,
-        add_contests
+        add_owl_watch_contest,
+        add_multipage_contest
     ], function(err, res) {
-        if (err) console.log("testsuite setup error");
+        if (err) throw new Error("testsuite setup error");
         profiler.mark('setup complete');
         fn();
     });
-};
-
-var emptyCollection = function(name) {
-    return function(callback){
-        Bozuko.models[name].remove(function(){
-            console.log(name+' collection emptied');
-            callback(null, '');
-        });
-    };
 };
 
 var add_users = function(callback) {
@@ -170,11 +166,9 @@ var add_users = function(callback) {
 var pages = [
     // hookslides
     '181069118581729', // owl watch
-    '103621403038522', // middlesex
+    '170323862989289', // antonio's barber shop
+    '165703316805011', // st. memorial hospital
     "120199624663908", // dunks
-    // boston
-//    "108123539229568",	// hard rock
-    //"75568770316",    // black rose
     // florida
     "185253393876"     // owl watch florida
 ];
@@ -206,12 +200,55 @@ function add_page(id, callback){
                 return callback(new Error("WTF!!!"));
             }
             page.active = true;
+
+
+
+            if (id === '170323862989289' ) assert.page1 = page;
+            if (id === '165703316805011') assert.page2 = page;
             return page.save(function(){callback(null,'');});
         });
     });
 }
 
-var add_contests = function(callback) {
+var add_multipage_contest = function(callback) {
+    var start = new Date();
+    var end = new Date();
+    end.setTime(start.getTime()+1000*60*60*24*2);
+    var contest = new Bozuko.models.Contest({
+        page_ids: [assert.page1._id, assert.page2._id],
+        game: 'slots',
+        game_config: {
+            theme: 'default'
+        },
+        entry_config: [{
+            type: "facebook/checkin",
+            tokens: 3,
+            duration: 2
+        }],
+        start: start,
+        end: end,
+        win_frequency: 2,
+        free_play_pct: 0
+    });
+    contest.prizes.push({
+        name: 'DBC $10 giftcard',
+        value: '0',
+        description: 'Gonna create some sick desynes fer you',
+        details: 'Don\'t worry, you won\'t make money off this',
+        instructions: 'Check yer email fool!',
+        total: 100
+    });
+
+    contest.publish(function(error){
+        if( error ) return cb(error);
+        return Bozuko.models.Contest.findById(contest.id,function(error) {
+            assert.multipage_contest_id = contest._id;
+            return callback(error);
+        });
+    });
+};
+
+var add_owl_watch_contest = function(callback) {
     var start = new Date();
     var end = new Date();
     end.setTime(start.getTime()+1000*60*60*24*2);
@@ -275,10 +312,7 @@ var add_contests = function(callback) {
                 contest.publish(function(error){
                     if( error ) return cb(error);
                     return Bozuko.models.Contest.findById(contest.id,function(error, contest){
-                        if( error ) return cb(error);
-                        return contest.generateResults( function(error){
-                            cb(error);
-                        });
+                        return cb(error);
                     });
                 });
 

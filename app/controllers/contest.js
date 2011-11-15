@@ -10,18 +10,29 @@ exports.routes = {
 
         get: {
             handler: function(req,res){
-                Bozuko.models.Contest.findById(req.params.id, function(error, contest){
+
+                var contest_id = req.params.id;
+                var page_id = null;
+                if( ~contest_id.indexOf('-') ){
+                    var id_parts = contest_id.split('-');
+                    contest_id = id_parts[0];
+                    page_id = id_parts[1];
+                }
+
+                Bozuko.models.Contest.findById(contest_id, {results: 0, plays: 0}, function(error, contest){
                     if( error ){
                         return error.send(res);
                     }
                     if( !contest ){
-                        return Bozuko.error('contest/unknown', req.params.id).send(res);
+                        return Bozuko.error('contest/unknown', contest_id).send(res);
                     }
+                    var user = req.session.user;
+                    var opts = {user: user, page_id: page_id};
                     // lets let the contest handle finding entries, etc
-                    return contest.loadTransferObject( req.session.user, function(error){
+                    return contest.loadGameState( opts, function(error){
                         if( error ) return error.send(res);
                         var game = contest.getGame();
-                        return Bozuko.transfer('game', game, req.session.user, function(error, result){
+                        return Bozuko.transfer('game', game, user, function(error, result){
                             return res.send( error || result );
                         });
                     });
@@ -51,7 +62,7 @@ exports.routes = {
                     page_id = id_parts[1];
                 }
 
-                Bozuko.models.Contest.findById(contest_id, function(error, contest){
+                Bozuko.models.Contest.findById(contest_id, {results:0, plays:0}, function(error, contest){
                     if( error ){
                         return error.send(res);
                     }
@@ -150,7 +161,7 @@ exports.routes = {
                     page_id = id_parts[1];
                 }
 
-                return Bozuko.models.Contest.findById(contest_id, function(error, contest){
+                return Bozuko.models.Contest.findById(contest_id, {results:0, plays:0}, function(error, contest){
                     if( error ){
                         return error.send(res);
                     }
@@ -211,15 +222,23 @@ exports.routes = {
         get: {
 
             handler : function(req,res){
-                return Bozuko.models.Contest.findById(req.params.id, function(error, contest){
+                var contest_id = req.params.id;
+                var page_id = null;
+                if( ~contest_id.indexOf('-') ){
+                    var id_parts = contest_id.split('-');
+                    contest_id = id_parts[0];
+                    page_id = id_parts[1];
+                }
+
+                return Bozuko.models.Contest.findById(contest_id, {results:0, plays:0}, function(error, contest){
                     if( error ){
                         return error.send(res);
                     }
                     if( !contest ){
-                        return Bozuko.error('contest/unknown', req.params.id).send(res);
+                        return Bozuko.error('contest/unknown', contest_id).send(res);
                     }
                     var user = req.session.user;
-                    var opts = {user: user};
+                    var opts = {user: user, page_id: page_id};
                     return contest.loadGameState(opts, function(error){
                         return Bozuko.transfer('game_state', contest.game_state, user, function(error, result){
                             res.send( error || result );

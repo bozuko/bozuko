@@ -3,7 +3,7 @@ var assert = require('assert');
 var qs = require('querystring');
 var testsuite = require('./config/testsuite');
 
-var id = assert.page_id;
+var id = assert.fbpage_id;
 var token = assert.token;
 var headers = {'content-type': 'application/json'};
 var tokstr = "/?token="+token;

@@ -2,6 +2,7 @@ var print = require('util').debug;
 var assert = require('assert');
 var async = require('async');
 var testsuite = require('./config/testsuite');
+var inspect = require('util').inspect;
 
 var token = assert.token;
 var challenge = assert.challenge;
@@ -61,8 +62,9 @@ exports['page tests'] = {
             {url: pages_link+'/?bounds=42.631243,-71.331739,42.655803,-71.293201&ll=42.646261785714,-71.303897114286&token='+token},
             ok,
             function(res) {
+                console.log("res = "+res.body);
                 var result = JSON.parse(res.body);
-                test.ok( result.pages.length === 3 );
+                test.equal(result.pages.length, 4);
                 test.done();
             });
     }
@@ -491,7 +493,6 @@ exports['game tests'] = {
             function(res) {
                 var game_state = JSON.parse(res.body);
                 test.ok( game_state.button_enabled == false, 'Out of tokens, need to wait till next entry' );
-                // test.ok( game_state.button_text == 'Play again later...', 'Out of tokens, need to wait till next entry' );
                 // lets print the next time
                 var date = new Date( Date.parse( game_state.next_enter_time ) );
                 var now = new Date();

@@ -112,7 +112,7 @@ var game = {
         obj.prizes = game.getPrizes();
         obj.image = game.getListImage();
         obj.list_message = game.contest.getListMessage();
-        return game.contest.getEntryMethodDescription(user, game.contest.page_id, function(error, description){
+        return game.contest.getEntryMethodDescription(user, game.contest.game_state.page_id, function(error, description){
             if (error) return callback(error);
             obj.entry_method.description = description;
             obj.entry_method.image = game.contest.getEntryMethod(user).image;
@@ -149,9 +149,15 @@ var game_state = {
         if( game_state.contest){
             game_state.game_id = game_state.contest.id;
             var links = {
-                game_state: '/game/'+game_state.contest.id+'/state',
-                game: '/game/'+game_state.contest.id
             };
+            if (game_state.page_id) {
+                links.game_state = '/game/'+game_state.contest.id+'-'+game_state.page_id+'/state';
+                links.game = '/game/'+game_state.contest.id+'-'+game_state.page_id;
+            } else {
+                links.game_state = '/game/'+game_state.contest.id+'/state';
+                links.game = '/game/'+game_state.contest.id;
+            }
+
             if( game_state.user_tokens > 0 ){
                 game_state.button_action = 'play';
                 if (game_state.page_id) {
