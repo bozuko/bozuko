@@ -152,7 +152,7 @@ exports.routes = {
                         var options = {
                             place_id: fbid
                         };
-                        if( access_token ) options.access_token = access_token;
+                        // if( access_token ) options.access_token = access_token;
                         return Bozuko.service('facebook').place(options, function( error, _place){
                             if( error ) return cb(error);
                             place = _place;
