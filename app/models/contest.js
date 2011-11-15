@@ -544,6 +544,7 @@ Contest.method('getEntryMethodHtmlDescription', function(){
  * @public
  */
 Contest.method('loadGameState', function(opts, callback){
+    // use a passed in page_id so we can have multipage contests. default to contest.page_id.
     var page_id = opts.page ? opts.page._id : opts.page_id || this.page_id;
     var page = opts.page;
     var user = opts.user;

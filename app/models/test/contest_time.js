@@ -337,7 +337,7 @@ function cleanup(callback) {
     var e = emptyCollection;
     async.parallel([e('User'), e('Entry'), e('Contest'), e('Page'), e('Checkin'), e('Play'), e('Prize'),
         e('Result')], callback);
-}
+};
 
 function emptyCollection(name) {
     return function(callback){

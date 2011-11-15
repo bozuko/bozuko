@@ -578,7 +578,7 @@ Page.static('search', function(options, callback){
             var selector = {
                 name: 'Admin Demo',
                 _id: {$in: options.user.manages}
-            }
+            };
             return Bozuko.models.Page.findOne( selector, function(error, page){
                 if( !error && page ){
                     // have to load the contests
