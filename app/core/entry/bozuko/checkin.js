@@ -59,7 +59,7 @@ BozukoCheckinMethod.prototype.getDescription = function(callback){
     var duration = DateUtil.duration(self.config.duration, true);
     var description = "Check In on Bozuko\n";
     description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-    return callback(error, description);
+    return callback(null, description);
 };
 
 /**
