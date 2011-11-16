@@ -544,7 +544,7 @@ Contest.method('sendEndOfGameAlert', function() {
     var self = this;
     return mail.send({
         to: 'dev@bozuko.com',
-        subject: 'Contest '+name+' about to expire!',
+        subject: 'Contest '+this.name+' about to expire!',
         body: 'Your contest is about to expire.\ncontest_id = '+this._id
     }, function(err, success, record) {
         if (err || !success) {
