@@ -282,18 +282,18 @@ Contest.method('getOfficialRules', function(){
 Contest.method('getTotalPrizeCount', function(){
     var count = 0;
     if( me.prizes && me.prizes.length ) me.prizes.forEach(function(prize){
-	count += prize.total;
+        count += prize.total;
     });
     return count;
 });
 
 Contest.method('getTotalEntries', function(){
     if( this.mode == 'odds' ){
-	// need to get the total
-	return Math.ceil(this.win_frequency * this.contest.getTotalPrizeCount());
+        // need to get the total
+        return Math.ceil(this.win_frequency * this.contest.getTotalPrizeCount());
     }
     else{
-	return this.total_entries;
+        return this.total_entries;
     }
 });
 
