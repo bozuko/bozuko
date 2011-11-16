@@ -97,7 +97,7 @@ exports['get page2 game_state'] = function(test) {
     );
 };
 
-exports['get page1 game_state with no token (user)'] = function(test) {
+exports['get page1 game_state with no token (no user)'] = function(test) {
     assert.response(test, Bozuko.app,
         {url: page1.games[0].game_state.links.game_state},
         ok,
@@ -109,7 +109,7 @@ exports['get page1 game_state with no token (user)'] = function(test) {
     );
 };
 
-exports['get page2 game_state with no token (user)'] = function(test) {
+exports['get page2 game_state with no token (no user)'] = function(test) {
     assert.response(test, Bozuko.app,
         {url: page2.games[0].game_state.links.game_state},
         ok,
@@ -213,3 +213,69 @@ exports['enter contest at page2 - success'] = function(test) {
     );
 };
 
+exports['play all tokens at page 2 - success'] = function(test) {
+    var url = page2_game_state.links.game_result+"/?token="+token;
+    var params = JSON.stringify({
+        ll: '42.646261785714,-71.303897114286',
+        message: "This place is off the hook!",
+        phone_type: phone.type,
+        phone_id: phone.unique_id,
+        mobile_version: '1.0',
+        challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
+    });
+
+    var i = 0;
+    return async.whilst(
+        function() {
+            return i < 6;
+        },
+        function(callback) {
+            assert.response(test, Bozuko.app,
+                {url: url, method: 'POST', headers: headers, data: params},
+                ok,
+                function(res) {
+                    var result = JSON.parse(res.body);
+                    test.ok(Bozuko.validate('game_result', result));
+                    var gs = result.game_state;
+                    test.equal(gs.user_tokens, 5 - i);
+                    test.equal(gs.button_enabled, true);
+                    if (gs.user_tokens > 0) {
+                        test.equal(gs.button_text, 'Play');
+                        test.equal(gs.button_action, 'play');
+                        test.ok(gs.links.game_result);
+                    } else {
+                        test.equal(gs.button_text, 'Play Again!');
+                        test.equal(gs.button_action, 'enter');
+                        test.ok(!gs.links.game_result);
+                    }
+                    i++;
+                    callback();
+                }
+            );
+        },
+        function(err) {
+            test.done();
+        }
+    );
+};
+
+exports['play and fail - no tokens'] = function(test) {
+    var url = page2_game_state.links.game_result+"/?token="+token;
+    var params = JSON.stringify({
+        ll: '42.646261785714,-71.303897114286',
+        message: "This place is off the hook!",
+        phone_type: phone.type,
+        phone_id: phone.unique_id,
+        mobile_version: '1.0',
+        challenge_response: auth.mobile_algorithms['1.0'](assert.challenge,{url:url})
+    });
+
+    // have to use an old link
+    assert.response(test, Bozuko.app,
+    {url: url, method: 'POST', headers: headers, data: params},
+    bad,
+    function(res) {
+        test.done();
+    });
+
+};

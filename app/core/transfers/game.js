@@ -50,7 +50,7 @@ var game_result = {
             ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize just for playing!";
         }
 
-
+        var page_id = result.contest.game_state.page_id;
         return Bozuko.transfer('game_state', result.contest.game_state, user, function( error, game_state){
             if( error ) return callback( error );
             ret.game_state = game_state;
@@ -58,13 +58,13 @@ var game_result = {
                 if( error ) return callback( error );
                 ret.prize = prize;
                 ret.links = {
-                    page: '/page/'+result.contest.page_id,
+                    page: '/page/'+result.contest.game_state.page_id,
                     game: '/game/'+result.contest.id
                 };
                 return callback( null, ret);
             });
             ret.links = {
-                page: '/page/'+result.contest.page_id,
+                page: '/page/'+page_id,
                 game: '/game/'+result.contest.id
             };
             return callback( null, ret);
@@ -118,7 +118,7 @@ var game = {
             obj.entry_method.image = game.contest.getEntryMethod(user).image;
             // obj.can_play = obj.game_state.user_tokens > 0;
             obj.links = {
-                page: '/page/'+game.contest.page_id,
+                page: '/page/'+game.contest.game_state.page_id,
                 game: '/game/'+game.contest.id
             };
             return self.sanitize(obj, null, user, callback);

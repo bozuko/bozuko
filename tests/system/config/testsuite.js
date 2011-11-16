@@ -236,7 +236,8 @@ var add_multipage_contest = function(callback) {
         description: 'Gonna create some sick desynes fer you',
         details: 'Don\'t worry, you won\'t make money off this',
         instructions: 'Check yer email fool!',
-        total: 100
+        total: 100,
+        duration: 1000*60*60
     });
 
     contest.publish(function(error){
