@@ -15,7 +15,8 @@ exports.routes = {
                     links.login = "/user/login";
                 }
                 return Bozuko.transfer('entry_point', {links: links}, null, function(error, result){
-                    return res.send( error || result );
+                    if (error) return error.send(res);
+                    return res.send( result );
                 });
             }
         }

@@ -70,7 +70,8 @@ exports.routes = {
                         return Bozuko.transfer('prizes', {
                             prizes: []
                         }, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     }
 
@@ -83,7 +84,8 @@ exports.routes = {
                         };
                         if( hasNext ) ret.next = next;
                         return Bozuko.transfer('prizes', ret, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });
@@ -113,7 +115,8 @@ exports.routes = {
                     return prize.loadTransferObject( function(error, prize){
                         if( error ) return error.send(res);
                         return Bozuko.transfer('prize', prize, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });
@@ -147,7 +150,8 @@ exports.routes = {
                         if( share == 'false' ) share = false;
 
                         if( !share ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
 
                         // brag to friends
@@ -168,7 +172,8 @@ exports.routes = {
 
                                 if( error || !page || !contest || contest.post_to_wall !== true ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                     console.error('not gonna share');
-                                    res.send( error || result );
+                                    if (error) return error.send(res);
+                                    res.send( result );
                                 });
 
 
@@ -200,7 +205,8 @@ exports.routes = {
                                             console.log('saved share from redeem');
                                             // send the redemption object
                                             return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
-                                                res.send( error || result );
+                                                if (error) return error.send(res);
+                                                res.send( result );
                                             });
                                         });
                                     }
@@ -208,7 +214,8 @@ exports.routes = {
                                         return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                             console.error('error posting to facebook wall: user_id = '+req.session.user._id+
                                                           ' user name = '+req.session.user.name);
-                                            res.send( error || result );
+                                            if (error) return error.send(res);
+                                            res.send( result );
                                         });
                                     }
                                 });
