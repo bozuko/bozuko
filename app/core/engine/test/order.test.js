@@ -1,5 +1,5 @@
 process.env.NODE_ENV='test';
-var bozuko = require('../../../../bozuko');
+var bozuko = require('../../../bozuko');
 var OrderEngine = require('../order');
 var inspect = require('util').inspect;
 
@@ -18,7 +18,10 @@ var contest = {
     },
     free_play_pct: 20,
     win_frequency: 2,
-    total_entries: 1000*2
+    total_entries: 1000*2,
+    save: function(callback) {
+        callback(null);
+    }
 };
 
 exports['generate_results: no primer - 1000 of same prize'] = function(test) {
@@ -28,19 +31,19 @@ exports['generate_results: no primer - 1000 of same prize'] = function(test) {
         var tokens = contest.getEntryConfig().tokens;
         test.deepEqual(contest.total_free_plays, Math.floor(tokens*contest.total_entries*.20));
         test.deepEqual(contest.total_plays, contest.total_entries*tokens+contest.total_free_plays);
-    
+
         var free_play_ct = 0,
             prize_ct = 0;
         Object.keys(contest.results).forEach(function(index) {
             if (contest.results[index] === 'free_play') {
                 free_play_ct++;
             } else if (contest.results[index]) {
-                prize_ct++;            
+                prize_ct++;
             }
         });
         test.deepEqual(contest.total_free_plays, free_play_ct);
-        test.deepEqual(1000, prize_ct);    
-        test.done();        
+        test.deepEqual(1000, prize_ct);
+        test.done();
     });
 };
 
@@ -55,10 +58,10 @@ exports['generate_results: primer - 1000 of same prize'] = function(test) {
         var tokens = contest.getEntryConfig().tokens;
         test.deepEqual(contest.total_free_plays, Math.floor(tokens*contest.total_entries*.20));
         test.deepEqual(contest.total_plays, contest.total_entries*tokens+contest.total_free_plays);
-    
+
         var primer_end = Math.floor(contest.total_plays*primer.region/100);
         var primer_prize_ct = 0;
-                               
+
         var free_play_ct = 0,
             prize_ct = 0;
         Object.keys(contest.results).forEach(function(index) {
@@ -75,7 +78,7 @@ exports['generate_results: primer - 1000 of same prize'] = function(test) {
         test.deepEqual(contest.total_free_plays, free_play_ct);
         test.deepEqual(1000, prize_ct);
         test.deepEqual(primer_prize_ct, Math.floor(primer.density/100*prize_ct));
-        test.done();        
+        test.done();
     });
 };
 
@@ -91,7 +94,7 @@ exports['generate results: primer - high value prize'] = function(test) {
         var tokens = contest.getEntryConfig().tokens;
         test.deepEqual(contest.total_free_plays, Math.floor(tokens*contest.total_entries*.20));
         test.deepEqual(contest.total_plays, contest.total_entries*tokens+contest.total_free_plays);
-    
+
         var primer_end = Math.floor(contest.total_plays*primer.region/100);
         var primer_prize_ct = 0;
 

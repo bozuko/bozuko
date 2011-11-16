@@ -23,6 +23,7 @@ var safe = {w:2, wtimeout:5000};
 
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
+    page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
     engine_type             :{type:String, default:'order'},
     engine_options          :{},
@@ -75,7 +76,7 @@ Contest.virtual('state')
     });
 
 Contest.method('getEntryConfig', function() {
-    return this.entry_config[0];		   
+    return this.entry_config[0];
 });
 
 Contest.method('validate_', function(callback) {
@@ -144,17 +145,17 @@ Contest.method('validatePrizes', function(isConsolation, callback) {
             if (prize.total != prize.barcodes.length) {
                 status.errors.push(Bozuko.error('validate/contest/barcodes_length', prize.name));
             }
-	    
+
 	    barcode_prizes.push(i);
         }
     }
 
     if (!this.active || !barcode_prizes.length) {
-	return callback(null, status);	
+	return callback(null, status);
     }
 
     // Check S3 to see if all barcodes are there
-    async.forEach(barcode_prizes, function(index, cb) {  
+    async.forEach(barcode_prizes, function(index, cb) {
         var prize = self.prizes[index];
         var ct = 0;
         async.forEachSeries(prize.barcodes, function(barcode, cb) {
@@ -168,7 +169,7 @@ Contest.method('validatePrizes', function(isConsolation, callback) {
 	    cb(null);
         });
     }, function(err) {
-	return callback(null, status);	
+	return callback(null, status);
     });
 
 });
@@ -211,7 +212,7 @@ Contest.method('validateResults', function(callback) {
 
 
 Contest.method('getOfficialRules', function(){
-    
+
     var rules = Content.get('app/rules.txt');
     var replacements = {
         start_date : dateFormat(this.start, 'mmmm dd, yyyy'),
@@ -264,18 +265,18 @@ Contest.method('getOfficialRules', function(){
     replacements.prizes = prizes_str;
     replacements.arv = '$'+total;
 
-    var config = this.entry_config[0];
-    var entryMethod = Bozuko.entry( config.type );
+    var config = this.getEntryConfig();
+    var entryMethod = Bozuko.entry( {contest: this, type: config.type} );
     replacements.entry_requirement = entryMethod.getEntryRequirement();
 
     rules = rules.replace(/\{\{([a-zA-Z0-9_-]+)\}\}/g, function(match, key){
         return replacements[key] || '';
     });
-	
+
     if( this.rules ){
         rules += "\n\n----------\n\n"+this.rules;
     }
-	
+
     return rules;
 });
 
@@ -298,7 +299,7 @@ Contest.method('getTotalEntries', function(){
 });
 
 Contest.method('getTotalPlays', function(){
-    return this.getTotalEntries() * this.entry_config[0].tokens;
+    return this.getTotalEntries() * this.getEntryConfig().tokens;
 });
 
 /**
@@ -310,19 +311,32 @@ Contest.method('generateResults', function(callback){
     var self = this;
 
     var prof = new Profiler('/models/contest/generateResults');
-    self.getEngine().generateResults(function(err, results) {
+    self.getEngine().generateResults(function(err) {
         prof.stop();
-        if (err) return callback(err);
-        self.save(function(error){
-            if( error ) return callback(error);
-            return callback(null, results);
-        });
+        if (err) return callback(Bozuko.error('contest/generateResults'));
+        return callback(null);
     });
+});
+
+Contest.method('getEngine', function() {
+    if( !this._engine ){
+        var type = String(this.engine_type);
+        if( type == '') type = 'order';
+        var Engine = Bozuko.require('core/engine/'+type);
+        this._engine = new Engine( this );
+    }
+    return this._engine;
+});
+
+
+Contest.method('saveTimeResult', function(result, callback) {
+    result = new Bozuko.models.Result(result);
+    result.save(callback);
 });
 
 Contest.method('createAndSaveBarcodes', function(prize, cb) {
     var self = this;
-    
+
     var i = 0;
     async.whilst(
         function() { return i < prize.prize.total; },
@@ -338,7 +352,7 @@ Contest.method('createAndSaveBarcodes', function(prize, cb) {
             // save the barcode image in /tmp
             barcode.create_png(prize.prize.barcodes[i], prize.prize.barcode_type, filename, function(err) {
                 if (err) return callback(err);
-                // load the barcode image into s3
+                // loadpa the barcode image into s3
                 return S3.put(filename+'.png', path, function(err) {
                     if (err) return callback(err);
                     i++;
@@ -432,7 +446,7 @@ Contest.method('publish', function(callback){
             return callback(Bozuko.error('contest/max_entries', 1500));
         }
         self.active = true;
-        self.generateResults( function(error, results){
+        self.generateResults( function(error){
             if( error ) return callback(error);
             return self.generateBarcodes(function(err) {
                 if (err) return callback(err);
@@ -458,52 +472,65 @@ Contest.method('cancel', function(callback){
     });
 });
 
-/**
- * Enter a contest
- *
- * @param {Entry}
- *
- * @public
- * Note that the entry param is not an entry model, it is an Entry with prototype in
- * core/contest/entry.js
- */
-Contest.method('enter', function(entry, callback){
-    var self = this;
-    var cfg = this.getEntryConfig();
-    if( cfg.type != entry.type ){
-        return callback( Bozuko.error('contest/invalid_entry_type', {contest:this, entry:entry}) );
-    }
+Contest.method('allowEntry', function(opts, callback) {
+    // need to check for other entries within the  window
+    var selector = {
+        contest_id: opts.contest_id,
+        user_id: opts.user_id,
+        timestamp: {$gt : opts.entry_window}
+    };
 
-    entry.setContest(this);
-    entry.configure(cfg);
-    return entry.process( function(err, entry) {
-        if( !err ) self.schema.emit('entry', entry);
-        callback(err, entry);
+    return Bozuko.models.Entry.find(selector, function(error, entries){
+        if( error ) return callback( error );
+        return callback( null, entries.length ? false: true);
     });
 });
 
-Contest.method('getEngine', function(){
-    if( !this._engine ){
-        var type = String(this.engine_type);
-        if( type == '') type = 'order';
-        var Engine = Bozuko.require('core/contest/engine/'+type);
-        this._engine = new Engine( this );
-    }
-    return this._engine;
+
+Contest.method('incrementTokenCursor', function(tokens, callback) {
+
+    var prof = new Profiler('/models/contest/enter');
+    Bozuko.models.Contest.findAndModify(
+        { _id: this._id, token_cursor: {$lte : this.total_plays - this.total_free_plays - tokens}},
+        [],
+        {$inc : {'token_cursor': tokens}},
+        {new: true, fields: {plays: 0, results: 0}, safe: safe},
+        function(err, contest) {
+            prof.stop();
+            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
+            if (!contest) {
+                return callback(Bozuko.error('entry/not_enough_tokens'));
+            }
+            return callback(null);
+        }
+    );
 });
 
 Contest.method('getListMessage', function(){
     return this.getEntryMethod().getListMessage();
 });
 
-Contest.method('getEntryMethodDescription', function(user, callback){
-    return this.getEntryMethod(user).getDescription(callback);
+Contest.method('getEntryMethodDescription', function(user, page_id, callback){
+    var self = this;
+    Bozuko.models.Page.findById(page_id, function(err, page) {
+        if (err) return callback(err);
+        if (!page) return callback(Bozuko.error('page/does_not_exist'));
+        return self.getEntryMethod(user, page).getDescription(callback);
+    });
 });
-Contest.method('getEntryMethod', function(user){
-    var config = this.entry_config[0];
-    var entryMethod = Bozuko.entry( config.type, user );
+
+Contest.method('getEntryMethod', function(user, page){
+    var config = this.getEntryConfig();
+    var options = {
+        type: config.type,
+        contest: this,
+        user: user,
+        page: page
+    };
+
+    var entryMethod = Bozuko.entry(options);
     entryMethod.configure( config );
-    entryMethod.setContest( this );
+    this.entry_method = entryMethod;
     return entryMethod;
 });
 
@@ -511,47 +538,16 @@ Contest.method('getEntryMethodHtmlDescription', function(){
     return this.getEntryMethod().getHtmlDescription();
 });
 
-
-Contest.method('getUserInfo', function(user_id, callback) {
-
-    var min_expiry_date = new Date(new Date().getTime() - Bozuko.config.entry.token_expiration);
-    Bozuko.models.Entry.find(
-        {contest_id: this._id, user_id: user_id, timestamp: {$gt :min_expiry_date}},
-        function(err, entries) {
-            if (err) return callback(err);
-            var tokens = 0;
-            var last_entry = null;
-            var earliest_active_entry_time = null;
-            var last_entry_time = null;
-
-            var prof = new Profiler('/models/contest/getUserInfo');
-
-            entries.forEach(function(entry) {
-                if (!earliest_active_entry_time || (entry.timestamp < earliest_active_entry_time)) {
-                    earliest_active_entry_time = entry.timestamp;
-                }
-
-                if (!last_entry_time || (entry.timestamp > last_entry_time)) {
-                    last_entry_time = entry.timestamp;
-                    last_entry = entry;
-                }
-
-                tokens += entry.tokens;
-            });
-
-            prof.stop();
-
-            return callback(null, {
-                tokens: tokens,
-                last_entry: last_entry,
-                earliest_active_entry_time: earliest_active_entry_time
-            });
-        }
-    );
-
-});
-
-Contest.method('loadGameState', function(user, callback){
+/*
+ * page_id param is optional
+ *
+ * @public
+ */
+Contest.method('loadGameState', function(opts, callback){
+    // use a passed in page_id so we can have multipage contests. default to contest.page_id.
+    var page_id = opts.page ? opts.page._id : opts.page_id || this.page_id;
+    var page = opts.page;
+    var user = opts.user;
 
     var self = this,
     state = {
@@ -561,10 +557,12 @@ Contest.method('loadGameState', function(user, callback){
         button_enabled: true,
         button_action: 'enter',
         contest: self,
-        game_over: false
+        game_over: false,
+        page_id: page_id
     };
 
     self.game_state = state;
+    var last_entry = null;
     return async.series([
 
         function update_user(cb){
@@ -572,9 +570,10 @@ Contest.method('loadGameState', function(user, callback){
                 return user.updateInternals(function(error){
                     if( error ) return cb(error);
 
-                    return self.getUserInfo(user._id, function(err, info){
+                    return Bozuko.models.Entry.getUserInfo(self._id, user._id, function(err, info){
                         if (err) return callback(err);
                         if (info.tokens) state.user_tokens = info.tokens;
+                        last_entry = info.last_entry;
                         return cb();
                     });
 
@@ -583,13 +582,9 @@ Contest.method('loadGameState', function(user, callback){
             return cb();
         },
 
-        function load_entry_method(cb){
-            self.loadEntryMethod(user, cb);
-        },
-
         function load_state(cb){
             // Contest is over for this user
-            if (state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
+            if (self.engine_type === 'order' && state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
                 state.game_over = true;
                 state.next_enter_time = 'Never';
                 state.button_text = 'Game Over';
@@ -597,22 +592,30 @@ Contest.method('loadGameState', function(user, callback){
                 return cb();
             }
 
-            return self.entry_method.getButtonText( state.user_tokens, function(error, text){
-                if( error ) return cb(error);
-                state.button_text= text;
-
-                return self.entry_method.getNextEntryTime( function(error, time){
-                    if( error ) return cb( error );
-                    state.next_enter_time = time;
-
-                    return self.entry_method.getButtonEnabled( state.user_tokens, function(error, enabled){
-                        if( error ) return cb( error);
-                        state.button_enabled = enabled;
-
-                        return cb();
-                    });
+            if (!page && page_id) {
+                return Bozuko.models.Page.findById(page_id, function(err, page) {
+                    if (err) return callback(err);
+                    if (!page) return callback(Bozuko.error('page/does_not_exist'));
+                    return self.getEntryMethod(user, page).getButtonState(last_entry, state.user_tokens,
+                        function(err, buttonState) {
+                            if (err) return callback(err);
+                            state.button_text = buttonState.text;
+                            state.next_enter_time = buttonState.next_enter_time;
+                            state.button_enabled = buttonState.enabled;
+                            return cb();
+                        }
+                    );
                 });
-            });
+            }
+            return self.getEntryMethod(user, page).getButtonState(last_entry, state.user_tokens,
+                function(err, buttonState) {
+                    if (err) return callback(err);
+                    state.button_text = buttonState.text;
+                    state.next_enter_time = buttonState.next_enter_time;
+                    state.button_enabled = buttonState.enabled;
+                    return cb();
+                }
+            );
         }
     ], function return_state(error){
         return callback(error, state);
@@ -620,59 +623,15 @@ Contest.method('loadGameState', function(user, callback){
 
 });
 
-Contest.method('loadEntryMethod', function(user, callback){
-    var self =this;
-
-    // we need to create an entry to see whats up...
-    var config = this.getEntryConfig();
-    var entryMethod = Bozuko.entry(config.type, user);
-    entryMethod.setContest(this);
-    entryMethod.configure(config);
-
-    self.entry_method = entryMethod;
-    self.entry_method.load( function(error){
-        if( error ) return callback(error);
-        return callback(null, entryMethod);
-    });
-
-});
-
-Contest.method('loadTransferObject', function(user, callback){
-    var self = this;
-    return self.loadGameState(user, function(error){
-        if( error ) return callback(error);
-        return self.loadEntryMethod(user, function(error){
-            if( error ) return callback(error);
-            return callback( null, self);
-        });
-    });
-});
-
-Contest.method('ensureTokens', function(entry) {
-    return this.getEngine().allowEntry(entry);
-});
-
-Contest.method('addEntry', function(tokens, callback) {
-    return this.getEngine().enter(tokens, callback);
-});
-
 Contest.method('play', function(memo, callback){
     var self = this;
-
-    // the user was passed in (normal case)
-    if (!memo.timestamp) {
-        memo = {
-            contest: this,
-            user: memo,
-            timestamp: new Date()
-        };
-    }
+    memo.contest = this;
 
     var engine = this.getEngine();
     async.reduce(
         ['spendEntryToken', engine.play, 'processResult',
-         'savePrizes', 'savePlay'], 
-        memo, 
+         'savePrizes', 'savePlay'],
+        memo,
         function(memo, fn, cb) {
             if (typeof fn === 'string') return self[fn](memo, cb);
             return engine.play(memo, cb);
@@ -682,6 +641,95 @@ Contest.method('play', function(memo, callback){
                 self.schema.emit('play', self, result);
             }
             return callback(error, result);
+        }
+    );
+});
+
+Contest.method('noLookbackQuery', function(memo) {
+    return {
+        contest_id: this._id,
+        timestamp: {$lte: memo.timestamp},
+        win_time: {$exists: false}
+    };
+});
+
+Contest.method('lookbackQuery', function(memo) {
+    return {
+        contest_id: this._id,
+        $and: [{timestamp: {$gt: memo.max_lookback}}, {timestamp: {$lte: memo.timestamp}}],
+        win_time: {$exists: false}
+    };
+});
+
+Contest.method('getTimeResult', function(memo, callback) {
+    var self = this;
+    return Bozuko.models.Result.findAndModify(
+        memo.query,
+        [['timestamp', 'asc']],
+        {$set: {win_time: memo.timestamp, user_id: memo.user._id, entry_id: memo.entry._id}},
+        {new: true, safe: safe},
+        function(err, result) {
+            if (err) return callback(err);
+            memo.result = result;
+            if (memo.result) return callback(null, memo);
+            memo.new_time = self.getEngine().redistribute(memo.timestamp);
+            if (memo.new_time) {
+                return self.redistributeTimeResult(memo, callback);
+            }
+            return callback(null, memo);
+        }
+    );
+});
+
+Contest.method('getOrderResult', function(memo, callback) {
+    var query = {_id: memo.contest._id};
+    query['results.'+memo.play_cursor] = {$exists: true};
+
+    var opts = {};
+    opts['results.'+memo.play_cursor] = 1;
+
+    return Bozuko.models.Contest.findOne(query, opts, function(err, doc) {
+        if (err) return callback(err);
+        if (doc) {
+            memo.result = doc.results[memo.play_cursor];
+        }
+        return callback(null, memo);
+    });
+});
+
+Contest.method('incrementPlayCursor', function(memo, callback) {
+    var prof = new Profiler('/engines/order/incrementPlayCursor');
+    return Bozuko.models.Contest.findAndModify(
+        {_id: this._id},
+        [],
+        {$inc : {play_cursor: 1}},
+        {new: true, fields: {plays: 0, results: 0}, safe: safe},
+        function(err, contest) {
+            prof.stop();
+            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
+            if (!contest) return callback(Bozuko.error("contest/no_tokens"));
+            memo.play_cursor = contest.play_cursor;
+            memo.contest = contest;
+            return callback(null, memo);
+        }
+    );
+
+});
+
+Contest.method('redistributeTimeResult', function(memo, callback) {
+    var self = this;
+    return Bozuko.models.Result.findAndModify(
+        {contest_id: this._id, win_time: {$exists: false}, timestamp: {$lt: memo.max_lookback}},
+        [['timestamp', 'asc']],
+        {$push: {history: {timestamp: memo.new_time, move_time: memo.timestamp}}, $set: {timestamp: memo.new_time}},
+        {new: false, safe: safe},
+            function(err, result) {
+            if (err) return callback(err);
+            if (result) {
+                console.log("contest: "+self._id+" timestamp redistributed from "+
+                    result.timestamp+" to "+memo.new_time+" at "+memo.timestamp);
+            }
+            return callback(null, memo);
         }
     );
 });
@@ -731,8 +779,8 @@ Contest.method('processResult', function(memo, callback) {
 
 Contest.method('savePrizes', function(memo, callback) {
     var self = this;
-   
-    return this.getUserInfo(memo.user._id, function(err, info) {
+
+    return Bozuko.models.Entry.getUserInfo(this._id, memo.user._id, function(err, info) {
         if (err) return callback(err);
 
         // Should we hand out a consolation prize?
@@ -877,6 +925,8 @@ Contest.method('savePrize', function(opts, callback) {
     var self = this;
     var prize;
 
+    var page_id = opts.page_id || this.page_id;
+
     if( opts.prize_index === false && !opts.consolation) {
         return callback(null, null);
     }
@@ -890,7 +940,7 @@ Contest.method('savePrize', function(opts, callback) {
     if (!prize) return callback(Bozuko.error('contest/no_prize'));
 
     var prof = new Profiler('/models/contest/savePrize/find page');
-    return Bozuko.models.Page.findById( self.page_id, function(error, page){
+    return Bozuko.models.Page.findById( page_id, function(error, page){
         prof.stop();
         if( error ) return callback( error );
         if( !page ){
@@ -902,7 +952,7 @@ Contest.method('savePrize', function(opts, callback) {
         expires.setTime( expires.getTime() + prize.duration );
         var user_prize = new Bozuko.models.Prize({
             contest_id: self._id,
-            page_id: self.page_id,
+            page_id: page_id,
             user_id: opts.user._id,
             user_name: opts.user._name,
             prize_id: prize._id,
@@ -960,10 +1010,11 @@ Contest.method('savePrize', function(opts, callback) {
 
 Contest.method('savePlay', function(memo, callback) {
     var self = this;
+    var page_id = memo.page_id || this.page_id;
 
     var play = new Bozuko.models.Play({
         contest_id: this._id,
-        page_id: this.page_id,
+        page_id: page_id,
         user_id: memo.user._id,
         play_cursor:  memo.play_cursor,
         timestamp: memo.timestamp,

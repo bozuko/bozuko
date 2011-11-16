@@ -15,11 +15,11 @@ exports['cleanup old pages'] = function(test) {
  * page_details elements are of the format [in_range, max_distance, [lng,lat]]
  */
 exports['add pages'] = function(test) {
-    var page_details = [ 
+    var page_details = [
         false,
         ['out_of_range', 25, [-72.3, 42.375]],
-        ['in_range', -1, [-74, 50]], 
-        false, 
+        ['in_range', -1, [-74, 50]],
+        false,
         ['in_range', 50, [ -71.7, 42 ]],
         true
     ];
