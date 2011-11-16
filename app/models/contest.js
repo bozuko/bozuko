@@ -17,7 +17,8 @@ var mongoose = require('mongoose'),
     barcode = Bozuko.require('util/barcode'),
     fs = require('fs'),
     burl = Bozuko.require('util/url').create,
-    inspect = require('util').inspect
+    inspect = require('util').inspect,
+    mail = Bozuko.require('util/mail')
 ;
 var safe = {w:2, wtimeout:5000};
 
@@ -48,7 +49,8 @@ var Contest = module.exports = new Schema({
     results                 :{},
     play_cursor             :{type:Number, default: -1},
     token_cursor            :{type:Number, default: 0},
-    winners                 :[ObjectId]
+    winners                 :[ObjectId],
+    end_alert_sent          :{type: Boolean}
 }, {safe: {w:2, wtimeout: 5000}});
 
 Contest.ACTIVE = 'active';
@@ -538,6 +540,29 @@ Contest.method('getEntryMethodHtmlDescription', function(){
     return this.getEntryMethod().getHtmlDescription();
 });
 
+Contest.method('sendEndOfGameAlert', function() {
+    var self = this;
+    return mail.send({
+        to: 'dev@bozuko.com',
+        subject: 'Contest '+name+' about to expire!',
+        body: 'Your contest is about to expire.\ncontest_id = '+this._id
+    }, function(err, success, record) {
+        if (err || !success) {
+            console.error('Error sending end of game alert for contest_id '+self._id+': '+err);
+        } else {
+            // Ensure this alert only goes out once
+            self.end_alert_sent = true;
+            return Bozuko.models.Contest.update(
+                {_id: self._id},
+                {$set: {end_alert_sent: true}},
+                function(err) {
+                    if (err) console.error('Error setting end_alert_sent to true for contest_id '+self._id);
+                }
+            );
+        }
+    });
+});
+
 /*
  * page_id param is optional
  *
@@ -548,6 +573,7 @@ Contest.method('loadGameState', function(opts, callback){
     var page_id = opts.page ? opts.page._id : opts.page_id || this.page_id;
     var page = opts.page;
     var user = opts.user;
+    var end_notice_thresh = 0.9;
 
     var self = this,
     state = {
@@ -564,6 +590,17 @@ Contest.method('loadGameState', function(opts, callback){
     self.game_state = state;
     var last_entry = null;
     return async.series([
+
+        function end_alert_check(cb) {
+            if (self.end_alert_sent) return cb();
+            if ( (self.engine_type === 'order' && self.play_cursor > self.total_plays*end_notice_thresh) ||
+            (Date.now() > ( self.start.getTime()+(self.end.getTime() - self.start.getTime())*end_notice_thresh))) {
+                // don't wait for the email to get sent
+                self.sendEndOfGameAlert();
+                return cb();
+            }
+            return cb();
+        },
 
         function update_user(cb){
             if( user ){
@@ -584,7 +621,7 @@ Contest.method('loadGameState', function(opts, callback){
 
         function load_state(cb){
             // Contest is over for this user
-            if (self.engine_type === 'order' && state.user_tokens === 0 && this.token_cursor == this.total_plays - this.total_free_plays) {
+            if (self.engine_type === 'order' && state.user_tokens === 0 && self.token_cursor == self.total_plays - self.total_free_plays) {
                 state.game_over = true;
                 state.next_enter_time = 'Never';
                 state.button_text = 'Game Over';
