@@ -91,7 +91,7 @@ FacebookLikeMethod.prototype.getDescription = function(callback){
         description+="\nTap Like and wait a second.";
     }
 
-    return callback(error, description);
+    return callback(null, description);
 };
 
 /**

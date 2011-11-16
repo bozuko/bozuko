@@ -75,7 +75,7 @@ FacebookLikeCheckinMethod.prototype.getDescription = function(callback){
         if( !self.user || (self.page && !self.user.likes(self.page))){
             description+="\nTap Like and wait a second.";
         }
-        return callback(error, description);
+        return callback(null, description);
     });
 };
 
