@@ -214,51 +214,51 @@ Contest.method('getOfficialRules', function(){
     
     var rules = Content.get('app/rules.txt');
     var replacements = {
-	start_date : dateFormat(this.start, 'mmmm dd, yyyy'),
-	start_time : dateFormat(this.start, 'hh:MM TT'),
-	end_date : dateFormat(this.end, 'mmmm dd, yyyy'),
-	end_time : dateFormat(this.end, 'hh:MM TT'),
-	age_limit : 16,
-	page_url : 'https://bozuko.com/p/'+this.page_id,
-	winners_list_url : 'https://bozuko.com/p/'+this.page_id+'/winners/'+this.id
+        start_date : dateFormat(this.start, 'mmmm dd, yyyy'),
+        start_time : dateFormat(this.start, 'hh:MM TT'),
+        end_date : dateFormat(this.end, 'mmmm dd, yyyy'),
+        end_time : dateFormat(this.end, 'hh:MM TT'),
+        age_limit : 16,
+        page_url : 'https://bozuko.com/p/'+this.page_id,
+        winners_list_url : 'https://bozuko.com/p/'+this.page_id+'/winners/'+this.id
     };
     var map = [
-	"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth",
-	"Ninth", "Tenth", "Eleventh", "Twelvth", "Thirteenth", "Fourteenth", "Fifteenth",
-	"Sixteenth", "Seventeenth", 'Eighteenth', "Twentieth", "Twentyfirst", "Twentysecond",
-	"Twentythird", "Twentyfouth", "Twentyfifth", "Twentysixth", "Twenthseventh", "Twentyeigth",
-	"Twentyninth", "Thirtieth"
+        "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth",
+        "Ninth", "Tenth", "Eleventh", "Twelvth", "Thirteenth", "Fourteenth", "Fifteenth",
+        "Sixteenth", "Seventeenth", 'Eighteenth', "Twentieth", "Twentyfirst", "Twentysecond",
+        "Twentythird", "Twentyfouth", "Twentyfifth", "Twentysixth", "Twenthseventh", "Twentyeigth",
+        "Twentyninth", "Thirtieth"
     ];
     var prizes = this.prizes.slice(),
         consolation_prizes = this.consolation_prizes.slice(),
-	self = this,
-	prizes_str = '';
+        self = this,
+        prizes_str = '';
 
     prizes.sort( function(a, b){
-	return b.value - a.value;
+        return b.value - a.value;
     });
     consolation_prizes.sort( function(a, b){
-	return b.value - a.value;
+        return b.value - a.value;
     });
     var total = 0, total_plays = this.getTotalPlays();
     prizes.forEach(function(prize, i){
-	var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
-	prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
-	if( prize.details ) prizes_str+= prizes.details+' ';
-	var gcd = getGCD( prize.total, self.total_plays );
+        var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
+        prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
+        if( prize.details ) prizes_str+= prizes.details+' ';
+        var gcd = getGCD( prize.total, self.total_plays );
 
-	prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
-	total = prize.value * prize.total;
+        prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
+        total += (prize.value * prize.total);
     });
 
     consolation_prizes.forEach(function(prize, i){
-	var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
-	prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
-	if( prize.details ) prizes_str+= prizes.details+' ';
-	var gcd = getGCD( prize.total, self.total_plays );
+        var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
+        prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
+        if( prize.details ) prizes_str+= prizes.details+' ';
+        var gcd = getGCD( prize.total, self.total_plays );
 
-	prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
-	total = prize.value * prize.total;
+        prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
+        total += (prize.value * prize.total);
     });
 
     replacements.prizes = prizes_str;
@@ -269,11 +269,11 @@ Contest.method('getOfficialRules', function(){
     replacements.entry_requirement = entryMethod.getEntryRequirement();
 
     rules = rules.replace(/\{\{([a-zA-Z0-9_-]+)\}\}/g, function(match, key){
-	return replacements[key] || '';
+        return replacements[key] || '';
     });
 	
     if( this.rules ){
-	rules += "\n\n----------\n\n"+this.rules;
+        rules += "\n\n----------\n\n"+this.rules;
     }
 	
     return rules;
