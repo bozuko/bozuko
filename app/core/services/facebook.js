@@ -524,6 +524,9 @@ FacebookService.prototype.place = function(options, callback){
     if( options.fields ){
         params.fields = options.fields.join(',');
     }
+    if( options.access_token ){
+        params.access_token = options.access_token;
+    }
     facebook.graph('/'+options.place_id, {
         params: params
     },function(error, result){

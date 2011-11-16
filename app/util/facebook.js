@@ -109,7 +109,7 @@ exports.graph = function(path, options, callback){
         Bozuko.facebook_requests[url].push(Bozuko.last_facebook_time);
         
         if (callback instanceof Function){
-            return callback.apply(this,[null, result]);
+            return callback.call(this, null, result);
         }
         else{
             return console.log("Weird... why are you calling facebook graph method ["+path+"] with no callback?");

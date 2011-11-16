@@ -11,6 +11,9 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       meta(property="og:type",content="website")
       meta(property="og:site_name",content=place.name)
       meta(property="og:app_id",content=Bozuko.config.facebook.app.id)
+      -if( locals.admin )
+        meta(property="fb:admins",content=admin)
+      
     style(type="text/css")
       html,body{ background: transparent; padding: 0; margin: 0; }
       body{ overflow: hidden;}
@@ -30,7 +33,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       -if( !locals.user || !locals.user.likes(place.data.id))
         img.loading-gif(src="/images/assets/facebook/like-loading-#{isAndroid?'android':'iphone'}.gif?v=3",alt="Loading...")
         #like-button
-          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="tahoma")
+          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="tahoma",data-href=place.data.link)
       -else
         img(src="/images/assets/facebook/like-liked-"+(isAndroid?'android':'iphone')+".png")
       

@@ -169,6 +169,9 @@ var pages = [
     '170323862989289', // antonio's barber shop
     '165703316805011', // st. memorial hospital
     "120199624663908", // dunks
+    '103621403038522', 	// middlesex
+    // boston
+    "106837076612",	// hard rock
     // florida
     "185253393876"     // owl watch florida
 ];
@@ -191,6 +194,9 @@ function add_page(id, callback){
         if( error ){
             return callback(error);
         }
+		if( !place ){
+			console.log(id);
+		}
         return Bozuko.models.Page.createFromServiceObject(place, function(error, page){
             if( error ){
                 return callback(error);
