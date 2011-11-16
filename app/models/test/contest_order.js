@@ -53,7 +53,14 @@ contest.prizes.push({
     email_codes: ["15h1ttyd3s1gn"]
 });
 
-var entry;
+var entry_opts = {
+    type: 'facebook/checkin',
+    user: user,
+    contest: contest,
+    page: page,
+    ll: ll
+};
+
 
 exports['save page'] = function(test) {
     cleanup(function() {
@@ -87,19 +94,15 @@ exports['publish contest'] = function(test) {
 };
 
 exports['enter contest'] = function(test) {
-    var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
-    contest.enter(entryMethod, function(err, e) {
+    Bozuko.enter(entry_opts, function(err, game_states) {
+        console.log("err = "+err);
         test.ok(!err);
-        if( err ) console.log(err.stack);
-        entry = e;
         test.done();
     });
 };
 
 exports['enter contest fail - no tokens'] = function(test) {
-  var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
-    contest.enter(entryMethod, function(err, e) {
-        console.log(err);
+    Bozuko.enter(entry_opts, function(err) {
         test.ok(err);
         test.done();
     });
@@ -108,7 +111,12 @@ exports['enter contest fail - no tokens'] = function(test) {
 var free_play = false;
 
 function play(callback) {
-    contest.play(user, function(err, result) {
+    var opts = {
+        user: user,
+        page_id: page._id,
+        timestamp: new Date()
+    };
+    contest.play(opts, function(err, result) {
         if (result.play.free_play) free_play = true;
         callback(err, result);
     });
@@ -142,7 +150,12 @@ exports['use free play if won'] = function(test) {
 };
 
 exports['play fail - no tokens'] = function(test) {
-    contest.play(user._id, function(err, result) {
+    var opts = {
+        user: user,
+        page_id: page._id,
+        timestamp: new Date()
+    };
+    contest.play(opts, function(err, result) {
         test.ok(err);
         var play_cursor = free_play ? 3 : 2;
         Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {

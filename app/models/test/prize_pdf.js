@@ -35,10 +35,7 @@ exports['createNormalPrizeScreenPdf'] = function(test) {
         }
     };
     var pdf = prize.createPrizeScreenPdf(user, images);
-    fs.writeFile('generatedPrizeScreen.pdf', pdf, 'binary', function(err) {
-        test.ok(!err);
-        test.done();
-    });
+    test.done();
 };
 
 exports['createBarcodePrizeScreenPdf'] = function(test) {
@@ -54,9 +51,6 @@ exports['createBarcodePrizeScreenPdf'] = function(test) {
         }
     };
     var pdf = prize.createPrizeScreenPdf(user, images);
-    fs.writeFile('generatedBarcodeScreen.pdf', pdf, 'binary', function(err) {
-        test.ok(!err);
-        test.done();
-    });
+    test.done();
 };
 
