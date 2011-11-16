@@ -330,6 +330,36 @@ exports.routes = {
                             }
                         });
 
+                        /**
+                         * Send an Auto Reply to the user
+                         */
+                         mailer.send({
+                            to: user.email,
+                            subject: "Thank you for your recommendation!",
+                            body: [
+                                'Hi '+user.name+'-',
+                                '',
+                                'Thank you for your Bozuko recommendation for '+page.name+'! '+
+                                'We compile all of our recommendations and use them to help prioritize our Bozuko roll out.',
+                                '',
+                                'The best way to recommend Bozuko to your favorite businesses is posting on their wall. Make sure to use @Bozuko so your post links back to our page. '+
+                                'For example, post something like this on their wall:  "I think you guys are awesome. You should rock a @Bozuko game!"',
+                                '',
+                                'Here is a link to their wall:',
+                                page.service('facebook').data.link,
+                                '',
+                                'Your original message was: ',
+                                message,
+                                '',
+                                'Thanks-',
+                                'The Bozuko Team'
+                            ].join("\n")
+                        }, function(error){
+                            if( error ){
+                                console.error('Error sending recommendation! ['+recommendation._id+']');
+                            }
+                        });
+
                         Bozuko.publish('page/recommend', {message:message, service:service, page: page.name});
                         return Bozuko.transfer('success_message', {success: true}, null, function(error, result){
                             if (error) return error.send(res);

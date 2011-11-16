@@ -11,9 +11,6 @@ exports.routes = {
             access: 'mobile',
 
             handler: function(req, res) {
-
-                console.log(req.body);
-
                 var id = req.param('id');
                 var ll = req.param('ll');
                 var accuracy = req.param('accuracy') || false;
@@ -92,32 +89,71 @@ exports.routes = {
                 res.locals.user = req.session.user;
                 res.locals.isAndroid = req.header('user-agent').match(/android/i);
 
-                return Bozuko.service('facebook').place({place_id: req.param('id')}, function( error, place){
+                var page,
+                    user,
+                    place,
+                    access_token,
+                    fbid = req.param('id');
+
+                return  async.series([
+                    function get_page(cb){
+                        Bozuko.models.Page.findByService('facebook', fbid, function(error, _page){
+                            if( error ) return cb(error);
+                            if( _page ) page = _page;
+                            return cb();
+                        });
+                    },
+
+                    function get_user(cb){
+                        if( !page ) return cb();
+                        if( !page.admins || !page.admins.length ) return cb();
+                        var user_id = page.admins[0];
+                        return Bozuko.models.User.findOne({_id:user_id}, function (error, _user){
+                            if( error ) return cb(error);
+                            if( _user ) user = _user;
+                            if( user && user.service('facebook') ){
+                                access_token = user.service('facebook').auth;
+                            }
+                            return cb();
+                        });
+                    },
+
+                    function get_place(cb){
+                        var options = {
+                            place_id: fbid
+                        };
+                        if( access_token ) options.access_token = access_token;
+                        return Bozuko.service('facebook').place(options, function( error, _place){
+                            if( error ) return cb(error);
+                            place = _place;
+                            return cb();
+                        });
+                    }
+                ], function render(error){
                     if( error ){
                         res.locals.error = error;
                         return res.render('app/facebook/'+tmpl);
                     }
+
+                    res.locals.place = place;
+
                     if( !place ){
-                        res.locals.place = null;
                         return res.render('app/facebook/'+tmpl);
                     }
-                    res.locals.place = place;
-                    // see if we can find a Bozuko place...
-                    return Bozuko.models.Page.findByService('facebook', place.id, function(error, page){
-                        if( error ) {
-                            res.locals.error = error;
-                        }
-                        else if(page){
-                            res.locals.place.image = page.image;
-                            res.locals.place.category = page.category;
-                            res.locals.place.name = page.name;
-                        }
-                        if( res.locals.place.image.indexOf('type=large') ){
-                            res.locals.place.image = res.locals.place.image.replace(/type=large/, 'type=square');
-                        }
-                        res.locals.title = "Like "+place.name+" on Facebook!";
-                        return res.render('app/facebook/'+tmpl);
-                    });
+
+                    if(page){
+                        res.locals.place.image = page.image;
+                        res.locals.place.category = page.category;
+                        res.locals.place.name = page.name;
+                    }
+                    if( res.locals.place.image.indexOf('type=large') ){
+                        res.locals.place.image = res.locals.place.image.replace(/type=large/, 'type=square');
+                    }
+                    if(user){
+                        res.locals.admin = user.service('facebook').sid;
+                    }
+                    res.locals.title = "Like "+place.name+" on Facebook!";
+                    return res.render('app/facebook/'+tmpl);
                 });
             }
         }
