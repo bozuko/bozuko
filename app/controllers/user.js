@@ -135,7 +135,8 @@ exports.routes = {
                         } else {
                             console.error('\n no transfer user\n');
                         }
-                        res.send( error || result );
+                        if (error) return error.send(res);
+                        res.send( result );
                     });
                 });
             }
@@ -195,7 +196,8 @@ exports.routes = {
                             added: true,
                             page_id: id
                         }, user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });
@@ -234,7 +236,8 @@ exports.routes = {
                             removed: true,
                             page_id: id
                         }, user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });
@@ -277,7 +280,8 @@ exports.routes = {
                     return user.save(function(error){
                         if(error) return error.send(res);
                         return Bozuko.transfer('favorite_response', ret, user, function(error, result){
-                            return res.send( error || result );
+                            if (error) return error.send(res);
+                            return res.send( result );
                         });
                     });
                 });

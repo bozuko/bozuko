@@ -33,7 +33,8 @@ exports.routes = {
                         if( error ) return error.send(res);
                         var game = contest.getGame();
                         return Bozuko.transfer('game', game, user, function(error, result){
-                            return res.send( error || result );
+                            if (error) return error.send(res);
+                            return res.send( result );
                         });
                     });
                 });
@@ -105,8 +106,8 @@ exports.routes = {
                                             result: result,
                                             game_result: JSON.stringify(result.result)
                                         });
-
-                                        return res.send( error || result );
+                                        if (error) return error.send(res);
+                                        return res.send( result );
                                     });
                                 });
                             }
@@ -126,8 +127,8 @@ exports.routes = {
                                     contest: contest.name,
                                     result: result
                                 });
-
-                                return res.send( error || result );
+                                if (error) return error.send(res);
+                                return res.send( result );
                             });
                         });
                     });
@@ -241,7 +242,8 @@ exports.routes = {
                     var opts = {user: user, page_id: page_id};
                     return contest.loadGameState(opts, function(error){
                         return Bozuko.transfer('game_state', contest.game_state, user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });

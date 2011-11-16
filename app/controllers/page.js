@@ -117,7 +117,8 @@ exports.routes = {
                         if( pages.length ) ret.next = next;
                         return Bozuko.transfer('pages', ret, req.session.user, function(error, result){
                             profiler.mark('after transfer');
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     }
                 );
@@ -140,7 +141,8 @@ exports.routes = {
                     return page.loadContests( req.session.user, function(error){
                         if( error ) return error.send(res);
                         return Bozuko.transfer('page', page, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });
@@ -221,7 +223,8 @@ exports.routes = {
                         });
 
                         return Bozuko.transfer('success_message', {success:true}, null, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });
@@ -329,7 +332,8 @@ exports.routes = {
 
                         Bozuko.publish('page/recommend', {message:message, service:service, page: page.name});
                         return Bozuko.transfer('success_message', {success: true}, null, function(error, result){
-                            return res.send( error || result );
+                            if (error) return error.send(res);
+                            return res.send( result );
                         });
                     });
                 });

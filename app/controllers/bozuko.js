@@ -25,7 +25,8 @@ exports.routes = {
                     // the return...
                     var transfer = function(page, demo_page){
                         return Bozuko.transfer('bozuko',{page: page, demo_page: demo_page || false}, null, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     };
 
