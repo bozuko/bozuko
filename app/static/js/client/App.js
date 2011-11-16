@@ -132,8 +132,11 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     console.log(e.stack);
                 }
                 return callback(new Error('No User'));
+            },
+            failure : function(response, request){
+                return callback(new Error('No User'));
             }
-        })
+        });
     },
     
     setUser : function(user){

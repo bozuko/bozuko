@@ -26,12 +26,13 @@ exports.routes = {
                     ret.noToken = true;
                     return res.send( ret );
                 }
+                
+                var options = {params:{access_token: token}};
+                
                 // else lets see if we can find this guy...
-                return Facebook.graph('/me', {params:{
-                    access_token: token
-                }}, function(error, result){
+                return Facebook.graph('/me', options, function(error, result){
                     
-                    if( error || !result ){
+                    if( error || !result || !result.id){
                         ret.error = error;
                         return res.send(ret);
                     }
@@ -39,10 +40,10 @@ exports.routes = {
                     // see if this is an existing person...
                     return Bozuko.models.User.findByService('facebook', result.id, function(error, user){
                         
-                        if( error ) return res.send(ret);
+                        if( error || !user ) return res.send(ret);
                         
                         return Bozuko.transfer('user', user, user, function(error, result){
-                            res.send( error || result );
+                            return res.send( error || result );
                         });
                         
                     });
