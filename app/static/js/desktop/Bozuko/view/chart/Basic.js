@@ -203,7 +203,7 @@ Ext.define('Bozuko.view.chart.Basic', {
         
         me.callParent(arguments);
         
-        me.on('render', me.renderChart, me);
+        me.on('render', me.renderChart, me, {delay:200});
     },
     
     renderChart : function(){
