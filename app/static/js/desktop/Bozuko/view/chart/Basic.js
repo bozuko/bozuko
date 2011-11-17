@@ -66,8 +66,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                             {text:'Unique Users', value:'Unique Users',fn:'average'},
                             {text:'New Users', value:'New Users',fn:'sum'},
                             {text:'Prize Cost', value:'Prize Cost',fn:'sum'}
-                        ],
-                        autoLoad        :false
+                        ]
                     }),
                     listeners       :{
                         scope           :me,
@@ -121,7 +120,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 height: 280,
                 width: 500,
                 anchor: '0',
-                store: Ext.create('Bozuko.store.Reports'),
+                store: Ext.create('Bozuko.store.Reports',{autoLoad:false}),
                 axes: [{
                     type        :'Numeric',
                     position    :'left',

@@ -137,7 +137,7 @@ exports.routes = {
                     user.save();
                     
                     res.locals.scripts.unshift(
-                        '/js/ext-4.0/lib/ext-all-debug.js',
+                        '/js/ext-4.0/lib/ext-all.js',
                         //'/js/desktop/beta/all-classes.js',
                         '/js/desktop/beta/app.js'
                     );
