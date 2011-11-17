@@ -55,7 +55,6 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         Bozuko.client.game.Scratch.superclass.constructor.apply(this, arguments);
         this.$prizes = [];
         this.$targets = [];
-        this.images = {};
         this.positions = [];
         this.scratchedPositions = {};
         this.scratchImages = [];
@@ -81,27 +80,23 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         }
         
         var self = this;
-        Ext.each( this.scratchMasks, function(mask){
-            var img = new Image();
-            img.src = mask;
-            self.scratchImages.push(img)
+        
+        // add the masks
+        Ext.each( this.scratchMasks, function(mask, i){
+            self.addImage( 'scratch-mask-'+i, mask)
         });
         
-        // load the result images
+        // add the images
         for(var i in this.resultImages ){
-            (function(src, key){
-                var img = new Image();
-                img.src = src;
-                self.images[key] = img;
-            })(this.resultImages[i], i);
+            self.addImage( i, this.resultImages[i]);
         }
         
-        
-        this.images.masks = [];
-        for(var i = 0; i < this.scratchMasks.length; i++ ){
-            this.images.masks[i] = new Image();
-            this.images.masks[i].src = this.scratchMasks[i];
-        }
+        // add the specific game theme
+        var bg = this.game.config.theme.images.background.match(/^http\:/i) ?
+            this.game.config.theme.images.background :
+            this.game.config.theme.base+'/'+this.game.config.theme.images.background;
+            
+        // is this retina?
         
         if( this.renderTo ){
             this.render( this.renderTo );
@@ -343,7 +338,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         var animate = function(){
             ctx.save();
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.drawImage(self.images.masks[frame],pos.x,pos.y);
+            ctx.drawImage(self.images['scratch-mask-'+frame],pos.x,pos.y);
             ctx.restore();
             if(++frame >= self.scratchMasks.length){
                 self.fireEvent('scratch', index);

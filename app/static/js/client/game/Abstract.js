@@ -15,14 +15,41 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     constructor : function(config){
         this.config = config;
         this.state = null;
+        
+        this._images = {};
+        this._srcs = {};
+        this._imagesLoaded = 0;
+        
         Ext.apply( this, config );
         this.addEvents({
+            'ready'             :true,
             'result'            :true,
             'win'               :true,
             'lose'              :true,
             'load'              :true,
             'enter'             :true
         });
+    },
+    
+    addImage : function(key, src, onload, load){
+        var self = this;
+        
+        if( this._images[key] ) return;
+        var img = this._images[key] = new Image();
+        img.onload = function(){
+            self._imagesLoaded++;
+            img.loaded = true;
+            if( onload && onload instanceof Function ) onload(this);
+        };
+        this._srcs[key] = src;
+        if( load || onload === true ) img.src = src;
+    },
+    
+    loadImages : function(){
+        for(var key in this._srcs ){
+            var img = this._images[key];
+            if( !img.loaded ) img.src = this._srcs[key];
+        }
     },
     
     enter : function(){
