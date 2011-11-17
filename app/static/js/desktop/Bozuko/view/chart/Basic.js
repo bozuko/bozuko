@@ -66,7 +66,8 @@ Ext.define('Bozuko.view.chart.Basic', {
                             {text:'Unique Users', value:'Unique Users',fn:'average'},
                             {text:'New Users', value:'New Users',fn:'sum'},
                             {text:'Prize Cost', value:'Prize Cost',fn:'sum'}
-                        ]
+                        ],
+                        autoLoad        :false
                     }),
                     listeners       :{
                         scope           :me,
@@ -118,6 +119,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 theme : 'Bozuko',
                 animate: true,
                 height: 280,
+                width: 500,
                 anchor: '0',
                 store: Ext.create('Bozuko.store.Reports'),
                 axes: [{
@@ -274,8 +276,7 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.chartProxy = me.chartStore.getProxy();
         me.timeField = me.down('[name=time]');
         me.modelField = me.down('[name=model]');
-        me.updateChart();
-        me.updateStats();
+        
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
         
@@ -345,7 +346,11 @@ Ext.define('Bozuko.view.chart.Basic', {
                 drawStuff();
             }
             else me.chart.on('render', drawStuff);
-            
+        });
+        
+        me.on('render', function(){
+            me.updateChart();
+            me.updateStats();
         });
     },
     
