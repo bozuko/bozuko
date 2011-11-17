@@ -218,11 +218,6 @@ Ext.define('Bozuko.view.chart.Basic', {
                 width: 500,
                 anchor: '0',
                 
-                // hack attack yo!
-                surface : {
-                    setSize : function(){}
-                },
-                
                 store: Ext.create('Bozuko.store.Reports',{autoLoad:true}),
                 axes: [{
                     type        :'Numeric',
