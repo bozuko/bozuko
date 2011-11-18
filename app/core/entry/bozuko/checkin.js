@@ -1,4 +1,4 @@
-var EntryMethod = Bozuko.require('core/contest/entry'),
+var EntryMethod = Bozuko.require('core/entry'),
     _t = Bozuko.t,
     DateUtil = Bozuko.require('util/date'),
     dateFormat = require('dateformat');
@@ -7,10 +7,8 @@ var EntryMethod = Bozuko.require('core/contest/entry'),
  * Facebook Checkin
  *
  */
-var BozukoCheckinMethod = module.exports = function(key, user, options){
-    options = options || {};
-    EntryMethod.call(this,key,user);
-    // set the valid options
+var BozukoCheckinMethod = module.exports = function(options){
+    EntryMethod.call(this, options);
     this.options = options;
     this._lastCheckin = false;
 };
@@ -56,16 +54,13 @@ BozukoCheckinMethod.prototype.defaults = {
  */
 BozukoCheckinMethod.prototype.getDescription = function(callback){
     var self = this;
-    
-    return self.load(function(error){
-        // need a nice duration
-        var duration = DateUtil.duration(self.config.duration, true);
-        var description = "Check In on Bozuko\n";
-            description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
-    
-        return callback(error, description);
-    });
-}
+
+    // need a nice duration
+    var duration = DateUtil.duration(self.config.duration, true);
+    var description = "Check In on Bozuko\n";
+    description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+    return callback(null, description);
+};
 
 /**
  * Get Html Description - allow for formatting.
@@ -152,26 +147,17 @@ BozukoCheckinMethod.prototype._load = function( callback ){
     });
 };
 
-BozukoCheckinMethod.prototype.getButtonText = function( tokens, callback ){
-    var self = this;
-    this.load( function(error){
-        if( error ) return callback( error );
-        return self.getNextEntryTime( function( error, time ){
-
-            if( error ) return callback( error );
-            if( !tokens ){
-                var now = new Date();
-                if( time.getTime() > now.getTime() ){
-                    var time_str = DateUtil.inAgo( time );
-                    return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/wait_duration', time_str )  );
-                }
-                if( self.user && !self.can_checkin ){
-                    return callback(null,  _t( self.user ? self.user.lang : 'en', 'entry/bozuko/enter' )  );
-                }
-                return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/checkin_to_play' ));
-            }
-            return callback(null, _t( self.user ? self.user.lang : 'en', 'entry/bozuko/play' ) );
-        });
-    });
-
+BozukoCheckinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
+    if( !tokens ){
+        var now = new Date();
+        if( nextEntryTime.getTime() > now.getTime() ){
+            var time_str = DateUtil.inAgo( nextEntryTime );
+            return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/wait_duration', time_str );
+        }
+        if( this.user && !this.can_checkin ){
+            return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/enter' );
+        }
+        return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/checkin_to_play' );
+    }
+    return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/play' );
 };

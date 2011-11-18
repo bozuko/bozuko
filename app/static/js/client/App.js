@@ -84,9 +84,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 // now we need to get the user
                 self.showLoading('Logging you in...');
                 self.bozukoLogin(response.authResponse.accessToken, function(error, user){
-                    if( error ) return console.log(error.stack);
-                    if( !user ){
-                        // show login button...
+                    if( error || !user || user.success === false){
                         return self.showLogin();
                     }
                     // TODO - show who you are logged in as...

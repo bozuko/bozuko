@@ -1,46 +1,3 @@
-exports.transfer_objects = {
-    entry_point: {
-        doc: "The entry point object of the application. If a user token is passed, the "+
-             "user and prizes links will be provided, otherwise, the login link will be present.",
-
-        def: {
-            links: {
-                pages: "String",
-                login: "String",
-                bozuko : "String",
-                user: "String",
-                prizes: "String"
-            }
-        }
-    },
-
-    error: {
-        doc: "The generic error object",
-
-        def: {
-            code: "Number",
-            name: "String",
-            title: "String",
-            message: "String",
-            links: {
-            }
-        }
-    }
-};
-
-if( Bozuko.env() == 'development'){
-    exports.transfer_objects.error.def.stack = "String";
-}
-
-exports.links = {
-    api: {
-        get: {
-            doc: "The entry point of the application",
-            returns: "entry_point"
-        }
-    }
-};
-
 exports.session = false;
 
 exports.routes = {
@@ -58,7 +15,8 @@ exports.routes = {
                     links.login = "/user/login";
                 }
                 return Bozuko.transfer('entry_point', {links: links}, null, function(error, result){
-                    return res.send( error || result );
+                    if (error) return error.send(res);
+                    return res.send( result );
                 });
             }
         }

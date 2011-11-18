@@ -203,6 +203,13 @@ var contest_losers_always = new Bozuko.models.Contest(
     }]
 });
 
+var entry_opts = {
+    type: 'facebook/checkin',
+    user: user,
+    page: page,
+    ll: ll
+};
+
 
 exports['cleanup'] = function(test) {
     cleanup(function(err) {
@@ -260,8 +267,8 @@ exports['enter contests'] = function(test) {
     var count = 0;
     async.forEach(contests,
         function(contest, callback) {
-            var entryMethod = Bozuko.entry('facebook/checkin', user, {ll: ll});
-            contest.enter(entryMethod, function(err, e) {
+            entry_opts.contest = contest;
+            Bozuko.enter(entry_opts, function(err, e) {
                 callback(err);
             });
         },
@@ -280,8 +287,8 @@ exports['everyone gets a consolation prize once per contest'] = function(test) {
         // There should be a consolation prize here
         test.ok(result.play.consolation);
 
-        var entryMethod = Bozuko.entry('facebook/checkin', user, {ll: ll});
-        contest_all_once.enter(entryMethod, function(err, e) {
+        entry_opts.contest = contest_all_once;
+        Bozuko.enter(entry_opts, function(err, e) {
             test.ok(!err);
             play3times(contest_all_once, function(err, result) {
                 if (err) console.log(err);
@@ -322,8 +329,8 @@ exports['everyone gets a consolation prize every time they run out of plays'] = 
         // There should be a consolation prize here
         test.ok(result.play.consolation);
 
-        var entryMethod = Bozuko.entry('facebook/checkin', user, {ll: ll});
-        contest_all_always.enter(entryMethod, function(err, e) {
+        entry_opts.contest = contest_all_always;
+        Bozuko.enter(entry_opts, function(err, e) {
             test.ok(!err);
             play3times(contest_all_always, function(err, result) {
                 if (err) console.log(err);
@@ -344,8 +351,7 @@ exports['everyone gets a consolation prize every time they run out of plays'] = 
                                 test.ok(!err);
                                 test.deepEqual(2, plays.length);
 
-                                var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
-                                contest_all_always.enter(entryMethod, function(err, e) {
+                                Bozuko.enter(entry_opts, function(err, e) {
                                     test.ok(!err);
                                     play3times(contest_all_always, function(err, result) {
                                         if (err) console.log(err);
@@ -391,8 +397,8 @@ exports['every loser gets a consolation prize once per contest'] = function(test
         // There should be a consolation prize here
         test.ok(result.play.consolation);
 
-        var entryMethod = Bozuko.entry('facebook/checkin', user, {ll:ll});
-        contest_losers_once.enter(entryMethod, function(err, e) {
+        entry_opts.contest = contest_losers_once;
+        Bozuko.enter(entry_opts, function(err, e) {
             test.ok(!err);
             play3times(contest_losers_once, function(err, result) {
                 if (err) console.log(err);
@@ -430,8 +436,8 @@ exports['every loser gets a consolation prize every time they run out of plays']
         // There should be a consolation prize here
         test.ok(result.play.consolation);
 
-        var entryMethod = Bozuko.entry('facebook/checkin', user, {ll: ll});
-        contest_losers_always.enter(entryMethod, function(err, e) {
+        entry_opts.contest = contest_losers_always;
+        Bozuko.enter(entry_opts, function(err, e) {
             test.ok(!err);
             play3times(contest_losers_always, function(err, result) {
                 if (err) console.log(err);
@@ -504,7 +510,12 @@ function play3times(contest, callback) {
     async.whilst(
         function() { return count < 3; },
         function(callback) {
-            contest.play(user, function(err, res) {
+            var opts = {
+                user: user,
+                timestamp: new Date(),
+                page_id: page._id
+            };
+            contest.play(opts, function(err, res) {
                 if( err ) console.log(err.stack);
                 console.log('res.play.win = '+res.play.win);
                 if (res.play.win) won = true;

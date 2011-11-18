@@ -12,7 +12,7 @@ var mongoose = require('mongoose'),
     httpsUrl = Bozuko.require('util/functions').httpsUrl,
     DateUtil = Bozuko.require('util/date')
     ;
-    
+
 var User = module.exports = new Schema({
     name                :{type:String, index: true},
     phones              :[Phone],
@@ -107,7 +107,7 @@ User.method('updateInternals', function(force, callback){
     }
     if (Bozuko.config.test_mode) return callback(null);
     var self = this;
-    
+
     var now = new Date();
     if( !force && self.last_internal_update && +now -self.last_internal_update < (1000 * 60 * 60) ){
         return callback(null);
@@ -135,7 +135,7 @@ User.method('updateInternals', function(force, callback){
         if( !self.service('facebook').internal ){
             self.service('facebook').internal = {};
         }
-        
+
         self.service('facebook').internal.likes = likes;
         self.service('facebook').internal.friends = friends;
         self.service('facebook').internal.friend_count = friends.length;
@@ -196,9 +196,9 @@ User.method('getManagedPages', function(){
         callback = args.pop(),
         selector = {admins:self._id}
         ;
-    
+
     while( args.length && (arg = args.shift()) && params.length && (param = params.shift()) ){
-        
+
         switch( param ){
             case 'selector':
                 fnArgs.push( merge( selector, arg ) );
@@ -208,15 +208,15 @@ User.method('getManagedPages', function(){
                 fnArgs.push( arg );
         }
     }
-    
+
     fnArgs.push( callback );
     Bozuko.models.Page.find.apply( Bozuko.models.Page, fnArgs );
 });
 
 User.method('getPrizes', function(options, callback){
-    
+
     options = options || {};
-    
+
     var self    = this,
         skip    = options.skip || options.start || options.offset || 0,
         limit   = options.limit || 25,
@@ -226,14 +226,14 @@ User.method('getPrizes', function(options, callback){
         search  = options.search || false,
         query   = options.query || {}
         ;
-        
+
     query.user_id = self._id;
-    
+
     if( state ){
-        
+
         var states = Array.isArray(state) ? state : state.split(','),
             $or = [];
-            
+
         states.forEach(function(state){ switch(state){
             case 'active':
                 $or.push({
@@ -253,12 +253,12 @@ User.method('getPrizes', function(options, callback){
                 });
                 break;
         }});
-        
+
         if( $or.length ){
             query.$or = $or;
         }
     }
-    
+
     if( search ) {
         var searcher = [{
             name : new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
@@ -266,10 +266,10 @@ User.method('getPrizes', function(options, callback){
             page_name: new RegExp('(^|\\s)'+XRegExp.escape(search), "i")
         }];
         if( query.$or ){
-            
+
             var $or = query.$or,
                 $newOr = [];
-                
+
             $or.forEach(function(conditions){
                 searcher.forEach(function(searchConditions){
                     var o = {};
@@ -287,19 +287,19 @@ User.method('getPrizes', function(options, callback){
         else{
             query.$or = searcher;
         }
-        
+
     }
-    
+
     var opts = {
         skip            :skip,
         limit           :limit
     };
-    
+
     opts.sort = {};
     opts.sort[sort] = dir;
-    
+
     console.log(query);
-    
+
     // first lets get the count
     return Bozuko.models.Prize.count( query, function(error, total){
         if( error ) return callback( error );
@@ -319,12 +319,8 @@ User.method('getPrizes', function(options, callback){
                 // setup pages to be a map
                 var page_map={};
                 return async.forEach(pages, function(page, cb){
-                    return page.getActiveContests(null, function(error, contests){
-                        if( error ) return cb(error);
-                        page.contests = contests;
-                        page_map[String(page._id)] = page;
-                        return cb();
-                    });
+                    page_map[String(page._id)] = page;
+                    return cb();
                 }, function(error){
                     if( error ) return callback( error );
                     prizes.forEach(function(prize,i){
@@ -338,7 +334,7 @@ User.method('getPrizes', function(options, callback){
 });
 
 User.method('getFriendsOnBozuko', function(options, callback){
-    
+
     options = merge({
         start       :0,
         limit       :2,
@@ -348,59 +344,59 @@ User.method('getFriendsOnBozuko', function(options, callback){
         full        :false,
         dir         :-1
     },options);
-    
+
     var self        = this,
         friend_ids  = [],
         total       = 0,
         opts        = {sort:{}},
         fb_friends  = self.service('facebook').internal.friends;
-        
+
     opts.sort[options.sort] = options.dir;
     if( !options.random ){
         opts.limit = options.limit;
         opts.skip = options.start;
     }
-    
+
     if( !fb_friends.length ){
         return callback(null, [], 0);
     }
-    
+
     var tmp = [];
     fb_friends.forEach(function(fb_friend){
         tmp.push(String(fb_friend.id));
     });
-    
+
     var query = {
         'services.name':'facebook',
         'services.sid':{$in: tmp},
         $or: [{blocked: {$exists:false}, allowed:{$exists:false}}, {blocked: false}, {allowed: true}]
     };
-    
+
     if( options.search ){
         query['name'] = new RegExp('(^|\\s)'+XRegExp.escape(options.search), "i");
     }
-    
+
     // lets get the total
     return Bozuko.models.User.count(query, function(error, total){
-        
+
         if( error ) return callback( error );
-        
+
         // now we need to get the ids that are in our db
         return Bozuko.models.User.find(query, {'_id':1}, opts, function(error, friends){
-            
+
             if( error ) return callback(error);
-            
+
             if( options.random ) while( friends.length > 0 && friend_ids.length < options.limit){
                 var i = Math.round(Math.random()*(friends.length-1));
                 friend_ids.push(friends.splice(i,1)[0]._id);
             }
-            
+
             else{
                 friends.foreEach(function(friend){
                     friend_ids.push(friend._id);
                 });
             }
-            
+
             var fields = {};
             if( !options.full ) fields = {
                 'services.internal.friends':0,
@@ -415,7 +411,7 @@ User.method('getFriendsOnBozuko', function(options, callback){
                 'allowed':0,
                 'blocked':0
             };
-            
+
             return Bozuko.models.User.find({_id:{$in:friend_ids}}, fields, function(error, friends){
                 if( error ) return callback(error);
                 if( options.random ){
@@ -433,19 +429,19 @@ User.method('getFriendsOnBozuko', function(options, callback){
 });
 
 User.method('getStatistics', function(options, callback){
-    
+
     if( !callback ){
         callback = options;
         options = {};
     }
-    
+
     options = options || {};
     // lets stat this dude up.
     var stats={},
         self=this;
-    
+
     async.series([
-        
+
         function total_entries(cb){
             if( options.entries === false ) return cb();
             return Bozuko.models.Entry.count({user_id: self._id}, function(error, count){
@@ -454,7 +450,7 @@ User.method('getStatistics', function(options, callback){
                 return cb();
             });
         },
-        
+
         function total_plays(cb){
             if( options.plays === false ) return cb();
             return Bozuko.models.Play.count({user_id: self._id}, function(error, count){
@@ -463,7 +459,7 @@ User.method('getStatistics', function(options, callback){
                 return cb();
             });
         },
-        
+
         function total_wins(cb){
             if( options.wins === false ) return cb();
             return Bozuko.models.Prize.count({user_id: self._id}, function(error, count){
@@ -472,7 +468,7 @@ User.method('getStatistics', function(options, callback){
                 return cb();
             });
         },
-        
+
         function total_redeemed(cb){
             if( options.redeemed === false ) return cb();
             return Bozuko.models.Prize.count({user_id: self._id, redeemed: true}, function(error, count){
@@ -481,7 +477,7 @@ User.method('getStatistics', function(options, callback){
                 return cb();
             });
         }
-        
+
     ],  function finish(error){
         if( error ) return callback(error);
         return callback(null, stats);
@@ -541,7 +537,7 @@ User.static('addOrModify', function(user, phone, callback) {
             u = new Bozuko.models.User();
             isNew = true;
         }
-        
+
         u.name = user.name;
         u.first_name = user.first_name;
         u.last_name = user.last_name;

@@ -1,35 +1,6 @@
 var async = require('async'),
     http = Bozuko.require('util/http');
 
-exports.links = {
-    facebook_checkin: {
-        post: {
-            doc: "Checkin to facebook and receive tokens",
-            access: 'mobile',
-            params: {
-                ll: {
-                    required: true,
-                    type: "String",
-                    description: "The users latitude and longitude in lat,lng format"
-                },
-                message : {
-                    type: "String",
-                    description: "The user message to post with the checkin."
-                }
-            },
-            returns: ["game_state"]
-        }
-    },
-
-    facebook_like: {
-        post: {
-            access: 'user',
-            doc: "Like a facebook page and receive tokens",
-            returns: ["success_message"]
-        }
-    }
-};
-
 exports.session = false;
 
 exports.routes = {
@@ -40,7 +11,6 @@ exports.routes = {
             access: 'mobile',
 
             handler: function(req, res) {
-                
                 var id = req.param('id');
                 var ll = req.param('ll');
                 var accuracy = req.param('accuracy') || false;
@@ -118,13 +88,13 @@ exports.routes = {
                 }
                 res.locals.user = req.session.user;
                 res.locals.isAndroid = req.header('user-agent').match(/android/i);
-                
+
                 var page,
                     user,
                     place,
                     access_token,
                     fbid = req.param('id');
-                
+
                 return  async.series([
                     function get_page(cb){
                         Bozuko.models.Page.findByService('facebook', fbid, function(error, _page){
@@ -133,7 +103,7 @@ exports.routes = {
                             return cb();
                         });
                     },
-                    
+
                     function get_user(cb){
                         if( !page ) return cb();
                         if( !page.admins || !page.admins.length ) return cb();
@@ -147,7 +117,7 @@ exports.routes = {
                             return cb();
                         });
                     },
-                    
+
                     function get_place(cb){
                         var options = {
                             place_id: fbid
@@ -164,13 +134,13 @@ exports.routes = {
                         res.locals.error = error;
                         return res.render('app/facebook/'+tmpl);
                     }
-                    
+
                     res.locals.place = place;
-                    
+
                     if( !place ){
                         return res.render('app/facebook/'+tmpl);
                     }
-                    
+
                     if(page){
                         res.locals.place.image = page.image;
                         res.locals.place.category = page.category;

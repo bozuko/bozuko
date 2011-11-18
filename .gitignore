@@ -35,3 +35,5 @@ Thumbs.db
 # SASS Cache         #
 ######################
 .sass-cache
+
+*~

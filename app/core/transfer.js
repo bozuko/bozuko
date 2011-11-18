@@ -1,245 +1,90 @@
-var fs              = require('fs'),
-    path            = require('path'),
-    async           = require('async'),
-    markdown        = require('markdown-js'),
-    Profiler        = require('../util/profiler')
-    ;
+var async = require('async'),
+    TransferObject = require('./transferObject'),
+    Link = require('./link'),
+    fs = require('fs')
+;
 
-/**
- * Abstract Bozuko Transfer Object
- */
-var TransferObject = module.exports = function(name, config){
-    this.name = name;
-    this.doc = config.doc;
-    this.def = config.def;
-    this.access = config.access || false;
-    this._create = config.create;
-    this.title = config.title;
-    this.links = {};
-    this.returned = [];
+var transfer_objects = {};
+var links = {};
 
-    // check for .md documentation
-    var filename = Bozuko.dir+'/content/docs/api/transfers/'+this.name+'.md';
-    if( path.existsSync(filename) ){
-        this.doc = markdown.parse( fs.readFileSync(filename, 'utf-8'));
-    }
-
-    // run through the links and associate with this controller
-    if( this.def.links ){
-        var self = this;
-        Object.keys(this.def.links).forEach(function(key){
-
-            if( Bozuko.link(key) ){
-                Bozuko.link(key).associateTransferObject(self);
-            }
-            else{
-                console.warn('Undocumented Link ['+key+']');
-            }
-        });
-    }
-};
-
-TransferObject.ticks = 0;
-TransferObject.tickLimit = 10;
-
-TransferObject.prototype.getTitle = function(){
-    return this.title || this.name;
-};
-
-TransferObject.prototype.create = function(data, user, callback){
+var transfer = module.exports = function(key, data, user, callback) {
+    if( !data ) return transfer_objects[key];
     try{
-        return this._create ? this._create(data, user, callback) : this.sanitize(data, null, user, callback);
+        if( Array.isArray(data) ){
+            var ret = [];
+	    return async.forEachSeries( data,
+	        function iterator(o, next){
+		    return transfer_objects[key].create(o, user, function( error, result){
+			if( error ) return next(error);
+			ret.push(result);
+			return next();
+		    });
+		},
+
+	        function cb(error){
+		    if( error ) return callback( error );
+		    return callback( null, ret );
+		}
+	    );
+        }
+        else{
+            return transfer_objects[key].create(data, user, function(error, result){
+		if( error ) return callback( error );
+		return callback( null, result );
+	    });
+        }
     }catch(e){
-        throw e;
+        return callback(e);
     }
-};
 
-TransferObject.prototype.returnedBy = function(link){
-    if( link && !~this.returned.indexOf(link) ) this.returned.push(link);
-    return this.returned;
 };
+transfer.objects = transfer_objects;
+transfer.links = links;
 
-TransferObject.prototype.merge = function(a,b){
-    // only do it for the properties we have
-    
-    Object.keys(this.def).forEach(function(prop){
-        if( b[prop] ) a[prop] = b[prop];
+transfer.init = function(opts) {
+    var files = [];
+    fs.readdirSync(__dirname + '/transfers').forEach( function(file){
+
+        if( !/js$/.test(file) ) return;
+
+        var name = file.replace(/\..*?$/, '');
+        // first check for object_types and links
+        files.push(require('./transfers/'+name));
     });
-    return a;
-};
 
-var native_types = ['string', 'number', 'object', 'int', 'integer', 'mixed'];
-
-TransferObject.now = function(fn){ return fn(); };
-
-TransferObject.prototype.sanitize = function(data, current, user, callback){
-    
-    // make this conform to our def
-    var self = this, ret = {};
-    if( !current ) current = this.def;
-
-    if( typeof current == 'string' ){
-        // this _should be_ another transfer object
-        return Bozuko.transfer(current, data, user, callback);
-    }
-
-    else if( current instanceof Array ){
-        
-        if( !(data instanceof Array) ){
-            data = [];
+    // collect all the links first so they can be associated in the Transfer Objects
+    files.forEach(function(file){
+        if(file.links) {
+            Object.keys(file.links).forEach(function(key) {
+                var config = file.links[key];
+                config.docs_dir = opts.docs_dir;
+                transfer.links[key] = Link.create(key, config);
+            });
         }
-        
-        ret = [];
-        return async.forEachSeries( data,
-            function iterator(item, next){
-                (TransferObject.ticks++ % TransferObject.tickLimit == 0 ? async.nextTick : TransferObject.now )(function(){
-                    self.sanitize(item, current[0], user, function(error, result){
-                        if( error ) return next(error);
-                        ret.push(result);
-                        return next();
-                    });
-                });
-            },
-            function cb(error){
-                if( error ) return callback( error );
-                return callback(null, ret);
-            }
-        );
-        
-    }
-    else{
-        if( !(data instanceof Object || typeof data == 'object') ){
-            data = {};
+    });
+    files.forEach(function(file){
+        if(file.transfer_objects) {
+            Object.keys(file.transfer_objects).forEach(function(key){
+                var config = file.transfer_objects[key];
+                config.docs_dir = opts.docs_dir;
+                transfer.objects[key] = TransferObject.create(key, config);
+            });
         }
-        
-        return async.forEachSeries( Object.keys(current),
-            function iterator(key, next){
-                (TransferObject.ticks++ % TransferObject.tickLimit == 0 ? async.nextTick : TransferObject.now )(function(){
-                    if( data[key] !== undefined ){
-                        // Cast the value to the proper type.
-                        var v = data[key];
-                        var c = current[key];
-                        
-                        if( c instanceof String || typeof c == 'string' ){
-                            // check type
-        
-                            switch(c.toLowerCase()){
-        
-                                case 'string':
-                                    v = String(v);
-                                    break;
-        
-                                case 'int':
-                                case 'integer':
-                                    v = parseInt(v);
-                                    break;
-        
-                                case 'float':
-                                case 'number':
-                                    v = parseFloat(v);
-                                    break;
-        
-                                case 'boolean':
-                                    v = Boolean(v);
-                                    break;
-        
-                                case 'object':
-                                case 'mixed':
-                                    break;
-        
-                                default:
-                                    return Bozuko.transfer(c, v, user, function(error, value){
-                                        if( error ) return next(error);
-                                        ret[key] = value;
-                                        return next();
-                                    });
-                            }
-                        }
-                        else if(c instanceof Number){
-                            v = parseFloat(v);
-                        }
-                        else if(c instanceof Object || typeof c == 'object'){
-                            
-                            return self.sanitize(v, c, user, function(error, value){
-                                if( error ) return next(error);
-                                ret[key] = value;
-                                return next();
-                            });
-                        }
-                        ret[key] = v;
-                    }
-                    return next();
-                });
-            },
-            
-            function cb(error){
-                if( error ) return callback(error);
-                return callback( null, ret );
+    });
+
+    // okay, one last time through the links to associate
+    // the return objects
+    Object.keys(transfer.links).forEach(function(key){
+        var link = transfer.links[key];
+        Object.keys(link.methods).forEach(function(name){
+            var method = link.methods[name];
+            var r = method.returns;
+            if( r instanceof Array ){
+                r = r[0];
             }
-        );
-    }
-};
-
-// This only validates that properties that exist in data are of the right type.
-// We should have some way to validate whether all required properties exist.
-TransferObject.prototype.validate = function(data, current) {
-
-    var self = this, ret = true;
-    if( !current ) current = this.def;
-
-
-    if( typeof current == 'string' ){
-        // this _should be_ another transfer object
-        ret = Bozuko.validate(current, data);
-    }
-
-    else if( current instanceof Array ){
-        if( !(data instanceof Array) ){
-            return false;
-        }
-        var prof = new Profiler('/core/transfer/validate/array');
-        data.forEach(function(v,k){
-            if (!self.validate(v,current[0])) {
-                ret = false;
-            }
+            var t = transfer(r);
+            if( t ) t.returnedBy(link);
         });
-        prof.stop();
-    }
-    else{
-        if( !(data instanceof Object || typeof data == 'object') ){
-            return false;
-        }
-        var prof = new Profiler('/core/transfer/validate/object');
-        Object.keys(current).forEach(function(key){
-            if( data[key] ){
-                var v = data[key];
-                var c = current[key];
+    });
+}
 
-                if (typeof c != 'string' ) {
-                    if (!self.validate(v, c)) {
-                        ret = false;
-                    }
-                }
-                else if( typeof v == 'object' && !~native_types.indexOf(c.toLowerCase())){
-                    ret = Bozuko.validate(c, v);
-                }
-                else if( c.toLowerCase() != typeof v ) {
-                    console.log("failed key = "+key);
-                    console.log("typeof c = "+typeof c);
-                    console.log("typeof v = "+typeof v);
-                    ret = false;
-                }
-            }
-        });
-        prof.stop();
-    }
-    return ret;
-};
-
-TransferObject.prototype.addLink = function(link){
-    this.links[link.name] = link;
-};
-
-TransferObject.create = function(name, config){
-    return new TransferObject(name, config);
-};
