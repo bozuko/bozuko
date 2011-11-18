@@ -36,21 +36,33 @@ Entry.static('getUserInfo', function(contest_id, user_id, callback) {
                 if (!earliest_active_entry_time || (entry.timestamp < earliest_active_entry_time)) {
                     earliest_active_entry_time = entry.timestamp;
                 }
-
-                if (!last_entry || (entry.timestamp > last_entry.timestamp)) {
-                    last_entry = entry;
-                }
-
                 tokens += entry.tokens;
             });
+            
+            return Bozuko.models.Entry.find(
+                {contest_id: contest_id, user_id: user_id, timestamp: {$gt :min_expiry_date}},
+                {},
+                {limit:1, sort:{timestamp:-1}},
+                function(error, last_entries){
+                    
+                    if( error ) return callback(error);
+                    
+                    if( last_entries && last_entries.length ){
+                        last_entry = last_entries[0];
+                    }
+                    
+                    prof.stop();
 
-            prof.stop();
+                    return callback(null, {
+                        tokens: tokens,
+                        last_entry: last_entry,
+                        earliest_active_entry_time: earliest_active_entry_time
+                    });
+                }
+            );
+                
 
-            return callback(null, {
-                tokens: tokens,
-                last_entry: last_entry,
-                earliest_active_entry_time: earliest_active_entry_time
-            });
+            
         }
     );
 
