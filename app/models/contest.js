@@ -313,7 +313,7 @@ Contest.method('generateResults', function(callback){
     var self = this;
 
     var prof = new Profiler('/models/contest/generateResults');
-    self.getEngine().generateResults(function(err) {
+    self.getEngine().generateResults(Bozuko.models.Page, self.page_id, function(err) {
         prof.stop();
         if (err) return callback(Bozuko.error('contest/generateResults'));
         return callback(null);
@@ -438,6 +438,8 @@ Contest.method('publish', function(callback){
 
     if (this.engine_type === 'order') {
         if( !this.engine_options || !this.engine_options.mode || this.engine_options.mode == 'odds'){
+            console.log("total_prizes = "+total_prizes);
+            console.log("win_frequency = "+this.win_frequency);
             this.total_entries = Math.ceil(total_prizes * this.win_frequency);
         }
     }
@@ -448,7 +450,7 @@ Contest.method('publish', function(callback){
             return callback(Bozuko.error('contest/max_entries', 1500));
         }
         self.active = true;
-        self.generateResults( function(error){
+        self.generateResults(function(error){
             if( error ) return callback(error);
             return self.generateBarcodes(function(err) {
                 if (err) return callback(err);

@@ -63,6 +63,13 @@ Page.method('getWebsite', function(){
     return website;
 });
 
+Page.static('getNumContests', function(page_id, callback) {
+    return Bozuko.models.Contest.count({page_id: page_id}, function(err, count) {
+        if (err) return callback(err);
+        return callback(null, count || 0);
+    });
+});
+
 Page.method('isAdmin', function(user, callback){
     callback( null, ~this.admins.indexOf(user._id) );
 });

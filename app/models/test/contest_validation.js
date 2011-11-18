@@ -112,7 +112,7 @@ exports['prizes - barcodes bad count'] = function(test) {
     contest.validatePrizes(false, function(err, status) {
 	var bc_err = status.errors.some(function(err) {
 	    if (err.name === 'validate/contest/barcodes_length') return true;
-            return false;	    
+            return false;
 	});
 	test.ok(bc_err);
 	test.done();
@@ -134,7 +134,7 @@ exports['entries and plays - error'] = function(test) {
     contest.total_plays = 3;
     contest.validateEntriesAndPlays(function(err, status) {
 	test.equal(status.errors.length, 1);
-	
+
 	// Reset to real total_plays
 	contest.total_plays = oldPlays;
 
@@ -192,7 +192,7 @@ exports['results - bad free play count and prize count'] = function(test) {
 
 	test.equal(prize_count_err_ct, 2);
 	test.ok(free_play_err);
-				
+
 	// Reset to real contest results
 	test.done();
     });
