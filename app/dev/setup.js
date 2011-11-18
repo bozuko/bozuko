@@ -185,7 +185,7 @@ function setupPlace(place, featured, cb){
                 barcode_prize.barcodes.push('01234567890');
             }
 
-            contest.generateResults(function(error){
+            contest.generateResults(Bozuko.models.Page, contest.page_id, function(error){
                 console.error("after generateResults");
                 contest.generateBarcodes(function(err) {
                     console.error("after generateBarcodes");
@@ -200,7 +200,7 @@ function setupPlace(place, featured, cb){
                     contest2.prizes.forEach(function(prize){
                         prize.duration = 1000*60*60*24;
                     });
-                    contest2.generateResults(function(error){
+                    contest2.generateResults(Bozuko.models.Page, contests.page_id, function(error){
                         if( error ) console.error(error, contest2._doc );
                         cb();
                     });
