@@ -542,15 +542,27 @@ Contest.method('getEntryMethodHtmlDescription', function(){
     return this.getEntryMethod().getHtmlDescription();
 });
 
-Contest.method('sendEndOfGameAlert', function() {
+Contest.method('sendEndOfGameAlert', function(page) {
     var self = this;
-    return mail.send({
-        to: 'dev@bozuko.com',
-        subject: 'Contest '+this.name+' about to expire!',
-        body: 'Your contest is about to expire.\ncontest_id = '+this._id
-    }, function(err, success, record) {
-        if (err || !success) {
-            console.error('Error sending end of game alert for contest_id '+self._id+': '+err);
+    Bozuko.models.User.find({_id: {$in: page.admins}}, {email:1}, function(err, users) {
+        var to = '';
+        users.forEach(function(user) {
+            if (!to.length && user.email) {
+                to = user.email;
+            } else if (user.email) {
+                to += ','+user.email;
+            }
+        });
+
+        return mail.send({
+            to: to,
+            cc: 'dev@bozuko.com',
+            subject: 'You Bozuko Contest \''+this.name+'\' is about to expire!',
+            body: 'You Bozuko Contest \''+this.name+'\' is about to expire!\n'
+                + 'Please login to your Bozuko account at bozuko.com/beta to create a new contest.'
+        }, function(err, success, record) {
+            if (err || !success) {
+                console.error('Error sending end of game alert for contest_id '+self._id+': '+err);
         } else {
             // Ensure this alert only goes out once
             self.end_alert_sent = true;
@@ -561,7 +573,7 @@ Contest.method('sendEndOfGameAlert', function() {
                     if (err) console.error('Error setting end_alert_sent to true for contest_id '+self._id);
                 }
             );
-        }
+        }});
     });
 });
 
@@ -598,7 +610,9 @@ Contest.method('loadGameState', function(opts, callback){
             if ( (self.engine_type === 'order' && self.play_cursor > self.total_plays*end_notice_thresh) ||
             (Date.now() > ( self.start.getTime()+(self.end.getTime() - self.start.getTime())*end_notice_thresh))) {
                 // don't wait for the email to get sent
-                self.sendEndOfGameAlert();
+                if (opts.page) {
+                    self.sendEndOfGameAlert(page);
+                }
                 return cb();
             }
             return cb();
