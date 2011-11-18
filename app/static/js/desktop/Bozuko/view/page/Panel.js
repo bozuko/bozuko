@@ -131,7 +131,6 @@ Ext.define('Bozuko.view.page.Panel', {
     },
     
     onBtnToggle : function(btn, state){
-        console.log(btn.icon);
         if( !btn.icon ) return;
         if( btn.icon.match(/star/gi) ){
             // replace with the gray star

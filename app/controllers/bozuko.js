@@ -3,100 +3,6 @@ var content = Bozuko.require('util/content'),
     Profiler = Bozuko.require('util/profiler')
 ;
 
-exports.transfer_objects= {
-    bozuko: {
-        doc: "Bozuko Meta Object",
-        create: function(obj, user, callback){
-            var ret = {
-                links:{
-                    privacy_policy: '/bozuko/privacy_policy',
-                    terms_of_use: '/bozuko/terms_of_use',
-                    about: '/bozuko/about',
-                    bozuko_for_business:'/bozuko/for_business'
-                }
-            };
-            if( obj.page ){
-                ret.links.bozuko_page = '/page/'+obj.page.id;
-            }
-            if( obj.demo_page ){
-                ret.links.bozuko_demo_page = '/page/'+obj.demo_page.id;
-            }
-            // delete obj.page;
-            return callback(null, ret);
-        },
-        def:{
-            links: {
-                privacy_policy: "String",
-                terms_of_use: "String",
-                about: "String",
-                bozuko_for_business: "String",
-                bozuko_page: "String",
-                bozuko_demo_page : "String"
-            }
-        }
-    },
-
-    content: {
-        doc: "Bozuko Content Object",
-        def:{
-            content: "String"
-        }
-    },
-
-    success_message:{
-        doc:"Generic success message",
-        def:{
-            success: "Boolean",
-            title: "String",
-            message: "String"
-        }
-    }
-};
-
-exports.links = {
-    bozuko: {
-        get: {
-            doc: "Retrieve information about Bozuko",
-            returns: "bozuko"
-        }
-    },
-    privacy_policy:{
-        get: {
-            doc: "Return the Privacy Policy",
-            returns: "content"
-        }
-    },
-    terms_of_use:{
-        get: {
-            doc: "Return the Terms of Use",
-            returns: "content"
-        }
-    },
-    about:{
-        get: {
-            doc: "About Bozuko Content",
-            returns: "content"
-        }
-    },
-    bozuko_for_business:{
-        get: {
-            doc: "Bozuko For Business",
-            returns: "content"
-        }
-    },
-    bozuko_page:{
-        get: {
-            doc: "Bozuko Page - for the 'Play our Game' button",
-            returns: "page"
-        }
-    },
-    bozuko_demo_page:{
-        get: {
-            doc: "Bozuko Demonstration Page - for the 'Demo Games' button",
-            returns: "page"
-        }
-    }
-};
 
 exports.session = false;
 
@@ -115,14 +21,15 @@ exports.routes = {
                 // we need to find the bozuko page...
                 Bozuko.models.Page.findByService('facebook', Bozuko.config.bozuko.facebook_id, function(error, page){
                     if( error ) return error.send(res);
-                    
+
                     // the return...
                     var transfer = function(page, demo_page){
                         return Bozuko.transfer('bozuko',{page: page, demo_page: demo_page || false}, null, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     };
-                    
+
                     if( !Bozuko.config.bozuko.demo_id ){
                         return transfer( page );
                     }
@@ -204,12 +111,12 @@ exports.routes = {
                     };
 
                 var onItem = function(item){
-                    
+
                     var msg = item.message,
                         type = item.type,
                         timestamp = item.timestamp,
                         _id = item._id;
-                    
+
                     var prof = new Profiler('/controllers/bozuko/listen/onItem');
                     var all_filters = [body.listeners[type],body.listeners['*']],
                         add = false;
@@ -265,13 +172,13 @@ exports.routes = {
 
                 var subscribe = function(){
                     var prof = new Profiler('/controllers/bozuko/listen/subscribe');
-                    
+
                     // well, if its listening for everything, than just return everything,
                     // don't bother with individual listeners
                     if( body.listeners['*'] && body.listeners['*'] === true || (Array.isArray(body.listeners['*']) && ~body.listeners['*'].indexOf(true)) ){
                         body.listeners = {'*':[true]};
                     }
-                    
+
                     for( var event in body.listeners ){
 
                         // distinct callbacks - we need to create a separate

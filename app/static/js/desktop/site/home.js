@@ -3,7 +3,8 @@ jQuery(function($){
         $noticeBd = $('.notice-bd'),
         step=0, heights = [18,8,14,8,12,10], durations = [500, 300, 500, 300, 400, 200],
         floating = true;
-        
+    
+    if( !$notice.length ) return;
     
     $notice.hover(
         function over()

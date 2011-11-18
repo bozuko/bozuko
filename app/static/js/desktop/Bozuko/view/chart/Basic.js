@@ -43,6 +43,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 anchor          :'0',
                 height          :30,
                 layout          :'hbox',
+                ref             :'chart-controls',
                 items           :[{xtype:'splitter', width: 60},{
                     xtype           :'combo',
                     hideLabel       :true,
@@ -112,74 +113,6 @@ Ext.define('Bozuko.view.chart.Basic', {
                     border          :false,
                     ref             :'chart-total'
                 }]
-            },{
-                xtype: 'chart',
-                border: false,
-                theme : 'Bozuko',
-                animate: true,
-                height: 280,
-                anchor: '0',
-                store: Ext.create('Bozuko.store.Reports'),
-                axes: [{
-                    type        :'Numeric',
-                    position    :'left',
-                    fields      :['count'],
-                    title       :'Entries',
-                    inflections :[],
-                    grid: {
-                        odd: {
-                            opacity: .5,
-                            fill: '#ddd',
-                            stroke: '#bbb',
-                            'stroke-width': 1
-                        }
-                    },
-                    label:      {
-                        renderer    :function(value){
-                            if( me.modelField.getValue().match(/cost/i) ){
-                                return Ext.util.Format.usMoney(value);
-                            }
-                            var axis = me.chart.axes.get(0);
-                            return axis.roundToDecimal(value, axis.decimals);
-                        }
-                    },
-                    minimum     :0
-                },{
-                    type        :'Category',
-                    position    :'bottom',
-                    fields      :'timestamp',
-                    title       :'Time',
-                    dateFormat  :'M d',
-                    label       :{
-                        renderer    :function(value){
-                            return Ext.util.Format.date(value, me.dateFormat);
-                        }
-                    }
-                }],
-                series: [{
-                    title: 'Count',
-                    type: 'column',
-                    tips: {
-                        trackMouse: true,
-                        width: 150,
-                        height: 50,
-                        renderer: function(storeItem, item) {
-                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'),me.dateFormat));
-                            var count = me.modelField.getValue().match(/cost/i) ?
-                                Ext.util.Format.usMoney(storeItem.get('count')) :
-                                storeItem.get('count');
-                            this.update( count+' '+me.modelField.getRawValue() );
-                        }
-                    },
-                    axis: 'left',
-                    xField: 'timestamp',
-                    yField: 'count'
-                }],
-                listeners : {
-                    scope           :me,
-                    refresh         :me.onChartRefresh,
-                    render          :me.onChartRefresh
-                }
             },{
             
                 xtype           :'component',
@@ -269,13 +202,94 @@ Ext.define('Bozuko.view.chart.Basic', {
         });
         
         me.callParent(arguments);
+        
+        me.on('render', me.renderChart, me, {delay:200});
+    },
+    
+    renderChart : function(){
+        
+        var me = this,
+            chartCfg = {
+                xtype: 'chart',
+                border: false,
+                theme : 'Bozuko',
+                animate: true,
+                height: 280,
+                anchor: '0',
+                
+                store: Ext.create('Bozuko.store.Reports',{autoLoad:true}),
+                axes: [{
+                    type        :'Numeric',
+                    position    :'left',
+                    fields      :['count'],
+                    title       :'Entries',
+                    inflections :[],
+                    grid: {
+                        odd: {
+                            opacity: .5,
+                            fill: '#ddd',
+                            stroke: '#bbb',
+                            'stroke-width': 1
+                        }
+                    },
+                    label:      {
+                        renderer    :function(value){
+                            if( me.modelField.getValue().match(/cost/i) ){
+                                return Ext.util.Format.usMoney(value);
+                            }
+                            var axis = me.chart.axes.get(0);
+                            return axis.roundToDecimal(value, axis.decimals);
+                        }
+                    },
+                    minimum     :0
+                },{
+                    type        :'Category',
+                    position    :'bottom',
+                    fields      :'timestamp',
+                    title       :'Time',
+                    dateFormat  :'M d',
+                    label       :{
+                        renderer    :function(value){
+                            return Ext.util.Format.date(value, me.dateFormat);
+                        }
+                    }
+                }],
+                series: [{
+                    title: 'Count',
+                    type: 'column',
+                    tips: {
+                        trackMouse: true,
+                        width: 150,
+                        height: 50,
+                        renderer: function(storeItem, item) {
+                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'),me.dateFormat));
+                            var count = me.modelField.getValue().match(/cost/i) ?
+                                Ext.util.Format.usMoney(storeItem.get('count')) :
+                                storeItem.get('count');
+                            this.update( count+' '+me.modelField.getRawValue() );
+                        }
+                    },
+                    axis: 'left',
+                    xField: 'timestamp',
+                    yField: 'count'
+                }],
+                listeners : {
+                    scope           :me,
+                    refresh         :me.onChartRefresh,
+                    render          :me.onChartRefresh
+                }
+            };
+            
+        var i = me.items.indexOf(me.down('[ref=chart-controls]'));
+        
+        me.insert(i+1, chartCfg);
+        
         me.chart = me.down('chart');
         me.chartStore = me.chart.store;
         me.chartProxy = me.chartStore.getProxy();
         me.timeField = me.down('[name=time]');
         me.modelField = me.down('[name=model]');
-        me.updateChart();
-        me.updateStats();
+        
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
         
@@ -345,8 +359,8 @@ Ext.define('Bozuko.view.chart.Basic', {
                 drawStuff();
             }
             else me.chart.on('render', drawStuff);
-            
         });
+        me.updateStats();
     },
     
     resume : function(){

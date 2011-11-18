@@ -1,150 +1,8 @@
-var dateFormat = require('dateformat'),
-    XRegExp = Bozuko.require('util/xregexp'),
+var XRegExp = Bozuko.require('util/xregexp'),
     URL = require('url'),
     burl = Bozuko.require('util/url').create,
     qs = require('querystring'),
-    s3 = Bozuko.require('util/s3'),
     PrizeSchema = Bozuko.models.Prize.schema;
-
-exports.transfer_objects = {
-    prize: {
-        doc: "Bozuko Prize Object - state is either active, redeemed, or expired",
-        def: {
-            id: "String",
-            game_id: "String",
-            page_id: "String",
-            state: "String",
-            name: "String",
-            is_email: "Boolean",
-            is_barcode: "Boolean",
-            barcode_image: "String",
-            page_name: "String",
-            wrapper_message: "String",
-            description: "String",
-            win_time: "String",
-            redemption_duration: "Number",
-            redeemed_timestamp: "String",
-            expiration_timestamp: "String",
-            business_img: "String",
-            user_img: "String",
-            code: "String",
-            links: {
-                redeem: "String",
-                page: "String",
-                user: "String",
-                prize: "String"
-            }
-        },
-
-        create : function( prize, user, callback){
-            var self = this;
-            this.sanitize(prize, null, user, function(error, o){
-                if( error ) return callback( error );
-                o.page_id = prize.page_id;
-                o.game_id = prize.contest_id;
-                o.wrapper_message = "To redeem your prize from "+prize.page.name+": "+prize.instructions+
-                    " This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
-                o.win_time = prize.timestamp;
-                o.business_img = prize.page.image;
-                o.user_img = prize.user.image.replace(/type=large/, 'type=square');
-
-                if( o.is_barcode ){
-                    var url = o.barcode_image;
-                    if( url.match(/^https?\:\/\//) ){
-                        url.replace(/^https?\:\/\//, '');
-                        url = url.substr(url.indexOf('/') );
-                    }
-                    var expires = new Date( Date.now() + Bozuko.cfg('barcode.url_expiration',1000*60*60*24 ) );
-                    o.barcode_image = s3.client.signedUrl(url, expires);
-                }
-
-                /**
-                 * TODO - pull this from the contest / prize / page
-                 */
-                o.redemption_duration = 60;
-                if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
-                o.expiration_timestamp = prize.expires;
-
-                o.links = {
-                    prize : '/prize/'+prize.id,
-                    page: '/page/'+prize.page_id,
-                    user: '/user/'+prize.user_id
-                };
-
-                if( o.state == 'active' ){
-                    o.links.redeem = '/prize/'+prize.id+'/redemption';
-                }
-                return self.sanitize(o, null, user, function(error, result){
-                    if( error ) return callback( error );
-                    return callback(null, result);
-                });
-            });
-        }
-    },
-
-    prizes: {
-        doc: "The list of prizes",
-        def: {
-            "prizes" :["prize"],
-            "next" : "String"
-        }
-    },
-
-    redemption_object: {
-        doc: "Prize Redemption Object",
-        def: {
-            security_image: 'String',
-            prize: 'prize'
-        }
-    }
-};
-
-exports.links = {
-    prizes: {
-        get: {
-        access: 'user',
-            doc:  "Return a list of prizes",
-            params: {
-                state: {
-                    type: "String",
-                    values: ['active', 'redeemed', 'expired'],
-                    description: "The state of the prizes to search"
-                }
-            },
-            returns: "prizes"
-        }
-    },
-
-    prize: {
-        get: {
-        access: 'user',
-            doc: "Get a specific prize",
-            returns: "prize"
-        }
-    },
-
-    redeem: {
-        post: {
-            access: 'mobile',
-            doc: "Redeem a prize",
-            params: {
-                message : {
-                    type: "String",
-                    description: "The user entered message"
-                },
-                share : {
-                    type: "Boolean",
-                    description: "Share this redemption."
-                },
-                email_prize_screen : {
-                    type: "Boolean",
-                    description: "Email the assets for this prize, even if it isn't an email prize."
-                }
-            },
-            returns: "redemption_object"
-        }
-    }
-};
 
 exports.session = false;
 
@@ -212,7 +70,8 @@ exports.routes = {
                         return Bozuko.transfer('prizes', {
                             prizes: []
                         }, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     }
 
@@ -225,7 +84,8 @@ exports.routes = {
                         };
                         if( hasNext ) ret.next = next;
                         return Bozuko.transfer('prizes', ret, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });
@@ -255,7 +115,8 @@ exports.routes = {
                     return prize.loadTransferObject( function(error, prize){
                         if( error ) return error.send(res);
                         return Bozuko.transfer('prize', prize, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
                     });
                 });
@@ -289,7 +150,8 @@ exports.routes = {
                         if( share == 'false' ) share = false;
 
                         if( !share ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
-                            res.send( error || result );
+                            if (error) return error.send(res);
+                            res.send( result );
                         });
 
                         // brag to friends
@@ -310,7 +172,8 @@ exports.routes = {
 
                                 if( error || !page || !contest || contest.post_to_wall !== true ) return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                     console.error('not gonna share');
-                                    res.send( error || result );
+                                    if (error) return error.send(res);
+                                    res.send( result );
                                 });
 
 
@@ -342,7 +205,8 @@ exports.routes = {
                                             console.log('saved share from redeem');
                                             // send the redemption object
                                             return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
-                                                res.send( error || result );
+                                                if (error) return error.send(res);
+                                                res.send( result );
                                             });
                                         });
                                     }
@@ -350,7 +214,8 @@ exports.routes = {
                                         return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                             console.error('error posting to facebook wall: user_id = '+req.session.user._id+
                                                           ' user name = '+req.session.user.name);
-                                            res.send( error || result );
+                                            if (error) return error.send(res);
+                                            res.send( result );
                                         });
                                     }
                                 });
