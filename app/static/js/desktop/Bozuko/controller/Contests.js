@@ -376,6 +376,9 @@ Ext.define('Bozuko.controller.Contests' ,{
             case 'export':
                 this.exportContest( record );
                 break;
+            
+            case 'html5':
+                break;
 
             default:
                 Ext.Msg.show({
