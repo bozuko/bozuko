@@ -19,6 +19,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this._images = {};
         this._srcs = {};
         this._imagesLoaded = 0;
+        this._imageCount = 0;
+        this._ready = false;
         
         Ext.apply( this, config );
         this.addEvents({
@@ -39,17 +41,30 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         img.onload = function(){
             self._imagesLoaded++;
             img.loaded = true;
+            if( self._imagesLoaded == self._imageCount  ){
+                self._ready = true;
+                self.fireEvent('ready', self);
+            }
             if( onload && onload instanceof Function ) onload(this);
         };
         this._srcs[key] = src;
+        this._imageCount++;
         if( load || onload === true ) img.src = src;
     },
     
-    loadImages : function(){
+    isReady : function(){
+        return this._ready;
+    },
+    
+    loadImages : function(cb){
         for(var key in this._srcs ){
             var img = this._images[key];
             if( !img.loaded ) img.src = this._srcs[key];
         }
+    },
+    
+    image : function(key){
+        return this._images[key];
     },
     
     enter : function(){

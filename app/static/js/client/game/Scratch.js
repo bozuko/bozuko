@@ -59,6 +59,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         this.scratchedPositions = {};
         this.scratchImages = [];
         this.loaded = false;
+        this.rendered = false;
         
         this.on('enter', this.onEnter, this);
         this.on('result', this.onResult, this);
@@ -95,8 +96,16 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         var bg = this.game.config.theme.images.background.match(/^http\:/i) ?
             this.game.config.theme.images.background :
             this.game.config.theme.base+'/'+this.game.config.theme.images.background;
-            
+        
         // is this retina?
+        if( window.devicePixelRatio > 1 ){
+            var parts = bg.split('/');
+            var file = parts.pop();
+            bg = parts.join('/')+'2x/'+file;
+        }
+        
+        self.addImage('bg', bg);
+        self.loadImages();
         
         if( this.renderTo ){
             this.render( this.renderTo );
@@ -105,6 +114,12 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     
     load : function(callback){
         var self = this;
+        if( !self.rendered ){
+            self.on('render', function(){
+                self.load(callback);
+            });
+            return;
+        }
         this.app.api.call(this.game.game_state.links.game_state, function(result){
             // we need to see what the deal is...
             self.state = result.data;
@@ -212,7 +227,17 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     },
     
     render : function(parent){
+        
         var self = this;
+        
+        if( this.rendered ) return;
+        
+        if( !this.isReady() ){
+            this.on('ready', function(){
+                self.render(parent);
+            });
+            return;
+        }
         
         this.$parent = parent;
         this.$ct = this.$parent.createChild({
@@ -284,16 +309,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             height      :this.height
         });
         this.$ticketCtx = this.$ticket.dom.getContext('2d');
+        this.rendered = true;
         
-        // draw the ticket
-        var bg = this.images.bg = new Image();
-        this.images.bg.onload = function(){
-            self.$ticketCtx.drawImage( bg, 0, 0, bg.width, bg.height );
-        };
-        
-        bg.src = this.game.config.theme.images.background.match(/^http\:/i) ?
-            this.game.config.theme.images.background :
-            this.game.config.theme.base+'/'+this.game.config.theme.images.background;
     },
     
     _createAnimationDiv : function(name, stars){
@@ -306,20 +323,21 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         self.$animations[name].setVisibilityMode( Ext.Element.DISPLAY );
         
         // if( name == 'win') self.$animations[name].dom.className+=' animate';
-        self.images[name+'Bg'].className = 'bg';
-        self.$animations[name].dom.appendChild(self.images[name+'Bg']);
+        self.image(name+'Bg').className = 'bg';
+        self.$animations[name].dom.appendChild(self.image(name+'Bg'));
         
-        self.images[name+'Txt'].className = 'txt';
-        self.$animations[name].dom.appendChild(self.images[name+'Txt']);
+        self.image(name+'Txt').className = 'txt';
+        self.$animations[name].dom.appendChild(self.image(name+'Txt'));
         
         if( stars ){
-            self.images[name+'Stars'].className = 'stars';
-            self.$animations[name].dom.appendChild(self.images[name+'Stars']);
+            self.image(name+'Stars').className = 'stars';
+            self.$animations[name].dom.appendChild(self.image(name+'Stars'));
         }
     },
     
     reset : function(){
-        this.$ticketCtx.drawImage( this.images.bg, 0, 0, this.images.bg.width, this.images.bg.height );
+        var bg = this.image('bg');
+        this.$ticketCtx.drawImage( bg, 0, 0, bg.width, bg.height );
         this.loaded = false;
         this.scratched = 0;
         this.scratchedWins = 0;
@@ -338,7 +356,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         var animate = function(){
             ctx.save();
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.drawImage(self.images['scratch-mask-'+frame],pos.x,pos.y);
+            ctx.drawImage(self.image('scratch-mask-'+frame),pos.x,pos.y);
             ctx.restore();
             if(++frame >= self.scratchMasks.length){
                 self.fireEvent('scratch', index);
