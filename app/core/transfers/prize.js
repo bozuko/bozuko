@@ -1,4 +1,5 @@
 var dateFormat = require('dateformat');
+var s3 = Bozuo.require('util/s3');
 
 exports.transfer_objects = {
     prize: {
