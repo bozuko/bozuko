@@ -40,7 +40,7 @@ Entry.static('getUserInfo', function(contest_id, user_id, callback) {
             });
             
             return Bozuko.models.Entry.find(
-                {contest_id: contest_id, user_id: user_id, timestamp: {$gt :min_expiry_date}},
+                {contest_id: contest_id, user_id: user_id},
                 {},
                 {limit:1, sort:{timestamp:-1}},
                 function(error, last_entries){
