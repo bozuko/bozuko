@@ -239,11 +239,15 @@ exports.routes = {
                         return Bozuko.error('contest/unknown', contest_id).send(res);
                     }
                     var user = req.session.user;
-                    var opts = {user: user, page_id: page_id};
-                    return contest.loadGameState(opts, function(error){
-                        return Bozuko.transfer('game_state', contest.game_state, user, function(error, result){
-                            if (error) return error.send(res);
-                            res.send( result );
+                    return Bozuko.models.Page.findById(page_id, function(err, page) {
+                        if (err) return callback(err);
+                        if (!page) return callback(Bozuko.error('page/does_not_exist'));
+                        var opts = {user: user, page: page};
+                        return contest.loadGameState(opts, function(error){
+                            return Bozuko.transfer('game_state', contest.game_state, user, function(error, result){
+                                if (error) return error.send(res);
+                                res.send( result );
+                            });
                         });
                     });
                 });
