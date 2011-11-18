@@ -215,7 +215,6 @@ Ext.define('Bozuko.view.chart.Basic', {
                 theme : 'Bozuko',
                 animate: true,
                 height: 280,
-                width: 500,
                 anchor: '0',
                 
                 store: Ext.create('Bozuko.store.Reports',{autoLoad:true}),
