@@ -202,6 +202,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         
         var self = this;
         
+        // TODO - what to do if this is not css3 compliant?
+        
         this.$animationsCt.select('.animation').removeClass('animate');
         this.$animationsCt.show();
         this.$animations[name].addClass('animate');
@@ -255,7 +257,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             
             self.$prizes[i] = self.$ct.createChild({
                 tag         :'div',
-                cls         :'prize'
+                cls         :'prize',
+                html        :'&nbsp;'
             }).setStyle({
                 left: pos.x+'px',
                 top: pos.y+'px'
@@ -263,7 +266,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             
             self.$targets[i] = self.$ct.createChild({
                 tag         :'div',
-                cls         :'target'
+                cls         :'target',
+                html        :'&nbsp;'
             }).setStyle({
                 left: pos.x+'px',
                 top: pos.y+'px'
@@ -322,7 +326,6 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         
         self.$animations[name].setVisibilityMode( Ext.Element.DISPLAY );
         
-        // if( name == 'win') self.$animations[name].dom.className+=' animate';
         self.image(name+'Bg').className = 'bg';
         self.$animations[name].dom.appendChild(self.image(name+'Bg'));
         

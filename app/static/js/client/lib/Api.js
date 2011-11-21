@@ -54,7 +54,7 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
                 link: link,
                 path: path,
                 url: me.base+path,
-                method: method=='del'?'delete':method,
+                method: (method=='del'?'delete':method).toUpperCase(),
                 callback: me.handleResponse,
                 scope: me,
                 user_scope: scope || me,
