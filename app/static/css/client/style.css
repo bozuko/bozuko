@@ -137,7 +137,12 @@ body {
   position: absolute;
   width: 92px;
   height: 115px;
-  z-index: 3;
+  z-index: 4;
+  cursor: pointer;
+  zoom: 1;
+  background: #fff;
+  opacity: 0;
+  filter: alpha(opacity=0);
 }
 .scratch-ticket .animations {
   z-index: 4;
