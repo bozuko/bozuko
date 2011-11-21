@@ -282,6 +282,7 @@ FacebookService.prototype.checkin = function(options, callback){
         var d = Geo.distance( options.ll, coords, 'mi' );
 
 	var accuracy = options.accuracy*1.20; // add a fudge factor of 20% to reduce false positives
+        if (accuracy < 50) accuracy = 50;
 	var radius = accuracy*3.3 || Bozuko.cfg('checkin.distance', 600);
 	radius = radius / 5280;
 	if (radius > 1) radius = 1;
