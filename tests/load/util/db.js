@@ -967,7 +967,7 @@ var pages = [{
         '132298090153699',
         '157808704241476',
         '165151780198317'
-    ]    
+    ]
 }];
 
 var page_ids = exports.page_ids = [],
@@ -1014,7 +1014,7 @@ function setup_progress_bars(options, callback) {
 }
 
 exports.setup = function(options, callback) {
-    
+
     user_ct = options.users;
     function create() {
         async.forEachSeries([
@@ -1039,7 +1039,7 @@ exports.setup = function(options, callback) {
             }
         );
     }
-    
+
     mongoose.connection.on('open', function() {
         setup_progress_bars(options, create);
     });

@@ -34,6 +34,8 @@ var Page = module.exports = new Schema({
     test                :{type:Boolean, index: true, default: false},
     active              :{type:Boolean, default: false, index: true},
     location            :{
+		lat					:Number,
+		lng					:Number,
         street              :String,
         city                :String,
         state               :String,
@@ -61,6 +63,13 @@ Page.method('getWebsite', function(){
     if( !website.length ) return '';
     if( !website.match(/^http/) ) website = 'http://'+website;
     return website;
+});
+
+Page.static('getNumContests', function(page_id, callback) {
+    return Bozuko.models.Contest.count({page_id: page_id}, function(err, count) {
+        if (err) return callback(err);
+        return callback(null, count || 0);
+    });
 });
 
 Page.method('isAdmin', function(user, callback){

@@ -2,9 +2,11 @@ process.env.NODE_ENV='test';
 var bozuko = require('../../../bozuko');
 var OrderEngine = require('../order');
 var inspect = require('util').inspect;
+var Oid = require('mongoose').Types.ObjectId;
 
 // Mock Contest Model
 var contest = {
+    page_id: new Oid(),
     prizes: [{
         _id: '0001',
         total: 1000
@@ -26,7 +28,7 @@ var contest = {
 
 exports['generate_results: no primer - 1000 of same prize'] = function(test) {
     var engine = new OrderEngine(contest);
-    engine.generateResults(function(err, results) {
+    engine.generateResults(Bozuko.models.Page, contest.page_id, function(err, results) {
         // engine.generateResults() modifies contest
         var tokens = contest.getEntryConfig().tokens;
         test.deepEqual(contest.total_free_plays, Math.floor(tokens*contest.total_entries*.20));
@@ -54,7 +56,7 @@ exports['generate_results: primer - 1000 of same prize'] = function(test) {
     };
     contest.engine_options = {primer: primer};
     var engine = new OrderEngine(contest);
-    engine.generateResults(function(err, results) {
+    engine.generateResults(Bozuko.models.Page, contest.page_id, function(err, results) {
         var tokens = contest.getEntryConfig().tokens;
         test.deepEqual(contest.total_free_plays, Math.floor(tokens*contest.total_entries*.20));
         test.deepEqual(contest.total_plays, contest.total_entries*tokens+contest.total_free_plays);
@@ -90,7 +92,7 @@ exports['generate results: primer - high value prize'] = function(test) {
     };
     contest.engine_options = {primer: primer};
     var engine = new OrderEngine(contest);
-    engine.generateResults(function(err, results) {
+    engine.generateResults(Bozuko.models.Page, contest.page_id, function(err, results) {
         var tokens = contest.getEntryConfig().tokens;
         test.deepEqual(contest.total_free_plays, Math.floor(tokens*contest.total_entries*.20));
         test.deepEqual(contest.total_plays, contest.total_entries*tokens+contest.total_free_plays);
@@ -134,7 +136,7 @@ exports['generate results: primer - high value prize'] = function(test) {
 exports['generate results: no primer - high value prize'] = function(test) {
     contest.engine_options = null;
     var engine = new OrderEngine(contest);
-    engine.generateResults(function(err, results) {
+    engine.generateResults(Bozuko.models.Page, contest.page_id, function(err, results) {
         var tokens = contest.getEntryConfig().tokens;
         test.deepEqual(contest.total_free_plays, Math.floor(tokens*contest.total_entries*.20));
         test.deepEqual(contest.total_plays, contest.total_entries*tokens+contest.total_free_plays);

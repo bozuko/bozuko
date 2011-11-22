@@ -3,6 +3,7 @@ var fs = require('fs'),
     existsSync = require('path').existsSync,
     Profiler = require('./util/profiler')
 ;
+
 // setup the global object
 Bozuko = {};
 
@@ -42,7 +43,7 @@ var http            = Bozuko.require('util/http'),
     Controller      = Bozuko.require('core/controller'),
     Link            = Bozuko.require('core/link'),
     Game            = Bozuko.require('core/game');
-
+	
 Bozuko.env = function(){
     return process.env.NODE_ENV || 'development';
 
@@ -51,7 +52,6 @@ Bozuko.env = function(){
 Bozuko.getConfig = function(){
     return require(Bozuko.dir+'/config/'+this.env());
 };
-
 Bozuko.config = Bozuko.getConfig();
 
 Bozuko.getConfigValue = function(key, defaultValue){
@@ -81,6 +81,7 @@ Bozuko.getApp = function(){
         // setup our device dependent renderer
         Bozuko.require('core/view');
         Bozuko.app = app;
+		
 		// Bozuko.socket = socketIO.listen( Bozuko.app );
     }
     return Bozuko.app;
