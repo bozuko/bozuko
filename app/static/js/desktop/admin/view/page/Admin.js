@@ -47,6 +47,37 @@ Ext.define('Admin.view.page.Admin' ,{
                     xtype           :'checkbox',
                     name            :'featured',
                     fieldLabel      :'Featured'
+                },{
+                    xtype           :'textfield',
+                    name            :'coords',
+                    fieldLabel      :'Coordinates',
+                    getValue        :function(){
+                        var parts = this.getRawValue().split(',');
+                        if( parts.length != 2 ) return [0,0];
+                        parts.reverse();
+                        parts[0] = parseFloat(parts[0]);
+                        parts[1] = parseFloat(parts[1]);
+                        return parts;
+                    },
+                    setValue        :function(v){
+                        if( !v || !Ext.isArray(v) ) return;
+                        var c = v.slice().reverse().join(',');
+                        Ext.form.field.Text.prototype.setValue.call(this,c);
+                    }
+                },{
+                    xtype           :'hidden',
+                    name            :'location.lat',
+                    getValue        :function(){
+                        var v = this.up('fieldset').down('[name=coords]').getValue();
+                        return ( v && Ext.isArray(v) ) ? v[1] : 0;
+                    }
+                },{
+                    xtype           :'hidden',
+                    name            :'location.lng',
+                    getValue        :function(){
+                        var v = this.up('fieldset').down('[name=coords]').getValue();
+                        return ( v && Ext.isArray(v) ) ? v[0] : 0;
+                    }
                 }]
             },{
                 title           :'Links',
