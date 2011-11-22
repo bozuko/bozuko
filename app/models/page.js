@@ -34,6 +34,8 @@ var Page = module.exports = new Schema({
     test                :{type:Boolean, index: true, default: false},
     active              :{type:Boolean, default: false, index: true},
     location            :{
+		lat					:Number,
+		lng					:Number,
         street              :String,
         city                :String,
         state               :String,
