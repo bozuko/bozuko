@@ -137,7 +137,7 @@ var add_contests = function(callback) {
 			tokens: 3
 		});
 		contest.prizes.push({
-			name: 'Wicked cool T-Shirt',	
+			name: 'Wicked cool T-Shirt',
 			value: '20',
 			description: "Awesome Owl Watch T-Shirt",
 			details: "Only available in Large or Extra-large",
@@ -145,7 +145,7 @@ var add_contests = function(callback) {
 			total: 2
 		});
 		contest.prizes.push({
-			name: 'Owl Watch Mug',	
+			name: 'Owl Watch Mug',
 			value: '10',
 			description: "Sweet travel Mug",
 			details: "Not good for drinking out of.",
@@ -154,7 +154,7 @@ var add_contests = function(callback) {
 		});
 		contest.save(function(error){
 			Bozuko.models.Contest.findById(contest.id,function(error, contest){
-				contest.generateResults( function(error){
+				contest.publish( function(error){
 					callback(null);
 				});
 			});

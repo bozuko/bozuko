@@ -221,6 +221,7 @@ var add_multipage_contest = function(callback) {
     var end = new Date();
     end.setTime(start.getTime()+1000*60*60*24*2);
     var contest = new Bozuko.models.Contest({
+        page_id: [assert.page1._id],
         page_ids: [assert.page1._id, assert.page2._id],
         game: 'slots',
         game_config: {

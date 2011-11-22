@@ -23,7 +23,7 @@ var contest = new Bozuko.models.Contest(
     start: start,
     end: end,
     free_play_pct: 10
-    
+
 });
 contest.prizes.push({
     name: 'DBC $10 giftcard',
@@ -38,7 +38,7 @@ contest.prizes.push({
 });
 
 contest.save(function(err) {
-    contest.generateResults(function(err) {
+    contest.publish(function(err) {
         console.log("results generated");
         process.exit();
     });

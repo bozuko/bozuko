@@ -36,11 +36,11 @@ TimeEngine.prototype.configure = function() {
 
 
 /**
- * Generate contest results. Store in this.contest.results_array
+ * Generate contest results.
  *
  * @public
  */
-TimeEngine.prototype.generateResults = function(callback) {
+TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
     var self = this;
     var options = this.contest.engine_options || {};
     var contest = this.contest;
@@ -48,30 +48,31 @@ TimeEngine.prototype.generateResults = function(callback) {
     var start = contest.start.getTime();
     var end = start+this.contest_duration;
 
-
-    prizes.forEach(function(prize, prize_index) {
-        var i = 0;
-        async.whilst(
-            function() {
-                return i < prize.total;
-            },
-            function(cb) {
-                var date = new Date(rand(start, end));
-                var result = {
-                    contest_id: contest._id,
-                    index: prize_index,
-                    code: self.getCode(),
-                    count: i,
-                    timestamp: date,
-                    history: [{timestamp: date}]
-                };
-                i++;
-                contest.saveTimeResult(result, cb);
-            },
-            function(err) {
-                return callback(err);
-            }
-        );
+    return Page.getNumContests(page_id, function(err, block) {
+        prizes.forEach(function(prize, prize_index) {
+            var i = 0;
+            async.whilst(
+                function() {
+                    return i < prize.total;
+                },
+                function(cb) {
+                    var date = new Date(rand(start, end));
+                    var result = {
+                        contest_id: contest._id,
+                        index: prize_index,
+                        code: self.getCode(block),
+                        count: i,
+                        timestamp: date,
+                        history: [{timestamp: date}]
+                    };
+                    i++;
+                    contest.saveTimeResult(result, cb);
+                },
+                function(err) {
+                    return callback(err);
+                }
+            );
+        });
     });
 };
 

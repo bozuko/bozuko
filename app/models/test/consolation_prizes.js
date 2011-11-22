@@ -35,6 +35,9 @@ var contest_all_once = new Bozuko.models.Contest(
         who: 'all',
         when: 'once'
     }],
+    engine_options: {
+        mode: 'entries'
+    },
     start: start,
     end: end,
     free_play_pct: 0,
@@ -103,6 +106,9 @@ var contest_all_always = new Bozuko.models.Contest(
 
 var contest_losers_always_one_win = new Bozuko.models.Contest(
 {
+    engine_options: {
+        mode: 'entries'
+    },
     game: 'slots',
     game_config: {
         icons: ['seven','bar','bozuko','banana','monkey','cherries']
@@ -143,6 +149,9 @@ var contest_losers_always_one_win = new Bozuko.models.Contest(
 
 var contest_losers_once = new Bozuko.models.Contest(
 {
+    engine_options: {
+        mode: 'entries'
+    },
     game: 'slots',
     game_config: {
         icons: ['seven','bar','bozuko','banana','monkey','cherries']
@@ -174,6 +183,9 @@ var contest_losers_once = new Bozuko.models.Contest(
 
 var contest_losers_always = new Bozuko.models.Contest(
 {
+    engine_options: {
+        mode: 'entries'
+    },
     game: 'slots',
     game_config: {
         icons: ['seven','bar','bozuko','banana','monkey','cherries']

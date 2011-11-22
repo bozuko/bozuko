@@ -92,7 +92,7 @@ exports['save contest'] = function(test) {
 };
 
 exports['generate contest results'] = function(test) {
-    contest.generateResults(function(err) {
+    contest.publish(function(err) {
         test.ok(!err);
         test.done();
     });
