@@ -1078,9 +1078,23 @@ exports.routes = {
                     }
                     delete data.admins;
                     delete data._id;
+                    
+                    if( page.location && data.location ){
+                        if( data.location.lat ){
+                            page.location.lat = data.location.lat;
+                        }
+                        if( data.location.lng ){
+                            console.log(page.location.lng);
+                            console.log(data.location.lng);
+                            page.location.lng = data.location.lng;
+                            console.log(page.location.lng);
+                        }
+                    }
+                    delete data.location;
                     page.set( data );
+                    
                     /**
-                     * need to filter out non-updatabile fields
+                     * need to filter out non-updatable fields
                      */
                     // filter(data)
                     return page.save( function(error){

@@ -13,14 +13,15 @@ module.exports = {
         var ext = path.extname(file),
             content = '';
         switch(ext){
+            
             case '.md':
                 content = markdown.parse( fs.readFileSync(file, 'utf-8') );
                 break;
+            
             default:
                 content = fs.readFileSync(file, 'utf-8');
                 break;
         }
         return content;
-        
     }
 };
