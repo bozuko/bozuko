@@ -48,6 +48,7 @@ var contest = new Bozuko.models.Contest(_contest);
 
 var final_contest = new Bozuko.models.Contest(_contest);
 final_contest.name = 'final';
+final_contest.start = new Date(Date.now() + 1000*60*60);
 
 var entry_opts = {
     type: 'facebook/checkin',
@@ -113,14 +114,10 @@ exports['play out contest'] = function(test) {
     });
 };
 
-exports['create, publish and deactivate a third contest'] = function(test) {
+exports['create and publish a third contest'] = function(test) {
     return final_contest.publish(function(err) {
         test.ok(!err);
-        final_contest.active = false;
-        final_contest.save(function(err) {
-            test.ok(!err);
-            test.done();
-        });
+        test.done();
     });
 };
 
@@ -137,18 +134,19 @@ exports['set contest2.next_contest to the newly created third contest'] = functi
 };
 
 exports['enter contest 2 (activate 3rd contest as side effect)'] = function(test) {
-    Bozuko.models.Contest.count({name: 'final', active: false}, function(err, count) {
+    var testdate = new Date(Date.now() + 5000);
+    Bozuko.models.Contest.count({name: 'final', start: {$gt: testdate}}, function(err, count) {
         test.ok(!err);
         test.equal(count, 1);
         Bozuko.enter(entry_opts, function(err, game_states) {
             test.ok(!err);
-            Bozuko.models.Contest.count({name: 'final', active: true}, function(err, count) {
+            // entry causes the 2nd contest to finish and bumps up the start date of the next_contest
+            Bozuko.models.Contest.count({name: 'final', start: {$lt: testdate}}, function(err, count) {
                 test.ok(!err);
                 test.equal(count, 1);
                 test.done();
             });
         });
-
     });
 };
 
@@ -161,6 +159,78 @@ exports['enter final contest - ensure still only 3 contests'] =  function(test) 
             test.equal(count, 3);
             test.done();
         });
+    });
+};
+
+var expiring_contest = new Bozuko.models.Contest(_contest);
+expiring_contest.name = 'expiring';
+expiring_contest.next_contest = expiring_contest._id;
+
+exports['publish a contest that expires by time'] = function(test) {
+    expiring_contest.end = new Date(Date.now() + 10000);
+    expiring_contest.publish(function(err, results) {
+        test.ok(!err);
+        Bozuko.models.Contest.count({}, function(err, count) {
+            test.ok(!err);
+            test.equal(count, 4);
+        });
+        test.done();
+    });
+};
+
+var new_contest_start = null;
+exports['ensure a new contest is created via autoRenew with start date at end of last contest'] = function(test) {
+    Bozuko.models.Contest.autoRenew(function(err) {
+        test.ok(!err);
+        Bozuko.models.Contest.findOne({name: 'expiring (Copy)'}, function(err, c) {
+            test.ok(!err);
+            test.equal(c.start.getTime(), expiring_contest.end.getTime());
+            new_contest_start = c.start;
+            // Put the end date of this contest outside the one hour window so the next call
+            // to autoRenew doesn't create another contest
+            c.end = new Date(Date.now()+1000*60*60*2);
+            c.save(function(err) {
+                test.ok(!err);
+                Bozuko.models.Contest.count({}, function(err, count) {
+                    test.ok(!err);
+                    test.equal(count, 5);
+                    test.done();
+                });
+            });
+        });
+    });
+};
+
+exports['ensure another contest isn\'t created when autoRenew is called again'] = function(test) {
+    Bozuko.models.Contest.autoRenew(function(err) {
+        test.ok(!err);
+        Bozuko.models.Contest.findOne({name: 'expiring (Copy)'}, function(err, c) {
+            test.equal(new_contest_start.getTime(), c.start.getTime());
+            Bozuko.models.Contest.count({}, function(err, count) {
+                test.ok(!err);
+                test.equal(count, 5);
+                test.done();
+            });
+        });
+    });
+};
+
+exports['enter the contest that is about to expire - ensure another contest is not created'] = function(test) {
+    entry_opts.contest = expiring_contest;
+    Bozuko.enter(entry_opts, function(err) {
+        test.ok(!err);
+        Bozuko.models.Contest.count({}, function(err, count) {
+            test.ok(!err);
+            test.equal(count, 5);
+            test.done();
+        });
+    });
+};
+
+exports['fail to enter the expiring contest - no tokens'] = function(test) {
+    Bozuko.enter(entry_opts, function(err) {
+        test.ok(err);
+        test.done();
     });
 };
 
