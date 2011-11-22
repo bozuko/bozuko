@@ -1,4 +1,5 @@
 var nm = require('nodemailer'),
+    jade = require('jade'),
     inspect = require('util').inspect;
 
 var userIndex = 0;
@@ -51,6 +52,7 @@ EmailMessage.send = function(params, callback){
         status: 'pending',
         attempt: attempts+1
     });
+    
     record.save();
 
     var attempt = function(error, success){
@@ -85,4 +87,30 @@ EmailMessage.send = function(params, callback){
     };
 
     em.send(attempt);
+};
+
+EmailMessage.sendView = function(filename, options, params, callback){
+    if( !options ) options = {};
+    if( !options.locals ) options.locals = {};
+    // render the file
+    
+    if( !filename.match(/\.jade$/) ) filename+='.jade';
+    
+    jade.renderFile(Bozuko.dir+'/app/views/email/'+filename, options, function(error, html){
+        if( error ) return callback(error);
+        if( options.layout === false ){
+            params.html = html;
+            return EmailMessage.send( params, callback );
+        }
+        if( !options.locals.title ){
+            options.locals.title = params.subject;
+        }
+        
+        options.body = html;
+        return jade.renderFile(Bozuko.dir+'/app/views/email/layout.jade', options, function(error, html){
+            if( error ) return callback(error);
+            params.html = html;
+            return EmailMessage.send( params, callback );
+        })
+    });
 };

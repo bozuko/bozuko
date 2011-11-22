@@ -18,7 +18,8 @@ var mongoose = require('mongoose'),
     fs = require('fs'),
     burl = Bozuko.require('util/url').create,
     inspect = require('util').inspect,
-    mail = Bozuko.require('util/mail')
+    mail = Bozuko.require('util/mail'),
+	jade = require('jade')
 ;
 var safe = {w:2, wtimeout:5000};
 
@@ -544,36 +545,37 @@ Contest.method('getEntryMethodHtmlDescription', function(){
 
 Contest.method('sendEndOfGameAlert', function(page) {
     var self = this;
-    Bozuko.models.User.find({_id: {$in: page.admins}}, {email:1}, function(err, users) {
+	
+	// build the body of the email...
+	
+	
+    Bozuko.models.User.find({_id: {$in: page.admins}}, {email:1,name:1}, function(err, users) {
         var to = '';
-        users.forEach(function(user) {
-            if (!to.length && user.email) {
-                to = user.email;
-            } else if (user.email) {
-                to += ','+user.email;
-            }
+        return users.forEach(function(user) {
+			
+            mail.sendView('contest/expiration', {contest: self, user:user}, {
+				to: user.email,
+				bcc: 'dev@bozuko.com',
+				subject: 'Your Bozuko Contest \''+self.name+'\' is about to expire!',
+				body: 'Your Bozuko Contest \''+self.name+'\' is about to expire!\n'
+					+ 'Please login to your Bozuko account at https://bozuko.com/beta to create a new contest.'
+			}, function(err, success, record) {
+				
+				if (err || !success) {
+					console.error('Error sending end of game alert for contest_id '+self._id+': '+err);
+				} else {
+					// Ensure this alert only goes out once
+					self.end_alert_sent = true;
+					Bozuko.models.Contest.update(
+						{_id: self._id},
+						{$set: {end_alert_sent: true}},
+						function(err) {
+							if (err) console.error('Error setting end_alert_sent to true for contest_id '+self._id);
+						}
+					);
+				}
+			});
         });
-
-        return mail.send({
-            to: to,
-            cc: 'dev@bozuko.com',
-            subject: 'Your Bozuko Contest \''+self.name+'\' is about to expire!',
-            body: 'Your Bozuko Contest \''+self.name+'\' is about to expire!\n'
-                + 'Please login to your Bozuko account at bozuko.com/beta to create a new contest.'
-        }, function(err, success, record) {
-            if (err || !success) {
-                console.error('Error sending end of game alert for contest_id '+self._id+': '+err);
-        } else {
-            // Ensure this alert only goes out once
-            self.end_alert_sent = true;
-            return Bozuko.models.Contest.update(
-                {_id: self._id},
-                {$set: {end_alert_sent: true}},
-                function(err) {
-                    if (err) console.error('Error setting end_alert_sent to true for contest_id '+self._id);
-                }
-            );
-        }});
     });
 });
 
