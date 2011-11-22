@@ -50,7 +50,9 @@ var Contest = module.exports = new Schema({
     play_cursor             :{type:Number, default: -1},
     token_cursor            :{type:Number, default: 0},
     winners                 :[ObjectId],
-    end_alert_sent          :{type: Boolean}
+    end_alert_sent          :{type:Boolean},
+    next_contest            :{type:ObjectId},
+    next_contest_active     :{type:Boolean, default: false}
 }, {safe: {w:2, wtimeout: 5000}});
 
 Contest.ACTIVE = 'active';
@@ -438,8 +440,6 @@ Contest.method('publish', function(callback){
 
     if (this.engine_type === 'order') {
         if( !this.engine_options || !this.engine_options.mode || this.engine_options.mode == 'odds'){
-            console.log("total_prizes = "+total_prizes);
-            console.log("win_frequency = "+this.win_frequency);
             this.total_entries = Math.ceil(total_prizes * this.win_frequency);
         }
     }
@@ -504,6 +504,10 @@ Contest.method('incrementTokenCursor', function(tokens, callback) {
             if (err && !err.errmsg.match(no_matching_re)) return callback(err);
             if (!contest) {
                 return callback(Bozuko.error('entry/not_enough_tokens'));
+            }
+            // If the contest just ran out of tokens we will attempt to start the next one
+            if (contest.token_cursor == (contest.total_plays - contest.total_free_plays)) {
+                return contest.activateNextContest(callback);
             }
             return callback(null);
         }
@@ -577,6 +581,61 @@ Contest.method('sendEndOfGameAlert', function(page) {
     });
 });
 
+function copyAndPublishContest(contest, callback) {
+    var jsonContest = contest.toJSON();
+    var contest_duration = contest.end.getTime() - contest.start.getTime();
+    delete jsonContest._id;
+    jsonContest.prizes.forEach(function(prize) {
+        delete prize._id;
+    });
+    jsonContest.consolation_prizes.forEach(function(prize) {
+        delete prize._id;
+    });
+    jsonContest.name += ' (Copy)';
+    jsonContest.plays = [];
+    jsonContest.results = {};
+    jsonContest.play_cursor = -1;
+    jsonContest.token_cursor = 0;
+    jsonContest.winners = [];
+    jsonContest.next_contest_active = false;
+    jsonContest.end_alert_sent = false;
+    jsonContest.start = new Date();
+    jsonContest.end = new Date(jsonContest.start.getTime() + contest_duration);
+
+    var newContest = new Bozuko.models.Contest(jsonContest);
+    newContest.next_contest = newContest._id;
+    return newContest.save(function(err) {
+        if (err) return callback(err);
+        return newContest.publish(function(err) {
+            return callback(err);
+        });
+    });
+}
+
+function activateContest(contest_id, callback) {
+    Bozuko.models.Contest.update({_id: contest_id}, {$set: {active: true}}, callback);
+}
+
+Contest.method('activateNextContest', function(callback) {
+    var self = this;
+    if (!this.next_contest || this.next_contest_active) return callback();
+    return Bozuko.models.Contest.findAndModify(
+        {_id: this._id, next_contest_active: false},
+        [],
+        {$set: {next_contest_active: true}},
+        {new: true, fields: {plays: 0, results: 0}, safe: safe},
+        function(err, contest) {
+            if (err) return callback(err);
+            if (!contest) return callback();
+            if (String(self.next_contest) == self.id) {
+                return copyAndPublishContest(contest, callback);
+            } else {
+                return activateContest(self.next_contest, callback);
+            }
+        }
+    );
+});
+
 /*
  * page_id param is optional
  *
@@ -600,7 +659,6 @@ Contest.method('loadGameState', function(opts, callback){
         game_over: false,
         page_id: page_id
     };
-
     self.game_state = state;
     var last_entry = null;
     return async.series([
@@ -892,7 +950,7 @@ Contest.method('claimConsolation', function(opts, callback) {
     var total = this.consolation_prizes[0].total;
 
     var prof = new Profiler('/models/contest/claimConsolation');
-    Bozuko.models.Contest.findAndModify(
+    return Bozuko.models.Contest.findAndModify(
         { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total-1}}}},
         [],
         {$inc : {'consolation_prizes.$.claimed': 1}},
