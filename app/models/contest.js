@@ -1110,7 +1110,8 @@ Contest.method('savePrize', function(opts, callback) {
             redeemed: false,
             consolation: opts.consolation,
             is_email: prize.is_email,
-            is_barcode: prize.is_barcode
+            is_barcode: prize.is_barcode,
+            bucks: prize.bucks
         });
 
         if (prize.is_email) {
@@ -1143,7 +1144,31 @@ Contest.method('savePrize', function(opts, callback) {
 
         return user_prize.save(function(err) {
             if (err) return callback(err);
-            return callback(null, user_prize);
+            if (!user_prize.bucks) return callback(null, user_prize);
+
+            var value = {bucks: user_prize.bucks};
+            var modifier = {};
+
+            // the following 'if' is for backwards compatibility
+            if (opts.user.bucks) {
+                modifier['$inc'] = value;
+            } else {
+                modifier['$set'] = value;
+            }
+
+            // Add the Bozuko Bucks to the user's account
+            return Bozuko.models.User.update(
+                {_id: user_prize.user_id},
+                modifier,
+                function(err) {
+                    if (err) {
+                        console.error('Failed to update user\'s bucks for prize: '
+                            + user_prize._id + ". "+err);
+                        return callback(Bozuko.error('user/bucks'));
+                    }
+                    return callback(null, user_prize);
+                }
+            );
         });
     });
 });
