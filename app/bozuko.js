@@ -43,7 +43,7 @@ var http            = Bozuko.require('util/http'),
     Controller      = Bozuko.require('core/controller'),
     Link            = Bozuko.require('core/link'),
     Game            = Bozuko.require('core/game');
-	
+
 Bozuko.env = function(){
     return process.env.NODE_ENV || 'development';
 
@@ -76,12 +76,12 @@ Bozuko.getApp = function(){
         var app = Bozuko.require('core/server');
         Bozuko.configureApp(app);
         initApplication( app );
-		initGames( app );
+	initGames( app );
         initControllers( app );
         // setup our device dependent renderer
         Bozuko.require('core/view');
         Bozuko.app = app;
-		
+
 		// Bozuko.socket = socketIO.listen( Bozuko.app );
     }
     return Bozuko.app;
@@ -201,12 +201,12 @@ function initApplication(app){
 
     if (Bozuko.env() != 'test') {
         app.use(Bozuko.require('middleware/profiler')({
-			ignore: [
-				'/listen',
-				'/alive',
-				'/data'
-			]
-		}));
+            ignore: [
+		'/listen',
+		'/alive',
+		'/data'
+	    ]
+	}));
     }
 
 //    app.use(Bozuko.require('middleware/maintenance'));
@@ -265,7 +265,7 @@ function initApplication(app){
 		};
 	})());
 
-	app.use(express.bodyParser());
+    app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
 
@@ -302,7 +302,6 @@ function initApplication(app){
 
     app.use(app.router);
 
-
     app.use(express.static(__dirname + '/static',{maxAge: 1000 * 60 * 60 * 24 * 2}));
 
     // listen for http server errors
@@ -312,11 +311,6 @@ function initApplication(app){
     app.on('error', function(err) {
         console.error("HTTP Server Error: "+err);
     });
-
-    // handle unknown errors (How can I check for ETIMEDOUT throwing a socket error?)
-//    process.on('uncaughtException', function(err) {
-  //      console.error("UNCAUGHT EXCEPTION: "+err);
-//    });
 }
 
 function initModels(){
@@ -496,9 +490,9 @@ Bozuko.initHttpRedirect = function(){
 	redirect_server.listen(80);
 };
 
+var ms_per_hr = 1000*60*60;
 Bozuko.initStats= function(){
     var stats = Bozuko.require('util/stats');
-    var ms_per_hr = 1000*60*60;
     var ms_per_day = ms_per_hr*24;
 
     // Do an initial collection. Mongoose middleware will prevent duplication of records
@@ -511,9 +505,16 @@ Bozuko.initStats= function(){
     console.log('initStats');
 };
 
+Bozuko.initAutoRenew = function() {
+    Bozuko.models.Contest.autoRenew(logErr);
+    setInterval(function() {
+        Bozuko.models.Contest.autoRenew(logErr);
+    }, ms_per_hr);
+};
+
 function logErr(err, val) {
     if (err) {
-        console.log(err);
+        console.error(err);
     }
 }
 

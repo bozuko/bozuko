@@ -19,7 +19,7 @@ var mongoose = require('mongoose'),
     burl = Bozuko.require('util/url').create,
     inspect = require('util').inspect,
     mail = Bozuko.require('util/mail'),
-	jade = require('jade')
+        jade = require('jade')
 ;
 var safe = {w:2, wtimeout:5000};
 
@@ -51,7 +51,9 @@ var Contest = module.exports = new Schema({
     play_cursor             :{type:Number, default: -1},
     token_cursor            :{type:Number, default: 0},
     winners                 :[ObjectId],
-    end_alert_sent          :{type: Boolean}
+    end_alert_sent          :{type:Boolean},
+    next_contest            :{type:ObjectId},
+    next_contest_active     :{type:Boolean, default: false}
 }, {safe: {w:2, wtimeout: 5000}});
 
 Contest.ACTIVE = 'active';
@@ -93,11 +95,11 @@ Contest.method('validate_', function(callback) {
             self.validatePrizes(false, cb);
         },
         consolation_prizes: function(cb) {
-	    self.validatePrizes(true, cb);
+            self.validatePrizes(true, cb);
         },
         results: function(cb) {
             self.validateResults(cb);
-		}
+                }
     },
     callback
     );
@@ -106,7 +108,7 @@ Contest.method('validate_', function(callback) {
 Contest.method('validateEntriesAndPlays', function(callback) {
     var status = { errors: [], warnings: [] };
     if (!this.active) {
-	return callback(null, status);
+        return callback(null, status);
     }
     var entry_config = this.getEntryConfig();
     var tokens_per_entry = entry_config.tokens;
@@ -149,12 +151,12 @@ Contest.method('validatePrizes', function(isConsolation, callback) {
                 status.errors.push(Bozuko.error('validate/contest/barcodes_length', prize.name));
             }
 
-	    barcode_prizes.push(i);
+            barcode_prizes.push(i);
         }
     }
 
     if (!this.active || !barcode_prizes.length) {
-	return callback(null, status);
+        return callback(null, status);
     }
 
     // Check S3 to see if all barcodes are there
@@ -163,16 +165,16 @@ Contest.method('validatePrizes', function(isConsolation, callback) {
         var ct = 0;
         async.forEachSeries(prize.barcodes, function(barcode, cb) {
             var path = '/game/'+self._id+'/prize/'+index+'/barcode/'+ct;
-	    ct++;
+            ct++;
             S3.head(path, cb);
         }, function(err) {
             if (err) {
-		status.errors.push(Bozuko.error('validate/contest/barcodes_s3', prize.name));
-	    }
-	    cb(null);
+                status.errors.push(Bozuko.error('validate/contest/barcodes_s3', prize.name));
+            }
+            cb(null);
         });
     }, function(err) {
-	return callback(null, status);
+        return callback(null, status);
     });
 
 });
@@ -186,29 +188,29 @@ Contest.method('validateResults', function(callback) {
     var index;
 
     for (var i = 0; i < this.total_plays; i++) {
-	if (this.results[i]) {
-	    if (this.results[i] === 'free_play') {
-		free_plays++;
-	    } else {
-		index = this.results[i].index;
-	        if (counts[index] == undefined) {
-		    counts[index] = 1;
-		} else {
-		    counts[index]++;
-		}
-	    }
-	}
+        if (this.results[i]) {
+            if (this.results[i] === 'free_play') {
+                free_plays++;
+            } else {
+                index = this.results[i].index;
+                if (counts[index] == undefined) {
+                    counts[index] = 1;
+                } else {
+                    counts[index]++;
+                }
+            }
+        }
     }
 
     var prize;
     for (var j = 0; j < this.prizes.length; j++) {
-	prize = this.prizes[j];
+        prize = this.prizes[j];
         if (prize.total != counts[j]) {
-	    status.errors.push(Bozuko.error('validate/contest/results_prize_count', prize.name));
-	}
+            status.errors.push(Bozuko.error('validate/contest/results_prize_count', prize.name));
+        }
     }
     if (this.total_free_plays != free_plays) {
-	status.errors.push(Bozuko.error('validate/contest/results_free_play_count'));
+        status.errors.push(Bozuko.error('validate/contest/results_free_play_count'));
     }
     return callback(null, status);
 });
@@ -439,8 +441,6 @@ Contest.method('publish', function(callback){
 
     if (this.engine_type === 'order') {
         if( !this.engine_options || !this.engine_options.mode || this.engine_options.mode == 'odds'){
-            console.log("total_prizes = "+total_prizes);
-            console.log("win_frequency = "+this.win_frequency);
             this.total_entries = Math.ceil(total_prizes * this.win_frequency);
         }
     }
@@ -506,6 +506,10 @@ Contest.method('incrementTokenCursor', function(tokens, callback) {
             if (!contest) {
                 return callback(Bozuko.error('entry/not_enough_tokens'));
             }
+            // If the contest just ran out of tokens we will attempt to start the next one
+            if (contest.token_cursor == (contest.total_plays - contest.total_free_plays)) {
+                return contest.activateNextContest('entries', callback);
+            }
             return callback(null);
         }
     );
@@ -545,38 +549,121 @@ Contest.method('getEntryMethodHtmlDescription', function(){
 
 Contest.method('sendEndOfGameAlert', function(page) {
     var self = this;
-	
-	// build the body of the email...
-	
-	
-    Bozuko.models.User.find({_id: {$in: page.admins}}, {email:1,name:1}, function(err, users) {
+
+    // build the body of the email...
+    return Bozuko.models.User.find({_id: {$in: page.admins}}, {email:1,name:1}, function(err, users) {
         var to = '';
         return users.forEach(function(user) {
-			
-            mail.sendView('contest/expiration', {contest: self, user:user}, {
-				to: user.email,
-				bcc: 'dev@bozuko.com',
-				subject: 'Your Bozuko Contest \''+self.name+'\' is about to expire!',
-				body: 'Your Bozuko Contest \''+self.name+'\' is about to expire!\n'
-					+ 'Please login to your Bozuko account at https://bozuko.com/beta to create a new contest.'
-			}, function(err, success, record) {
-				
-				if (err || !success) {
-					console.error('Error sending end of game alert for contest_id '+self._id+': '+err);
-				} else {
-					// Ensure this alert only goes out once
-					self.end_alert_sent = true;
-					Bozuko.models.Contest.update(
-						{_id: self._id},
-						{$set: {end_alert_sent: true}},
-						function(err) {
-							if (err) console.error('Error setting end_alert_sent to true for contest_id '+self._id);
-						}
-					);
-				}
-			});
+            return mail.sendView('contest/expiration', {contest: self, user:user}, {
+            to: user.email,
+            bcc: 'dev@bozuko.com',
+            subject: 'Your Bozuko Contest \''+self.name+'\' is about to expire!',
+            body: 'Your Bozuko Contest \''+self.name+'\' is about to expire!\n'
+                + 'Please login to your Bozuko account at https://bozuko.com/beta to create a new contest.'
+            }, function(err, success, record) {
+                if (err || !success) {
+                    console.error('Error sending end of game alert for contest_id '+self._id+': '+err);
+                } else {
+                    // Ensure this alert only goes out once
+                    self.end_alert_sent = true;
+                    return Bozuko.models.Contest.update(
+                        {_id: self._id},
+                        {$set: {end_alert_sent: true}},
+                        function(err) {
+                            if (err) console.error('Error setting end_alert_sent to true for contest_id '+self._id);
+                        }
+                    );
+                }
+            });
         });
     });
+});
+
+function copyAndPublishContest(reason, contest, callback) {
+    var jsonContest = contest.toJSON();
+    var contest_duration = contest.end.getTime() - contest.start.getTime();
+    delete jsonContest._id;
+    jsonContest.prizes.forEach(function(prize) {
+        delete prize._id;
+    });
+    jsonContest.consolation_prizes.forEach(function(prize) {
+        delete prize._id;
+    });
+    jsonContest.name += ' (Copy)';
+    jsonContest.plays = [];
+    jsonContest.results = {};
+    jsonContest.play_cursor = -1;
+    jsonContest.token_cursor = 0;
+    jsonContest.winners = [];
+    jsonContest.next_contest_active = false;
+    jsonContest.end_alert_sent = false;
+    if (reason === 'entries') {
+        jsonContest.start = new Date();
+    } else {
+        jsonContest.start = contest.end;
+    }
+    jsonContest.end = new Date(jsonContest.start.getTime() + contest_duration);
+
+    var newContest = new Bozuko.models.Contest(jsonContest);
+    newContest.next_contest = newContest._id;
+    return newContest.save(function(err) {
+        if (err) return callback(err);
+        return newContest.publish(function(err) {
+            return callback(err);
+        });
+    });
+}
+
+function activateContest(contest, callback) {
+    var duration = contest.end.getTime() - contest.start.getTime();
+    var start = new Date();
+    var end = new Date(start.getTime() + duration);
+    Bozuko.models.Contest.update(
+        {_id: contest.next_contest},
+        {$set: {active: true, start: start, end: end}},
+        callback
+    );
+}
+
+Contest.method('activateNextContest', function(reason, callback) {
+    var self = this;
+    if (!this.next_contest || this.next_contest_active) return callback();
+    return Bozuko.models.Contest.findAndModify(
+        {_id: this._id, next_contest_active: false},
+        [],
+        {$set: {next_contest_active: true}},
+        {new: true, fields: {plays: 0, results: 0}, safe: safe},
+        function(err, contest) {
+            if (err) return callback(err);
+            if (!contest) return callback();
+            if (String(self.next_contest) == self.id) {
+                return copyAndPublishContest(reason, contest, callback);
+            } else {
+                return activateContest(contest, callback);
+            }
+        }
+    );
+});
+
+/*
+ * This function is run once per hour to find contests that are about to expire.
+ * If those contests have a next_contest and next_contest_active = false
+ * then the next contest is created with a start time that equals the end time of the
+ * contest about to expire.
+ */
+Contest.static('autoRenew', function(callback) {
+    var end_time = new Date(Date.now() + 1000*60*61); // 61 minutes
+    return Bozuko.models.Contest.find(
+        {next_contest: {$exists: true}, next_contest_active: false,
+        $and: [{end: {$gt: new Date()}}, {end: {$lt: end_time}}]},
+        function(err, contests) {
+            return async.forEach(contests, function(contest, cb) {
+                return contest.activateNextContest('time', cb);
+            }, function(err) {
+                return callback(err);
+            });
+        }
+    );
 });
 
 /*
@@ -602,7 +689,6 @@ Contest.method('loadGameState', function(opts, callback){
         game_over: false,
         page_id: page_id
     };
-
     self.game_state = state;
     var last_entry = null;
     return async.series([
@@ -897,7 +983,7 @@ Contest.method('claimConsolation', function(opts, callback) {
     var total = this.consolation_prizes[0].total;
 
     var prof = new Profiler('/models/contest/claimConsolation');
-    Bozuko.models.Contest.findAndModify(
+    return Bozuko.models.Contest.findAndModify(
         { _id: this._id, consolation_prizes: {$elemMatch: {claimed: {$lt : total-1}}}},
         [],
         {$inc : {'consolation_prizes.$.claimed': 1}},
@@ -1027,7 +1113,8 @@ Contest.method('savePrize', function(opts, callback) {
             redeemed: false,
             consolation: opts.consolation,
             is_email: prize.is_email,
-            is_barcode: prize.is_barcode
+            is_barcode: prize.is_barcode,
+            bucks: prize.bucks
         });
 
         if (prize.is_email) {
@@ -1052,7 +1139,7 @@ Contest.method('savePrize', function(opts, callback) {
         if( prize.won || prize.won === 0) Bozuko.models.Contest.collection.update(
             {'prizes._id':prize._id},
             {$inc: {'prizes.$.won':1}},
-	    {safe: {w:2, wtimeout: 5000}},
+            {safe: {w:2, wtimeout: 5000}},
             function(error){
                 if( error ) console.error( error );
             }
@@ -1060,7 +1147,31 @@ Contest.method('savePrize', function(opts, callback) {
 
         return user_prize.save(function(err) {
             if (err) return callback(err);
-            return callback(null, user_prize);
+            if (!user_prize.bucks) return callback(null, user_prize);
+
+            var value = {bucks: user_prize.bucks};
+            var modifier = {};
+
+            // the following 'if' is for backwards compatibility
+            if (opts.user.bucks) {
+                modifier['$inc'] = value;
+            } else {
+                modifier['$set'] = value;
+            }
+
+            // Add the Bozuko Bucks to the user's account
+            return Bozuko.models.User.update(
+                {_id: user_prize.user_id},
+                modifier,
+                function(err) {
+                    if (err) {
+                        console.error('Failed to update user\'s bucks for prize: '
+                            + user_prize._id + ". "+err);
+                        return callback(Bozuko.error('user/bucks'));
+                    }
+                    return callback(null, user_prize);
+                }
+            );
         });
     });
 });

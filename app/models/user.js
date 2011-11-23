@@ -33,7 +33,8 @@ var User = module.exports = new Schema({
     last_internal_update:{type:Date},
     can_manage_pages    :{type:Boolean},
     last_viewed_page    :{type:ObjectId},
-    manages             :[ObjectId]
+    manages             :[ObjectId],
+    bucks               :{type:Number, default: 0}
 }, {safe: {w:2, wtimeout: 5000}});
 
 User.plugin(Services);
