@@ -43,7 +43,9 @@ Ext.define('Bozuko.model.Contest', {
         {name:'total_plays',        type:'Number'},
         {name:'post_to_wall',       type:'Boolean',             defaultValue:true},
         {name:'play_cursor',        type:'Number',              defaultValue:-1},
-        {name:'token_cursor',       type:'Number',              defaultValue:0}
+        {name:'token_cursor',       type:'Number',              defaultValue:0},
+        {name:'entry_count',        type:'Number'},
+        {name:'play_count',         type:'Number'}
     ],
     
     hasMany: [
@@ -129,6 +131,8 @@ Ext.define('Bozuko.model.Contest', {
         var me = this,
             qty = 0;
             
+        if( me.get('engine_type') == 'time' ) return -1;
+            
         me.prizes().each(function(prize){
             qty += prize.get('total');
         });
@@ -146,8 +150,8 @@ Ext.define('Bozuko.model.Contest', {
     
     getEntryCount : function(){
         var me = this;
-        
-        return Math.floor((me.get('token_cursor')) / me.get('entry_config')[0].tokens);
+        return me.get('entry_count');
+        //return Math.floor((me.get('token_cursor')) / me.get('entry_config')[0].tokens);
     },
     
     getWonPrizeCount : function(){

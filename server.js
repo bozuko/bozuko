@@ -34,10 +34,10 @@ var proc = cluster( './app' )
 
 //proc.on('connect', function(){
     if( proc.isMaster ){
-    
+
         Bozuko.isMaster = true;
         Bozuko.pubsub.stop();
-    
+
         if( env === 'stats'){
             Bozuko.initStats();
         }
@@ -47,6 +47,9 @@ var proc = cluster( './app' )
         }
         if( env === 'site' || env === 'playground' || env == 'dashboard' ){
             Bozuko.initHttpRedirect();
+        }
+        if ( env === 'api' || 'playground' ) {
+            Bozuko.initAutoRenew();
         }
     }
 //});

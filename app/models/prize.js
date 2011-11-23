@@ -22,7 +22,6 @@ var Prize = module.exports = new Schema({
     uuid                    :{type:String},
     code                    :{type:String},
     value                   :{type:Number},
-    /* page and user names for searching */
     name                    :{type:String},
     page_name               :{type:String},
     user_name               :{type:String},
@@ -44,7 +43,8 @@ var Prize = module.exports = new Schema({
     email_history	    :[ObjectId],
     is_barcode              :{type:Boolean, default:false},
     barcode_image           :{type:String},
-    consolation             :{type:Boolean, default:false}
+    consolation             :{type:Boolean, default:false},
+    bucks                   :{type:Number}
 },  {safe: {w:2, wtimeout: 5000}});
 
 // setup our constants
@@ -191,6 +191,26 @@ Prize.method('loadTransferObject', function(callback){
             return callback( null, self );
         });
     });
+});
+
+/*
+ * This is potentially memory and cpu intensive. Use sparingly.
+ */
+Prize.static('countBucks', function(opts, callback) {
+    return Bozuko.models.Prize.find(
+        {user_id: opts.user_id, bucks: {$gt: 0}},
+        {bucks: 1, _id: 0},
+        function(err, prizes) {
+            if (err) return callback(err);
+            var bucks = 0;
+            return async.forEach(prizes, function(prize, cb) {
+                bucks += prize.bucks;
+                process.nextTick(cb);
+            }, function(err) {
+                return callback(null, bucks);
+            });
+        }
+    );
 });
 
 Prize.static('getLastUpdated', function(selector, callback){
