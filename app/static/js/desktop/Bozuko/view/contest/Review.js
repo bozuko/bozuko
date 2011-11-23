@@ -262,8 +262,8 @@ Ext.define('Bozuko.view.contest.Review', {
         var me = this;
         if(!me.rendered ) return;
         if(!me.contest) return;
-        me.update( me.contest.data );
         setTimeout(function(){
+            me.update( me.contest.data );
             var expander = me.getEl().down('.prizes .expander');
             if( expander ) expander.on('click', function(e,t){
                 var ct = Ext.fly(t).up('.prizes-container');
