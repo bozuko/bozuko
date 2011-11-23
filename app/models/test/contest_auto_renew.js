@@ -225,6 +225,8 @@ exports['enter the contest that is about to expire - ensure another contest is n
             test.ok(!err);
             test.equal(count, 5);
             Bozuko.models.Contest.findOne({name: 'expiring (Copy)'}, function(err, c) {
+                // Ensure that the time for the active next_contest is bumped up to now, since the contest
+                // just ended due to entries and the start date is in the future
                 test.ok(c.start.getTime() <= new Date());
                 test.ok(c.start.getTime() <= expiring_contest_end.getTime());
                 test.done();
