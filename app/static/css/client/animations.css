@@ -30,16 +30,18 @@
         transform:rotate(-4deg) scale(.9,.9);
     }
     to {
-        transform:rotate(12deg) scale(1.2,1.2);
+        transform:rotate(12deg) scale(1.1,1.1);
     }
 }
 
 @-moz-keyframes wiggle {
     from {
-        -moz-transform:rotate(-4deg) scale(.9,.9);
+        -moz-transform: rotate(-4deg) scale(.9,.9);
+        transform: rotate(-4deg) scale(.9,.9);
     }
     to {
-        -moz-transform:rotate(12deg) scale(1.2,1.2);
+        -moz-transform: rotate(12deg) scale(1.1,1.1);
+        transform: rotate(12deg) scale(1.1,1.1);
     }
 }
 
@@ -48,7 +50,7 @@
         -webkit-transform:rotate(-4deg) scale(.9,.9);
     }
     to {
-        -webkit-transform:rotate(12deg) scale(1.2,1.2);
+        -webkit-transform:rotate(12deg) scale(1.1,1.1);
     }
 }
 
@@ -118,5 +120,34 @@
     }
     100% {
         -webkit-transform:rotate(720deg) scale(.9,.9);
+    }
+}
+
+@keyframes spin {
+    0%{
+        transform:rotate(-30deg);
+    }
+    100% {
+        transform:rotate(30deg);
+    }
+}
+
+@-moz-keyframes spin {
+    0%{
+        -moz-transform:rotate(-30deg);
+        transform:rotate(-30deg);
+    }
+    100% {
+        -moz-transform:rotate(30deg);
+        transform:rotate(30deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    0%{
+        -webkit-transform:rotate(-8deg) translateX(-2px);
+    }
+    100% {
+        -webkit-transform:rotate(8deg) translateX(2px);
     }
 }

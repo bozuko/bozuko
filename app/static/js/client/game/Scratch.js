@@ -65,7 +65,6 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         this.on('result', this.onResult, this);
         this.on('scratch', this.onScratch, this);
         
-        
         this.init();
     },
     
@@ -99,9 +98,9 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         
         // is this retina?
         if( window.devicePixelRatio > 1 ){
-            var parts = bg.split('/');
-            var file = parts.pop();
-            bg = parts.join('/')+'2x/'+file;
+            //var parts = bg.split('/');
+            //var file = parts.pop();
+            //bg = parts.join('/')+'2x/'+file;
         }
         
         self.addImage('bg', bg);
@@ -112,38 +111,32 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         }
     },
     
-    load : function(callback){
+    _load : function(){
+        
         var self = this;
-        if( !self.rendered ){
-            self.on('render', function(){
-                self.load(callback);
-            });
-            return;
+        // first, lets see if this dude has a ticket saved...
+        var state = this.getCache('state');
+        if( state && state.user_tokens == self.state.user_tokens ){
+            // might be the same ticket...
+            var game_result = this.getCache('game_result');
+            if( game_result ){
+                this.game_result = game_result;
+                this.fireEvent('result', this.game_result);
+                return;
+            }
         }
-        this.app.api.call(this.game.game_state.links.game_state, function(result){
-            // we need to see what the deal is...
-            self.state = result.data;
-            if( result.button_enabled === false ){
-                // we need to make it so this person likes us...
-                // if( result.entry_method)
-            }
-            else{
-                callback(null, true);
-                self.loadTicket();
-            }
-        });
+        self.loadTicket();
     },
     
     loadTicket : function(){
-        
         var self = this;
+        // lets either load or not...
         if( self.state.button_action == 'enter' ){
             self.enter();
         }
         else{
             self.result();
         }
-        
     },
     
     onEnter : function(entry){
@@ -160,6 +153,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         }
         this.reset();
         this.loaded = true;
+        this.saveState();
         var tokens = this.state.user_tokens+(result.free_play?0:1);
         this.$ticketsLeft.update(tokens);
     },
@@ -201,6 +195,9 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     showAnimation : function(name, callback){
         
         var self = this;
+        
+        this.clearCache('game_result');
+        this.clearCache('state');
         
         // TODO - what to do if this is not css3 compliant?
         
@@ -277,8 +274,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
                 return function(e){self.scratch( Ext.EventObject.setEvent(e),i); };
             })(i);
             
-            self.$targets[i].dom.addEventListener('touchstart', scratch);
-            self.$targets[i].dom.addEventListener('mousedown', scratch);
+            self.$targets[i].on('touchstart', scratch);
+            self.$targets[i].on('mousedown', scratch);
         }
         
         self.$pageImage = self.$ct.createChild({
@@ -314,6 +311,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         });
         this.$ticketCtx = this.$ticket.dom.getContext('2d');
         this.rendered = true;
+        this.reset();
         
     },
     
@@ -368,5 +366,9 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             setTimeout(animate, self.frameRate);
         };
         animate();
+    },
+    
+    saveState : function(){
+        
     }
 });

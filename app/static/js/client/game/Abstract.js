@@ -31,6 +31,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             'load'              :true,
             'enter'             :true
         });
+        Bozuko.client.game.Abstract.superclass.constructor.call(this,config);
     },
     
     addImage : function(key, src, onload, load){
@@ -67,6 +68,36 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         return this._images[key];
     },
     
+    load : function(callback){
+        var self = this;
+        if( !self.rendered ){
+            self.on('render', function(){
+                self.load(callback);
+            });
+            return;
+        }
+        this.app.api.call(this.game.game_state.links.game_state, function(result){
+            // we need to see what the deal is...
+            self.state = result.data;
+            if( result.button_enabled === false ){
+                // we need to make it so this person likes us...
+                // if( result.entry_method)
+            }
+            else{
+                callback(null, true);
+                self._load();
+            }
+        });
+    },
+    
+    render : function(){
+        
+    },
+    
+    _load : function(){
+        
+    },
+    
     enter : function(){
         var self = this;
         
@@ -88,6 +119,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 result.data.forEach(function(state){
                     if( state.game_id == self.game.id ){
                         self.state = state;
+                        
+                        self.updateCache('state');
+                        
                         self.fireEvent('enter', result.data);
                         return;
                     }
@@ -118,7 +152,24 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             self.app.hideLoading();
             self.game_result = result.data;
             self.state = result.data.game_state;
+            
+            self.updateCache('game_result');
+            self.updateCache('state');
+            
             self.fireEvent('result', result.data);
         });
+    },
+    
+    getCache : function(key){
+        return this.app.cache(key+'_'+this.game.id);
+    },
+    
+    updateCache : function(key, value){
+        if( !value ) value = this[key];
+        return this.app.cache(key+'_'+this.game.id, value);
+    },
+    
+    clearCache : function(key){
+        this.app.cache(key+'_'+this.game.id, false);
     }
 });

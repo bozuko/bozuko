@@ -64,7 +64,7 @@ exports.transfer_objects = {
                     facebook_checkin    :'/facebook/'+fid+'/checkin'
                     // facebook_like       :'/facebook/'+fid+'/like'
                 };
-                page.is_place = page.location  && page.location.lat && page.location.lng;
+                page.is_place = page.location && page.location.lat && page.location.lng && !(page.location.lat == 0 && page.location.lng == 0);
                 if( page.registered ){
                     // page.image = burl('/page/'+page.id+'/image?version=8');
                 }
