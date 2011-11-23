@@ -73,7 +73,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                             '<h3>Plays</h3>',
                             '<div class="stat-info">',
                                 '<span class="current">{plays_current}</span>',
-                                '<span class="total">of {plays_total}</span>',
+                                '<span class="total">of {[plays_total=-1?"&infin;":plays_total]}</span>',
                             '</div>',
                         '</div>',
                     '</div>',
@@ -83,7 +83,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                             '<h3>Entries</h3>',
                             '<div class="stat-info">',
                                 '<span class="current">{entries_current}</span>',
-                                '<span class="total">of {entries_total}</span>',
+                                '<span class="total">of {[entries_total=-1?"&infin;":entries_total]}</span>',
                             '</div>',
                         '</div>',
                     '</div>',
@@ -286,11 +286,11 @@ Ext.define('Bozuko.view.contest.List' ,{
         
         data.entries_current = record.getEntryCount();
         data.entries_total = record.getTotalEntries();
-        data.entries_percent = data.entries_current / data.entries_total;
+        data.entries_percent = data.entries_total == -1 ? 0 : data.entries_current / data.entries_total;
         
-        data.plays_current = record.get('play_cursor')+1;
-        data.plays_total = record.get('total_plays');
-        data.plays_percent = data.plays_current / data.plays_total;
+        data.plays_current = record.get('play_count');
+        data.plays_total = record.get('engine_type') == 'time' ? -1 : record.get('total_plays');
+        data.plays_percent = data.plays_total == -1 ? 0 : data.plays_current / data.plays_total;
         
         data.winners_current = record.getWonPrizeCount();
         data.winners_total = record.getTotalPrizeCount();

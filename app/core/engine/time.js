@@ -69,7 +69,11 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
                     contest.saveTimeResult(result, cb);
                 },
                 function(err) {
-                    return callback(err);
+                    if( err ) return callback( err );
+                    // save the contest
+                    return contest.save(function(error){
+                        return callback(error);
+                    });
                 }
             );
         });
@@ -92,6 +96,15 @@ TimeEngine.prototype.allowEntry = function(){
  * Just return successfully, because there are no limits on entry related to #plays
  */
 TimeEngine.prototype.enter = function(tokens, callback) {
+    Bozuko.models.Contest.findAndModify(
+        { _id: this.contest._id},
+        [],
+        {$inc : {'token_cursor': tokens}},
+        {new: true, fields: {_id:1}, safe: {w:2, wtimeout:5000}},
+        function(err, contest) {
+            // this is just for analytics
+        }
+    );
     return callback(null);
 };
 
@@ -125,6 +138,16 @@ TimeEngine.prototype.play = function(memo, callback) {
     } else {
         memo.query = self.contest.lookbackQuery(memo);
     }
+    
+    Bozuko.models.Contest.findAndModify(
+        {_id: this.contest._id},
+        [],
+        {$inc : {play_cursor: 1}},
+        {new: true, fields: {_id: 1}, safe: {w:2, wtimeout:5000}},
+        function(err, contest) {
+            // this is just for analytics
+        }
+    )
 
     self.contest.getTimeResult(memo, callback);
 };

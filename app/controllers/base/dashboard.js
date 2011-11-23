@@ -1233,7 +1233,35 @@ exports.routes = {
                         if( b.state=='active' && a.state != 'active' ) return 1;
                         return +b.start-a.start;
                     });
-                    return res.send({items:contests});
+                    
+                    var ret = [];
+                    
+                    return async.forEachSeries( contests,
+                        
+                        function iterator(contest, cb){
+                            var contest_json = contest.toJSON();
+                            
+                            ret.push(contest_json);
+                            
+                            Bozuko.models.Entry.count({contest_id:contest._id}, function(error, entry_count){
+                                if( error ) return cb(error);
+                                contest_json.entry_count = entry_count;
+                                
+                                return Bozuko.models.Play.count({contest_id:contest._id}, function(error, play_count){
+                                    if( error ) return cb(error);
+                                    contest_json.play_count = play_count;
+                                    
+                                    return cb();
+                                });
+                                
+                            });
+                        },
+                        
+                        function done(error){
+                            if( error ) return res.send(error);
+                            return res.send({items:ret});
+                        }
+                    );
                 });
             }
         },

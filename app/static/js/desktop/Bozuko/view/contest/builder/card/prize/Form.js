@@ -400,7 +400,6 @@ Ext.define('Bozuko.view.contest.builder.card.prize.Form', {
         }
         me.on('render', function(){
             if( me.prize ){
-                console.log(me.prize);
                 me.loadForm(me.prize);
                 me.onRedemptionTypeChange();
             }

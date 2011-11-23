@@ -121,7 +121,6 @@ exports.transfer_objects = {
                     });
                 }
 
-
                 return self.sanitize(page, null, user, function(){
                     callback.apply(this, arguments);
                 });
