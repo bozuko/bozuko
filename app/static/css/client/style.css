@@ -16,6 +16,20 @@ body {
   height: 460px;
   font-family: "open sans", arial;
 }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-familiy: "open sans", arial;
+}
+h4 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  text-align: center;
+}
 * {
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -40,6 +54,29 @@ body {
   -khtml-opacity: 0.4;
   opacity: 0.4;
 }
+.branding {
+  text-align: center;
+}
+.branding img {
+  border: 2px solid #999;
+  vertical-align: middle;
+}
+.branding h4 {
+  vertical-align: middle;
+  margin: 0;
+}
+.loading {
+  text-align: center;
+}
+.loading img {
+  margin-right: 6px;
+}
+.spinner {
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: spin 0.6s ease-in-out 0s infinite alternate;
+  -moz-animation: spin 0.6s ease-in-out 0s infinite alternate;
+}
 .modal {
   width: 100%;
   height: 100%;
@@ -51,12 +88,17 @@ body {
 }
 .modal-window {
   margin: 20px;
-  border: 3px solid #006b37;
+  border: 3px solid #999;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.85);
   -moz-box-shadow: 0 0 20px #333333;
   -webkit-box-shadow: 0 0 20px #333333;
   box-shadow: 0 0 20px #333333;
+  color: #666;
+  -moz-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
+  -webkit-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
+  -ms-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
+  box-shadow: 0 0 20px #333, inset 0 0 40px #999;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
@@ -81,6 +123,14 @@ body {
   cursor: pointer;
   text-indent: -9999em;
   background: transparent url("/images/client/fblogin.png") no-repeat 50% 50%;
+}
+.powered-by {
+  text-align: center;
+  background: transparent url("/images/client/bozuko-logo-small.png") no-repeat 50% 100%;
+  padding-bottom: 30px;
+}
+.powered-by .small {
+  font-size: 10px;
 }
 /**
  * Games
@@ -174,14 +224,14 @@ body {
   -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
   -webkit-animation: fadein 300ms ease-in-out, pulse 1s ease-in-out 0ms infinite alternate;
-  -moz-animation: fadein 300ms ease-in-out 0ms 1 forward, pulse 1s ease-in-out 0ms infinite alternate;
+  -moz-animation: pulse 1s ease-in-out 0ms infinite alternate;
 }
 .scratch-ticket .animations .animate .txt {
   z-index: 3;
   -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
   -webkit-animation: fadein 300ms ease-in-out, wiggle 1s ease-in-out 0s infinite alternate;
-  -moz-animation: fadein 300ms ease-in-out 0ms 1 forward, wiggle 1s ease-in-out 0s infinite alternate;
+  -moz-animation: wiggle 1s ease-in-out 0s infinite alternate;
 }
 .scratch-ticket .animations .animate .stars {
   z-index: 2;

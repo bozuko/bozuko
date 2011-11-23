@@ -3,6 +3,9 @@
 
 html{ }
 body{ background: #000000; padding: 0; margin: 0; height: 460px; font-family: "open sans", arial;}
+h1,h2,h3,h4,h5,h6{ font-familiy: "open sans", arial; }
+
+h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
 
 * {
     outline: none;
@@ -29,6 +32,39 @@ body{ background: #000000; padding: 0; margin: 0; height: 460px; font-family: "o
     .opacity(40);
 }
 
+.branding {
+    text-align: center;
+    img {
+        border: 2px solid #999;
+        vertical-align: middle;
+    }
+    h4 {
+        vertical-align: middle;
+        margin: 0;
+    }
+}
+
+.loading {
+    
+    text-align: center;
+    img {
+        margin-right: 6px;
+    }
+}
+
+.spinner {
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    
+    -webkit-animation:
+        spin .6s ease-in-out 0s infinite alternate
+        ;
+    
+    -moz-animation:
+        spin .6s ease-in-out 0s infinite alternate
+        ;
+}
+
 .modal {
     width: 100%;
     height: 100%;
@@ -41,10 +77,18 @@ body{ background: #000000; padding: 0; margin: 0; height: 460px; font-family: "o
 
 .modal-window {
     margin: 20px;
-    border: 3px solid @dark_color;
+    border: 3px solid #999;
     padding: 10px;
-    background: rgba(255,255,255,.75);
+    background: rgba(255,255,255,.85);
     .box_shadow(0,0,20px,#333);
+    
+    color: #666;
+    
+    -moz-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
+    -webkit-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
+    -ms-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
+    box-shadow: 0 0 20px #333, inset 0 0 40px #999;
+    
     .border_radius( 10px );
     
     .logo {
@@ -70,9 +114,15 @@ body{ background: #000000; padding: 0; margin: 0; height: 460px; font-family: "o
     
 }
 
-.loading {
+.powered-by {
+    text-align: center;
+    background: transparent url("/images/client/bozuko-logo-small.png") no-repeat 50% 100%;
+    padding-bottom: 30px;
     
-    
+    .small {
+        font-size: 10px;
+        
+    }
 }
 
 /**
@@ -181,7 +231,6 @@ body{ background: #000000; padding: 0; margin: 0; height: 460px; font-family: "o
                     ;
                     
                 -moz-animation:
-                    fadein 300ms ease-in-out 0ms 1 forward,
                     pulse 1s ease-in-out 0ms infinite alternate
                     ;
             }
@@ -197,7 +246,6 @@ body{ background: #000000; padding: 0; margin: 0; height: 460px; font-family: "o
                     ;
                 
                 -moz-animation:
-                    fadein 300ms ease-in-out 0ms 1 forward,
                     wiggle 1s ease-in-out 0s infinite alternate
                     ;
             }

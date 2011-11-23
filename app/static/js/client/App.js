@@ -4,7 +4,6 @@ Ext.Element.prototype.update = function(html){
     this.dom.innerHTML = html;
 };
 
-
 Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     constructor : function(config){
@@ -13,6 +12,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         this.user = null;
         this.currentView = 'start';
+        this._loading = false;
         
         this.config = config || {};
         Ext.apply( this, config );
@@ -22,7 +22,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.createElements();
         this.showLoading('Loading...');
         
-        document.body.addEventListener('touchstart', function(e){
+        Ext.get(document.body).on('touchstart', function(e){
             e.preventDefault();
         }, false);
         
@@ -31,9 +31,18 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             self.scrollToTop();
         }, 200);
         
+        this.addEvents({
+            'pagedata' : true
+        });
+        
+        Bozuko.client.App.superclass.constructor.call(this, config);
+        
+        this.on('pagedata', function(data){
+            this.updateBranding();
+        });
+        
         this.initFacebook();
         this.startFromPath();
-        
     },
     
     createElements : function(){
@@ -53,11 +62,28 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.$loading = this.$modal.createChild({
             cls         :'modal-window loading',
             cn: [{
-                cls         :'logo'
+                cls         :'branding',
+                cn          :this.getBrandingElements()
             },{
                 tag         :'p',
-                cls         :'text',
-                html        :'Loading...'
+                cn          :[{
+                    tag         :'img',
+                    cls         :'spinner',
+                    src         :'/images/client/bozuko_logo_clover.png',
+                    alt         :'Loading...',
+                    style       :'vertical-align:middle'
+                },{
+                    tag         :'span',
+                    cls         :'text',
+                    html        :'Loading...'
+                }]
+            },{
+                cls         :'powered-by',
+                cn          :[{
+                    tag         :'span',
+                    cls         :'small',
+                    html        :'Powered By'
+                }]
             }]
         });
         this.$loading.setVisibilityMode(Ext.Element.DISPLAY);
@@ -88,6 +114,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                         return self.showLogin();
                     }
                     // TODO - show who you are logged in as...
+                    
                     return self.onUserConnected();
                     
                 });
@@ -137,6 +164,87 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         });
     },
     
+    showLogin : function(){
+        if( !this.$loginWindow ){
+            this.$loginWindow = this.$modal.createChild({
+                cls         :'modal-window loading',
+                cn: [{
+                    cls         :'branding',
+                    cn          :this.getBrandingElements()
+                },{
+                    cls         :'text',
+                    cn          :[{
+                        tag         :'p',
+                        html        :'Welcome to Bozuko! You must login with Facebook to play.'
+                    },{
+                        tag         :'a',
+                        cls         :'facebook-login',
+                        href        :'#;',
+                        html        :'Login With Facebook'
+                    }]
+                },{
+                    cls         :'powered-by',
+                    cn          :[{
+                        tag         :'span',
+                        cls         :'small',
+                        html        :'Powered By'
+                    }]
+                }]
+            });
+            
+            this.$loginWindow.child('.facebook-login').on({
+                scope: this,
+                'touchstart' : this.doLogin,
+                'click' : this.doLogin
+            });
+            
+            this.$loginWindow.setVisibilityMode( Ext.Element.DISPLAY );
+        }
+        this.showModal(this.$loginWindow);
+    },
+    
+    getBrandingElements : function(){
+        if( !this.page ) return [];
+        return [{
+            tag         :'table',
+            style       :'margin: 0 auto',
+            cn          :[{
+                tag         :'tr',
+                valign      :'middle',
+                cn          :[{
+                    tag         :'td',
+                    cn          :[{
+                        tag         :'img',
+                        src         :this.page.image.replace('type=large', 'type=square'),
+                        style       :'height: 50px; width: 50px; margin-right: 10px; vertical-align: middle;'
+                    }]
+                },{
+                    tag         :'td',
+                    cn          :[{
+                        tag         :'h4',
+                        html        :this.page.name
+                    }]
+                }]
+            }]
+        }]
+    },
+    
+    updateBranding : function(){
+        Ext.select('.branding').update('');
+        Ext.select('.branding').createChild(this.getBrandingElements());
+    },
+    
+    doLogin : function(){
+        var self = this;
+        /**
+         * FB.login or redirect ?
+         *
+         * We want to do the FB.login for desktop situations...
+         * 
+         */
+        window.location.href = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
+    },
+    
     setUser : function(user){
         this.user = user;
         this.api.setToken( user.token );
@@ -158,11 +266,13 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     showLoading : function(text){
         this.mask();
-        if(text) this.$loading.down('.text').update(text);
+        this._loading = true;
+        if(text) this.$loading.select('.text').update(text);
         this.showModal(this.$loading);
     },
     
     hideLoading : function(){
+        this._loading = false;
         this.hideModal();
     },
     
@@ -174,43 +284,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     hideModal : function(){
         this.unmask();
-    },
-    
-    showLogin : function(){
-        if( !this.$loginWindow ){
-            this.$loginWindow = this.$modal.createChild({
-                cls         :'modal-window loading',
-                cn: [{
-                    cls         :'logo'
-                },{
-                    cls         :'text',
-                    cn          :[{
-                        tag         :'p',
-                        html        :'Welcome to Bozuko! You must login with Facebook to play.'
-                    },{
-                        tag         :'a',
-                        cls         :'facebook-login',
-                        href        :'#;',
-                        html        :'Login With Facebook'
-                    }]
-                }]
-            });
-            
-            this.$loginWindow.child('.facebook-login').on({
-                scope: this,
-                'touchstart' : this.doLogin,
-                'click' : this.doLogin
-            });
-            
-            this.$loginWindow.setVisibilityMode( Ext.Element.DISPLAY );
-        }
-        this.showModal(this.$loginWindow);
-    },
-    
-    doLogin : function(){
-        var self = this;
-        // facebook or regular...
-        window.location.href = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
     },
     
     createModalWindow : function(cfg){
@@ -256,6 +329,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     return;
                 }
                 
+                self.page = pageResponse.data;
+                self.fireEvent('pagedata', pageResponse.data, self);
+                
                 self.scratch = new Bozuko.client.game.Scratch({
                     game: gameResponse.data,
                     page: pageResponse.data,
@@ -266,6 +342,17 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 
             });
         });
+    },
+    
+    cache : function(key, value){
+        
+        if( value === undefined ){
+            return Bozuko.client.util.Cache.get(key);
+        }
+        if( value === false ){
+            return Bozuko.client.util.Cache.del(key);
+        }
+        return Bozuko.client.util.Cache.set(key, value);
     }
     
 });
