@@ -10,13 +10,14 @@ Ext.define('Ext.ux.picker.DateTime', {
     alternateClassName: 'Ext.DateTimePicker',
     
     renderTpl: [
+        
         '<div class="{cls} x-datetime-picker" id="{id}" role="grid" title="{ariaTitle} {value:this.longDay}">',
             '<div role="presentation" class="{baseCls}-header">',
-                '<div class="{baseCls}-prev"><a href="#" role="button" title="{prevText}"></a></div>',
-                '<div class="{baseCls}-month"></div>',
-                '<div class="{baseCls}-next"><a href="#" role="button" title="{nextText}"></a></div>',
+                '<div class="{baseCls}-prev"><a id="{id}-prevEl" href="#" role="button" title="{prevText}"></a></div>',
+                '<div class="{baseCls}-month" id="{id}-middleBtnEl"></div>',
+                '<div class="{baseCls}-next"><a id="{id}-nextEl" href="#" role="button" title="{nextText}"></a></div>',
             '</div>',
-            '<table class="{baseCls}-inner" cellspacing="0" role="presentation">',
+            '<table id="{id}-eventEl" class="{baseCls}-inner" cellspacing="0" role="presentation">',
                 '<thead role="presentation"><tr role="presentation">',
                     '<tpl for="dayNames">',
                         '<th role="columnheader" title="{.}"><span>{.:this.firstInitial}</span></th>',
@@ -34,7 +35,7 @@ Ext.define('Ext.ux.picker.DateTime', {
                 '</tr></tbody>',
             '</table>',
             '<tpl if="showToday || showTime">',
-                '<div role="presentation" class="{baseCls}-footer"></div>',
+                '<div id="{id}-footerEl" role="presentation" class="{baseCls}-footer"></div>',
             '</tpl>',
         '</div>',
         {
@@ -68,11 +69,15 @@ Ext.define('Ext.ux.picker.DateTime', {
     onRender : function(){
         var me = this;
         
-        Ext.apply(me.renderData, {
+        Ext.applyIf(me.renderData, {
             showTime: me.showTime
         });
-        
-        me.callParent(arguments);
+        try{
+            me.callParent(arguments);
+        }catch(e){
+            console.log(me);
+            console.log(e, e.stack);
+        }
         
         me.hourField = Ext.create('Ext.form.field.Spinner', {
             renderTo: me.footerEl,
@@ -139,6 +144,15 @@ Ext.define('Ext.ux.picker.DateTime', {
     _onSelect : function(e, t){
         var me = this;
         me.setTimeValue();
+    },
+    
+    setValue : function(value){
+        this.value = value;
+        // set the time...
+        this.hourField.setValue(Ext.Date.format(value, 'h'));
+        this.minuteField.setValue(Ext.Date.format(value, 'i'));
+        this.ampmField.setValue(Ext.Date.format(value, 'A'));
+        return this.update(this.value);
     },
     
     setTimeValue: function(){
