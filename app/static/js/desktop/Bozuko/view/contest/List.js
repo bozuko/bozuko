@@ -45,6 +45,12 @@ Ext.define('Bozuko.view.contest.List' ,{
                             '<label>Entry Type:</label>',
                             '<span>{entry_type}</span>',
                         '</div>',
+                        '<tpl if="this.html5url(values)">',
+                            '<div class="info-row">',
+                                '<label>HTML5 URL:</label>',
+                                '<span>{[this.html5url(values)]}</span>',
+                            '</div>',
+                        '</tpl>',
                     '</div>',
                     
                     '<div class="stat-block stat-block-times">',
@@ -73,7 +79,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                             '<h3>Plays</h3>',
                             '<div class="stat-info">',
                                 '<span class="current">{plays_current}</span>',
-                                '<span class="total">of {[plays_total=-1?"&infin;":plays_total]}</span>',
+                                '<span class="total">of {[values.plays_total=-1?"&infin;":values.plays_total]}</span>',
                             '</div>',
                         '</div>',
                     '</div>',
@@ -83,7 +89,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                             '<h3>Entries</h3>',
                             '<div class="stat-info">',
                                 '<span class="current">{entries_current}</span>',
-                                '<span class="total">of {[entries_total=-1?"&infin;":entries_total]}</span>',
+                                '<span class="total">of {[values.entries_total=-1?"&infin;":values.entries_total]}</span>',
                             '</div>',
                         '</div>',
                     '</div>',
@@ -122,6 +128,22 @@ Ext.define('Bozuko.view.contest.List' ,{
                             percent = Math.max( 0, Math.min( 100, Math.round( me.getData(record)[name+'_percent'] * 100 ) || 0 ) );
                             
                         return Bozuko.Router.route('/s3/public/circles/circle-'+percent+'.png');
+                    },
+                    
+                    html5url: function(values){
+                        
+                        if( values.game_type.toLowerCase() != 'scratch' ) return false;
+                        if( window.location.hostname.match(/dashboard/) ) return false;
+                        var server = window.location.hostname;
+                        if( /dashboard/.test(window.location.hostname) ){
+                            server = 'bozuko.com';
+                        }
+                        var p = window.location.port;
+                        if( server != 'bozuko.com' && !~['80','443'].indexOf(p) ){
+                            server+= ':'+p;
+                        }
+                        var link = 'https://'+server+'/client/game/'+values._id;
+                        return '<a target="_blank" href="'+link+'" class="html5">'+link+'</a>';
                     },
                     
                     isAdmin : function(){
@@ -268,10 +290,13 @@ Ext.define('Bozuko.view.contest.List' ,{
         
         if( !record ) return data;
         
+        
+        data._id = record.get('_id');
         data.name = record.get('name') || 'Untitled';
         data.game = record.get('game');
         data.state = record.get('state');
         data.State = Ext.String.capitalize( record.get('state') );
+        data.game_type = record.get('game');
         data.game = Ext.String.capitalize(data.game);
         var game_cfg = record.get('game_config');
         if( game_cfg && game_cfg.name ){
