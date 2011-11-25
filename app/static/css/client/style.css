@@ -212,6 +212,7 @@ h4 {
   height: 100%;
 }
 .scratch-ticket .animations .animation img {
+  display: block;
   position: absolute;
   top: 0;
   left: 0;

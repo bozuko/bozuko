@@ -132,7 +132,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                     
                     html5url: function(values){
                         
-                        if( values.game.toLowerCase() != 'scratch' ) return false;
+                        if( values.game_type.toLowerCase() != 'scratch' ) return false;
                         if( window.location.hostname.match(/dashboard/) ) return false;
                         var server = window.location.hostname;
                         if( /dashboard/.test(window.location.hostname) ){
@@ -296,6 +296,7 @@ Ext.define('Bozuko.view.contest.List' ,{
         data.game = record.get('game');
         data.state = record.get('state');
         data.State = Ext.String.capitalize( record.get('state') );
+        data.game_type = record.get('game');
         data.game = Ext.String.capitalize(data.game);
         var game_cfg = record.get('game_config');
         if( game_cfg && game_cfg.name ){
