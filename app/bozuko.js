@@ -509,7 +509,7 @@ Bozuko.initAutoRenew = function() {
     Bozuko.models.Contest.autoRenew(logErr);
     setInterval(function() {
         Bozuko.models.Contest.autoRenew(logErr);
-    }, ms_per_hr);
+    }, ms_per_hr*12);
 };
 
 function logErr(err, val) {
