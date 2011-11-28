@@ -24,11 +24,16 @@ var mongoose = require('mongoose'),
 ;
 var safe = {w:2, wtimeout:5000};
 
+function enum_engine_type(type) {
+    if (type !== 'order' && type !== 'time') return 'order';
+    return type;
+};
+
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
     page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
-    engine_type             :{type:String, default:'order'},
+    engine_type             :{type:String, default:'order', get: enum_engine_type},
     engine_options          :{},
     plays                   :[Play],
     game                    :{type:String},
@@ -1126,7 +1131,7 @@ Contest.method('savePrize', function(opts, callback) {
             contest_id: self._id,
             page_id: page_id,
             user_id: opts.user._id,
-            user_name: opts.user._name,
+            user_name: opts.user.name,
             prize_id: prize._id,
             code: opts.consolation ? opts.consolation_prize_code : opts.prize_code,
             value: prize.value,
