@@ -326,6 +326,34 @@ exports.routes = {
                             return res.redirect('/beta/create-account?ua='+tracking.join(','));
                         }
                         
+                        if( !user_pages.length ){
+                            
+                            var body = [
+                                "Someone just visited the 'create-account' page:",
+                                "",
+                                "Name :"+user.name,
+                                "",
+                                "Pages: "
+                            ];
+                            
+                            if( facebook_pages.length ) facebook_pages.forEach(function(p){
+                                
+                                body.push('  '+p.name+' ('+p.data.link+')');
+                            });
+                            
+                            else{
+                                body.push('  - No Facebook Pages -');
+                            }
+                            body.join('\n');
+                            
+                            mailer.send({
+                                to: 'info@bozuko.com',
+                                subject: "Beta sign up attempt",
+                                body: body
+                            });
+                        }
+                        
+                        
                         return res.render('/beta/create-account');
                     
                     });
