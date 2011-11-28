@@ -344,7 +344,7 @@ exports.routes = {
                             else{
                                 body.push('  - No Facebook Pages -');
                             }
-                            body.join('\n');
+                            body = body.join('\n');
                             
                             mailer.send({
                                 to: 'info@bozuko.com',
