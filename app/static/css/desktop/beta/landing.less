@@ -9,6 +9,10 @@ html body {
     
 }
 
+.page-width {
+    width: 880px;
+}
+
 html body .hd {
     background: #fff url("/images/desktop/site/bg_header.png") repeat-x 0 0 !important;
     filter: none;
@@ -115,14 +119,18 @@ body{
 }
 .beta-main {
     font-family: 'Open Sans', sans-serif;
-    margin-right: 290px;
+    margin-right: 280px;
     color: #656565;
     
     .beta-top {
-        background: url("/images/desktop/site/beta/img_fb-methods.png") 100% 65px no-repeat;
         h1 {
-            font-weight: 800;
-            font-size: 41px;
+            text-indent: -9999em;
+            background: url("/images/desktop/site/beta/img_beta-h1.jpg") 0 0 no-repeat;
+            height: 166px;
+            margin: 0;
+        }
+        h2 {
+            display: none;
         }
         ul{
             
@@ -149,48 +157,53 @@ body{
         }
     }
     
-    .whats-the-deal {
-        width: 666px;
-        height: 1380px;
-        background: transparent url("/images/desktop/site/beta/bg_beta-steps.png") 50% 50% no-repeat;
+    .main-area {
+        background: url("/images/desktop/site/beta/beta-bg.png") 0 0 no-repeat;
+        width: 686px;
+        height: 744px;
         position: relative;
+        font-family: "Open Sans";
         
-        .step {
+        .block {
             position: absolute;
-            left: 45px;
-            top: 0;
+            width: 300px;
             
-            h4 {
+            h3 {
                 font-size: 22px;
-                line-height: 1.2em;
                 font-weight: 700;
-                .orange {
-                    font-style: italic;
-                    color: #FF6500;
-                }
+                padding-left: 40px;
             }
             
             p {
-                width: 270px;
-                font-size: 16px;
-                line-height: 1.4em;
-            }
-            
-            .buttons {
-                margin: 20px 0;
-                text-align: left;
-                a{
-                    margin: 4px;
-                }
+                font-size: 15px;
+                line-height: 1.6em;
+                
             }
         }
         
-        .step1 { top: 0px; }
-        .step2 { top: 326px; }
-        .step3 { top: 604px; }
-        .step4 { top: 820px; }
-        .step5 { top: 1110px; }
+        .block-1 {
+            top: 72px;
+            left: 12px;
+        }
         
+        .block-2 {
+            top: 332px;
+            left: 230px;
+        }
+        
+        .block-3 {
+            width: 360px;
+            top: 552px;
+            left: 16px;
+        }
+    }
+    
+    .login-arrow {
+        background: url("/images/desktop/site/beta/img_beta-arrow.png") 0 0 no-repeat;
+        width: 631px;
+        height: 99px;
+        margin-bottom: 20px;
+        text-indent: -99999em;
     }
     
 }
