@@ -338,7 +338,7 @@ exports.routes = {
                             
                             if( facebook_pages.length ) facebook_pages.forEach(function(p){
                                 
-                                body.push('  '+p.name+' ('+p.data.link+')');
+                                body.push('  '+p.name+' (https://facebook.com/'+p.id+')');
                             });
                             
                             else{
