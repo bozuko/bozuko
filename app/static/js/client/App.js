@@ -11,6 +11,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         var self = this;
         
         this.user = null;
+        this.stopped = false;
         this.currentView = 'start';
         this._loading = false;
         
@@ -40,7 +41,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.on('pagedata', function(data){
             this.updateBranding();
         });
-        
+        if( !this.validPath() ){
+            return;
+        }
         this.initFacebook();
         this.startFromPath();
     },
@@ -86,6 +89,18 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 }]
             }]
         });
+        
+        this.$message = this.$modal.createChild({
+            cls         :'modal-window message',
+            cn: [{
+                tag         :'p',
+                cn          :[{
+                    tag         :'span',
+                    cls         :'text',
+                    html        :''
+                }]
+            }]
+        });
         this.$loading.setVisibilityMode(Ext.Element.DISPLAY);
     },
     
@@ -110,13 +125,11 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 // now we need to get the user
                 self.showLoading('Logging you in...');
                 self.bozukoLogin(response.authResponse.accessToken, function(error, user){
+                    if( self.stopped ) return false;
                     if( error || !user || user.success === false){
                         return self.showLogin();
                     }
-                    // TODO - show who you are logged in as...
-                    
                     return self.onUserConnected();
-                    
                 });
             }
         });
@@ -125,13 +138,15 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     onUserConnected : function(){
         var self = this;
         if( this.currentView !== 'game' ){
-            alert("Error");
+            self.showMessage("Unsupported Path");
             return;
         }
         if( !this.scratch ){
-            alert("Unsupported Game Type");
+            self.showMessage("Unsupported Game Type");
             return;
         }
+        
+        
         self.showLoading('Loading Game...');
         self.scratch.load(function(error, loaded){
             self.unmask();
@@ -276,7 +291,18 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.hideModal();
     },
     
+    showMessage : function(text){
+        this.mask();
+        if(text) this.$message.select('.text').update(text);
+        this.showModal(this.$message);
+    },
+    
+    hideMessage : function(text){
+        this.hideModal();
+    },
+    
     showModal : function($el){
+        if( this.stopped ) return;
         this.mask();
         this.$modal.select('.modal-window').hide();
         $el.show();
@@ -303,8 +329,13 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             this.openGame( path );
         }
         else{
-            alert('Path Not Supported');
+            this.showMessage('Path Not Supported');
         }
+    },
+    
+    validPath : function(){
+        var path = Bozuko.client.App.path || '/';
+        return path.match( /^\/game\/.*/ );
     },
     
     openGame : function( path ){
@@ -315,17 +346,20 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             // we also need to get the page
             if( !gameResponse.ok ){
                 // handle this error
-                alert('Error retreiving game');
+                self.showMessage('Error retreiving game');
+                self.stopped = true;
                 return;
             }
             api.call( {path: gameResponse.data.links.page}, function(pageResponse){
                 if( !pageResponse.ok ){
-                    alert('Error retreiving page');
+                    self.showMessage('Error retreiving page');
+                    self.stopped = true;
                     return;
                 }
                 
                 if( !gameResponse.data.type == 'scratch' ){
-                    alert('Unsupported Game Type');
+                    self.showMessage('Unsupported Game Type');
+                    self.stopped = true;
                     return;
                 }
                 
@@ -356,6 +390,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     }
     
 });
+
 (function(){
     var instances = [];
     Bozuko.client.App.launch = function(config){

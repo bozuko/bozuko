@@ -310,8 +310,9 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             height      :this.height
         });
         this.$ticketCtx = this.$ticket.dom.getContext('2d');
-        this.rendered = true;
         this.reset();
+        this.rendered = true;
+        this.fireEvent('render', this);
         
     },
     
