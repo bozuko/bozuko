@@ -12,6 +12,9 @@
 html {
   background: #fff !important;
 }
+.page-width {
+  width: 880px;
+}
 html body .hd {
   background: #ffffff url("/images/desktop/site/bg_header.png") repeat-x 0 0 !important;
   filter: none;
@@ -108,15 +111,17 @@ body h3.deal {
 }
 .beta-main {
   font-family: 'Open Sans', sans-serif;
-  margin-right: 290px;
+  margin-right: 280px;
   color: #656565;
 }
-.beta-main .beta-top {
-  background: url("/images/desktop/site/beta/img_fb-methods.png") 100% 65px no-repeat;
-}
 .beta-main .beta-top h1 {
-  font-weight: 800;
-  font-size: 41px;
+  text-indent: -9999em;
+  background: url("/images/desktop/site/beta/img_beta-h1.jpg") 0 0 no-repeat;
+  height: 166px;
+  margin: 0;
+}
+.beta-main .beta-top h2 {
+  display: none;
 }
 .beta-main .beta-top ul {
   font-size: 24px;
@@ -138,52 +143,45 @@ body h3.deal {
   font-style: italic;
   font-size: 32px;
 }
-.beta-main .whats-the-deal {
-  width: 666px;
-  height: 1380px;
-  background: transparent url("/images/desktop/site/beta/bg_beta-steps.png") 50% 50% no-repeat;
+.beta-main .main-area {
+  background: url("/images/desktop/site/beta/beta-bg.png") 0 0 no-repeat;
+  width: 686px;
+  height: 744px;
   position: relative;
+  font-family: "Open Sans";
 }
-.beta-main .whats-the-deal .step {
+.beta-main .main-area .block {
   position: absolute;
-  left: 45px;
-  top: 0;
+  width: 300px;
 }
-.beta-main .whats-the-deal .step h4 {
+.beta-main .main-area .block h3 {
   font-size: 22px;
-  line-height: 1.2em;
   font-weight: 700;
+  padding-left: 40px;
 }
-.beta-main .whats-the-deal .step h4 .orange {
-  font-style: italic;
-  color: #FF6500;
+.beta-main .main-area .block p {
+  font-size: 15px;
+  line-height: 1.6em;
 }
-.beta-main .whats-the-deal .step p {
-  width: 270px;
-  font-size: 16px;
-  line-height: 1.4em;
+.beta-main .main-area .block-1 {
+  top: 72px;
+  left: 12px;
 }
-.beta-main .whats-the-deal .step .buttons {
-  margin: 20px 0;
-  text-align: left;
+.beta-main .main-area .block-2 {
+  top: 332px;
+  left: 230px;
 }
-.beta-main .whats-the-deal .step .buttons a {
-  margin: 4px;
+.beta-main .main-area .block-3 {
+  width: 360px;
+  top: 552px;
+  left: 16px;
 }
-.beta-main .whats-the-deal .step1 {
-  top: 0px;
-}
-.beta-main .whats-the-deal .step2 {
-  top: 326px;
-}
-.beta-main .whats-the-deal .step3 {
-  top: 604px;
-}
-.beta-main .whats-the-deal .step4 {
-  top: 820px;
-}
-.beta-main .whats-the-deal .step5 {
-  top: 1110px;
+.beta-main .login-arrow {
+  background: url("/images/desktop/site/beta/img_beta-arrow.png") 0 0 no-repeat;
+  width: 631px;
+  height: 99px;
+  margin-bottom: 20px;
+  text-indent: -99999em;
 }
 .italic {
   font-style: italic;
