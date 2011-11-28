@@ -53,6 +53,7 @@ exports.transfer_objects= {
                 terms_of_use: "String",
                 about: "String",
                 bozuko_for_business: "String",
+                my_account: "String",
                 bozuko_page: "String",
                 bozuko_demo_page : "String"
             }
@@ -114,6 +115,12 @@ exports.links = {
     bozuko_for_business:{
         get: {
             doc: "Bozuko For Business",
+            returns: "content"
+        }
+    },
+    my_account:{
+        get: {
+            doc: "My Account",
             returns: "content"
         }
     },
