@@ -331,7 +331,7 @@ exports.routes = {
                             var body = [
                                 "Someone just visited the 'create-account' page:",
                                 "",
-                                "Name :"+user.name,
+                                "Name: "+user.name,
                                 "",
                                 "Pages: "
                             ];
