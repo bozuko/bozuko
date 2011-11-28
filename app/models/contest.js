@@ -1126,7 +1126,7 @@ Contest.method('savePrize', function(opts, callback) {
             contest_id: self._id,
             page_id: page_id,
             user_id: opts.user._id,
-            user_name: opts.user._name,
+            user_name: opts.user.name,
             prize_id: prize._id,
             code: opts.consolation ? opts.consolation_prize_code : opts.prize_code,
             value: prize.value,
