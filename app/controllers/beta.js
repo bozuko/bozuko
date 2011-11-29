@@ -331,14 +331,14 @@ exports.routes = {
                             var body = [
                                 "Someone just visited the 'create-account' page:",
                                 "",
-                                "Name: "+user.name,
+                                "Name: "+user.name+" <"+user.email+">",
                                 "",
                                 "Pages: "
                             ];
                             
                             if( facebook_pages.length ) facebook_pages.forEach(function(p){
                                 
-                                body.push('  '+p.name+' ('+p.data.link+')');
+                                body.push('  '+p.name+' (https://facebook.com/'+p.id+')');
                             });
                             
                             else{
