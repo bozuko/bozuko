@@ -8,20 +8,20 @@ var safe = {w:2, wtimeout: 5000};
 
 var TimeEngine = module.exports = function(contest) {
     Engine.call(this, contest);
-    this.configure();
+    this.configure({});
 };
 
 inherits(TimeEngine, Engine);
 
-TimeEngine.prototype.configure = function() {
-    this.end_margin_multiplier = 0.10;
+TimeEngine.prototype.configure = function(opts) {
+    this.buffer = opts.buffer || 0.10;
 
     // This number should work itself out to some constant
-    this.window_divisor = 2;
+    this.window_divisor = opts.window_divisor || 2;
 
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
-        (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.end_margin_multiplier));
+        (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.buffer));
 
     this.buffer_start = new Date(this.contest.start.getTime() + this.contest_duration);
     this.step =  Math.floor(
@@ -138,7 +138,7 @@ TimeEngine.prototype.play = function(memo, callback) {
     } else {
         memo.query = self.contest.lookbackQuery(memo);
     }
-    
+
     Bozuko.models.Contest.findAndModify(
         {_id: this.contest._id},
         [],
