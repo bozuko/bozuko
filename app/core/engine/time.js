@@ -14,6 +14,7 @@ var TimeEngine = module.exports = function(contest) {
 inherits(TimeEngine, Engine);
 
 TimeEngine.prototype.configure = function(opts) {
+    opts = opts || {};
     this.buffer = opts.buffer || 0.10;
 
     // This number should work itself out to some constant
