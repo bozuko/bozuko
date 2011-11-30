@@ -150,8 +150,9 @@ h4 {
   font-family: tahoma, arial, sans;
 }
 .scratch-ticket .prize .number {
-  padding: 20px 0 15px;
-  font-size: 18px;
+  font-weight: 800;
+  padding: 18px 0 10px;
+  font-size: 26px;
 }
 .scratch-ticket .prize .name {
   font-size: 11px;
@@ -280,8 +281,9 @@ h4 {
   line-height: 1.3em;
 }
 .game-description .hd .description .name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
+  margin-bottom: .4em;
 }
 .game-description .hd .description .name img {
   height: 16px;
