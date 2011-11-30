@@ -156,7 +156,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             cls             :'name',
                             cn              :[{
                                 tag             :'img',
-                                style           :this.game.entry_method?'display:inline-block;':'display:none;',
+                                style           :this.game.entry_method.image?'display:inline-block;':'display:none;',
                                 src             :this.game.entry_method.image
                             },{
                                 tag             :'span',
