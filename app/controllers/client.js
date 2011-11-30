@@ -42,9 +42,13 @@ exports.routes = {
                         
                         if( error ) return res.send(ret);
                         
-                        if( user ) return Bozuko.transfer('user', user, user, function(error, result){
-                            return res.send( error || result );
-                        });
+                        if( user ){
+                            user.service('facebook').auth = token;
+                            user.save();
+                            return Bozuko.transfer('user', user, user, function(error, result){
+                                return res.send( error || result );
+                            });
+                        }
                         
                         // lets add this dude..
                         result.token = token;
