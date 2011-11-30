@@ -1,15 +1,22 @@
 .body
   .rightCol(style="width: 320px")
+
+    h3(style="margin-top: 90px;") Try it on your phone!
+    
     p(style="text-align:center;")
       img(src=img,alt="Try it on your phone!",width="320",style="margin: 0 auto;")
-    h3 Try it on your phone!
-    p Scan the QR code above, or visit the following url in your mobile browser:<br /><br /> <script type="text/javascript">document.write(window.location.href);</script>
+    
+    p Scan the QR code or visit the following url in your mobile browser:<br /><br /><strong>bozuko.com/demo</strong>
   
   .main
-    .main-padding
-      h1 Demo Page
+    .main-padding(style="padding: 0 20px 0 0")
+      
+      h1 Web Demo Page
+      
       div(style="text-align:center;")
         iframe(src=url,frameborder="0",align="center",style="margin:0 auto;border: 2px solid #999;overflow:hidden;",width="320",height="415",scrolling="no")
-      p This is just a demonstration game and results may vary from browser to browser.
+      
+      p(style="font-size: 12px; width: 320px; margin: 20px auto;")
+        |  This is just a demonstration game and results may vary from browser to browser
         |  If you are using Internet Explorer, things probably look pretty weird right now. You should
         |  check it out in <a href="http://getfirefox.com">Mozilla Firefox</a> or <a href="http://google.com/chrome">Google Chrome</a> :)
