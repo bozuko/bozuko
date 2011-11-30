@@ -66,11 +66,11 @@ var SuperScroll = Ext.extend( Ext.util.Observable, {
         
         // create scrollbars
         this.$scrollbars = {};
-        if( this.$scroller.dom.scrollWidth > this.$el.getWidth() ){
+        if( this.horizontal !== false && this.$scroller.dom.scrollWidth > this.$el.getWidth() ){
             // create the horizontal scroller.
             this.horizontal = new Scrollbar.Horizontal(this);
         }
-        if( this.$scroller.dom.scrollHeight > this.$el.getHeight() ){
+        if( this.vertical !== false && this.$scroller.dom.scrollHeight > this.$el.getHeight() ){
             // create vertical scroller
             this.vertical = new Scrollbar.Vertical(this);
         }
@@ -129,9 +129,10 @@ var SuperScroll = Ext.extend( Ext.util.Observable, {
             touch = touches[0],
             pos = [touch.pageX, touch.pageY];
             
-        
-        this.$scroller.dom.scrollTop =  Math.max(0, Math.min( this.$scroller.dom.scrollHeight, this.startScroll[1] + this.startPosition[1]-pos[1] ));
-        this.$scroller.dom.scrollLeft = Math.max(0, Math.min( this.$scroller.dom.scrollWidth, this.startScroll[0] +this.startPosition[0]-pos[0] ));
+        if( this.vertical !== false )
+            this.$scroller.dom.scrollTop =  Math.max(0, Math.min( this.$scroller.dom.scrollHeight, this.startScroll[1] + this.startPosition[1]-pos[1] ));
+        if( this.horizontal !== false )
+            this.$scroller.dom.scrollLeft = Math.max(0, Math.min( this.$scroller.dom.scrollWidth, this.startScroll[0] +this.startPosition[0]-pos[0] ));
     },
     
     onTouchEnd : function(ev){
@@ -140,8 +141,10 @@ var SuperScroll = Ext.extend( Ext.util.Observable, {
             touch = touches[0],
             pos = [touch.pageX, touch.pageY];
             
-        this.$scroller.dom.scrollTop =  Math.max(0, Math.min( this.$scroller.dom.scrollHeight, this.startScroll[1] + this.startPosition[1]-pos[1] ));
-        this.$scroller.dom.scrollLeft = Math.max(0, Math.min( this.$scroller.dom.scrollWidth, this.startScroll[0] +  this.startPosition[0]-pos[0] ));
+        if( this.vertical !== false )
+            this.$scroller.dom.scrollTop =  Math.max(0, Math.min( this.$scroller.dom.scrollHeight, this.startScroll[1] + this.startPosition[1]-pos[1] ));
+        if( this.horizontal !== false )
+            this.$scroller.dom.scrollLeft = Math.max(0, Math.min( this.$scroller.dom.scrollWidth, this.startScroll[0] +this.startPosition[0]-pos[0] ));
         
         this.hideScrollbars();
     }

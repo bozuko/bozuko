@@ -24,7 +24,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.showLoading('Loading...');
         
         Ext.get(document.body).on('touchstart', function(e){
-            e.preventDefault();
+            //e.preventDefault();
         }, false);
         
         // scroll the window to the top
@@ -46,6 +46,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         }
         this.initFacebook();
         this.startFromPath();
+        
     },
     
     createElements : function(){
@@ -246,7 +247,22 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
          * We want to do the FB.login for desktop situations...
          * 
          */
-        window.location.href = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
+        
+        if( window.location != window.parent.location ){
+            FB.login(function(response){
+                // now we need to get the user
+                self.bozukoLogin(response.authResponse.accessToken, function(error, user){
+                    if( self.stopped ) return false;
+                    if( error || !user || user.success === false){
+                        //return self.showLogin();
+                    }
+                    return self.onUserConnected();
+                });
+            },{scope: Bozuko.client.App.facebookApp.scope});
+        }
+        else{
+            window.top.location = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
+        }
     },
     
     setUser : function(user){
