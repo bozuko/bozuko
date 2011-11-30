@@ -19,15 +19,21 @@ var mongoose = require('mongoose'),
     burl = Bozuko.require('util/url').create,
     inspect = require('util').inspect,
     mail = Bozuko.require('util/mail'),
-        jade = require('jade')
+    jade = require('jade'),
+    NextContest = require('./embedded/contest/next_contest')
 ;
 var safe = {w:2, wtimeout:5000};
+
+function enum_engine_type(type) {
+    if (type !== 'order' && type !== 'time') return 'order';
+    return type;
+};
 
 var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
     page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
-    engine_type             :{type:String, default:'order'},
+    engine_type             :{type:String, default:'order', get: enum_engine_type},
     engine_options          :{},
     plays                   :[Play],
     game                    :{type:String},
@@ -52,8 +58,8 @@ var Contest = module.exports = new Schema({
     token_cursor            :{type:Number, default: 0},
     winners                 :[ObjectId],
     end_alert_sent          :{type:Boolean},
-    next_contest            :{type:ObjectId},
-    next_contest_active     :{type:Boolean, default: false}
+    next_contest            :[NextContest],
+    parent                  :{type:ObjectId, index: {sparse: true}}
 }, {safe: {w:2, wtimeout: 5000}});
 
 Contest.ACTIVE = 'active';
@@ -595,7 +601,7 @@ function copyAndPublishContest(reason, contest, callback) {
     jsonContest.play_cursor = -1;
     jsonContest.token_cursor = 0;
     jsonContest.winners = [];
-    jsonContest.next_contest_active = false;
+    jsonContest.next_contest[0].active = false;
     jsonContest.end_alert_sent = false;
     if (reason === 'entries') {
         jsonContest.start = new Date();
@@ -603,9 +609,9 @@ function copyAndPublishContest(reason, contest, callback) {
         jsonContest.start = contest.end;
     }
     jsonContest.end = new Date(jsonContest.start.getTime() + contest_duration);
-
+    jsonContest.parent = contest._id;
     var newContest = new Bozuko.models.Contest(jsonContest);
-    newContest.next_contest = newContest._id;
+    newContest.nextContest().contest_id = newContest._id;
     return newContest.save(function(err) {
         if (err) return callback(err);
         return newContest.publish(function(err) {
@@ -614,32 +620,62 @@ function copyAndPublishContest(reason, contest, callback) {
     });
 }
 
-function activateContest(contest, callback) {
+function activateContest(reason, contest, callback) {
     var duration = contest.end.getTime() - contest.start.getTime();
-    var start = new Date();
+    var start;
+    if (reason === 'entries') {
+        start = new Date();
+    } else {
+        start = contest.end;
+    }
     var end = new Date(start.getTime() + duration);
+
     Bozuko.models.Contest.update(
-        {_id: contest.next_contest},
-        {$set: {active: true, start: start, end: end}},
+        {_id: contest.nextContest().contest_id},
+        {$set: {active: true, start: start, end: end, parent: contest._id}},
         callback
     );
 }
 
+Contest.method('nextContest', function() {
+    return this.next_contest[0];
+});
+
+Contest.method('adjustNextContest', function(callback) {
+    var start = new Date();
+    return Bozuko.models.Contest.update(
+        {parent: this._id},
+        {$set: {start: start}},
+        callback
+    );
+});
+
 Contest.method('activateNextContest', function(reason, callback) {
     var self = this;
-    if (!this.next_contest || this.next_contest_active) return callback();
+    var next_contest = this.nextContest();
+
+    // Only activate the next contests of active contests
+    if (!this.active) return callback();
+
+    // If the next contest is active because it was about to expire in the next day,
+    // but the entries just ran out, we want to bump up the start time of the next contest.
+    if (reason === 'entries' && next_contest && next_contest.active) return this.adjustNextContest(callback);
+
+    // If there isn't a next contest or it's already active and wasn't handled by the 'if' above then just return
+    if (!next_contest || !next_contest.contest_id || next_contest.active) return callback();
+
     return Bozuko.models.Contest.findAndModify(
-        {_id: this._id, next_contest_active: false},
+        {_id: this._id, 'next_contest.0.active': false},
         [],
-        {$set: {next_contest_active: true}},
+        {$set: {'next_contest.0.active': true}},
         {new: true, fields: {plays: 0, results: 0}, safe: safe},
         function(err, contest) {
             if (err) return callback(err);
             if (!contest) return callback();
-            if (String(self.next_contest) == self.id) {
+            if (String(next_contest.contest_id) == self.id) {
                 return copyAndPublishContest(reason, contest, callback);
             } else {
-                return activateContest(contest, callback);
+                return activateContest(reason, contest, callback);
             }
         }
     );
@@ -647,14 +683,14 @@ Contest.method('activateNextContest', function(reason, callback) {
 
 /*
  * This function is run once per hour to find contests that are about to expire.
- * If those contests have a next_contest and next_contest_active = false
+ * If those contests have a next_contest.contest_id and next_contest.active = false
  * then the next contest is created with a start time that equals the end time of the
  * contest about to expire.
  */
 Contest.static('autoRenew', function(callback) {
-    var end_time = new Date(Date.now() + 1000*60*61); // 61 minutes
+    var end_time = new Date(Date.now() + 1000*60*60*24); // 24 hrs
     return Bozuko.models.Contest.find(
-        {next_contest: {$exists: true}, next_contest_active: false,
+        {active: true, 'next_contest.0.contest_id': {$exists: true}, 'next_contest.0.active': false,
         $and: [{end: {$gt: new Date()}}, {end: {$lt: end_time}}]},
         function(err, contests) {
             return async.forEach(contests, function(contest, cb) {
@@ -1098,7 +1134,7 @@ Contest.method('savePrize', function(opts, callback) {
             contest_id: self._id,
             page_id: page_id,
             user_id: opts.user._id,
-            user_name: opts.user._name,
+            user_name: opts.user.name,
             prize_id: prize._id,
             code: opts.consolation ? opts.consolation_prize_code : opts.prize_code,
             value: prize.value,
