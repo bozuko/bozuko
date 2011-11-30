@@ -8,26 +8,29 @@ var safe = {w:2, wtimeout: 5000};
 
 var TimeEngine = module.exports = function(contest) {
     Engine.call(this, contest);
-    this.configure();
+    this.configure({});
 };
 
 inherits(TimeEngine, Engine);
 
-TimeEngine.prototype.configure = function() {
-    this.end_margin_multiplier = 0.10;
+TimeEngine.prototype.configure = function(opts) {
+    opts = opts || {};
+    this.buffer = opts.buffer || 0.10;
 
-    // This number should work itself out to some constant
-    this.window_divisor = 2;
+    this.window_divisor = opts.window_divisor || 2;
+    this.throwahead_multiplier = opts.throwahead_multiplier || 1/this.window_divisor;
 
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
-        (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.end_margin_multiplier));
+        (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.buffer));
 
     this.buffer_start = new Date(this.contest.start.getTime() + this.contest_duration);
     this.step =  Math.floor(
         (this.contest_duration)/this.contest.totalPrizes());
-    this.lookback_window = this.step/this.window_divisor;
-    this.throwahead_window = this.lookback_window;
+    this.lookback_window = Math.round(this.step/this.window_divisor);
+    this.throwahead_window = Math.round(this.step*this.throwahead_multiplier);
+    console.log("throwahead window = "+this.throwahead_window);
+    console.log("lookback_window = "+this.lookback_window);
 
     if (this.contest.free_play_pct) {
         this.free_play_odds = Math.round(1/(this.contest.free_play_pct/100));
@@ -138,7 +141,7 @@ TimeEngine.prototype.play = function(memo, callback) {
     } else {
         memo.query = self.contest.lookbackQuery(memo);
     }
-    
+
     Bozuko.models.Contest.findAndModify(
         {_id: this.contest._id},
         [],
