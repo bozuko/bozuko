@@ -40,10 +40,32 @@ exports.routes = {
                     // see if this is an existing person...
                     return Bozuko.models.User.findByService('facebook', result.id, function(error, user){
                         
-                        if( error || !user ) return res.send(ret);
+                        if( error ) return res.send(ret);
                         
-                        return Bozuko.transfer('user', user, user, function(error, result){
+                        if( user ) return Bozuko.transfer('user', user, user, function(error, result){
                             return res.send( error || result );
+                        });
+                        
+                        // lets add this dude..
+                        result.token = token;
+                        return Bozuko.models.User.addOrModify(result, null, function(err, u) {
+                            
+                            if (err) {
+                                console.log("Facebook login error: "+err);
+                                return err.send(ret);
+                            }
+
+                            return u.updateInternals( true, function(error){
+                                if (error) {
+                                    return res.send(ret);
+                                }
+
+                                req.session.user = u;
+
+                                return Bozuko.transfer('user', u, u, function(error, result){
+                                    return res.send( error || result );
+                                });
+                            });
                         });
                         
                     });
