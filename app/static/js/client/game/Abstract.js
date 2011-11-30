@@ -211,6 +211,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 var bd = self.$description.child('.bd');
                 bd.setHeight( self.$description.getHeight(true) - (bd.getXY()[1]-self.$description.getXY()[1]) );
                 self.$description.child('.bd').superScroll({
+                    horizontal : false,
                     fixSize : function(){
                         bd.setHeight( self.$description.getHeight(true) - (bd.getXY()[1]-self.$description.getXY()[1]) );
                     }
@@ -322,6 +323,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     if( state.game_id == self.game.id ){
                         self.state = state;
                         if( !self.state.user_tokens ){
+                            this._playing = false;
                             self.registerLoader();
                         }
                         else{
@@ -361,6 +363,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             self.state = result.data.game_state;
             
             if( !self.state.user_tokens ){
+                this._playing = false;
                 self.registerLoader();
             }
             else{

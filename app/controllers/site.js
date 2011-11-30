@@ -92,6 +92,30 @@ exports.routes = {
         }
     },
     
+    '/demo' : {
+        get : {
+            title : 'Bozuko Demonstration Page',
+            locals: {
+                html_classes : ['demo-page']
+            },
+            
+            handler : function(req, res){
+                
+                var url = 'https://playground.bozuko.com:8001/client/game/4ecd46d54c97da8a1400011e';
+                //var url = 'https://playground.bozuko.com/client/game/4ed56082a82573953a0008c0';
+                
+                var ua = req.header('user-agent');
+                if(ua.match(/(i(phone|pad|pod)|android)/i) ){
+                    return res.redirect(url);
+                }
+                
+                res.locals.url = url;
+                res.locals.img = 'http://qrcode.kaywa.com/img.php?s=8&d='+encodeURIComponent(url);
+                return res.render('site/demo');
+            }
+        }
+    },
+    
     '/qr/:type?' : {
         get : {
             
@@ -622,49 +646,8 @@ exports.routes = {
             },
             
             handler : function(req, res){
-                
-                var advertise = function(){
-                    if( req.url.match(/tab/) ) res.locals.html_classes = ['facebook-520'];
-                    return res.render('site/facebook/advertisement');
-                }
-                
-                var signed_request = req.param('signed_request');
-                
-                if( !signed_request ) return advertise();
-                
-                var data = Bozuko.require('util/facebook').parse_signed_request( signed_request );
-                
-                // If bad data, die.
-                if( data instanceof Error || !data || !data.page || !data.page.id ) return advertise();
-                
-                // we need to init this dudes session too
-                var user, page, contests;
-                return async.series([
-                    
-                    function get_user(){
-                        return Bozuko.models.User.findByService('facebook', data.user_id, function(error, _user){
-                            if( error || !_user ) return cb();
-                            user = _user;
-                            return cb();
-                        });
-                    },
-                    
-                    function get_page(cb){
-                        return Bozuko.models.Page.findByService('facebook', data.page.id, function(error, _page){
-                            if( error || !_page || !_page.active ) return cb();
-                            page = _page;
-                            return page.loadActiveContests(function(error){
-                                return cb();
-                            });
-                        });
-                    }
-                    
-                ], function render(error){
-                    return advertise();
-                });
-                
-                
-                
+                if( req.url.match(/tab/) ) res.locals.html_classes = ['facebook-520'];
+                return res.render('site/facebook/advertisement');
             }
         }
     }
