@@ -107,7 +107,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         self.updateAction([{
             cls         :'button',
             tag         :'a',
-            html        :self.state.button_text
+            html        :self.state.button_text || 'Play'
         },{
             cls         :'agree',
             html        :'I agree to the terms and conditions below.'
