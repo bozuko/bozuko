@@ -13,6 +13,8 @@ exports.locals = {
 
 exports.session = false;
 
+var now = Date.now();
+
 exports.routes = {
     '/client/fblogin' : {
         post : {
@@ -118,6 +120,33 @@ exports.routes = {
             handler : function(req, res){
                 req.session.destroy();
                 res.locals.path = '/'+( req.params && req.params.length ? req.params[0] : 'api');
+                
+                // lets add our scripts
+                var scripts = [
+                    '/js/client/util/Scroller.js',
+                    '/js/client/util/Cookies.js',
+                    '/js/client/util/Cache.js',
+                    '/js/client/lib/Api.js',
+                    '/js/client/game/Abstract.js',
+                    '/js/client/game/Scratch.js',
+                    '/js/client/App.js',
+                ];
+                
+                var styles = [
+                    '/css/client/animations.css',
+                    '/css/client/style.css'
+                ];
+                
+                res.locals.scripts = ['https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core.js'];
+                scripts.forEach(function(script){
+                    res.locals.scripts.push(script+'?'+now);
+                });
+                
+                res.locals.stylesheets = [];
+                styles.forEach(function(style){
+                    res.locals.stylesheets.push(style+'?'+now);
+                });
+                
                 return res.render('client/index');
             }
         }
