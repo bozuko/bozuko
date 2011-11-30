@@ -87,13 +87,15 @@ h4 {
   z-index: 1001;
 }
 .modal-window {
-  margin: 20px;
+  margin: 15px;
   border: 3px solid #999;
   padding: 10px;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.85);
   -moz-box-shadow: 0 0 20px #333333;
   -webkit-box-shadow: 0 0 20px #333333;
   box-shadow: 0 0 20px #333333;
+  max-height: 381px;
   color: #666;
   -moz-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
   -webkit-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
@@ -242,4 +244,186 @@ h4 {
                     ;
   -moz-animation: stars 4s linear 0s infinite
                     ;
+}
+.game-description {
+  padding: 0;
+}
+.game-description .hd {
+  overflow: hidden;
+  position: static;
+  height: 75px;
+  background-color: #656565;
+  background-image: -moz-linear-gradient(top, #656565, #343434);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #656565), color-stop(1, #343434)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#656565',EndColorStr='#343434');
+  /* IE6-9 */
+
+  color: #fff;
+  font-size: 12px;
+}
+.game-description .hd .page-pic {
+  position: relative;
+  overflow: hidden;
+  float: left;
+  width: 75px;
+  height: 75px;
+  background: #fff;
+}
+.game-description .hd .page-pic img {
+  z-index: 0;
+  position: relative;
+}
+.game-description .hd .description {
+  padding: 6px;
+  margin-left: 75px;
+  font-size: 11px;
+  line-height: 1.3em;
+}
+.game-description .hd .description .name {
+  font-size: 13px;
+  font-weight: 500;
+}
+.game-description .hd .description .name img {
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.game-description .hd .description .instructions {
+  padding-left: 2px;
+}
+.game-description .actions {
+  border-top: 1px solid #999;
+  background: #5f5f5f;
+  color: #fff;
+  font-size: 13px;
+  padding: 6px;
+  text-align: center;
+}
+.game-description .actions .loader {
+  display: none;
+}
+.game-description .actions .action {
+  display: block;
+}
+.game-description .actions .button {
+  display: block;
+  margin: 0 10px;
+  padding: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  background-color: #2ad43a;
+  background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
+  /* IE6-9 */
+
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
+  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
+  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
+  color: #fff;
+  text-shadow: 1px 1px 1px #333;
+}
+.game-description .actions .button:hover {
+  background-color: #31fb45;
+  background-image: -moz-linear-gradient(top, #31fb45, #26c135);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
+  /* IE6-9 */
+
+}
+.game-description .actions .agree {
+  font-size: 10px;
+}
+.game-description .loading .action {
+  display: none;
+}
+.game-description .loading .loader {
+  display: block;
+}
+.game-description .bd {
+  padding-top: 0;
+}
+.game-description .bd .scrollable {
+  padding: 10px;
+}
+.game-description .bd .section h4 {
+  color: #333;
+  margin: 0 0 5px 10px;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: left;
+}
+.game-description .bd .section ul {
+  margin-top: 0;
+  margin-left: 0;
+  list-style: none;
+  padding: 0;
+}
+.game-description .bd .section ul li {
+  color: #666;
+  margin: 0;
+  list-style: none;
+  padding: 10px;
+  border-bottom: 2px solid #ccc;
+}
+.game-description .bd .section ul li:last-child {
+  border-bottom-width: 0;
+}
+.game-description .bd .bubble {
+  border: 2px solid #999;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  background-clip: padding-box;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.game-description .bd .terms .bubble {
+  padding: 10px;
+  font-size: 11px;
+}
+.superscroll {
+  position: relative;
+  overflow: hidden;
+}
+.superscroll .scrollable {
+  overflow: scroll;
+}
+.superscroll-bar {
+  background: #666;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 7px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 7px;
+  border-radius: 7px;
+  background-clip: padding-box;
+  position: absolute;
+  opacity: 0;
+  z-index: 2;
+  -webkit-transition: linear 300ms opacity;
+  -moz-transition: linear 300ms opacity;
+  -o-transition: linear 300ms opacity;
+}
+.superscroll-bar-shown {
+  opacity: 1;
+}
+.superscroll-bar-horizontal {
+  height: 7px;
+  margin-left: 2px;
+  bottom: 2px;
+  left: 0;
+}
+.superscroll-bar-vertical {
+  width: 7px;
+  margin-top: 2px;
+  right: 2px;
+  top: 0;
 }

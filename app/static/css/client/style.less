@@ -76,11 +76,13 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
 }
 
 .modal-window {
-    margin: 20px;
+    margin: 15px;
     border: 3px solid #999;
     padding: 10px;
+    overflow: hidden;
     background: rgba(255,255,255,.85);
     .box_shadow(0,0,20px,#333);
+    max-height: 381px;
     
     color: #666;
     
@@ -268,4 +270,184 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
         }
         
     }
+}
+
+.game-description {
+    padding: 0;
+    .hd {
+        overflow: hidden;
+        position: static;
+        height: 75px;
+        .background_gradient(#656565,#343434);
+        color: #fff;
+        font-size: 12px;
+        .page-pic {
+            position: relative;
+            overflow: hidden;
+            float:left;
+            width: 75px;
+            height: 75px;
+            background: #fff;
+            img {
+                z-index: 0;
+                position: relative;
+            }
+        }
+        .description {
+            padding: 6px;
+            margin-left: 75px;
+            font-size: 11px;
+            line-height: 1.3em;
+            
+            .name {
+                font-size: 13px;
+                font-weight: 500;
+                img {
+                    height: 16px;
+                    vertical-align: middle;
+                    margin-right: 4px;
+                }
+            }
+            .instructions {
+                padding-left: 2px;
+            }
+        }
+    }
+    
+    .actions {
+        border-top: 1px solid #999;
+        background: #5f5f5f;
+        color: #fff;
+        font-size: 13px;
+        padding: 6px;
+        text-align: center;
+        
+        .loader {
+            display: none;
+        }
+        
+        .action {
+            display: block;
+        }
+        
+        .button {
+            display: block;
+            margin: 0 10px;
+            padding: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            .background_gradient(#26c135 * 1.1, #26c135 * .8);
+            .border_radius(6px);
+            box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+            -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+            -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+            color: #fff;
+            text-shadow: 1px 1px 1px #333;
+            
+            &:hover {
+                .background_gradient(#26c135 * 1.3, #26c135 * 1);
+            }
+        }
+        .agree{
+            font-size: 10px;
+        }
+    }
+    
+    .loading {
+        .action {
+            display: none;
+        }
+        
+        .loader {
+            display: block;
+        }
+    }
+    
+    .bd {
+        padding-top: 0;
+        .scrollable{
+            padding: 10px;
+        }
+        .section {
+            h4 {
+                color: #333;
+                margin: 0 0 5px 10px;
+                font-weight: bold;
+                font-size: 14px;
+                text-align:left;
+            }
+            ul {
+                margin-top: 0;
+                margin-left: 0;
+                list-style: none;
+                padding: 0;
+                
+                li {
+                    color: #666;
+                    margin: 0;
+                    list-style: none;
+                    padding: 10px;
+                    border-bottom: 2px solid #ccc;
+                    
+                    
+                    &:last-child {
+                        border-bottom-width: 0;
+                    }
+                }
+            }
+        }
+        
+        .bubble {
+            border: 2px solid #999;
+            .border_radius(10px);
+            background-color: rgba(255,255,255,.5);
+        }
+        
+        .terms {
+            .bubble {
+                padding: 10px;
+                font-size: 11px;
+            }
+        }
+    }
+}
+
+.superscroll {
+    position: relative;
+    overflow: hidden;
+    .scrollable {
+        overflow: scroll;
+    }
+    .scrollable::-webkit-scrollbar, .scrollable::scrollbar {
+        
+    }
+}
+
+.superscroll-bar{
+    background: #666;
+    background: rgba(0, 0, 0, .6);
+    .border_radius( 7px );
+    position: absolute;
+    opacity: 0;
+    z-index: 2;
+    
+    -webkit-transition: linear 300ms opacity;
+    -moz-transition: linear 300ms opacity;
+    -o-transition: linear 300ms opacity;
+}
+.superscroll-bar-shown {
+    opacity: 1;
+    
+}
+.superscroll-bar-horizontal{
+    height: 7px;
+    margin-left: 2px;
+    bottom: 2px;
+    left: 0;
+}
+.superscroll-bar-vertical{
+    width: 7px;
+    margin-top: 2px;
+    right: 2px;
+    top: 0;
 }
