@@ -14,6 +14,7 @@ var fs = require('fs'),
 var argv = require('optimist')
     .default('buffer', 0.1)
     .default('window_divisor', 2)
+    .default('throwahead_multiplier', 0.5)
     .default('out', process.env.HOME+'/delorean_out.csv')
     .argv;
 
@@ -81,6 +82,7 @@ function dropdb(callback) {
 var wins = [];
 var redistributions = [];
 var timestamps = [];
+var engine;
 
 function run() {
     async.series(
@@ -101,8 +103,12 @@ function run() {
             },
             function generate_results(cb) {
                 var prof = new Profiler('generate_results');
-                var engine = new TimeEngine(contest);
-                engine.configure({buffer: argv.buffer, window_divisor: argv.window_divisor});
+                engine = new TimeEngine(contest);
+                engine.configure({
+                    buffer: argv.buffer,
+                    window_divisor: argv.window_divisor,
+                    throwahead_multiplier: argv.throwahead_multiplier
+                });
                 engine.generateResults(Bozuko.models.Page, page._id, function(err) {
                     prof.mark('done');
                     cb(err);
@@ -199,7 +205,6 @@ function createBuckets() {
 
 function play(callback) {
     var prof = new Profiler('play');
-    var engine = new TimeEngine(contest);
     return async.forEachSeries(data.plays, function(play, cb) {
         var memo = {
             timestamp: new Date(play.timestamp),
