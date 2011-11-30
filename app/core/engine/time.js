@@ -17,8 +17,8 @@ TimeEngine.prototype.configure = function(opts) {
     opts = opts || {};
     this.buffer = opts.buffer || 0.10;
 
-    // This number should work itself out to some constant
     this.window_divisor = opts.window_divisor || 2;
+    this.throwahead_multiplier = opts.throwahead_multiplier || 1/this.window_divisor;
 
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
@@ -27,8 +27,10 @@ TimeEngine.prototype.configure = function(opts) {
     this.buffer_start = new Date(this.contest.start.getTime() + this.contest_duration);
     this.step =  Math.floor(
         (this.contest_duration)/this.contest.totalPrizes());
-    this.lookback_window = this.step/this.window_divisor;
-    this.throwahead_window = this.lookback_window;
+    this.lookback_window = Math.round(this.step/this.window_divisor);
+    this.throwahead_window = Math.round(this.step*this.throwahead_multiplier);
+    console.log("throwahead window = "+this.throwahead_window);
+    console.log("lookback_window = "+this.lookback_window);
 
     if (this.contest.free_play_pct) {
         this.free_play_odds = Math.round(1/(this.contest.free_play_pct/100));
