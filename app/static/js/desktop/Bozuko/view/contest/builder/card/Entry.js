@@ -19,7 +19,6 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
         
         var like_id = Ext.id();
         var store = Ext.create('Bozuko.store.EntryTypes');
-        store.filter('type', /^facebook/);
         
         Ext.apply( me.form, {
             items : [{
@@ -75,7 +74,31 @@ Ext.define('Bozuko.view.contest.builder.card.Entry', {
             }]
         });
         
+        store.filter('type', /^facebook/);
         me.callParent(arguments);
+        
+        // lets go up to the page view...
+        me.on('render', function(){
+            var name = me.up('pagepanel').page.get('name');
+            if( name.match(/admin\sdemo/i ) ){
+                store.clearFilter();
+                store.filter('type', /^(facebook|bozuko\/nothing)/i);
+                me.form.insert(0,{
+                    xtype           :'component',
+                    autoEl          :{
+                        tag             :'div'
+                    },
+                    style           :{
+                        'border'        :'1px solid #000',
+                        'background'    :'lightyellow',
+                        'padding'       :'10px',
+                        'margin'        :'0 0 20px'
+                    },
+                    html            :'For the Admin Demo, the only option that will work in the application is "No Requirement".'
+                });
+            }
+        });
+        
         me.dataview = me.down('dataview');
     },
     
