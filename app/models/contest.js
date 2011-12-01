@@ -453,7 +453,8 @@ Contest.method('publish', function(callback){
 
     // Remove this entry restriction after beta (when we have pricing)
     Bozuko.models.Page.findOne({_id: self.page_id}, {name: 1}, function(err, page) {
-        if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && self.total_entries > 1500) {
+        if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && page.name != 'Admin Demo'
+            && self.total_entries > 1500) {
             return callback(Bozuko.error('contest/max_entries', 1500));
         }
         self.active = true;
