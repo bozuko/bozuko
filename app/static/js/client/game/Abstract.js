@@ -222,6 +222,22 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         return this.$description;
     },
     
+    getYouWinScreen : function(){
+        if( !this.$youWin ){
+            this.$youWin = this.app.createModal({
+                cls         :'you-win',
+                cn          :[{
+                    cls         :'hd',
+                    cn          :[{
+                        tag         :'h2',
+                        html        :'You Win!'
+                    }]
+                }]
+            });
+        }
+        return this.$youWin;
+    },
+    
     getLoader : function(){
         if( !this._loader ){
             var description = this.getDescription();
