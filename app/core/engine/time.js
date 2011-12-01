@@ -15,7 +15,7 @@ inherits(TimeEngine, Engine);
 
 TimeEngine.prototype.configure = function(opts) {
     opts = opts || {};
-    this.buffer = opts.buffer || 0.10;
+    this.buffer = opts.buffer || 0.001;
 
     this.window_divisor = opts.window_divisor || 2;
     this.throwahead_multiplier = opts.throwahead_multiplier || 1/this.window_divisor;
