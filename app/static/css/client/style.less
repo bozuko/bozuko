@@ -273,7 +273,7 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
     }
 }
 
-.game-description {
+.page-window {
     padding: 0;
     .hd {
         overflow: hidden;
@@ -294,12 +294,19 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
                 position: relative;
             }
         }
-        .description {
+        .content {
             padding: 6px;
             margin-left: 75px;
             font-size: 11px;
             line-height: 1.3em;
-            
+        }
+    }
+}
+
+.game-description {
+    padding: 0;
+    .hd {
+        .content {
             .name {
                 font-size: 14px;
                 font-weight: 500;
@@ -410,6 +417,32 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
                 padding: 10px;
                 font-size: 11px;
             }
+        }
+    }
+}
+
+.you-win {
+    .hd {
+        h2 {
+            font-size: 28px;
+            color: 11px;
+            line-height: 75px;
+            text-align: center;
+        }
+    }
+    
+    .ft {
+        .background_gradient(#656565,#343434);
+        text-align:center;
+        padding: 6px;
+        .btn {
+            color: #fff;
+            font-size: 14px;
+            padding: 4px 6px;
+            cursor: pointer;
+            display: inline-block;
+            .border_radius( 6px );
+            .background_gradient(#4884a8 ,#386681 );
         }
     }
 }
