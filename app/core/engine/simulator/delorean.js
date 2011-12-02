@@ -175,6 +175,7 @@ function buildKey(ts) {
 function createBuckets() {
     var buckets = {};
     console.log("plays = "+timestamps.length);
+    console.log("wins = "+wins.length);
     timestamps.forEach(function(ts) {
         var key = buildKey(ts);
         if (!buckets[key]) {
@@ -230,7 +231,7 @@ function play(callback) {
                 entry: entry
             };
             return engine.play(memo, function(err, memo) {
-                if (memo.result) wins.push(memo.timestamp);
+                if (memo.result && memo.result != 'free_play') wins.push(memo.timestamp);
                 return process.nextTick(function() {cb(err);});
             });
         }, callback);
