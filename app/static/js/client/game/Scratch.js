@@ -177,7 +177,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
                         }, 300);
                     }
                     else{
-                        this.showAnimation('win');
+                        this.showAnimation('win', this.onAfterWin, this);
                     }
                 }
             }
@@ -192,7 +192,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         }
     },
     
-    showAnimation : function(name, callback){
+    showAnimation : function(name, callback, scope){
         
         var self = this;
         
@@ -212,15 +212,17 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             self.$animations[name].removeClass('animate');
             self.$animationsCt.hide();
             if( callback ) {
-                callback();
+                callback.apply(scope||self);
             }
             else{
                 self.loadTicket();
             }
         };
+        setTimeout(function(){
+            self.$animationsCt.on('touchstart', cancel);
+            self.$animationsCt.on('click', cancel);
+        }, 1000);
         
-        this.$animationsCt.on('touchstart', cancel);
-        this.$animationsCt.on('click', cancel);
         
         setTimeout(cancel, 5000);
     },

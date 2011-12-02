@@ -246,10 +246,10 @@ h4 {
   -moz-animation: stars 4s linear 0s infinite
                     ;
 }
-.game-description {
+.page-window {
   padding: 0;
 }
-.game-description .hd {
+.page-window .hd {
   overflow: hidden;
   position: static;
   height: 75px;
@@ -262,7 +262,7 @@ h4 {
   color: #fff;
   font-size: 12px;
 }
-.game-description .hd .page-pic {
+.page-window .hd .page-pic {
   position: relative;
   overflow: hidden;
   float: left;
@@ -270,27 +270,30 @@ h4 {
   height: 75px;
   background: #fff;
 }
-.game-description .hd .page-pic img {
+.page-window .hd .page-pic img {
   z-index: 0;
   position: relative;
 }
-.game-description .hd .description {
+.page-window .hd .content {
   padding: 6px;
   margin-left: 75px;
   font-size: 11px;
   line-height: 1.3em;
 }
-.game-description .hd .description .name {
+.game-description {
+  padding: 0;
+}
+.game-description .hd .content .name {
   font-size: 14px;
   font-weight: 500;
   margin-bottom: .4em;
 }
-.game-description .hd .description .name img {
+.game-description .hd .content .name img {
   height: 16px;
   vertical-align: middle;
   margin-right: 4px;
 }
-.game-description .hd .description .instructions {
+.game-description .hd .content .instructions {
   padding-left: 2px;
 }
 .game-description .actions {
@@ -390,6 +393,41 @@ h4 {
 .game-description .bd .terms .bubble {
   padding: 10px;
   font-size: 11px;
+}
+.you-win .hd h2 {
+  font-size: 28px;
+  color: 11px;
+  line-height: 75px;
+  text-align: center;
+}
+.you-win .ft {
+  background-color: #656565;
+  background-image: -moz-linear-gradient(top, #656565, #343434);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #656565), color-stop(1, #343434)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#656565',EndColorStr='#343434');
+  /* IE6-9 */
+
+  text-align: center;
+  padding: 6px;
+}
+.you-win .ft .btn {
+  color: #fff;
+  font-size: 14px;
+  padding: 4px 6px;
+  cursor: pointer;
+  display: inline-block;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  background-color: #4884a8;
+  background-image: -moz-linear-gradient(top, #4884a8, #386681);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #4884a8), color-stop(1, #386681)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#4884a8',EndColorStr='#386681');
+  /* IE6-9 */
+
 }
 .superscroll {
   position: relative;
