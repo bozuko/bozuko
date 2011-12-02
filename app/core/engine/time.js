@@ -52,7 +52,8 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
     var end = start+this.contest_duration;
 
     return Page.getNumContests(page_id, function(err, block) {
-        prizes.forEach(function(prize, prize_index) {
+        var prize_index = 0;
+        return async.forEachSeries(prizes, function(prize, cb) {
             var i = 0;
             async.whilst(
                 function() {
@@ -72,13 +73,14 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
                     contest.saveTimeResult(result, cb);
                 },
                 function(err) {
-                    if( err ) return callback( err );
-                    // save the contest
-                    return contest.save(function(error){
-                        return callback(error);
-                    });
+                    prize_index++;
+                    return cb( err );
                 }
             );
+        }, function(err) {
+            if (err) return callback(err);
+            // save the contest
+            return contest.save(callback);
         });
     });
 };
