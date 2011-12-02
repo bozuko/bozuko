@@ -428,8 +428,10 @@ Bozuko.initFacebookPubSub = function(){
         url: url,
         method: 'GET'},
         function(err, body){
-            if (err) console.log("Failed to get existing facebook subscriptions");
-			body = JSON.parse(body);
+            if (err){
+				console.log("Failed to get existing facebook subscriptions");
+				return;
+			}
 			console.log('Existing Facebook Subscriptions');
 			console.log(body);
 			// now lets setup the new subscriptions
