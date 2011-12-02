@@ -19,6 +19,7 @@ var argv = require('optimist')
     .default('window_divisor', 2)
     .default('throwahead_multiplier', 0.5)
     .default('out', process.env.HOME+'/delorean_out.csv')
+    .default('sparse', 1)
     .argv;
 
 if (!argv.contest) throw new Error("Need a contest to simulate");
@@ -173,6 +174,7 @@ function buildKey(ts) {
 
 function createBuckets() {
     var buckets = {};
+    console.log("plays = "+timestamps.length);
     timestamps.forEach(function(ts) {
         var key = buildKey(ts);
         if (!buckets[key]) {
@@ -215,7 +217,10 @@ function createBuckets() {
 function play(callback) {
     return fs.readFile(path+'/plays.json', function(err, jsonlines) {
         var jsonarray = jsonlines.split("\n");
+        var ct = -1;
         return async.forEachSeries(jsonarray, function(json, cb) {
+            ct++;
+            if ((ct % argv.sparse) != 0) return cb();
             var data = JSON.parse(json);
             var timestamp = new Date(data.timestamp.$date);
             timestamps.push(timestamp);
