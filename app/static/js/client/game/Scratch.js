@@ -7,6 +7,13 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     prizeWidth: 91,
     prizeHeight: 114,
     
+    lang : {
+        loading : {
+            entry : 'Loading...',
+            result : 'Getting a ticket...'
+        }
+    },
+    
     scratchMasks: [
         "data:image/png;base64,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",
         "data:image/png;base64,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",
@@ -111,34 +118,6 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         }
     },
     
-    _load : function(){
-        
-        var self = this;
-        // first, lets see if this dude has a ticket saved...
-        var state = this.getCache('state');
-        if( state && state.user_tokens == self.state.user_tokens ){
-            // might be the same ticket...
-            var game_result = this.getCache('game_result');
-            if( game_result ){
-                this.game_result = game_result;
-                this.fireEvent('result', this.game_result);
-                return;
-            }
-        }
-        self.loadTicket();
-    },
-    
-    loadTicket : function(){
-        var self = this;
-        // lets either load or not...
-        if( self.state.button_action == 'enter' ){
-            self.enter();
-        }
-        else{
-            self.result();
-        }
-    },
-    
     onEnter : function(entry){
         this.result();
     },
@@ -153,7 +132,6 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         }
         this.reset();
         this.loaded = true;
-        this.saveState();
         var tokens = this.state.user_tokens+(result.free_play?0:1);
         this.$ticketsLeft.update(tokens);
     },
@@ -177,6 +155,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
                         }, 300);
                     }
                     else{
+                        this.fireEvent('displaywin', this.game_result, this);
                         this.showAnimation('win', this.onAfterWin, this);
                     }
                 }
@@ -184,9 +163,11 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         }
         else if( this.scratched == 6 ){
             if( !this.state.user_tokens ){
-                this.showAnimation('lose');
+                this.fireEvent('lose', this.game_result, this);
+                this.showAnimation('displaylose');
             }
             else{
+                this.fireEvent('displaylose', this.game_result, this);
                 this.showAnimation('playAgain');
             }
         }
@@ -215,13 +196,12 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
                 callback.apply(scope||self);
             }
             else{
-                self.loadTicket();
+                self.next();
             }
         };
         setTimeout(function(){
-            self.$animationsCt.on('touchstart', cancel);
             self.$animationsCt.on('click', cancel);
-        }, 1000);
+        }, 500);
         
         
         setTimeout(cancel, 5000);
@@ -276,8 +256,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
                 return function(e){self.scratch( Ext.EventObject.setEvent(e),i); };
             })(i);
             
-            self.$targets[i].on('touchstart', scratch);
-            self.$targets[i].on('mousedown', scratch);
+            self.$targets[i].on('click', scratch);
         }
         
         self.$pageImage = self.$ct.createChild({
@@ -369,9 +348,5 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             setTimeout(animate, self.frameRate);
         };
         animate();
-    },
-    
-    saveState : function(){
-        
     }
 });

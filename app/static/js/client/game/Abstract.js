@@ -8,7 +8,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     lang : {
         loading : {
             entry : 'Loading...',
-            result : 'Getting your Ticket...'
+            result : 'Loading...'
         }
     },
     
@@ -30,12 +30,41 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             'win'               :true,
             'lose'              :true,
             'load'              :true,
-            'enter'             :true
+            'enter'             :true,
+            'displaywin'        :true,
+            'displaylose'       :true
         });
         Bozuko.client.game.Abstract.superclass.constructor.call(this,config);
         
+        this._saved = {
+            state: this.getCache('state'),
+            game_result: this.getCache('game_result')
+        };
         // lets get our loader going right away...
         this.registerLoader();
+        
+        this.on('displaywin', this.onDisplayWin, this);
+    },
+    
+    onDisplayWin : function(result){
+        if( !result.prize ) return;
+        if( !result.prize.is_email || !result.prize.links.redeem ) return;
+        
+        var self = this;
+        
+        // lets redeem!
+        self.app.api.call({
+            path: result.prize.links.redeem,
+            method: 'post',
+            params: {
+                message: '',
+                share: false,
+                email_prize_screen: true
+            }
+        },function(result){
+            // meh.. we are going to assume this worked.
+        });
+        
     },
     
     addImage : function(key, src, onload, load){
@@ -76,31 +105,89 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
      * load is only called on instantiation, so we can do set up
      * stuff here, like display the game description page.
      */
-    load : function(callback){
+    load : function(){
         var self = this;
         if( !self.rendered ){
             self.on('render', function(){
-                self.load(callback);
+                self.load();
             });
             return;
         }
-        
-        this.app.api.call(this.game.game_state.links.game_state, function(result){
-            // we need to see what the deal is...
-            self.state = result.data;
-            if( self.state.button_enabled === false ){
-                // we need to make it so this person likes us...
-                // if( result.entry_method)
-                self.app.hideLoading();
-                self.updateAction(self.state.button_text);
-            }
-            else{
-                self.playButton();
-            }
+        this.updateState(true, function(){
+            self.app.hideLoading();
+            self.showDescription();
         });
     },
     
-    playButton : function(){
+    updateActionFromState : function(){
+        var self = this;
+        if( self.state.button_enabled === false ){
+            if( !self.state.next_enter_time_ms && (self.game.entry_method.type == 'facebook/like' || self.game.entry_method.type == 'facebook/likecheckin')){
+                
+                var url = self.page.like_button_url;
+                url+='?token='+self.app.user.token;
+                
+                self.updateAction(
+                    '<div style="line-height: 26px;">'+
+                    self.state.button_text+
+                    '<iframe src="'+url+'" frameborder="0" style="display: inline-block; width: 54px; height: 26px; vertical-align:middle; margin-left: 10px;"></iframe>'+
+                    '</div>'
+                );
+                var iframe = self.getDescription().child('iframe');
+                self.getDescription().child('iframe').on('load', function(){
+                    var win = iframe.dom.contentWindow || iframe.contentDocument;
+                    if( !win.document ) { 
+                        win= win.getParentNode();
+                    }
+                    win.notifyFn = function(state){
+                        if( state == 'facebook/liked' ){
+                            self.updateState();
+                        }
+                    }
+                    
+                }, this);
+            }
+            else{
+                self.updateAction(self.state.button_text);
+            }
+        }
+        else{
+            self.button();
+        }
+    },
+    
+    next : function(callback){
+        var self = this;
+        callback = callback && typeof callback == 'function' ? callback : function(){};
+        
+        // lets either load or not...
+        if( !self.state.button_enabled || self.state.button_action == 'enter'){
+            self.updateActionFromState();
+            self.showDescription();
+            callback(false);
+        }
+        else{
+            
+            if( this._saved && this._saved.state && this._saved.state.user_tokens == self.state.user_tokens ){
+                // might be the same ticket...
+                var game_result = this._saved.game_result;
+                if( game_result ){
+                    this.game_result = game_result;
+                    this.fireEvent('result', this.game_result);
+                    callback(true);
+                }
+                this._saved = false;
+                return;
+            }
+            else if( self.state.button_action == 'play'){
+                self.result(function(){
+                    callback();
+                });
+            }
+        }
+    },
+    
+    button : function(){
         var self = this;
         self.app.hideLoading();
         // okay... we now want to display the button
@@ -114,22 +201,49 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         }]);
         var action = self.getDescription().child('.actions .action');
         
-        var play = function(){
-            self._playing = true;
-            self.app.unmask();
-            self._load();
+        var click = function(){
+            if( self.state.button_action == 'enter' ){
+                self.enter();
+                return;
+            }
+            self.next(function(success){
+                if(success) self.app.unmask();
+            });
         };
         
-        action.child('.button').on('click', play);
-        action.child('.button').on('touchstart', play);
+        action.child('.button').on('click', click);
         
         if( self.state.user_tokens ){
             self.app.useDefaultLoader();
         }
     },
     
+    updateState : function(full, callback){
+        if( typeof full == 'function' ){
+            callback = full;
+            full = false;
+        }
+        var self = this,
+            link = full ? this.game.game_state.links.game : this.game.game_state.links.game_state;
+            
+        self.app.api.call(link, function(result){
+            // we need to see what the deal is...
+            if( full ){
+                self.setState(result.data.game_state);
+                self.game = result.data;
+                if( self.$description ) self.updateDescription();
+            }
+            else{
+                self.setState(result.data);
+            }
+            
+            self.updateActionFromState();
+            if( callback && typeof callback == 'function' ) callback();
+        });
+    },
+    
     updateAction : function(cfg){
-        var action = this.$description.child('.actions .action');
+        var action = this.getDescription().child('.actions .action');
         if( Ext.isString(cfg) ){
             action.update(cfg);
             this._loader.$el.child('.bd').superScroll().update();
@@ -163,8 +277,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                 html            :this.game.name
                             }]
                         },{
-                            cls             :'instructions',
-                            html            :this.game.entry_method.description.replace(/\n/g,'<br />')
+                            cls             :'instructions'
                         }]
                     }]
                 },{
@@ -204,6 +317,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     }]
                 }]
             });
+            this.squareImage(this.$description.child('.page-pic'), this.page.image);
             this.updateDescription();
             var show = this.$description.show;
             var self = this;
@@ -220,6 +334,25 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             };
         }
         return this.$description;
+    },
+    
+    updateDescription : function(){
+        var description = this.getDescription();
+        // add prizes...
+        description.child('.instructions').update(
+            this.game.entry_method.description.replace(/\n/g,'<br />')
+        );
+        var ul = description.select('.prizes ul').item(0);
+        ul.update('');
+        for(var i=0; i<this.game.prizes.length; i++){
+            var p = this.game.prizes[i];
+            ul.createChild({
+                tag         :'li',
+                html        :p.name
+            });
+        }
+        // add terms...
+        description.child('.terms .bubble').update(this.game.rules.replace(/\n/g,'<br />') );
     },
     
     getYouWinScreen : function(prize){
@@ -255,12 +388,13 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             tag             :'a',
                             href            :'#',
                             cls             :'btn btn-close',
-                            html            :'close'
+                            html            :'Close'
                         }]
                     }]
                 }]
             });
-            this.$youWin.child('.btn-close', this.closeYouWin, this);
+            this.$youWin.child('.btn-close').on('click', this.closeYouWin, this);
+            this.squareImage(this.$youWin.child('.page-pic'), this.page.image);
         }
         if( !prize ) return this.$youWin;
         this.$youWin.child('.prize-name').update(prize.name);
@@ -290,7 +424,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     closeYouWin : function(){
         // what other logic do we need here?
         this.app.unmask();
-        this._load();
+        this.next();
     },
     
     onAfterWin : function(){
@@ -327,8 +461,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             var $img = Ext.fly(img),
                 w = img.width,
                 h = img.height, 
-                cw = el.item(0).getWidth(),
-                ch = el.item(0).getHeight();
+                cw = el.getWidth(),
+                ch = el.getHeight();
                 
             if( w > h ){
                 var p = ch/h, offset = p*w - cw;
@@ -353,62 +487,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         img.src = src;
     },
     
-    updateDescription : function(){
-        var description = this.getDescription();
-        // lets go through and update our elements...
-        var img = new Image();
-        img.onload = function(){
-            var pp = description.select('.page-pic'),
-                $img = Ext.fly(img),
-                w = img.width,
-                h = img.height, 
-                cw = pp.item(0).getWidth(),
-                ch = pp.item(0).getHeight();
-                
-            if( w > h ){
-                var p = ch/h, offset = p*w - cw;
-                $img.setStyle({
-                    'top' : 0,
-                    'width': w*p + 'px',
-                    'height': h*p + 'px',
-                    'left': -offset/2 + 'px'
-                });
-            }
-            else{
-                var p = cw/w, offset = p*h - ch;
-                $img.setStyle({
-                    'top' : -offset/2,
-                    'width': w*p + 'px',
-                    'height': h*p + 'px',
-                    'left': 0 + 'px'
-                });
-            }
-            description.select('.page-pic').appendChild(img);
-        };
-        img.src = this.page.image;
-        
-        // add prizes...
-        var ul = description.select('.prizes ul').item(0);
-        ul.update('');
-        for(var i=0; i<this.game.prizes.length; i++){
-            var p = this.game.prizes[i];
-            ul.createChild({
-                tag         :'li',
-                html        :p.name
-            });
-        }
-        
-        // add terms...
-        description.child('.terms .bubble').update(this.game.rules.replace(/\n/g,'<br />') );
-        
-    },
-    
-    render : function(){
-        
-    },
-    
-    _load : function(){
-        
+    showDescription : function(){
+        this.app.showModal(this.getDescription());
+        this.getDescription().child('.bd').superScroll().update()
     },
     
     enter : function(){
@@ -431,7 +512,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 
                 result.data.forEach(function(state){
                     if( state.game_id == self.game.id ){
-                        self.state = state;
+                        self.setState(state);
                         if( !self.state.user_tokens ){
                             this._playing = false;
                             self.registerLoader();
@@ -439,8 +520,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         else{
                             self.app.useDefaultLoader();
                         }
-                        self.updateCache('state');
-                        
                         self.fireEvent('enter', result.data);
                         return;
                     }
@@ -461,16 +540,19 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         }
     },
     
-    result : function(){
+    result : function(callback){
         var self = this;
+        
         self.app.showLoading(this.lang.loading.result);
+        
         self.app.api.call({
             path: self.state.links.game_result,
             method: 'post'
         },function(result){
+            
             self.app.hideLoading();
             self.game_result = result.data;
-            self.state = result.data.game_state;
+            self.setState(result.data.game_state);
             
             if( !self.state.user_tokens ){
                 self._playing = false;
@@ -479,12 +561,25 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             else{
                 self.app.useDefaultLoader();
             }
-            
             self.updateCache('game_result');
-            self.updateCache('state');
-            
             self.fireEvent('result', result.data);
+            if( callback && typeof callback == 'function' ) callback();
         });
+    },
+    
+    setState : function(state){
+        
+        var self = this;
+        if( this._updateTimeout ) clearTimeout(this._updateTimeout);
+        this.state = state;
+        if( state.next_enter_time_ms > 0 ){
+            // set a timeout
+            this._updateTimeout = setTimeout( function(){
+                self.updateState();
+            }, state.next_enter_time_ms );
+        }
+        this.updateCache('state');
+        this.updateActionFromState();
     },
     
     getCache : function(key){
