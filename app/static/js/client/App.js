@@ -241,12 +241,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     doLogin : function(){
         var self = this;
-        /**
-         * FB.login or redirect ?
-         *
-         * We want to do the FB.login for desktop situations...
-         * 
-         */
         
         if( window.location != window.parent.location ){
             FB.login(function(response){
@@ -381,7 +375,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     renderTo: self.$body
                 });
                 
-                // now lets get the user?
+                // now lets get the user
                 self.doFacebookLogin();
                 
             });

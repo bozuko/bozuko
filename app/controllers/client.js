@@ -123,6 +123,7 @@ exports.routes = {
                 
                 // lets add our scripts
                 var scripts = [
+                    '/js/client/util/Touch.js',
                     '/js/client/util/Scroller.js',
                     '/js/client/util/Cookies.js',
                     '/js/client/util/Cache.js',
