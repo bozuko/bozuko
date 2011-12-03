@@ -408,10 +408,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 'This prize has been emailed to <strong>'+this.app.user.email+'</strong>!',
                 'Wrong email address? <a href="#">Change it here</a>'
             ].join('\n'));
-            // capture the change click
-            message.child('a').on('click', function(){
-                alert('Not Implemented Yet');
-            });
         }
         else{
             message.update(
@@ -428,9 +424,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     },
     
     onAfterWin : function(){
-        this.app.showModal(
-            this.getYouWinScreen(this.game_result.prize)
-        );
+        var self = this;
+        setTimeout(function(){
+            self.app.showModal(
+                self.getYouWinScreen(self.game_result.prize)
+            );
+        },50);
     },
     
     getLoader : function(){
