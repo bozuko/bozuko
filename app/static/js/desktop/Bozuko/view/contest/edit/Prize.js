@@ -83,6 +83,12 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     change          :me.onEmailChange
                 }
             },{
+                hidden          :true,
+                name            :'email_subject',
+                fieldLabel      :'Email Subject',
+                value           :'You won a Bozuko prize!',
+                allowBlank      :false
+            },{
                 xtype           :'textarea',
                 height          :100,
                 hidden          :true,
@@ -138,7 +144,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
 
     onEmailChange : function(field, value){
         var fn = value ? 'show' : 'hide';
-        Ext.Array.each( this.query('[name=email_body], [name=email_codes]'), function(cmp){
+        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes]'), function(cmp){
             cmp[fn]();
         });
     },
