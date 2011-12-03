@@ -445,7 +445,7 @@ h4 {
   text-shadow: 1px 1px 1px #01556c, 2px 2px 1px #ffffff;
 }
 .you-win .bd {
-  padding: 10px;
+  padding: 10px 10px 20px;
 }
 .you-win .bd h3 {
   text-align: center;

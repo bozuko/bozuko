@@ -86,8 +86,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 hidden          :true,
                 name            :'email_subject',
                 fieldLabel      :'Email Subject',
-                value           :'You won a Bozuko prize!',
-                allowBlank      :false
+                value           :'You won a Bozuko prize!'
             },{
                 xtype           :'textarea',
                 height          :100,
