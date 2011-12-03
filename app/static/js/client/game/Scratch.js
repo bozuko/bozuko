@@ -163,8 +163,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         }
         else if( this.scratched == 6 ){
             if( !this.state.user_tokens ){
-                this.fireEvent('lose', this.game_result, this);
-                this.showAnimation('displaylose');
+                this.fireEvent('displaylose', this.game_result, this);
+                this.showAnimation('lose');
             }
             else{
                 this.fireEvent('displaylose', this.game_result, this);
