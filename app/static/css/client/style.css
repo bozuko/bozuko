@@ -15,7 +15,6 @@ body {
   margin: 0;
   font-family: "open sans", arial;
   font-size: 13px;
-  overflow-y: hidden;
 }
 h1,
 h2,
@@ -128,6 +127,7 @@ h4 {
   -webkit-box-shadow: 0 0 20px #333333;
   box-shadow: 0 0 20px #333333;
   max-height: 95%;
+  min-height: 300px;
   color: #666;
   -moz-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
   -webkit-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
