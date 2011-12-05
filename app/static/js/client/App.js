@@ -46,10 +46,13 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( !this.validPath() ){
             return;
         }
+        
+        
+        this.width = Math.min( 500, Math.max( this.config.width || Math.min(window.innerWidth, window.innerHeight), 320 ) );
+        
         // scale the page
-        Ext.get(document.body).setStyle('font-size', 13*Ext.fly(document.body).getWidth()/320+'px')
-        var w = Math.min(window.innerWidth, window.innerHeight);
-        Ext.get(this.ct).setWidth(w);
+        Ext.get(document.body).setStyle('font-size', 13*this.width/320+'px')
+        Ext.get(this.ct).setWidth(this.width);
         this.initFacebook();
         this.startFromPath();
         
