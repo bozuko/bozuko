@@ -255,10 +255,12 @@ Entry.prototype.getNextEntryTime = function( lastEntry ){
 Entry.prototype.getButtonText = function(nextEntryTime, tokens){
     if( !tokens ){
         var now = new Date();
-        if( nextEntryTime.getTime() >= now.getTime() ){
+	if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
+	    this._buttonText = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
+	} else if( nextEntryTime.getTime() >= now.getTime() ){
             this._buttonText = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/wait_duration', DateUtil.inAgo( nextEntryTime ) );
         } else{
-            this._buttonText =  _t( this.user ? this.user.lang : 'en', 'entry/enter');
+            this._buttonText = _t( this.user ? this.user.lang : 'en', 'entry/enter');
         }
     } else{
         this._buttonText = _t( this.user ? this.user.lang : 'en', 'entry/play');
