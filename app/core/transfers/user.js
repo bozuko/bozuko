@@ -21,7 +21,7 @@ exports.transfer_objects= {
         },
 
         create : function(data, user, callback){
-            data.image = data.image.replace(/type=large/, 'type=square');
+            data.image = data.image ? data.image.replace(/type=large/, 'type=square') : '';
             data.img = data.image;
             return this.sanitize(data, null, user, function(error, result){
                 if( error ) return callback(error);
