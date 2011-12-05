@@ -88,7 +88,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 fieldLabel      :'Email Subject',
                 value           :'You won a Bozuko prize!'
             },{
-                xtype           :'textarea',
+                xtype           :'htmleditor',
                 height          :100,
                 hidden          :true,
                 name            :'email_body',
@@ -107,7 +107,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     if( ar.length ){
                         if( ar[0] === '' ) ar.shift();
                         if( ar.length ){
-                            if( ar[ar.length] === '') ar.pop();
+                            if( ar[ar.length-1] === '') ar.pop();
                         }
                     }
                     return ar;
@@ -143,7 +143,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
 
     onEmailChange : function(field, value){
         var fn = value ? 'show' : 'hide';
-        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes]'), function(cmp){
+        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes], [name=email_type]'), function(cmp){
             cmp[fn]();
         });
     },
@@ -158,7 +158,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
     getValues : function(selector){
         var form = this;
         var values = {};
-        selector = selector ? selector+' field' : 'field';
+        selector = selector ? selector+' field, '+selector+' htmleditor' : 'field, htmleditor';
         Ext.Array.each(form.query( selector ), function(field){
             var ns = field.getName().split('.'), cur = values;
 

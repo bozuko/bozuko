@@ -4,8 +4,15 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     
     
     frameRate: 10,
+    
     prizeWidth: 91,
     prizeHeight: 114,
+    
+    prizeOffsetX: 24,
+    prizeOffsetY: 124,
+    
+    baseWidth: 320,
+    baseHeight: 415,
     
     lang : {
         loading : {
@@ -67,6 +74,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         this.scratchImages = [];
         this.loaded = false;
         this.rendered = false;
+        this.scale = this.width / this.baseWidth;
+        this.useRetina = window.devicePixelRatio > 1 || this.width > this.baseWidth;
         
         this.on('enter', this.onEnter, this);
         this.on('result', this.onResult, this);
@@ -78,11 +87,17 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     init : function(){
         
         for(var i=0; i<6; i++){
-            var x = (24 + (i%3*91) ),
-                y = (124 + (Math.floor(i/3)*114));
+            
+            var ox = this.prizeOffsetX/this.baseWidth,
+                oy = this.prizeOffsetY/this.baseHeight,
+                w = this.prizeWidth/this.baseWidth,
+                h = this.prizeHeight/this.baseHeight,
+                x = (ox + (i%3*w)),
+                y = (oy + (Math.floor(i/3)*h));
+                
             this.positions.push({
-                x:x,
-                y:y
+                x:x*100,
+                y:y*100
             });
         }
         
@@ -104,10 +119,10 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             this.game.config.theme.base+'/'+this.game.config.theme.images.background;
         
         // is this retina?
-        if( window.devicePixelRatio > 1 ){
-            //var parts = bg.split('/');
-            //var file = parts.pop();
-            //bg = parts.join('/')+'2x/'+file;
+        if( this.useRetina ){
+            var parts = bg.split('/');
+            var file = parts.pop();
+            bg = parts.join('/')+'2x/'+file;
         }
         
         self.addImage('bg', bg);
@@ -239,8 +254,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
                 cls         :'prize',
                 html        :'&nbsp;'
             }).setStyle({
-                left: pos.x+'px',
-                top: pos.y+'px'
+                left: pos.x+'%',
+                top: pos.y+'%'
             });
             
             self.$targets[i] = self.$ct.createChild({
@@ -248,8 +263,8 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
                 cls         :'target',
                 html        :'&nbsp;'
             }).setStyle({
-                left: pos.x+'px',
-                top: pos.y+'px'
+                left: pos.x+'%',
+                top: pos.y+'%'
             });
             
             var scratch = (function(i){
@@ -320,7 +335,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     
     reset : function(){
         var bg = this.image('bg');
-        this.$ticketCtx.drawImage( bg, 0, 0, bg.width, bg.height );
+        this.$ticketCtx.drawImage( bg, 0, 0, this.width, this.height );
         this.loaded = false;
         this.scratched = 0;
         this.scratchedWins = 0;
@@ -339,7 +354,13 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
         var animate = function(){
             ctx.save();
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.drawImage(self.image('scratch-mask-'+frame),pos.x,pos.y);
+            ctx.drawImage(
+                self.image('scratch-mask-'+frame),
+                pos.x/100*self.width,
+                pos.y/100*self.height,
+                self.prizeWidth*self.scale,
+                self.prizeHeight*self.scale
+            );
             ctx.restore();
             if(++frame >= self.scratchMasks.length){
                 self.fireEvent('scratch', index);
