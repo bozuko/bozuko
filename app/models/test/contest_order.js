@@ -31,7 +31,7 @@ var contest = new Bozuko.models.Contest(
     entry_config: [{
         type: "facebook/checkin",
         tokens: 3,
-        duration: 2
+        duration: 100000000000
     }],
     start: start,
     end: end,
@@ -131,9 +131,14 @@ exports['play  3 times'] = function(test) {
         test.deepEqual(results[1].play.play_cursor+0, 1);
         test.deepEqual(results[2].play.play_cursor+0, 2);
 
-        Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
-            test.equal(c.plays.length, 0);
-            test.done();
+        contest.loadGameState({page: page, user: user}, function(err, state) {
+            if (!free_play) {
+	        test.equal(state.button_text, 'Thanks For Playing');
+	    }
+            Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
+                test.equal(c.plays.length, 0);
+                test.done();
+            });
         });
     });
 };
@@ -144,8 +149,12 @@ exports['use free play if won'] = function(test) {
     console.log("Congratulations: You won a free play!");
 
     play(function(err, result) {
-        test.equal(3, result.play.play_cursor);
-        test.done();
+        contest.loadGameState({page: page, user: user}, function(err, state) {
+            console.log(result);
+            test.equal(state.button_text, 'Thanks For Playing');
+            test.equal(3, result.play.play_cursor);
+            test.done();
+        });
     });
 };
 

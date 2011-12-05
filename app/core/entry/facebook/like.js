@@ -193,7 +193,9 @@ FacebookLikeMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     var text = '';
     if( !tokens ){
         var now = new Date();
-        if( +nextEntryTime > +now ){
+        if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
+	    text = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
+        } else if( +nextEntryTime > +now ){
             text = _t( this.user ? this.user.lang : 'en', 'entry/facebook/wait_duration', DateUtil.inAgo(nextEntryTime) );
         } else if( this.user ){
             if( !this.user.likes(this.page) ){

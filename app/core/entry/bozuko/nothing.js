@@ -95,6 +95,9 @@ BozukoNothingMethod.prototype.getTokenCount = function(){
 BozukoNothingMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
         var now = new Date();
+        if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
+	    return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
+        }
         if( nextEntryTime.getTime() > now.getTime() ){
             var time_str = DateUtil.inAgo( nextEntryTime );
             return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/wait_duration', time_str );
