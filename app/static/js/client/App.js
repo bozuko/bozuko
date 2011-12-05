@@ -18,6 +18,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.config = config || {};
         Ext.apply( this, config );
         
+        this.ct = this.config.renderTo || document.body;
+        
         this.api = new Bozuko.client.lib.Api();
         
         this.createElements();
@@ -44,6 +46,10 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( !this.validPath() ){
             return;
         }
+        // scale the page
+        Ext.get(document.body).setStyle('font-size', 13*Ext.fly(document.body).getWidth()/320+'px')
+        var w = Math.min(window.innerWidth, window.innerHeight);
+        Ext.get(this.ct).setWidth(w);
         this.initFacebook();
         this.startFromPath();
         
@@ -51,7 +57,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     createElements : function(){
         
-        this.$body = Ext.get(document.body).createChild({
+        this.$body = Ext.get(this.ct).createChild({
             cls         :'app'
         });
         
@@ -368,6 +374,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 self.fireEvent('pagedata', pageResponse.data, self);
                 
                 self.scratch = new Bozuko.client.game.Scratch({
+                    width: self.$body.getWidth(),
+                    height: self.$body.getWidth()/320*415,
                     game: gameResponse.data,
                     page: pageResponse.data,
                     user: self.user,

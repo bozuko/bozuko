@@ -2,10 +2,12 @@
 @import "app/static/css/mixins";
 
 html{ }
-body{ background: #000000; padding: 0; margin: 0; height: 460px; font-family: "open sans", arial;}
+body{ background: #000000; padding: 0; margin: 0; font-family: "open sans", arial; font-size: 13px; overflow-y: hidden; }
 h1,h2,h3,h4,h5,h6{ font-familiy: "open sans", arial; }
 
-h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
+#container{ margin: 0 auto; }
+
+h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
 
 * {
     outline: none;
@@ -15,9 +17,8 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
 
 .app {
     position: relative;
-    width: 320px;
-    height: 416px;
     margin: 0 auto;
+    font-size: 100%;
 }
 
 .mask {
@@ -107,9 +108,10 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
     border: 3px solid #999;
     padding: 10px;
     overflow: hidden;
+    background: #fff; /* IE! */
     background: rgba(255,255,255,.85);
     .box_shadow(0,0,20px,#333);
-    max-height: 381px;
+    max-height: 95%;
     
     color: #666;
     
@@ -165,45 +167,46 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
         position: absolute;
         z-index: 1;
         
-        width: 92px;
-        height: 115px;
+        width: 29.2%;
+        height: 27.71%;
         
         text-align: center;
-        font-family: tahoma, arial, sans;
         
         .number {
             font-weight: 800;
-            padding: 18px 0 10px;
-            font-size: 26px;
+            padding-top: 25%;
+            padding-bottom: 10%;
+            line-height: 1em;
+            font-size: 2.4em;
         }
         .name {
-            font-size: 11px;
-            padding: 0 12px;
+            font-size: .85em;
+            padding: 0 1em;
         }
     }
     
     .profile-pic {
         position: absolute;
         z-index: 1;
-        top: 8px;
-        left: 8px;
-        width: 80px;
-        height: 80px;
+        top: 1.928%;
+        left: 2.54%;
+        width: 25.4%;
+        height: 19.277%;
         -webkit-transform:rotate(-15deg);
     }
     
     .tickets-left {
         font-family: Arial;
-        font-size: 24px;
+        font-size: 1.8em;
         font-weight: bold;
         color: #fff;
         position: absolute;
         z-index: 3;
-        top: 9px;
-        width: 30px;
-        line-height: 30px;
+        top: 2.169%;
+        width: 10%;
+        line-height: 1.3em;
         text-align: center;
-        left: 107px;
+        left: 33.34%;
     }
     
     .ticket {
@@ -215,8 +218,8 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
     
     .target {
         position: absolute;
-        width: 92px;
-        height: 115px;
+        width: 29.2%;
+        height: 27.71%;
         z-index: 4;
         cursor: pointer;
         zoom: 1;
@@ -229,7 +232,7 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
         z-index: 4;
         position: absolute;
         overflow: hidden;
-        top: 40px;
+        top: 9.639%;
         left: 0;
         width: 100%;
         height: 100%;
@@ -245,6 +248,7 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
             img {
                 display: block;
                 position: absolute;
+                width: 100%;
                 top: 0;
                 left: 0;
             }
@@ -332,6 +336,8 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
 
 .game-description {
     padding: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
     .hd {
         .content {
             .name {
@@ -439,6 +445,10 @@ h4{ font-size: 16px; font-weight: 500; color: #666; text-align: center;}
 }
 
 .you-win {
+    
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    
     .hd {
         h2 {
             font-size: 28px;
