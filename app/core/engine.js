@@ -1,4 +1,5 @@
 var rand = require('../util/math').rand;
+var codify = require('codify');
 
 /**
  * Contest Engine
@@ -40,46 +41,5 @@ Engine.prototype.getCode = function(block) {
         val = rand(start, end);
     }
     codes[val] = true;
-    return this.intToCode(val);
-};
-
-
-// This function accepts numbers from 0-35
-function character(num) {
-    if (num < 10) return String(num);
-    return String.fromCharCode(num-10+65);
-}
-
-/*
- * Generate an alphanumeric (base-36) code from an integer
- */
-Engine.prototype.intToCode = function(val) {
-    var code = '';
-
-    while (val >= 1) {
-        var remainder = val % 36;
-        val = Math.floor(val / 36);
-        code = character(remainder)+code;
-    }
-    return code;
-};
-
-var digits = {};
-for (var i = 0; i < 10; i++) {
-    digits[String(i)] = i;
-}
-for (i = 0; i < 26; i++) {
-    digits[String.fromCharCode(i+65)] = i+10;
-}
-
-/*
- * Convert an alphanumeric (base-36) code to an integer
- */
-Engine.prototype.codeToInt = function(code) {
-    var calculated = 0;
-    for (var i =0; i < code.length; i++) {
-        var num = digits[code.charAt(i)];
-        calculated += Math.pow(36, code.length-i-1)*num;
-    }
-    return calculated;
+    return codify.toCode(val);
 };
