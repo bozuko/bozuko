@@ -38,6 +38,12 @@ h4 {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-user-select: none;
 }
+::-webkit-input-placeholder {
+  color: #999;
+}
+:-moz-placeholder {
+  color: #999;
+}
 .app {
   position: relative;
   margin: 0 auto;
@@ -103,6 +109,7 @@ h4 {
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
   border-radius: 8px;
   background-clip: padding-box;
 }
@@ -126,8 +133,6 @@ h4 {
   -moz-box-shadow: 0 0 20px #333333;
   -webkit-box-shadow: 0 0 20px #333333;
   box-shadow: 0 0 20px #333333;
-  max-height: 95%;
-  min-height: 300px;
   color: #666;
   -moz-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
   -webkit-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
@@ -137,6 +142,7 @@ h4 {
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
 }
@@ -172,6 +178,7 @@ h4 {
 .scratch-ticket {
   background: #bbb;
   position: relative;
+  overflow: hidden;
 }
 .scratch-ticket .prize {
   position: absolute;
@@ -185,11 +192,11 @@ h4 {
   padding-top: 25%;
   padding-bottom: 10%;
   line-height: 1em;
-  font-size: 2.4em;
+  font-size: 2.2em;
 }
 .scratch-ticket .prize .name {
-  font-size: .85em;
-  padding: 0 1em;
+  font-size: .72em;
+  padding: 0 1.5em;
 }
 .scratch-ticket .profile-pic {
   position: absolute;
@@ -199,6 +206,10 @@ h4 {
   width: 25.4%;
   height: 19.277%;
   -webkit-transform: rotate(-15deg);
+  -moz-transform: rotate(-15deg);
+  -ms-transform: rotate(-15deg);
+  -o-transform: rotate(-15deg);
+  transform: rotate(-15deg);
 }
 .scratch-ticket .tickets-left {
   font-family: Arial;
@@ -255,29 +266,30 @@ h4 {
   left: 0;
 }
 .scratch-ticket .animations .animate {
+  position: relative;
   display: block;
 }
 .scratch-ticket .animations .animate .bg {
   z-index: 1;
   -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
-  -webkit-animation: fadein 300ms ease-in-out, pulse 1s ease-in-out 0ms infinite alternate;
+  -webkit-animation: pulse 1s ease-in-out 0ms infinite alternate;
   -moz-animation: pulse 1s ease-in-out 0ms infinite alternate;
 }
 .scratch-ticket .animations .animate .txt {
   z-index: 3;
   -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
-  -webkit-animation: fadein 300ms ease-in-out, wiggle 1s ease-in-out 0s infinite alternate;
+  -webkit-animation: wiggle 1s ease-in-out 0s infinite alternate;
   -moz-animation: wiggle 1s ease-in-out 0s infinite alternate;
 }
 .scratch-ticket .animations .animate .stars {
   z-index: 2;
   -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
-  -webkit-animation: stars 4s linear 0s infinite
+  -webkit-animation: stars 2s linear 0s infinite
                     ;
-  -moz-animation: stars 4s linear 0s infinite
+  -moz-animation: stars 2s linear 0s infinite
                     ;
 }
 .page-window {
@@ -285,7 +297,8 @@ h4 {
 }
 .page-window .hd {
   overflow: hidden;
-  position: static;
+  position: relative;
+  z-index: 2;
   height: 75px;
   background-color: #656565;
   background-image: -moz-linear-gradient(top, #656565, #343434);
@@ -314,10 +327,46 @@ h4 {
   font-size: 11px;
   line-height: 1.3em;
 }
+.page-window .bd {
+  position: relative;
+}
 .game-description {
   padding: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+}
+.game-description .user {
+  position: relative;
+  z-index: 3;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px 6px 0 0;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px 6px 0 0;
+  -ms-border-radius: 6px 6px 0 0;
+  border-radius: 6px 6px 0 0;
+  background-clip: padding-box;
+  padding: 3px 8px;
+  color: #000;
+  background: #fff;
+  font-size: 13px;
+  line-height: 1.3em;
+  border-bottom: 2px solid #999;
+  overflow: hidden;
+  _height: 1%;
+}
+.game-description .user .name {
+  float: left;
+}
+.game-description .user .user-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  float: right;
+  background: transparent;
+  border-width: 0;
+}
+.game-description .user .user-links li {
+  display: inline;
+  margin: 0 0 0 10px;
+  padding: 0;
 }
 .game-description .hd .content .name {
   font-size: 14px;
@@ -333,6 +382,8 @@ h4 {
   padding-left: 2px;
 }
 .game-description .actions {
+  position: relative;
+  z-index: 2;
   border-top: 1px solid #999;
   border-bottom: 1px solid #999;
   background: #5f5f5f;
@@ -365,6 +416,7 @@ h4 {
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
   border-radius: 8px;
   background-clip: padding-box;
   background-color: #2ad43a;
@@ -436,9 +488,10 @@ h4 {
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 .game-description .bd .terms .bubble {
   padding: 10px;
@@ -448,30 +501,108 @@ h4 {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+.you-win .hd {
+  height: 50px;
+  -moz-box-shadow: 0 2px 10px #666666;
+  -webkit-box-shadow: 0 2px 10px #666666;
+  box-shadow: 0 2px 10px #666666;
+}
+.you-win .hd .page-pic {
+  height: 50px;
+  width: 50px;
+}
+.you-win .hd .content {
+  padding: 0;
+  margin-left: 50px;
+}
 .you-win .hd h2 {
-  font-size: 28px;
+  font-size: 35px;
+  line-height: 50px;
   text-transform: uppercase;
-  color: #01a9d8;
+  color: white;
   font-weight: 800;
-  line-height: 63px;
   text-align: center;
+  text-shadow: 0 0 10px #000;
   margin: 0;
-  text-shadow: 1px 1px 1px #01556c, 2px 2px 1px #ffffff;
 }
 .you-win .bd {
-  padding: 10px 10px 20px;
+  position: relative;
+  padding: 0;
+  font-size: 12px;
+}
+.you-win .bd .scrollable {
+  padding: 8px 16px;
 }
 .you-win .bd h3 {
   text-align: center;
   font-size: 22px;
   font-weight: 800px;
   color: #333;
-  margin: .2em 0;
+  margin: 0;
+}
+.you-win .bd .prize-code {
+  text-align: center;
+  font-size: 20px;
+  color: #00a24f;
+  font-weight: bold;
+  margin: 0;
+}
+.you-win .bd .message {
+  padding-left: 40px;
+  margin: 16px 0;
+  text-align: left;
+}
+.you-win .bd label {
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+.you-win .bd label input, .you-win .bd label span {
+  display: inline-block;
+  vertical-align: middle;
+}
+.you-win .bd textarea {
+  font-family: "open sans";
+  font-size: 11px;
+  height: 46px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px;
+  -webkit-user-select: auto;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
 }
 .you-win .ft {
+  position: relative;
+  z-index: 2;
   background: #5f5f5f;
   text-align: center;
   padding: 6px;
+  overflow: hidden;
+  _height: 1%;
+  border-top: 1px solid #999;
+  -moz-box-shadow: 0 -2px 10px #666666;
+  -webkit-box-shadow: 0 -2px 10px #666666;
+  box-shadow: 0 -2px 10px #666666;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 0 0 6px 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 0 0 6px 6px;
+  -ms-border-radius: 0 0 6px 6px;
+  border-radius: 0 0 6px 6px;
+  background-clip: padding-box;
+}
+.you-win .ft .buttons-2 .button-wrap {
+  float: left;
+  width: 50%;
+}
+.you-win .ft .buttons-2 .btn-1 {
+  margin-right: 5px;
+}
+.you-win .ft .buttons-2 .btn-2 {
+  margin-left: 5px;
 }
 .you-win .ft .btn {
   display: inline-block;
@@ -488,6 +619,7 @@ h4 {
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
   border-radius: 8px;
   background-clip: padding-box;
   background-color: #2ad43a;
@@ -496,6 +628,9 @@ h4 {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
+  display: block;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 .you-win .ft .btn:hover {
   background-color: #31fb45;
@@ -512,6 +647,51 @@ h4 {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
   /* IE6-9 */
 
+}
+.you-win .ft .btn-save {
+  display: inline-block;
+  padding: 4px 20px;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 15px;
+  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
+  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
+  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
+  color: #fff;
+  text-shadow: 1px 1px 1px #333;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 8px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  border-radius: 8px;
+  background-clip: padding-box;
+  background-color: #ffd329;
+  background-image: -moz-linear-gradient(top, #ffd329, #c19a1e);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffd329), color-stop(1, #c19a1e)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#ffd329',EndColorStr='#c19a1e');
+  /* IE6-9 */
+
+  display: block;
+}
+.you-win .ft .btn-save:hover {
+  background-color: #31fb45;
+  background-image: -moz-linear-gradient(top, #31fb45, #26c135);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
+  /* IE6-9 */
+
+}
+.you-win .ft .btn-save:hover {
+  background-color: #fffa30;
+  background-image: -moz-linear-gradient(top, #fffa30, #f1c025);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fffa30), color-stop(1, #f1c025)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#fffa30',EndColorStr='#f1c025');
+  /* IE6-9 */
+
+}
+.prize-shared .share-box {
+  display: none;
 }
 .superscroll {
   position: relative;
@@ -527,14 +707,12 @@ h4 {
   -webkit-border-radius: 7px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
   border-radius: 7px;
   background-clip: padding-box;
   position: absolute;
   opacity: 0;
   z-index: 2;
-  -webkit-transition: linear 300ms opacity;
-  -moz-transition: linear 300ms opacity;
-  -o-transition: linear 300ms opacity;
 }
 .superscroll-bar-shown {
   opacity: 1;

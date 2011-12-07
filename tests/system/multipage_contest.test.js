@@ -41,6 +41,7 @@ exports['center search - ensure pages share contest'] = function(test) {
     ok,
     function(res) {
         var result = JSON.parse(res.body);
+        console.log(result);
         result.pages.forEach(function(page) {
             if (page.id == assert.page1.id) {
                 test.ok(!page1);

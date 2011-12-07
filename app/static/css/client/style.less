@@ -15,6 +15,14 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
     -webkit-user-select: none;
 }
 
+::-webkit-input-placeholder {
+    color: #999;
+}
+ 
+:-moz-placeholder {
+    color: #999;
+}
+
 .app {
     position: relative;
     margin: 0 auto;
@@ -111,8 +119,6 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
     background: #fff; /* IE! */
     background: rgba(255,255,255,.85);
     .box_shadow(0,0,20px,#333);
-    max-height: 95%;
-    min-height: 300px;
     
     color: #666;
     
@@ -163,6 +169,7 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
 .scratch-ticket {
     background: #bbb;
     position: relative;
+    overflow: hidden;
     
     .prize {
         position: absolute;
@@ -178,11 +185,11 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
             padding-top: 25%;
             padding-bottom: 10%;
             line-height: 1em;
-            font-size: 2.4em;
+            font-size: 2.2em;
         }
         .name {
-            font-size: .85em;
-            padding: 0 1em;
+            font-size: .72em;
+            padding: 0 1.5em;
         }
     }
     
@@ -194,6 +201,10 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
         width: 25.4%;
         height: 19.277%;
         -webkit-transform:rotate(-15deg);
+        -moz-transform:rotate(-15deg);
+        -ms-transform:rotate(-15deg);
+        -o-transform:rotate(-15deg);
+        transform:rotate(-15deg);
     }
     
     .tickets-left {
@@ -256,13 +267,13 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
         }
         
         .animate {
+            position: relative;
             display: block;
             .bg {
                 z-index: 1;
                 -webkit-transform-origin: 50% 50%;
                 -moz-transform-origin: 50% 50%;
                 -webkit-animation:
-                    fadein 300ms ease-in-out,
                     pulse 1s ease-in-out 0ms infinite alternate
                     ;
                     
@@ -277,7 +288,6 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
                 -moz-transform-origin: 50% 50%;
                 
                 -webkit-animation:
-                    fadein 300ms ease-in-out,
                     wiggle 1s ease-in-out 0s infinite alternate
                     ;
                 
@@ -293,11 +303,11 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
                 -moz-transform-origin: 50% 50%;
                 
                 -webkit-animation:
-                    stars 4s linear 0s infinite
+                    stars 2s linear 0s infinite
                     ;
                 
                 -moz-animation:
-                    stars 4s linear 0s infinite
+                    stars 2s linear 0s infinite
                     ;
             }
         }
@@ -308,8 +318,10 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
 .page-window {
     padding: 0;
     .hd {
+        
         overflow: hidden;
-        position: static;
+        position: relative;
+        z-index: 2;
         height: 75px;
         .background_gradient(#656565,#343434);
         color: #fff;
@@ -333,12 +345,43 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
             line-height: 1.3em;
         }
     }
+    .bd {
+        position: relative;
+    }
 }
 
 .game-description {
     padding: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+    .user {
+        position: relative;
+        z-index: 3;
+        .border_radius(6px 6px 0 0);
+        padding: 3px 8px;
+        color: #000;
+        background: #fff;
+        font-size: 13px;
+        line-height: 1.3em;
+        border-bottom: 2px solid #999;
+        overflow: hidden;
+        _height: 1%;
+        
+        .name {
+            float: left;
+        }
+        .user-links{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            float: right;
+            background: transparent;
+            border-width: 0;
+            li{
+                display: inline;
+                margin: 0 0 0 10px;
+                padding: 0;
+            }
+        }
+    }
     .hd {
         .content {
             .name {
@@ -358,6 +401,8 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
     }
     
     .actions {
+        position: relative;
+        z-index: 2;
         border-top: 1px solid #999;
         border-bottom: 1px solid #999;
         background: #5f5f5f;
@@ -433,7 +478,7 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
         .bubble {
             border: 2px solid #999;
             .border_radius(10px);
-            background-color: rgba(255,255,255,.5);
+            background-color: rgba(255,255,255,.8);
         }
         
         .terms {
@@ -451,36 +496,122 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
     border-top-right-radius: 0;
     
     .hd {
+        height: 50px;
+        .box_shadow(0,2px,10px,#666);
+        .page-pic{
+            height: 50px;
+            width: 50px;
+        }
+        .content{
+            padding: 0;
+            margin-left: 50px;
+        }
+        
         h2 {
-            font-size: 28px;
+            font-size: 35px;
+            line-height: 50px;
             text-transform: uppercase;
-            color: @blue;
+            color: white;
             font-weight: 800;
-            line-height: 63px;
             text-align: center;
+            text-shadow: 0 0 10px #000;
             margin: 0;
-            text-shadow: 1px 1px 1px @blue * .5, 2px 2px 1px #fff;
         }
     }
     
     .bd {
-        padding: 10px 10px 20px;
+        position: relative;
+        padding: 0;
+        .scrollable{
+            padding: 8px 16px;
+        }
+        font-size: 12px;
         h3 {
             text-align: center;
             font-size: 22px;
             font-weight: 800px;
             color: #333;
-            margin: .2em 0;
+            margin: 0;
+        }
+        .prize-code {
+            text-align: center;
+            font-size: 20px;
+            color: @brand_color;
+            font-weight: bold;
+            margin: 0;
+        }
+        .message {
+            padding-left: 40px;
+            margin: 16px 0;
+            text-align: left;
+        }
+        label {
+            margin-bottom: 6px;
+            font-size: 11px;
+            input,span{
+                display: inline-block;
+                vertical-align: middle;
+            }
+        }
+        textarea {
+            font-family: "open sans";
+            font-size: 11px;
+            height: 46px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 6px;
+            -webkit-user-select: auto;
+            box-sizing: border-box;
+            -webkit-box-sizing:border-box;
+            -moz-box-sizing: border-box;
+            -ms-box-sizing: border-box;
+            
         }
     }
     
     .ft {
+        position: relative;
+        z-index: 2;
         background: #5f5f5f;
         text-align:center;
         padding: 6px;
+        overflow: hidden;
+        _height: 1%;
+        border-top: 1px solid #999;
+        .box_shadow(0,-2px,10px,#666);
+        .border_radius(0 0 6px 6px);
+        
+        .buttons-2{
+            .button-wrap{
+                float: left;
+                width: 50%;
+            }
+            .btn-1{
+                margin-right: 5px;
+            }
+            .btn-2{
+                margin-left: 5px;
+            }
+        }
+        
         .btn {
             .action_button();
+            display: block;
+            margin-left: 10px;
+            margin-right: 10px;
         }
+        
+        .btn-save {
+            .action_button(#f1c025);
+            display: block;
+        }
+    }
+}
+
+.prize-shared {
+    .share-box{
+        display: none;
     }
 }
 
@@ -490,10 +621,8 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
     .scrollable {
         overflow: scroll;
     }
-    .scrollable::-webkit-scrollbar, .scrollable::scrollbar {
-        
-    }
 }
+
 
 .superscroll-bar{
     background: #666;
@@ -503,9 +632,6 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
     opacity: 0;
     z-index: 2;
     
-    -webkit-transition: linear 300ms opacity;
-    -moz-transition: linear 300ms opacity;
-    -o-transition: linear 300ms opacity;
 }
 .superscroll-bar-shown {
     opacity: 1;
