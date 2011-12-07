@@ -176,17 +176,9 @@ var pages = [
     "185253393876"     // owl watch florida
 ];
 var add_pages = function(callback, i) {
-    i = i || 0;
-    if( i < pages.length ){
-        add_page(pages[i], function(error){
-            profiler.mark('add page');
-            add_pages(callback, i+1);
-        });
-    }
-    else{
-        console.log('no pages');
-        callback(null,'');
-    }
+    return async.forEach(pages, add_page, function(err) {
+        return callback(err);
+    });
 };
 
 function add_page(id, callback){
@@ -195,7 +187,7 @@ function add_page(id, callback){
             return callback(error);
         }
 		if( !place ){
-			console.log(id);
+//	            console.log(id);
 		}
         return Bozuko.models.Page.createFromServiceObject(place, function(error, page){
             if( error ){
@@ -206,12 +198,14 @@ function add_page(id, callback){
                 return callback(new Error("WTF!!!"));
             }
             page.active = true;
-
-
-
+            page.test = true;
+            
             if (id === '170323862989289' ) assert.page1 = page;
             if (id === '165703316805011') assert.page2 = page;
-            return page.save(function(){callback(null,'');});
+            return page.save(function(err) {
+                console.log('page.id: '+page.id);
+                return callback(err);
+            });
         });
     });
 }
@@ -248,7 +242,7 @@ var add_multipage_contest = function(callback) {
     });
 
     contest.publish(function(error){
-        if( error ) return cb(error);
+        if( error ) return callback(error);
         return Bozuko.models.Contest.findById(contest.id,function(error) {
             assert.multipage_contest_id = contest._id;
             return callback(error);
@@ -328,7 +322,7 @@ var add_owl_watch_contest = function(callback) {
             },
 
             function finish(err){
-                callback(null);
+                callback(err);
             }
         );
 
