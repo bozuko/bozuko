@@ -215,7 +215,10 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             }
         };
         setTimeout(function(){
-            self.$animationsCt.on('click', cancel);
+            self.$animationsCt.on('click', function(e){
+                e.stopEvent();
+                cancel();
+            });
         }, 500);
         
         

@@ -10,6 +10,7 @@ exports.transfer_objects = {
             page_id: "String",
             state: "String",
             name: "String",
+            shared: "Boolean",
             is_email: "Boolean",
             is_barcode: "Boolean",
             barcode_image: "String",
@@ -24,6 +25,7 @@ exports.transfer_objects = {
             user_img: "String",
             code: "String",
             links: {
+                share: "String",
                 redeem: "String",
                 page: "String",
                 user: "String",
@@ -65,6 +67,9 @@ exports.transfer_objects = {
                     page: '/page/'+prize.page_id,
                     user: '/user/'+prize.user_id
                 };
+                if( prize.state != 'expired' && !prize.shared ){
+                    o.links.share = '/prize/'+prize.id+'/share';
+                }
 
                 if( o.state == 'active' ){
                     o.links.redeem = '/prize/'+prize.id+'/redemption';
@@ -137,6 +142,21 @@ exports.links = {
                 }
             },
             returns: "redemption_object"
+        }
+    },
+    
+    share : {
+        post: {
+            access: 'mobile',
+            doc: "Share a Prize Win on Facebook",
+            
+            params: {
+                message : {
+                    type: "String",
+                    description:"The user entered message - can be empty"
+                }
+            },
+            returns:"success_message"
         }
     }
 };

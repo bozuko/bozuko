@@ -6,11 +6,14 @@ Ext.Element.prototype.update = function(html){
 
 Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
+    dimensions : {x: 320, y: 415},
+    
     constructor : function(config){
         
         var self = this;
         
         this.user = null;
+        this.userState = 'loading';
         this.stopped = false;
         this.currentView = 'start';
         this._loading = false;
@@ -25,17 +28,29 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.createElements();
         this.showLoading('Loading...');
         
+        var lastTouch;
         Ext.get(document.body).on('touchstart', function(e){
-            //e.preventDefault();
+            if( !lastTouch ){
+                lastTouch = Date.now();
+                return;
+            }
+            var now = Date.now();
+            if( now-lastTouch < 500 ){
+                e.preventDefault();
+            }
+            lastTouch = now;
         }, false);
         
         // scroll the window to the top
         setTimeout(function(){
             self.scrollToTop();
-        }, 200);
+        }, 300);
         
         this.addEvents({
-            'pagedata' : true
+            'pagedata'      :true,
+            'user'          :true,
+            'nouser'        :true,
+            'logout'        :true
         });
         
         Bozuko.client.App.superclass.constructor.call(this, config);
@@ -47,14 +62,47 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             return;
         }
         
-        
         this.width = Math.min( 500, Math.max( this.config.width || Math.min(window.innerWidth, window.innerHeight), 320 ) );
+        this.height = this.width/this.dimensions.x*this.dimensions.y;
+        
+        this.stylesheet = Bozuko.client.util.Stylesheet.create('app');
+        this.stylesheet.rule('.modal-window', {
+            'max-height': (this.height-30-6)+'px'
+        });
+        (function(){
+            var h =  window.innerHeight;
+            this.stylesheet.rule('body', {
+                'min-height': h+'px'
+            });
+            if( h > self.height ){
+                var padding = (h - this.height) / 2;
+                this.stylesheet.rule('body', {
+                    'padding-top': padding+'px',
+                    'min-height': (h-padding)+'px'
+                });
+            }
+            this.scrollToTop();
+        }).defer(500, this);
+        
+        
         
         // scale the page
-        Ext.get(document.body).setStyle('font-size', 13*this.width/320+'px')
+        Ext.get(document.body).setStyle('font-size', 13*this.width/this.dimensions.x+'px');
         Ext.get(this.ct).setWidth(this.width);
+        
+        // okay... now we need to take orientation change into account
+        
+        
         this.initFacebook();
         this.startFromPath();
+        
+        this.on('user', function(){
+            this.userState = 'user';
+        }, this);
+        
+        this.on('nouser', function(){
+            this.userState = 'nouser';
+        });
         
     },
     
@@ -143,6 +191,24 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             xfbml: true,
             oauth: true
         });
+        
+        FB.Event.subscribe('auth.logout', function(){
+            self.fireEvent('nouser');
+        });
+        
+        FB.Event.subscribe('auth.login', function(response){
+            self.onFacebookLogin(response);
+        });
+    },
+    
+    logout : function(){
+        this.user = false;
+        this.userState = 'nouser';
+        Bozuko.client.util.Cache.clear();
+        this.api.setToken(false);
+        FB.logout();
+        this.fireEvent('logout');
+        this.showLogin();
     },
     
     doFacebookLogin : function(){
@@ -150,21 +216,26 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         self.showLoading('Contacting Facebook...');
         FB.getLoginStatus(function(response){
-            // check status
-            if( !response.authResponse ){
-                self.showLogin();
-            }
-            else{
-                // now we need to get the user
-                self.bozukoLogin(response.authResponse.accessToken, function(error, user){
-                    if( self.stopped ) return false;
-                    if( error || !user || user.success === false){
-                        //return self.showLogin();
-                    }
-                    return self.onUserConnected();
-                });
-            }
+            self.onFacebookLogin(response);
         });
+    },
+    
+    onFacebookLogin : function(response){
+        var self = this;
+        if( !response.authResponse ){
+            self.fireEvent('nouser');
+            self.showLogin();
+        }
+        else{
+            // now we need to get the user
+            self.bozukoLogin(response.authResponse.accessToken, function(error, user){
+                if( self.stopped ) return false;
+                if( error || !user || user.success === false){
+                    return self.showLogin();
+                }
+                return self.onUserConnected();
+            });
+        }
     },
     
     onUserConnected : function(){
@@ -177,9 +248,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             self.showMessage("Unsupported Game Type");
             return;
         }
-        
         self.showLoading('Loading Game...');
-        self.scratch.load();
+        self.scratch.load(self.user);
     },
     
     bozukoLogin : function(token, callback){
@@ -194,15 +264,18 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     var user = Ext.decode(response.responseText);
                     if( user ){
                         self.setUser(user);
+                        self.fireEvent('user');
                         return callback(null, user);
                     }
                 }
                 catch(e){
                     console.log(e.stack);
                 }
+                self.fireEvent('nouser');
                 return callback(new Error('No User'));
             },
             failure : function(response, request){
+                self.fireEvent('nouser');
                 return callback(new Error('No User'));
             }
         });
@@ -251,17 +324,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     doLogin : function(){
         var self = this;
         
-        if( window.location != window.parent.location ){
-            FB.login(function(response){
-                // now we need to get the user
-                self.bozukoLogin(response.authResponse.accessToken, function(error, user){
-                    if( self.stopped ) return false;
-                    if( error || !user || user.success === false){
-                        //return self.showLogin();
-                    }
-                    return self.onUserConnected();
-                });
-            },{scope: Bozuko.client.App.facebookApp.scope});
+        if( 1 || window.location != window.parent.location ){
+            FB.login(function(){},{scope: Bozuko.client.App.facebookApp.scope});
         }
         else{
             window.top.location = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
