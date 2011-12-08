@@ -159,6 +159,20 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
             margin-top: -16px;
             margin-left: -16px;
         }
+        
+        .animated-spinner{
+            width: 100px;
+            height: 100px;
+            margin-top: -50px;
+            margin-left: -50px;
+            -webkit-animation:
+                spin 10s linear 0ms infinite
+                ;
+                
+            -moz-animation:
+                spin 10s linear 0ms infinite
+                ;
+        }
     }
 }
 
@@ -492,15 +506,45 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
                 padding: 0;
                 
                 li {
-                    color: #666;
+                    color: #333;
                     margin: 0;
                     list-style: none;
-                    padding: 10px;
                     border-bottom: 2px solid #ccc;
+                    overflow: hidden;
                     
                     
                     &:last-child {
                         border-bottom-width: 0;
+                    }
+                    
+                    .name {
+                        padding: 10px;
+                        .trigger {
+                            display: inline-block;
+                            float: right;
+                            width: 22px;
+                            height: 22px;
+                            margin: 0 0 0 10px;
+                            vertical-align: middle;
+                            cursor: pointer;
+                            background: transparent url("/images/client/arrow.png?v3") 50% 2px no-repeat;
+                        }
+                    }
+                    
+                    .description {
+                        padding: 0px 10px 5px;
+                        display: none;
+                        font-size: .9em;
+                        color: #666;
+                    }
+                    
+                }
+                .show-description {
+                    .trigger {
+                        background-position: 50% -20px !important;
+                    }
+                    .description {
+                        display: block;
                     }
                 }
             }
@@ -601,6 +645,10 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
                 -ms-box-sizing: border-box;
             }
         }
+        
+        .sharebox {
+            padding-bottom: 20px;
+        }
         label {
             display: block;
             margin-bottom: 10px;
@@ -674,7 +722,13 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
 }
 
 .prize-shared {
-    .share-box{
+    .sharebox{
+        display: none;
+    }
+}
+
+.prize-is-email, .prize-is-barcode{
+    .prize-code {
         display: none;
     }
 }

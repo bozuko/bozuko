@@ -118,6 +118,7 @@ exports.routes = {
         alias: '/client/*',
         get : {
             handler : function(req, res){
+                
                 req.session.destroy();
                 res.locals.path = '/'+( req.params && req.params.length ? req.params[0] : 'api');
                 
@@ -132,7 +133,7 @@ exports.routes = {
                     '/js/client/lib/Api.js',
                     '/js/client/game/Abstract.js',
                     '/js/client/game/Scratch.js',
-                    '/js/client/App.js',
+                    '/js/client/App.js'
                 ];
                 
                 var styles = [

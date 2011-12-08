@@ -420,7 +420,8 @@ Prize.method('share', function(args, callback){
 					contest_id      :prize.contest_id,
 					page_id         :prize.page_id,
 					user_id         :prize.user_id,
-					visibility      :0
+					visibility      :0,
+					message			:options.message
 				});
 
 				try{

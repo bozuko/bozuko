@@ -36,6 +36,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'consolation_config', type:'Array'},
         {name:'free_play_pct',      type:'Number',              defaultValue:'30%'},
         {name:'active',             type:'Boolean'},
+        {name:'web_only',           type:'Boolean',             defaultValue:false},
         {name:'state',              type:'String'},
         {name:'start',              type:'Date',                dateFormat: 'c',    defaultValue:(function(){var d = new Date(); d.setMinutes(0); return d;})()},
         {name:'end',                type:'Date',                dateFormat: 'c',    defaultValue:(function(){var d = new Date(); d.setMinutes(0); d=Ext.Date.add(d, Ext.Date.DAY, 90);return d;})()},

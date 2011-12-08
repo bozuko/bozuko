@@ -35,6 +35,7 @@ var Contest = module.exports = new Schema({
     name                    :{type:String},
     engine_type             :{type:String, default:'order', get: enum_engine_type},
     engine_options          :{},
+	web_only				:{type:Boolean, default:false},
     plays                   :[Play],
     game                    :{type:String},
     game_config             :{},

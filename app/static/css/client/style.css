@@ -221,6 +221,16 @@ h4 {
   margin-top: -16px;
   margin-left: -16px;
 }
+.loading-mask .bg .animated-spinner {
+  width: 100px;
+  height: 100px;
+  margin-top: -50px;
+  margin-left: -50px;
+  -webkit-animation: spin 10s linear 0ms infinite
+                ;
+  -moz-animation: spin 10s linear 0ms infinite
+                ;
+}
 .rgba .loading-mask .bg {
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.6);
@@ -543,14 +553,39 @@ h4 {
   padding: 0;
 }
 .game-description .bd .section ul li {
-  color: #666;
+  color: #333;
   margin: 0;
   list-style: none;
-  padding: 10px;
   border-bottom: 2px solid #ccc;
+  overflow: hidden;
 }
 .game-description .bd .section ul li:last-child {
   border-bottom-width: 0;
+}
+.game-description .bd .section ul li .name {
+  padding: 10px;
+}
+.game-description .bd .section ul li .name .trigger {
+  display: inline-block;
+  float: right;
+  width: 22px;
+  height: 22px;
+  margin: 0 0 0 10px;
+  vertical-align: middle;
+  cursor: pointer;
+  background: transparent url("/images/client/arrow.png?v3") 50% 2px no-repeat;
+}
+.game-description .bd .section ul li .description {
+  padding: 0px 10px 5px;
+  display: none;
+  font-size: .9em;
+  color: #666;
+}
+.game-description .bd .section ul .show-description .trigger {
+  background-position: 50% -20px !important;
+}
+.game-description .bd .section ul .show-description .description {
+  display: block;
 }
 .game-description .bd .bubble {
   width: auto;
@@ -720,6 +755,9 @@ h4 {
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
 }
+.you-win .bd .sharebox {
+  padding-bottom: 20px;
+}
 .you-win .bd label {
   display: block;
   margin-bottom: 10px;
@@ -862,7 +900,10 @@ h4 {
   /* IE6-9 */
 
 }
-.prize-shared .share-box {
+.prize-shared .sharebox {
+  display: none;
+}
+.prize-is-email .prize-code, .prize-is-barcode .prize-code {
   display: none;
 }
 .superscroll {

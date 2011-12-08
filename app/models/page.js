@@ -25,7 +25,7 @@ var Page = module.exports = new Schema({
     description         :{type:String},
     is_location         :{type:Boolean},
     name                :{type:String, index: true},
-    image               :{type:String,  get: httpsUrl},
+    image               :{type:String, get: httpsUrl},
     use_twitter         :{type:Boolean, default: false},
     twitter_id          :{type:String},
     announcement        :{type:String},
@@ -153,8 +153,9 @@ Page.method('loadContests', function(user, callback){
 
     return Bozuko.models.Contest.find({
         active: true,
-	$or: [{page_id: this._id}, {page_ids: this._id}],
-	start: {$lt: now},
+		web_only: {$ne: true},
+		$or: [{page_id: this._id}, {page_ids: this._id}],
+		start: {$lt: now},
         end: {$gt: now}
     }, {results: 0, plays: 0},
     function(err, contests) {
@@ -304,8 +305,6 @@ Page.method('checkin', function(user, options, callback) {
         if( checkin && checkinError ){
             return callback( checkinError );
         }
-        console.log( options.ll );
-        console.log( self.coords );
         Bozuko.publish('page/checkin', {
             page_name: self.name,
             user_name: user.name,
