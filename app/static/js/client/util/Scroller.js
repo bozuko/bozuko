@@ -177,7 +177,8 @@ var SuperScroll = Ext.extend( Ext.util.Observable, {
     },
     
     onTouchStart : function(ev){
-        ev.preventDefault();
+        // if( ev.getTarget('input,textarea,button,a,label') ) return;
+        
         if( this.animating ){
             cancelRequestAnimationFrame(this.animateTimeout);
             this.animating = false;
