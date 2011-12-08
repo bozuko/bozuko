@@ -377,6 +377,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         if( this.app.user ){
             description.child('.user').update('<ul class="user-links"><!--<li><a href="#" class="my-prizes">My Prizes</a></li>--><li><a class="logout" href="#">Logout</a></li></ul><div class="name">Hi <strong>'+this.app.user.name+'</strong></div>');
             description.child('.user .logout').on('click', function(){
+                this.registerLoader();
                 this.app.logout();
             }, this);
         }
