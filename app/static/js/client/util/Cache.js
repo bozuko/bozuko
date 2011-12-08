@@ -28,6 +28,7 @@ Bozuko.client.util.Cache = (function(){
         },
         
         update : function(){
+            this.clear();
             window.localStorage.setItem(this.key, Ext.encode(this.cache.getData()));
         },
         

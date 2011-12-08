@@ -465,6 +465,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     bd.setHeight( h - (y-yy) - fh );
                 }
             });
+            
         }
         if( !prize ) return this.$youWin;
         this.$youWin.prize = prize;
@@ -499,6 +500,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             changeBlock.setVisibilityMode(Ext.Element.DISPLAY);
             
             changeBlock.hide();
+            
             changeBlock.child('input').dom.value = this.app.user.email;
                 
             linkBlock.child('a').on('click', function(){
