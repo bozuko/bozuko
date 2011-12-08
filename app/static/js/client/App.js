@@ -203,6 +203,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     logout : function(){
         this.user = false;
         this.userState = 'nouser';
+        this.fireEvent('nouser');
         Bozuko.client.util.Cache.clear();
         this.api.setToken(false);
         FB.logout();
