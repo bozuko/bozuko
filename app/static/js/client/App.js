@@ -122,7 +122,12 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.$loading = this.createModal({
             cls         :'loading-mask',
             cn: [{
-                cls         :'bg'
+                cls         :'bg',
+                cn          :[{
+                    tag         :'img',
+                    cls         :'spinner',
+                    src         :'/images/client/loading.gif?v2'
+                }]
             }]
         });
         var defaultLoader = new Bozuko.client.Loader(this.$loading);
