@@ -483,9 +483,77 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
         if( prize.is_email ){
             message.update([
-                'This prize has been emailed to <strong>'+this.app.user.email+'</strong>!',
-                'Wrong email address? <a href="#">Change it here</a>'
+                '<p>This prize has been emailed to <strong>'+this.app.user.email+'</strong>!</p>',
+                '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
+                '<div class="email-form">',
+                    '<div><input class="email-field" placeholder="Enter your email" name="email" /></div>',
+                    '<div><a href="javascript:;" class="btn btn-cancel">Canel</a><a href="javascript:;" class="btn btn-change">Change</a></div>',
+                '</div>'
             ].join('\n'));
+            
+            var linkBlock = message.child('.email-link'),
+                changeBlock = message.child('.email-form')
+                ;
+                
+            linkBlock.setVisibilityMode(Ext.Element.DISPLAY);
+            changeBlock.setVisibilityMode(Ext.Element.DISPLAY);
+            
+            changeBlock.hide();
+            changeBlock.child('input').dom.value = this.app.user.email;
+                
+            linkBlock.child('a').on('click', function(){
+                linkBlock.hide();
+                changeBlock.show();
+                // add new stuff...
+            }, this);
+            
+            var changeBtn = changeBlock.child('.btn-change');
+            var cancelBtn = changeBlock.child('.btn-cancel')
+            
+            var changing = false;
+            
+            changeBtn.on('click', function(){
+                if( changing ) return;
+                // need to update the user
+                changing = true;
+                cancelBtn.setStyle('opacity', .6);
+                changeBtn.setStyle('opacity', .6).update('Saving...');
+                var self = this;
+                this.app.api.call( {
+                    path: this.app.entry_point.links.user,
+                    method: 'post',
+                    params: {
+                        email: changeBlock.child('input').dom.value
+                    }
+                }, function(result){
+                    if( !result.data.success ){
+                        alert( result.data.message );
+                        changing = false;
+                        cancelBtn.setStyle('opacity',1);
+                        changeBtn.setStyle('opacity',1).update('Change');
+                        return;
+                    }
+                    // need to resend
+                    self.app.api.call({
+                        path: prize.links.resend,
+                        method: 'post'
+                    }, function(result){
+                        changing = false;
+                        cancelBtn.setStyle('opacity',1);
+                        changeBtn.setStyle('opacity',1).update('Change');
+                        changeBlock.hide();
+                        linkBlock.show();
+                    });
+                    
+                });
+            }, this);
+            
+            cancelBtn.on('click', function(){
+                if( changing ) return;
+                changeBlock.child('input').dom.value = this.app.user.email;
+                changeBlock.hide();
+                linkBlock.show();
+            }, this);
         }
         else{
             message.update(
@@ -540,7 +608,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     },
                     method: 'post'
                 },function(result){
-                    console.log(result);
+                    // i don't think we really need to do anything here...
                 });
             }
         }
@@ -647,7 +715,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 
                 self.app.hideLoading();
                 
-                result.data.forEach(function(state){
+                Ext.each( result.data, function(state){
                     if( state.game_id == self.game.id ){
                         self.setState(state);
                         if( !self.state.user_tokens ){

@@ -85,7 +85,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         }).defer(500, this);
         
         
-        
         // scale the page
         Ext.get(document.body).setStyle('font-size', 13*this.width/this.dimensions.x+'px');
         Ext.get(this.ct).setWidth(this.width);
@@ -264,8 +263,12 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     var user = Ext.decode(response.responseText);
                     if( user ){
                         self.setUser(user);
-                        self.fireEvent('user');
-                        return callback(null, user);
+                        
+                        return self.api.call(function(entry_point){
+                            self.entry_point = entry_point.data;
+                            self.fireEvent('user');
+                            return callback(null, user);
+                        });
                     }
                 }
                 catch(e){

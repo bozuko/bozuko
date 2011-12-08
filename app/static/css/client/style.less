@@ -111,6 +111,10 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
     }
 }
 
+.btn {
+    .action_button();
+}
+
 .modal-window {
     margin: 15px;
     border: 3px solid #999;
@@ -476,8 +480,11 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
         }
         
         .bubble {
+            width: auto;
+            overflow: visible;
             border: 2px solid #999;
             .border_radius(10px);
+            background-color: #fff;
             background-color: rgba(255,255,255,.8);
         }
         
@@ -541,9 +548,29 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
             margin: 0;
         }
         .message {
+            background: transparent url("/images/client/info.png") 4px 4px no-repeat;
             padding-left: 40px;
             margin: 16px 0;
             text-align: left;
+            
+            .btn {
+                .action_button();
+                margin-right: 10px;
+            }
+            
+            .btn-cancel{
+                .action_button(#999);
+                margin-right: 15px;
+                margin-top: 6px;
+            }
+            
+            .email-field {
+                width: 100%;
+                box-sizing: border-box;
+                -webkit-box-sizing:border-box;
+                -moz-box-sizing: border-box;
+                -ms-box-sizing: border-box;
+            }
         }
         label {
             margin-bottom: 6px;
@@ -568,6 +595,13 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
             -ms-box-sizing: border-box;
             
         }
+        
+        input {
+            -webkit-user-select: auto;
+        }
+        
+        
+        
     }
     
     .ft {

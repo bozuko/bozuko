@@ -51,6 +51,11 @@ exports.links = {
             access: 'user',
             doc: "Get Information about the user",
             returns: "user"
+        },
+        post: {
+            access: 'mobile',
+            doc: "Update user info (currently email address only)",
+            returns: "success_message"
         }
     },
 

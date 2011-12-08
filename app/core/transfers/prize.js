@@ -29,7 +29,8 @@ exports.transfer_objects = {
                 redeem: "String",
                 page: "String",
                 user: "String",
-                prize: "String"
+                prize: "String",
+                resend: "String"
             }
         },
 
@@ -70,10 +71,14 @@ exports.transfer_objects = {
                 if( prize.state != 'expired' && !prize.shared ){
                     o.links.share = '/prize/'+prize.id+'/share';
                 }
-
                 if( o.state == 'active' ){
                     o.links.redeem = '/prize/'+prize.id+'/redemption';
                 }
+                
+                if( o.is_email ){
+                    o.links.resend = '/prize/'+prize.id+'/resend';
+                }
+                
                 return self.sanitize(o, null, user, function(error, result){
                     if( error ) return callback( error );
                     return callback(null, result);
@@ -156,6 +161,18 @@ exports.links = {
                     description:"The user entered message - can be empty"
                 }
             },
+            returns:"success_message"
+        }
+    },
+    
+    resend : {
+        post: {
+            access: 'mobile',
+            doc: "Resend an emailed prize",
+            
+            params: {
+            },
+            
             returns:"success_message"
         }
     }

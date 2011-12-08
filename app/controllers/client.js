@@ -140,7 +140,7 @@ exports.routes = {
                     '/css/client/style.css'
                 ];
                 
-                res.locals.scripts = ['https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core.js'];
+                res.locals.scripts = ['https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js'];
                 scripts.forEach(function(script){
                     res.locals.scripts.push(script+'?'+now);
                 });
