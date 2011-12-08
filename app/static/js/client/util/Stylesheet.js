@@ -5,7 +5,7 @@ Ext.ns('Bozuko.client.util');
     
     var Stylesheet = Ext.extend( Object, {
     
-        constructor : function(){
+        constructor : function(id){
             this.cache = {};
             this.create(id);
             this.sheet = document.styleSheets[document.styleSheets.length-1];
@@ -13,12 +13,14 @@ Ext.ns('Bozuko.client.util');
         },
         
         create : function(id) {
-            var style = document.createElement('style');
-            style.type='text/css';
-            style.id = id;
-            style.title = id;
-            document.querySelector('head').appendChild(style);
-            return style;
+            var h = Ext.DomQuery.selectNode('head');
+            return Ext.fly(h).createChild({
+                tag:'style',
+                type:'text/css',
+                id: id,
+                title: id
+            });
+            
         },
         
         rule : function(selector, css, value){
@@ -35,7 +37,11 @@ Ext.ns('Bozuko.client.util');
                     delete rule.style[property.replace(camelRe,camelFn)];
                 }
                 else{
-                    rule.style[property.replace(camelRe,camelFn)] = val;
+                    try{
+                        rule.style[property.replace(camelRe,camelFn)] = val;
+                    }catch(e){
+                        // probably an unsupported rule;
+                    }
                 }
             }
         },
@@ -45,17 +51,29 @@ Ext.ns('Bozuko.client.util');
             if( create === false ) return false;
             var found = this.findRule(selector);
             if( found != null ){
-                return this.sheet.cssRules[found];
+                return this._rules()[found];
             }
-            var rule = this.sheet.insertRule(selector+' {}', this.sheet.cssRules.length);
-            this.cache[selector] = this.sheet.cssRules[rule];
+            var rule;
+            if( this.sheet.insertRule ){
+                rule = this.sheet.insertRule(selector+' {}', this._rules().length);
+            }
+            else{
+                rule = this._rules().length;
+                this.sheet.addRule(selector, 'height: auto;');
+                
+            }
+            this.cache[selector] = this._rules()[rule];
             return this.cache[selector];
+        },
+        
+        _rules : function(){
+            return this.sheet.cssRules || this.sheet.rules;
         },
         
         findRule : function(selector){
             // search rules
             var found = null;
-            Ext.each( this.sheet.cssRules, function(rule, i){
+            Ext.each( this._rules(), function(rule, i){
                 if( rule.selectorText == selector ){
                     found = i;
                     return false;

@@ -152,6 +152,40 @@ exports.routes = {
             }
         }
     },
+    
+    '/prizes/:id/resend' : {
+        post : {
+            access : 'mobile',
+            
+            handler : function(req, res){
+                var user = req.session.user;
+                
+                var options = {
+                    query           :{
+                        _id             :req.param('id')
+                    },
+                    limit : 1
+                };
+                
+                user.getPrizes(options, function(error, prizes){
+                    if( error ) return error.send(res);
+                    if( !prizes.length ) return Bozuko.error('prize/not_exists').send(res);
+                    
+                    prizes[0].sendEmail(user);
+                    return Bozuko.transfer('success_message', {
+                        
+                        success: true,
+                        message: 'Email resent successfully',
+                        title: 'Email Resent'
+                        
+                    }, user, function(error, result){
+                        return res.send(error || result);
+                    })
+                    
+                });
+            }
+        }
+    },
 
     '/prize/:id/redemption' : {
 

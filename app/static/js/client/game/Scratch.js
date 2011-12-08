@@ -308,7 +308,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
             width       :this.width,
             height      :this.height
         });
-        this.$ticketCtx = this.$ticket.dom.getContext('2d');
+        if( Modernizr.canvas ) this.$ticketCtx = this.$ticket.dom.getContext('2d');
         this.reset();
         this.rendered = true;
         this.fireEvent('render', this);
@@ -338,7 +338,7 @@ Bozuko.client.game.Scratch = Ext.extend( Bozuko.client.game.Abstract, {
     
     reset : function(){
         var bg = this.image('bg');
-        this.$ticketCtx.drawImage( bg, 0, 0, this.width, this.height );
+        if( Modernizr.canvas ) this.$ticketCtx.drawImage( bg, 0, 0, this.width, this.height );
         this.loaded = false;
         this.scratched = 0;
         this.scratchedWins = 0;
