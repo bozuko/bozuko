@@ -51,7 +51,7 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
     var start = contest.start.getTime();
     var end = start+this.contest_duration;
 
-    return Page.getNumContests(page_id, function(err, block) {
+    return Page.getCodeInfo(page_id, function(err, block, prefix) {
         var prize_index = 0;
         return async.forEachSeries(prizes, function(prize, cb) {
             var i = 0;
@@ -64,7 +64,7 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
                     var result = {
                         contest_id: contest._id,
                         index: prize_index,
-                        code: self.getCode(block),
+                        code: prefix + self.getCode(block),
                         count: i,
                         timestamp: date,
                         history: [{timestamp: date}]
@@ -152,7 +152,7 @@ TimeEngine.prototype.play = function(memo, callback) {
         function(err, contest) {
             // this is just for analytics
         }
-    )
+    );
 
     self.contest.getTimeResult(memo, callback);
 };

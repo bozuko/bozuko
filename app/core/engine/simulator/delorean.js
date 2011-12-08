@@ -126,6 +126,7 @@ function run() {
                     window_divisor: argv.window_divisor,
                     throwahead_multiplier: argv.throwahead_multiplier
                 });
+                contest._engine = engine;
                 cb();
             },
             play,
