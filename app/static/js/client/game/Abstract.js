@@ -489,7 +489,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
                 '<div class="email-form">',
                     '<div><input class="email-field" placeholder="Enter your email" name="email" /></div>',
-                    '<div><a href="javascript:;" class="btn btn-cancel">Canel</a><a href="javascript:;" class="btn btn-change">Change</a></div>',
+                    '<div><a href="javascript:;" class="btn btn-cancel">Cancel</a><a href="javascript:;" class="btn btn-change">Change</a></div>',
                 '</div>'
             ].join('\n'));
             

@@ -682,6 +682,7 @@ h4 {
 
 }
 .you-win .bd .message .email-field {
+  font-size: 13px;
   width: 100%;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -689,8 +690,9 @@ h4 {
   -ms-box-sizing: border-box;
 }
 .you-win .bd label {
-  margin-bottom: 6px;
-  font-size: 11px;
+  display: block;
+  margin-bottom: 10px;
+  font-size: 12px;
 }
 .you-win .bd label input, .you-win .bd label span {
   display: inline-block;
