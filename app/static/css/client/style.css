@@ -72,12 +72,6 @@ h4 {
   vertical-align: middle;
   margin: 0;
 }
-.loading {
-  text-align: center;
-}
-.loading img {
-  margin-right: 6px;
-}
 .spinner {
   -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
@@ -170,9 +164,6 @@ h4 {
   /* IE! */
 
   background: rgba(255, 255, 255, 0.85);
-  -moz-box-shadow: 0 0 20px #333333;
-  -webkit-box-shadow: 0 0 20px #333333;
-  box-shadow: 0 0 20px #333333;
   color: #666;
   -moz-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
   -webkit-box-shadow: 0 0 20px #333, inset 0 0 40px #999;
@@ -194,6 +185,39 @@ h4 {
   color: #006b37;
   font-weight: 500;
   text-align: center;
+}
+.loading-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 0;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  border-radius: 0;
+  background-clip: padding-box;
+  -moz-box-shadow: 0 0 0;
+  -webkit-box-shadow: 0 0 0;
+  -ms-box-shadow: 0 0 0;
+  box-shadow: 0 0 0;
+}
+.loading-mask .bg {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -moz-opacity: 0.5;
+  -khtml-opacity: 0.5;
+  opacity: 0.5;
+  background: #000000 url('/images/client/loading.gif') 50% 50% no-repeat;
 }
 .facebook-login {
   display: block;
@@ -591,6 +615,7 @@ h4 {
   margin: 0;
 }
 .you-win .bd .message {
+  font-size: 12px;
   background: transparent url("/images/client/info.png") 4px 4px no-repeat;
   padding-left: 40px;
   margin: 16px 0;

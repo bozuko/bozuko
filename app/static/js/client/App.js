@@ -120,24 +120,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         });
         
         this.$loading = this.createModal({
-            cls         :'loading',
+            cls         :'loading-mask',
             cn: [{
-                cls         :'branding',
-                cn          :this.getBrandingElements()
-            },{
-                tag         :'p',
-                cn          :[{
-                    tag         :'span',
-                    cls         :'text',
-                    html        :'Loading...'
-                }]
-            },{
-                cls         :'powered-by',
-                cn          :[{
-                    tag         :'span',
-                    cls         :'small',
-                    html        :'Powered By'
-                }]
+                cls         :'bg'
             }]
         });
         var defaultLoader = new Bozuko.client.Loader(this.$loading);
