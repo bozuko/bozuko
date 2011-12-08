@@ -568,8 +568,8 @@ h4 {
 .game-description .bd .section ul li .name .trigger {
   display: inline-block;
   float: right;
-  width: 22px;
-  height: 22px;
+  width: 50px;
+  height: 24px;
   margin: 0 0 0 10px;
   vertical-align: middle;
   cursor: pointer;
