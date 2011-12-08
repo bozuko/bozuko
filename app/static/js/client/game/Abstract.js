@@ -60,6 +60,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         if( !result.prize.is_email || !result.prize.links.redeem ) return;
         
         var self = this;
+        this._showingYouWin = true;
         
         // lets redeem!
         self.app.api.call({
@@ -72,6 +73,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             }
         },function(result){
             // meh.. we are going to assume this worked.
+            // this could be where youWin disappears... lets make sure
+            // its still showing...
+            if( self._showingYouWin){
+                self.app.showModal(this.getYouWinScreen());
+            }
         });
         
     },
@@ -654,14 +660,17 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         yw.child('textarea[name=message]').value = '';
         
         if( btn.hasClass('btn-save') ){
+            this._showingYouWin = false;
             this.app.unmask();
             this.next();
         }
         else if( btn.hasClass('btn-save') ){
+            this._showingYouWin = false;
             this.app.unmask();
             this.next();
         }
         else{
+            this._showingYouWin = false;
             this.app.unmask();
             this.next();
         }

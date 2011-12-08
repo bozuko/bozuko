@@ -185,7 +185,7 @@ var SuperScroll = Ext.extend( Ext.util.Observable, {
         }
         var touches = getTouches(ev),
             touch = touches[0];
-            
+        
         this.startPosition = [touch.pageX, touch.pageY];
         this.startScroll = [this.x, this.y];
         this.showScrollbars();
@@ -307,8 +307,21 @@ var SuperScroll = Ext.extend( Ext.util.Observable, {
             return -c * (t /= d) * (t - 2) + b;
             return d/n*total;
         }
-        this.animating = true;
-        this.animateTimeout = requestAnimationFrame(frame);
+        
+        if( true || navigator.userAgent.match(/i(phone|pad|pod)/i) ){
+            // smooth
+            this.animating = true;
+            this.animateTimeout = requestAnimationFrame(frame);
+        }
+        // else lets try to use a webkit transition instead
+        else {
+            // not smooth
+            var time = Math.max( momentum[0].time, momentum[1].time );
+            this.$scroller.dom.style[vendor + 'TransitionDuration'] = time+'ms';
+            this.x = Math.max(0, Math.min( scrollable[0], origin[0] - momentum[0].dist));
+            this.y = Math.max(0, Math.min( scrollable[1], origin[1] - momentum[1].dist));
+            this.translate();
+        }
     }
 });
 
