@@ -20,20 +20,32 @@ Bozuko.client.util.Cache = (function(){
             this.cache.on('set', this.update, this);
             this.cache.on('del', this.update, this);
             this.cache.on('clear', this.clear, this);
-            
-            var data = window.localStorage.getItem(this.key);
-            if( data ){
-                this.cache.setData( Ext.decode(data) );
+            try{
+                var data = window.localStorage.getItem(this.key);
+                if( data ){
+                    this.cache.setData( Ext.decode(data) );
+                }
+            }catch(e){
+                // something is wrong with local storage.
             }
         },
         
         update : function(){
-            this.clear();
-            window.localStorage.setItem(this.key, Ext.encode(this.cache.getData()));
+            
+            try{
+                this.clear();
+                window.localStorage.setItem(this.key, Ext.encode(this.cache.getData()));
+            }catch(e){
+                // something wrong
+            }
         },
         
         clear : function(){
-            window.localStorage.removeItem(this.key);
+            try{
+                window.localStorage.removeItem(this.key);
+            }catch(e){
+                // something wrong with local storage
+            }
         }
         
     });
