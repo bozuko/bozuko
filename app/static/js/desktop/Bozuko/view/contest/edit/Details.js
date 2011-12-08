@@ -42,6 +42,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             fieldLabel      :'Post Wins to User\'s Wall'
         },{
             xtype           :'checkbox',
+            name            :'web_only',
+            fieldLabel      :'Web Only'
+        },{
+            xtype           :'checkbox',
             name            :'active',
             fieldLabel      :'Active'
         },{

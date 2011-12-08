@@ -361,13 +361,44 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         ul.update('');
         for(var i=0; i<this.game.prizes.length; i++){
             var p = this.game.prizes[i];
-            ul.createChild({
+            var li = ul.createChild({
                 tag         :'li',
-                html        :p.name
+                cn          :[{
+                    cls         :'name',
+                    html        :p.name
+                },{
+                    cls         :'description',
+                    html        :p.description
+                }]
             });
+            if( p.description ){
+                (function(li){
+                    var blocking = false;
+                    var trigger = li.child('.name').createChild({
+                        cls         :'trigger'
+                    });
+                    li.child('.name').insertFirst(trigger);
+                    li.addClass('has-description');
+                    var fn = function(e){
+                        if( blocking ) return;
+                        blocking = true;
+                        setTimeout(function(){
+                            blocking = false;
+                        },300);
+                        li.toggleClass('show-description');
+                    };
+                    trigger.on('click', fn, this);
+                })(li);
+            }
         }
         // add terms...
-        description.child('.terms .bubble').update(this.game.rules.replace(/\n/g,'<br />') );
+        var terms = this.game.rules
+            .replace(/\n/g,'<br />')
+            .replace(/(www\..+\.com)/ig, 'http://$1' )
+            .replace(/(\b(https?):\/\/[\-A-Z0-9+&@#\/%?=~_|!:,.;]*[\-A-Z0-9+&@#\/%=~_|])/ig, '<a target="_blank" href="$1">$1</a>' )
+            .replace(/([\-A-Z0-9+_.]+?@[\-A-Z0-9+&@#\/%?=~_|!:,.;]*[\-A-Z0-9+&@#\/%=~_|])/ig, '<a href="mailto:$1">$1</a>')
+            
+        description.child('.terms .bubble').update( terms );
     },
     
     onUserState : function(){
@@ -473,6 +504,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         
         this.$youWin[prize.shared?'addClass':'removeClass']('prize-shared');
         this.$youWin[prize.is_email?'addClass':'removeClass']('prize-is-email');
+        this.$youWin[prize.is_barcode?'addClass':'removeClass']('prize-is-barcode');
         
         this.$youWin.child('.hd .title').update(prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
         
@@ -557,6 +589,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 changeBlock.hide();
                 linkBlock.show();
             }, this);
+        }
+        else if( prize.is_barcode ){
+            
         }
         else{
             message.update(

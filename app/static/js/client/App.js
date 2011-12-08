@@ -130,6 +130,13 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 }]
             }]
         });
+        
+        if( Modernizr.cssanimations ){
+            var img = this.$loading.child('img');
+            img.dom.src = '/images/client/spinner2.png?v2';
+            img.addClass('animated-spinner');
+        }
+        
         var defaultLoader = new Bozuko.client.Loader(this.$loading);
         
         defaultLoader.on('showloading', function(){
@@ -317,8 +324,10 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     doLogin : function(){
         var self = this;
+        // test for qr reader on iphone...
+        var qr = navigator.userAgent.match(/i(phone|pad|pod)/i ) && !navigator.userAgent.match(/safari/i);
         
-        if( 1 || window.location != window.parent.location ){
+        if( !qr ){
             FB.login(function(){},{scope: Bozuko.client.App.facebookApp.scope});
         }
         else{
