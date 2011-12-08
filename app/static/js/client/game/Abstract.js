@@ -373,7 +373,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
             if( p.description ){
                 (function(li){
-                    var blocking = false;
+                    var blocking = false, last;
                     var trigger = li.child('.name').createChild({
                         cls         :'trigger'
                     });
@@ -387,7 +387,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         },300);
                         li.toggleClass('show-description');
                     };
-                    trigger.on('click', fn, this);
+                    trigger.on(Modernizr.touch?'touchstart':'mousedown', fn, this);
                 })(li);
             }
         }
