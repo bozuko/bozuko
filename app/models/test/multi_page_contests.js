@@ -77,6 +77,7 @@ exports['save pages'] = function(test) {
 };
 
 exports['save contest with two page_ids'] = function(test) {
+    contest.page_id = page1._id;
     contest.page_ids = [page1._id, page2._id];
     contest.save(function(err) {
         test.ok(!err);
@@ -92,7 +93,7 @@ exports['publish contest'] = function(test) {
 };
 
 exports['ensure loadPagesContests returns the same contest for page1 and page2'] = function(test) {
-    Bozuko.models.Page.loadPagesContests([page1, page2], user, function(err, pages) {
+    return Bozuko.models.Page.loadPagesContests([page1, page2], user, function(err, pages) {
         test.ok(!err);
         pages.forEach(function(page) {
             test.equal(page.contests[0].id, contest.id);

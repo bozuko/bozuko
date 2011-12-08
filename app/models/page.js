@@ -34,8 +34,8 @@ var Page = module.exports = new Schema({
     test                :{type:Boolean, index: true, default: false},
     active              :{type:Boolean, default: false, index: true},
     location            :{
-		lat					:Number,
-		lng					:Number,
+        lat	            :Number,
+        lng	            :Number,
         street              :String,
         city                :String,
         state               :String,
@@ -49,7 +49,10 @@ var Page = module.exports = new Schema({
         signed              :{type:Boolean, default: false},
         signed_by           :{type:ObjectId},
         signed_date         :{type:Date}
-    }
+    },
+    // This is a running total. Can't just search because contests may be deleted.
+    code_block          :{type:Number},
+    code_prefix         :{type:String}
 }, {safe: {w:2, wtimeout: 5000}});
 
 Page.index({admins: 1});
@@ -65,10 +68,49 @@ Page.method('getWebsite', function(){
     return website;
 });
 
-Page.static('getNumContests', function(page_id, callback) {
-    return Bozuko.models.Contest.count({page_id: page_id}, function(err, count) {
+Page.method('setCodeBlock', function(callback) {
+        var page_id = this._id;
+        return Bozuko.models.Contest.count({page_id: page_id}, function(err, count) {
+            if (err) return callback(err);
+            count = count || 0;
+            return Bozuko.models.Page.update({_id: page_id}, {$set: {code_block: count}}, function(err) {
+                return callback(null, count);
+            });
+        });
+});
+
+Page.static('setCodeInfo', function(page_id, callback) {
+    return Bozuko.models.Page.findById(page_id, function(err, page) {
         if (err) return callback(err);
-        return callback(null, count || 0);
+        if (!page) return callback(Bozuko.error('page/does_not_exist'));
+        if (!page.code_block && page.code_block !== 0) return page.setCodeBlock(function(err) {
+            if (err) return callback(err);
+            if (page.code_prefix) return callback(null);
+            return page.setCodePrefix(callback);
+        });
+        return Bozuko.models.Page.update({_id: page_id}, {$inc: {code_block: 1}}, function(err) {
+            if (err) return callback(err);
+            if (page.code_prefix) return callback(null);
+            return page.setCodePrefix(callback);
+        });
+    });
+});
+
+Page.method('setCodePrefix', function(callback) {
+    var page_id = this._id;
+    return Bozuko.models.CodePrefix.increment(function(err, prefix) {
+        if (err) return callback(err);
+        return Bozuko.models.Page.update({_id: page_id}, {$set: {code_prefix: prefix}}, callback);
+    });
+});
+
+Page.static('getCodeInfo', function(page_id, callback) {
+    if (!page_id) return callback(Bozuko.error('page/does_not_exist'));
+    return Bozuko.models.Page.findById(page_id, function(err, page) {
+        if (err) return callback(err);
+        if (!page) return callback(Bozuko.error('page/does_not_exist'));
+        if (page.code_block && page.code_prefix) return callback(null, page.code_block, page.code_prefix);
+        return Bozuko.models.Page.setCodeInfo(page_id, callback);
     });
 });
 
@@ -560,6 +602,7 @@ Page.static('search', function(options, callback){
             }
 
             if( page._doc ){
+                console.error(page.name+' registered');
                 page.registered = true;
             }
             if (!page.active && page._id) {
@@ -618,8 +661,9 @@ Page.static('search', function(options, callback){
                 $nin: featured_ids
             };
         }
-
+        console.log('bozukoSearch = '+inspect(bozukoSearch));
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
+            console.log('pages.length = '+pages.length);
 
             if( error ) return callback(error);
 

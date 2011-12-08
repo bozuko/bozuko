@@ -85,7 +85,7 @@ exports.routes = {
                 }
 
                 var profiler = Profiler.create('controller/page/search');
-                
+
                 return Bozuko.models.Page.search(options,
                     function(error, pages){
                         if( error )return error.send(res);
