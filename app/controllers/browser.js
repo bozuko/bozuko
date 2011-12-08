@@ -3,7 +3,6 @@ var facebook    = Bozuko.require('util/facebook'),
     qs          = require('querystring'),
     url         = require('url'),
     spawn       = require('child_process').spawn,
-    sys         = require('sys'),
     ObjectId    = require('mongoose').Types.ObjectId,
     filter      = Bozuko.require('util/functions').filter,
     merge       = Bozuko.require('util/functions').merge,
@@ -27,7 +26,7 @@ exports.routes = {
                 layout: false
             },
             handler : function(req, res){
-                
+
                 var transfer_objects = {};
                 var links = {};
                 Object.keys(Bozuko.transfers()).forEach(function(key){
@@ -37,7 +36,7 @@ exports.routes = {
                         def: transfer.def
                     };
                 });
-                
+
                 Object.keys(Bozuko.links()).forEach(function(key){
                     var link = Bozuko.link(key);
 
@@ -59,7 +58,7 @@ exports.routes = {
                         methods: methods
                     };
                 });
-                
+
                 return Bozuko.models.User.find({}, {}, {limit:24}, function(error, users){
                     res.locals.transfer_objects = JSON.stringify(transfer_objects);
                     res.locals.links = JSON.stringify(links);
@@ -71,7 +70,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/browser/users' : {
 
         get : {
@@ -84,7 +83,7 @@ exports.routes = {
                     start = req.param('start') || 0,
                     limit = req.param('limit') || 25
                     ;
-                
+
                 if( search ){
                     selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
                 }
@@ -104,7 +103,7 @@ exports.routes = {
                         selector['services.internal.friend_count'] = {$lt: 10};
                         break;
                 }
-                
+
                 Bozuko.models.User.find(selector,{
                     'services.internal.likes': 0,
                     'services.internal.friends': 0
