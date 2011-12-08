@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.env.NODE_ENV = 'test';
+
 var fs = require('fs'),
     bozuko = require('../../../bozuko'),
     async = require('async'),
@@ -8,56 +10,31 @@ var fs = require('fs'),
     Oid = require('mongoose').Types.ObjectId,
     TimeEngine = require('../time'),
     inspect = require('util').inspect,
-    Profiler = Bozuko.require('util/profiler')
+    Profiler = Bozuko.require('util/profiler'),
+    exec = require('child_process').exec
 ;
 
 var argv = require('optimist')
-    .default('buffer', 0.1)
+    .default('buffer', 0.001)
     .default('window_divisor', 2)
     .default('throwahead_multiplier', 0.5)
     .default('out', process.env.HOME+'/delorean_out.csv')
+    .default('sparse', 1)
     .argv;
 
-var data = require(argv.f);
+if (!argv.contest) throw new Error("Need a contest to simulate");
 
 var user = new Bozuko.models.User(
 {
     name: 'Marty McFly',
     first_name: 'Marty',
     last_name: 'McFly',
-    email: 'bozukob@gmail.com',
-    token: 'dfasaa33345353453543',
+    email: 'marty@mcfly.net',
+    token: 'sillytimetravelingtoken',
     gender: 'male'
 });
 
-var page = new Bozuko.models.Page({
-    active: true,
-    name: 'delorean'
-});
-
 var ll = [42.646, -71.303];
-
-
-var contest = new Bozuko.models.Contest({
-    engine_type: 'time',
-    game: 'slots',
-    game_config: {
-        theme: 'default'
-    },
-    entry_config: [{
-        type: "facebook/checkin",
-        tokens: 5000,
-        duration: 0
-    }],
-    start: data.start,
-    end: data.end,
-    free_play_pct: 0,
-    prizes: [{
-        name: 'stuff',
-        value: 1,
-        total: data.prizes
-    }]
-});
 
 // Mock entry model
 var entry = {
@@ -66,6 +43,7 @@ var entry = {
 
 run();
 
+var path = process.env.HOME+'/bozuko/app/core/engine/simulator/input/'+argv.contest;
 
 function emptyCollection(name) {
     return function(callback){
@@ -79,40 +57,76 @@ function dropdb(callback) {
         e('Result')], callback);
 }
 
+function mongoimport(callback) {
+    var opts = {
+        timeout: 60000,
+        cwd: path
+    };
+    async.series([
+        function import_page(cb) {
+            exec('mongoimport --host pgdb1 --db bozuko_test9001 --collection pages --file ./page.json',
+                opts, cb);
+        },
+        function import_contest(cb) {
+            exec('mongoimport --host pgdb1 --db bozuko_test9001 --collection contests --file ./contest.json',
+                opts, cb);
+        }
+    ], callback);
+}
+
 var wins = [];
 var redistributions = [];
 var timestamps = [];
 var engine;
+var contest;
 
 function run() {
     async.series(
         [
             dropdb,
-            function save_page(cb) {
-                page.save(cb);
-            },
+            mongoimport,
             function save_user(cb) {
                 user.save(cb);
             },
-            function save_contest(cb) {
-                contest.page_id = page._id;
-                contest.save(cb);
+            function get_contest(cb) {
+                return fs.readFile(path+'/contest.json', function(err, json) {
+                    if (err) return cb(err);
+                    var data = JSON.parse(json);
+                    var contest_id = new Oid(data._id['$oid']);
+                    return Bozuko.models.Contest.findOne({_id: contest_id}, function(err, c) {
+                        contest = c;
+                        cb(err);
+                    });
+                });
             },
-            function remove_results(cb) {
-                Bozuko.models.Result.remove(cb);
+            function clear_history_and_save_results(cb) {
+                fs.readFile(path+'/results.json', function(err, jsonlines) {
+                    var jsonarray = jsonlines.split("\n");
+                    async.forEachSeries(jsonarray, function(json, cb) {
+                        var data = JSON.parse(json);
+                        delete data._id;
+                        delete data.win_time;
+                        delete data.entry_id;
+                        delete data.user_id;
+                        data.contest_id = new Oid(data.contest_id['$oid']);
+                        var timestamp = new Date(data.timestamp['$date']);
+                        data.timestamp = timestamp;
+                        data.history = [{timestamp: timestamp}];
+                        var result = new Bozuko.models.Result(data);
+                        result.save(cb);
+                    }, function(err) {
+                        return cb(err);
+                    });
+                });
             },
-            function generate_results(cb) {
-                var prof = new Profiler('generate_results');
+            function configure_engine(cb) {
                 engine = new TimeEngine(contest);
                 engine.configure({
                     buffer: argv.buffer,
                     window_divisor: argv.window_divisor,
                     throwahead_multiplier: argv.throwahead_multiplier
                 });
-                engine.generateResults(Bozuko.models.Page, page._id, function(err) {
-                    prof.mark('done');
-                    cb(err);
-                });
+                cb();
             },
             play,
             function get_redistributions(cb) {
@@ -132,10 +146,6 @@ function run() {
                 });
             },
             function output_data_file(cb) {
-                for (var i = 0; i < data.plays.length; i++) {
-                    timestamps.push(data.plays[i].timestamp);
-                }
-
                 var buckets = createBuckets();
 
                 var stream = fs.createWriteStream(argv.out);
@@ -164,6 +174,8 @@ function buildKey(ts) {
 
 function createBuckets() {
     var buckets = {};
+    console.log("plays = "+timestamps.length);
+    console.log("wins = "+wins.length);
     timestamps.forEach(function(ts) {
         var key = buildKey(ts);
         if (!buckets[key]) {
@@ -204,34 +216,39 @@ function createBuckets() {
 }
 
 function play(callback) {
-    var prof = new Profiler('play');
-    return async.forEachSeries(data.plays, function(play, cb) {
-        var memo = {
-            timestamp: new Date(play.timestamp),
-            user: user,
-            entry: entry
-        };
-        return engine.play(memo, function(err, memo) {
-            if (memo.result) wins.push(play.timestamp);
-            return process.nextTick(function() {cb(err);});
-        });
-    }, function(err) {
-        prof.mark(''+data.plays.length+' plays');
-        callback(err);
+    return fs.readFile(path+'/plays.json', function(err, jsonlines) {
+        var jsonarray = jsonlines.split("\n");
+        var ct = -1;
+        return async.forEachSeries(jsonarray, function(json, cb) {
+            ct++;
+            if ((ct % argv.sparse) != 0) return cb();
+            var data = JSON.parse(json);
+            var timestamp = new Date(data.timestamp.$date);
+            timestamps.push(timestamp);
+            var memo = {
+                timestamp: timestamp,
+                user: user,
+                entry: entry
+            };
+            return engine.play(memo, function(err, memo) {
+                if (memo.result && memo.result != 'free_play') wins.push(memo.timestamp);
+                return process.nextTick(function() {cb(err);});
+            });
+        }, callback);
     });
 }
 
 function chart() {
     var playchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
-        ylabel: 'plays', step: 3});
+        ylabel: 'plays', step: 1});
     var winchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
-        ylabel: 'wins', step: 3});
+        ylabel: 'wins', step: 1});
 
     var redistchart = new Chart({height: 20, width: 120, direction: 'y', xlabel: 'time (hours)',
         ylabel: 'redistributions', step: 3});
 
-    var start = data.start.getTime();
-    var end = data.end.getTime();
+    var start = contest.start.getTime();
+    var end = contest.end.getTime();
 
     playchart.bucketize(timestamps, start, end);
     playchart.draw();

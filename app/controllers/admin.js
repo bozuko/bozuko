@@ -4,7 +4,6 @@ var facebook    = Bozuko.require('util/facebook'),
     Dashboard   = require('./base/dashboard'),
     url         = require('url'),
     spawn       = require('child_process').spawn,
-    sys         = require('sys'),
     Path        = require('path'),
     s3          = Bozuko.require('util/s3'),
     GD          = require('node-gd'),
@@ -24,7 +23,7 @@ exports.access = 'admin';
 exports.restrictToUser = false;
 
 exports.routes = {
-    
+
     '/dev/reset' : {
         get : {
             handler: function(req, res){
@@ -34,11 +33,11 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/upgrade/from/owners': {
         get : {
             handler : function(req, res){
-                
+
                 Bozuko.models.Page.collection.update({
                     owner_id: {$exists:false}
                 },{
@@ -53,82 +52,82 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/checkandsend/:id' : {
         get : {
             handler : function(req, res) {
-                
+
                 var test = false;
-                
+
                 Bozuko.models.Contest.findById( req.param('id'), function(error, contest){
                     if( error ) return error.send( res );
                     if( !contest ) return res.send({error:'no contest'});
                     return Bozuko.models.Prize.find({contest_id: contest._id, is_email: false}, function(error, prizes){
                         if( error ) return error.send( res );
                         // go through each prize
-                        
+
                         var results=[];
-                        
+
                         return async.forEachSeries( prizes,
-                                           
+
                             function iterator(prize, cb){
-                                
+
                                 var contest_prize = contest.prizes.id( prize.prize_id ),
                                     result = contest.results[prize.play_cursor];
-                                    
+
                                 if( !contest_prize.is_email ){
                                     return cb();
                                 }
-                                
+
                                 return Bozuko.models.User.findById( prize.user_id, function(error, user){
                                     if( error ) return cb(error);
-                                    
+
                                     if( !user ) return cb(new Error('Invalid user ID?'));
-                                    
+
                                     if( test ) {
                                         results.push({play_cursor: prize.play_cursor, result: result, prize:prize.name, email_code: contest_prize.email_codes[result.count], user_name: user.name, already_redeemed: prize.redeemed});
                                         return cb();
                                     }
-                                    
+
                                     prize.is_email = true;
                                     prize.email_format = contest_prize.email_format;
                                     prize.email_body = contest_prize.email_body;
                                     prize.email_subject = contest_prize.email_subject;
                                     prize.email_code = contest_prize.email_codes[result.count];
-                                    
+
                                     return prize.save(function(error){
                                         if( error ) return cb(error);
                                         // we need to get this user too
-                                        
+
                                         if( !prize.redeemed ) return prize.redeem(user, function(error){
                                             if( error ) return cb(error);
                                             results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: false});
                                             return cb();
                                         });
-                                        
+
                                         else {
                                             prize.sendEmail( user );
                                             results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: true});
                                             return cb();
                                         }
-                                        
+
                                     });
                                 });
                             },
-                            
+
                             function complete(error){
                                 if( error ) return error.send(res);
                                 return res.send('<pre>'+JSON.stringify(results,null,'  ')+'</pre>');
                             }
-                            
+
                         );
                     });
                 });
-                
+
             }
         }
     },
-    
+
     '/admin/add/search/params/:type': {
         get : {
             handler : function(req, res){
@@ -136,14 +135,14 @@ exports.routes = {
                 var do_update = function(model, callback){
                     var collection = model.collection;
                     collection.find({}, function(error, cursor){
-                        
+
                         async.whilst(
-                            
+
                             function(){ return !atEnd; },
-                            
+
                             function(_cb){
                                 cursor.nextObject(function( err, obj ){
-                                    
+
                                     if( err ){
                                         return _cb(err);
                                     }
@@ -156,7 +155,7 @@ exports.routes = {
                                         user_id = obj.user_id,
                                         page_id = obj.page_id
                                         ;
-                                        
+
                                     return async.series([
                                         function get_user(cb){
                                             if( user_map[String(user_id)] ){
@@ -193,11 +192,11 @@ exports.routes = {
                                         }
                                     ], function finish(error){
                                         collection.update({_id: obj._id}, {$set:{page_name: page_name, user_name:user_name}}, function(err, result){
-                                            
+
                                         });
                                         _cb(null);
                                     });
-                                    
+
                                 });
                             }, function(error){
                                 callback(null);
@@ -206,12 +205,12 @@ exports.routes = {
                     });
                 };
                 async.series([
-                    
+
                     function(cback){
                         var model = req.param('type')=='prize' ? Bozuko.models.Prize : Bozuko.models.Entry;
                         do_update(model, cback);
                     }
-                    
+
                 ], function(error){
                     console.log(error);
                     res.send('done.');
@@ -219,7 +218,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin' : {
 
         get : {
@@ -235,7 +234,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/page/:id/admins' : {
         alias : '/admin/page/:id/admins/:user_id',
         get : {
@@ -250,7 +249,7 @@ exports.routes = {
                 });
             }
         },
-        
+
         post : {
             handler : function(req, res){
                 if( !req.param('user_id') ) (new Error('No user')).send(res);
@@ -282,7 +281,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/fix/like/shares' : {
         get: {
             handler : function( req, res ){
@@ -294,20 +293,20 @@ exports.routes = {
                     if( error ) res.send(error);
                     async.forEach( pages, function iterate(page, callback){
                         console.log('iterating over page '+page._id);
-                        
+
                         // get distinct users
                         return Bozuko.models.Entry.collection.distinct(
-                            
+
                             'user_id',
                             {type:'facebook/like', page_id:page._id},
-                            
+
                             function(error, user_ids){
                                 if( error ) return callback(error);
-                                
+
                                 // for each user
                                 return async.forEach( user_ids, function iterate(user_id, cb){
-                                    
-                                    
+
+
                                     console.log('iterating over user_id '+user_id);
                                     // see if this guy has a share entry
                                     Bozuko.models.Share.count({user_id: user_id, page_id: page._id}, function(error, count){
@@ -321,15 +320,15 @@ exports.routes = {
                                             type:'facebook/like'
                                         },{},{sort:{timestamp: 1}},function(error, entries){
                                             if( error ) return cb(error);
-                                            
+
                                             if( !entries ) return cb();
-                                            
+
                                             var entry = entries[0];
-                                            
+
                                             // lets get this user too.
                                             return Bozuko.models.User.findOne({_id: user_id}, {'services.internal.friend_count':1},function(error, user){
                                                 if( error ) return cb(error);
-                                                
+
                                                 var share = new Bozuko.models.Share({
                                                     user_id: user_id,
                                                     page_id: page._id,
@@ -372,7 +371,7 @@ exports.routes = {
                     limit = req.param('limit') || 25,
                     exclude = req.param('exclude')
                     ;
-                
+
                 if( search ){
                     selector.name = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
                 }
@@ -395,7 +394,7 @@ exports.routes = {
                         selector['services.internal.friend_count'] = {$lt: 10};
                         break;
                 }
-                
+
                 Bozuko.models.User.find(selector,{
                     'services.internal.likes': 0,
                     'services.internal.friends': 0
@@ -414,7 +413,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/users/:id/block' : {
         post : {
             handler : function(req, res){
@@ -445,7 +444,7 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/places' : {
 
         get : {
@@ -521,14 +520,14 @@ exports.routes = {
             }
         }
     },
-    
+
     '/admin/export' : {
         post : {
             handler : function(req, res){
                 console.log(req.param('body'));
                 var body = JSON.parse(req.param('body')),
                     name = body.name.replace(/"/, '\\"');
-                    
+
                 res.contentType('application/json');
                 res.header('content-disposition', 'attachment; filename="'+name+'.json"');
                 return res.send( body );
@@ -539,11 +538,11 @@ exports.routes = {
     '/admin/build-circles' : {
         get :{
             handler : function(req, res){
-                
+
                 var radius = parseInt(req.param('radius')||40,10),
                     diameter = radius*2,
                     i = 0;
-                    
+
                 function rgb(percent){
                     var r,g,b;
                     if( percent < .25 ){
@@ -560,12 +559,12 @@ exports.routes = {
                     }
                     return ['rgba('+r,g,b,'.5)'].join(',');
                 }
-                
+
                 async.whilst(function(){ return i < 101; }, function(cb){
                     var canvas = new Canvas(diameter, diameter),
                         percent = (i/100),
                         ctx = canvas.getContext('2d');
-                    
+
                     ctx.beginPath();
                     ctx.fillStyle = '#ffffff';
                     ctx.moveTo(radius,radius);
@@ -586,13 +585,13 @@ exports.routes = {
                     ctx.closePath();
                     ctx.stroke();
                     ctx.moveTo(radius,radius);
-                    
+
                     var stream = canvas.createPNGStream(),
                         tmpFile = Bozuko.dir+'/tmp/circle-'+i+'.png',
                         tmp = fs.createWriteStream(tmpFile);
-                    
+
                     i++;
-                    
+
                     stream.on('data', function(chunk){
                         tmp.write(chunk,'binary');
                     });
@@ -604,13 +603,13 @@ exports.routes = {
                             return cb();
                         });
                     });
-                    
+
                 }, function(error){
                     // tell the browser its all good...
                     if( error ) return res.send('there was an error dog...');
                     return res.send('circles created');
                 });
-                
+
             }
         }
     }

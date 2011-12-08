@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
     Native = require('./plugins/native'),
     crypto = require('crypto'),
     Phone = require('./embedded/user/phone'),
+    Reward = require('./embedded/user/reward'),
     XRegExp = Bozuko.require('util/xregexp'),
     async = require('async'),
     merge = Bozuko.require('util/object').merge,
@@ -13,6 +14,7 @@ var mongoose = require('mongoose'),
     DateUtil = Bozuko.require('util/date')
     ;
 
+var safe = {w:2, wtimeout: 5000};
 var User = module.exports = new Schema({
     name                :{type:String, index: true},
     phones              :[Phone],
@@ -34,8 +36,9 @@ var User = module.exports = new Schema({
     can_manage_pages    :{type:Boolean},
     last_viewed_page    :{type:ObjectId},
     manages             :[ObjectId],
-    bucks               :{type:Number, default: 0}
-}, {safe: {w:2, wtimeout: 5000}});
+    bucks               :{type:Number, default: 0},
+    rewards             :[Reward]
+}, {safe: safe});
 
 User.plugin(Services);
 User.plugin(Native);
@@ -48,6 +51,31 @@ User.pre('save', function(next) {
         return create_token(this, 1, next);
     }
     return next();
+});
+
+User.method('claimReward', function(reward, callback) {
+    var self = this;
+    return reward.claim(this, function(err) {
+        if (err) return callback(err);
+
+        var embedded_reward = {
+            name: reward.name,
+            reward_id: reward._id,
+            bucks: reward.bucks,
+            timestamp: new Date()
+        };
+
+        return Bozuko.models.User.findAndModify(
+            {_id: self._id, bucks: {$gte: reward.bucks}}, [],
+            {$inc: {bucks: -1*reward.bucks}, $push: {rewards: embedded_reward}},
+            {new: true, safe: safe},
+            function(err, user) {
+                if (err) return callback(err);
+                if (!user) return callback(Bozuko.error('reward/not_enough_bucks'));
+                return callback(null, user);
+            }
+        );
+    });
 });
 
 User.method('isBlocked', function(){
