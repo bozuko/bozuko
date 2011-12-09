@@ -1,0 +1,18 @@
+#fb-root
+script(src="//connect.facebook.net/en_US/all.js")
+
+#container
+script(type="text/javascript")
+  
+  alert('before init');
+  var channel = '//'+(window.location.hostname+((~[80,443].indexOf(window.location.port))?'':(':'+window.location.port))+'/channel.html');
+  //initialize facebook
+  FB.init({
+      appId: "#{Bozuko.cfg('facebook.app.id')}",
+      channelUrl: channel,
+      status: true, 
+      cookie: true,
+      xfbml: true,
+      oauth: true
+  });
+  alert('after init');

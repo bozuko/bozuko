@@ -255,6 +255,19 @@ exports.routes = {
             }
         }
 
+    },
+    
+    '/channel.html' : {
+        get : {
+            handler : function(req, res){
+                var cache_expire = 60*60*24*365;
+                res.header('Pragma', 'public');
+                res.header('Cache-Control', 'max-age='+cache_expire);
+                res.send(
+                    '<script src="//connect.facebook.net/en_US/all.js"></script>'
+                );
+            }
+        }
     }
 
 };

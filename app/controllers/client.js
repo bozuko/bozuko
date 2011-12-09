@@ -52,6 +52,8 @@ exports.routes = {
                             });
                         }
                         
+                        result = Bozuko.service('facebook').sanitizeUser(result);
+                        
                         // lets add this dude..
                         result.token = token;
                         return Bozuko.models.User.addOrModify(result, null, function(err, u) {
@@ -114,6 +116,15 @@ exports.routes = {
             }
         }
     },
+    
+    '/client/test' : {
+        get : {
+            handler : function(req, res){
+                res.render('client/test');
+            }
+        }
+    },
+    
     '/client' : {
         alias: '/client/*',
         get : {
@@ -146,7 +157,7 @@ exports.routes = {
                     res.locals.scripts.push(script+'?'+now);
                 });
                 
-                res.locals.stylesheets = [];
+                res.locals.stylesheets = ['https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300'];
                 styles.forEach(function(style){
                     res.locals.stylesheets.push(style+'?'+now);
                 });

@@ -64,7 +64,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         this.width = Math.min( 500, Math.max( this.config.width || Math.min(window.innerWidth, window.innerHeight), 320 ) );
         this.height = this.width/this.dimensions.x*this.dimensions.y;
-        
         this.stylesheet = Bozuko.client.util.Stylesheet.create('app');
         this.stylesheet.rule('.modal-window', {
             'max-height': (this.height-30-6)+'px'
@@ -89,12 +88,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         Ext.get(document.body).setStyle('font-size', 13*this.width/this.dimensions.x+'px');
         Ext.get(this.ct).setWidth(this.width);
         
-        // okay... now we need to take orientation change into account
-        
-        
+        // okay... now we need to take orientation change into account       
         this.initFacebook();
         this.startFromPath();
-        
         this.on('user', function(){
             this.userState = 'user';
         }, this);
@@ -179,19 +175,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     initFacebook : function(){
         var self = this;
         
-        //initialize facebook
-        FB.init({
-            appId: Bozuko.client.App.facebookApp.id, 
-            status: true, 
-            cookie: true,
-            xfbml: true,
-            oauth: true
-        });
-        
         FB.Event.subscribe('auth.logout', function(){
             self.fireEvent('nouser');
         });
-        
         FB.Event.subscribe('auth.login', function(response){
             self.onFacebookLogin(response);
         });
