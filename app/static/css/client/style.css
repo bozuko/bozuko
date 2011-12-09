@@ -94,7 +94,6 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  letter-spacing: .05em;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
@@ -123,7 +122,6 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  letter-spacing: .05em;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
@@ -278,7 +276,8 @@ a:hover {
   text-align: center;
 }
 .scratch-ticket .prize .number {
-  font-weight: 800;
+  font-family: Arial;
+  font-weight: bolder;
   padding-top: 25%;
   padding-bottom: 10%;
   line-height: 1em;
@@ -498,7 +497,6 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  letter-spacing: .05em;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
@@ -585,10 +583,9 @@ a:hover {
   float: right;
   width: 50px;
   height: 18px;
-  margin: 0 0 0 10px;
   vertical-align: middle;
   cursor: pointer;
-  background: transparent url("/images/client/arrow3.png?v4") 100% 0px no-repeat;
+  background: transparent url("/images/client/arrow3.png?v5") 100% 0px no-repeat;
 }
 .game-description .bd .section ul li .description {
   padding: 0px 10px 5px;
@@ -597,7 +594,7 @@ a:hover {
   color: #666;
 }
 .game-description .bd .section ul .show-description .trigger {
-  background-position: 100% -25px !important;
+  background-position: 100% -47px !important;
 }
 .game-description .bd .section ul .show-description .description {
   display: block;
@@ -684,6 +681,9 @@ a:hover {
   margin: 16px 0;
   text-align: left;
 }
+.you-win .bd .message .buttons {
+  text-align: right;
+}
 .you-win .bd .message .btn {
   display: inline-block;
   padding: 4px 20px;
@@ -691,7 +691,6 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  letter-spacing: .05em;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
@@ -710,7 +709,10 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
-  margin-right: 10px;
+  font-size: 12px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-top: 10px;
 }
 .you-win .bd .message .btn:hover {
   background-color: #31fb45;
@@ -735,7 +737,6 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  letter-spacing: .05em;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
@@ -754,8 +755,10 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#a8a8a8',EndColorStr='#7a7a7a');
   /* IE6-9 */
 
-  margin-right: 15px;
-  margin-top: 6px;
+  font-size: 12px;
+  margin-right: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 .you-win .bd .message .btn-cancel:hover {
   background-color: #31fb45;
@@ -847,7 +850,6 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  letter-spacing: .05em;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
@@ -893,7 +895,6 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  letter-spacing: .05em;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;

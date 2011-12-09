@@ -351,12 +351,14 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         window.scrollTo(0,1);
     },
     
-    mask : function(){
+    mask : function(keep){
+        this.keepmask = keep;
         this.$mask.show();
         this.$modal.show();
     },
     
-    unmask : function(){
+    unmask : function(force){
+        if( this.keepmask && !force ) return;
         this.$mask.hide();
         this.$modal.hide();
     },
@@ -381,15 +383,15 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.hideModal();
     },
     
-    showModal : function($el){
+    showModal : function($el, keep){
         if( this.stopped ) return;
-        this.mask();
+        this.mask(keep);
         this.$modal.select('.modal-window').hide();
         $el.show();
     },
     
-    hideModal : function(){
-        this.unmask();
+    hideModal : function(force){
+        this.unmask(force);
     },
     
     registerLoader : function(loader){
