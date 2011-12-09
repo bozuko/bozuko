@@ -8,21 +8,9 @@ script(src="//connect.facebook.net/en_US/all.js")
 
 
 script(type="text/javascript")
-  var channel = '//'+(window.location.hostname+((~[80,443].indexOf(window.location.port))?'':(':'+window.location.port))+'/channel.html');
   Bozuko.client.App.path = !{JSON.stringify(path)};
   Bozuko.client.App.facebookApp = {
     id: "#{Bozuko.cfg('facebook.app.id')}",
     scope: "#{Bozuko.cfg('facebook.perms.user')}"
   };
-  
-  //initialize facebook
-  FB.init({
-      appId: Bozuko.client.App.facebookApp.id,
-      channelUrl: channel,
-      status: true, 
-      cookie: true,
-      xfbml: true,
-      oauth: true
-  });
-  
   Bozuko.client.App.launch(!{JSON.stringify(config)});

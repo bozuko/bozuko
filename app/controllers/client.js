@@ -130,6 +130,8 @@ exports.routes = {
         get : {
             handler : function(req, res){
                 
+                var device = req.session.device;
+                
                 req.session.destroy();
                 res.locals.path = '/'+( req.params && req.params.length ? req.params[0] : 'api');
                 
@@ -157,7 +159,7 @@ exports.routes = {
                     res.locals.scripts.push(script+'?'+now);
                 });
                 
-                res.locals.stylesheets = ['https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300'];
+                res.locals.stylesheets = [];
                 styles.forEach(function(style){
                     res.locals.stylesheets.push(style+'?'+now);
                 });

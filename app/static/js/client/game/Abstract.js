@@ -72,6 +72,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 email_prize_screen: true
             }
         },function(result){
+            if( !result.ok ){
+                // we need this to go through
+            }
             // meh.. we are going to assume this worked.
             // this could be where youWin disappears... lets make sure
             // its still showing...
@@ -129,7 +132,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             return;
         }
         this.updateDescription();
-        this.updateState(true, function(){
+        this.updateState(true, function(result){
+            if( !result.ok ){
+                self.updateAction('Error');
+            }
             self.app.scrollToTop();
             self.app.hideLoading();
             self.showDescription();
@@ -244,6 +250,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             link = full ? this.game.game_state.links.game : this.game.game_state.links.game_state;
             
         self.app.api.call(link, function(result){
+            if( !result.ok ){
+                if( callback && typeof callback == 'function' ) callback(result);
+                return;
+            }
             // we need to see what the deal is...
             if( full ){
                 self.setState(result.data.game_state);
@@ -255,7 +265,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             }
             
             self.updateActionFromState();
-            if( callback && typeof callback == 'function' ) callback();
+            if( callback && typeof callback == 'function' ) callback(result);
         });
     },
     
@@ -760,6 +770,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 method: 'post'
             },function(result){
                 
+                if( !result.ok ){
+                    self.updateAction('Error');
+                    self.showDescription();
+                    return;
+                }
+                
                 self.app.hideLoading();
                 
                 Ext.each( result.data, function(state){
@@ -802,8 +818,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             method: 'post'
         },function(result){
             
-            if( !result ){
-                
+            if( !result.ok ){
+                self.updateAction('Error');
+                self.showDescription();
+                return;
             }
             
             self.app.hideLoading();

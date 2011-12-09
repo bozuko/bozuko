@@ -24,6 +24,11 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.ct = this.config.renderTo || document.body;
         
         this.api = new Bozuko.client.lib.Api();
+        this.api.on('failure', function(result){
+            if( result.data && result.data.message ){
+                alert(result.data.message);
+            }
+        });
         
         this.createElements();
         this.showLoading('Loading...');
@@ -35,7 +40,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 return;
             }
             var now = Date.now();
-            if( now-lastTouch < 500 ){
+            if( now-lastTouch < 200 ){
                 e.preventDefault();
             }
             lastTouch = now;
@@ -88,9 +93,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         Ext.get(document.body).setStyle('font-size', 13*this.width/this.dimensions.x+'px');
         Ext.get(this.ct).setWidth(this.width);
         
-        // okay... now we need to take orientation change into account       
-        this.initFacebook();
+        
         this.startFromPath();
+        this.initFacebook();
         this.on('user', function(){
             this.userState = 'user';
         }, this);
@@ -174,13 +179,28 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     initFacebook : function(){
         var self = this;
-        
-        FB.Event.subscribe('auth.logout', function(){
-            self.fireEvent('nouser');
-        });
-        FB.Event.subscribe('auth.login', function(response){
-            self.onFacebookLogin(response);
-        });
+        var channel = '//'+(window.location.hostname+((~[80,443].indexOf(window.location.port))?'':(':'+window.location.port))+'/channel.html');
+        try{
+            FB.init({
+                appId: Bozuko.client.App.facebookApp.id,
+                channelUrl: channel,
+                status: true, 
+                cookie: true,
+                xfbml: true,
+                oauth: true
+            });
+            FB.Event.subscribe('auth.logout', function(){
+                self.fireEvent('nouser');
+            });
+            FB.Event.subscribe('auth.login', function(response){
+                self.onFacebookLogin(response);
+            });
+        }catch(e){
+            if( e.code === DOMException.QUOTA_EXCEEDED_ERR ){
+                // this is probably safari in private browsing mode
+                alert('This page will not work in private browsing mode. Please go to Settings > Safari and make sure "Private Browsing" is set to "off". Thanks!');
+            }
+        }
     },
     
     logout : function(){
