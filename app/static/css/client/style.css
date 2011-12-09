@@ -13,7 +13,7 @@ body {
   background: #000000;
   padding: 0;
   margin: 0;
-  font-family: "open sans", arial;
+  font-family: "helvetica nueue", "helvetica", "arial", "sans";
   font-size: 13px;
 }
 h1,
@@ -22,7 +22,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-familiy: "open sans", arial;
+  font-family: "helvetica nueue", "helvetica", "arial", "sans";
 }
 #container {
   margin: 0 auto;
@@ -36,6 +36,12 @@ h4 {
 * {
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+a,
+a:visited,
+a:link,
+a:hover {
+  color: #006699;
 }
 ::-webkit-input-placeholder {
   color: #999;
@@ -86,12 +92,13 @@ h4 {
   padding: 4px 20px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: bold;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   color: #fff;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: -1px -1px 1px #333333, 1px 1px 1px #999999;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
@@ -113,12 +120,13 @@ h4 {
   padding: 4px 20px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: bold;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   color: #fff;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: -1px -1px 1px #333333, 1px 1px 1px #999999;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
@@ -459,7 +467,7 @@ h4 {
   margin-right: 4px;
 }
 .game-description .hd .content .instructions {
-  padding-left: 2px;
+  padding-left: 0px;
 }
 .game-description .actions {
   position: relative;
@@ -486,12 +494,13 @@ h4 {
   padding: 4px 20px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: bold;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   color: #fff;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: -1px -1px 1px #333333, 1px 1px 1px #999999;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
@@ -525,7 +534,8 @@ h4 {
 
 }
 .game-description .actions .agree {
-  font-size: 10px;
+  margin-top: .5em;
+  font-size: 11px;
 }
 .game-description .loading .action {
   display: none;
@@ -564,16 +574,18 @@ h4 {
 }
 .game-description .bd .section ul li .name {
   padding: 10px;
+  font-weight: bold;
+  font-size: 1.1em;
 }
 .game-description .bd .section ul li .name .trigger {
   display: inline-block;
   float: right;
   width: 50px;
-  height: 22px;
+  height: 18px;
   margin: 0 0 0 10px;
   vertical-align: middle;
   cursor: pointer;
-  background: transparent url("/images/client/arrow.png?v3") 100% 2px no-repeat;
+  background: transparent url("/images/client/arrow3.png?v3") 100% 0px no-repeat;
 }
 .game-description .bd .section ul li .description {
   padding: 0px 10px 5px;
@@ -582,7 +594,7 @@ h4 {
   color: #666;
 }
 .game-description .bd .section ul .show-description .trigger {
-  background-position: 100% -20px !important;
+  background-position: 100% -25px !important;
 }
 .game-description .bd .section ul .show-description .description {
   display: block;
@@ -604,6 +616,13 @@ h4 {
 .game-description .bd .terms .bubble {
   padding: 10px;
   font-size: 11px;
+}
+.like-button-frame {
+  display: inline-block;
+  width: 54px;
+  height: 26px;
+  vertical-align: middle;
+  margin-left: 10px;
 }
 .you-win {
   border-top-left-radius: 0;
@@ -667,12 +686,13 @@ h4 {
   padding: 4px 20px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: bold;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   color: #fff;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: -1px -1px 1px #333333, 1px 1px 1px #999999;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
@@ -709,12 +729,13 @@ h4 {
   padding: 4px 20px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: bold;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   color: #fff;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: -1px -1px 1px #333333, 1px 1px 1px #999999;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
@@ -819,12 +840,13 @@ h4 {
   padding: 4px 20px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: bold;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   color: #fff;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: -1px -1px 1px #333333, 1px 1px 1px #999999;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;
@@ -863,12 +885,13 @@ h4 {
   padding: 4px 20px;
   text-decoration: none;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: bold;
   box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
   color: #fff;
-  text-shadow: 1px 1px 1px #333;
+  text-shadow: -1px -1px 1px #333333, 1px 1px 1px #999999;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 8px;
   -moz-background-clip: padding-box;

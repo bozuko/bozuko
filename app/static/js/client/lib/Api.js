@@ -12,7 +12,7 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
             var loc = window.location;
             me.base = loc.protocol+'//'+loc.host;
         }
-        
+        me.stack = [];
         me.history = [];
         me.addEvents({
             'beforecall'        :true,
@@ -35,6 +35,10 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
     },
     
     call : function(config, callback){
+        if( this._requesting ){
+            this.stack.push(arguments);
+            return;
+        }
         if( typeof config == 'function' ){
             callback = config;
             config = {};
@@ -50,7 +54,7 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
             params = config.data || config.params || {},
             path = config.path|| '/api';
             options = {
-                
+                attempt: config.attempt || 0,
                 link: link,
                 path: path,
                 url: me.base+path,
@@ -67,12 +71,17 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
             options.url+=('?'+Ext.urlEncode(params));
         }*/
         this.fireEvent('beforecall', options);
+        this._requesting = true;
         Ext.Ajax.request(options);
     },
     
     handleResponse : function(options, success, response){
         var me = this,
             data;
+            
+        // did we just shit ourselves?
+        if( !success ) console.log(arguments);
+        
         try{
             data = JSON.parse(response.responseText);
         }catch(e){
@@ -93,9 +102,13 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
         };
         me.history.push(event);
         me.fireEvent('aftercall', event, options.user_scope );
-        me.fireEvent(me.success?'success':'failure', event, options.user_scope);
+        me.fireEvent(success?'success':'failure', event, options.user_scope);
         if( options.user_callback ){
             options.user_callback.apply(options.user_scope, [event]);
+        }
+        me._requesting = false;
+        if( me.stack.length ){
+            me.call.apply(me, me.stack.shift());
         }
     },
     
