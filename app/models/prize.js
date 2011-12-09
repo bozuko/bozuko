@@ -382,7 +382,7 @@ Prize.method('share', function(args, callback){
 				}
 				contest = _contest;
 				if( contest.post_to_wall !== true ){
-					return cb(Bozuko.error('prize/share_do_not_post_to_wall'));
+					return cb();
 				}
 				return cb();
 			});

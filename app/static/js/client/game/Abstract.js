@@ -76,7 +76,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             // this could be where youWin disappears... lets make sure
             // its still showing...
             if( self._showingYouWin){
-                self.app.showModal(this.getYouWinScreen());
+                
             }
         });
         
@@ -147,7 +147,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 self.updateAction(
                     '<div style="line-height: 26px;">'+
                     self.state.button_text+
-                    '<iframe src="'+url+'" frameborder="0" style="display: inline-block; width: 54px; height: 26px; vertical-align:middle; margin-left: 10px;"></iframe>'+
+                    '<iframe src="'+url+'" frameborder="0" class="like-button-frame"></iframe>'+
                     '</div>'
                 );
                 var iframe = self.getDescription().child('iframe');
@@ -329,7 +329,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             cls             :'section terms',
                             cn              :[{
                                 tag             :'h4',
-                                html            :'Terms and Conditions'
+                                html            :'Official Rules'
                             },{
                                 cls             :'bubble'
                             }]
@@ -802,6 +802,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             method: 'post'
         },function(result){
             
+            if( !result ){
+                
+            }
+            
             self.app.hideLoading();
             self.game_result = result.data;
             self.setState(result.data.game_state);
@@ -820,11 +824,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     },
     
     setState : function(state){
-        
+        if( !state ) { return ; }
         var self = this;
         if( this._updateTimeout ) clearTimeout(this._updateTimeout);
         this.state = state;
-        if( state.next_enter_time_ms > 0 ){
+        if( state.next_enter_time_ms && state.next_enter_time_ms > 0 ){
             // set a timeout
             this._updateTimeout = setTimeout( function(){
                 self.updateState();

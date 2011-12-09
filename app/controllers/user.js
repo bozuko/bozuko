@@ -100,8 +100,12 @@ exports.routes = {
                     // not only that, we should check to see if there is a "liked" page being referenced
                     // here
                     var liked = req.param('liked');
+                    console.log('liked:'+liked);
+                    console.log('facebook:'+user.service('facebook'));
                     if( liked && user.service('facebook') ){
                         var internal = user.service('facebook').internal;
+                        console.log('internal');
+                        console.log(internal);
                         if( internal.likes && ~internal.likes.indexOf( liked ) ){
                             // boom, we got a weiner!
                             // lets see if we have a page for this
