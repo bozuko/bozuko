@@ -171,9 +171,11 @@ exports['free spin and win'] = function(test) {
 
 exports['lose and redistribute'] = function(test) {
     var next_win_time = results[result_cursor].timestamp.getTime();
-    var engine = new TimeEngine(contest);
+    var engine = contest.getEngine();
     // Set engine.lookback_window to 1ms so we can force a redistribution
     engine.lookback_window = 1;
+    // Set engine.throwahead_window to a 5 sec so we don't attempt to distribute into the buffer
+    engine.throwahead_window = 5000;
     var memo = {
         timestamp: new Date(next_win_time+2),
         user: user,
@@ -186,6 +188,8 @@ exports['lose and redistribute'] = function(test) {
         Bozuko.models.Result.findOne({timestamp: new Date(next_win_time)}, function(err, result) {
             test.ok(!err);
             test.ok(!result);
+            console.log(result);
+            console.log('next_win_time = '+new Date(next_win_time));
             Bozuko.models.Result.findOne(
                 {'history.timestamp': new Date(next_win_time), 'history.move_time': memo.timestamp},
                 function(err, result) {
