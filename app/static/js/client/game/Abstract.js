@@ -60,7 +60,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         if( !result.prize.is_email || !result.prize.links.redeem ) return;
         
         var self = this;
-        this._showingYouWin = true;
         
         // lets redeem!
         self.app.api.call({
@@ -79,7 +78,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             // this could be where youWin disappears... lets make sure
             // its still showing...
             if( self._showingYouWin){
-                
+                self.app.showModal(self.getYouWinScreen());
             }
         });
         
@@ -389,18 +388,13 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
             if( p.description ){
                 (function(li){
-                    var blocking = false, last;
                     var trigger = li.child('.name').createChild({
                         cls         :'trigger'
                     });
                     li.child('.name').insertFirst(trigger);
                     li.addClass('has-description');
                     var fn = function(e){
-                        if( blocking ) return;
-                        blocking = true;
-                        setTimeout(function(){
-                            blocking = false;
-                        },300);
+                        e.preventDefault();
                         li.toggleClass('show-description');
                     };
                     trigger.on(Modernizr.touch?'touchstart':'mousedown', fn, this);
@@ -528,6 +522,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.$youWin.child('.prize-code').update(prize.code);
         
         var message = this.$youWin.child('.message'),
+            bd = this.$youWin.child('.bd'),
             ft = this.$youWin.child('.ft')
             ;
             
@@ -537,7 +532,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
                 '<div class="email-form">',
                     '<div><input class="email-field" placeholder="Enter your email" name="email" /></div>',
-                    '<div><a href="javascript:;" class="btn btn-cancel">Cancel</a><a href="javascript:;" class="btn btn-change">Change</a></div>',
+                    '<div class="buttons"><a href="javascript:;" class="btn btn-cancel">Cancel</a><a href="javascript:;" class="btn btn-change">Change</a></div>',
                 '</div>'
             ].join('\n'));
             
@@ -556,6 +551,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 linkBlock.hide();
                 changeBlock.show();
                 // add new stuff...
+                bd.superScroll().update();
             }, this);
             
             var changeBtn = changeBlock.child('.btn-change');
@@ -594,6 +590,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         changeBtn.setStyle('opacity',1).update('Change');
                         changeBlock.hide();
                         linkBlock.show();
+                        bd.superScroll().update();
                     });
                     
                 });
@@ -604,6 +601,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 changeBlock.child('input').dom.value = this.app.user.email;
                 changeBlock.hide();
                 linkBlock.show();
+                bd.superScroll().update();
             }, this);
         }
         else if( prize.is_barcode ){
@@ -671,28 +669,24 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         
         if( btn.hasClass('btn-save') ){
             this._showingYouWin = false;
-            this.app.unmask();
+            this.app.unmask(true);
             this.next();
         }
         else if( btn.hasClass('btn-save') ){
-            this._showingYouWin = false;
-            this.app.unmask();
+            this.app.unmask(true);
             this.next();
         }
         else{
-            this._showingYouWin = false;
-            this.app.unmask();
+            this.app.unmask(true);
             this.next();
         }
     },
     
     onAfterWin : function(){
         var self = this;
-        setTimeout(function(){
-            var screen = self.getYouWinScreen(self.game_result.prize);
-            self.app.showModal(screen);
-            screen.child('.bd').superScroll().update();
-        },50);
+        var screen = self.getYouWinScreen(self.game_result.prize);
+        self.app.showModal(screen, true);
+        screen.child('.bd').superScroll().update();
     },
     
     getLoader : function(){
