@@ -214,7 +214,7 @@ exports.routes = {
                 ], function(error){
                     console.log(error);
                     res.send('done.');
-                })
+                });
             }
         }
     },
