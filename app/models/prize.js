@@ -20,7 +20,7 @@ var Prize = module.exports = new Schema({
     user_id                 :{type:ObjectId, index:true},
     prize_id                :{type:ObjectId, index:true},
     uuid                    :{type:String},
-    code                    :{type:String},
+    code                    :{type:String, index:true},
     value                   :{type:Number},
     name                    :{type:String},
     page_name               :{type:String},
