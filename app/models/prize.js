@@ -39,6 +39,7 @@ var Prize = module.exports = new Schema({
     is_email                :{type:Boolean, default:false},
     email_body              :{type:String},
     email_code              :{type:String},
+	email_replyto           :{type:String},
     email_format            :{type:String,  default: 'text/plain'},
     email_subject           :{type:String},
     email_history	    :[ObjectId],
@@ -166,14 +167,19 @@ Prize.method('sendEmail', function(user) {
         .replace(/<p.*>/gi, "\n")
         .replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
         .replace(/<(?:.|\s)*?>/g, "");
-
-
-    return mail.send({
+		
+	var config = {
         to: user.email,
         subject: subject,
         html: body,
         body: text
-    }, function(err, success) {
+    };
+	
+	if( self.email_replyto && self.email_replyto != '' ){
+		config.reply_to = self.email_replyto;
+	}
+
+    return mail.send(config, function(err, success) {
         if (err) console.error("Email Err = "+err);
         if (err || !success) {
             console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
