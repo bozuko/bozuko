@@ -387,14 +387,15 @@ Prize.method('share', function(args, callback){
 					return cb(Bozuko.error('prize/share_no_contest'));
 				}
 				contest = _contest;
-				if( contest.post_to_wall !== true ){
-					return cb();
-				}
 				return cb();
 			});
 		},
 		
 		function doShare(cb){
+			
+			if( contest.post_to_wall !== true ){
+				return cb();
+			}
 			
 			var options = {
 				user: user,
