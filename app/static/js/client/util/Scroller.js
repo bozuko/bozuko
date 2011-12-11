@@ -113,6 +113,7 @@ var SuperScroll = Ext.extend( Ext.util.Observable, {
     		this.$scroller.dom.style[vendor + 'TransitionDuration'] = '0';
             this.$scroller.dom.style[vendor + 'TransformOrigin'] = '0 0';
             this.$scroller.dom.style[vendor + 'TransitionTimingFunction'] = 'cubic-bezier(0.33,0.66,0.66,1)';
+            this.$scroller.dom.style[vendor + 'Transform'] = trnOpen + '0px,0px' + trnClose;
             
             this.$scroller.on('touchstart', this.onTouchStart, this);
         }

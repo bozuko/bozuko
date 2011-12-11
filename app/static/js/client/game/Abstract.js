@@ -150,20 +150,42 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 url+='?token='+self.app.user.token;
                 
                 self.updateAction(
-                    '<div style="line-height: 26px;">'+
+                    '<div style="line-height: 26px;" class="like-container like-container-loading">'+
                     self.state.button_text+
+                    '<span class="like-loading">'+
+                        '<span class="loading">&nbsp;</span>'+
+                    '</span>'+
                     '<iframe src="'+url+'" frameborder="0" class="like-button-frame"></iframe>'+
                     '</div>'
                 );
+                
+                var frame=0,
+                    ct=self.getDescription().child('.like-container'),
+                    loader=self.getDescription().child('.like-loading .loading'),
+                    interval = setInterval(function(){
+                        loader.setStyle('background-position', (-frame*16)+'px 0');
+                        frame++;
+                        if( frame > 7 ) frame=0;
+                    }, 100);
+                
                 var iframe = self.getDescription().child('iframe');
                 self.getDescription().child('iframe').on('load', function(){
-                    var win = iframe.dom.contentWindow || iframe.contentDocument;
+                    var win = iframe.dom.contentWindow || iframe.dom.contentDocument;
                     if( !win.document ) { 
-                        win= win.getParentNode();
+                        win = win.getParentNode();
                     }
                     win.notifyFn = function(state){
-                        if( state == 'facebook/liked' ){
-                            self.updateState();
+                        switch(state){
+                            
+                            case 'facebook/like_loaded':
+                                clearInterval(interval);
+                                ct.removeClass('like-container-loading');
+                                break;
+                            
+                            case 'facebook/liked':
+                                self.updateState(true);
+                                break;
+                            
                         }
                     }
                     
@@ -369,8 +391,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         var description = this.getDescription();
         
         // add prizes...
+        var instructions = this.game.entry_method.description.split('\n');
+        instructions.shift();
         description.child('.instructions').update(
-            this.game.entry_method.description.split('\n')[1]
+            instructions.join('<br />')
         );
         var ul = description.child('.prizes ul');
         ul.update('');
@@ -394,7 +418,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     li.child('.name').insertFirst(trigger);
                     li.addClass('has-description');
                     var fn = function(e){
-                        e.preventDefault();
+                        e.stopEvent();
                         li.toggleClass('show-description');
                     };
                     trigger.on(Modernizr.touch?'touchstart':'mousedown', fn, this);
@@ -547,7 +571,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
             changeBlock.child('input').dom.value = this.app.user.email;
                 
-            linkBlock.child('a').on('click', function(){
+            linkBlock.child('a').on('click', function(e){
+                e.stopEvent();
                 linkBlock.hide();
                 changeBlock.show();
                 // add new stuff...
@@ -559,7 +584,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
             var changing = false;
             
-            changeBtn.on('click', function(){
+            changeBtn.on('click', function(e){
+                e.stopEvent();
                 if( changing ) return;
                 // need to update the user
                 changing = true;
@@ -596,7 +622,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 });
             }, this);
             
-            cancelBtn.on('click', function(){
+            cancelBtn.on('click', function(e){
+                e.stopEvent();
                 if( changing ) return;
                 changeBlock.child('input').dom.value = this.app.user.email;
                 changeBlock.hide();
