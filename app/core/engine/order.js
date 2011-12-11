@@ -14,8 +14,7 @@ inherits( OrderEngine, Engine );
 
 OrderEngine.prototype.generateResults = function(Page, page_id, callback) {
     var self = this;
-    return Page.getNumContests(page_id, function(err, block) {
-        console.log("block = "+block);
+    return Page.getCodeInfo(page_id, function(err, block, prefix) {
         if (err) return callback(err);
         var options = self.contest.engine_options || {},
             contest = self.contest,
@@ -73,7 +72,7 @@ OrderEngine.prototype.generateResults = function(Page, page_id, callback) {
                 var result = {
                     index: prize_index,
                     prize: prize._id,
-                    code: self.getCode(block),
+                    code: prefix+self.getCode(block),
                     count: 0
                 };
                 results[index] = result;
@@ -82,7 +81,7 @@ OrderEngine.prototype.generateResults = function(Page, page_id, callback) {
                 var result = {
                     index: prize_index,
                     prize: prize._id,
-                    code: self.getCode(block),
+                    code: prefix+self.getCode(block),
                     count: 0
                 };
                 results[index] = result;
@@ -100,7 +99,7 @@ OrderEngine.prototype.generateResults = function(Page, page_id, callback) {
                     var result = {
                         index: prize_index,
                         prize: prize._id,
-                        code: self.getCode(block),
+                        code: prefix+self.getCode(block),
                         count: i
                     };
                     results[index] = result;

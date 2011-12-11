@@ -17,8 +17,8 @@ TimeEngine.prototype.configure = function(opts) {
     opts = opts || {};
     this.buffer = opts.buffer || 0.001;
 
-    this.window_divisor = opts.window_divisor || 2;
-    this.throwahead_multiplier = opts.throwahead_multiplier || 1/this.window_divisor;
+    this.window_divisor = opts.window_divisor || 5;
+    this.throwahead_multiplier = opts.throwahead_multiplier || 10;
 
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
@@ -51,7 +51,7 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
     var start = contest.start.getTime();
     var end = start+this.contest_duration;
 
-    return Page.getNumContests(page_id, function(err, block) {
+    return Page.getCodeInfo(page_id, function(err, block, prefix) {
         var prize_index = 0;
         return async.forEachSeries(prizes, function(prize, cb) {
             var i = 0;
@@ -64,7 +64,7 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
                     var result = {
                         contest_id: contest._id,
                         index: prize_index,
-                        code: self.getCode(block),
+                        code: prefix + self.getCode(block),
                         count: i,
                         timestamp: date,
                         history: [{timestamp: date}]
@@ -138,7 +138,7 @@ TimeEngine.prototype.play = function(memo, callback) {
     // In other words, disregard the lookback window. We do this so that all prizes
     // get handed out before the contest expires.
     //
-    if (now > this.buffer_start) {
+    if (now > this.buffer_start.getTime()) {
         memo.query = self.contest.noLookbackQuery(memo);
     } else {
         memo.query = self.contest.lookbackQuery(memo);
@@ -152,7 +152,7 @@ TimeEngine.prototype.play = function(memo, callback) {
         function(err, contest) {
             // this is just for analytics
         }
-    )
+    );
 
     self.contest.getTimeResult(memo, callback);
 };
@@ -169,7 +169,8 @@ TimeEngine.prototype.redistribute = function(old_time) {
     var new_time = new Date(rand(start, end));
 
     // Don't redistribute into the buffer
-    if (new_time.getTime() > this.buffer_start) return null;
+    if (new_time.getTime() > this.buffer_start.getTime()) return null;
 
     return new_time;
 };
+
