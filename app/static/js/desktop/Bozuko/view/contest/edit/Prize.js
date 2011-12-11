@@ -128,6 +128,11 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 fieldLabel      :'Email Subject',
                 value           :'You won a Bozuko prize!'
             },{
+                hidden          :true,
+                name            :'email_replyto',
+                fieldLabel      :'Email Reply To',
+                value           :''
+            },{
                 xtype           :'htmleditor',
                 height          :200,
                 hidden          :true,
@@ -189,7 +194,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
 
     onEmailChange : function(field, value){
         var fn = value ? 'show' : 'hide';
-        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes], [name=email_type]'), function(cmp){
+        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes], [name=email_type], [name=email_replyto]'), function(cmp){
             cmp[fn]();
         });
     },
