@@ -120,9 +120,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
         res.locals.title = game.getName()+' - '+page.name+' | Bozuko';
         res.locals.page = page;
         res.locals.content = contest.promo_copy;
-        
-        // lets do some replacin'
-        
+        res.locals.short_url = burl(req.url).replace(/https?:\/\//, '');
         
         return res.render('client/game');
     });
