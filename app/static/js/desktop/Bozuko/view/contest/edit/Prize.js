@@ -84,16 +84,62 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 }
             },{
                 hidden          :true,
+                xtype           :'combo',
+                name            :'email_type',
+                fieldLabel      :'Email Format',
+                value           :'text/plain',
+                allowBlank          :false,
+                editable            :false,
+                forceSelection      :true,
+                displayField        :'value',
+                valueField          :'value',
+                queryMode           :'local',
+                store               :Ext.create('Ext.data.Store',{
+                    fields              :['value'],
+                    data                :[{value:'text/plain'},{value:'text/html'}]
+                }),
+                listeners           :{
+                    change              :function(){
+                        this.onTypeChange();
+                    },
+                    render              :function(){
+                        var self = this;
+                        setTimeout(function(){
+                            self.onTypeChange();
+                        }, 500);
+                    }
+                },
+                
+                onTypeChange    :function(){
+                    var val = this.getValue();
+                    var body = me.down('[name=email_body]');
+                    switch(val){
+                        case 'text/plain':
+                            body.toggleSourceEdit(true);
+                            break;
+                        case 'text/html':
+                            body.toggleSourceEdit(false);
+                            break;
+                    }
+                }
+            },{
+                hidden          :true,
                 name            :'email_subject',
                 fieldLabel      :'Email Subject',
                 value           :'You won a Bozuko prize!'
             },{
                 xtype           :'htmleditor',
-                height          :100,
+                height          :200,
                 hidden          :true,
                 name            :'email_body',
                 fieldLabel      :'Email Body',
-                allowBlank      :false
+                allowBlank      :false,
+                listeners       :{
+                    editmodechange  :function(){
+                        var type = me.down('[name=email_type]').getValue();
+                        // if( type == 'text/plain' && this.sourceEditMode ) this.toggleSourceEdit(true);
+                    }
+                }
             },{
                 xtype           :'textarea',
                 height          :80,

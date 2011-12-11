@@ -33,6 +33,8 @@ var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
     page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
+	alias					:{type:String, unique: true, index: true},
+	promo_copy				:{type:String},
     engine_type             :{type:String, default:'order', get: enum_engine_type},
     engine_options          :{},
 	web_only				:{type:Boolean, default:false},
@@ -685,27 +687,6 @@ Contest.method('activateNextContest', function(reason, callback) {
 });
 
 /*
- * This function is run once per hour to find contests that are about to expire.
- * If those contests have a next_contest.contest_id and next_contest.active = false
- * then the next contest is created with a start time that equals the end time of the
- * contest about to expire.
- */
-Contest.static('autoRenew', function(callback) {
-    var end_time = new Date(Date.now() + 1000*60*60*24); // 24 hrs
-    return Bozuko.models.Contest.find(
-        {active: true, 'next_contest.0.contest_id': {$exists: true}, 'next_contest.0.active': false,
-        $and: [{end: {$gt: new Date()}}, {end: {$lt: end_time}}]},
-        function(err, contests) {
-            return async.forEach(contests, function(contest, cb) {
-                return contest.activateNextContest('time', cb);
-            }, function(err) {
-                return callback(err);
-            });
-        }
-    );
-});
-
-/*
  * page_id param is optional
  *
  * @public
@@ -1314,3 +1295,28 @@ function getGCD(x,y) {
     }
     return x;
 }
+
+/*********************************************************************************
+ * Static Methods
+ *********************************************************************************/
+
+/*
+ * This function is run once per hour to find contests that are about to expire.
+ * If those contests have a next_contest.contest_id and next_contest.active = false
+ * then the next contest is created with a start time that equals the end time of the
+ * contest about to expire.
+ */
+Contest.static('autoRenew', function(callback) {
+    var end_time = new Date(Date.now() + 1000*60*60*24); // 24 hrs
+    return Bozuko.models.Contest.find(
+        {active: true, 'next_contest.0.contest_id': {$exists: true}, 'next_contest.0.active': false,
+        $and: [{end: {$gt: new Date()}}, {end: {$lt: end_time}}]},
+        function(err, contests) {
+            return async.forEach(contests, function(contest, cb) {
+                return contest.activateNextContest('time', cb);
+            }, function(err) {
+                return callback(err);
+            });
+        }
+    );
+});

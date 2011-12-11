@@ -126,7 +126,13 @@ exports.parse_signed_request = function(signed_request){
         // decode the data
         sig = encoded_data[0],
         json = base64UrlToString(encoded_data[1]),
-        data = JSON.parse(json); // ERROR Occurs Here!
+        data;
+		
+	try{
+		data = JSON.parse(json); // ERROR Occurs Here!
+	}catch(e){
+		return new Error('Invalid json string');
+	}
 
     // check algorithm - not relevant to error
     if( !data.algorithm || data.algorithm.toUpperCase() != 'HMAC-SHA256' ){

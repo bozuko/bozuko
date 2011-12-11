@@ -650,6 +650,25 @@ exports.routes = {
                 return res.render('site/facebook/advertisement');
             }
         }
+    },
+    
+    '/:alias':{
+        get : {
+            handler : function(req, res, next){
+                var self = this,
+                    alias = req.param('alias');
+                    
+                if( ~alias.indexOf('/') ) return next();
+                return Bozuko.models.Contest.find({alias: alias}, {results: 0, page: 0}, {limit: 1}, function(error, contests){
+                    if( error || !contests.length ) return next();
+                    if( !Bozuko.controllers.Client ){
+                        console.log('Please enable the Client controller');
+                        return next();
+                    }
+                    return Bozuko.controllers.Client.renderGame(req, res, contests[0]);
+                });
+            }
+        }
     }
 };
 

@@ -76,7 +76,7 @@ Bozuko.getApp = function(){
         var app = Bozuko.require('core/server');
         Bozuko.configureApp(app);
         initApplication( app );
-	initGames( app );
+		initGames( app );
         initControllers( app );
         // setup our device dependent renderer
         Bozuko.require('core/view');
