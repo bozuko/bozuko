@@ -591,12 +591,13 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 changing = true;
                 cancelBtn.setStyle('opacity', .6);
                 changeBtn.setStyle('opacity', .6).update('Saving...');
-                var self = this;
+                var self = this,
+                    email= changeBlock.child('input').dom.value;
                 this.app.api.call( {
                     path: this.app.entry_point.links.user,
                     method: 'post',
                     params: {
-                        email: changeBlock.child('input').dom.value
+                        email: email
                     }
                 }, function(result){
                     if( !result.data.success ){
@@ -606,6 +607,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         changeBtn.setStyle('opacity',1).update('Change');
                         return;
                     }
+                    self.app.user.email = email;
                     // need to resend
                     self.app.api.call({
                         path: prize.links.resend,
