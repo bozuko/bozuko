@@ -83,11 +83,10 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     change          :me.onEmailChange
                 }
             },{
-                hidden          :true,
-                xtype           :'combo',
-                name            :'email_type',
-                fieldLabel      :'Email Format',
-                value           :'text/plain',
+                hidden              :true,
+                xtype               :'combo',
+                name                :'email_type',
+                fieldLabel          :'Email Format',
                 allowBlank          :false,
                 editable            :false,
                 forceSelection      :true,
