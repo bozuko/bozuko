@@ -83,7 +83,7 @@ exports.graph = function(path, options, callback){
 
         if( result.error && callback ){
             // handle bogus sessions
-            if( result.error.message.match(/changed the password/i) ){
+            if( result.error.message.match(/(changed the password|validating access token)/i) ){
                 return callback( Bozuko.error('facebook/auth') );
             }
             // log the error...
