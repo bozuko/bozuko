@@ -153,6 +153,7 @@ Page.method('loadContests', function(user, callback){
 
     return Bozuko.models.Contest.find({
         active: true,
+		web_only: {$ne: true},
 		$or: [{page_id: this._id}, {page_ids: this._id}],
 		start: {$lt: now},
         end: {$gt: now}
