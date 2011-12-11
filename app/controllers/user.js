@@ -155,6 +155,7 @@ exports.routes = {
                 
                 // the only thing we are going to change right now is email...
                 var email = req.param('email');
+                
                 if( !email || !email.match(/.+@.+\..+/) ){
                     return Bozuko.transfer('success_message', {
                         success: false,
@@ -166,6 +167,7 @@ exports.routes = {
                 }
                 
                 user.email = email;
+                user.user_email = true;
                 return user.save(function(error){
                     if( error ) return error.send(res);
                     
