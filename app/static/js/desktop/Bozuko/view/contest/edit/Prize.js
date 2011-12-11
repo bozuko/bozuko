@@ -85,8 +85,9 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
             },{
                 hidden              :true,
                 xtype               :'combo',
-                name                :'email_type',
+                name                :'email_format',
                 fieldLabel          :'Email Format',
+                value               :'text/plain',
                 allowBlank          :false,
                 editable            :false,
                 forceSelection      :true,
@@ -140,7 +141,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 allowBlank      :false,
                 listeners       :{
                     editmodechange  :function(){
-                        var type = me.down('[name=email_type]').getValue();
+                        var type = me.down('[name=email_format]').getValue();
                         // if( type == 'text/plain' && this.sourceEditMode ) this.toggleSourceEdit(true);
                     }
                 }
@@ -193,7 +194,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
 
     onEmailChange : function(field, value){
         var fn = value ? 'show' : 'hide';
-        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes], [name=email_type], [name=email_replyto]'), function(cmp){
+        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes], [name=email_format], [name=email_replyto]'), function(cmp){
             cmp[fn]();
         });
     },
