@@ -33,19 +33,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.createElements();
         this.showLoading('Loading...');
         
-        var lastTouch;
-        Ext.get(document.body).on('touchstart', function(e){
-            if( !lastTouch ){
-                lastTouch = Date.now();
-                return;
-            }
-            var now = Date.now();
-            if( now-lastTouch < 200 ){
-                e.preventDefault();
-            }
-            lastTouch = now;
-        }, false);
-        
         // scroll the window to the top
         setTimeout(function(){
             self.scrollToTop();

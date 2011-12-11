@@ -36,6 +36,7 @@ h4 {
 * {
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
 }
 a,
 a:visited,
@@ -158,6 +159,7 @@ a:hover {
 
 }
 .modal-window {
+  position: relative;
   margin: 15px;
   border: 3px solid #999;
   padding: 10px;
@@ -234,10 +236,12 @@ a:hover {
   height: 100px;
   margin-top: -50px;
   margin-left: -50px;
+}
+.animated-spinner {
   -webkit-animation: spin 10s linear 0ms infinite
-                ;
+        ;
   -moz-animation: spin 10s linear 0ms infinite
-                ;
+        ;
 }
 .rgba .loading-mask .bg {
   opacity: 1;
@@ -574,18 +578,18 @@ a:hover {
   border-bottom-width: 0;
 }
 .game-description .bd .section ul li .name {
-  padding: 10px;
+  padding: 10px 0 10px 10px;
   font-weight: bold;
   font-size: 1.1em;
 }
 .game-description .bd .section ul li .name .trigger {
   display: inline-block;
   float: right;
-  width: 50px;
+  width: 60px;
   height: 18px;
   vertical-align: middle;
   cursor: pointer;
-  background: transparent url("/images/client/arrow3.png?v5") 100% 0px no-repeat;
+  background: transparent url("/images/client/arrow3.png?v5") 80% 0px no-repeat;
 }
 .game-description .bd .section ul li .description {
   padding: 0px 10px 5px;
@@ -594,7 +598,7 @@ a:hover {
   color: #666;
 }
 .game-description .bd .section ul .show-description .trigger {
-  background-position: 100% -47px !important;
+  background-position: 80% -47px !important;
 }
 .game-description .bd .section ul .show-description .description {
   display: block;
@@ -623,6 +627,26 @@ a:hover {
   height: 26px;
   vertical-align: middle;
   margin-left: 10px;
+}
+.like-loading {
+  display: none;
+  text-align: center;
+  width: 54px;
+  height: 26px;
+  margin-left: 10px;
+}
+.like-loading .loading {
+  display: inline-block;
+  background: transparent url("/images/assets/facebook/loader-bg.png") 0 0 no-repeat;
+  vertical-align: middle;
+  height: 11px;
+  width: 16px;
+}
+.like-container-loading .like-button-frame {
+  display: none;
+}
+.like-container-loading .like-loading {
+  display: inline-block;
 }
 .you-win {
   border-top-left-radius: 0;
@@ -675,6 +699,7 @@ a:hover {
   margin: 0;
 }
 .you-win .bd .message {
+  position: relative;
   font-size: 12px;
   background: transparent url("/images/client/info.png") 4px 4px no-repeat;
   padding-left: 40px;
@@ -682,7 +707,7 @@ a:hover {
   text-align: left;
 }
 .you-win .bd .message .buttons {
-  text-align: right;
+  text-align: center;
 }
 .you-win .bd .message .btn {
   display: inline-block;
@@ -797,8 +822,8 @@ a:hover {
   vertical-align: middle;
 }
 .you-win .bd textarea {
-  font-family: "open sans";
-  font-size: 11px;
+  font-family: Arial;
+  font-size: 12px;
   height: 46px;
   width: 100%;
   border: 1px solid #ccc;

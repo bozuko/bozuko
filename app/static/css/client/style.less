@@ -12,6 +12,7 @@ h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
 * {
     outline: none;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-user-select: none;
 }
 a, a:visited, a:link, a:hover {
     color: #006699;
@@ -98,6 +99,7 @@ a, a:visited, a:link, a:hover {
 }
 
 .modal-window {
+    position: relative;
     margin: 15px;
     border: 3px solid #999;
     padding: 10px;
@@ -169,16 +171,20 @@ a, a:visited, a:link, a:hover {
             height: 100px;
             margin-top: -50px;
             margin-left: -50px;
-            -webkit-animation:
-                spin 10s linear 0ms infinite
-                ;
-                
-            -moz-animation:
-                spin 10s linear 0ms infinite
-                ;
         }
     }
 }
+
+.animated-spinner{
+    -webkit-animation:
+        spin 10s linear 0ms infinite
+        ;
+        
+    -moz-animation:
+        spin 10s linear 0ms infinite
+        ;
+}
+
 
 .rgba {
     .loading-mask {
@@ -524,17 +530,17 @@ a, a:visited, a:link, a:hover {
                     }
                     
                     .name {
-                        padding: 10px;
+                        padding: 10px 0 10px 10px;
                         font-weight: bold;
                         font-size: 1.1em;
                         .trigger {
                             display: inline-block;
                             float: right;
-                            width: 50px;
+                            width: 60px;
                             height: 18px;
                             vertical-align: middle;
                             cursor: pointer;
-                            background: transparent url("/images/client/arrow3.png?v5") 100% 0px no-repeat;
+                            background: transparent url("/images/client/arrow3.png?v5") 80% 0px no-repeat;
                         }
                     }
                     
@@ -548,7 +554,7 @@ a, a:visited, a:link, a:hover {
                 }
                 .show-description {
                     .trigger {
-                        background-position: 100% -47px !important;
+                        background-position: 80% -47px !important;
                     }
                     .description {
                         display: block;
@@ -583,7 +589,30 @@ a, a:visited, a:link, a:hover {
     margin-left: 10px;
 }
 
+.like-loading {
+    display: none;
+    text-align: center;
+    width: 54px;
+    height: 26px;
+    margin-left: 10px;
+    
+    .loading {
+        display: inline-block;
+        background: transparent url("/images/assets/facebook/loader-bg.png") 0 0 no-repeat;
+        vertical-align: middle;
+        height: 11px;
+        width: 16px;
+    }
+}
 
+.like-container-loading{
+    .like-button-frame{
+        display: none;
+    }
+    .like-loading {
+        display: inline-block;
+    }
+}
 
 .you-win {
     
@@ -636,6 +665,7 @@ a, a:visited, a:link, a:hover {
             margin: 0;
         }
         .message {
+            position: relative;
             font-size: 12px;
             background: transparent url("/images/client/info.png") 4px 4px no-repeat;
             padding-left: 40px;
@@ -685,8 +715,8 @@ a, a:visited, a:link, a:hover {
             }
         }
         textarea {
-            font-family: "open sans";
-            font-size: 11px;
+            font-family: Arial;
+            font-size: 12px;
             height: 46px;
             width: 100%;
             border: 1px solid #ccc;
