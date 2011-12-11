@@ -20,5 +20,25 @@ exports.routes = {
                 });
             }
         }
+    },
+    
+    '/:alias':{
+        get : {
+            handler : function(req, res, next){
+                var self = this,
+                    alias = req.param('alias');
+                
+                if( ~alias.indexOf('/') ) return next();
+                return Bozuko.models.Contest.find({alias: alias}, {results: 0, page: 0}, {limit: 1}, function(error, contests){
+                    
+                    if( error || !contests.length ) return next();
+                    
+                    if( Bozuko.controllers.Client ){
+                        return Bozuko.controllers.Client.renderGame(req, res, contests[0]);
+                    }
+                    return next();
+                });
+            }
+        }
     }
 };

@@ -6,7 +6,8 @@ module.exports = {
         only: [
             'site',
 			'my',
-            'mycroft'
+            'mycroft',
+			'client'
         ]
     },
 

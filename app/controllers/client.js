@@ -1,4 +1,8 @@
-var Facebook = Bozuko.require('util/facebook');
+var async = require('async'),
+    Facebook = Bozuko.require('util/facebook'),
+    burl = Bozuko.require('util/url').create,
+    merge = Bozuko.require('util/functions').merge,
+    indexOf = Bozuko.require('util/functions').indexOf;
 
 // exports.access = 'admin';
 
@@ -8,12 +12,121 @@ exports.init = function(){
 
 exports.locals = {
     layout : '/client/layout',
-    device : 'desktop'
+    device : 'touch'
 };
 
 exports.session = false;
 
 var now = Date.now();
+
+exports.renderGame = function(req, res, contest_id, page_id){
+    
+    var contest, page;
+    
+    return async.series([
+        
+        function get_contest(cb){
+            console.log(contest_id);
+            if( contest_id.alias ){
+                contest = contest_id;
+                return cb();
+            }
+            return Bozuko.models.Contest.findById(contest_id, {results: 0, plays: 0}, function(error, _contest){
+                if( error ) return cb(error);
+                if( !_contest ) return cb(new Error('Invalid Contest Id'));
+                contest = _contest;
+                return cb();
+            });
+        },
+        
+        function get_page(cb){
+            
+            if( page_id ){
+                var pid = String(contest.page_id);
+                if( !contest.page_id == pid || !~indexOf(pid, contest.page_ids) ){
+                    return cb(new Error('Invalid Page Id'));
+                }
+            }
+            else{
+                page_id = contest.page_id || contest.page_ids[0];
+            }
+            return Bozuko.models.Page.findById(page_id, function(error, _page){
+                if( error ) return cb(error);
+                if( !_page ) return cb(new Error('Invalid Page'));
+                page = _page;
+                return cb();
+            });
+        }
+        
+    ], function render(error){
+        
+        if( error ){
+            console.error(error);
+            return res.send('error');
+        }
+        
+        var qr = 'http://api.qrserver.com/v1/create-qr-code/?size=320x320&color=006b37&data='+encodeURIComponent(burl(req.url));
+        
+        if( req.session.device == 'touch' || req.param('play') ){
+            
+            if( Bozuko.env() == 'site' ){
+                return res.redirect('https://api.bozuko.com'+req.url);
+            }
+        
+            req.session.destroy();
+            res.locals.path = '/game/'+contest.id;
+            
+            // lets add our scripts
+            var scripts = [
+                '/js/client/util/Stylesheet.js',
+                '/js/iscroll/iscroll-lite-4.1.6.js',
+                '/js/client/util/Touch.js',
+                '/js/client/util/Scroller.js',
+                '/js/client/util/Cookies.js',
+                '/js/client/util/Cache.js',
+                '/js/client/lib/Api.js',
+                '/js/client/game/Abstract.js',
+                '/js/client/game/Scratch.js',
+                '/js/client/App.js'
+            ];
+            
+            var styles = [
+                '/css/client/animations.css',
+                '/css/client/style.css'
+            ];
+            
+            res.locals.scripts = ['https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js'];
+            scripts.forEach(function(script){
+                res.locals.scripts.push(script+'?'+now);
+            });
+            
+            res.locals.stylesheets = [];
+            styles.forEach(function(style){
+                res.locals.stylesheets.push(style+'?'+now);
+            });
+            
+            res.locals.title = 'Bozuko Client';
+            res.locals.device = 'touch';
+            res.locals.layout = 'client/layout';
+            return res.render('client/index');
+        }
+        // this is going to be the desktop display...
+        res.locals = merge({}, Bozuko.require('controllers/site').locals);
+        res.locals.meta['og:image'] = qr;
+        res.locals.qr = qr;
+        res.locals.contest = contest;
+        var game = contest.getGame();
+        res.locals.game = game;
+        res.locals.title = game.getName()+' - '+page.name+' | Bozuko';
+        res.locals.page = page;
+        res.locals.content = contest.promo_copy;
+        
+        // lets do some replacin'
+        
+        
+        return res.render('client/game');
+    });
+};
 
 exports.routes = {
     '/client/fblogin' : {
@@ -125,46 +238,19 @@ exports.routes = {
         }
     },
     
-    '/client' : {
-        alias: '/client/*',
+    '/client/game/:id' : {
         get : {
             handler : function(req, res){
-                
-                var device = req.session.device;
-                
-                req.session.destroy();
-                res.locals.path = '/'+( req.params && req.params.length ? req.params[0] : 'api');
-                
-                // lets add our scripts
-                var scripts = [
-                    '/js/client/util/Stylesheet.js',
-                    '/js/iscroll/iscroll-lite-4.1.6.js',
-                    '/js/client/util/Touch.js',
-                    '/js/client/util/Scroller.js',
-                    '/js/client/util/Cookies.js',
-                    '/js/client/util/Cache.js',
-                    '/js/client/lib/Api.js',
-                    '/js/client/game/Abstract.js',
-                    '/js/client/game/Scratch.js',
-                    '/js/client/App.js'
-                ];
-                
-                var styles = [
-                    '/css/client/animations.css',
-                    '/css/client/style.css'
-                ];
-                
-                res.locals.scripts = ['https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js'];
-                scripts.forEach(function(script){
-                    res.locals.scripts.push(script+'?'+now);
-                });
-                
-                res.locals.stylesheets = [];
-                styles.forEach(function(style){
-                    res.locals.stylesheets.push(style+'?'+now);
-                });
-                
-                return res.render('client/index');
+                var contest_id = req.param('id'),
+                    page_id, contest, page,
+                    device = req.session.device;
+                    
+                if( ~contest_id.indexOf('-') ){
+                    var id_parts = contest_id.split('-');
+                    contest_id = id_parts[0];
+                    page_id = id_parts[1];
+                }
+                return this.renderGame(req, res, contest_id, page_id);
             }
         }
     }

@@ -25,6 +25,8 @@ Ext.define('Bozuko.model.Contest', {
         {name:'_id',                type:'String'},
         {name:'page_id',            type:'String'},
         {name:'name',               type:'String',              defaultValue:'Untitled Campaign'},
+        {name:'alias',              type:'String'},
+        {name:'promo_copy',         type:'String'},
         {name:'win_frequency',      type:'Number',              defaultValue:2},
         {name:'engine_type',        type:'String'},
         {name:'engine_options',     type:'Object',              defaultValue:{mode:'odds'}},
