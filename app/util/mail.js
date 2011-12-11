@@ -52,7 +52,7 @@ EmailMessage.send = function(params, callback){
         status: 'pending',
         attempt: attempts+1
     });
-    
+
     record.save();
 
     var attempt = function(error, success){
@@ -63,7 +63,7 @@ EmailMessage.send = function(params, callback){
             record.attempt = attempts+1;
             record.delivered = new Date();
             return record.save(function(error){
-                return callback.call(this, null, true, record);
+                if (callback) return callback.call(this, null, true, record);
             });
         }
 
@@ -74,7 +74,8 @@ EmailMessage.send = function(params, callback){
             record.status = 'failure';
             record.attempt = attempts+1;
             record.save();
-            return callback.call(this, error, success);
+            if (callback) return callback.call(this, error, success);
+            return;
         }
 
         // retry (5,10,15 minutes)
@@ -93,9 +94,9 @@ EmailMessage.sendView = function(filename, options, params, callback){
     if( !options ) options = {};
     if( !options.locals ) options.locals = {};
     // render the file
-    
+
     if( !filename.match(/\.jade$/) ) filename+='.jade';
-    
+
     jade.renderFile(Bozuko.dir+'/app/views/email/'+filename, options, function(error, html){
         if( error ) return callback(error);
         if( options.layout === false ){
@@ -105,7 +106,7 @@ EmailMessage.sendView = function(filename, options, params, callback){
         if( !options.locals.title ){
             options.locals.title = params.subject;
         }
-        
+
         options.body = html;
         return jade.renderFile(Bozuko.dir+'/app/views/email/layout.jade', options, function(error, html){
             if( error ) return callback(error);

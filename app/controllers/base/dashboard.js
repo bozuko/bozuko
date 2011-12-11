@@ -1078,7 +1078,7 @@ exports.routes = {
                     }
                     delete data.admins;
                     delete data._id;
-                    
+
                     if( page.location && data.location ){
                         if( data.location.lat ){
                             page.location.lat = data.location.lat;
@@ -1092,7 +1092,7 @@ exports.routes = {
                     }
                     delete data.location;
                     page.set( data );
-                    
+
                     /**
                      * need to filter out non-updatable fields
                      */
@@ -1233,30 +1233,30 @@ exports.routes = {
                         if( b.state=='active' && a.state != 'active' ) return 1;
                         return +b.start-a.start;
                     });
-                    
+
                     var ret = [];
-                    
+
                     return async.forEachSeries( contests,
-                        
+
                         function iterator(contest, cb){
                             var contest_json = contest.toJSON();
-                            
+
                             ret.push(contest_json);
-                            
+
                             Bozuko.models.Entry.count({contest_id:contest._id}, function(error, entry_count){
                                 if( error ) return cb(error);
                                 contest_json.entry_count = entry_count;
-                                
+
                                 return Bozuko.models.Play.count({contest_id:contest._id}, function(error, play_count){
                                     if( error ) return cb(error);
                                     contest_json.play_count = play_count;
-                                    
+
                                     return cb();
                                 });
-                                
+
                             });
                         },
-                        
+
                         function done(error){
                             if( error ) return res.send(error);
                             return res.send({items:ret});
@@ -1300,23 +1300,28 @@ exports.routes = {
                 var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
+                    return Bozuko.models.Page.setCodeInfo(page_id, function(err) {
+                        if (err) return error.send(res);
 
-                    if( Bozuko.env() == 'dashboard' ) Bozuko.models.Page.findById( contest.page_id, function(error, page){
-                        if( error ) return;
-                        Bozuko.require('util/mail').send({
-                            to: 'info@bozuko.com',
-                            subject: 'New Contest Created',
-                            body: [
-                                'Check it out...',
-                                '',
-                                'Page:    '+page.name,
-                                'Contest: '+contest.name
-                            ].join('\n')
-                        });
+                        if( Bozuko.env() == 'dashboard' ) {
+                            Bozuko.models.Page.findById( contest.page_id, function(error, page){
+                                if( error ) return;
+                                Bozuko.require('util/mail').send({
+                                    to: 'info@bozuko.com',
+                                    subject: 'New Contest Created',
+                                    body: [
+                                        'Check it out...',
+                                        '',
+                                        'Page:    '+page.name,
+                                        'Contest: '+contest.name
+                                    ].join('\n')
+                                });
+                            });
+                        }
+                        return res.send({items:[contest]});
                     });
 
 
-                    return res.send({items:[contest]});
                 });
             }
         },
