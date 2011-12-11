@@ -60,7 +60,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.stylesheet.rule('.modal-window', {
             'max-height': (this.height-30-6)+'px'
         });
-        this.stylesheet.rule('body',{
+        if( Modernizr.touch ) this.stylesheet.rule('body',{
             'width': this.width+'px'
         });
         (function(){
