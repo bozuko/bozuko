@@ -153,23 +153,25 @@ Page.method('loadContests', function(user, callback){
 
     return Bozuko.models.Contest.find({
         active: true,
-		web_only: {$ne: true},
 		$or: [{page_id: this._id}, {page_ids: this._id}],
 		start: {$lt: now},
         end: {$gt: now}
     }, {results: 0, plays: 0},
     function(err, contests) {
+		if( err){
+			return callback(err);
+		}
         // attach active contests to page
         return async.forEach(contests, function (contest, cb) {
             // load contest game state
             var opts = {user: user, page: self};
             return contest.loadGameState(opts, function(error, state){
                 if (error) return cb(error);
-		if (!state.game_over) self.contests.push(contest);
-                cb(null);
+				if (!state.game_over) self.contests.push(contest);
+                return cb(null);
             });
         }, function(err) {
-            return callback(null, self.contests);
+            return callback(err, self.contests);
         });
     });
 });
