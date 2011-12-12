@@ -552,7 +552,7 @@ exports.routes = {
                                                 // create a winner object
                                                 winners.push({
                                                     _id: prize.id,
-                                                    prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','code','redeemed','redeemed_time','expires','redeemed','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
+                                                    prize: filter(prize,'_id','timestamp','state','name','description','details','instructions','code','redeemed','redeemed_time','expires','verified','verified_time','consolation','is_barcode','is_email','email_code','barcode_image', 'last_updated'),
                                                     user: filtered_user,
                                                     page: filter(page_map[String(prize.page_id)], '_id', 'name','image'),
                                                     contest: filter(contest_map[String(prize.contest_id)], '_id', 'name')

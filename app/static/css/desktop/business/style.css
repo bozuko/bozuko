@@ -255,6 +255,9 @@ body .big-button, body .small-button, body .medium-button {
 .winners-list .prize-redeemed .winner-body {
   background-image: url("/images/assets/prizes/48/icon-redeemed.png");
 }
+.winners-list .prize-verified .winner-body {
+  background-image: url("/images/assets/prizes/48/icon-verified.png");
+}
 .winners-list .winner-blink {
   background-color: #b7ffd0;
 }
