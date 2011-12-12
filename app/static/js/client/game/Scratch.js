@@ -342,13 +342,27 @@ Ext.namespace('Bozuko.client.game');
             // add the canvas
             
             if( Modernizr.canvas ){
+                
                 this.$ticket = this.$ct.createChild({
                     tag         :'canvas',
                     cls         :'ticket',
                     width       :this.width,
                     height      :this.height
                 });
+                
                 this.$ticketCtx = this.$ticket.dom.getContext('2d');
+                
+                if( window.devicePixelRatio > 1 ){
+                    this.$ticket.dom.setAttribute('width', this.width*2);
+                    this.$ticket.dom.setAttribute('height', this.height*2);
+                    this.$ticketCtx.scale(2,2);
+                    this.$ticket.setStyle({
+                        'width': this.width+'px',
+                        'height':this.height+'px'
+                    });
+                }
+                
+                
             }
             else{
                 this.$ticket = this.$ct.createChild({
