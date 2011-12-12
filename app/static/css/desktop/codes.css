@@ -1,0 +1,107 @@
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
+.search-box {
+  text-align: center;
+}
+.search-box input[type='text'] {
+  width: 420px;
+  padding: 2px 6px;
+  font-size: 14px;
+  line-height: 24px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  border: 1px solid #aaa;
+}
+H2.not_found {
+  text-align: center;
+  color: red;
+}
+.prize-list {
+  text-align: center;
+  display: block;
+  width: 420px;
+  margin: 0 auto;
+}
+.prize-list li {
+  list-style: none;
+}
+.prize-list li .verify-button {
+  float: right;
+  vertical-align: middle;
+}
+.prize-list li .prize {
+  width: 300px;
+  border: 2px solid #999;
+  padding: 2px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+  display: block;
+  overflow: hidden;
+}
+.prize-list li .prize .page-name {
+  background: #e6e6e6;
+  padding: .2em 6px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.prize-list li .prize .contest-name {
+  font-weight: normal;
+  background: #e6e6e6;
+  padding: .2em 6px;
+  font-size: 16px;
+}
+.prize-list li .prize .user-name {
+  margin-left: 55px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: normal;
+  margin-bottom: .4em;
+}
+.prize-list li .prize .prize-name {
+  margin-left: 55px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: .2em;
+}
+.prize-list li .prize .prize-code {
+  margin-left: 55px;
+  text-align: left;
+  font-weight: normal;
+  font-family: "courier new";
+  font-size: 12px;
+  margin-bottom: .2em;
+  color: #666;
+}
+.prize-list li .prize img.profile-pic {
+  height: 50px;
+  float: right;
+}
+.prize-list li .prize img.poker-chip {
+  float: left;
+}
+.prize-list li .prize .prize-timestamp {
+  text-align: right;
+  font-size: 11px;
+  color: #999;
+}
+.prize-list li .prize .prize-timestamp .label {
+  float: left;
+}

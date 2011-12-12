@@ -33,6 +33,21 @@ exports.locals = {
     ]
 };
 var inspect = require('util').inspect;
+
+function render(res) {
+    return Bozuko.models.User.findById(res.locals.prize.user_id, function(err, user) {
+        if (err) return err.send(res);
+        if (!user) return res.render('codes/not_found.jade');
+        res.locals.user_image = user.image;
+        return Bozuko.models.Contest.findById(res.locals.prize.contest_id, function(err, contest) {
+            if (err) return err.send(res);
+            if (!contest) return res.render('codes/not_found.jade');
+            res.locals.contest = contest;
+            return res.render('codes/prizes.jade');
+        });
+    });
+}
+
 exports.routes = {
     '/codes': {
         get: {
@@ -49,16 +64,25 @@ exports.routes = {
                     if (!prize) return res.render('codes/not_found.jade');
                     res.locals.code = code;
                     res.locals.prize = prize;
-                    return Bozuko.models.User.findById(prize.user_id, function(err, user) {
+                    return render(res);
+                });
+            }
+        }
+    },
+
+    '/codes/verified': {
+        post: {
+            handler: function(req, res) {
+                var code = req.param('code');
+                return Bozuko.models.Prize.findOne({code: code}, function(err, prize) {
+                    if (err) return err.send(res);
+                    if (!prize) return res.render('codes/not_found.jade');
+                    res.locals.code = code;
+                    return prize.verify(function(err, newPrize) {
                         if (err) return err.send(res);
-                        if (!user) return res.render('codes/not_found.jade');
-                        res.locals.user_image = user.image;
-                        return Bozuko.models.Contest.findById(prize.contest_id, function(err, contest) {
-                            if (err) return err.send(res);
-                            if (!contest) return res.render('codes/not_found.jade');
-                            res.locals.contest = contest;
-                            return res.render('codes/prizes.jade');
-                        });
+                        if (!newPrize) return res.render('codes/not_found.jade');
+                        res.locals.prize = newPrize;
+                        return render(res);
                     });
                 });
             }

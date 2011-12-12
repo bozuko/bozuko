@@ -14,6 +14,7 @@ var mongoose = require('mongoose'),
     fs = require('fs')
 ;
 
+var safe = {w:2, wtimeout: 5000};
 var Prize = module.exports = new Schema({
     contest_id              :{type:ObjectId, index:true},
     page_id                 :{type:ObjectId, index:true},
@@ -33,6 +34,8 @@ var Prize = module.exports = new Schema({
     description             :{type:String},
     details                 :{type:String},
     instructions            :{type:String},
+    verified                :{type:Boolean, index: {sparse: true}},
+    verified_time           :{type:Date},
     redeemed                :{type:Boolean},
     redeemed_time           :{type:Date,    index: true},
     is_email                :{type:Boolean, default:false},
@@ -45,24 +48,33 @@ var Prize = module.exports = new Schema({
     barcode_image           :{type:String},
     consolation             :{type:Boolean, default:false},
     bucks                   :{type:Number}
-},  {safe: {w:2, wtimeout: 5000}});
+},  {safe:safe});
 
 // setup our constants
 Prize.REDEEMED = 'redeemed';
 Prize.ACTIVE = 'active';
 Prize.EXPIRED = 'expired';
-
+Prize.VERIFIED = 'verified';
 
 Prize.plugin(LastUpdatedPlugin);
 Prize.plugin(JSONPlugin);
 
 Prize.virtual('state')
     .get(function(){
+        if( this.verified ) return Prize.VERIFIED;
         if( this.redeemed ) return Prize.REDEEMED;
         var now = new Date();
         if( now < this.expires ) return Prize.ACTIVE;
         return Prize.EXPIRED;
     });
+
+Prize.method('verify', function(callback) {
+    if (this.verified) return callback(Bozuko.error('prize/already_verified'));
+    return Bozuko.models.Prize.findAndModify(
+        {_id: this._id, verfied: {$exists: false}}, [],
+        {$set: {verified: true, verified_time: new Date()}},
+        {new: true, safe: safe}, callback);
+});
 
 Prize.method('redeem', function(user, email_prize_screen, callback){
     var self = this;
