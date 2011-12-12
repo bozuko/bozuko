@@ -429,7 +429,7 @@ Ext.namespace('Bozuko.client.game');
             this.scratchedPositions[index] = true;
             var self = this,
                 pos = this.positions[index],
-                ctx = Modernizr.cavnas ? this.$ticketCtx : null,
+                ctx = Modernizr.canvas ? this.$ticketCtx : null,
                 frame = 0;
                 
             var animate = function(){
