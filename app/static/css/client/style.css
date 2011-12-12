@@ -86,6 +86,7 @@ a:hover {
   z-index: 1001;
 }
 .cool_button {
+  overflow: hidden;
   display: inline-block;
   padding: 4px 20px;
   text-decoration: none;
@@ -114,6 +115,7 @@ a:hover {
 
 }
 .btn {
+  overflow: hidden;
   display: inline-block;
   padding: 4px 20px;
   text-decoration: none;
@@ -511,6 +513,7 @@ a:hover {
   display: block;
 }
 .game-description .actions .button {
+  overflow: hidden;
   display: inline-block;
   padding: 4px 20px;
   text-decoration: none;
@@ -727,6 +730,7 @@ a:hover {
   text-align: center;
 }
 .you-win .bd .message .btn {
+  overflow: hidden;
   display: inline-block;
   padding: 4px 20px;
   text-decoration: none;
@@ -773,6 +777,7 @@ a:hover {
 
 }
 .you-win .bd .message .btn-cancel {
+  overflow: hidden;
   display: inline-block;
   padding: 4px 20px;
   text-decoration: none;
@@ -886,6 +891,7 @@ a:hover {
   margin-left: 5px;
 }
 .you-win .ft .btn {
+  overflow: hidden;
   display: inline-block;
   padding: 4px 20px;
   text-decoration: none;
@@ -931,6 +937,7 @@ a:hover {
 
 }
 .you-win .ft .btn-save {
+  overflow: hidden;
   display: inline-block;
   padding: 4px 20px;
   text-decoration: none;
