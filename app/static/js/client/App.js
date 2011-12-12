@@ -54,7 +54,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             return;
         }
         
-        this.width = Math.min( 500, Math.max( this.config.width || Math.min(window.innerWidth, window.innerHeight), 320 ) );
+        
+        this.width = Math.min( 500, Math.max( this.config.width || Math.min(window.innerWidth||document.documentElement.clientWidth, window.innerHeight||document.documentElement.clientHeight), 320 ) );
         this.height = this.width/this.dimensions.x*this.dimensions.y;
         this.stylesheet = Bozuko.client.util.Stylesheet.create('app');
         this.stylesheet.rule('.modal-window', {
@@ -64,7 +65,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             'width': this.width+'px'
         });
         (function(){
-            var h =  window.innerHeight;
+            var h =  window.innerHeight||document.documentElement.clientHeight;
             this.stylesheet.rule('body', {
                 'min-height': h+'px'
             });
@@ -77,7 +78,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             }
             this.scrollToTop();
         }).defer(500, this);
-        
         
         // scale the page
         Ext.get(document.body).setStyle('font-size', 13*this.width/this.dimensions.x+'px');
@@ -179,6 +179,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 xfbml: true,
                 oauth: true
             });
+
             FB.Event.subscribe('auth.logout', function(){
                 self.fireEvent('nouser');
             });
@@ -323,7 +324,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         // test for qr reader on iphone...
         var qr = navigator.userAgent.match(/i(phone|pad|pod)/i ) && !navigator.userAgent.match(/safari/i);
         
-        if( !qr ){
+        if( !qr && !Ext.isIE7 && !Ext.isIE8 ){
             FB.login(function(){},{scope: Bozuko.client.App.facebookApp.scope});
             this.showLoading('Logging in...');
         }

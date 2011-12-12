@@ -81,6 +81,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
             var scripts = [
                 '/js/client/util/Stylesheet.js',
                 '/js/iscroll/iscroll-lite-4.1.6.js',
+                '/js/client/util/Overrides.js',
                 '/js/client/util/Touch.js',
                 '/js/client/util/Scroller.js',
                 '/js/client/util/Cookies.js',

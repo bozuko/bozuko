@@ -92,30 +92,6 @@ exports.routes = {
         }
     },
     
-    '/demo' : {
-        get : {
-            title : 'Bozuko Demonstration Page',
-            locals: {
-                html_classes : ['demo-page']
-            },
-            
-            handler : function(req, res){
-                
-                //var url = 'https://playground.bozuko.com:8001/client/game/4ecd46d54c97da8a1400011e';
-                var url = 'https://playground.bozuko.com/client/game/4ed56082a82573953a0008c0';
-                
-                var ua = req.header('user-agent');
-                if(ua.match(/(i(phone|pad|pod)|android)/i) ){
-                    return res.redirect(url);
-                }
-                
-                res.locals.url = url;
-                res.locals.img = 'http://qrcode.kaywa.com/img.php?s=8&d='+encodeURIComponent(url);
-                return res.render('site/demo');
-            }
-        }
-    },
-    
     '/qr/:type?' : {
         get : {
             
