@@ -1,23 +1,35 @@
 include index
+br
+br
 ul.prize-list
   li
-    .page-name #{prize.page_name} - 
-    .contest-name #{contest.name}
-    img.profile-pic(src=user_image)
-    -if (locals.prize.state == 'active')
-      img.poker-chip(src='/images/assets/prizes/48/icon-active.png')
-    -else if (locals.prize.state == 'redeemed')
-      img.poker-chip(src='/images/assets/prizes/48/icon-redeemed.png')
-    -else
-      img.poker-chip(src='/images/assets/prizes/48/icon-expired.png')
-    .user-name #{prize.user_name}
-    .prize-name #{prize.name}
-    .prize-code #{code}
-    .prize-timestamp #{prize.timestamp}
-      .label Won:
-    -if (locals.prize.redeemed) 
-      .prize-timestamp #{prize.redeemed_time}
-        .label Redeemed:
-    -if (locals.prize.state == 'expired')
-      .prize-timestamp #{prize.expires}
-        .label Expired:
+    .verify-button
+      form(action="/codes/verified",method="post")
+        input(type='hidden', name='code', value=code)
+        input.medium-button(type='submit', value='Verify')
+    .prize
+      .page-name #{prize.page_name} - 
+      .contest-name #{contest.name}
+      img.profile-pic(src=user_image)
+      -if (locals.prize.state == 'active')
+        img.poker-chip(src='/images/assets/prizes/48/icon-active.png')
+      -else if (locals.prize.state == 'redeemed')
+        img.poker-chip(src='/images/assets/prizes/48/icon-redeemed.png')
+      -else if (locals.prize.state == 'verified')
+        img.poker-chip(src='/images/assets/prizes/48/icon-verified.png')
+      -else
+        img.poker-chip(src='/images/assets/prizes/48/icon-expired.png')
+      .user-name #{prize.user_name}
+      .prize-name #{prize.name}
+      .prize-code #{code}
+      .prize-timestamp #{prize.timestamp}
+        .label Won:
+      -if (locals.prize.redeemed) 
+        .prize-timestamp #{prize.redeemed_time}
+          .label Redeemed:
+      -if (locals.prize.state == 'expired')
+        .prize-timestamp #{prize.expires}
+          .label Expired:
+      -if (locals.prize.verified)
+        .prize-timestamp #{prize.verified_time}
+          .label Verified:

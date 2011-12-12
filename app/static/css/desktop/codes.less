@@ -20,67 +20,73 @@ H2.not_found {
 
 .prize-list {
     text-align: center;
+    display: block;
+    width: 420px;    
+    margin: 0 auto; 
     li {
         list-style: none;
-        width: 300px;
-        margin: 0 auto;
-        border: 2px solid #999;
-        padding: 2px;
-        .border_radius(6px);
-        display: block;
-        overflow: hidden;
-        text-align: center;
-
-        .page-name {
-            background: #e6e6e6;
-            padding: .2em 6px;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .contest-name {
-            font-weight: normal;
-            background: #e6e6e6;
-            padding: .2em 6px;
-            font-size: 16px;
-        }
-        .user-name {
-            margin-left: 55px;
-            text-align: left;
-            font-size: 14px;
-            font-weight: normal;
-            margin-bottom: .4em;
-        }
-        .prize-name {
-            margin-left: 55px;
-            text-align: left;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: .2em;
-        }
-        .prize-code {
-            margin-left: 55px;
-            text-align: left;
-            font-weight: normal;
-            font-family: "courier new";
-            font-size: 12px;
-            margin-bottom: .2em;
-            color: #666;
-        }
-       img.profile-pic {
-            height: 50px;
+        .verify-button {
             float: right;
+            vertical-align: middle;
         }
-       img.poker-chip {
-           float: left;
-       }
-       .prize-timestamp {
-           text-align:right;
-           font-size: 11px;
-           color: #999;
-           .label {
-               float:left;
-           }
-       }
-    }
+        .prize {
+            width: 300px;
+            border: 2px solid #999;
+            padding: 2px;
+            .border_radius(6px);
+            display: block;
+            overflow: hidden;
 
+            .page-name {
+                background: #e6e6e6;
+                padding: .2em 6px;
+                font-weight: bold;
+                font-size: 16px;
+            }
+            .contest-name {
+                font-weight: normal;
+                background: #e6e6e6;
+                padding: .2em 6px;
+                font-size: 16px;
+            }
+            .user-name {
+                margin-left: 55px;
+                text-align: left;
+                font-size: 14px;
+                font-weight: normal;
+                margin-bottom: .4em;
+            }
+            .prize-name {
+                margin-left: 55px;
+                text-align: left;
+                font-size: 14px;
+                font-weight: bold;
+                margin-bottom: .2em;
+            }
+            .prize-code {
+                margin-left: 55px;
+                text-align: left;
+                font-weight: normal;
+                font-family: "courier new";
+                font-size: 12px;
+                margin-bottom: .2em;
+                color: #666;
+            }
+            img.profile-pic {
+                height: 50px;
+                float: right;
+            }
+            img.poker-chip {
+                float: left;
+            }
+            .prize-timestamp {
+                text-align:right;
+                font-size: 11px;
+                color: #999;
+                .label {
+                    float:left;
+                }
+            }
+        }
+    }
 }
