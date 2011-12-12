@@ -69,11 +69,18 @@ Prize.virtual('state')
     });
 
 Prize.method('verify', function(callback) {
+    var self = this;
     if (this.verified) return callback(Bozuko.error('prize/already_verified'));
     return Bozuko.models.Prize.findAndModify(
         {_id: this._id, verfied: {$exists: false}}, [],
         {$set: {verified: true, verified_time: new Date()}},
-        {new: true, safe: safe}, callback);
+        {new: true, safe: safe}, function(err, prize) {
+            if (err) return callback(err);
+            Bozuko.publish('prize/verified',
+                {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
+            return callback(null, prize);
+        }
+    );
 });
 
 Prize.method('redeem', function(user, email_prize_screen, callback){
