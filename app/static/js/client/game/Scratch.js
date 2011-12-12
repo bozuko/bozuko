@@ -94,6 +94,7 @@ Ext.namespace('Bozuko.client.game');
             this.positions = [];
             this.scratchedPositions = {};
             this.scratchImages = [];
+            this.ieScratches = [];
             this.loaded = false;
             this.rendered = false;
             this.scale = this.width / this.baseWidth;
@@ -126,9 +127,10 @@ Ext.namespace('Bozuko.client.game');
             var self = this;
             
             // add the masks
-            Ext.each( this.scratchMasks, function(mask, i){
-                self.addImage( 'scratch-mask-'+i, mask)
+            if( Modernizr.canvas ) Ext.each( this.scratchMasks, function(mask, i){
+                self.addImage( 'scratch-mask-'+i, mask )
             });
+            else self.addImage( 'scratch-mask', '/images/client/scratch/scratchMask_0024.png');
             
             // add the images
             for(var i in this.resultImages ){
@@ -278,22 +280,26 @@ Ext.namespace('Bozuko.client.game');
             // draw the prize and targets...
             for(var i=0; i<6; i++){
                 
-                var pos = self.positions[i];
+                var el, pos = self.positions[i];
                 
-                self.$prizes[i] = self.$ct.createChild({
+                el = self.$prizes[i] = self.$ct.createChild({
                     tag         :'div',
                     cls         :'prize',
                     html        :'&nbsp;'
-                }).setStyle({
+                });
+                
+                el.setStyle({
                     left: pos.x+'%',
                     top: pos.y+'%'
                 });
                 
-                self.$targets[i] = self.$ct.createChild({
+                el = self.$targets[i] = self.$ct.createChild({
                     tag         :'div',
                     cls         :'target',
                     html        :'&nbsp;'
-                }).setStyle({
+                });
+                
+                el.setStyle({
                     left: pos.x+'%',
                     top: pos.y+'%'
                 });
@@ -310,6 +316,10 @@ Ext.namespace('Bozuko.client.game');
                 cls         :'profile-pic',
                 src         :this.page.image //.replace(/type=large/i, 'type=square')
             });
+            
+            if( Ext.isIE7 || Ext.isIE8 ){
+                //self.$pageImage.dom.style.filter='progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
+            }
             
             self.$ticketsLeft = self.$ct.createChild({
                 cls         :'tickets-left',
@@ -330,13 +340,44 @@ Ext.namespace('Bozuko.client.game');
             self._createAnimationDiv('win', true);
             
             // add the canvas
-            this.$ticket = this.$ct.createChild({
-                tag         :'canvas',
-                cls         :'ticket',
-                width       :this.width,
-                height      :this.height
-            });
-            if( Modernizr.canvas ) this.$ticketCtx = this.$ticket.dom.getContext('2d');
+            
+            if( Modernizr.canvas ){
+                this.$ticket = this.$ct.createChild({
+                    tag         :'canvas',
+                    cls         :'ticket',
+                    width       :this.width,
+                    height      :this.height
+                });
+                this.$ticketCtx = this.$ticket.dom.getContext('2d');
+            }
+            else{
+                this.$ticket = this.$ct.createChild({
+                    tag         :'img',
+                    cls         :'ticket',
+                    width       :this.width,
+                    height      :this.height,
+                    src         :this.image('bg').src
+                });
+                this.$ieScratch = this.$ct.createChild({
+                    tag         :'div',
+                    cls         :'ie-scratch',
+                    style       :'width: '+this.width+'px; height: '+this.height+'px;'
+                });
+                // pre add all the scratches
+                for(var i=0; i<6; i++){
+                    var pos = this.positions[i],
+                        x = pos.x/100*self.width,
+                        y = pos.y/100*self.height,
+                        w = self.prizeWidth*self.scale,
+                        h = self.prizeHeight*self.scale;
+                    
+                    self.ieScratches[i] = self.$ieScratch.createChild({
+                        tag             :'img',
+                        style           :'left: '+x+'px;top:'+y+'px;width:'+w+'px;height:'+h+'px;visibility: hidden;',
+                        src             :self.image('scratch-mask').src
+                    });
+                }
+            }
             this.reset();
             this.rendered = true;
             this.fireEvent('render', this);
@@ -366,7 +407,16 @@ Ext.namespace('Bozuko.client.game');
         
         reset : function(){
             var bg = this.image('bg');
-            if( Modernizr.canvas ) this.$ticketCtx.drawImage( bg, 0, 0, this.width, this.height );
+            if( Modernizr.canvas ){
+                this.$ticketCtx.drawImage( bg, 0, 0, this.width, this.height );
+            }
+            else{
+                // need to erase any images we drew...
+                for(var i=0; i<6; i++){
+                    this.ieScratches[i].dom.style.visibility='hidden';
+                    this.$prizes[i].setStyle('display','none');
+                }
+            }
             this.loaded = false;
             this.scratched = 0;
             this.scratchedWins = 0;
@@ -379,21 +429,29 @@ Ext.namespace('Bozuko.client.game');
             this.scratchedPositions[index] = true;
             var self = this,
                 pos = this.positions[index],
-                ctx = this.$ticketCtx,
+                ctx = Modernizr.cavnas ? this.$ticketCtx : null,
                 frame = 0;
                 
             var animate = function(){
-                ctx.save();
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.drawImage(
-                    self.image('scratch-mask-'+frame),
-                    pos.x/100*self.width,
-                    pos.y/100*self.height,
-                    self.prizeWidth*self.scale,
-                    self.prizeHeight*self.scale
-                );
-                ctx.restore();
-                if(++frame >= self.scratchMasks.length){
+                
+                 var x = pos.x/100*self.width,
+                     y = pos.y/100*self.height,
+                     w = self.prizeWidth*self.scale,
+                     h = self.prizeHeight*self.scale;
+                
+                if( ctx ){
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.drawImage(self.image('scratch-mask-'+frame),x,y,w,h);
+                    ctx.restore();
+                }
+                else{
+                    self.ieScratches[index].dom.style.visibility= 'visible';
+                }
+                if(!ctx || ++frame >= self.scratchMasks.length){
+                    if( !ctx ){
+                        self.$prizes[index].setStyle('display', 'block');
+                    }
                     self.fireEvent('scratch', index);
                     return;
                 }
