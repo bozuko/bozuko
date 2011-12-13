@@ -62,14 +62,27 @@ exports.routes = {
     '/codes': {
         get: {
             handler: function(req, res) {
-                return res.render('codes/index.jade');
+                return res.render('codes/pin.jade');
             }
         },
 
         post: {
             handler: function(req, res) {
                 var code = req.param('code');
-                return Bozuko.models.Prize.findOne({code: code}, function(err, prize) {
+                var pin = req.param('pin');
+                var page_id = req.param('page_id');
+                if (!pin) return res.render('codes/pin.jade');
+                if (!page_id) {
+                    return Bozuko.models.Page.verifyPin(pin, function(err, page) {
+                        if (err) return error(res, err);
+                        res.locals.pin = pin;
+                        res.locals.page_id = page._id;
+                        return res.render('codes/index.jade');
+                    });
+                }
+                res.locals.pin = pin;
+                res.locals.page_id = page_id;
+                return Bozuko.models.Prize.findOne({code: code, page_id: page_id}, function(err, prize) {
                     if (err) return error(res, err);
                     if (!prize) return res.render('codes/not_found.jade');
                     res.locals.code = code;

@@ -17,8 +17,20 @@ exports['cleanup'] = function(test) {
 
 exports['save page'] = function(test) {
     page.save(function(err) {
-       test.ok(!err);
-       test.done();
+        test.ok(!err);
+        return Bozuko.models.Page.findOne({_id: page._id}, function(err, _page) {
+           test.ok(!err);
+           page = _page;
+           console.log(page);
+           test.ok(page.pin.length >=4 && page.pin.length <= 6);
+           return Bozuko.models.Page.verifyPin(page.pin, function(err) {
+               test.ok(!err);
+               return Bozuko.models.Page.count({pin: page.pin}, function(err, count) {
+                   test.equal(count, 1);
+                   test.done();
+               });
+           });
+        });
     });
 };
 
