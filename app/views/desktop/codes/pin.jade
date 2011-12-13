@@ -1,8 +1,7 @@
-.pin
-  br
-  h1.h1 Please Enter Your Pin
-  form(action="?",method="post")
-    input(type='text', name='pin')  
-    br
-    br
-    input.medium-button(type='submit', value='Submit')
+.codes
+  img.orange-check(src='/images/desktop/site/beta/img_orange-check.png')
+  .pin
+    .prompt Please enter your unique Pin number:
+    form(action="?",method="post")
+      input(type='text', name='pin')  
+      input.pin-button(type='submit', value='Continue')

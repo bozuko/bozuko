@@ -1,102 +1,134 @@
 @import "app/static/css/vars";
 @import "app/static/css/mixins";
 
-.pin {
-   text-align: center;
-   input[type='text'] {
-        width: 200px;
-        padding: 2px 6px;
-        font-size: 14px;
-        line-height: 24px;
-        .border_radius(6px);
-        border: 1px solid #aaa;
-    }
-}
-
-.search-box {
-    text-align: center;
-    input[type='text'] {
-        width: 420px;
-        padding: 2px 6px;
-        font-size: 14px;
-        line-height: 24px;
-        .border_radius(6px);
-        border: 1px solid #aaa;
-    }
-}
-
-H2.not_found {
-    text-align: center;
-    color: red;
-}
-
-.prize-list {
-    text-align: center;
-    display: block;
-    width: 420px;    
-    margin: 0 auto; 
-    li {
-        list-style: none;
-        .verify-button {
-            float: right;
-            vertical-align: middle;
+.codes {
+    .pin {
+        margin: 0 10px;
+        .prompt {
+            font-size: 25px;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 700;
+            color: #656565;
         }
-        .prize {
-            width: 300px;
-            border: 2px solid #999;
-            padding: 2px;
+        input[type='text'] {
+            margin-top: 20px;
+            width: 200px;
+            padding: 2px 6px;
+            font-size: 30px;
+            font-weight: 900;
             .border_radius(6px);
-            display: block;
-            overflow: hidden;
+            border: 2px solid #aaa;
+        }
+        input.pin-button {
+            cursor: pointer;
+            display: inline-block;
+            .transition(none);
+            .border_radius(4px);
+            border: 1px solid @dark_color;
+            .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
+            color: #fff;
+            font-family: 'Open Sans', sans-serif;
+            text-decoration: none;
+            font-weight: 900;
+            width: 180px;
+            
+            &:hover, &:active{
+                color: #fff;
+                .background_gradient(@brand_color, @dark_color);
+            }
+            line-height: 24px;
+            font-size: 30px;
+            padding: 7px 12px;
+            margin: 0 10px;
+        }
+    }
 
-            .page-name {
-                background: #e6e6e6;
-                padding: .2em 6px;
-                font-weight: bold;
-                font-size: 16px;
-            }
-            .contest-name {
-                font-weight: normal;
-                background: #e6e6e6;
-                padding: .2em 6px;
-                font-size: 16px;
-            }
-            .user-name {
-                margin-left: 55px;
-                text-align: left;
-                font-size: 14px;
-                font-weight: normal;
-                margin-bottom: .4em;
-            }
-            .prize-name {
-                margin-left: 55px;
-                text-align: left;
-                font-size: 14px;
-                font-weight: bold;
-                margin-bottom: .2em;
-            }
-            .prize-code {
-                margin-left: 55px;
-                text-align: left;
-                font-weight: normal;
-                font-family: "courier new";
-                font-size: 12px;
-                margin-bottom: .2em;
-                color: #666;
-            }
-            img.profile-pic {
-                height: 50px;
+    img.orange-check {
+        margin: 0px 10px;
+        float: left;
+    }
+
+    .search-box {
+        input[type='text'] {
+            width: 420px;
+            padding: 2px 6px;
+            font-size: 14px;
+            line-height: 24px;
+            .border_radius(6px);
+            border: 1px solid #aaa;
+        }
+    }
+
+    H2.not_found {
+        color: red;
+    }
+
+    .prize-list {
+        display: block;
+        width: 420px;    
+        li {
+            list-style: none;
+            .verify-button {
                 float: right;
+                vertical-align: middle;
             }
-            img.poker-chip {
-                float: left;
-            }
-            .prize-timestamp {
-                text-align:right;
-                font-size: 11px;
-                color: #999;
-                .label {
-                    float:left;
+            .prize {
+                width: 300px;
+                border: 2px solid #999;
+                padding: 2px;
+                .border_radius(6px);
+                display: block;
+                overflow: hidden;
+
+                .page-name {
+                    background: #e6e6e6;
+                    padding: .2em 6px;
+                    font-weight: bold;
+                    font-size: 16px;
+                }
+                .contest-name {
+                    font-weight: normal;
+                    background: #e6e6e6;
+                    padding: .2em 6px;
+                    font-size: 16px;
+                }
+                .user-name {
+                    margin-left: 55px;
+                    text-align: left;
+                    font-size: 14px;
+                    font-weight: normal;
+                    margin-bottom: .4em;
+                }
+                .prize-name {
+                    margin-left: 55px;
+                    text-align: left;
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: .2em;
+                }
+                .prize-code {
+                    margin-left: 55px;
+                    text-align: left;
+                    font-weight: normal;
+                    font-family: "courier new";
+                    font-size: 12px;
+                    margin-bottom: .2em;
+                    color: #666;
+                }
+                img.profile-pic {
+                    height: 50px;
+                    float: right;
+                }
+                img.poker-chip {
+                    float: left;
+                }
+                .prize-timestamp {
+                    text-align:right;
+                    font-size: 11px;
+                    color: #999;
+                    .label {
+                        float:left;
+                    }
                 }
             }
         }
