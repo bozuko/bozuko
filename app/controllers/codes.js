@@ -73,7 +73,7 @@ exports.routes = {
                 if (!pin) return res.render('codes/pin.jade');
                 if (!page_id) {
                     return Bozuko.models.Page.verifyPin(pin, function(err, page) {
-                        if (err) return error(res, err);
+                        if (err) return setTimeout(function() {error(res, err);}, 3000);
                         res.locals.pin = pin;
                         res.locals.page_id = page._id;
                         return res.render('codes/index.jade');
@@ -102,7 +102,7 @@ exports.routes = {
                 if (!pin) return res.render('codes/pin.jade');
                 if (!page_id) {
                     return Bozuko.models.Page.verifyPin(pin, function(err, page) {
-                        if (err) return error(res, err);
+                        if (err) return setTimeout(function() {error(res, err);}, 3000);
                         res.locals.pin = pin;
                         res.locals.page_id = page._id;
                         return res.render('codes/index.jade');
