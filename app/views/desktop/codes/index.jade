@@ -2,7 +2,9 @@
   br
   h1.h1 Code Search
   form(action="?",method="post")
-      input(type='text', name='code')
-      br
-      br
-      input.medium-button(type='submit', value='Search')
+    input(type='text', name='code')  
+    input(type='hidden', name='pin', value=pin)
+    input(type='hidden', name='page_id', value=page_id)
+    br
+    br
+    input.medium-button(type='submit', value='Search')
