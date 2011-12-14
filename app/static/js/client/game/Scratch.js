@@ -226,25 +226,33 @@ Ext.namespace('Bozuko.client.game');
             
             this.$animationsCt.select('.animation').removeClass('animate');
             this.$animationsCt.show();
-            this.$animations[name].addClass('animate');
+            var cur = this.$animations[name];
+            cur.addClass('animate');
             
             
             var anim, cancelAnimation;
             if( !Modernizr.cssanimations ){
                 var grow=true,
                     animStopped=false,
-                    scale = [.9, 1.1],
-                    xy = this.$animationsCt.getXY(),
-                    wh = [this.$animationsCt.getWidth(),this.$animationsCt.getHeight()],
+                    scale = [.8, 1],
+                    xy = cur.getXY(),
+                    wh = [cur.getWidth(),cur.getHeight()],
                     animOpts;
                 
                 cancelAnimation = function(){
                     animStopped = true;
                     if( animOpts.anim && animOpts.anim.isAnimating && animOpts.anim.isAnimating() ) animOpts.anim.stop();
-                    self.$animationsCt.setXY(xy);
-                    self.$animationsCt.setWidth(wh[0]);
-                    self.$animationsCt.setHeight(wh[1]);
+                    cur.setStyle({
+                        'top':0,'left':0,'bottom':0,'right':0,
+                        'width':'100%',
+                        'height':'100%'
+                    });
                 };
+                
+                cur.setStyle({
+                    'width':'auto',
+                    'height':'auto'
+                });
                 
                 var animate = function(){
                     
@@ -253,13 +261,13 @@ Ext.namespace('Bozuko.client.game');
                     var r = Math.round,
                         w = {from: r(wh[0]*scale[grow?0:1]), to: r(wh[0]*scale[grow?1:0]) },
                         h = {from: r(wh[1]*scale[grow?0:1]), to: r(wh[1]*scale[grow?1:0]) },
-                        x = {from: xy[0] + r((wh[0]-w.from) / 2), to: xy[0] + r((wh[0]-w.to) / 2)},
-                        y = {from: xy[1] + r((wh[1]-h.from) / 2), to: xy[1] + r((wh[1]-h.to) / 2)};
+                        x = {from: r((wh[0]-w.from) / 2), to: r((wh[0]-w.to) / 2)},
+                        y = {from: r((wh[1]-h.from) / 2), to: r((wh[1]-h.to) / 2)};
                     
-                    var args = { width: w, height: h, left: x, top: y };
+                    var args = {top: x, left: y, right: x, bottom: y };
+                    
                     grow = !grow;
-                    
-                    self.$animationsCt.anim(args, animOpts);
+                    cur.anim(args, animOpts);
                 };
                 
                 animOpts = {
@@ -293,7 +301,6 @@ Ext.namespace('Bozuko.client.game');
             setTimeout(function(){
                 self.$animationsCt.on('click', clickHandler);
             }, 500);
-            
             
             setTimeout(cancel, 5000);
         },
