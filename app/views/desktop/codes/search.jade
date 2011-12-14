@@ -1,0 +1,12 @@
+.codes
+  img.orange-check(src='/images/desktop/site/beta/img_orange-check.png')
+  .main
+    .prompt.welcome Welcome, #{page_name}
+    form(action="/codes",method="post")
+      input(type='text', name='code')  
+      input(type='hidden', name='pin', value=pin)
+      input(type='hidden', name='page_id', value=page_id)
+      input(type='hidden', name='page_name', value=page_name)
+      input.button(type='submit', value='Search')
+    -if (locals.error)
+        .error #{error}

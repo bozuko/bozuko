@@ -9,16 +9,25 @@
   content: "";
   display: block;
 }
-.codes .pin {
-  margin: 0 10px;
+.codes img.orange-check {
+  margin: 0px 10px;
+  float: left;
 }
-.codes .pin .prompt {
+.codes .main {
+  margin: 0 auto;
+  text-align: left;
+  overflow: hidden;
+}
+.codes .main .prompt {
   font-size: 25px;
   font-family: 'Open Sans', sans-serif;
   font-weight: 700;
   color: #656565;
 }
-.codes .pin input[type='text'] {
+.codes .main .prompt .welcome {
+  color: #00a24f;
+}
+.codes .main input[type='text'] {
   margin-top: 20px;
   width: 200px;
   padding: 2px 6px;
@@ -32,7 +41,7 @@
   background-clip: padding-box;
   border: 2px solid #aaa;
 }
-.codes .pin input.pin-button {
+.codes .main .button {
   cursor: pointer;
   display: inline-block;
   transition: none 0.5s linear;
@@ -60,9 +69,9 @@
   line-height: 24px;
   font-size: 30px;
   padding: 7px 12px;
-  margin: 0 10px;
+  margin: 0 10px 10px;
 }
-.codes .pin input.pin-button:hover, .codes .pin input.pin-button:active {
+.codes .main .button:hover, .codes .main .button:active {
   color: #fff;
   background-color: #00a24f;
   background-image: -moz-linear-gradient(top, #00a24f, #006b37);
@@ -71,41 +80,18 @@
   /* IE6-9 */
 
 }
-.codes img.orange-check {
-  margin: 0px 10px;
-  float: left;
-}
-.codes .search-box input[type='text'] {
-  width: 420px;
-  padding: 2px 6px;
-  font-size: 14px;
-  line-height: 24px;
-  -webkit-background-clip: padding-box;
-  -webkit-border-radius: 6px;
-  -moz-background-clip: padding-box;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
-  background-clip: padding-box;
-  border: 1px solid #aaa;
-}
-.codes H2.not_found {
+.codes .main .error {
+  font-size: 20px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  margin-top: 10px;
   color: red;
 }
-.codes .prize-list {
-  display: block;
-  width: 420px;
-}
-.codes .prize-list li {
-  list-style: none;
-}
-.codes .prize-list li .verify-button {
-  float: right;
-  vertical-align: middle;
-}
-.codes .prize-list li .prize {
-  width: 300px;
+.codes .main .prize {
+  width: 400px;
   border: 2px solid #999;
   padding: 2px;
+  font-family: 'Open Sans', sans-serif;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
@@ -115,53 +101,88 @@
   display: block;
   overflow: hidden;
 }
-.codes .prize-list li .prize .page-name {
-  background: #e6e6e6;
+.codes .main .prize .prize-header {
+  display: block;
+}
+.codes .main .prize .prize-header .page-name {
   padding: .2em 6px;
   font-weight: bold;
   font-size: 16px;
 }
-.codes .prize-list li .prize .contest-name {
-  font-weight: normal;
-  background: #e6e6e6;
-  padding: .2em 6px;
-  font-size: 16px;
-}
-.codes .prize-list li .prize .user-name {
-  margin-left: 55px;
-  text-align: left;
-  font-size: 14px;
-  font-weight: normal;
-  margin-bottom: .4em;
-}
-.codes .prize-list li .prize .prize-name {
-  margin-left: 55px;
-  text-align: left;
-  font-size: 14px;
+.codes .main .prize .prize-header .prize-code {
   font-weight: bold;
-  margin-bottom: .2em;
-}
-.codes .prize-list li .prize .prize-code {
-  margin-left: 55px;
-  text-align: left;
-  font-weight: normal;
   font-family: "courier new";
-  font-size: 12px;
-  margin-bottom: .2em;
+  font-size: 16px;
+  float: right;
   color: #666;
 }
-.codes .prize-list li .prize img.profile-pic {
-  height: 50px;
+.codes .main .prize .prize-header .contest-name {
+  font-weight: normal;
+  padding: .2em 6px;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.codes .main .prize .user-prize {
+  width: 150px;
+  display: inline-block;
+}
+.codes .main .prize .user-prize .user-name {
+  font-size: 14px;
   float: right;
 }
-.codes .prize-list li .prize img.poker-chip {
-  float: left;
+.codes .main .prize .user-prize .prize-name {
+  font-size: 14px;
+  font-weight: bold;
 }
-.codes .prize-list li .prize .prize-timestamp {
-  text-align: right;
+.codes .main .prize .profile-pic {
+  display: block;
+  float: right;
+}
+.codes .main .prize .timestamps {
+  display: block;
+  font-family: 'Open Sans', sans-serif;
   font-size: 11px;
   color: #999;
 }
-.codes .prize-list li .prize .prize-timestamp .label {
-  float: left;
+.codes .main .prize .verify-button {
+  display: block;
+  float: right;
+}
+.codes .main .prize .verify-button .button {
+  cursor: pointer;
+  display: inline-block;
+  transition: none 0.5s linear;
+  -moz-transition: none 0.5s linear;
+  -o-transition: none 0.5s linear;
+  -webkit-transition: none 0.5s linear;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  background-clip: padding-box;
+  border: 1px solid #006b37;
+  background-color: #00d568;
+  background-image: -moz-linear-gradient(top, #00d568, #009e51);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00d568), color-stop(1, #009e51)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#00d568',EndColorStr='#009e51');
+  /* IE6-9 */
+
+  color: #fff;
+  font-family: 'Open Sans', sans-serif;
+  text-decoration: none;
+  font-weight: 900;
+  width: 120px;
+  font-size: 20px;
+  padding: 7px 12px;
+  margin: 0 10px 10px;
+}
+.codes .main .prize .verify-button .button:hover, .codes .main .prize .verify-button .button:active {
+  color: #fff;
+  background-color: #00a24f;
+  background-image: -moz-linear-gradient(top, #00a24f, #006b37);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #00a24f), color-stop(1, #006b37)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#00a24f',EndColorStr='#006b37');
+  /* IE6-9 */
+
 }

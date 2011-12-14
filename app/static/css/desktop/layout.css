@@ -156,6 +156,12 @@ body {
 .hd .nav li a.last:hover span em, .hd .nav li a.last.active span em {
   background-position: 100% -52px;
 }
+.bd_codes {
+  position: relative;
+  padding: 5px 0;
+  min-height: 200px;
+  border-top: 0;
+}
 .bd {
   position: relative;
   padding: 5px 0;

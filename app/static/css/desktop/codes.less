@@ -2,13 +2,24 @@
 @import "app/static/css/mixins";
 
 .codes {
-    .pin {
-        margin: 0 10px;
+
+    img.orange-check {
+        margin: 0px 10px;
+        float: left;
+    }
+
+    .main {
+        margin: 0 auto;
+        text-align: left;
+        overflow: hidden;
         .prompt {
             font-size: 25px;
             font-family: 'Open Sans', sans-serif;
             font-weight: 700;
             color: #656565;
+            .welcome {
+                color: @brand_color;
+            }
         }
         input[type='text'] {
             margin-top: 20px;
@@ -19,7 +30,7 @@
             .border_radius(6px);
             border: 2px solid #aaa;
         }
-        input.pin-button {
+        .button {
             cursor: pointer;
             display: inline-block;
             .transition(none);
@@ -39,98 +50,93 @@
             line-height: 24px;
             font-size: 30px;
             padding: 7px 12px;
-            margin: 0 10px;
+            margin: 0 10px 10px;
         }
-    }
-
-    img.orange-check {
-        margin: 0px 10px;
-        float: left;
-    }
-
-    .search-box {
-        input[type='text'] {
-            width: 420px;
-            padding: 2px 6px;
-            font-size: 14px;
-            line-height: 24px;
+        .error {
+            font-size: 20px;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 700;
+            margin-top: 10px;
+            color: red;
+        }
+        .prize {
+            width: 400px;
+            border: 2px solid #999;
+            padding: 2px;
+            font-family: 'Open Sans', sans-serif;
             .border_radius(6px);
-            border: 1px solid #aaa;
-        }
-    }
-
-    H2.not_found {
-        color: red;
-    }
-
-    .prize-list {
-        display: block;
-        width: 420px;    
-        li {
-            list-style: none;
-            .verify-button {
-                float: right;
-                vertical-align: middle;
-            }
-            .prize {
-                width: 300px;
-                border: 2px solid #999;
-                padding: 2px;
-                .border_radius(6px);
+            display: block;
+            overflow: hidden;
+            
+            .prize-header {
                 display: block;
-                overflow: hidden;
-
                 .page-name {
-                    background: #e6e6e6;
                     padding: .2em 6px;
                     font-weight: bold;
                     font-size: 16px;
+                }
+                .prize-code {
+                    font-weight: bold;
+                    font-family: "courier new";
+                    font-size: 16px;
+                    float: right;
+                    color: #666;
                 }
                 .contest-name {
                     font-weight: normal;
-                    background: #e6e6e6;
                     padding: .2em 6px;
                     font-size: 16px;
+                    margin-bottom: 6px;
                 }
+            }
+            .user-prize {
+                width: 150px;
+                display: inline-block;
                 .user-name {
-                    margin-left: 55px;
-                    text-align: left;
                     font-size: 14px;
-                    font-weight: normal;
-                    margin-bottom: .4em;
+                    float:right;
                 }
                 .prize-name {
-                    margin-left: 55px;
-                    text-align: left;
                     font-size: 14px;
                     font-weight: bold;
-                    margin-bottom: .2em;
                 }
-                .prize-code {
-                    margin-left: 55px;
-                    text-align: left;
-                    font-weight: normal;
-                    font-family: "courier new";
-                    font-size: 12px;
-                    margin-bottom: .2em;
-                    color: #666;
-                }
-                img.profile-pic {
-                    height: 50px;
-                    float: right;
-                }
-                img.poker-chip {
-                    float: left;
-                }
-                .prize-timestamp {
-                    text-align:right;
-                    font-size: 11px;
-                    color: #999;
-                    .label {
-                        float:left;
+            }
+            .profile-pic {
+                display: block;
+                float: right;
+            }
+            .timestamps {
+                display: block;
+                font-family: 'Open Sans', sans-serif;
+                font-size: 11px;
+                color: #999;
+            }
+            .verify-button {
+                display: block;
+                float: right;
+                .button {
+                    cursor: pointer;
+                    display: inline-block;
+                    .transition(none);
+                    .border_radius(4px);
+                    border: 1px solid @dark_color;
+                    .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
+                    color: #fff;
+                    font-family: 'Open Sans', sans-serif;
+                    text-decoration: none;
+                    font-weight: 900;
+                    width: 120px;
+                    
+                    &:hover, &:active{
+                        color: #fff;
+                        .background_gradient(@brand_color, @dark_color);
                     }
+                    font-size: 20px;
+                    padding: 7px 12px;
+                    margin: 0 10px 10px;
                 }
             }
         }
     }
 }
+
