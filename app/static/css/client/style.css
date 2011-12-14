@@ -359,25 +359,24 @@ a:hover {
   top: 9.639%;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 91.361%;
 }
 .scratch-ticket .animations .animation {
   display: none;
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 100%;
+  width: 100%;
 }
 .scratch-ticket .animations .animation img {
   display: block;
   position: absolute;
   width: 100%;
+  height: 85%;
   top: 0;
   left: 0;
 }
 .scratch-ticket .animations .animate {
-  position: relative;
+  position: absolute;
   display: block;
 }
 .scratch-ticket .animations .animate .bg {
