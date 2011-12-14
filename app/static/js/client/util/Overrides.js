@@ -2,10 +2,10 @@
     var setStyle = Ext.Element.prototype.setStyle;
     Ext.Element.prototype.setStyle = function(prop, value){
         try{
-            setStyle.apply( this, arguments );
+            return setStyle.apply( this, arguments );
         }
         catch(e){
-            
+            return this;
         }
     };
     

@@ -202,13 +202,26 @@ body{
         padding-bottom: 20px;
     }
 }
-
+.no-csstransitions {
+    .slideshow {
+        .slide {
+            display: none;
+        }
+    }
+}
 
 .site-home{
-    .top-line {
-        display: none;
+    .nav {
+        
     }
     .bd{
+        padding: 0;
+        background: #fff;
+        
+        .top-line, .bottom-line {
+            display: none;
+        }
+        
         .page-width{
             width: auto;
             .wrap {
@@ -219,89 +232,136 @@ body{
                 .city {
                     z-index: 1;
                     position: relative;
-                    background: transparent url("/images/desktop/site/bg_cityscape.jpg") repeat-x 50% 0;
+                    background: transparent url("/images/desktop/site/home/cityscape2.jpg") repeat-x 50% 0;
                     height: 342px;
                     
                     .bottom-line {
+                        display: block;
                         position: absolute;
-                        background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
+                        background: transparent url("/images/desktop/site/home/city-bottom-shadow.png") no-repeat 50% 100%;
                         width: 100%;
                         z-index: 10;
-                        height: 9px;
+                        height: 22px;
                         bottom: 0;
                     }
                     .top-line {
                         display: block;
                         z-index: 3;
-                        top: -5px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 17px;
+                        background: transparent url("/images/desktop/site/home/city-top-shadow.png") no-repeat 50% 0;
                     }
                     
-                    .panels {
+                    .slideshow {
+                        width: @page_width;
+                        margin: 0 auto;
                         position: relative;
-                        z-index: 4;
+                        z-index: 11;
                         height: 370px;
-                        margin-left: -2px;
                         top: -28px;
-                        background: transparent url("/images/desktop/site/img_panels-with-shadow.png") no-repeat 50% 0;
+                        
+                        .controls {
+                            visibility: hidden;
+                            position: absolute;
+                            bottom: 0;
+                            left: 50%;
+                            padding: 0 4px;
+                            
+                            .trigger {
+                                text-decoration: none;
+                                display: inline-block;
+                                cursor: pointer;
+                                font-family: "open sans";
+                                font-size: 30px;
+                                margin: 3px;
+                                color: @dark_color;
+                                -webkit-transition: none;
+                                -moz-transition: none;
+                            }
+                            
+                            .active-trigger{
+                                color: white;
+                            }
+                        }
+                        
                         h1 {
                             display: none;
                         }
-                    }
-                    
-                    
-                    .notice {
-                        position: absolute;
-                        bottom: 0;
-                        width: 468px;
-                        left: 50%;
-                        margin-left: -370px;
-                        z-index: 8;
-                        overflow: visible;
                         
-                        .notice-hd {
-                            background: transparent url("/images/desktop/site/notice/img_home-notice-banner.png") no-repeat 0 0;
-                            padding: 0 24px;
-                            color: #fff;
-                            font-family: "ArvoRegular";
-                            line-height: 39px;
-                            font-size: 21px;
-                            height: 39px;
-                            z-index: 2;
-                            position: relative;
+                        .phone {
+                            position: absolute;
+                            left: 0px;
+                            width: 305px;
+                            height: 342px;
+                            background: transparent url("/images/desktop/site/home/phone-frame.png") no-repeat 0 0;
+                            bottom: 0;
                             
-                            .toggle-indicator {
-                                background: transparent url("/images/desktop/site/notice/img_home-notice-btn.png") no-repeat 0 -22px;
+                            .ct {
                                 position: absolute;
-                                right: 20px;
-                                top: 50%;
-                                width: 20px;
-                                height: 20px;
-                                margin-top: -10px;
+                                left: 72px;
+                                top: 78px;
+                                width: 166px;
+                                height: 248px;
+                                overflow: hidden;
+                            }
+                            .scroller {
+                                width: 498px;
                             }
                         }
-                        .notice-bd {
-                            display: block;
-                            cursor: pointer;
-                            .box_shadow(0, 0, 12px, #333 );
-                            background: transparent url("/images/desktop/site/notice/bg_notice-bd.png") 0 0 repeat-x;
-                            margin: -2px 18px 0;
-                            padding-top: -2px;
+                        
+                        .slides {
                             position: relative;
-                            overflow: hidden;
-                            
-                            .notice-padding {
-                                padding: 20px 25px;
-                                .click-here {
-                                    float: right;
-                                    margin-top: 30px;
-                                }
-                            }
+                            height: 370px;
                         }
-                    }
-                    .notice-over {
-                        .notice-hd{
-                            .toggle-indicator {
-                                background-position: 0 0;
+                        
+                        .content {
+                            overflow: hidden;
+                            position: absolute;
+                            height: 342px;
+                            width: 564px;
+                            left: 257px;
+                            bottom: 0;
+                            
+                            .slide {
+                                position: absolute;
+                                top: 0; right: 0;
+                                width: 564px;
+                                height: 342px;
+                                -webkit-transform-origin: 0 50%;
+                                -webkit-transform: scale(0,0);
+                                -moz-transform-origin: 0 50%;
+                                -moz-transform: scale(0,0);
+                                
+                                img {
+                                    width: 100%;
+                                    height: 100%;
+                                }
+                                
+                            }
+                            
+                            .active {
+                                display: block;
+                                -webkit-transform: scale(1,1);
+                                
+                                -moz-transform: scale(1,1);
+                                -moz-transition: -moz-transform 0.6s ease-out;
+                                
+                                
+                            }
+                            
+                            .slide-1 {
+                                -webkit-transform-origin: 50% 100%;
+                                -moz-transform-origin: 50% 100%;
+                                
+                            }
+                            
+                            .slide-2 {
+                                -webkit-transform-origin: 50% 0%;
+                                -moz-transform-origin: 50% 0%;
+                                
                             }
                         }
                     }
@@ -311,100 +371,61 @@ body{
             .middle{
                 position: relative;
                 z-index: 5;
+                overflow: hidden;
+                _height: 1%;
+                padding-bottom: 20px;
+                color: #666;
                 
-                .phone-ct{
-                    position: absolute;
-                    top: -45px;
-                    right: 0;
-                    width: 246px;
-                    height: 503px;
-                    background: url("/images/desktop/site/img_bozuko-iphone.png") no-repeat 0 0;
+                font-family: "open sans";
+                line-height: 1.5em;
+                font-size: 16px;
+                
+                a{ color:@blue; text-decoration: none;}
+                
+                .bold {
+                    font-weight: 600;
                 }
                 
-                .who-we-are {
-                    
-                    background: url("/images/desktop/site/bg_dark-gray.png") repeat-x 0 0;
-                    
-                    
-                    .white-gradient {
-                        background: url("/images/desktop/site/bg_gradient-radial-white-long.png") no-repeat 50% 100%;
-                        height: 256px;
-                        min-width: 850px;
-                    }
-                    
-                    h2.instant-win-headline {
-                        text-indent: -99999em;
-                        background: transparent url("/images/desktop/site/txt_instant-win-headline.png") no-repeat 0 50%;
-                        height: 120px;
-                        margin-bottom: 0;
-                    }
-                    
-                    p {
-                        margin: 0;
-                        font-size: 15px;
-                        line-height: 1.4em;
-                        font-family: Tahoma;
-                        color: #fff;
-                    }
-                    
-                    .bottom {
-                        padding-top: 10px;
-                        .download {
-                            vertical-align: top;
-                            margin-right: 10px;
-                            img {
-                                margin-top: 4px;
-                                height: 39px;
-                            }
-                        }
-                        a.how-to-play{
-                            float: right;
-                            display: block;
-                            cursor: pointer;
-                            width: 184px;
-                            height: 39px;
-                            margin-top: 4px;
-                            text-indent: -99999em;
-                            background: transparent url("/images/desktop/site/btn_how-to-play-green.png") no-repeat 0 0;
-                        }
-                        a.how-to-play:hover{
-                            background-position: 0 -39px;
-                        }
-                    }
-                    
-                    
+                h3 {
+                    padding-top: .8em;
+                    font-weight: 800;
+                    color: #666;
+                    font-size: 32px;
                 }
                 
-                .businesses {
-                    
-                    .rewards {
-                        min-width: 850px;
-                        background: transparent url("/images/desktop/site/bg_rewards.png") no-repeat 50% 100%;
+                h3.biz {
+                    padding-top: .8em;
+                    margin-top: .8em;
+                    border-top: 2px solid #eee;
+                }
+                
+                .business-owners {
+                    padding-left: 100px;
+                    background: transparent url("/images/desktop/site/home/beta-burst.jpg") 0 50% no-repeat;
+                    font-weight: 800;
+                    img {
+                        margin-left: 10px;
+                        float: right;
                     }
-                    .content {
-                        height: 200px;
-                        position: relative;
-                        .bottom{
-                            position: relative;
-                            bottom: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            
-                            a.learn-more{
-                                position: absolute;
-                                bottom: 18px;
-                                right: 0;
-                                display: block;
-                                cursor: pointer;
-                                width: 184px;
-                                height: 39px;
-                                text-indent: -99999em;
-                                background: transparent url("/images/desktop/site/btn_learn-more-orange.png") no-repeat 0 0;
-                            }
-                            a.learn-more:hover{
-                                background-position: 0 -39px;
-                            }
+                }
+                
+                .download-buttons {
+                    float: right;
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-left: 10px;
+                    
+                    a {
+                        margin-right: 10px;
+                    }
+                    img {
+                        height: 36px;
+                    }
+                    .android-market {
+                        margin-right: 0;
+                        img{
+                            height: 34px;
+                            border: 1px solid #ccc;
                         }
                     }
                 }
@@ -414,17 +435,70 @@ body{
                     width: 850px;
                     margin: 0 auto;
                     
-                    .content {
-                        padding-right: 275px;
+                    .main-col {
+                        width: 550px;
+                        float: left;
+                    }
+                    
+                    .right-col {
+                        width: 207px;
+                        float: right;
+                        text-align: center;
+                        padding-top: 20px;
+                        
+                        h3 {
+                            margin-top: 2em;
+                            margin-bottom: 1em;
+                            font-size: 18px;
+                            font-weight: 700;
+                        }
+                        
+                        .url {
+                            color: @orange;
+                        }
                     }
                 }
-                
-                .border-bottom {
-                    background: transparent url("/images/desktop/site/bg_shadow-line-top-shadow.png") repeat-x 0 100%;
-                    margin-top: -6px;
-                    height: 8px;
-                }
             }
+        }
+    }
+    
+    .ft {
+        border-top: 5px solid #eee;
+    }
+    
+    .demo-popup {
+        font-family: "open sans";
+        display: none;
+        background: #fff;
+        .border_radius(20px);
+        border: 5px solid #ccc;
+        .box_shadow(0,0,30px,#ccc);
+        
+        h3 {
+            font-size: 24px;
+            color: #999;
+        }
+        
+        .padding{
+            padding: 10px;
+            overflow: hidden;
+            _height: 1%;
+        }
+        
+        .close {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            display: block;
+            background: transparent url("/images/desktop/site/home/close-button.png") 0 0 no-repeat;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+        }
+        
+        iframe {
+            background: #000;
+            .border_radius(10px);
         }
     }
 
