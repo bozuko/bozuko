@@ -26,11 +26,11 @@ jQuery(function($){
                 // this should show the login link already..
                 return;
             }
-            if( String(BozukoData.user.fbId) == String(response.session.uid) ){
+            if( String(BozukoData.user.fbId) == String(response.authResponse.userID) ){
                 // this dude is all set already..
                 return;
             }
-            var params = {'accessToken':response.session.access_token};
+            var params = {'accessToken':response.authResponse.accessToken};
             $.get('/site/user-bar',params,function(data){
                 $('.user-bar').html(data.html);
                 if( fn ) fn();

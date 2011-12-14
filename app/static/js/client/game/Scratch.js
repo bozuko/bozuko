@@ -228,8 +228,59 @@ Ext.namespace('Bozuko.client.game');
             this.$animationsCt.show();
             this.$animations[name].addClass('animate');
             
+            
+            var anim, cancelAnimation;
+            if( 1 ){
+                var grow=true,
+                    animStopped=false,
+                    scale = [.9, 1.1],
+                    xy = this.$animationsCt.getXY(),
+                    wh = [this.$animationsCt.getWidth(),this.$animationsCt.getHeight()],
+                    animOpts;
+                
+                cancelAnimation = function(){
+                    animStopped = true;
+                    if( animOpts.anim && animOpts.anim.isAnimating && animOpts.anim.isAnimating() ) animOpts.anim.stop();
+                    self.$animationsCt.setXY(xy);
+                    self.$animationsCt.setWidth(wh[0]);
+                    self.$animationsCt.setHeight(wh[1]);
+                };
+                
+                var animate = function(){
+                    
+                    if( animStopped ) return;
+                    
+                    var r = Math.round,
+                        w = {from: r(wh[0]*scale[grow?0:1]), to: r(wh[0]*scale[grow?1:0]) },
+                        h = {from: r(wh[1]*scale[grow?0:1]), to: r(wh[1]*scale[grow?1:0]) },
+                        x = {from: xy[0] + r((wh[0]-w.from) / 2), to: xy[0] + r((wh[0]-w.to) / 2)},
+                        y = {from: xy[1] + r((wh[1]-h.from) / 2), to: xy[1] + r((wh[1]-h.to) / 2)};
+                    
+                    var args = {
+                        width: w,
+                        height: h,
+                        left: x,
+                        top: y
+                    };
+                    
+                    console.log(args);
+                    
+                    grow = !grow;
+                    
+                    self.$animationsCt.anim(args, animOpts);
+                };
+                
+                animOpts = {
+                    duration: .35,
+                    callback: animate,
+                    easing: 'easeOut'
+                };
+                animate();
+            }
+            
             var cancelled = false;
             var cancel = function(){
+                if( cancelAnimation ) cancelAnimation();
                 self.resultAnimating = false;
                 self.$animationsCt.un('click', clickHandler);
                 if( cancelled ) return;
@@ -361,8 +412,6 @@ Ext.namespace('Bozuko.client.game');
                         'height':this.height+'px'
                     });
                 }
-                
-                
             }
             else{
                 this.$ticket = this.$ct.createChild({
@@ -395,27 +444,27 @@ Ext.namespace('Bozuko.client.game');
             this.reset();
             this.rendered = true;
             this.fireEvent('render', this);
-            
         },
         
         _createAnimationDiv : function(name, stars){
             var self = this;
-            
-            self.$animations[name] = self.$animationsCt.createChild({
-                cls         :'animation '+name
-            });
-            
-            self.$animations[name].setVisibilityMode( Ext.Element.DISPLAY );
-            
-            self.image(name+'Bg').className = 'bg';
-            self.$animations[name].dom.appendChild(self.image(name+'Bg'));
-            
-            self.image(name+'Txt').className = 'txt';
-            self.$animations[name].dom.appendChild(self.image(name+'Txt'));
-            
-            if( stars ){
-                self.image(name+'Stars').className = 'stars';
-                self.$animations[name].dom.appendChild(self.image(name+'Stars'));
+            if( 1 ){
+                self.$animations[name] = self.$animationsCt.createChild({
+                    cls         :'animation '+name
+                });
+                
+                self.$animations[name].setVisibilityMode( Ext.Element.DISPLAY );
+                
+                self.image(name+'Bg').className = 'bg';
+                self.$animations[name].dom.appendChild(self.image(name+'Bg'));
+                
+                self.image(name+'Txt').className = 'txt';
+                self.$animations[name].dom.appendChild(self.image(name+'Txt'));
+                
+                if( stars ){
+                    self.image(name+'Stars').className = 'stars';
+                    self.$animations[name].dom.appendChild(self.image(name+'Stars'));
+                }
             }
         },
         
