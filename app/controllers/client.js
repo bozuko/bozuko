@@ -229,6 +229,18 @@ exports.routes = {
         }
     },
     
+    '/client/blank': {
+        get :{
+            locals :{
+                layout: false,
+                device: 'desktop'
+            },
+            handler : function(req, res){
+                return res.render('client/blank');
+            }
+        }
+    },
+    
     '/client/test' : {
         get : {
             handler : function(req, res){
