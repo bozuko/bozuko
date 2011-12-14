@@ -7,6 +7,7 @@ exports.locals = {
     home_title: 'Code Search',
     device: 'desktop',
     title: 'Code Search',
+    layout: 'codes/layout',
     hide_top_profile: true,
     meta: {
         'charset':'utf-8',
@@ -40,17 +41,23 @@ function error(res, err) {
     } else {
         res.locals.error = err;
     }
-    res.render('codes/error.jade', err);
+    if (res.locals.error_ctx && res.locals.error_ctx === 'search') {
+        return res.render('codes/search.jade', err);
+    }
+    res.render('codes/pin.jade');
 }
 
+var not_found = 'Sorry, no prizes were found.';
 function render(res) {
+    res.locals.error_ctx = 'search';
     return Bozuko.models.User.findById(res.locals.prize.user_id, function(err, user) {
         if (err) return error(res, err);
-        if (!user) return res.render('codes/not_found.jade');
+        if (!user) return error(res, not_found);
         res.locals.user_image = user.image;
+        res.locals.user_name = user.name;
         return Bozuko.models.Contest.findById(res.locals.prize.contest_id, function(err, contest) {
             if (err) return error(res, err);
-            if (!contest) return res.render('codes/not_found.jade');
+            if (!contest) return error(res, not_found);
             res.locals.contest = contest;
             return res.render('codes/prizes.jade');
         });
@@ -70,21 +77,26 @@ exports.routes = {
                 var code = req.param('code');
                 var pin = req.param('pin');
                 var page_id = req.param('page_id');
+                var page_name = req.param('page_name');
+
                 if (!pin) return res.render('codes/pin.jade');
-                if (!page_id) {
+                if (!page_id || !page_name) {
                     return Bozuko.models.Page.verifyPin(pin, function(err, page) {
-                        if (err) return setTimeout(function() {error(res, err);}, 3000);
+                        // if (err) return setTimeout(function() {error(res, err);}, 3000);
+                        if (err) return error(res,err);
                         res.locals.pin = pin;
                         res.locals.page_id = page._id;
-                        return res.render('codes/index.jade');
+                        res.locals.page_name = page.name;
+                        return res.render('codes/search.jade');
                     });
                 }
-                res.locals.error_ctx = 'codes';
+                res.locals.error_ctx = 'search';
                 res.locals.pin = pin;
                 res.locals.page_id = page_id;
+                res.locals.page_name = page_name;
                 return Bozuko.models.Prize.findOne({code: code, page_id: page_id}, function(err, prize) {
                     if (err) return error(res, err);
-                    if (!prize) return res.render('codes/not_found.jade');
+                    if (!prize) return error(res, not_found);
                     res.locals.code = code;
                     res.locals.prize = prize;
                     return render(res);
@@ -99,25 +111,30 @@ exports.routes = {
                 var code = req.param('code');
                 var pin = req.param('pin');
                 var page_id = req.param('page_id');
+                var page_name = req.param('page_name');
+
                 if (!pin) return res.render('codes/pin.jade');
-                if (!page_id) {
+                if (!page_id || !page_name) {
                     return Bozuko.models.Page.verifyPin(pin, function(err, page) {
-                        if (err) return setTimeout(function() {error(res, err);}, 3000);
+                        //if (err) return setTimeout(function() {error(res, err);}, 3000);
+                        if (err) return error(res,err);
                         res.locals.pin = pin;
                         res.locals.page_id = page._id;
-                        return res.render('codes/index.jade');
+                        res.locals.page_name = page_name;
+                        return res.render('codes/search.jade');
                     });
                 }
-                res.locals.error_ctx = 'codes';
+                res.locals.error_ctx = 'search';
                 res.locals.pin = pin;
                 res.locals.page_id = page_id;
+                res.locals.page_name = page_name;
                 return Bozuko.models.Prize.findOne({code: code, page_id:  page_id}, function(err, prize) {
                     if (err) return error(res, err);
-                    if (!prize) return res.render('codes/not_found.jade');
+                    if (!prize) return error(res, not_found);
                     res.locals.code = code;
                     return prize.verify(function(err, newPrize) {
                         if (err) return error(res, err);
-                        if (!newPrize) return res.render('codes/not_found.jade');
+                        if (!newPrize) return error(res, not_found);
                         res.locals.prize = newPrize;
                         return render(res);
                     });

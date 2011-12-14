@@ -73,7 +73,7 @@ Page.pre('save', function(next) {
 });
 
 Page.static('verifyPin', function(pin, callback) {
-    return Bozuko.models.Page.findOne({pin: pin}, {_id: 1}, function(err, page) {
+    return Bozuko.models.Page.findOne({pin: pin}, {_id: 1, name: 1}, function(err, page) {
         if (err) return callback(err);
         if (!page) return callback(Bozuko.error('page/invalid_pin'));
         return callback(null, page);
