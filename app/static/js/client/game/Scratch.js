@@ -230,7 +230,7 @@ Ext.namespace('Bozuko.client.game');
             
             
             var anim, cancelAnimation;
-            if( 1 ){
+            if( !Modernizr.cssanimations ){
                 var grow=true,
                     animStopped=false,
                     scale = [.9, 1.1],
@@ -256,15 +256,7 @@ Ext.namespace('Bozuko.client.game');
                         x = {from: xy[0] + r((wh[0]-w.from) / 2), to: xy[0] + r((wh[0]-w.to) / 2)},
                         y = {from: xy[1] + r((wh[1]-h.from) / 2), to: xy[1] + r((wh[1]-h.to) / 2)};
                     
-                    var args = {
-                        width: w,
-                        height: h,
-                        left: x,
-                        top: y
-                    };
-                    
-                    console.log(args);
-                    
+                    var args = { width: w, height: h, left: x, top: y };
                     grow = !grow;
                     
                     self.$animationsCt.anim(args, animOpts);
