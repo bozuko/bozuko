@@ -6,7 +6,7 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
     requires: [
         'Ext.ux.form.field.DateTime'
     ],
-    
+    autoScroll: true,
     layout: 'anchor',
     defaults: {
         anchor          :'0',
@@ -42,6 +42,14 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             fieldLabel      :'Post Wins to User\'s Wall'
         },{
             xtype           :'checkbox',
+            name            :'web_only',
+            fieldLabel      :'Web Only'
+        },{
+            xtype           :'textfield',
+            name            :'alias',
+            fieldLabel      :'Alias'
+        },{
+            xtype           :'checkbox',
             name            :'active',
             fieldLabel      :'Active'
         },{
@@ -60,6 +68,12 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
                 fields              :['text','value'],
                 data                :[{value:'order',text:'Order Based'},{value:'time',text:'Time Based'}]
             })
+        },{
+            xtype           :'htmleditor',
+            name            :'promo_copy',
+            height          :300,
+            labelAlign      :'top',
+            fieldLabel      :'Promotional Copy'
         }];
         me.callParent();
     }

@@ -1,4 +1,5 @@
 var http = Bozuko.require('util/http'),
+    crypto = require('crypto'),
     merge= require('connect').utils.merge;
 
 var facebook = module.exports;
@@ -82,7 +83,7 @@ exports.graph = function(path, options, callback){
 
         if( result.error && callback ){
             // handle bogus sessions
-            if( result.error.message.match(/changed the password/i) ){
+            if( result.error.message.match(/(changed the password|validating access token)/i) ){
                 return callback( Bozuko.error('facebook/auth') );
             }
             // log the error...
@@ -116,4 +117,55 @@ exports.graph = function(path, options, callback){
         }
     };
     http.request(opts, http_callback);
+};
+
+exports.parse_signed_request = function(signed_request){
+    
+    var secret = Bozuko.cfg('facebook.app.secret'),
+        encoded_data = signed_request.split('.',2),
+        // decode the data
+        sig = encoded_data[0],
+        json = base64UrlToString(encoded_data[1]),
+        data;
+		
+	try{
+		data = JSON.parse(json); // ERROR Occurs Here!
+	}catch(e){
+		return new Error('Invalid json string');
+	}
+
+    // check algorithm - not relevant to error
+    if( !data.algorithm || data.algorithm.toUpperCase() != 'HMAC-SHA256' ){
+        return new Error('Unknown algorithm. Expected HMAC-SHA256');
+    }
+    // check sig - not relevant to error
+    var expected_sig = crypto.createHmac('sha256',secret)
+        .update(encoded_data[1])
+        .digest('base64')
+        .replace(/\+/g,'-')
+        .replace(/\//g,'_')
+        .replace('=','')
+        ;
+        
+    if (sig !== expected_sig) {
+        return new Error('Bad signed JSON Signature!');
+    }
+
+    return data;
+};
+
+var base64ToString = function(str) {
+	return (new Buffer(str || "", "base64")).toString("ascii");
+};
+
+var base64UrlToString = function(str) {
+	return base64ToString( base64UrlToBase64(str) );
+};
+
+var base64UrlToBase64 = function(str) {
+	var paddingNeeded = (4- (str.length%4));
+	for (var i = 0; i < paddingNeeded; i++) {
+		str = str + '=';
+	}
+	return str.replace(/\-/g, '+').replace(/_/g, '/')
 };

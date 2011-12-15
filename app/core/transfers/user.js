@@ -21,7 +21,7 @@ exports.transfer_objects= {
         },
 
         create : function(data, user, callback){
-            data.image = data.image.replace(/type=large/, 'type=square');
+            data.image = data.image ? data.image.replace(/type=large/, 'type=square') : '';
             data.img = data.image;
             return this.sanitize(data, null, user, function(error, result){
                 if( error ) return callback(error);
@@ -51,6 +51,11 @@ exports.links = {
             access: 'user',
             doc: "Get Information about the user",
             returns: "user"
+        },
+        post: {
+            access: 'mobile',
+            doc: "Update user info (currently email address only)",
+            returns: "success_message"
         }
     },
 

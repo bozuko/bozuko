@@ -26,6 +26,15 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       
       #mask{ background: #000; display: none; position: absolute; top: 0; left: 0; width: 400px; height: 400px; z-index: 100; }
       #touch-killer{ background: transparent; display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+    script(type="text/javascript")
+      function broadcast(state){
+        if( window.notifyFn ){
+          window.notifyFn(state);
+        }
+        else{
+          window.location = 'bozuko://'+state;
+        }
+      }
       
   body
     #fb-root
@@ -82,13 +91,13 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               function onEdgeCreate(response) {
                   updateLikes(function () {
                       enableMask();
-                      window.location = 'bozuko://facebook/liked';
+                      broadcast('facebook/liked');
                   });
               }
               
               function onEdgeRemove(response) {
                   updateLikes(function () {
-                      window.location = 'bozuko://facebook/unliked';
+                      broadcast('facebook/unliked');
                   });
               }
               
@@ -97,12 +106,12 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               
               FB.getLoginStatus(function(response){
                 
-                if( !response.session ){
+                if( !response.authResponse ){
                   if( mobile_version == 'iphone-1.3'    ||
                       mobile_version == 'iphone-1.4'    ||
                       mobile_version == 'iphone-1.5'    ||
                       mobile_version == 'android-1.1'   ){
-                    window.location='bozuko://facebook/no_session';
+                    broadcast('facebook/no_session');
                   }
                   document.getElementById('like-button').style.display='none';
                   var img = document.createElement('img');
@@ -115,8 +124,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   else{
                     img.src="/images/assets/facebook/like-button.png";
                     img.onclick = function(){
-                      window.location='bozuko://facebook/no_session';
-                      alert("Sorry - your Facebook session for Bozuko is no longer valid. You must go to the Bozuko page, and Log out and back in.");
+                      broadcast('facebook/no_session');
+                      alert("Sorry - your Facebook session for Bozuko is no longer valid. You must go to the Bozuko page, and Log out and back in..");
                     }
                     document.body.appendChild(img);
                   }
@@ -152,7 +161,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                 var html = document.getElementsByTagName('html')[0];
                 html.className = html.className.replace(/like_button_loading/, '');
                 try{
-                  window.location = 'bozuko://facebook/like_loaded';
+                  broadcast('facebook/like_loaded');
                 }catch(e){
                   // supposed to get an error
                 }
@@ -185,8 +194,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               document.getElementById('fb-root').appendChild(e)
           }());
       -else
-        script(type="text/javascript")
-          window.location="bozuko://facebook/like_loaded";
+        script(type="text/javascript");
+          broadcast("facebook/like_loaded"_;
       script(type="text/javascript")
         document.ontouchmove = function (e) {
             e.preventDefault();
@@ -197,7 +206,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
         }
     -else
       script(type="text/javascript")
-        window.location = 'bozuko://facebook/like_loaded'
+        broadcast("facebook/like_loaded");
         window.onload = function(){
           document.body.className = 'no-place';
         }

@@ -59,7 +59,9 @@ exports['POST /facebook/:id/checkin No Latitude Longitude'] = function(test) {
 			headers: {'Content-Type': 'application/json; charset=utf-8'}
 		},
 		function(res) {
+			console.log(res.body);
 			var result = JSON.parse(res.body);
+			console.log(result);
 			test.done();
 		});
 };

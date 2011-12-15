@@ -207,9 +207,9 @@ exports.routes = {
                         return user.updateInternals( function(error){
                             if ( error ) return error.send(res);
 
-                            Bozuko.enter(options, function(err, rv) {
+                            return Bozuko.enter(options, function(err, rv) {
                                 if (err) return err.send(res);
-                                res.send(rv.game_state);
+                                return res.send(rv.game_state);
                             });
                         });
                     });

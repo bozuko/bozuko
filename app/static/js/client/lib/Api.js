@@ -2,9 +2,7 @@ Ext.namespace('Bozuko.client.lib');
 Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
     
     token           :null,
-    mobile_version   :'1.0',
-    phone_type      :'web',
-    phone_id        :new Date().getTime(),
+    mobile_version   :'html5-1.0',
     
     constructor : function(base){
         var me = this;
@@ -14,11 +12,7 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
             var loc = window.location;
             me.base = loc.protocol+'//'+loc.host;
         }
-        
-        Ext.Ajax.defaultHeaders = {
-            'content-type' : 'text/json'
-        };
-        
+        me.stack = [];
         me.history = [];
         me.addEvents({
             'beforecall'        :true,
@@ -35,12 +29,16 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
     
     buildParams : function(params){
         params = params || {};
-        params.mobile_version = 'web-1.0';
+        params.mobile_version = 'html5-1.0';
         if( this.token ) params.token = this.token;
         return params;
     },
     
     call : function(config, callback){
+        if( this._requesting ){
+            this.stack.push(arguments);
+            return;
+        }
         if( typeof config == 'function' ){
             callback = config;
             config = {};
@@ -56,11 +54,11 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
             params = config.data || config.params || {},
             path = config.path|| '/api';
             options = {
-                
+                attempt: config.attempt || 0,
                 link: link,
                 path: path,
                 url: me.base+path,
-                method: method=='del'?'delete':method,
+                method: (method=='del'?'delete':method).toUpperCase(),
                 callback: me.handleResponse,
                 scope: me,
                 user_scope: scope || me,
@@ -73,12 +71,17 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
             options.url+=('?'+Ext.urlEncode(params));
         }*/
         this.fireEvent('beforecall', options);
+        this._requesting = true;
         Ext.Ajax.request(options);
     },
     
     handleResponse : function(options, success, response){
         var me = this,
             data;
+            
+        // did we just shit ourselves?
+        if( !success ) console.log(arguments);
+        
         try{
             data = JSON.parse(response.responseText);
         }catch(e){
@@ -99,9 +102,13 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
         };
         me.history.push(event);
         me.fireEvent('aftercall', event, options.user_scope );
-        me.fireEvent(me.success?'success':'failure', event, options.user_scope);
+        me.fireEvent(success?'success':'failure', event, options.user_scope);
         if( options.user_callback ){
             options.user_callback.apply(options.user_scope, [event]);
+        }
+        me._requesting = false;
+        if( me.stack.length ){
+            me.call.apply(me, me.stack.shift());
         }
     },
     

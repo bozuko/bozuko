@@ -33,17 +33,20 @@ exports.locals = {
         link: '/',
         text: 'Home'
     },{
-        link: '/how-to-play',
-        text: 'How to Play'
+        link: '/mobile-app',
+        text: 'Mobile App'
     },{
         link: '/beta',
         text: 'Bozuko for Business'
     }],
     head_scripts:[
-        'https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
+        '/js/jquery/jquery.tools.min-1.2.6.js',
+        '/js/jquery/plugins/jquery.easing-1.3.js',
+        '/js/modernizr/min.js',
         '/js/desktop/site/global.js'
     ],
     styles:[
+        'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
         // Date now forces styles to refresh after a server reboot
         '/css/desktop/style.css?'+Date.now(),
         '/css/desktop/layout.css?'+Date.now()
@@ -88,30 +91,6 @@ exports.routes = {
             handler: function(req, res) {
                 res.locals.head_scripts.push('/js/desktop/site/home.js');
                 res.render('site/index');
-            }
-        }
-    },
-    
-    '/demo' : {
-        get : {
-            title : 'Bozuko Demonstration Page',
-            locals: {
-                html_classes : ['demo-page']
-            },
-            
-            handler : function(req, res){
-                
-                //var url = 'https://playground.bozuko.com:8001/client/game/4ecd46d54c97da8a1400011e';
-                var url = 'https://playground.bozuko.com/client/game/4ed56082a82573953a0008c0';
-                
-                var ua = req.header('user-agent');
-                if(ua.match(/(i(phone|pad|pod)|android)/i) ){
-                    return res.redirect(url);
-                }
-                
-                res.locals.url = url;
-                res.locals.img = 'http://qrcode.kaywa.com/img.php?s=8&d='+encodeURIComponent(url);
-                return res.render('site/demo');
             }
         }
     },
@@ -222,6 +201,7 @@ exports.routes = {
     },
     
     '/how-to-play' : {
+        alias: '/mobile-app',
         get : {
 
             title: 'How to Play Bozuko',
@@ -648,6 +628,25 @@ exports.routes = {
             handler : function(req, res){
                 if( req.url.match(/tab/) ) res.locals.html_classes = ['facebook-520'];
                 return res.render('site/facebook/advertisement');
+            }
+        }
+    },
+    
+    '/:alias':{
+        get : {
+            handler : function(req, res, next){
+                var self = this,
+                    alias = req.param('alias');
+                    
+                if( ~alias.indexOf('/') ) return next();
+                return Bozuko.models.Contest.find({alias: alias}, {results: 0, page: 0}, {limit: 1}, function(error, contests){
+                    if( error || !contests.length ) return next();
+                    if( !Bozuko.controllers.Client ){
+                        console.log('Please enable the Client controller');
+                        return next();
+                    }
+                    return Bozuko.controllers.Client.renderGame(req, res, contests[0]);
+                });
             }
         }
     }

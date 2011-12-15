@@ -61,7 +61,7 @@ Scratch.prototype.process = function(outcome) {
 
 function randomPrize( contest, exclude ){
     var ar = [], prizes = contest.prizes.slice(0);
-    if( exclude === prizes.length ) prizes.push({name:'Free Play'});
+    if( exclude === undefined || exclude === prizes.length ) prizes.push({name:'Free Play'});
     for( var i=0; i < prizes.length; i++) ar.push(i);
     if( exclude !== undefined && exclude < prizes.length ) ar.splice( exclude, 1);
     return prizes[rand(0,ar.length-1)].name;

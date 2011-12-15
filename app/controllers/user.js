@@ -100,8 +100,12 @@ exports.routes = {
                     // not only that, we should check to see if there is a "liked" page being referenced
                     // here
                     var liked = req.param('liked');
+                    console.log('liked:'+liked);
+                    console.log('facebook:'+user.service('facebook'));
                     if( liked && user.service('facebook') ){
                         var internal = user.service('facebook').internal;
+                        console.log('internal');
+                        console.log(internal);
                         if( internal.likes && ~internal.likes.indexOf( liked ) ){
                             // boom, we got a weiner!
                             // lets see if we have a page for this
@@ -136,9 +140,46 @@ exports.routes = {
                             console.error('\n no transfer user\n');
                         }
                         if (error) return error.send(res);
-                        res.send( result );
+                        return res.send( result );
                     });
                 });
+            }
+        },
+        
+        post : {
+            access: 'mobile',
+            
+            handler : function(req, res){
+                
+                var user = req.session.user;
+                
+                // the only thing we are going to change right now is email...
+                var email = req.param('email');
+                
+                if( !email || !email.match(/.+@.+\..+/) ){
+                    return Bozuko.transfer('success_message', {
+                        success: false,
+                        message: 'Please enter a valid email address',
+                        title: 'Invalid email'
+                    }, user, function(error, result){
+                        res.send(error || result);
+                    });
+                }
+                
+                user.email = email;
+                user.user_email = true;
+                return user.save(function(error){
+                    if( error ) return error.send(res);
+                    
+                    return Bozuko.transfer('success_message', {
+                        success: true,
+                        message: 'All set! Your email address has been updated.',
+                        title: 'Email Updated'
+                    }, user, function(error, result){
+                        res.send(error || result);
+                    });
+                });
+                
             }
         }
     },

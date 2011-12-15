@@ -223,10 +223,10 @@ function filterPrizes(prizes){
     var _prizes = [];
     prizes.forEach(function(prize){
         var _contests = [];
-        prize.page.contests.forEach(function(contest){
+        if( prize.page && prize.page.contests ) prize.page.contests.forEach(function(contest){
             _contests.push( contest.toJSON() );
         });
-        var _page = prize.page.toJSON(),
+        var _page = prize.page ? prize.page.toJSON() : {},
             _prize = prize.toJSON();
         _page.contests = _contests;
         _prize.page = _page;
