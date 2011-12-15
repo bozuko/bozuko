@@ -14,7 +14,8 @@ var _t = Bozuko.t,
     async = require('async'),
     inspect = require('util').inspect,
     rand = Bozuko.require('util/math').rand,
-    Profiler = Bozuko.require('util/profiler')
+    Profiler = Bozuko.require('util/profiler'),
+    codify = require('codify')
 ;
 
 var Page = module.exports = new Schema({
@@ -50,15 +51,57 @@ var Page = module.exports = new Schema({
         signed_by           :{type:ObjectId},
         signed_date         :{type:Date}
     },
-    // This is a running total. Can't just search because contests may be deleted.
+    // code_block is a running total. Can't just search because contests may be deleted.
     code_block          :{type:Number},
-    code_prefix         :{type:String}
+    code_prefix         :{type:String},
+    pin                 :{type:String, index: {unique: true}}
 }, {safe: {w:2, wtimeout: 5000}});
 
 Page.index({admins: 1});
 
 Page.plugin(Services);
 Page.plugin(Coords);
+
+Page.pre('save', function(next) {
+    var self = this;
+    if (!this.pin) return Bozuko.models.Page.getPin(function(err, pin) {
+        if (err) return next(err);
+        self.pin = pin;
+        return next();
+    });
+    return next();
+});
+
+Page.static('verifyPin', function(pin, callback) {
+    return Bozuko.models.Page.findOne({pin: pin}, {_id: 1, name: 1}, function(err, page) {
+        if (err) return callback(err);
+        if (!page) return callback(Bozuko.error('page/invalid_pin'));
+        return callback(null, page);
+    });
+});
+
+var maxPin = Math.pow(36, 6);
+var minPin = Math.pow(36, 4);
+Page.static('getPin', function(callback) {
+    var self = this;
+    var found = false;
+    var pin = null;
+    return async.until(
+        function() {return found;},
+        function(cb) {
+            var random = rand(minPin, maxPin);
+            pin = codify.toCode(random);
+            return Bozuko.models.Page.findOne({pin: pin}, function(err, page) {
+                if (err) return cb(err);
+                if (!page) found = true;
+                return cb();
+            });
+        }, function(err) {
+            if (err) return callback(err);
+            return callback(null, pin);
+        }
+    );
+});
 
 Page.method('getWebsite', function(){
     var website = this.website;

@@ -1,18 +1,18 @@
 Ext.define('Bozuko.view.page.Settings' ,{
-    
+
     extend          :'Ext.form.Panel',
     alias           :'widget.pagesettings',
-    
+
     requires        :[
         'Bozuko.view.page.Preview'
     ],
-    
+
     autoScroll      :true,
     layout          :'border',
 
     initComponent : function(){
         var me = this;
-       
+
         Ext.apply(me, {
             items : [{
                 region          :'center',
@@ -35,7 +35,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
                 items:[{
                     title           :'Basic Information',
                     layout          :'hbox',
-                    
+
                     items: [{
                         xtype           :'container',
                         border          :false,
@@ -59,6 +59,11 @@ Ext.define('Bozuko.view.page.Settings' ,{
                             xtype           :'textfield',
                             name            :'website',
                             fieldLabel      :'Website'
+                        },{
+                            xtype          :'displayfield',
+                            name           :'pin',
+                            fieldLabel     :'PIN',
+                            editable       :false
                         }]
                     },{xtype:'splitter', width:10},{
                         xtype           :'container',
@@ -118,14 +123,14 @@ Ext.define('Bozuko.view.page.Settings' ,{
                     items           :[{
                         xtype           :'dataview',
                         ref             :'security-image-view',
-                        
+
                         trackOver       :true,
                         singleSelect    :true,
-                        
+
                         itemSelector    :'.item',
                         overItemCls     :'item-over',
                         selectedItemCls :'item-selected',
-                        
+
                         tpl             :new Ext.XTemplate(
                             '<div class="security-images">',
                                 '<div class="scroller">',
@@ -185,18 +190,18 @@ Ext.define('Bozuko.view.page.Settings' ,{
                 xtype           :'pagepreview',
                 border          :false,
                 autoScroll      :true
-                
+
             }]
         });
         me.callParent(arguments);
         if( me.record ){
             me.loadRecord( me.record );
-            
+
             var fixProfilePic = Ext.Function.createBuffered(function(){
                 me.down('[ref=profile-pic-ct]').doLayout();
                 me.down('[ref=profile-pic-ct]').doComponentLayout();
             },200);
-            
+
             me.record.on('save', fixProfilePic);
             me.on('destroy', function(){
                 me.record.un('save', fixProfilePic);
@@ -205,22 +210,22 @@ Ext.define('Bozuko.view.page.Settings' ,{
         var pp = me.down('pagepreview');
         me.on('activate', me.onActivate, me);
     },
-    
+
     onActivate : function(){
         var me  = this,
             pp = me.down('pagepreview'),
             view = me.down('[ref=security-image-view]'),
             nodes = view.getSelectedNodes();
-            
+
         if( !nodes || !nodes.length ) return;
         var node = Ext.get(nodes[0]),
             scroller = Ext.fly(node).up('.scroller'),
             left = node.getLeft(true),
             width = scroller.getWidth();
-            
+
         scroller.scrollTo('l',left-(width/2)+35);
     },
-    
+
     openImageDialog : function(){
         var me = this;
         if( !me._imageDialog ){
@@ -271,9 +276,9 @@ Ext.define('Bozuko.view.page.Settings' ,{
                         }]
                     }]
                 }],
-                
+
                 buttonAlign: 'left',
-                
+
                 buttons: [{
                     text            :'Use Facebook Picture',
                     handler         :function(){
@@ -310,10 +315,10 @@ Ext.define('Bozuko.view.page.Settings' ,{
                                 me._imageDialog.setLoading(false);
                                 alert(action.result.err);
                             }
-                        })
+                        });
                     }
                 }],
-                
+
                 listeners : {
                     destroy         :function(){
                         delete me._imageDialog;
@@ -323,15 +328,15 @@ Ext.define('Bozuko.view.page.Settings' ,{
         }
         me._imageDialog.show();
     },
-    
+
     loadRecord : function( record ){
         var me = this;
-        
+
         me.callParent(arguments );
         // lets fill out the sub stuff too
         me.record = record;
         me.down('[ref=profile-pic]').update(me.record.data);
-        
+
         var location = record.get('location');
         var values = {};
         if( location ) Ext.Object.each( location, function(key, value){
@@ -340,7 +345,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
         values.betalink = window.location.protocol+'//'+window.location.host+'/beta/page/'+record.get('_id');
         values.sharelink = window.location.protocol+'//'+window.location.host+'/p/'+record.get('_id');
         me.getForm().setValues(values);
-        
+
         me.down('pagepreview').loadRecord( record );
     }
 });

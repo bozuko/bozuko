@@ -1,0 +1,51 @@
+.codes
+  img.orange-check(src='/images/desktop/site/beta/img_orange-check.png')
+  .main
+    .prompt.welcome Welcome, #{page_name}
+    form(action="/codes",method="post")
+      input(type='text', name='code')  
+      input(type='hidden', name='pin', value=pin)
+      input(type='hidden', name='page_id', value=page_id)
+      input(type='hidden', name='page_name', value=page_name)
+      input.button(type='submit', value='Search')
+
+    .prize
+      .prize-header
+        .page-name #{prize.page_name}
+          .prize-code #{code}
+        .contest-name #{contest.name}
+      .user-prize
+        -if (locals.prize.state == 'active')
+          img(src='/images/assets/prizes/48/icon-active.png')
+        -else if (locals.prize.state == 'redeemed')
+          img(src='/images/assets/prizes/48/icon-redeemed.png')
+        -else if (locals.prize.state == 'verified')
+          img(src='/images/assets/prizes/48/icon-verified.png')
+        -else
+          img(src='/images/assets/prizes/48/icon-expired.png')
+        .user-name #{user_name}
+          .prize-name #{prize.name}
+      .profile-pic
+        img(src=user_image,height='50px')
+      .timestamps
+        span Won: #{prize.timestamp}
+        br
+        -if (locals.prize.redeemed) 
+          span Redeemed: #{prize.redeemed_time}
+          br
+        -if (locals.prize.state == 'expired')
+          span Expired: #{prize.expires}
+          br
+        -if (locals.prize.verified)
+          span Verified:  #{prize.verified_time}
+          br
+      .verify-button
+        form(action="/codes/verified",method="post")
+          input(type='hidden', name='code', value=code)
+          input(type='hidden', name='pin', value=pin)
+          input(type='hidden', name='page_id', value=page_id)
+          input(type='hidden', name='page_name', value=page_name)
+          -if (locals.prize.state == 'verified')
+            input.button-disabled(type='submit', value='Verify', disabled)
+          -else
+            input.button(type='submit', value='Verify')

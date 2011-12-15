@@ -1,0 +1,9 @@
+.codes
+  img.orange-check(src='/images/desktop/site/beta/img_orange-check.png')
+  .main
+    .prompt Please enter your unique Pin number:
+    form(action="?",method="post")
+      input(type='text', name='pin')  
+      input.button(type='submit', value='Continue')
+    -if (locals.error)
+     .error #{error}

@@ -1,0 +1,146 @@
+@import "app/static/css/vars";
+@import "app/static/css/mixins";
+
+.codes {
+
+    img.orange-check {
+        margin: 0px 10px;
+        float: left;
+    }
+
+    .main {
+        margin: 0 auto;
+        text-align: left;
+        overflow: hidden;
+        .prompt {
+            font-size: 25px;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 700;
+            color: #656565;
+            .welcome {
+                color: @brand_color;
+            }
+        }
+        input[type='text'] {
+            margin-top: 20px;
+            width: 200px;
+            padding: 2px 6px;
+            font-size: 30px;
+            font-weight: 900;
+            .border_radius(6px);
+            border: 2px solid #aaa;
+        }
+        .button {
+            cursor: pointer;
+            display: inline-block;
+            .transition(none);
+            .border_radius(4px);
+            border: 1px solid @dark_color;
+            .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
+            color: #fff;
+            font-family: 'Open Sans', sans-serif;
+            text-decoration: none;
+            font-weight: 900;
+            width: 180px;
+            
+            &:hover, &:active{
+                color: #fff;
+                .background_gradient(@brand_color, @dark_color);
+            }
+            line-height: 24px;
+            font-size: 30px;
+            padding: 7px 12px;
+            margin: 0 10px 10px;
+        }
+        .button-disabled {
+            .button;
+            .opacity(40);
+        }
+        .error {
+            font-size: 20px;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 700;
+            margin-top: 10px;
+            color: red;
+        }
+        .prize {
+            width: 400px;
+            border: 2px solid #999;
+            padding: 2px;
+            font-family: 'Open Sans', sans-serif;
+            .border_radius(6px);
+            display: block;
+            overflow: hidden;
+            
+            .prize-header {
+                display: block;
+                .page-name {
+                    padding: .2em 6px;
+                    font-weight: bold;
+                    font-size: 16px;
+                }
+                .prize-code {
+                    font-weight: bold;
+                    font-family: "courier new";
+                    font-size: 16px;
+                    float: right;
+                    color: #666;
+                }
+                .contest-name {
+                    font-weight: normal;
+                    padding: .2em 6px;
+                    font-size: 16px;
+                    margin-bottom: 6px;
+                }
+            }
+            .user-prize {
+                width: 150px;
+                display: inline-block;
+                .user-name {
+                    font-size: 14px;
+                    float:right;
+                }
+                .prize-name {
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+            }
+            .profile-pic {
+                display: block;
+                float: right;
+            }
+            .timestamps {
+                display: block;
+                font-family: 'Open Sans', sans-serif;
+                font-size: 11px;
+                color: #999;
+            }
+            .verify-button {
+                display: block;
+                float: right;
+                .button {
+                    cursor: pointer;
+                    display: inline-block;
+                    .transition(none);
+                    .border_radius(4px);
+                    border: 1px solid @dark_color;
+                    .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
+                    color: #fff;
+                    font-family: 'Open Sans', sans-serif;
+                    text-decoration: none;
+                    font-weight: 900;
+                    width: 120px;
+                    
+                    &:hover, &:active{
+                        color: #fff;
+                        .background_gradient(@brand_color, @dark_color);
+                    }
+                    font-size: 20px;
+                    padding: 7px 12px;
+                    margin: 0 10px 10px;
+                }
+            }
+        }
+    }
+}
+
