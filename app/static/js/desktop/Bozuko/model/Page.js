@@ -1,8 +1,8 @@
 Ext.define('Bozuko.model.Page', {
     extend: 'Bozuko.lib.data.Model',
-    
+
     idProperty: '_id',
-    
+
     proxy: {
         type: 'rest',
         url: '/pages',
@@ -12,7 +12,7 @@ Ext.define('Bozuko.model.Page', {
             totalProperty: 'total'
         }
     },
-    
+
     fields: [
         {name:'_id',            type:'String'},
         {name:'name',           type:'String'},
@@ -29,19 +29,20 @@ Ext.define('Bozuko.model.Page', {
         {name:'security_img',   type:'String'},
         {name:'services',       type:'Array'},
         {name:'admins',         type:'Array'},
-        {name:'has_contests',   type:'Boolean'}
+        {name:'has_contests',   type:'Boolean'},
+        {name:'pin',            type:'String'}
     ],
-    
+
     service : function(name){
         var me = this,
             services = this.get('services');
-        
+
         for(var i=0; i<services.length; i++){
             if( services[i].name == name ) return services[i];
         }
         return false;
     }
-    
+
 }, function(){
     this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });
