@@ -204,9 +204,6 @@ exports.routes = {
                     });
                 }
 
-                console.log('pubsub body');
-                console.log(req.rawBody);
-
                 if( undefined === entry || false === entry ) return res.send({});
                 if( !Array.isArray(entry) ) entry = [entry];
                 switch(object){
@@ -219,7 +216,6 @@ exports.routes = {
                                 if( err ) return cb(err);
                                 if( user ){
                                     return user.updateInternals(true, function(error){
-                                        console.log('Updated Facebook internals for '+user.name);
                                         return cb(error);
                                     });
                                 }
@@ -255,6 +251,19 @@ exports.routes = {
             }
         }
 
+    },
+    
+    '/channel.html' : {
+        get : {
+            handler : function(req, res){
+                var cache_expire = 60*60*24*365;
+                res.header('Pragma', 'public');
+                res.header('Cache-Control', 'max-age='+cache_expire);
+                res.send(
+                    '<script src="//connect.facebook.net/en_US/all.js"></script>'
+                );
+            }
+        }
     }
 
 };

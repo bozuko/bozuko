@@ -33,8 +33,11 @@ var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
     page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
+	alias					:{type:String, unique: true, index: true},
+	promo_copy				:{type:String},
     engine_type             :{type:String, default:'order', get: enum_engine_type},
     engine_options          :{},
+	web_only				:{type:Boolean, default:false},
     plays                   :[Play],
     game                    :{type:String},
     game_config             :{},
@@ -684,27 +687,6 @@ Contest.method('activateNextContest', function(reason, callback) {
 });
 
 /*
- * This function is run once per hour to find contests that are about to expire.
- * If those contests have a next_contest.contest_id and next_contest.active = false
- * then the next contest is created with a start time that equals the end time of the
- * contest about to expire.
- */
-Contest.static('autoRenew', function(callback) {
-    var end_time = new Date(Date.now() + 1000*60*60*24); // 24 hrs
-    return Bozuko.models.Contest.find(
-        {active: true, 'next_contest.0.contest_id': {$exists: true}, 'next_contest.0.active': false,
-        $and: [{end: {$gt: new Date()}}, {end: {$lt: end_time}}]},
-        function(err, contests) {
-            return async.forEach(contests, function(contest, cb) {
-                return contest.activateNextContest('time', cb);
-            }, function(err) {
-                return callback(err);
-            });
-        }
-    );
-});
-
-/*
  * page_id param is optional
  *
  * @public
@@ -915,7 +897,10 @@ Contest.method('redistributeTimeResult', function(memo, callback) {
 
 Contest.method('spendEntryToken', function(memo, callback) {
     var self = this;
-    min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.config.entry.token_expiration);
+    var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration'));
+	
+	console.log(inspect({contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}}));
+	
     Bozuko.models.Entry.findAndModify(
         {contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}},
         [],
@@ -1156,6 +1141,7 @@ Contest.method('savePrize', function(opts, callback) {
             user_prize.email_format = prize.email_format;
             user_prize.email_subject = prize.email_subject;
             user_prize.email_body = prize.email_body;
+			user_prize.email_replyto = prize.email_replyto;
             if (opts.consolation) {
                 user_prize.email_code = prize.email_codes[opts.consolation_prize_count];
             } else {
@@ -1266,6 +1252,7 @@ Contest.method('savePlay', function(memo, callback) {
 Contest.method('incrementEntryToken', function(memo, callback) {
         var self = this;
         var prof = new Profiler('/models/contest/winEntryToken');
+		var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration',1000*60*60*24));
         return Bozuko.models.Entry.findAndModify(
             {contest_id: this._id, user_id: memo.user._id, timestamp: {$gt :min_expiry_date}},
             [],
@@ -1309,3 +1296,28 @@ function getGCD(x,y) {
     }
     return x;
 }
+
+/*********************************************************************************
+ * Static Methods
+ *********************************************************************************/
+
+/*
+ * This function is run once per hour to find contests that are about to expire.
+ * If those contests have a next_contest.contest_id and next_contest.active = false
+ * then the next contest is created with a start time that equals the end time of the
+ * contest about to expire.
+ */
+Contest.static('autoRenew', function(callback) {
+    var end_time = new Date(Date.now() + 1000*60*60*24); // 24 hrs
+    return Bozuko.models.Contest.find(
+        {active: true, 'next_contest.0.contest_id': {$exists: true}, 'next_contest.0.active': false,
+        $and: [{end: {$gt: new Date()}}, {end: {$lt: end_time}}]},
+        function(err, contests) {
+            return async.forEach(contests, function(contest, cb) {
+                return contest.activateNextContest('time', cb);
+            }, function(err) {
+                return callback(err);
+            });
+        }
+    );
+});

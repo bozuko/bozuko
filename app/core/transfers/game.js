@@ -79,6 +79,7 @@ var game = {
         id: "String",
         type: "String",
         name: "String",
+        post_to_wall: 'Boolean',
         image: "String",
         description: "String",
         list_message: "String",

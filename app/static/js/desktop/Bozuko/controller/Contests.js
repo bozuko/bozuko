@@ -376,6 +376,9 @@ Ext.define('Bozuko.controller.Contests' ,{
             case 'export':
                 this.exportContest( record );
                 break;
+            
+            case 'html5':
+                break;
 
             default:
                 Ext.Msg.show({
@@ -625,7 +628,7 @@ Ext.define('Bozuko.controller.Contests' ,{
     
     getValues : function(form, selector){
         var values = {};
-        selector = selector ? selector+' field' : 'field';
+        selector = selector ? (selector+' field'+', '+selector+' htmleditor') : 'field, htmleditor';
         Ext.Array.each(form.query( selector ), function(field){
             var name = field.getName();
             var ns = name.split('.'), cur = values;

@@ -83,12 +83,68 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     change          :me.onEmailChange
                 }
             },{
-                xtype           :'textarea',
-                height          :100,
+                hidden              :true,
+                xtype               :'combo',
+                name                :'email_format',
+                fieldLabel          :'Email Format',
+                value               :'text/plain',
+                allowBlank          :false,
+                editable            :false,
+                forceSelection      :true,
+                displayField        :'value',
+                valueField          :'value',
+                queryMode           :'local',
+                store               :Ext.create('Ext.data.Store',{
+                    fields              :['value'],
+                    data                :[{value:'text/plain'},{value:'text/html'}]
+                }),
+                listeners           :{
+                    change              :function(){
+                        this.onTypeChange();
+                    },
+                    render              :function(){
+                        var self = this;
+                        setTimeout(function(){
+                            self.onTypeChange();
+                        }, 500);
+                    }
+                },
+                
+                onTypeChange    :function(){
+                    var val = this.getValue();
+                    var body = me.down('[name=email_body]');
+                    switch(val){
+                        case 'text/plain':
+                            body.toggleSourceEdit(true);
+                            break;
+                        case 'text/html':
+                            body.toggleSourceEdit(false);
+                            break;
+                    }
+                }
+            },{
+                hidden          :true,
+                name            :'email_subject',
+                fieldLabel      :'Email Subject',
+                value           :'You won a Bozuko prize!'
+            },{
+                hidden          :true,
+                name            :'email_replyto',
+                fieldLabel      :'Email Reply To',
+                value           :''
+            },{
+                xtype           :'htmleditor',
+                height          :200,
                 hidden          :true,
                 name            :'email_body',
                 fieldLabel      :'Email Body',
-                allowBlank      :false
+                allowBlank      :false,
+                listeners       :{
+                    editmodechange  :function(){
+                        var type = me.down('[name=email_format]').getValue();
+                        // if( type == 'text/plain' && this.sourceEditMode ) this.toggleSourceEdit(true);
+                    }
+                }
             },{
                 xtype           :'textarea',
                 height          :80,
@@ -102,7 +158,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     if( ar.length ){
                         if( ar[0] === '' ) ar.shift();
                         if( ar.length ){
-                            if( ar[ar.length] === '') ar.pop();
+                            if( ar[ar.length-1] === '') ar.pop();
                         }
                     }
                     return ar;
@@ -138,7 +194,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
 
     onEmailChange : function(field, value){
         var fn = value ? 'show' : 'hide';
-        Ext.Array.each( this.query('[name=email_body], [name=email_codes]'), function(cmp){
+        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes], [name=email_format], [name=email_replyto]'), function(cmp){
             cmp[fn]();
         });
     },
@@ -153,7 +209,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
     getValues : function(selector){
         var form = this;
         var values = {};
-        selector = selector ? selector+' field' : 'field';
+        selector = selector ? selector+' field, '+selector+' htmleditor' : 'field, htmleditor';
         Ext.Array.each(form.query( selector ), function(field){
             var ns = field.getName().split('.'), cur = values;
 

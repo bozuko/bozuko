@@ -4,7 +4,7 @@
     .info= system[0]
   .leftCol.gCal
     .my-account-col
-      img.profile-pic(src=user.image)
+      img.profile-pic(src=user.image.replace(/type=square/i,'type=large'))
       
       .user-info
         .name= user.name
