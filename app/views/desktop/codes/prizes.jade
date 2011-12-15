@@ -44,5 +44,8 @@
           input(type='hidden', name='code', value=code)
           input(type='hidden', name='pin', value=pin)
           input(type='hidden', name='page_id', value=page_id)
-          input.button(type='submit', value='Verify')
           input(type='hidden', name='page_name', value=page_name)
+          -if (locals.prize.state == 'verified')
+            input.button-disabled(type='submit', value='Verify', disabled)
+          -else
+            input.button(type='submit', value='Verify')
