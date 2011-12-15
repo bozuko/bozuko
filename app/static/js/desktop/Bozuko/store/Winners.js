@@ -1,23 +1,23 @@
 Ext.define('Bozuko.store.Winners', {
     extend: 'Ext.data.Store',
-    
+
     requires: [
         'Bozuko.model.Winner',
         'Bozuko.lib.PubSub',
         'Ext.data.reader.Json'
     ],
-    
+
     model: 'Bozuko.model.Winner',
-    
+
     isListener : true,
 
     constructor : function(){
-        
+
         var me = this;
-        
+
         me.last = {};
         me.listening = false;
-        
+
         me.callParent(arguments);
         me.on('beforeload', me.onBeforeLoad, me);
         if( me.isListener ){
@@ -30,9 +30,9 @@ Ext.define('Bozuko.store.Winners', {
                 autoLoad: false
             });
         }
-        
+
     },
-    
+
     onBeforeLoad : function(store, operation){
         var me = this;
         if( !me.page_id && !me.contest_id ) return;
@@ -40,35 +40,37 @@ Ext.define('Bozuko.store.Winners', {
         operation.params['page_id'] = me.page_id;
         operation.params['contest_id'] = me.contest_id;
     },
-    
-    
+
+
     startListening : function(){
         var me = this,
             selector = {};
-        
+
         if( me.listening && me.last && me.last.page_id == me.page_id && me.last.contest_id == me.contest_id ) return;
-        
+
         if( me.page_id ) selector.page_id = me.page_id;
         if( me.contest_id ) selector.contest_id = me.contest_id;
-        
+
         if( !me.page_id && !me.contest_id ) selector = true;
-        
+
         var reload = function(item, callback){
             me.updateStore();
             callback();
-        };  
-        
+        };
+
         Bozuko.PubSub.subscribe('prize/redeemed', selector, reload);
         Bozuko.PubSub.subscribe('contest/win', selector, reload);
         Bozuko.PubSub.subscribe('contest/consolation', selector, reload);
+        Bozuko.PubSub.subscribe('prize/verified', selector, reload);
         me.on('destroy', function(){
             Bozuko.PubSub.unsubscribe('prize/redeemed', selector, reload);
             Bozuko.PubSub.unsubscribe('contest/win', selector, reload);
             Bozuko.PubSub.unsubscribe('contest/consolation', selector, reload);
+            Bozuko.PubSub.subscribe('prize/verified', selector, reload);
         });
         me.listening = true;
     },
-    
+
     updateStore : function(cb){
         var me = this;
         if( me._isLoading ){
