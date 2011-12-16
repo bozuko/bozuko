@@ -47,7 +47,6 @@ Ext.define('Bozuko.view.page.Settings' ,{
                             anchor          :'0'
                         },
                         items:[{
-                        },{
                             xtype           :'textfield',
                             name            :'name',
                             fieldLabel      :'Name'

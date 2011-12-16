@@ -78,7 +78,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             // this could be where youWin disappears... lets make sure
             // its still showing...
             if( self._showingYouWin){
-                self.app.showModal(self.getYouWinScreen());
+                self.showYouWin();
             }
         });
         
@@ -307,9 +307,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     getDescription : function(){
         if( !this.$description ){
             this.$description = this.app.createModal({
-                cls             :'game-description page-window',
+                cls             :'game-description page-window modal-window-full',
                 cn              :[{
-                    cls             :'user',
+                    cls             :'user top-bar',
                     html            :'Loading User...'
                 },{
                     cls             :'hd',
@@ -437,18 +437,51 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     onUserState : function(){
         // add user bar
-        var description = this.getDescription();
+        var self = this,
+            description = this.getDescription();
         
         if( this.app.user ){
-            description.child('.user').update('<ul class="user-links"><!--<li><a href="#" class="my-prizes">My Prizes</a></li>--><li><a class="logout" href="#">Logout</a></li></ul><div class="name">Hi <strong>'+this.app.user.name+'</strong></div>');
+            description.child('.user').update('<ul class="user-links"><li class="my-prizes-li" style="display: none;"><a href="#" class="my-prizes">My Prizes</a></li><li><a class="logout" href="#">Logout</a></li></ul><div class="name">Hi <strong>'+this.app.user.name+'</strong></div>');
             description.child('.user .logout').on('click', function(){
                 this.registerLoader();
                 this.app.logout();
             }, this);
+            description.child('.user .my-prizes').on('click', function(){
+                this.showMyPrizes();
+            }, this);
+            self.updatePrizes();
         }
         else{
             description.child('.user').update('You are not logged in.');
         }
+    },
+    
+    updatePrizes : function(){
+        
+        var self = this,
+            description = this.getDescription();
+            
+        self.app.api.call({
+            path: self.app.entry_point.links.prizes,
+            method: 'get',
+            params:{
+                game_id: self.game.id
+            }
+        }, function(response){
+            if( !response.ok ){
+                return;
+            }
+            var result = response.data;
+            self.prizes = result.prizes;
+            if( !result.prizes.length ) return;
+            description.child('.my-prizes-li').setStyle('display', '');
+        });
+    },
+    
+    showYouWin : function(prize){
+        var screen = this.getYouWinScreen(prize)
+        this.app.showModal( screen );
+        screen.child('.bd').superScroll().update();
     },
     
     getYouWinScreen : function(prize){
@@ -646,9 +679,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             ft.update('');
             if( !arguments.length ) return;
             var c = arguments.length,
+                i, cfg,
                 o = ['<div class="buttons-'+c+'">'];
-            for(var i=0; i<arguments.length; i++){
-                var cfg = arguments[i];
+                
+            for(i=0; i<arguments.length; i++){
+                cfg = arguments[i];
                 o.push('<div class="button-wrap"><a class="btn btn-'+(i+1)+' '+cfg.cls+'" href="#">'+cfg.text+'</a></div>');
             }
             o.push('</div>');
@@ -697,25 +732,121 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         yw.child('textarea[name=message]').value = '';
         
         if( btn.hasClass('btn-save') ){
-            this._showingYouWin = false;
-            this.app.unmask(true);
-            this.next();
+            this.closeYouWin();
         }
         else if( btn.hasClass('btn-save') ){
-            this.app.unmask(true);
-            this.next();
+            this.closeYouWin();
         }
         else{
-            this.app.unmask(true);
-            this.next();
+            this.closeYouWin();
         }
+    },
+    
+    closeYouWin : function(){
+        this._showingYouWin = false;
+        switch( this._youWinReturn ){
+            
+            case 'game':
+                this.app.unmask();
+                this.next();
+                break;
+            
+            default:
+                this.showMyPrizes();
+                break;
+        }
+    },
+    
+    showMyPrizes : function(){
+        this.updateMyPrizesScreen();
+        this.app.showModal(this.getMyPrizesScreen());
+    },
+    
+    updateMyPrizesScreen : function(){
+        var self = this,
+            win = this.getMyPrizesScreen(),
+            list = win.child('.prize-list');
+            
+        list.update('');
+        var ul = list.createChild({tag:'ul'});
+        Ext.each( this.prizes, function(prize){
+            var win_time = new Date(Date.parse(prize.win_time));
+            
+            var li = ul.createChild({
+                tag         :'li',
+                cls         :prize.state,
+                cn:[{
+                    cls         :'left',
+                    cn          :[{
+                        cls         :'name',
+                        html        :prize.name
+                    },{
+                        cls         :'meta',
+                        cn          :[{
+                            tag         :'span',
+                            html        :'Won: '+win_time.format("mediumDate")
+                        }]
+                    }]
+                },{
+                    cls         :'right link'
+                }]
+            });
+            li.child('.link').on('click', function(){
+                self._youWinReturn = 'prizes';
+                self.showYouWin(prize);
+            });
+        });
+        
+    },
+    
+    getMyPrizesScreen : function(){
+        if( !this.$myPrizes ){
+            this.$myPrizes = this.app.createModal({
+                cls             :'my-prizes page-window modal-window-full',
+                cn              :[{
+                    cls             :'top-bar',
+                    html            :'<a href="#" class="back-to-game">&larr; Back to Game</a>'
+                },{
+                    cls             :'hd',
+                    cn              :[{
+                        cls             :'page-pic'
+                    },{
+                        cls             :'content',
+                        cn              :[{
+                            tag             :'h3',
+                            html            :'My Prizes'
+                        }]
+                    }]
+                },{
+                    cls             :'bd',
+                    cn              :[{
+                        cls             :'scrollable prize-list'
+                    }]
+                }]
+            });
+            this.$myPrizes.child('.back-to-game').on('click', this.showDescription, this);
+            this.squareImage(this.$myPrizes.child('.page-pic'), this.app.user.image);
+            var show = this.$myPrizes.show;
+            var self = this;
+            this.$myPrizes.show = function(){
+                show.apply(this, arguments);
+                var bd = self.$myPrizes.child('.bd');
+                //bd.setHeight( self.$description.getHeight(true) - (bd.getXY()[1]-self.$description.getXY()[1]) );
+                self.$myPrizes.child('.bd').superScroll({
+                    horizontal : false,
+                    fixSize : function(){
+                        bd.setHeight( self.$myPrizes.getHeight(true) - (bd.getXY()[1]-self.$myPrizes.getXY()[1]) );
+                    }
+                });
+            };
+        }
+        return this.$myPrizes;
     },
     
     onAfterWin : function(){
         var self = this;
-        var screen = self.getYouWinScreen(self.game_result.prize);
-        self.app.showModal(screen, true);
-        screen.child('.bd').superScroll().update();
+        self.showYouWin(self.game_result.prize);
+        self._youWinReturn = 'game';
     },
     
     getLoader : function(){
@@ -845,6 +976,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 self.updateAction('Error');
                 self.showDescription();
                 return;
+            }
+            
+            if( result.data.win ){
+                self.updatePrizes();
             }
             
             self.app.hideLoading();

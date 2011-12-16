@@ -114,6 +114,18 @@ exports.links = {
                     type: "String",
                     values: ['active', 'redeemed', 'expired'],
                     description: "The state of the prizes to search"
+                },
+                query: {
+                    type: "String",
+                    description: "Query for prizes by name or page name"
+                },
+                game_id: {
+                    type: "String",
+                    description: "Filter the results by game_id"
+                },
+                page_id: {
+                    type: "String",
+                    description: "Filter the results by page_id"
                 }
             },
             returns: "prizes"

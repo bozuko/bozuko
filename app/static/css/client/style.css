@@ -298,10 +298,25 @@ a:hover {
 .scratch-ticket .profile-pic {
   position: absolute;
   z-index: 1;
-  top: 1.928%;
-  left: 2.54%;
-  width: 25.4%;
-  height: 19.277%;
+  top: 2.5%;
+  left: 3.1%;
+  width: 23.5%;
+  height: 17.9%;
+  -webkit-transform: rotate(-15deg);
+  -moz-transform: rotate(-15deg);
+  -ms-transform: rotate(-15deg);
+  -o-transform: rotate(-15deg);
+  transform: rotate(-15deg);
+}
+.scratch-ticket .profile-pic-target {
+  position: absolute;
+  z-index: 3;
+  top: 2.5%;
+  left: 3.1%;
+  width: 23.5%;
+  height: 17.9%;
+  cursor: pointer;
+  background: transparent;
   -webkit-transform: rotate(-15deg);
   -moz-transform: rotate(-15deg);
   -ms-transform: rotate(-15deg);
@@ -405,6 +420,25 @@ a:hover {
 .page-window {
   padding: 0;
 }
+.page-window .top-bar {
+  position: relative;
+  z-index: 3;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px 6px 0 0;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px 6px 0 0;
+  -ms-border-radius: 6px 6px 0 0;
+  border-radius: 6px 6px 0 0;
+  background-clip: padding-box;
+  padding: 3px 8px;
+  color: #000;
+  background: #fff;
+  font-size: 13px;
+  line-height: 1.3em;
+  border-bottom: 2px solid #999;
+  overflow: hidden;
+  _height: 1%;
+}
 .page-window .hd {
   overflow: hidden;
   position: relative;
@@ -442,25 +476,6 @@ a:hover {
 }
 .game-description {
   padding: 0;
-}
-.game-description .user {
-  position: relative;
-  z-index: 3;
-  -webkit-background-clip: padding-box;
-  -webkit-border-radius: 6px 6px 0 0;
-  -moz-background-clip: padding-box;
-  -moz-border-radius: 6px 6px 0 0;
-  -ms-border-radius: 6px 6px 0 0;
-  border-radius: 6px 6px 0 0;
-  background-clip: padding-box;
-  padding: 3px 8px;
-  color: #000;
-  background: #fff;
-  font-size: 13px;
-  line-height: 1.3em;
-  border-bottom: 2px solid #999;
-  overflow: hidden;
-  _height: 1%;
 }
 .game-description .user .name {
   float: left;
@@ -978,6 +993,82 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#fffa30',EndColorStr='#f1c025');
   /* IE6-9 */
 
+}
+.my-prizes .hd {
+  height: 50px;
+  -moz-box-shadow: 0 2px 10px #666666;
+  -webkit-box-shadow: 0 2px 10px #666666;
+  box-shadow: 0 2px 10px #666666;
+}
+.my-prizes .hd .page-pic {
+  height: 50px;
+  width: 50px;
+}
+.my-prizes .hd .content {
+  padding: 0;
+  margin-left: 50px;
+}
+.my-prizes .hd h3 {
+  font-size: 35px;
+  line-height: 50px;
+  text-transform: uppercase;
+  color: white;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 0 10px #000;
+  margin: 0;
+}
+.my-prizes .bd .scrollable {
+  padding: 0;
+}
+.my-prizes .bd ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px;
+  zoom: 1;
+  width: auto;
+  overflow: visible;
+  border: 2px solid #999;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  border-radius: 10px;
+  background-clip: padding-box;
+  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.my-prizes .bd ul li {
+  position: relative;
+  overflow: hidden;
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+  border-bottom: 2px solid #ccc;
+}
+.my-prizes .bd ul li:last-child {
+  border-bottom-width: 0;
+}
+.my-prizes .bd ul li:first-child {
+  border-top-width: 0;
+}
+.my-prizes .bd ul li .left {
+  margin-right: 18%;
+}
+.my-prizes .bd ul li .right {
+  position: absolute;
+  cursor: pointer;
+  width: 18%;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background: transparent url("/images/client/arrow-iso.png") 50% 50% no-repeat;
+}
+.my-prizes .bd ul li .name {
+  color: #333;
+  font-size: 1.2em;
+  font-weight: bold;
 }
 .prize-shared .sharebox {
   display: none;
