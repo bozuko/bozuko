@@ -214,7 +214,7 @@ exports.routes = {
                 ], function(error){
                     console.log(error);
                     res.send('done.');
-                })
+                });
             }
         }
     },
@@ -515,6 +515,27 @@ exports.routes = {
                             if( error ) return error.send( res );
                             return res.send(page);
                         });
+                    });
+                });
+            }
+        }
+    },
+
+    // This adds pins to all pages that don't have them. It only needs to be used once, since new pages
+    // will automatically get pins when created.
+    //
+    '/admin/pages/add_pins': {
+        get: {
+            handler: function(req, res) {
+                return Bozuko.models.Page.find({pin: {$exists: false}}, {_id: 1}, function(err, pages) {
+                    return async.forEachSeries(pages, function(page, callback) {
+                        return Bozuko.models.Page.getPin(function(err, pin) {
+                            if (err) return callback(err);
+                            return Bozuko.models.Page.update({_id: page._id}, {$set: {pin: pin}}, callback);
+                        });
+                    }, function(err) {
+                        if (err) res.send(err);
+                        res.send('DONE!');
                     });
                 });
             }

@@ -28,7 +28,7 @@ Controller.prototype = {
 
         var self = this;
         var app = this.app;
-        
+
         var controllerSession = (self.session !== false);
 
         Object.keys(routes).forEach(function(route){
@@ -40,14 +40,14 @@ Controller.prototype = {
             var path = route;
             if( !config.aliases ) config.aliases = [];
             if( config.alias ) config.aliases.push(config.alias);
-            
+
             var routeSession = !!controllerSession;
             if( config.session === false ){
                 routeSession = false;
             }
-            
+
             ['get','post','put','del','all'].forEach( function(method){
-                
+
                 var methodSession = !!routeSession,
                     ref = false;
 
@@ -77,7 +77,7 @@ Controller.prototype = {
                         else if( methodConfig.handler ){
                             handler = methodConfig.handler;
                         }
-                        
+
                         if( methodConfig.ref ){
                             ref = methodConfig.ref;
                         }
@@ -92,11 +92,11 @@ Controller.prototype = {
                         if( methodConfig.locals ){
                             merge(_locals, methodConfig.locals);
                         }
-                        
+
                         if( methodConfig.filter ){
                             handler = middleware( methodConfig.filter, handler, self);
                         }
-                        
+
                         if( methodConfig.session === false ){
                             methodSession = false;
                         }
@@ -112,7 +112,7 @@ Controller.prototype = {
                             }
                         };
                     }
-					
+
 					// add our controller middleware
                     if (self.filter ){
                         handler = middleware(self.filter, handler, self);
@@ -143,15 +143,15 @@ Controller.prototype = {
 							var merge = require('connect').utils.merge;
                             args[1] = merge( merge({}, locals), args[1] || {} );
                             return _render.apply(res, args);
-                        }
+                        };
                         $handler.apply(self,arguments);
                     };
-                    
+
                     // add our access
                     if( self.access ){
                         handler = auth.check( self.access, handler );
                     }
-                    
+
                     if( !methodSession ){
                         handler = middleware(function(req, res, next){
                             var end = res.end;
@@ -159,15 +159,15 @@ Controller.prototype = {
                                 res.end = end;
                                 delete req.session;
                                 res.end(data, encoding);
-                            }
+                            };
                             next();
                         }, handler, self);
                     }
-                    
+
                     if( ref ){
                         self.refs[ref] = handler;
                     }
-                    
+
                     path = self._cleanPath(path);
                     app[method](path, function(req,res){
                         handler.apply(self,arguments);
@@ -188,23 +188,23 @@ Controller.prototype = {
         if( !/\/\?$/.test(path) && /\w$/.test(path)) path += '/?';
         return path;
     },
-    
+
     io : function(sockets){
-        
+
     },
 
     forward : function(path){
 
     },
-	
+
 	init : function(){
-		
+
 	},
-    
+
     beforeRoute : function(){
-        
+
     },
-    
+
     afterRoute : function(){
         // empty override
     }

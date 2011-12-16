@@ -99,6 +99,14 @@ exports['remove results'] = function(test) {
     });
 };
 
+exports['Lookback Window floor'] = function(test) {
+    contest.start = new Date();
+    contest.end = new Date(contest.start.getTime()+5000);
+    var engine = new TimeEngine(contest);
+    test.equal(engine.lookback_window, 1000*60*3);
+    test.done();
+};
+
 var result_cursor = 0;
 
 exports['generate 5 results '] = function(test) {

@@ -14,14 +14,15 @@ var mongoose = require('mongoose'),
     fs = require('fs')
 ;
 
+var safe = {w:2, wtimeout: 5000};
 var Prize = module.exports = new Schema({
     contest_id              :{type:ObjectId, index:true},
     page_id                 :{type:ObjectId, index:true},
     user_id                 :{type:ObjectId, index:true},
     prize_id                :{type:ObjectId, index:true},
     uuid                    :{type:String},
-	shared					:{type:Boolean, default:false},
-    code                    :{type:String},
+    shared					:{type:Boolean, default:false},
+    code                    :{type:String, index:true},
     value                   :{type:Number},
     name                    :{type:String},
     page_name               :{type:String},
@@ -34,12 +35,14 @@ var Prize = module.exports = new Schema({
     description             :{type:String},
     details                 :{type:String},
     instructions            :{type:String},
+    verified                :{type:Boolean, index: {sparse: true}},
+    verified_time           :{type:Date},
     redeemed                :{type:Boolean},
     redeemed_time           :{type:Date,    index: true},
     is_email                :{type:Boolean, default:false},
     email_body              :{type:String},
     email_code              :{type:String},
-	email_replyto           :{type:String},
+    email_replyto           :{type:String},
     email_format            :{type:String,  default: 'text/plain'},
     email_subject           :{type:String},
     email_history	    :[ObjectId],
@@ -47,24 +50,40 @@ var Prize = module.exports = new Schema({
     barcode_image           :{type:String},
     consolation             :{type:Boolean, default:false},
     bucks                   :{type:Number}
-},  {safe: {w:2, wtimeout: 5000}});
+},  {safe:safe});
 
 // setup our constants
 Prize.REDEEMED = 'redeemed';
 Prize.ACTIVE = 'active';
 Prize.EXPIRED = 'expired';
-
+Prize.VERIFIED = 'verified';
 
 Prize.plugin(LastUpdatedPlugin);
 Prize.plugin(JSONPlugin);
 
 Prize.virtual('state')
     .get(function(){
+        if( this.verified ) return Prize.VERIFIED;
         if( this.redeemed ) return Prize.REDEEMED;
         var now = new Date();
         if( now < this.expires ) return Prize.ACTIVE;
         return Prize.EXPIRED;
     });
+
+Prize.method('verify', function(callback) {
+    var self = this;
+    if (this.verified) return callback(Bozuko.error('prize/already_verified'));
+    return Bozuko.models.Prize.findAndModify(
+        {_id: this._id, verfied: {$exists: false}}, [],
+        {$set: {verified: true, verified_time: new Date()}},
+        {new: true, safe: safe}, function(err, prize) {
+            if (err) return callback(err);
+            Bozuko.publish('prize/verified',
+                {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
+            return callback(null, prize);
+        }
+    );
+});
 
 Prize.method('redeem', function(user, email_prize_screen, callback){
     var self = this;
@@ -167,14 +186,14 @@ Prize.method('sendEmail', function(user) {
         .replace(/<p.*>/gi, "\n")
         .replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
         .replace(/<(?:.|\s)*?>/g, "");
-		
+
 	var config = {
         to: user.email,
         subject: subject,
         html: body,
         body: text
     };
-	
+
 	if( self.email_replyto && self.email_replyto != '' ){
 		config.reply_to = self.email_replyto;
 	}
@@ -350,13 +369,13 @@ Prize.method('share', function(args, callback){
 		user = args.user || false,
 		page = args.page || false,
 		contest = args.contest || false;
-		
+
 	if( prize.shared ){
 		return callback(Bozuko.error('prize/already_shared'));
 	}
-	
+
 	return async.series([
-		
+
 		function getUser(cb){
 			if( user && user._id == prize.user_id ) return cb();
 			return Bozuko.models.User.findById(prize.user_id, function(error, _user){
@@ -364,9 +383,9 @@ Prize.method('share', function(args, callback){
 				user = _user;
 				return cb();
 			});
-			
+
 		},
-		
+
 		function getPage(cb){
 			if( page && page._id == prize.page_id ) return cb();
 			return Bozuko.models.Page.findById(prize.page_id, function(error, _page){
@@ -378,7 +397,7 @@ Prize.method('share', function(args, callback){
 				return cb();
 			});
 		},
-		
+
 		function getContest(cb){
 			if( contest && contest._id == prize.contest_id ) return cb();
 			return Bozuko.models.Contest.findById(prize.contest_id, function(error, _contest){
@@ -390,34 +409,34 @@ Prize.method('share', function(args, callback){
 				return cb();
 			});
 		},
-		
+
 		function doShare(cb){
-			
+
 			if( contest.post_to_wall !== true ){
 				return cb();
 			}
-			
+
 			var options = {
 				user: user,
 				message: args.message || '',
 				link: 'https://bozuko.com/p/'+prize.page_id,
 				picture: burl('/page/'+prize.page_id+'/image')
 			};
-			
+
 			var gameName = contest.getGame().getName();
 
 			var a = /^([0-9\$]|a|an|the)\s/i.test(String(prize.name)) ? '' : (String(prize.name).match(/^[aeiou]/i) ? 'an ' : 'a '),
 				at = 'at';
-			
+
 			options.name = user.name+' just won '+a+prize.name+'!';
-			
+
 			// fix this in the case of Bozuko
 			if( page.name.match(/^bozuko$/i) ) at='with';
-			
+
 			options.description = 'You could too! Play '+gameName+' '+at+' '+page.name+' for your chance to win!';
-			
+
 			return Bozuko.service('facebook').post(options, function(error){
-				
+
 				if( error ) return cb(error);
 
 				// lets save this share...
@@ -436,25 +455,25 @@ Prize.method('share', function(args, callback){
 				}catch(e){
 					share.visibility = 0;
 				}
-				
+
 				return share.save(function(err){
 					// send the redemption object
 					if( error ) return cb(error);
-					
+
 					// we also want to set a flag that this prize has been shared.
 					prize.shared = true;
 					return prize.save(cb);
 				});
-				
+
 			});
-			
+
 		}
-		
+
 	], function finish(error){
 		if( error ) return callback(error);
 		return callback();
 	});
-	
+
 });
 
 Prize.method('createPrizeScreenPdf', function(user, images) {
