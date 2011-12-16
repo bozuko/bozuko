@@ -61,6 +61,7 @@ exports.transfer_objects = {
                  */
                 o.redemption_duration = 60;
                 if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
+                if ( prize.verified ) o.redeemed_timestamp = prize.verified_time;
                 o.expiration_timestamp = prize.expires;
 
                 o.links = {
@@ -73,12 +74,14 @@ exports.transfer_objects = {
                 }
                 if( o.state == 'active' ){
                     o.links.redeem = '/prize/'+prize.id+'/redemption';
+                } else if ( o.state == 'verified') {
+                    o.state = 'redeemed';
                 }
-                
+
                 if( o.is_email ){
                     o.links.resend = '/prize/'+prize.id+'/resend';
                 }
-                
+
                 return self.sanitize(o, null, user, function(error, result){
                     if( error ) return callback( error );
                     return callback(null, result);
@@ -161,12 +164,12 @@ exports.links = {
             returns: "redemption_object"
         }
     },
-    
+
     share : {
         post: {
             access: 'mobile',
             doc: "Share a Prize Win on Facebook",
-            
+
             params: {
                 message : {
                     type: "String",
@@ -176,15 +179,15 @@ exports.links = {
             returns:"success_message"
         }
     },
-    
+
     resend : {
         post: {
             access: 'mobile',
             doc: "Resend an emailed prize",
-            
+
             params: {
             },
-            
+
             returns:"success_message"
         }
     }

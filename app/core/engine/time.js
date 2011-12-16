@@ -13,6 +13,8 @@ var TimeEngine = module.exports = function(contest) {
 
 inherits(TimeEngine, Engine);
 
+var lookback_window_floor = 1000*60*3;
+
 TimeEngine.prototype.configure = function(opts) {
     opts = opts || {};
     this.buffer = opts.buffer || 0.001;
@@ -28,6 +30,9 @@ TimeEngine.prototype.configure = function(opts) {
     this.step =  Math.floor(
         (this.contest_duration)/this.contest.totalPrizes());
     this.lookback_window = Math.round(this.step/this.window_divisor);
+    if (this.lookback_window < lookback_window_floor) {
+        this.lookback_window = lookback_window_floor;
+    }
     this.throwahead_window = Math.round(this.step*this.throwahead_multiplier);
     console.log("throwahead window = "+this.throwahead_window);
     console.log("lookback_window = "+this.lookback_window);

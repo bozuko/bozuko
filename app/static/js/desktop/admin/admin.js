@@ -2,7 +2,7 @@ Ext.Loader.setConfig({enabled:true});
 Ext.Loader.setPath('Ext.ux', '/js/ext-4.0/ux');
 Ext.Loader.setPath('Bozuko', '/js/desktop/Bozuko');
 Ext.application({
-    
+
     name: 'Admin',
     appFolder: '/js/desktop/admin',
 
@@ -10,9 +10,9 @@ Ext.application({
     controllers: [
         'Bozuko.controller.Pages',
         'Bozuko.controller.Contests',
-        'Admin',
+        'Admin'
     ],
-    
+
     requires:[
         'Bozuko.lib.Router',
         'Ext.chart.theme.Base',
@@ -27,13 +27,13 @@ Ext.application({
                 click: this.logout
             }
         }, null, this);
-        
+
         // prevent unintentional leaving of the page
         window.onbeforeunload = function(){
             return me.preventCloseWarning
                 ? false
-                : 'If you leave this page, any unsaved worked will be lost.'
-        }
+                : 'If you leave this page, any unsaved worked will be lost.';
+        };
 
     },
 
