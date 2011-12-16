@@ -262,10 +262,26 @@ a, a:visited, a:link, a:hover {
     .profile-pic {
         position: absolute;
         z-index: 1;
-        top: 1.928%;
-        left: 2.54%;
-        width: 25.4%;
-        height: 19.277%;
+        top: 2.5%;
+        left: 3.1%;
+        width: 23.5%;
+        height: 17.9%;
+        -webkit-transform:rotate(-15deg);
+        -moz-transform:rotate(-15deg);
+        -ms-transform:rotate(-15deg);
+        -o-transform:rotate(-15deg);
+        transform:rotate(-15deg);
+    }
+    
+    .profile-pic-target {
+        position: absolute;
+        z-index: 3;
+        top: 2.5%;
+        left: 3.1%;
+        width: 23.5%;
+        height: 17.9%;
+        cursor: pointer;
+        background: transparent;
         -webkit-transform:rotate(-15deg);
         -moz-transform:rotate(-15deg);
         -ms-transform:rotate(-15deg);
@@ -398,6 +414,21 @@ a, a:visited, a:link, a:hover {
 
 .page-window {
     padding: 0;
+    
+    .top-bar{
+        position: relative;
+        z-index: 3;
+        .border_radius(6px 6px 0 0);
+        padding: 3px 8px;
+        color: #000;
+        background: #fff;
+        font-size: 13px;
+        line-height: 1.3em;
+        border-bottom: 2px solid #999;
+        overflow: hidden;
+        _height: 1%;
+    }
+    
     .hd {
         
         overflow: hidden;
@@ -434,18 +465,6 @@ a, a:visited, a:link, a:hover {
 .game-description {
     padding: 0;
     .user {
-        position: relative;
-        z-index: 3;
-        .border_radius(6px 6px 0 0);
-        padding: 3px 8px;
-        color: #000;
-        background: #fff;
-        font-size: 13px;
-        line-height: 1.3em;
-        border-bottom: 2px solid #999;
-        overflow: hidden;
-        _height: 1%;
-        
         .name {
             float: left;
         }
@@ -799,6 +818,87 @@ a, a:visited, a:link, a:hover {
         .btn-save {
             .action_button(#f1c025);
             display: block;
+        }
+    }
+}
+
+.my-prizes {
+    .hd {
+        height: 50px;
+        .box_shadow(0,2px,10px,#666);
+        .page-pic{
+            height: 50px;
+            width: 50px;
+        }
+        .content{
+            padding: 0;
+            margin-left: 50px;
+        }
+        
+        h3 {
+            font-size: 35px;
+            line-height: 50px;
+            text-transform: uppercase;
+            color: white;
+            font-weight: 800;
+            text-align: center;
+            text-shadow: 0 0 10px #000;
+            margin: 0;
+        }
+    }
+    .bd {
+        .scrollable {
+            padding: 0;
+        }
+        
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px;
+            
+            zoom: 1;
+            width: auto;
+            overflow: visible;
+            border: 2px solid #999;
+            .border_radius(10px);
+            background-color: #fff;
+            background-color: rgba(255,255,255,.8);
+            
+            
+            li {
+                position: relative;
+                overflow: hidden;
+                list-style: none;
+                padding: 10px;
+                margin: 0;
+                border-bottom: 2px solid #ccc;
+                
+                &:last-child{
+                    border-bottom-width: 0;
+                }
+                &:first-child{
+                    border-top-width: 0;
+                }
+                
+                .left {
+                    margin-right: 18%;
+                }
+                .right {
+                    position: absolute;
+                    cursor: pointer;
+                    width: 18%;
+                    right: 0;
+                    bottom: 0;
+                    top: 0;
+                    background: transparent url("/images/client/arrow-iso.png") 50% 50% no-repeat;
+                }
+                
+                .name {
+                    color: #333;
+                    font-size: 1.2em;
+                    font-weight: bold;
+                }
+            }
         }
     }
 }

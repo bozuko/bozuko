@@ -54,12 +54,14 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             return;
         }
         
-        
         this.width = Math.min( 500, Math.max( this.config.width || Math.min(window.innerWidth||document.documentElement.clientWidth, window.innerHeight||document.documentElement.clientHeight), 320 ) );
         this.height = this.width/this.dimensions.x*this.dimensions.y;
         this.stylesheet = Bozuko.client.util.Stylesheet.create('app');
         this.stylesheet.rule('.modal-window', {
             'max-height': (this.height-30-6)+'px'
+        });
+        this.stylesheet.rule('.modal-window-full', {
+            'min-height': (this.height-30-6)+'px'
         });
         if( Modernizr.touch ) this.stylesheet.rule('body',{
             'width': this.width+'px'

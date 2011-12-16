@@ -102,7 +102,7 @@ Ext.namespace('Bozuko.client.game');
             
             this.on('enter', this.onEnter, this);
             this.on('result', this.onResult, this);
-            this.on('scratch', this.onScratch, this);
+            // this.on('scratch', this.onScratch, this);
             
             this.init();
         },
@@ -155,154 +155,6 @@ Ext.namespace('Bozuko.client.game');
             if( this.renderTo ){
                 this.render( this.renderTo );
             }
-        },
-        
-        onEnter : function(entry){
-            this.result();
-        },
-        
-        onResult : function(result){
-            for(var i=0; i<result.result.numbers.length; i++ ){
-                var n = result.result.numbers[i];
-                this.$prizes[i].update(
-                    '<div class="number">'+n.number+'</div>'+
-                    '<div class="name">'+n.text+'</div>'
-                );
-            }
-            this.reset();
-            this.loaded = true;
-            var tokens = this.state.user_tokens+(result.free_play?0:1);
-            this.$ticketsLeft.update(tokens);
-        },
-        
-        onScratch : function(i){
-            var self = this;
-            this.scratched++;
-            
-            if( this.game_result.win ){
-                var cur = this.game_result.result.numbers[i];
-                if( this.game_result.result.winning_number == cur.number ){
-                    if( ++this.scratchedWins == 3 ){
-                        
-                        if( this.game_result.free_play ){
-                            this.showAnimation('freePlay');
-                            //  blink...
-                            var count = 0;
-                            var interval = setInterval(function(){
-                                self.$ticketsLeft.setVisible(count++%2);
-                                if( count == 10 ) clearInterval( interval );
-                            }, 300);
-                        }
-                        else{
-                            this.fireEvent('displaywin', this.game_result, this);
-                            this.showAnimation('win', this.onAfterWin, this);
-                        }
-                    }
-                }
-            }
-            else if( this.scratched == 6 ){
-                if( !this.state.user_tokens ){
-                    this.fireEvent('displaylose', this.game_result, this);
-                    this.showAnimation('lose');
-                }
-                else{
-                    this.fireEvent('displaylose', this.game_result, this);
-                    this.showAnimation('playAgain');
-                }
-            }
-        },
-        
-        showAnimation : function(name, callback, scope){
-            
-            if( this.resultAnimating ) return;
-            
-            this.resultAnimating = true;
-            var self = this;
-            
-            this.clearCache('game_result');
-            this.clearCache('state');
-            
-            // TODO - what to do if this is not css3 compliant?
-            
-            this.$animationsCt.select('.animation').removeClass('animate');
-            this.$animationsCt.show();
-            var cur = this.$animations[name];
-            cur.addClass('animate');
-            
-            
-            var anim, cancelAnimation;
-            if( !Modernizr.cssanimations ){
-                var grow=true,
-                    animStopped=false,
-                    scale = [.8, 1],
-                    xy = cur.getXY(),
-                    wh = [cur.getWidth(),cur.getHeight()],
-                    animOpts;
-                
-                cancelAnimation = function(){
-                    animStopped = true;
-                    if( animOpts.anim && animOpts.anim.isAnimating && animOpts.anim.isAnimating() ) animOpts.anim.stop();
-                    cur.setStyle({
-                        'top':0,'left':0,'bottom':0,'right':0,
-                        'width':'100%',
-                        'height':'100%'
-                    });
-                };
-                
-                cur.setStyle({
-                    'width':'auto',
-                    'height':'auto'
-                });
-                
-                var animate = function(){
-                    
-                    if( animStopped ) return;
-                    
-                    var r = Math.round,
-                        w = {from: r(wh[0]*scale[grow?0:1]), to: r(wh[0]*scale[grow?1:0]) },
-                        h = {from: r(wh[1]*scale[grow?0:1]), to: r(wh[1]*scale[grow?1:0]) },
-                        x = {from: r((wh[0]-w.from) / 2), to: r((wh[0]-w.to) / 2)},
-                        y = {from: r((wh[1]-h.from) / 2), to: r((wh[1]-h.to) / 2)};
-                    
-                    var args = {top: x, left: y, right: x, bottom: y };
-                    
-                    grow = !grow;
-                    cur.anim(args, animOpts);
-                };
-                
-                animOpts = {
-                    duration: .35,
-                    callback: animate,
-                    easing: 'easeOut'
-                };
-                animate();
-            }
-            
-            var cancelled = false;
-            var cancel = function(){
-                if( cancelAnimation ) cancelAnimation();
-                self.resultAnimating = false;
-                self.$animationsCt.un('click', clickHandler);
-                if( cancelled ) return;
-                cancelled = true;
-                self.$animations[name].removeClass('animate');
-                self.$animationsCt.hide();
-                if( callback ) {
-                    callback.apply(scope||self);
-                }
-                else{
-                    self.next();
-                }
-            };
-            var clickHandler = function(e){
-                e.stopEvent();
-                cancel();
-            };
-            setTimeout(function(){
-                self.$animationsCt.on('click', clickHandler);
-            }, 500);
-            
-            setTimeout(cancel, 5000);
         },
         
         render : function(parent){
@@ -366,6 +218,15 @@ Ext.namespace('Bozuko.client.game');
                 cls         :'profile-pic',
                 src         :this.page.image //.replace(/type=large/i, 'type=square')
             });
+            
+            self.$pageImageTarget = self.$ct.createChild({
+                cls         :'profile-pic-target'
+            });
+            
+            self.$pageImageTarget.on('click', function(e){
+                e.stopEvent();
+                this.pause();
+            }, self);
             
             if( Ext.isIE7 || Ext.isIE8 ){
                 //self.$pageImage.dom.style.filter='progid:DXImageTransform.Microsoft.BasicImage(rotation=3)';
@@ -467,6 +328,138 @@ Ext.namespace('Bozuko.client.game');
             }
         },
         
+        pause : function(){
+            if( this._animationImminent ) return;
+            // save the old stuff...
+            var action = this.getDescription().child('.actions .action'),
+                saved = [];
+            while( action.dom.childNodes.length ){
+                saved.push( action.dom.childNodes[0] );
+                action.dom.removeChild( action.dom.childNodes[0] );
+            }
+            
+            this.updateAction('<a href="javascript:;" class="button">Go back to the ticket &raquo;</a>');
+            this.getDescription().child('.actions .button').on('click', function(){
+                this.app.unmask();
+                // add back the old stuff
+                Ext.each(saved, function(el){
+                    action.dom.appendChild(el);
+                });
+            }, this);
+            this.showDescription();
+        },
+        
+        onEnter : function(entry){
+            this.result();
+        },
+        
+        onResult : function(result){
+            for(var i=0; i<result.result.numbers.length; i++ ){
+                var n = result.result.numbers[i];
+                this.$prizes[i].update(
+                    '<div class="number">'+n.number+'</div>'+
+                    '<div class="name">'+n.text+'</div>'
+                );
+            }
+            this.reset();
+            this.loaded = true;
+            var tokens = this.state.user_tokens+(result.free_play?0:1);
+            this.$ticketsLeft.update(tokens);
+        },
+        
+        showAnimation : function(name, callback, scope){
+            
+            if( this.resultAnimating ) return;
+            
+            this.resultAnimating = true;
+            var self = this;
+            
+            this.clearCache('game_result');
+            this.clearCache('state');
+            
+            // TODO - what to do if this is not css3 compliant?
+            
+            this.$animationsCt.select('.animation').removeClass('animate');
+            this.$animationsCt.show();
+            var cur = this.$animations[name];
+            cur.addClass('animate');
+            
+            
+            var anim, cancelAnimation;
+            if( !Modernizr.cssanimations ){
+                var grow=true,
+                    animStopped=false,
+                    scale = [.8, 1],
+                    xy = cur.getXY(),
+                    wh = [cur.getWidth(),cur.getHeight()],
+                    animOpts;
+                
+                cancelAnimation = function(){
+                    animStopped = true;
+                    if( animOpts.anim && animOpts.anim.isAnimating && animOpts.anim.isAnimating() ) animOpts.anim.stop();
+                    cur.setStyle({
+                        'top':0,'left':0,'bottom':0,'right':0,
+                        'width':'100%',
+                        'height':'100%'
+                    });
+                };
+                
+                cur.setStyle({
+                    'width':'auto',
+                    'height':'auto'
+                });
+                
+                var animate = function(){
+                    
+                    if( animStopped ) return;
+                    
+                    var r = Math.round,
+                        w = {from: r(wh[0]*scale[grow?0:1]), to: r(wh[0]*scale[grow?1:0]) },
+                        h = {from: r(wh[1]*scale[grow?0:1]), to: r(wh[1]*scale[grow?1:0]) },
+                        x = {from: r((wh[0]-w.from) / 2), to: r((wh[0]-w.to) / 2)},
+                        y = {from: r((wh[1]-h.from) / 2), to: r((wh[1]-h.to) / 2)};
+                    
+                    var args = {top: x, left: y, right: x, bottom: y };
+                    
+                    grow = !grow;
+                    cur.anim(args, animOpts);
+                };
+                
+                animOpts = {
+                    duration: .35,
+                    callback: animate,
+                    easing: 'easeOut'
+                };
+                animate();
+            }
+            
+            var cancelled = false;
+            var cancel = function(){
+                if( cancelAnimation ) cancelAnimation();
+                self.resultAnimating = false;
+                self.$animationsCt.un('click', clickHandler);
+                if( cancelled ) return;
+                cancelled = true;
+                self.$animations[name].removeClass('animate');
+                self.$animationsCt.hide();
+                if( callback ) {
+                    callback.apply(scope||self);
+                }
+                else{
+                    self.next();
+                }
+            };
+            var clickHandler = function(e){
+                e.stopEvent();
+                cancel();
+            };
+            setTimeout(function(){
+                self.$animationsCt.on('click', clickHandler);
+            }, 500);
+            
+            setTimeout(cancel, 5000);
+        },
+        
         reset : function(){
             var bg = this.image('bg');
             if( Modernizr.canvas ){
@@ -488,9 +481,60 @@ Ext.namespace('Bozuko.client.game');
         scratch : function(e, index){
             e.preventDefault();
             if( !this.loaded || this.scratchedPositions[index] || this.resultAnimating ) return;
+            
             this.scratchedPositions[index] = true;
-            var self = this,
-                pos = this.positions[index],
+            
+            var self = this;
+            this.scratched++;
+            
+            var cb = false;
+            
+            if( !this._animationImminent ){
+                if( this.game_result.win ){
+                    var cur = this.game_result.result.numbers[index];
+                    if( this.game_result.result.winning_number == cur.number ){
+                        if( ++this.scratchedWins == 3 ){
+                            
+                            this._animationImminent=true;
+                            if( this.game_result.free_play ){
+                                cb = function(){
+                                    this.showAnimation('freePlay');
+                                    //  blink...
+                                    var count = 0;
+                                    var interval = setInterval(function(){
+                                        self.$ticketsLeft.setVisible(count++%2);
+                                        if( count == 10 ) clearInterval( interval );
+                                    }, 300);
+                                };
+                            }
+                            else{
+                                cb = function(){
+                                    this.fireEvent('displaywin', this.game_result, this);
+                                    this.showAnimation('win', this.onAfterWin, this);
+                                };
+                            }
+                        }
+                    }
+                }
+                else if( this.scratched == 6 ){
+                    this._animationImminent=true;
+                    if( !this.state.user_tokens ){
+                        cb = function(){
+                            this.fireEvent('displaylose', this.game_result, this);
+                            this.showAnimation('lose');
+                        };
+                    }
+                    else{
+                        cb = function(){
+                            this.fireEvent('displaylose', this.game_result, this);
+                            this.showAnimation('playAgain');
+                        };
+                    }
+                }
+            }
+            
+            
+            var pos = this.positions[index],
                 ctx = Modernizr.canvas ? this.$ticketCtx : null,
                 frame = 0;
                 
@@ -515,6 +559,8 @@ Ext.namespace('Bozuko.client.game');
                         self.$prizes[index].setStyle('display', 'block');
                     }
                     self.fireEvent('scratch', index);
+                    if( self._animationImminent ) self._animationImminent = false;
+                    if( cb ) cb.call(self);
                     return;
                 }
                 requestAnimationFrame(animate);

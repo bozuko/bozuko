@@ -79,6 +79,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
             
             // lets add our scripts
             var scripts = [
+                '/js/dateFormat.js',
                 '/js/client/util/Stylesheet.js',
                 '/js/iscroll/iscroll-lite-4.1.6.js',
                 '/js/client/util/Overrides.js',
