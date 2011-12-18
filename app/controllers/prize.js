@@ -17,7 +17,10 @@ exports.routes = {
             handler: function(req, res) {
 
                 var state = req.param('state'),
-                     query = req.param('query');
+                    query = req.param('query'),
+                    page_id = req.param('page_id'),
+                    game_id = req.param('game_id')
+                    ;
 
                 if (state && state != PrizeSchema.ACTIVE && state != PrizeSchema.REDEEMED && state != PrizeSchema.EXPIRED) {
                     return Bozuko.error('prize/bad_state').send(res);
@@ -50,6 +53,13 @@ exports.routes = {
                         {name: re},
                         {page_name: re}
                     ];
+                }
+                
+                if( game_id ){
+                    selector.contest_id = game_id;
+                }
+                if( page_id ){
+                    selector.page_id = page_id;
                 }
 
                 var limit = req.param('limit') || 25;
