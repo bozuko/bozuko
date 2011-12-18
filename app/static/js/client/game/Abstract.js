@@ -233,7 +233,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     button : function(){
         var self = this;
-        self.app.hideLoading();
         // okay... we now want to display the button
         self.updateAction([{
             cls         :'button',
@@ -379,7 +378,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 self.$description.child('.bd').superScroll({
                     horizontal : false,
                     fixSize : function(){
-                        bd.setHeight( self.$description.getHeight(true) - (bd.getXY()[1]-self.$description.getXY()[1]) );
+                        bd.setHeight( self.$description.getHeight(true)+4 - (bd.getXY()[1]-self.$description.getXY()[1]) );
                     }
                 });
             };
@@ -441,7 +440,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             description = this.getDescription();
         
         if( this.app.user ){
-            description.child('.user').update('<ul class="user-links"><li class="my-prizes-li" style="display: none;"><a href="#" class="my-prizes">My Prizes</a></li><li><a class="logout" href="#">Logout</a></li></ul><div class="name">Hi <strong>'+this.app.user.name+'</strong></div>');
+            description.child('.user').update('<ul class="user-links"><li class="my-prizes-li" style="display: none;"><a href="javascript:;" class="my-prizes">My Prizes</a></li><li><a class="logout" href="javascript:;">Logout</a></li></ul><div class="name">Hi <strong>'+this.app.user.name+'</strong></div>');
             description.child('.user .logout').on('click', function(){
                 this.registerLoader();
                 this.app.logout();
@@ -487,7 +486,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     getYouWinScreen : function(prize){
         if( !this.$youWin ){
             this.$youWin = this.app.createModal({
-                cls         :'you-win page-window',
+                cls         :'you-win page-window modal-window-full',
                 cn          :[{
                     cls             :'hd',
                     cn              :[{
@@ -510,38 +509,57 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         },{
                             cls             :'prize-code'
                         },{
-                            tag             :'div',
-                            cls             :'message',
-                            html            :''
-                        },{
-                            cls             :'sharebox',
+                            cls             :'body',
                             cn              :[{
-                                tag             :'label',
-                                cn              :[{
-                                    tag             :'input',
-                                    type            :'checkbox',
-                                    name            :'share',
-                                    checked         :'checked'
-                                },{
-                                    tag             :'span',
-                                    html            :'Share with your friends.'
-                                }]
+                                tag             :'div',
+                                cls             :'message',
+                                html            :''
                             },{
-                                tag             :'textarea',
-                                name            :'message',
-                                placeholder     :'Write a message...'
+                                cls             :'sharebox',
+                                cn              :[{
+                                    tag             :'label',
+                                    cn              :[{
+                                        tag             :'input',
+                                        type            :'checkbox',
+                                        name            :'share',
+                                        checked         :'checked'
+                                    },{
+                                        tag             :'span',
+                                        html            :'Share this win to your friends.'
+                                    }]
+                                },{
+                                    tag             :'textarea',
+                                    name            :'message',
+                                    placeholder     :'Write a message...'
+                                }]
+                            }]
+                        },{
+                            cls             :'redemption',
+                            cn              :[{
+                                cls             :'security',
+                                cn              :[{
+                                    cls             :'text',
+                                    html            :'Security Image'
+                                },{
+                                    cls             :'image'
+                                },{
+                                    cls             :'time'
+                                }]
                             }]
                         }]
                     }]
                 },{
                     cls             :'ft',
                     cn              :[{
-                        cls             :'buttons',
+                        cls             :'ft-padding',
                         cn              :[{
-                            tag             :'a',
-                            href            :'#',
-                            cls             :'btn btn-close',
-                            html            :'Okay'
+                        cls             :'buttons',
+                            cn              :[{
+                                tag             :'a',
+                                href            :'#',
+                                cls             :'btn btn-close',
+                                html            :'Okay'
+                            }]
                         }]
                     }]
                 }]
@@ -569,14 +587,21 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         if( !prize ) return this.$youWin;
         this.$youWin.prize = prize;
         
+        this.$youWin.removeClass('prize-active');
+        this.$youWin.removeClass('prize-redeemed');
+        this.$youWin.removeClass('prize-expired');
+        
+        this.$youWin.addClass('prize-'+prize.state);
+        
         this.$youWin[prize.shared?'addClass':'removeClass']('prize-shared');
         this.$youWin[prize.is_email?'addClass':'removeClass']('prize-is-email');
         this.$youWin[prize.is_barcode?'addClass':'removeClass']('prize-is-barcode');
+        this.$youWin[!prize.is_barcode&&!prize.is_email?'addClass':'removeClass']('prize-is-user-redeemable');
         
         this.$youWin.child('.hd .title').update(prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
         
         this.$youWin.child('.prize-name').update(prize.name);
-        this.$youWin.child('.prize-code').update(prize.code);
+        this.$youWin.child('.prize-code').update('<span class="code-label">CODE: </span>'+prize.code);
         
         var message = this.$youWin.child('.message'),
             bd = this.$youWin.child('.bd'),
@@ -670,45 +695,70 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
         }
         else{
-            message.update(
-                prize.wrapper_message
-            );
-        }
-        
-        var addFooterButtons = function(){
-            ft.update('');
-            if( !arguments.length ) return;
-            var c = arguments.length,
-                i, cfg,
-                o = ['<div class="buttons-'+c+'">'];
-                
-            for(i=0; i<arguments.length; i++){
-                cfg = arguments[i];
-                o.push('<div class="button-wrap"><a class="btn btn-'+(i+1)+' '+cfg.cls+'" href="#">'+cfg.text+'</a></div>');
+            
+            switch( prize.state ){
+                case 'active':
+                    var i1 = prize.wrapper_message.indexOf(':'),
+                        i2 = prize.wrapper_message.indexOf('This prize expires');
+                    var parts = [prize.wrapper_message.substr(0, i1)];
+                    parts.push('<b>'+prize.wrapper_message.substr(i1,i2-i1)+'</b><br /><br />');
+                    parts.push('<div class="expires">'+(prize.wrapper_message.substr(i2).replace(/This prize expires/i, '<span class="label">Expires:</span>'))+'</div>');
+                    message.update(parts.join(''));
+                    break;
+                case 'redeemed':
+                    var time = new Date(Date.parse(prize.redeemed_timestamp));
+                    message.update("This prize was redeemed "+(time.format('fullDate'))+' at '+(time.format('shortTime'))+'.');
+                    break;
+                case 'expired':
+                    var time = new Date(Date.parse(prize.expiration_timestamp));
+                    message.update("This prize expired "+(time.format('fullDate'))+' at '+(time.format('shortTime'))+'.');
+                    break;
             }
-            o.push('</div>');
-            ft.update(o.join(''));
-        };
-        
+        }
         // add footer buttons...
-        if( !prize.is_email ){
-            addFooterButtons({text:'Save',cls:'btn-save'},{text:'Redeem', cls:'btn-redeem'});
+        if( !prize.is_email && prize.state == 'active' ){
+            this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'Redeem', cls:'btn-redeem'});
         }
         else{
-            addFooterButtons({text:'Okay',cls:'btn-close'});
+            this.addYouWinFooterButtons({text:'OK',cls:'btn-close'});
         }
         
         this.$youWin.child('.bd').superScroll().update();
         return this.$youWin;
     },
     
+    addYouWinFooterButtons : function(){
+        var buttons = this.getYouWinScreen().child('.ft .buttons');
+        
+        buttons.update('');
+        if( !arguments.length ) return;
+        var c = arguments.length,
+            i, cfg,
+            o = [];
+        
+        buttons.dom.className = 'buttons';
+        buttons.addClass('buttons-'+c);
+            
+        for(i=0; i<arguments.length; i++){
+            cfg = arguments[i];
+            o.push('<div class="button-wrap"><a class="btn btn-'+(i+1)+' '+cfg.cls+'" href="#">'+cfg.text+'</a></div>');
+        }
+        buttons.update(o.join(''));
+    },
+    
     onYouWinButtonClick : function(e){
         
         // whats the target, an <a> tag?
         var btn = e.getTarget('a.btn');
-        if( !btn ) return;
+        if( !btn || Ext.fly(btn).hasClass('btn-disabled') ) return;
         
-        var yw = this.getYouWinScreen(),
+        var self = this,
+            yw = this.getYouWinScreen(),
+            bd = yw.child('.bd'),
+            ft = yw.child('.ft'),
+            body = bd.child('.body'),
+            redemption = bd.child('.redemption'),
+            time = redemption.child('.time'),
             prize = yw.prize;
         
         btn = Ext.get(btn);
@@ -724,18 +774,65 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     },
                     method: 'post'
                 },function(result){
+                    prize.shared = true;
+                    self.updatePrizes();
                     // i don't think we really need to do anything here...
                 });
             }
         }
-        
-        yw.child('textarea[name=message]').value = '';
+        yw.child('textarea[name=message]').dom.value = '';
         
         if( btn.hasClass('btn-save') ){
             this.closeYouWin();
         }
-        else if( btn.hasClass('btn-save') ){
-            this.closeYouWin();
+        else if( btn.hasClass('btn-redeem') && !prize.redeemed ){
+            if( !confirm('Please make sure you are with someone qualified to review the prize screen.') ) return;
+            yw.select('.btn').addClass('btn-disabled');
+            var params = {};
+            self.app.useDefaultLoader();
+            self.app.showLoading();
+            self.app.api.call({
+                path: prize.links.redeem,
+                method: 'post'
+            }, function(response){
+                self.app.hideLoading();
+                self.app.showModal( yw );
+                if( !response.ok ){
+                    yw.select('.btn').removeClass('btn-disabled');
+                    // not good
+                    return;
+                }
+                for( var i in response.data.prize ){
+                    prize[i] = response.data.prize[i];
+                    // get the security image
+                }
+                body.setStyle({display: 'none'});
+                redemption.setStyle({display:'block'});
+                redemption.child('.image').update('');
+                redemption.child('.image').createChild({
+                    tag         :'img',
+                    src         :response.data.security_image
+                });
+                var redeem_time = Date.now(), blink=0;
+                // countdown time...
+                var clock = function(){
+                    time.update(new Date().format('hh:MM:ss TT'));
+                    var elapsed = Date.now() - redeem_time;
+                    if( elapsed > 1000 * 60 * 4){
+                        var color = !(blink++ % 2) ? 'white' : 'red';
+                        time.setStyle({color: color});
+                    }
+                    if( elapsed > 1000 * 60 * 5){
+                        self.closeYouWin();
+                    }
+                    
+                };
+                clock();
+                self._redemptionClock = setInterval(clock, 1000);
+                self._redeeming = true;
+                self.addYouWinFooterButtons({text:'OK', cls:'btn-close'});
+                bd.superScroll().update();
+            });
         }
         else{
             this.closeYouWin();
@@ -744,6 +841,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     closeYouWin : function(){
         this._showingYouWin = false;
+        if( this._redeeming ){
+            clearInterval( this._redemptionClock );
+            this.getYouWinScreen().child('.bd .body').setStyle({'display':'block'});
+            this.getYouWinScreen().child('.bd .redemption').setStyle({'display':'none'});
+            this._redeeming = false;
+        }
         switch( this._youWinReturn ){
             
             case 'game':
@@ -769,31 +872,40 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
         list.update('');
         var ul = list.createChild({tag:'ul'});
-        Ext.each( this.prizes, function(prize){
+        Ext.each( this.prizes, function(prize, i){
             var win_time = new Date(Date.parse(prize.win_time));
             
             var li = ul.createChild({
                 tag         :'li',
                 cls         :prize.state,
                 cn:[{
-                    cls         :'left',
+                    cls         :'prize-body',
                     cn          :[{
-                        cls         :'name',
-                        html        :prize.name
-                    },{
-                        cls         :'meta',
+                        cls         :'left',
                         cn          :[{
-                            tag         :'span',
-                            html        :'Won: '+win_time.format("mediumDate")
+                            cls         :'state',
+                            html        :prize.state
+                        },{
+                            cls         :'name',
+                            cn          :[{
+                                tag         :'span',
+                                html        :prize.name
+                            }]
+                        },{
+                            cls         :'meta',
+                            cn          :[{
+                                tag         :'span',
+                                html        :'Won: '+win_time.format("mediumDate")
+                            }]
                         }]
+                    },{
+                        cls         :'right link'
                     }]
-                },{
-                    cls         :'right link'
                 }]
             });
             li.child('.link').on('click', function(){
                 self._youWinReturn = 'prizes';
-                self.showYouWin(prize);
+                self.showYouWin(self.prizes[i]);
             });
         });
         
@@ -805,7 +917,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 cls             :'my-prizes page-window modal-window-full',
                 cn              :[{
                     cls             :'top-bar',
-                    html            :'<a href="#" class="back-to-game">&larr; Back to Game</a>'
+                    html            :'<a href="javascript:;" class="back-to-game">&larr; Back to Game</a>'
                 },{
                     cls             :'hd',
                     cn              :[{
@@ -835,7 +947,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 self.$myPrizes.child('.bd').superScroll({
                     horizontal : false,
                     fixSize : function(){
-                        bd.setHeight( self.$myPrizes.getHeight(true) - (bd.getXY()[1]-self.$myPrizes.getXY()[1]) );
+                        bd.setHeight( self.$myPrizes.getHeight(true)+4 - (bd.getXY()[1]-self.$myPrizes.getXY()[1]) );
                     }
                 });
             };
