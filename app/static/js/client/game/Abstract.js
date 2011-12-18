@@ -525,7 +525,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                         checked         :'checked'
                                     },{
                                         tag             :'span',
-                                        html            :'Share this win to your friends.'
+                                        html            :'Share this win with your friends.'
                                     }]
                                 },{
                                     tag             :'textarea',
