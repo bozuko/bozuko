@@ -17,12 +17,16 @@ Scratch.prototype.name = "Scratch";
 Scratch.prototype.icon = burl('/games/scratch/scratch_icon.png');
 
 Scratch.prototype.getTheme = function(){
-    var theme  = typeof this.config.theme == 'string'
-        ? this.config.theme
-        : (typeof this.config == 'object'
-            ? this.config.theme.name
-            : 'default');
-    
+    var theme;
+    if (!this.config.theme) {
+        theme = 'default';
+    } else {
+        theme  = typeof this.config.theme == 'string'
+            ? this.config.theme
+            : (typeof this.config == 'object'
+               ? this.config.theme.name
+               : 'default');
+    }
     var Theme = require('./themes/'+theme);
     return new Theme(this);
 };
@@ -70,7 +74,7 @@ function randomPrize( contest, exclude ){
 function win(contest, winIndex) {
     var ar = [], prize;
     for (var i = 0; i < size; i++) { ar[i] = i; }
-    
+
     if( winIndex === contest.prizes.length ){
         // free spin!
         prize = {name:'Free Play'};
