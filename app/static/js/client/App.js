@@ -108,6 +108,10 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             cls         :'mask'
         });
         
+        this.$mask.on('click', function(e){
+            e.stopEvent();
+        });
+        
         this.$modal = this.$body.createChild({
             cls         :'modal'
         });
