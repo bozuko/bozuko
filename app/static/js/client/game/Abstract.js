@@ -144,7 +144,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     updateActionFromState : function(){
         var self = this;
         if( self.state.button_enabled === false ){
-            if( !self.state.next_enter_time_ms && (self.game.entry_method.type == 'facebook/like' || self.game.entry_method.type == 'facebook/likecheckin')){
+            if( !self.state.button_text.match(/thanks for playing/i) && !self.state.next_enter_time_ms && (self.game.entry_method.type == 'facebook/like' || self.game.entry_method.type == 'facebook/likecheckin')){
                 
                 var url = self.page.like_button_url;
                 url+='?token='+self.app.user.token;
