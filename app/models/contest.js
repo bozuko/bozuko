@@ -33,11 +33,11 @@ var Contest = module.exports = new Schema({
     page_id                 :{type:ObjectId, index :true},
     page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
-	alias					:{type:String, unique: true, index: true},
-	promo_copy				:{type:String},
+    alias                   :{type:String, unique: true, index: true},
+    promo_copy              :{type:String},
     engine_type             :{type:String, default:'order', get: enum_engine_type},
     engine_options          :{},
-	web_only				:{type:Boolean, default:false},
+    web_only                :{type:Boolean, default:false},
     plays                   :[Play],
     game                    :{type:String},
     game_config             :{},
@@ -454,23 +454,34 @@ Contest.method('publish', function(callback){
         }
     }
 
-    // Remove this entry restriction after beta (when we have pricing)
-    Bozuko.models.Page.findOne({_id: self.page_id}, {name: 1}, function(err, page) {
-        if (err) return callback(err);
-        if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && page.name != 'Admin Demo'
-            && self.total_entries > 1500) {
-            return callback(Bozuko.error('contest/max_entries', 1500));
-        }
-        self.active = true;
-        self.generateResults(function(error){
-            if( error ) return callback(error);
-            return self.generateBarcodes(function(err) {
-                if (err) return callback(err);
-                Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
-                return callback( null, self);
+    function publishResults() {
+        // Remove this entry restriction after beta (when we have pricing)
+        Bozuko.models.Page.findOne({_id: self.page_id}, {name: 1}, function(err, page) {
+            if (err) return callback(err);
+            if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && page.name != 'Admin Demo'
+                && self.total_entries > 1500) {
+                    return callback(Bozuko.error('contest/max_entries', 1500));
+            }
+            self.active = true;
+            return self.generateResults(function(error){
+                if( error ) return callback(error);
+                return self.generateBarcodes(function(err) {
+                    if (err) return callback(err);
+                    Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
+                    return callback( null, self);
+                });
             });
         });
-    });
+    }
+
+    if (this.start.getTime() < Date.now()) {
+        this.start = new Date();
+        return this.save(function(err) {
+            return publishResults();
+        });
+    }
+
+    return publishResults();
 });
 
 /**
@@ -898,9 +909,9 @@ Contest.method('redistributeTimeResult', function(memo, callback) {
 Contest.method('spendEntryToken', function(memo, callback) {
     var self = this;
     var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration'));
-	
+
 	console.log(inspect({contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}}));
-	
+
     Bozuko.models.Entry.findAndModify(
         {contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}},
         [],
