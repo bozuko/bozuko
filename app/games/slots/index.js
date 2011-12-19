@@ -23,13 +23,13 @@ Slots.prototype.process = function(outcome){
 
     var self = this,
 	ret = [];
-    
+
     var icons = this.getConfig().icons;
-    
+
     if( outcome === false ){
         // need random icons
         var icons2 = icons.slice();
-		
+
 		// add _real_ suspense? 20% of the time
 		/*
 		if( Math.random() < .1 ){
@@ -69,13 +69,16 @@ Slots.prototype.process = function(outcome){
 };
 
 Slots.prototype.getTheme = function(){
-    
-    var theme  = typeof this.config.theme == 'string'
-        ? this.config.theme
-        : (typeof this.config.theme == 'object'
-            ? this.config.theme.name
-            : 'default');
-    
+    var theme;
+    if (!this.config.theme) {
+        theme = 'default';
+    } else {
+        theme = typeof this.config.theme == 'string'
+            ? this.config.theme
+            : (typeof this.config.theme == 'object'
+               ? this.config.theme.name
+               : 'default');
+    }
     var Theme = require('./themes/'+theme);
     return new Theme(this);
 }
@@ -83,7 +86,7 @@ Slots.prototype.getTheme = function(){
 Slots.prototype.getConfig = function(){
     var self = this,
         theme = this.getTheme();
-    
+
     var icons = {};
     if( self.config.custom_icons ) Object.keys(self.config.custom_icons).forEach(function(key){
         icons[key] = self.config.custom_icons[key];
@@ -92,7 +95,7 @@ Slots.prototype.getConfig = function(){
 		icons[key] = theme.icons[key];
 		if( theme.version ) icons[key]+='?version='+theme.version;
     });
-    
+
     var config = {
         theme: {
             name: theme.name,
@@ -100,7 +103,7 @@ Slots.prototype.getConfig = function(){
             base: theme.base
         }
     };
-    
+
     config.icons = Object.keys( icons );
     return config;
 };
@@ -112,24 +115,24 @@ Slots.prototype.getListImage = function(){
 Slots.prototype.getImage = function(index){
     var self = this,
         config = this.getConfig();
-    
+
 //    index = self.prizes.indexOf(self.contest.prizes[index]);
-    
+
     var icon = config.icons[index];
-    
+
     var theme = this.getTheme();
-    
+
     if( theme.icons[icon] ){
-        
+
         var base = __dirname+'/themes/'+theme.name+'/resources/'+path.basename(theme.base);
-        
+
         if( !path.existsSync( base+'/x3' ) ) fs.mkdirSync(base+'/x3', 0777);
-        
+
         var png = base+'/'+theme.icons[icon];
         var dest = base+'/x3/'+theme.icons[icon];
-        
+
         this.createResultImage(dest, png);
-        
+
         return theme.base+'/x3/'+theme.icons[icon];
     }
     else{
@@ -140,7 +143,7 @@ Slots.prototype.getImage = function(index){
 
 Slots.prototype.createResultImage = function(dest, icon_src, callback){
     var x3_src = __dirname+'/resources/x3.png';
-    
+
     if(path.existsSync(dest)) return;
     console.error(icon_src);
     gd.openPng(
