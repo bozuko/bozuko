@@ -206,8 +206,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
         }
     -else
       script(type="text/javascript")
-        broadcast("facebook/like_loaded");
         window.onload = function(){
+          broadcast("facebook/like_loaded");
           document.body.className = 'no-place';
         }
         document.ontouchmove = function (e) {
