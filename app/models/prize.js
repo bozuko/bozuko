@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     mail = Bozuko.require('util/mail'),
     Pdf = require('pdfkit'),
+	dateFormat = require('dateformat'),
     async = require('async'),
     uuid = require('node-uuid'),
     http = Bozuko.require('util/http'),
@@ -314,7 +315,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
         if (err) {
             return console.error('emailPrizeScreen: failed to retrieve images for prize: '+self._id);
         }
-        var pdf = self.createPrizeScreenPdf(user, images);
+        var pdf = self.createPdf(user, images);
         var attachments = [{
             filename: 'bozuko_prize.pdf',
             contents: new Buffer(pdf, 'binary')
@@ -555,6 +556,236 @@ Prize.method('createPrizeScreenPdf', function(user, images) {
     ;
 
     return doc.output();
+});
+
+Prize.method('createPdf', function(user, images, callback){
+	var doc = new Pdf({size: 'letter', margins: {top: 20, left: 20, right: 20, bottom: 20}});
+    var image_base = Bozuko.dir+'/resources/images',
+        logo_width = doc.page.width * .25;
+
+    doc.info.Title = 'Bozuko Prize';
+    doc.info.Author = 'Bozuko, Inc';
+	
+    doc.registerFont('Light',Bozuko.dir+'/resources/fonts/open-sans/OpenSans-Light.ttf','OpenSansLight')
+	doc.registerFont('Regular',Bozuko.dir+'/resources/fonts/open-sans/OpenSans-Regular.ttf','OpenSansRegular');
+	doc.registerFont('Bold',Bozuko.dir+'/resources/fonts/open-sans/OpenSans-Bold.ttf','OpenSansBold');
+	doc.registerFont('ExtraBold',Bozuko.dir+'/resources/fonts/open-sans/OpenSans-ExtraBold.ttf','OpenSansExtraBold');
+	
+    // Bozuko logo
+    // doc.image(image_base+'/logo/logo.png', 20, 20, {width: logo_width});
+	
+	var margin = 40, x, y,
+		width = doc.page.width-margin*2,
+		box_margin = 6,
+		box_padding = 6,
+		box_width = width - box_margin*2 - box_padding*2,
+		box_x = margin + box_margin + box_padding,
+		col1 = .4 * box_width, col1_y,
+		col2_x = col1 + (box_width * .05),
+		col2 = .55 * box_width, col2_y,
+		image_size = 40,
+		logo_width = 150
+		;
+	
+	
+	/**
+	 * Top box
+	 */
+	doc.y = box_x; // This is a hack to capture the y after we add the image
+	doc
+		.image(image_base+'/logo/logo.png',box_x, box_x, {width: logo_width})
+		;
+		
+	y = doc.y;
+	
+	doc
+		.fill('#333')
+		.font('Regular')
+		.fontSize(20)
+		.text('Code: '+this.code, box_x, box_x+10, {width: box_width, align: 'right'})
+		;
+		
+	y = Math.max(y, doc.y)+5;
+	
+	doc
+		.moveTo(box_x-box_padding, y)
+		.lineTo(box_x-box_padding + box_width+box_padding*2, y)
+		.stroke('#999')
+		;
+	
+	
+	var col_y = doc.y = y+10;
+	/**
+	 * First Column
+	 */
+	doc
+		.image(images.business.path, box_x, y+10, {width: image_size})
+		;
+	
+	var top = y;
+	x=doc.x;
+	y=doc.y;
+	
+	doc.y = top+15;
+	
+	doc
+		.font('Bold')
+		.fontSize(14)
+		.fill('#333')
+		.text(this.page.name, x+image_size+5, top+15, {width: col1-image_size-5, align: 'left'});
+	
+	doc.y = Math.max(y, doc.y)+5;
+	doc.x = box_x;
+	
+	doc
+		.fontSize(12)
+		.font('Bold')
+		.fill('#333')
+		.text('User:')
+		
+		.font('Regular')
+		.fill('#000')
+		.text(user.name)
+		;
+		
+	doc.y+=4;
+	
+	doc
+		.font('Bold')
+		.fill('#333')
+		.text('Won:')
+		
+		.font('Regular')
+		.fill('#000')
+		.text(dateFormat(this.timestamp, 'mediumDate')+' '+dateFormat(this.timestamp, 'shortTime'))
+		;
+	
+	doc.y+=4;
+	
+	doc
+		.font('Bold')
+		.fill('#333')
+		.text('Expires:')
+		
+		.font('Regular')
+		.fill('#000')
+		.text(dateFormat(this.expires, 'mediumDate')+' '+dateFormat(this.expires, 'shortTime'))
+		;
+	
+	doc.y+= 4;
+	
+	// do we have a barcode?
+	if( images.barcode ){
+		// lets pump this bad boy in...
+		doc.image(images.barcode.path, {fit:[col1, 80]});
+	}
+	// save bottom of the first column
+	col1_y = doc.y;
+	
+	// start the second column...
+	doc.x = box_x+col2_x;
+	doc.y = col_y;
+	
+	doc
+		.font('Bold')
+		.fill('#369d4e')
+		.fontSize(20)
+		.text('YOU WIN!', {width: col2})
+		
+		.fill('#000')
+		.fontSize(24)
+		.text(this.name, {width: col2})
+		;
+		
+	if( this.description ){
+		doc
+			.fontSize(12)
+			.moveDown()
+			.font('Bold')
+			.fill('#333')
+			.text('Description:', {width: col2})
+			
+			.font('Regular')
+			.fill('#000')
+			.text(this.description, {width: col2})
+			;
+	}
+	
+	doc
+		.moveDown()
+		.fontSize(9)
+		.font('Regular')
+		.fill('#666')
+		.text('This prize has no cash value and can only be redeemed a single time.', {width: col2})
+	
+	// lets get the bottom
+	col2_y = doc.y;
+	y = Math.max(col1_y, col2_y)+4;
+	
+	// draw that inside box.
+	doc
+		.rect(margin+box_margin, margin+box_margin, box_width+box_padding*2, y - margin+box_margin)
+		.stroke('#999')
+		;
+	
+	// ok, move down below
+	doc.x = margin + box_margin;
+	doc.y = y+20;
+	
+	doc
+		.fontSize(14)
+		.font('Bold')
+		.fill('#333')
+		.text('Instructions:', {width: width})
+		;
+	// stupid numbers
+	doc.moveDown();
+	
+	var left = doc.x, inst_left = doc.x+ 14, inst_width = width-14;
+	
+	y =doc.y
+	doc.font('Regular').fontSize(12).fill('#000');
+	doc.text('1)');
+	
+	doc.y = y;
+	doc.x = inst_left;
+	doc.text('Print this Bozuko prize voucher or pull up the prize using the mobile application.', {width: inst_width});
+	
+	
+	doc.x = left;
+	y = doc.y;
+	doc.text('2)');
+	
+	doc.y = y;
+	doc.x = inst_left;
+	doc.text('Present your Bozuko prize voucher or mobile application prize screen to an employee.', {width: inst_width});
+	
+	doc.x = left;
+	y = doc.y;
+	doc.text('3)');
+	
+	doc.y = y;
+	doc.x = inst_left;
+	doc.text('Enjoy your prize you big winner!', {width: inst_width});
+	
+	doc.x = left;
+	doc.moveDown();
+	doc.fontSize(9);
+	doc.fill('#333');
+	doc.text('Remember to tip on the full amount, when applicable :)', {width:width});
+	
+	doc.moveDown();
+	
+	doc.text('Thanks for playing Bozuko! Have any issues? Contact support@bozuko.com. This prize may be redeemed one time. XOXO.', {width: width});
+	
+	// get the bottom..
+	y = doc.y +5;
+	doc
+		.rect(margin, margin, width, y-margin)
+		.stroke('#999')
+	
+	return doc.output();
+	
 });
 
 function download(url, path, callback) {

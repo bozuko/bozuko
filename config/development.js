@@ -12,8 +12,7 @@ module.exports = {
     test_mode: false,
 
     controllers: {
-        except: [
-        ]
+        
     },
     
     user : {
