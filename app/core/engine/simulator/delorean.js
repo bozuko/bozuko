@@ -19,7 +19,8 @@ var argv = require('optimist')
     .default('window_divisor', 2)
     .default('throwahead_multiplier', 0.5)
     .default('out', process.env.HOME+'/delorean_out.csv')
-    .default('sparse', 1)
+    .default('sparse_plays', 1)
+    .default('sparse_prizes', 1)
     .argv;
 
 if (!argv.contest) throw new Error("Need a contest to simulate");
@@ -100,9 +101,12 @@ function run() {
                 });
             },
             function clear_history_and_save_results(cb) {
-                fs.readFile(path+'/results.json', function(err, jsonlines) {
+                return fs.readFile(path+'/results.json', function(err, jsonlines) {
                     var jsonarray = jsonlines.split("\n");
-                    async.forEachSeries(jsonarray, function(json, cb) {
+                    var ct = -1;
+                    return async.forEachSeries(jsonarray, function(json, cb) {
+                        ct++;
+                        if ((ct % argv.sparse_prizes) != 0) return cb();
                         var data = JSON.parse(json);
                         delete data._id;
                         delete data.win_time;
@@ -222,7 +226,7 @@ function play(callback) {
         var ct = -1;
         return async.forEachSeries(jsonarray, function(json, cb) {
             ct++;
-            if ((ct % argv.sparse) != 0) return cb();
+            if ((ct % argv.sparse_plays) != 0) return cb();
             var data = JSON.parse(json);
             var timestamp = new Date(data.timestamp.$date);
             timestamps.push(timestamp);
