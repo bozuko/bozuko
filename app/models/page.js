@@ -54,7 +54,7 @@ var Page = module.exports = new Schema({
     // code_block is a running total. Can't just search because contests may be deleted.
     code_block          :{type:Number},
     code_prefix         :{type:String},
-    pin                 :{type:String, index: {unique: true}}
+    pin                 :{type:String, index: true}
 }, {safe: {w:2, wtimeout: 5000}});
 
 Page.index({admins: 1});

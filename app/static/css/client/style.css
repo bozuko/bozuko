@@ -716,6 +716,7 @@ a:hover {
 }
 .you-win .bd {
   position: relative;
+  z-index: 2;
   padding: 0;
   font-size: 12px;
 }
@@ -859,18 +860,6 @@ a:hover {
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
 }
-.you-win .bd .sharebox {
-  padding-bottom: 20px;
-}
-.you-win .bd label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 12px;
-}
-.you-win .bd label input, .you-win .bd label span {
-  display: inline-block;
-  vertical-align: middle;
-}
 .you-win .bd textarea {
   display: none;
   font-family: Arial;
@@ -935,7 +924,7 @@ a:hover {
 .you-win .ft {
   bottom: 0;
   width: 100%;
-  z-index: 2;
+  z-index: 3;
   background: #5f5f5f;
   text-align: center;
   overflow: hidden;
@@ -955,6 +944,20 @@ a:hover {
 .you-win .ft .ft-padding {
   overflow: hidden;
   padding: 6px;
+}
+.you-win .ft .sharebox {
+  padding-bottom: 6px;
+  text-align: left;
+  padding-left: 10px;
+}
+.you-win .ft .sharebox label {
+  color: #fff;
+  display: block;
+  font-size: 12px;
+}
+.you-win .ft .sharebox label input, .you-win .ft .sharebox label span {
+  display: inline-block;
+  vertical-align: middle;
 }
 .you-win .ft .buttons-2 .button-wrap {
   float: left;
@@ -1171,7 +1174,7 @@ a:hover {
 .my-prizes .bd ul li.expired .prize-body .state {
   color: #ff0033;
 }
-.prize-shared .sharebox {
+.prize-shared .ft .sharebox {
   display: none;
 }
 .prize-is-email .prize-code, .prize-is-barcode .prize-code {
