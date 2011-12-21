@@ -694,6 +694,7 @@ a, a:visited, a:link, a:hover {
     
     .bd {
         position: relative;
+        z-index: 2;
         padding: 0;
         .scrollable{
             padding: 8px 16px;
@@ -760,19 +761,6 @@ a, a:visited, a:link, a:hover {
                 -webkit-box-sizing:border-box;
                 -moz-box-sizing: border-box;
                 -ms-box-sizing: border-box;
-            }
-        }
-        
-        .sharebox {
-            padding-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 12px;
-            input,span{
-                display: inline-block;
-                vertical-align: middle;
             }
         }
         textarea {
@@ -852,7 +840,7 @@ a, a:visited, a:link, a:hover {
     .ft {
         bottom: 0;
         width: 100%;
-        z-index: 2;
+        z-index: 3;
         background: #5f5f5f;
         text-align:center;
         overflow: hidden;
@@ -864,6 +852,22 @@ a, a:visited, a:link, a:hover {
         .ft-padding {
             overflow: hidden;
             padding: 6px;
+        }
+        
+        .sharebox {
+            padding-bottom: 6px;
+            text-align: left;
+            padding-left: 10px;
+            
+            label {
+                color: #fff;
+                display: block;
+                font-size: 12px;
+                input,span{
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+            }
         }
         
         .buttons-2{
@@ -1017,8 +1021,10 @@ a, a:visited, a:link, a:hover {
 }
 
 .prize-shared {
-    .sharebox{
-        display: none;
+    .ft{
+        .sharebox{
+            display: none;
+        }
     }
 }
 

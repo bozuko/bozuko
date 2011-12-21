@@ -57,7 +57,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     onDisplayWin : function(result){
         if( !result.prize ) return;
-        if( !result.prize.is_email || !result.prize.links.redeem ) return;
+        if( !(result.prize.is_email || this.app.email_only) || !result.prize.links.redeem ) return;
         
         var self = this;
         
@@ -134,10 +134,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.updateState(true, function(result){
             if( !result.ok ){
                 self.updateAction('Error');
+                return;
             }
             self.app.scrollToTop();
-            self.app.hideLoading();
             self.showDescription();
+            self.app.hideLoading();
         });
     },
     
@@ -240,7 +241,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             html        :self.state.button_text || 'Play'
         },{
             cls         :'agree',
-            html        :'I agree to the terms and conditions below.'
+            html        :'I agree to the Official Rules below.'
         }]);
         var action = self.getDescription().child('.actions .action');
         
@@ -249,16 +250,15 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 self.enter();
                 return;
             }
+            if( self.state.user_tokens ){
+                self.app.useDefaultLoader();
+            }
             self.next(function(success){
                 if(success) self.app.unmask();
             });
         };
         
         action.child('.button').on('click', click);
-        
-        if( self.state.user_tokens ){
-            self.app.useDefaultLoader();
-        }
     },
     
     updateState : function(full, callback){
@@ -319,10 +319,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         cn              :[{
                             cls             :'name',
                             cn              :[{
-                                tag             :'img',
-                                style           :this.game.entry_method.image?'display:inline-block;':'display:none;',
-                                src             :this.game.entry_method.image
-                            },{
                                 tag             :'span',
                                 html            :this.game.name
                             }]
@@ -339,7 +335,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         cn              :[{
                             cls             :'loading-text'
                         }]
-                        
                     }]
                 },{
                     
@@ -514,24 +509,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                 tag             :'div',
                                 cls             :'message',
                                 html            :''
-                            },{
-                                cls             :'sharebox',
-                                cn              :[{
-                                    tag             :'label',
-                                    cn              :[{
-                                        tag             :'input',
-                                        type            :'checkbox',
-                                        name            :'share',
-                                        checked         :'checked'
-                                    },{
-                                        tag             :'span',
-                                        html            :'Share this win with your friends.'
-                                    }]
-                                },{
-                                    tag             :'textarea',
-                                    name            :'message',
-                                    placeholder     :'Write a message...'
-                                }]
                             }]
                         },{
                             cls             :'redemption',
@@ -553,7 +530,21 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     cn              :[{
                         cls             :'ft-padding',
                         cn              :[{
-                        cls             :'buttons',
+                            cls             :'sharebox',
+                            cn              :[{
+                                tag             :'label',
+                                cn              :[{
+                                    tag             :'input',
+                                    type            :'checkbox',
+                                    name            :'share',
+                                    checked         :'checked'
+                                },{
+                                    tag             :'span',
+                                    html            :'Share this win with your friends.'
+                                }]
+                            }]
+                        },{
+                            cls             :'buttons',
                             cn              :[{
                                 tag             :'a',
                                 href            :'#',
@@ -608,7 +599,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             ft = this.$youWin.child('.ft')
             ;
             
-        if( prize.is_email ){
+        if( prize.is_email || this.app.email_only ){
             message.update([
                 '<p>This prize has been emailed to <strong>'+this.app.user.email+'</strong>!</p>',
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
@@ -697,6 +688,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         else{
             
             switch( prize.state ){
+                
                 case 'active':
                     var i1 = prize.wrapper_message.indexOf(':'),
                         i2 = prize.wrapper_message.indexOf('This prize expires');
@@ -705,18 +697,21 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     parts.push('<div class="expires">'+(prize.wrapper_message.substr(i2).replace(/This prize expires/i, '<span class="label">Expires:</span>'))+'</div>');
                     message.update(parts.join(''));
                     break;
+                
                 case 'redeemed':
                     var time = new Date(Date.parse(prize.redeemed_timestamp));
                     message.update("This prize was redeemed "+(time.format('fullDate'))+' at '+(time.format('shortTime'))+'.');
                     break;
+                
                 case 'expired':
                     var time = new Date(Date.parse(prize.expiration_timestamp));
                     message.update("This prize expired "+(time.format('fullDate'))+' at '+(time.format('shortTime'))+'.');
                     break;
             }
+            
         }
         // add footer buttons...
-        if( !prize.is_email && prize.state == 'active' ){
+        if( !(prize.is_email || this.app.email_only ) && prize.state == 'active' ){
             this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'Redeem', cls:'btn-redeem'});
         }
         else{
@@ -770,7 +765,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 this.app.api.call({
                     path: prize.links.share,
                     params: {
-                        message: yw.child('textarea[name=message]').dom.value
+                        message: ''
                     },
                     method: 'post'
                 },function(result){
@@ -778,9 +773,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     self.updatePrizes();
                     // i don't think we really need to do anything here...
                 });
+                yw.addClass('prize-shared');
+                bd.superScroll().update();
             }
         }
-        yw.child('textarea[name=message]').dom.value = '';
+        // yw.child('textarea[name=message]').dom.value = '';
         
         if( btn.hasClass('btn-save') ){
             this.closeYouWin();
@@ -1075,8 +1072,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     },
     
     result : function(callback){
-        var self = this;
         
+        var self = this;
         self.app.showLoading(this.lang.loading.result);
         
         self.app.api.call({

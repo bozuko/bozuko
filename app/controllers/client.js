@@ -1,4 +1,5 @@
 var async = require('async'),
+    s3 = Bozuko.require('util/s3'),
     Facebook = Bozuko.require('util/facebook'),
     burl = Bozuko.require('util/url').create,
     merge = Bozuko.require('util/functions').merge,
@@ -73,8 +74,14 @@ exports.renderGame = function(req, res, contest_id, page_id){
             if( Bozuko.env() == 'site' ){
                 return res.redirect('https://api.bozuko.com'+req.url);
             }
-        
+            var email_only = req.param('email_only');
+            if( req.session.device != 'touch' ){
+                email_only = email_only === '0' ? false : true;
+            }
+            if( email_only === '0' ) email_only = false;
+            
             req.session.destroy();
+            res.locals.email_only = email_only;
             res.locals.path = '/game/'+contest.id;
             
             // lets add our scripts
@@ -263,6 +270,54 @@ exports.routes = {
                     page_id = id_parts[1];
                 }
                 return this.renderGame(req, res, contest_id, page_id);
+            }
+        }
+    },
+    
+    '/client/pdf' : {
+        get : {
+            handler : function(req, res){
+                var prize, user, page;
+                async.series(
+                    [
+                        function get_prize(cb){
+                            Bozuko.models.Prize.find({},{},{sort:{timestamp:-1}}, function(error, prizes){
+                                prize = prizes[0];
+                                cb();
+                            });
+                        },
+                        
+                        function get_user(cb){
+                            Bozuko.models.User.findById(prize.user_id,function(error, _user){
+                                user = _user;
+                                cb();
+                            });
+                        },
+                        
+                        function get_page(cb){
+                            Bozuko.models.Page.findById(prize.page_id,function(error, _page){
+                                page = _page;
+                                cb();
+                            });
+                        }
+                    ],
+                    function send_pdf(){
+                        
+                        var security_img = page.security_img ?
+                            s3.client.signedUrl('/'+page.security_img, new Date(Date.now()+(1000*60*2)) ) :
+                            burl('/images/security_image.png')
+                            ;
+                        
+                        prize.user = user;
+                        prize.page = page;
+                        
+                        return prize.getImages(user, security_img, function(error, images){
+                            
+                            var pdf = prize.createPdf(user, images);
+                            res.send(new Buffer(pdf, 'binary'), {'Content-Type': 'application/pdf'});
+                        });
+                    }
+                );
             }
         }
     }
