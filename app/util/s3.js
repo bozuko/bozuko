@@ -121,7 +121,6 @@ Client.prototype.ls = function(params, callback) {
 	    var result = require('xml2json').toJson(buf,{object:true});
 	    try{
 		result.ListBucketResult.Contents.forEach(function(content){
-	            console.log(content);
 		    if( content.Key.substr(content.Key.length-1) != '/' ){
 		        files.push({
 		            path: content.Key,
