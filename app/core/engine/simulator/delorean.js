@@ -96,6 +96,12 @@ function run() {
                     var contest_id = new Oid(data._id['$oid']);
                     return Bozuko.models.Contest.findOne({_id: contest_id}, function(err, c) {
                         contest = c;
+                        if (argv.sparse_prizes != 1) {
+                            var total_prizes = contest.totalPrizes();
+                            contest.totalPrizes = function() {
+                                return total_prizes/argv.sparse_prizes;
+                            };
+                        }
                         cb(err);
                     });
                 });
