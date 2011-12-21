@@ -319,10 +319,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         cn              :[{
                             cls             :'name',
                             cn              :[{
-                                tag             :'img',
-                                style           :this.game.entry_method.image?'display:inline-block;':'display:none;',
-                                src             :this.game.entry_method.image
-                            },{
                                 tag             :'span',
                                 html            :this.game.name
                             }]
@@ -339,7 +335,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         cn              :[{
                             cls             :'loading-text'
                         }]
-                        
                     }]
                 },{
                     

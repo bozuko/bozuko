@@ -45,6 +45,18 @@ html body .ft {
   width: 260px;
   text-align: center;
 }
+.beta-right .blog-button {
+  display: block;
+  cursor: pointer;
+  z-index: 10;
+  position: absolute;
+  width: 311px;
+  height: 48px;
+  text-indent: -9999em;
+  left: -26px;
+  top: -120px;
+  background: transparent url("/images/desktop/site/beta/blog-tab.png") 0 0 no-repeat;
+}
 .beta-right .fixed {
   position: absolute;
   top: 0;
@@ -206,6 +218,7 @@ body h3.deal {
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
 }
