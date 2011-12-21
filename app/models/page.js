@@ -716,8 +716,17 @@ Page.static('search', function(options, callback){
                 if( error ) return callback(error);
 				
 				// lets ditch any pages that have no contests.
-				var i=0;
-				while( i<pages.length && pages.length ) !(pages[i].contests || !pages[i].contests.length) ? pages.splice(i,1) : i++;
+				var i=0, removed_ids = [];
+				while( i<pages.length && pages.length ){
+					console.log( pages[i].name+': '+pages[i].contests.length );
+					if(!pages[i].contests || !pages[i].contests.length){
+						removed_ids.push(String(pages[i]._id));
+						pages.splice(i,1);
+					}
+					else{
+						i++;
+					}
+				}
 
                 var page_ids = [], fb_ids=[];
                 prepare_pages(pages, options.user, function(page){
@@ -764,7 +773,7 @@ Page.static('search', function(options, callback){
 
                     return Bozuko.models.Page.findByService(service, Object.keys(map), {
                         active: true,
-                        _id: {$nin: page_ids}
+                        _id: {$nin: page_ids.concat(removed_ids)}
                     }, function(error, _pages){
                         if( error ) return callback( error );
 
