@@ -78,10 +78,10 @@ exports.routes = {
                     }
                     res.locals.styles = [
                         'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
-                        '/css/desktop/style.css',
-                        '/css/desktop/layout.css',
-                        '/css/desktop/beta/landing.css',
-                        '/css/desktop/beta/style.css'
+                        '/css/desktop/style.css?'+Date.now(),
+                        '/css/desktop/layout.css?'+Date.now(),
+                        '/css/desktop/beta/landing.css?'+Date.now(),
+                        '/css/desktop/beta/style.css?'+Date.now()
                     ];
                     res.locals.head_scripts = [
                         '/js/jquery/jquery.tools.min-1.2.6.js',
