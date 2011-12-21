@@ -123,7 +123,7 @@ Bozuko.client.util.Cache = (function(){
             Cache.superclass.constructor.call(this);
             
             
-            if(0) this._adapter = window.localStorage ?
+            this._adapter = window.localStorage ?
                 new LocalStorageAdapter(this) :
                 new CookieAdapter(this);
         },

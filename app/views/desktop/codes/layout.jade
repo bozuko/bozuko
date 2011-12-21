@@ -1,8 +1,9 @@
 !!! 5
 html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",class=locals.html_classes?html_classes.join(' '):'',lang="en")
-  head  
-    title= title
+  head
+    meta(name="viewport",content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1")
     
+    title= title
     - if( locals.meta)
       - each content, name in meta
         meta(name=name, content=content)
@@ -25,34 +26,12 @@ html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",c
         BozukoData.user.fbId = '#{user.service("facebook").sid}';
     
   body
-    .page            
+    .page
       .hd
         .page-width
-        
           h1.logo
             a(href=locals.home_link||'/', title=locals.home_title||"Bozuko - Go to Home Page") bozuko
-          
-          - if( locals.nav && locals.nav.length )
-            ul.nav
-              - each item, i in locals.nav
-                - if( item instanceof Function )
-                  - item = item.call(this,locals);
-                  
-                - var item_classes = [];
-                
-                - if( i==0 )
-                  - item_classes.push('first')
-                  
-                - if( i==nav.length-1 )
-                  - item_classes.push('last')
-                  
-                - if( req.url == item.link )
-                  - item_classes.push('active')
-                li
-                  a(href=item.link,class=item_classes.join(' '))
-                    span
-                      em!= item.text
-          
+      
       .bd_codes
         .page-width
           .wrap
@@ -70,4 +49,3 @@ html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",c
     - if (locals.scripts)
       - each script in scripts
         script(type="text/javascript",src=script)
-        

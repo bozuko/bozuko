@@ -28,8 +28,7 @@ exports.locals = {
         "og:image": "https://bozuko.com/images/profile-picture.png"
     },
     styles: [
-        '/css/desktop/style.css?'+Date.now(),
-        '/css/desktop/layout.css?'+Date.now(),
+        'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
         '/css/desktop/codes.css?'+Date.now()
     ]
 };
@@ -82,7 +81,7 @@ exports.routes = {
                 if (!pin) return res.render('codes/pin.jade');
                 if (!page_id || !page_name) {
                     return Bozuko.models.Page.verifyPin(pin, function(err, page) {
-                        if (err) return setTimeout(function() {error(res, err);}, 3000);
+                        if (err) return error(res, err);
                         res.locals.pin = pin;
                         res.locals.page_id = page._id;
                         res.locals.page_name = page.name;
