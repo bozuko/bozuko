@@ -41,7 +41,6 @@ exports.get_pages1 = function(test) {
         {url: pages_link+'/?ll='+ll1+'&limit=2'},
         ok,
         function(res) {
-            console.log("body = "+res.body);
             var result = JSON.parse(res.body);
             var page = result.pages[0];
             test.ok(Bozuko.validate('page', page));

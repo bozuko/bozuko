@@ -705,7 +705,7 @@ Page.static('search', function(options, callback){
                 $nin: featured_ids
             };
         }
-        console.log('bozukoSearch = '+inspect(bozukoSearch));
+        
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
             
 			if( error ) return callback(error);
@@ -718,7 +718,6 @@ Page.static('search', function(options, callback){
 				// lets ditch any pages that have no contests.
 				var i=0, removed_ids = [];
 				while( i<pages.length && pages.length ){
-					console.log( pages[i].name+': '+pages[i].contests.length );
 					if(!pages[i].contests || !pages[i].contests.length){
 						removed_ids.push(String(pages[i]._id));
 						pages.splice(i,1);
@@ -737,6 +736,8 @@ Page.static('search', function(options, callback){
                     page_ids.push(page._id);
                     if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                 });
+				
+				page_ids = page_ids.concat(removed_ids);
 
 
                 if( !serviceSearch ){
@@ -773,7 +774,7 @@ Page.static('search', function(options, callback){
 
                     return Bozuko.models.Page.findByService(service, Object.keys(map), {
                         active: true,
-                        _id: {$nin: page_ids.concat(removed_ids)}
+                        _id: {$nin: page_ids}
                     }, function(error, _pages){
                         if( error ) return callback( error );
 
