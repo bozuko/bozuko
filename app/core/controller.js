@@ -18,7 +18,10 @@ function Controller(app,name,config){
 	this.init();
     this.beforeRoute();
     if( this.routes ) this.route( this.routes );
-    this.afterRoute();
+	var self = this;
+	app.once('aftercontrollers', function(){
+		self.afterRoute();
+	});
     // if( this.sockets ) this.io( this.sockets );
 }
 

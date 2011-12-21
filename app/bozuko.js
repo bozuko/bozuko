@@ -74,10 +74,12 @@ Bozuko.cfg = Bozuko.getConfigValue;
 Bozuko.getApp = function(){
     if( !Bozuko.app ){
         var app = Bozuko.require('core/server');
+		app.setMaxListeners(100);
         Bozuko.configureApp(app);
         initApplication( app );
 		initGames( app );
         initControllers( app );
+		app.emit('aftercontrollers');
         // setup our device dependent renderer
         Bozuko.require('core/view');
         Bozuko.app = app;

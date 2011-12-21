@@ -646,8 +646,7 @@ Page.static('search', function(options, callback){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
 
-            if( page._doc ){
-                console.error(page.name+' registered');
+            if( page._doc && page.contests && page.contests.length ){
                 page.registered = true;
             }
             if (!page.active && page._id) {
@@ -708,15 +707,17 @@ Page.static('search', function(options, callback){
         }
         console.log('bozukoSearch = '+inspect(bozukoSearch));
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
-            console.log('pages.length = '+pages.length);
-
-            if( error ) return callback(error);
+            
+			if( error ) return callback(error);
 
             pages = featured.concat(pages);
 
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
-
+				
+				// lets ditch any pages that have no contests.
+				var i=0;
+				while( i<pages.length && pages.length ) !(pages[i].contests || !pages[i].contests.length) ? pages.splice(i,1) : i++;
 
                 var page_ids = [], fb_ids=[];
                 prepare_pages(pages, options.user, function(page){

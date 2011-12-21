@@ -601,7 +601,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
         if( prize.is_email || this.app.email_only ){
             message.update([
-                '<p>This prize has been emailed to <strong>'+this.app.user.email+'</strong>!</p>',
+                '<p>This prize has been emailed to <strong class="user-email">'+this.app.user.email+'</strong>!</p>',
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
                 '<div class="email-form">',
                     '<div><input class="email-field" placeholder="Enter your email" name="email" /></div>',
@@ -663,6 +663,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         method: 'post'
                     }, function(result){
                         changing = false;
+                        bd.child('.user-email').update(changeBlock.child('input').dom.value);
                         cancelBtn.setStyle('opacity',1);
                         changeBtn.setStyle('opacity',1).update('Change');
                         changeBlock.hide();
