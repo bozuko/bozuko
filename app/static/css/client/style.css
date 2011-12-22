@@ -514,6 +514,7 @@ a:hover {
   padding-left: 0px;
 }
 .game-description .hd .content .links {
+  display: none;
   list-style: none;
   padding: 2px 0;
   margin: 0;
