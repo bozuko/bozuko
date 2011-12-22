@@ -17,18 +17,14 @@ Ext.define('Bozuko.view.contest.edit.Rules' ,{
         
         me.items = [{
             xtype           :'checkbox',
-            name            :'auto_rules',
-            fieldLabel      :'Auto Generate Rules',
-            listeners       :{
-                scope           :me,
-                change          :me.onAutoChange
-            }
+            name            :'replace_rules',
+            fieldLabel      :'Replace Bozuko Rules'
         },{
             xtype           :'textarea',
             height          :300,
             labelAlign      :'top',
             name            :'rules',
-            fieldLabel      :'Rules'
+            fieldLabel      :'Custom Rules'
         }];
         me.callParent();
     },

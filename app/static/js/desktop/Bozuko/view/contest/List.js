@@ -133,7 +133,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                     html5url: function(values){
                         
                         if( values.game_type.toLowerCase() != 'scratch' ) return false;
-                        if( !window.location.path.match(/admin/) ) return false;
+                        if( !window.location.pathname.match(/admin/i) ) return false;
                         var server = window.location.hostname;
                         if( /dashboard/.test(window.location.hostname) ){
                             server = 'bozuko.com';
