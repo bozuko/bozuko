@@ -97,7 +97,7 @@ exports.transfer_objects = {
                 }
 
                 page.is_facebook = ( !page.registered || page.service('facebook') );
-                if( page.is_facebook ){
+                if( page.is_facebook && page.service && page.service('facebook') ){
                     page.facebook_page = page.service('facebook').data.link;
                 }
 
