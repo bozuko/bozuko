@@ -1,7 +1,6 @@
 var Content     = Bozuko.require('util/content'),
     validator   = require('validator'),
     mailer      = Bozuko.require('util/mail'),
-    Report      = Bozuko.require('core/report'),
     DateUtil    = Bozuko.require('util/date'),
     async       = require('async'),
     http        = Bozuko.require('util/http'),
@@ -16,7 +15,8 @@ var Content     = Bozuko.require('util/content'),
     Path        = require('path'),
     ObjectId    = require('mongoose').Types.ObjectId,
     XRegExp     = Bozuko.require('util/xregexp'),
-    crypto      = require('crypto')
+    crypto      = require('crypto'),
+    metrics     = Bozuko.require('util/metrics')
     ;
 
 exports.restrictToUser = false;
@@ -707,163 +707,24 @@ exports.routes = {
 
         get : {
             handler : function(req, res){
-
-                var time = req.param('time') || 'week-1',
-                    tzOffset = parseInt(req.param('timezoneOffset', 0), 10),
-                    query = {},
-                    options ={},
-                    model = req.param('model') || 'Entry'
-                    ;
-
-                if( this.restrictToUser ) {
-                    query.page_id = {$in: req.session.user.manages};
+                var options = {};
+                options.start = req.param('start');
+                options.end = req.param('end');
+                options.tzOffset = parseInt(req.param('timezoneOffset', 0), 10),
+                options.metrics = req.param('metrics');
+                options.page_id = req.param('page_id');
+                options.contest_id = req.param('contest_id');
+                if (!options.page_id) {
+                    return Bozuko.error('page/id_required').send(res);
                 }
 
-                if( req.param('page_id') && (!this.restrictToUser || ~indexOf(req.session.user.manages, req.param('page_id'))) ){
-                    query.page_id = new ObjectId(req.param('page_id'));
-                }
-                if( req.param('contest_id') ){
-                    query.contest_id = new ObjectId(req.param('contest_id'));
+                if(options.page_id && (indexOf(req.session.user.manages, options.page_id) === -1)) {
+                    return Bozuko.error('page/permission');
                 }
 
-                time = time.split('-');
-                if( time.length != 2 ) throw new Error('Invalid time argument');
-                time[1] = parseInt( time[1], 10 );
-
-                options.interval = time[0].substr(0,1).toUpperCase()+time[0].substr(1);
-                options.length = time[1];
-
-                switch( time[0] ){
-                    case 'year':
-                        if( time[1] > 1 ){
-                            options.unit = 'Year';
-                        }
-                        else{
-                            options.unit = 'Month';
-                        }
-                        break;
-
-                    case 'month':
-                        if( time[1] > 2 ){
-                            if( time[1] > 5 ){
-                                options.unit = 'Month';
-                            }
-                            else{
-                                options.unit = 'Week';
-                            }
-                        }
-                        else{
-                            options.unit = 'Day';
-                        }
-                        break;
-
-                    case 'week':
-                        if( time[1] > 4 ){
-                            options.unit = 'Week';
-                        }
-                        else{
-                            options.unit = 'Day';
-                        }
-                        break;
-
-                    case 'hour':
-                        if( time[1] > 1 ){
-                            options.unit = 'Hour';
-                        }
-                        else{
-                            options.unit = 'Minute';
-                        }
-                        break;
-
-                    case 'day':
-                        if( time[1] > 3 ){
-                            options.unit = 'Day';
-                        }
-                        else{
-                            options.unit = 'Hour';
-                        }
-                        break;
-
-                    case 'minute':
-                        options.unit = 'Minute';
-                        if( time[1] == 1 ){
-                            options.interval = 'Second';
-                            options.length = 60;
-                            options.unit = 'Second';
-                            options.unitInterval = 5;
-                        }
-                        break;
-                }
-
-                var model = req.param('model') || 'Entry';
-                options.timezoneOffset = tzOffset;
-                options.query = query;
-                options.model = model;
-
-                switch(model){
-                    case 'Redeemed Prizes':
-                        options.model = "Prize";
-                        query.redeemed = true;
-                        options.timeField= 'redeemed_time';
-                        break;
-
-                    case 'Share':
-                        options.sumField = 'visibility';
-                        break;
-
-                    case 'Likes':
-                        options.model = 'Share';
-                        query.service = 'facebook';
-                        query.type = 'like';
-                        break;
-
-                    case 'Checkins':
-                        options.model = 'Share';
-                        query.type = 'facebook';
-                        query.type = 'checkin';
-                        break;
-
-                    case 'New Users':
-                        options.model = 'Entry';
-                        options.distinctField = 'user_id';
-                        options.distinctFilter = function(results, opts, selector, cb){
-                            selector.timestamp.$lt = selector.timestamp.$gte;
-                            delete selector.timestamp.$gte;
-                            selector.user_id = {$in: results};
-                            Bozuko.models.Entry.distinct('user_id', selector, function(error, old){
-                                if( error ) return cb(error);
-                                return cb(null, results.length - old.length);
-                            });
-                        };
-                        break;
-
-                    case 'Unique Users':
-                        options.model = 'Entry';
-                        options.distinctField = 'user_id';
-                        break;
-
-                    case 'Prize Cost':
-                        options.model = 'Prize';
-                        query.redeemed = true;
-                        options.timeField= 'redeemed_time';
-                        options.sumField = 'value';
-                        break;
-
-                    case 'Prize':
-                    case 'Entry':
-                    case 'Play':
-                        break;
-
-                    default:
-                        throw "Invalid model";
-                }
-
-                return Report.run( 'interval', options, function(error, results){
-                    if( error ){
-                        console.error(require('util').inspect(error));
-                        return error.send( res );
-                    }
-                    return res.send( {items: results} );
+                return metrics.get(options, function(err, results) {
+                    if (err) return err.send(res);
+                    return res.send({items: results});
                 });
             }
         }

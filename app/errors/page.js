@@ -5,5 +5,16 @@ module.exports = {
     does_not_exist: "Page does not exist",
     missing_code_block: 'code_block field does not exist',
     missing_code_prefix: 'code_prefix field does not exist',
-    invalid_pin: "That PIN is invalid"
+    invalid_pin: {
+        code: 403,
+        message: "That PIN is invalid"
+    },
+    id_required: {
+        code: 403,
+        message: "This call requires a page_id"
+    },
+    permission: {
+        code: 403,
+        message: "You don't have permission to access this page"
+    }
 };

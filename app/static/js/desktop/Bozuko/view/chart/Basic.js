@@ -1,17 +1,17 @@
 Ext.define('Bozuko.view.chart.Basic', {
-    
+
     extend : 'Ext.panel.Panel',
     alias : 'widget.bozukochartbasic',
-    
+
     requires : [
         'Bozuko.lib.PubSub'
     ],
-    
+
     totalsLabel : "Page Totals",
-    
+
     initComponent : function(){
         var me = this;
-        
+
         Ext.define('Ext.chart.theme.Bozuko', {
             extend : 'Ext.chart.theme.Base',
             constructor : function(config){
@@ -20,7 +20,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 }, config)]);
             }
         });
-        
+
         if( me.contest_id ){
             me.totalsLabel = 'Campaign Totals';
         }
@@ -30,13 +30,13 @@ Ext.define('Bozuko.view.chart.Basic', {
         else {
             me.totalsLabel = 'Overall Totals';
         }
-        
+
         Ext.apply(me, {
-            
+
             layout: 'anchor',
-            
+
             dateFormat: 'D M d',
-            
+
             items : [{
                 xtype           :'panel',
                 border          :'false',
@@ -73,39 +73,6 @@ Ext.define('Bozuko.view.chart.Basic', {
                         scope           :me,
                         change          :me.updateChart
                     }
-                },{xtype:'splitter'},{
-                    xtype           :'combo',
-                    hideLabel       :true,
-                    forceSelection  :true,
-                    editable        :false,
-                    name            :'time',
-                    queryMode       :'local',
-                    displayField    :'text',
-                    value           :'week-1',
-                    valueField      :'value',
-                    width           :190,
-                    
-                    store           :Ext.create('Ext.data.Store',{
-                        fields          :['text','value'],
-                        data            :[
-                            {text:'Last Minute (by Second)',    value:'minute-1'},
-                            {text:'Last 10 Minutes (by Minute)', value:'minute-10'},
-                            {text:'Last Day (by Hour)', value:'hour-24'},
-                            {text:'Last Two Days (by Hour)', value:'hour-48'},
-                            {text:'Last Week (by Day)', value:'week-1'},
-                            {text:'Last Two Weeks (by Day)', value:'week-2'},
-                            {text:'Last Month (by Day)', value:'week-4'},
-                            {text:'Last 6 Months (by Week)', value:'week-24'},
-                            {text:'Last 6 Months (by Month)', value:'month-6'},
-                            {text:'Last Year (by Month)', value: 'month-12'},
-                            {text:'Last 5 Years (by Year)', value: 'year-5'}
-                        ]
-                    }),
-                    
-                    listeners       :{
-                        scope           :me,
-                        change          :me.updateChart
-                    }
                 },{
                     xtype           :'component',
                     flex            :1,
@@ -114,7 +81,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                     ref             :'chart-total'
                 }]
             },{
-            
+
                 xtype           :'component',
                 ref             :'stats-block',
                 tpl             :new Ext.XTemplate(
@@ -145,7 +112,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                                     '</table>',
                                 '</td>',
                                 '<td>',
-                                    
+
                                     '<table>',
                                         '<thead>',
                                             '<tr valign="bottom">',
@@ -200,14 +167,14 @@ Ext.define('Bozuko.view.chart.Basic', {
                 )
             }]
         });
-        
+
         me.callParent(arguments);
-        
+
         me.on('render', me.renderChart, me, {delay:200});
     },
-    
+
     renderChart : function(){
-        
+
         var me = this,
             chartCfg = {
                 xtype: 'chart',
@@ -216,7 +183,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 animate: true,
                 height: 280,
                 anchor: '0',
-                
+
                 store: Ext.create('Bozuko.store.Reports',{autoLoad:true}),
                 axes: [{
                     type        :'Numeric',
@@ -279,40 +246,40 @@ Ext.define('Bozuko.view.chart.Basic', {
                     render          :me.onChartRefresh
                 }
             };
-            
+
         var i = me.items.indexOf(me.down('[ref=chart-controls]'));
-        
+
         me.insert(i+1, chartCfg);
-        
+
         me.chart = me.down('chart');
         me.chartStore = me.chart.store;
         me.chartProxy = me.chartStore.getProxy();
         me.timeField = me.down('[name=time]');
         me.modelField = me.down('[name=model]');
-        
+
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
-        
+
         Bozuko.PubSub.subscribe('contest/entry', filter, me.getCallback('entry') );
         Bozuko.PubSub.subscribe('contest/play', filter, me.getCallback('play') );
         Bozuko.PubSub.subscribe('contest/win', filter, me.getCallback('win') );
         Bozuko.PubSub.subscribe('prize/redeemed', filter, me.getCallback('redeemed') );
-        
+
         me.on('destroy', function(){
             Bozuko.PubSub.unsubscribe('contest/entry', filter, me.getCallback('entry') );
             Bozuko.PubSub.unsubscribe('contest/play', filter, me.getCallback('play') );
             Bozuko.PubSub.unsubscribe('contest/win', filter, me.getCallback('win') );
             Bozuko.PubSub.unsubscribe('prize/redeemed', filter, me.getCallback('redeemed') );
         });
-        
+
         me.chartStore.on('load', function(){
             var axis = me.chart.axes.get(0),
                 redraw = false;
-            
+
             var fn = me.modelField.store.findRecord('value', me.modelField.getValue()).get('fn') || 'sum';
             var total = me.chartStore[fn]('count');
-            
-            
+
+
             if( !total ){
                 redraw = !axis.maximum;
                 axis.maximum = 10;
@@ -322,7 +289,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 delete axis.maximum;
             }
             if( redraw ) me.chart.redraw();
-            
+
             if( me.modelField.getValue().match(/cost/i)){
                 total = Ext.util.Format.usMoney(total);
             }
@@ -362,20 +329,20 @@ Ext.define('Bozuko.view.chart.Basic', {
         });
         me.updateStats();
     },
-    
+
     resume : function(){
         this.paused = false;
         this.updateChart();
         this.updateStats();
     },
-    
+
     pause : function(){
         this.paused = true;
     },
-    
+
     getCallback : function(name){
         var me = this,
-            model = function(){ return me.modelField.getValue() }
+            model = function(){ return me.modelField.getValue() };
             callbacks = {
                 entry: function(item, callback){
                     callback();
@@ -386,7 +353,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 play : function(item, callback){
                     callback();
                     if( !me.isVisible() ) return;
-                        
+
                     me.updateStats();
                     if( ~Ext.Array.indexOf(['Play'],model()) ) me.loadStore();
                 },
@@ -404,7 +371,7 @@ Ext.define('Bozuko.view.chart.Basic', {
             };
         return callbacks[name];
     },
-    
+
     addCommas : function(nStr){
         nStr += '';
         x = nStr.split('.');
@@ -416,11 +383,11 @@ Ext.define('Bozuko.view.chart.Basic', {
         }
         return x1 + x2;
     },
-    
+
     onChartRefresh : function(){
-        
+
     },
-    
+
     loadStore : function(){
         var me  = this;
         if( me.isLoading ){
@@ -436,10 +403,10 @@ Ext.define('Bozuko.view.chart.Basic', {
             };
         });
     },
-    
+
     updateStats : function(){
         var me = this;
-        
+
         var req_opts = {
             method          :'GET',
             url             :Bozuko.Router.route('/stats'),
@@ -457,12 +424,12 @@ Ext.define('Bozuko.view.chart.Basic', {
                 me.down('[ref=stats-block]').update( reports );
                 me.up().doLayout();
             }catch ( e ){
-                
+
             }
         };
         Ext.Ajax.request(req_opts);
     },
-    
+
     updateChart : function(){
         var me = this;
         me.chartProxy.extraParams = {
@@ -498,7 +465,7 @@ Ext.define('Bozuko.view.chart.Basic', {
             }
             else if( /day/i.test(time[0])){
                 me.dateFormat = me.chart.axes.get(1).dateFormat='ga';
-                
+
             }
             else if( /hour/i.test(time[0])){
                 if( time[1] > 1 ){
@@ -507,7 +474,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 else{
                     me.dateFormat = me.chart.axes.get(1).dateFormat='g:i a';
                 }
-                
+
             }
             else if( /minute/i.test(time[0])){
                 if( time[1] > 1 ){
@@ -523,5 +490,5 @@ Ext.define('Bozuko.view.chart.Basic', {
         }
         me.chartStore.load();
     }
-    
+
 });
