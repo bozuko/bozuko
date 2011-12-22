@@ -72,7 +72,7 @@ exports.routes = {
 
                     var pic_file = Bozuko.dir+'/tmp/'+page._id+'-pic';
                     var security_file = Bozuko.dir+'/tmp/'+page._id+'-security';
-
+                    
                     return async.series([
                         function download_profile_image(cb){
                             download(page.image, pic_file, function(error, path){
@@ -98,6 +98,14 @@ exports.routes = {
                                 right:20,
                                 bottom:20
                             }});
+                            
+                            doc.write_lines = function(lines, x, y, options){
+                                doc.x = x;
+                                doc.y = y;
+                                lines.forEach(function(line){
+                                    doc.text(line, options);
+                                });
+                            };
 
                             var image_base = Bozuko.dir+'/resources/images',
                                 logo_width = doc.page.width * .25,
@@ -127,10 +135,9 @@ exports.routes = {
                             var w = doc.page.width,
                                 prize_name = "Prize Name",
                                 you_win_text = ['STEP 1: Redeem',
-                                                '',
                                                 'If a player wins a prize, they are presented a "YOU WIN!" screen '+
                                                 'directing them to an employee. Ask them to press Redeem.'
-                                               ].join('\n');
+                                               ];
                                 h = (doc.page.height - doc.y),
                                 src_width = 320,
                                 src_height = 480,
@@ -162,6 +169,7 @@ exports.routes = {
                                 .font('Helvetica-Bold')
                                 .text(prize_name, img_x, y+(img_height*prize_y), {width: img_width, align: 'center'} )
                                 ;
+                            
                             // we need to get the width of that "Prize Name" string so we can underline it.
                             var underline_w = doc.widthOfString(prize_name),
                                 underline_x = img_x+(img_width-underline_w)/2
@@ -183,8 +191,9 @@ exports.routes = {
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(you_win_text, img_x, y+img_height+20, {align:'left', width: img_width } )
+                                .write_lines(you_win_text, img_x, y+img_height+20, {align:'left', width:img_width})
                                 ;
+                                
 
                             /**
                              * Block 2, redemption screen
@@ -209,10 +218,10 @@ exports.routes = {
                                 s_y = y + img_height*277/480,
                                 s_time_y = y+img_height*358/480,
                                 redeemed_text = ['STEP 2: Verify',
-                                                 '',
+                                                 //' ',
                                                  'Pressing "Redeem" brings up the Prize Screen. '+
                                                  'You should see the prize, your business logo, a security image and the current time.'
-                                                ].join('\n')
+                                                ]
                                 ;
 
                             doc
@@ -246,7 +255,7 @@ exports.routes = {
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(redeemed_text, block_width+img_x, y+img_height+20, {align:'left', width: img_width } )
+                                .write_lines(redeemed_text, block_width+img_x, y+img_height+20, {align:'left', width: img_width } )
                                 ;
 
                             /**
@@ -274,15 +283,13 @@ exports.routes = {
                             doc
                                 .fontSize(14)
                                 .font('Heading Font')
-                                .text(['Contact Information:',
-                                    '',
+                                .write_lines(['Contact Information:',
                                     'Email:',
                                     'support@bozuko.com',
-                                    '',
                                     'Phone:',
                                     '415-2BOZUKO',
                                     '(415) 226-9856'
-                                ].join('\n'), block_width, y+block_height+10,{align: 'center', width: block_width} )
+                                ], block_width, y+block_height+10,{align: 'center', width: block_width} )
 
                             // cleanup
                             fs.unlinkSync(security_file);
