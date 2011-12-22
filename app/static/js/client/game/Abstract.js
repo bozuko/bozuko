@@ -305,6 +305,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     getDescription : function(){
         if( !this.$description ){
+            // get the window width
+            var mobile = window.innerWidth && window.innerWidth < 500;
+            var url = (function(l){
+                return l.protocol+'//'+l.host+l.pathname;
+            })(window.location);
             this.$description = this.app.createModal({
                 cls             :'game-description page-window modal-window-full',
                 cn              :[{
@@ -324,6 +329,28 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             }]
                         },{
                             cls             :'instructions'
+                        },{
+                            tag             :'ul',
+                            cls             :'links',
+                            cn              :[{
+                                tag             :'li',
+                                cn              :[{
+                                    tag             :'a',
+                                    target          :'_blank',
+                                    href            :'http://'+(mobile?'m':'www')+'.facebook.com/sharer.php?u='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
+                                    html            :'Share Game',
+                                    cls             :'share'
+                                }]
+                            },{
+                                tag             :'li',
+                                cn              :[{
+                                    tag             :'a',
+                                    target          :'_blank',
+                                    href            :this.page.facebook_page,
+                                    html            :'Visit us on Facebook',
+                                    cls             :'facebook'
+                                }]
+                            }]
                         }]
                     }]
                 },{
