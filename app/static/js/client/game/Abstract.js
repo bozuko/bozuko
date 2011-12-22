@@ -329,7 +329,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             }]
                         },{
                             cls             :'instructions'
-                        },{
+                        }/*,{
                             tag             :'ul',
                             cls             :'links',
                             cn              :[{
@@ -352,7 +352,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                     // cls             :'addthis_button',
                                 }]
                             }]
-                        }]
+                        }*/]
                     }]
                 },{
                     cls             :'actions',
