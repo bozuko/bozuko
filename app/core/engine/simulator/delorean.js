@@ -21,6 +21,7 @@ var argv = require('optimist')
     .default('out', process.env.HOME+'/delorean_out.csv')
     .default('sparse_plays', 1)
     .default('sparse_prizes', 1)
+    .default('sim_plays', 0)
     .argv;
 
 if (!argv.contest) throw new Error("Need a contest to simulate");
@@ -227,6 +228,27 @@ function createBuckets() {
 }
 
 function play(callback) {
+
+    if (argv.sim_plays) {
+        for (var i = 0; i < argv.sim_plays; i++) {
+            timestamps.push(new Date(rand(contest.start.getTime(), contest.end.getTime())));
+        }
+        timestamps.sort(function(a, b) {
+            return a.getTime() - b.getTime();
+        });
+        return async.forEachSeries(timestamps, function(timestamp, cb) {
+            var memo = {
+                timestamp: timestamp,
+                user: user,
+                entry: entry
+            };
+            return engine.play(memo, function(err, memo) {
+                if (memo.result && memo.result != 'free_play') wins.push(memo.timestamp);
+                return cb(err);
+            });
+        }, callback);
+    }
+
     return fs.readFile(path+'/plays.json', function(err, jsonlines) {
         var jsonarray = jsonlines.split("\n");
         var ct = -1;
