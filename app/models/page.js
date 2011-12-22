@@ -73,6 +73,7 @@ Page.pre('save', function(next) {
 });
 
 Page.static('verifyPin', function(pin, callback) {
+	pin = (pin || "").toUpperCase();
     return Bozuko.models.Page.findOne({pin: pin}, {_id: 1, name: 1}, function(err, page) {
         if (err) return callback(err);
         if (!page) return callback(Bozuko.error('page/invalid_pin'));
@@ -646,8 +647,7 @@ Page.static('search', function(options, callback){
                 page.favorite = ~(options.user.favorites||[]).indexOf(page._id);
             }
 
-            if( page._doc ){
-                console.error(page.name+' registered');
+            if( page._doc && page.contests && page.contests.length ){
                 page.registered = true;
             }
             if (!page.active && page._id) {
@@ -706,17 +706,27 @@ Page.static('search', function(options, callback){
                 $nin: featured_ids
             };
         }
-        console.log('bozukoSearch = '+inspect(bozukoSearch));
+        
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
-            console.log('pages.length = '+pages.length);
-
-            if( error ) return callback(error);
+            
+			if( error ) return callback(error);
 
             pages = featured.concat(pages);
 
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
-
+				
+				// lets ditch any pages that have no contests.
+				var i=0, removed_ids = [];
+				while( i<pages.length && pages.length ){
+					if(!pages[i].contests || !pages[i].contests.length){
+						removed_ids.push(String(pages[i]._id));
+						pages.splice(i,1);
+					}
+					else{
+						i++;
+					}
+				}
 
                 var page_ids = [], fb_ids=[];
                 prepare_pages(pages, options.user, function(page){
@@ -727,6 +737,8 @@ Page.static('search', function(options, callback){
                     page_ids.push(page._id);
                     if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                 });
+				
+				page_ids = page_ids.concat(removed_ids);
 
 
                 if( !serviceSearch ){
