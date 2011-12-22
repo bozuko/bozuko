@@ -52,9 +52,9 @@ exports.transfer_objects = {
             // lets check for a contest
             var self = this;
             var createPage = function(){
+                
                 var fid = page.registered ? page.service('facebook').sid : page.id;
-                if( !page.registered ) delete page.id;
-
+                
                 page.liked = false;
                 page.image = page.image;
                 page.like_url = burl('/facebook/'+fid+'/like.html');
@@ -97,9 +97,11 @@ exports.transfer_objects = {
                 }
 
                 page.is_facebook = ( !page.registered || page.service('facebook') );
+                /*
                 if( page.is_facebook && page.service && page.service('facebook') ){
                     page.facebook_page = page.service('facebook').data.link;
                 }
+                */
 
                 // add registered links...
                 if( page.registered ){
