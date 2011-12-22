@@ -493,6 +493,13 @@ a:hover {
   margin: 0 0 0 10px;
   padding: 0;
 }
+.game-description .hd {
+  position: relative;
+}
+.game-description .hd .content {
+  position: relative;
+  height: 63px;
+}
 .game-description .hd .content .name {
   font-size: 14px;
   font-weight: 500;
@@ -505,6 +512,24 @@ a:hover {
 }
 .game-description .hd .content .instructions {
   padding-left: 0px;
+}
+.game-description .hd .content .links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.game-description .hd .content .links li {
+  list-style: none;
+  margin: 0;
+  padding-right: 10px;
+  padding-bottom: 4px;
+  display: inline-block;
+}
+.game-description .hd .content .links li a {
+  color: #ccc;
 }
 .game-description .actions {
   position: relative;
