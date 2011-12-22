@@ -18,6 +18,7 @@ h1.logo {
     a {
         zoom: 1;
         display: block;
+        margin: 0 auto;
         cursor: pointer;
         width: 275px;
         height: 110px;
@@ -27,14 +28,9 @@ h1.logo {
     
 }
 
-.page-width{
-    width: 400px;
-    margin: 0 auto;
-}
-
 .codes {
     font-size: 16px;
-    text-align: left;
+    text-align: center;
 
     img.orange-check {
         margin: 0px 2px;
@@ -42,9 +38,9 @@ h1.logo {
     }
 
     .prompt {
-        font-size: 18px;
+        font-size: 14px;
         font-family: 'Open Sans', sans-serif;
-        font-weight: 700;
+        font-weight: 500;
         color: #656565;
         .welcome {
             color: @brand_color;
@@ -52,17 +48,17 @@ h1.logo {
     }
     input[type='text'] {
         margin-top: 20px;
-        width: 200px;
+        width: 100px;
         padding: 2px 6px;
-        font-size: 30px;
-        font-weight: 900;
+        font-size: 16px;
+        line-height: 18px;
+        font-weight: 700;
         .border_radius(6px);
         border: 2px solid #aaa;
     }
     .button {
         cursor: pointer;
         display: inline-block;
-        .transition(none);
         .border_radius(4px);
         border: 1px solid @dark_color;
         .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
@@ -70,16 +66,16 @@ h1.logo {
         font-family: 'Open Sans', sans-serif;
         text-decoration: none;
         font-weight: 900;
-        width: 180px;
+        line-height: 18px;
+        font-size: 16px;
+        padding: 4px 12px;
+        margin: 0 10px;
         
         &:hover, &:active{
             color: #fff;
             .background_gradient(@brand_color, @dark_color);
         }
-        line-height: 24px;
-        font-size: 30px;
-        padding: 7px 12px;
-        margin: 0 10px 10px;
+        
     }
     .button-disabled {
         .button;
@@ -93,7 +89,9 @@ h1.logo {
         color: red;
     }
     .prize {
-        width: 400px;
+        text-align: left;
+        margin: 20px auto 0;
+        width: 310px;
         border: 2px solid #999;
         padding: 2px;
         font-family: 'Open Sans', sans-serif;
@@ -104,6 +102,8 @@ h1.logo {
         .prize-header {
             display: block;
             .page-name {
+                background: #e8e8e8;
+                .border_radius(3px 3px 0 0);
                 padding: .2em 6px;
                 font-weight: bold;
                 font-size: 16px;
@@ -143,35 +143,24 @@ h1.logo {
             font-family: 'Open Sans', sans-serif;
             font-size: 11px;
             color: #999;
+            .label{ font-weight: bold; }
+            .won .label{ color: green; }
+            .expired .label{ color: red; }
+            .redeemed .label{ color: blue; }
+            .verified .label{ color: black; }
         }
         .verify-button {
+            background: #e8e8e8;
+            .border_radius(0 0 3px 3px);
             display: block;
-            float: right;
-            .button {
-                cursor: pointer;
-                display: inline-block;
-                .transition(none);
-                .border_radius(4px);
-                border: 1px solid @dark_color;
-                .background_gradient(lighten(@brand_color,10%), lighten(@dark_color,10%));
-                color: #fff;
-                font-family: 'Open Sans', sans-serif;
-                text-decoration: none;
-                font-weight: 900;
-                width: 120px;
-                
-                &:hover, &:active{
-                    color: #fff;
-                    .background_gradient(@brand_color, @dark_color);
-                }
-                font-size: 20px;
-                padding: 7px 12px;
-                margin: 0 10px 10px;
-            }
+            text-align: center;
+            padding: 4px 0;
+            margin-top: 10px;
         }
     }
 }
 
 .copyright{
+    margin-top: 20px;
     text-align: center;
 }
