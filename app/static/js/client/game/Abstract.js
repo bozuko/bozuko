@@ -337,18 +337,19 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                 cn              :[{
                                     tag             :'a',
                                     target          :'_blank',
-                                    href            :'http://'+(mobile?'m':'www')+'.facebook.com/sharer.php?u='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
-                                    html            :'Share Game',
-                                    cls             :'share'
+                                    href            :this.page.facebook_page,
+                                    html            :'Visit us on Facebook',
+                                    cls             :'facebook'
                                 }]
                             },{
                                 tag             :'li',
                                 cn              :[{
                                     tag             :'a',
                                     target          :'_blank',
-                                    href            :this.page.facebook_page,
-                                    html            :'Visit us on Facebook',
-                                    cls             :'facebook'
+                                    //href            :'http://www.addthis.com/bookmark.php',
+                                    href            :'http://'+(mobile?'m':'www')+'.facebook.com/sharer.php?u='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
+                                    html            :'Share Game'
+                                    // cls             :'addthis_button',
                                 }]
                             }]
                         }]
