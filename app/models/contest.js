@@ -44,6 +44,7 @@ var Contest = module.exports = new Schema({
     win_frequency           :{type:Number},
     auto_rules              :{type:Boolean, default: false},
     rules                   :{type:String},
+    replace_rules           :{type:Boolean, default: false},
     entry_config            :[EntryConfig],
     consolation_config      :[ConsolationConfig],
     prizes                  :[Prize],
@@ -226,8 +227,13 @@ Contest.method('validateResults', function(callback) {
 
 
 Contest.method('getOfficialRules', function(){
-
-    var rules = Content.get('app/rules.txt');
+    
+    var rules = this.replace_rules ? this.rules : Content.get('app/rules.txt');
+    
+    if( !this.replace_rules && this.rules ){
+        rules += "\n\n----------\n\n"+this.rules;
+    }
+    
     var replacements = {
         start_date : dateFormat(this.start, 'mmmm dd, yyyy'),
         start_time : dateFormat(this.start, 'hh:MM TT'),
@@ -286,10 +292,6 @@ Contest.method('getOfficialRules', function(){
     rules = rules.replace(/\{\{([a-zA-Z0-9_-]+)\}\}/g, function(match, key){
         return replacements[key] || '';
     });
-
-    if( this.rules ){
-        rules += "\n\n----------\n\n"+this.rules;
-    }
 
     return rules;
 });

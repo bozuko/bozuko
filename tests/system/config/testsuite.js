@@ -184,6 +184,7 @@ var add_pages = function(callback, i) {
 function add_page(id, callback){
     Bozuko.service('facebook').place({place_id:id}, function(error, place){
         if( error ){
+			console.log(error);
             return callback(error);
         }
 		if( !place ){

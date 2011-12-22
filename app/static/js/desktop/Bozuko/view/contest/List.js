@@ -133,7 +133,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                     html5url: function(values){
                         
                         if( values.game_type.toLowerCase() != 'scratch' ) return false;
-                        if( window.location.hostname.match(/dashboard/) ) return false;
+                        if( !window.location.pathname.match(/admin/i) ) return false;
                         var server = window.location.hostname;
                         if( /dashboard/.test(window.location.hostname) ){
                             server = 'bozuko.com';
@@ -142,7 +142,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                         if( server != 'bozuko.com' && !~['80','443'].indexOf(p) ){
                             server+= ':'+p;
                         }
-                        var link = 'https://'+server+'/client/game/'+values._id;
+                        var link = 'https://'+server+'/client/game/'+(values.alias||values._id);
                         return '<a target="_blank" href="'+link+'" class="html5">'+link+'</a>';
                     },
                     

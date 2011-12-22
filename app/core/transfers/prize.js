@@ -78,9 +78,7 @@ exports.transfer_objects = {
                     o.state = 'redeemed';
                 }
 
-                if( o.is_email ){
-                    o.links.resend = '/prize/'+prize.id+'/resend';
-                }
+                o.links.resend = '/prize/'+prize.id+'/resend';
 
                 return self.sanitize(o, null, user, function(error, result){
                     if( error ) return callback( error );

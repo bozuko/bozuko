@@ -33,6 +33,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'game',               type:'String',              defaultValue:'slots'},
         {name:'game_config',        type:'Object',              defaultValue:{theme:'default'}},
         {name:'auto_rules',         type:'Boolean',             defaultValue:true},
+        {name:'replace_rules',      type:'Boolean',             defaultValue:false},
         {name:'rules',              type:'String'},
         {name:'entry_config',       type:'Array',               defaultValue:[{type:'facebook/checkin',tokens:3,duration:1000*60*60*24}]},
         {name:'consolation_config', type:'Array'},

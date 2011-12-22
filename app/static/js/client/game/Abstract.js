@@ -305,6 +305,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     getDescription : function(){
         if( !this.$description ){
+            // get the window width
+            var mobile = window.innerWidth && window.innerWidth < 500;
+            var url = (function(l){
+                return l.protocol+'//'+l.host+l.pathname;
+            })(window.location);
             this.$description = this.app.createModal({
                 cls             :'game-description page-window modal-window-full',
                 cn              :[{
@@ -324,7 +329,30 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             }]
                         },{
                             cls             :'instructions'
-                        }]
+                        }/*,{
+                            tag             :'ul',
+                            cls             :'links',
+                            cn              :[{
+                                tag             :'li',
+                                cn              :[{
+                                    tag             :'a',
+                                    target          :'_blank',
+                                    href            :this.page.facebook_page,
+                                    html            :'Visit us on Facebook',
+                                    cls             :'facebook'
+                                }]
+                            },{
+                                tag             :'li',
+                                cn              :[{
+                                    tag             :'a',
+                                    target          :'_blank',
+                                    //href            :'http://www.addthis.com/bookmark.php',
+                                    href            :'http://'+(mobile?'m':'www')+'.facebook.com/sharer.php?u='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
+                                    html            :'Share Game'
+                                    // cls             :'addthis_button',
+                                }]
+                            }]
+                        }*/]
                     }]
                 },{
                     cls             :'actions',
@@ -601,7 +629,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
         if( prize.is_email || this.app.email_only ){
             message.update([
-                '<p>This prize has been emailed to <strong>'+this.app.user.email+'</strong>!</p>',
+                '<p>This prize has been emailed to <strong class="user-email">'+this.app.user.email+'</strong>!</p>',
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
                 '<div class="email-form">',
                     '<div><input class="email-field" placeholder="Enter your email" name="email" /></div>',
@@ -663,6 +691,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         method: 'post'
                     }, function(result){
                         changing = false;
+                        bd.child('.user-email').update(changeBlock.child('input').dom.value);
                         cancelBtn.setStyle('opacity',1);
                         changeBtn.setStyle('opacity',1).update('Change');
                         changeBlock.hide();
