@@ -72,7 +72,7 @@ exports.routes = {
 
                     var pic_file = Bozuko.dir+'/tmp/'+page._id+'-pic';
                     var security_file = Bozuko.dir+'/tmp/'+page._id+'-security';
-                    
+
                     return async.series([
                         function download_profile_image(cb){
                             download(page.image, pic_file, function(error, path){
@@ -98,7 +98,7 @@ exports.routes = {
                                 right:20,
                                 bottom:20
                             }});
-                            
+
                             doc.write_lines = function(lines, x, y, options){
                                 doc.x = x;
                                 doc.y = y;
@@ -169,7 +169,7 @@ exports.routes = {
                                 .font('Helvetica-Bold')
                                 .text(prize_name, img_x, y+(img_height*prize_y), {width: img_width, align: 'center'} )
                                 ;
-                            
+
                             // we need to get the width of that "Prize Name" string so we can underline it.
                             var underline_w = doc.widthOfString(prize_name),
                                 underline_x = img_x+(img_width-underline_w)/2
@@ -193,7 +193,7 @@ exports.routes = {
                                 .fontSize(11)
                                 .write_lines(you_win_text, img_x, y+img_height+20, {align:'left', width:img_width})
                                 ;
-                                
+
 
                             /**
                              * Block 2, redemption screen
@@ -300,7 +300,7 @@ exports.routes = {
                                 .replace(/['\*"]/,'');
 
                             res.contentType('application/pdf');
-                            res.header('Content-Disposition', 'inline, filename='+name+'_Redemption_Instructions.pdf');
+                            res.header('Content-Disposition', 'inline; filename='+name+'_Redemption_Instructions.pdf');
                             return res.end(doc.output(),'binary');
                         }
                     )
