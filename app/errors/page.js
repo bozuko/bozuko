@@ -9,9 +9,9 @@ module.exports = {
         code: 403,
         message: "That PIN is invalid"
     },
-    id_required: {
+    required: {
         code: 403,
-        message: "This call requires a page_id"
+        message: "This call is missing parameters"
     },
     permission: {
         code: 403,

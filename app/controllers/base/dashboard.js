@@ -714,9 +714,11 @@ exports.routes = {
                 options.metrics = req.param('metrics');
                 options.page_id = req.param('page_id');
                 options.contest_id = req.param('contest_id');
-                if (!options.page_id) {
-                    return Bozuko.error('page/id_required').send(res);
-                }
+
+                if (!options.page_id) return Bozuko.error('page/required').send(res);
+                if (!options.start) return Bozuko.error('page/required').send(res);
+                if (!options.end) return Bozuko.error('page/required').send(res);
+                if (!options.tzOffset) return Bozuko.error('page/required').send(res);
 
                 if(options.page_id && (indexOf(req.session.user.manages, options.page_id) === -1)) {
                     return Bozuko.error('page/permission');
