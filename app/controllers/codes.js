@@ -47,7 +47,7 @@ function error(res, err) {
     res.render('codes/pin.jade');
 }
 
-var not_found = 'Sorry, no prizes were found.';
+var not_found = 'Sorry, we can\'t find that prize code.';
 function render(res) {
     res.locals.error_ctx = 'search';
     return Bozuko.models.User.findById(res.locals.prize.user_id, function(err, user) {
