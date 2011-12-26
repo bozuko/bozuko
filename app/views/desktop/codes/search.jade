@@ -2,7 +2,7 @@
   
     .prompt.welcome
       img.orange-check(src='/images/desktop/site/beta/img_orange-check.png')
-      |   Welcome, #{page_name}
+      |   Welcome #{page_name}. Please enter a prize code.
     form(action="/codes",method="post")
       input(type='text', name='code')  
       input(type='hidden', name='pin', value=pin)
