@@ -1304,6 +1304,18 @@ exports.routes = {
                     delete prize._id;
                 });
 
+                if (data.engine_type === 'time') {
+                    if (data.window_divisor > 5) data.window_divisor = 5;
+                    if (data.window_divisor < 0) data.window_divisor = 0;
+                    data.engine_options.window_divisor = data.window_divisor;
+                    data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
+                    data.engine_options.buffer = data.end_buffer;
+                }
+                // remove unused variables
+                delete data.window_divisor;
+                delete data.throwahead_multiplier;
+                delete data.end_buffer;
+
                 var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
@@ -1340,6 +1352,7 @@ exports.routes = {
                     if( error ) return error.send(res);
 
                     var data = filter(req.body);
+                    console.log(data);
 
                     var prizes = data.prizes,
                         entry_config = data.entry_config,
@@ -1356,6 +1369,16 @@ exports.routes = {
 
                     // don't want to update this, will throw an error
                     delete data._id;
+
+                    if (data.engine_type === 'time') {
+                        data.engine_options.window_divisor = data.window_divisor;
+                        data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
+                        data.engine_options.buffer = data.end_buffer;
+                    }
+                    // remove unused variables
+                    delete data.window_divisor;
+                    delete data.throwahead_multiplier;
+                    delete data.end_buffer;
 
                     for( var p in data ){
                         if( data.hasOwnProperty(p) ){

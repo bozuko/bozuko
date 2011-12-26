@@ -1,8 +1,8 @@
 Ext.define('Bozuko.view.contest.edit.Form' ,{
-    
+
     extend: 'Ext.panel.Panel',
     alias : 'widget.contestform',
-    
+
     requires: [
         'Bozuko.view.contest.edit.Details',
         'Bozuko.view.contest.edit.Prizes',
@@ -12,13 +12,13 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         'Bozuko.view.contest.edit.Rules',
         'Bozuko.view.contest.edit.Preview'
     ],
-    
+
     layout: 'border',
     border: false,
-    
+
     initComponent : function(){
         var me = this;
-        
+
         me.tbar = Ext.create('Ext.toolbar.Toolbar',{
             ref         :'contestform-navbar',
             cls         :'title-toolbar',
@@ -41,7 +41,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                 text        :''
             }]
         });
-        
+
         me.items = [{
             region: 'center',
             border: false,
@@ -93,7 +93,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                         {type:'consolation_prizes', text:'Consolation Prizes'},
                         {type:'game', text:'Game'},
                         {type:'entry', text:'Entries'},
-                        {type:'rules', text:'Rules'},
+                        {type:'rules', text:'Rules'}
                     ],
                     autoLoad: true
                 }),
@@ -118,7 +118,7 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
             width: 200,
             xtype: 'contestformpreview'
         }];
-        
+
         me.bbar = ['->',{
             scale           :'medium',
             type            :'button',
@@ -127,14 +127,14 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
             autoWidth       :true,
             text            :'Save'
         }];
-        
+
         me.callParent();
     },
-    
+
     setRecord : function(record){
         this.record = record;
         this.down('[ref=prizes]').bindStore( record.prizes() );
-        
+
         var consolation_config = this.record.get('consolation_config');
         this.down('[ref=consolation_prizes]').getForm().setValues( consolation_config && consolation_config.length ? consolation_config[0] : {} );
         this.down('[ref=consolation_prizes]').bindStore( record.consolation_prizes() );
@@ -143,9 +143,9 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
         this.down('contestformrules').getForm().loadRecord( this.record );
         var entry_config = this.record.get("entry_config");
         this.down('contestformentry').setValues( entry_config && entry_config.length ? entry_config[0] : {} );
-        
-        
-        
+
+
+
         this.down('[ref=edit-campaign-text]').setText(record.get('name'));
         if( !record.get('_id') ){
             this.down('[ref=edit-label-text]').setText('Create Campaign');
