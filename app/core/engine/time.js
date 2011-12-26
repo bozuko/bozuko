@@ -16,6 +16,7 @@ inherits(TimeEngine, Engine);
 var lookback_window_floor = 1000*60*3;
 
 TimeEngine.prototype.configure = function(opts) {
+    console.log('TimeEngine.configure: opts = '+inspect(opts));
     opts = opts || {};
     this.buffer = opts.buffer || 0.001;
 
