@@ -227,13 +227,13 @@ Contest.method('validateResults', function(callback) {
 
 
 Contest.method('getOfficialRules', function(){
-    
+
     var rules = this.replace_rules ? this.rules : Content.get('app/rules.txt');
-    
+
     if( !this.replace_rules && this.rules ){
         rules += "\n\n----------\n\n"+this.rules;
     }
-    
+
     var replacements = {
         start_date : dateFormat(this.start, 'mmmm dd, yyyy'),
         start_time : dateFormat(this.start, 'hh:MM TT'),
@@ -340,6 +340,7 @@ Contest.method('getEngine', function() {
         if( type == '') type = 'order';
         var Engine = Bozuko.require('core/engine/'+type);
         this._engine = new Engine( this );
+        this._engine.configure(this.engine_options);
     }
     return this._engine;
 });

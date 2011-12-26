@@ -1,8 +1,8 @@
 Ext.define('Bozuko.view.contest.edit.Details' ,{
-    
+
     extend: 'Ext.form.Panel',
     alias : 'widget.contestformdetails',
-    
+
     requires: [
         'Ext.ux.form.field.DateTime'
     ],
@@ -12,10 +12,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
         anchor          :'0',
         labelWidth      :150
     },
-    
+
     initComponent : function(){
         var me = this;
-        
+
         me.items = [{
             xtype           :'textfield',
             name            :'name',
@@ -68,6 +68,18 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
                 fields              :['text','value'],
                 data                :[{value:'order',text:'Order Based'},{value:'time',text:'Time Based'}]
             })
+        },{
+            xtype               :'textfield',
+            name                :'window_divisor',
+            fieldLabel          :'lbwDiv - not for Mark F'
+        },{
+            xtype               :'textfield',
+            name                :'throwahead_multiplier',
+            fieldLabel          :'Throwahead Multiplier'
+        },{
+            xtype               :'textfield',
+            name                :'end_buffer',
+            fieldLabel          :'End of game buffer (pct)'
         },{
             xtype           :'htmleditor',
             name            :'promo_copy',

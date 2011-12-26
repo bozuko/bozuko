@@ -20,6 +20,8 @@ Engine.prototype.generateResults = function(Page, page_id, callback){
     return callback(new Error('Implement ME!!!'));
 };
 
+Engine.prototype.configure = function() {};
+
 /**
  * Get the result of a play
  */
