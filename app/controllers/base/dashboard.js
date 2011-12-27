@@ -1258,6 +1258,12 @@ exports.routes = {
                                     if( error ) return cb(error);
                                     contest_json.play_count = play_count;
 
+                                    if (contest_json.engine_type === 'time') {
+                                        contest_json.window_divisor = contest.engine_options.window_divisor;
+                                        contest_json.throwahead_multiplier = contest.engine_options.throwahead_multiplier;
+                                        contest_json.end_buffer = contest.engine_options.buffer;
+                                    }
+
                                     return cb();
                                 });
 
@@ -1371,6 +1377,8 @@ exports.routes = {
                     delete data._id;
 
                     if (data.engine_type === 'time') {
+                        if (data.window_divisor > 5) data.window_divisor = 5;
+                        if (data.window_divisor < 0) data.window_divisor = 0;
                         data.engine_options.window_divisor = data.window_divisor;
                         data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
                         data.engine_options.buffer = data.end_buffer;
