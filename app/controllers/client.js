@@ -27,7 +27,6 @@ exports.renderGame = function(req, res, contest_id, page_id){
     return async.series([
         
         function get_contest(cb){
-            console.log(contest_id);
             if( contest_id.alias ){
                 contest = contest_id;
                 return cb();
@@ -118,6 +117,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
             res.locals.title = game.getName()+' - '+page.name+' | Bozuko Client';
             res.locals.device = 'touch';
             res.locals.layout = 'client/layout';
+            res.locals.cache_time = now;
             return res.render('client/index');
         }
         // this is going to be the desktop display...

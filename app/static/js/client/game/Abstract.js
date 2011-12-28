@@ -110,7 +110,13 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     loadImages : function(cb){
         for(var key in this._srcs ){
             var img = this._images[key];
-            if( !img.loaded ) img.src = this._srcs[key];
+            if( !img.loaded ){
+                var src = this._srcs[key];
+                if( !src.match(/^data/i) ){
+                    src+=((~src.indexOf('?')?':':'?')+'dc='+this.app.config.cache_time);
+                }
+                img.src = src;
+            }
         }
     },
     
@@ -530,6 +536,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             tag             :'h3',
                             cls             :'prize-name'
                         },{
+                            cls             :'prize-desc'
+                        },{
                             cls             :'prize-code'
                         },{
                             cls             :'body',
@@ -588,7 +596,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
             var youWin = this.$youWin,
                 bd = this.$youWin.child('.bd'),
-                ft = this.$youWin.child('.ft');
+                ft = this.$youWin.child('.ft'),
+                desc = this.$youWin.child('.prize-desc');
+                
+            desc.setVisibilityMode( Ext.Element.DISPLAY );
+            this.$youWin.child('.prize-name').on('click', desc.toggle, desc);
                 
             bd.superScroll({
                 horizontal : false,
@@ -620,6 +632,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.$youWin.child('.hd .title').update(prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
         
         this.$youWin.child('.prize-name').update(prize.name);
+        this.$youWin.child('.prize-desc').update('<strong>Prize Details:</strong> '+prize.description);
+        this.$youWin.child('.prize-desc').hide();
+        
         this.$youWin.child('.prize-code').update('<span class="code-label">CODE: </span>'+prize.code);
         
         var message = this.$youWin.child('.message'),
