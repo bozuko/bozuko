@@ -33,6 +33,12 @@ Ext.define('Bozuko.view.contest.Reports', {
                 xtype           :'tbtext',
                 ref             :'details-campaign-text',
                 text            :me.record.get('name')||'Untitled Campaign'
+            },{
+                text            :'Download CSV',
+//                action          :'download',
+                href            : Bozuko.Router.route('/contests/'+me.record.getId()+'/report'),
+                cls             :'site-button',
+                iconAlign       :'right'
             }]
         });
 

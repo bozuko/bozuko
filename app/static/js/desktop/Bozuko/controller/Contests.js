@@ -35,13 +35,16 @@ Ext.define('Bozuko.controller.Contests' ,{
             'contestreports button[action=back]' : {
                 click           :me.onContestReportsBackButton
             },
+	    'contestreports button[action=download]' : {
+		click           :me.onContestReportsDownloadClick
+	    },		    
             'contestform button[action=save]' : {
                 click           :this.onContestSaveClick
             },
             'contestform button[action=back]' : {
                 click           :this.onContestBackClick
             },
-            'contestbuilder button[action=back]' : {
+           'contestbuilder button[action=back]' : {
                 click           :this.onContestBuilderBackClick
             },
             'contestform panel[region=west] dataview' : {
@@ -78,6 +81,10 @@ Ext.define('Bozuko.controller.Contests' ,{
         panel.doComponentLayout();
         panel.remove(contest);
     },
+
+    onContestReportsDownloadClick : function(btn){
+        alert('fuck');
+    },		 
     
     onContestBackClick : function(btn){
         var panel = btn.up('contestspanel'),
