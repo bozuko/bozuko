@@ -760,6 +760,20 @@ a:hover {
   font-weight: 800px;
   color: #333;
   margin: 0;
+  cursor: pointer;
+}
+.you-win .bd .prize-desc {
+  margin-bottom: 20px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
 }
 .you-win .bd .prize-code {
   text-align: center;
