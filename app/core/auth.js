@@ -100,7 +100,10 @@ var adminAuth = basicAuth(function(user,pass,cb){
         secure: true
     });
     return conn.connect(function(error){
-        if( error ) return cb(error);
+        if( error ) {
+             console.error('auth error: '+error);
+             return cb(error);
+        }
         return cb(null, {email:email});
     });
 });
@@ -147,7 +150,7 @@ auth.mobile = function(req, res, callback) {
             if(version.length && version[0] == 'html5'){
                 return callback(null);
             }
-            
+
             if (!req.session.phone){
                 return callback(Bozuko.error('auth/mobile'));
             }
@@ -175,9 +178,9 @@ auth.mobile = function(req, res, callback) {
             var fn, result,
                 version = req.session.mobile_version.split('-',2),
                 type = 'mobile';
-            
-            
-            
+
+
+
             if( version.length > 1 ){
                 type = version.shift();
                 if( type == 'iphone' || type == 'android' ){
@@ -192,7 +195,7 @@ auth.mobile = function(req, res, callback) {
                     return callback(null);
                 }
             }
-            
+
             console.error('expected: '+result);
             console.error('user name: '+user.name);
             console.error('challenge: '+user.challenge);
@@ -200,7 +203,7 @@ auth.mobile = function(req, res, callback) {
             console.error('challenge_response: '+req.session.challenge_response);
             console.error('req.url: '+req.url);
             console.error('failing on challenge question');
-            
+
             /**
              * Disabling the authorization security on api until
              * we can figure out how it is broken
