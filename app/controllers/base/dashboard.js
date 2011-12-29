@@ -1508,7 +1508,7 @@ exports.routes = {
                    }
 
                    if (!allowed) return Bozuko.error('bozuko/auth').send(res);
-                   return reporter.stream(req.session.user, contest, res);
+                   return reporter.stream(contest, res);
                });
             }
         }
