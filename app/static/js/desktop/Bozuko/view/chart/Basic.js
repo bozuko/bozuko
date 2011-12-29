@@ -198,6 +198,12 @@ Ext.define('Bozuko.view.chart.Basic', {
                         }
                     }
                 )
+            }, {
+                xtype           :'button',
+                hidden          : me.contest_id ? false : true,
+                text            :'Download CSV',
+                href            : Bozuko.Router.route('/contests/'+me.contest_id+'/report'),
+                cls             :'site-button'
             }]
         });
         
