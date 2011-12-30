@@ -1,7 +1,6 @@
 var Content     = Bozuko.require('util/content'),
     validator   = require('validator'),
     mailer      = Bozuko.require('util/mail'),
-    Report      = Bozuko.require('core/report'),
     DateUtil    = Bozuko.require('util/date'),
     async       = require('async'),
     Dashboard   = require('./base/dashboard'),

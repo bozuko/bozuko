@@ -7,6 +7,7 @@ exports.locals = {
     home_title: 'Code Search',
     device: 'desktop',
     title: 'Code Search',
+    dateFormat : require('dateformat'),
     layout: 'codes/layout',
     hide_top_profile: true,
     meta: {
@@ -46,7 +47,7 @@ function error(res, err) {
     res.render('codes/pin.jade');
 }
 
-var not_found = 'Sorry, no prizes were found.';
+var not_found = 'Sorry, we can\'t find that prize code.';
 function render(res) {
     res.locals.error_ctx = 'search';
     return Bozuko.models.User.findById(res.locals.prize.user_id, function(err, user) {
@@ -73,7 +74,7 @@ exports.routes = {
 
         post: {
             handler: function(req, res) {
-                var code = req.param('code');
+                var code = (req.param('code')||"").toUpperCase();
                 var pin = req.param('pin');
                 var page_id = req.param('page_id');
                 var page_name = req.param('page_name');
@@ -106,7 +107,7 @@ exports.routes = {
     '/codes/verified': {
         post: {
             handler: function(req, res) {
-                var code = req.param('code');
+                var code = (req.param('code')||"").toUpperCase();
                 var pin = req.param('pin');
                 var page_id = req.param('page_id');
                 var page_name = req.param('page_name');
@@ -114,7 +115,7 @@ exports.routes = {
                 if (!pin) return res.render('codes/pin.jade');
                 if (!page_id || !page_name) {
                     return Bozuko.models.Page.verifyPin(pin, function(err, page) {
-                        if (err) return setTimeout(function() {error(res, err);}, 3000);
+                        if (err) return error(res, err);
                         res.locals.pin = pin;
                         res.locals.page_id = page._id;
                         res.locals.page_name = page_name;

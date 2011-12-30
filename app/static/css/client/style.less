@@ -483,7 +483,10 @@ a, a:visited, a:link, a:hover {
         }
     }
     .hd {
+        position: relative;
         .content {
+            position: relative;
+            height: 63px;
             .name {
                 font-size: 14px;
                 font-weight: 500;
@@ -496,6 +499,30 @@ a, a:visited, a:link, a:hover {
             }
             .instructions {
                 padding-left: 0px;
+            }
+            .links {
+                list-style: none;
+                padding: 2px 0;
+                margin: 0;
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                padding-top: 2px;
+                border-top: 1px solid #333;
+                background: rgba(0,0,0,0.1);
+                li{
+                    list-style: none;
+                    margin: 0;
+                    padding-left: 6px;
+                    padding-right: 4px;
+                    display: inline-block;
+                    a{
+                        font-weight: bold;
+                        color: #eaf9ff;
+                        text-decoration: none;
+                    }
+                }
             }
         }
     }
@@ -706,6 +733,14 @@ a, a:visited, a:link, a:hover {
             font-weight: 800px;
             color: #333;
             margin: 0;
+            cursor: pointer;
+        }
+        .prize-desc {
+            margin-bottom: 20px;
+            padding: 6px;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            .border_radius(6px);
         }
         .prize-code {
             text-align: center;

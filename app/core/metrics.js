@@ -5,6 +5,10 @@ var min = 60000,
     year = 52*week
 ;
 
+exports.configure = function(models) {
+    this.models = models;
+};
+
 /*
  * Based on the start time and end time determine which metric granularities (buckets) to return.
  * Every time the user zooms or scrolls new data will be retrieved. Return nearby buckets so
@@ -30,3 +34,23 @@ exports.get = function(options, callback) {
 exports.rebuild = function(options, callback) {
 };
 
+exports.schema = {
+    timestamp: {type: Date, index: true},
+    entries: {},
+    plays: {},
+    wins: {},
+    redemptions: {},
+    win_cost: {},
+    redemption_cost: {},
+    fb_posts: {},
+    fb_likes: {},
+    fb_checkins: {},
+    unique_users: {},
+    new_users: {}
+};
+
+exports.update = function(field, value) {
+    models.forEach(function(model) {
+        model.updateMetrics(field, value);
+    });
+};

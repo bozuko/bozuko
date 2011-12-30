@@ -1,7 +1,8 @@
 .codes
-  img.orange-check(src='/images/desktop/site/beta/img_orange-check.png')
+  .prompt.welcome
+    img.orange-check(src='/images/desktop/site/beta/img_orange-check.png')
+    |   Welcome #{page_name}. Please enter a prize code.
   .main
-    .prompt.welcome Welcome, #{page_name}
     form(action="/codes",method="post")
       input(type='text', name='code')  
       input(type='hidden', name='pin', value=pin)
@@ -28,16 +29,22 @@
       .profile-pic
         img(src=user_image,height='50px')
       .timestamps
-        span Won: #{prize.timestamp}
+        span Won: #{dateFormat(prize.timestamp, "mediumDate")} #{dateFormat(prize.timestamp, "shortTime")}
         br
         -if (locals.prize.redeemed) 
-          span Redeemed: #{prize.redeemed_time}
+          span.redeemed
+            span.label Redeemed:
+            |   #{dateFormat(prize.redeemed_time, "mediumDate")} #{dateFormat(prize.redeemed_time, "shortTime")}
           br
         -if (locals.prize.state == 'expired')
-          span Expired: #{prize.expires}
+          span.expired
+            span.label Expired:
+            |   #{dateFormat(prize.expires, "mediumDate")} #{dateFormat(prize.expires, "shortTime")}
           br
         -if (locals.prize.verified)
-          span Verified:  #{prize.verified_time}
+          span.verified
+            span.label Verified:
+            |   #{dateFormat(prize.verified_time, "mediumDate")} #{dateFormat(prize.verified_time, "shortTime")}
           br
       .verify-button
         form(action="/codes/verified",method="post")

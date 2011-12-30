@@ -65,13 +65,13 @@ Ext.define('Bozuko.view.page.Panel', {
                     group       :'page',
                     icon        :'/images/icons/bozuko/account_resources_24x24.png',
                     listeners   :{toggle:me.onBtnToggle, scope:me}
-                },{
+                }/*,{
                     text        :'Account',
                     page        :'account',
                     group       :'page',
                     icon        :'/images/icons/bozuko/accounts_24x24.png',
                     listeners   :{toggle:me.onBtnToggle, scope:me}
-                },'->',{
+                }*/,'->',{
                     ref         :'status-text',
                     xtype       :'tbtext',
                     text        :' '

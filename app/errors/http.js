@@ -12,5 +12,10 @@ module.exports = {
 
     error_event: function() {
         return "HTTP clientRequest error event: "+this.data;
-    }
+    },
+
+   unacceptable: {
+      code: 406,
+      message: 'This server does not support the given entity type'
+   }
 };

@@ -7,7 +7,6 @@ var facebook    = Bozuko.require('util/facebook'),
     filter      = Bozuko.require('util/functions').filter,
     merge       = Bozuko.require('util/functions').merge,
     array_map   = Bozuko.require('util/functions').map,
-    Report      = Bozuko.require('core/report'),
     DateUtil    = Bozuko.require('util/date'),
     async       = require('async'),
     XRegExp     = Bozuko.require('util/xregexp')

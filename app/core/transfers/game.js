@@ -175,6 +175,9 @@ var game_state = {
                 }
             }
             game_state.next_enter_time_ms = Math.max(+game_state.next_enter_time - Date.now(),0);
+            if (game_state.button_text === 'Thanks For Playing' || game_state.button_text === 'Game Over') {
+                game_state.next_enter_time_ms = 60000000; // some large number
+            }
             game_state.links = links;
         }
         return self.sanitize( game_state, null, user, callback );

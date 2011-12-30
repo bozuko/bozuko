@@ -16,8 +16,9 @@ var Content     = Bozuko.require('util/content'),
     ObjectId    = require('mongoose').Types.ObjectId,
     XRegExp     = Bozuko.require('util/xregexp'),
     crypto      = require('crypto'),
-    metrics     = Bozuko.require('util/metrics')
-    ;
+    metrics     = Bozuko.require('core/metrics'),
+    reporter    = Bozuko.require('util/reporter')
+;
 
 exports.restrictToUser = false;
 
@@ -99,6 +100,14 @@ exports.routes = {
                                 bottom:20
                             }});
 
+                            doc.write_lines = function(lines, x, y, options){
+                                doc.x = x;
+                                doc.y = y;
+                                lines.forEach(function(line){
+                                    doc.text(line, options);
+                                });
+                            };
+
                             var image_base = Bozuko.dir+'/resources/images',
                                 logo_width = doc.page.width * .25,
                                 logo_x = doc.page.width/2 - logo_width/2
@@ -127,10 +136,9 @@ exports.routes = {
                             var w = doc.page.width,
                                 prize_name = "Prize Name",
                                 you_win_text = ['STEP 1: Redeem',
-                                                '',
                                                 'If a player wins a prize, they are presented a "YOU WIN!" screen '+
                                                 'directing them to an employee. Ask them to press Redeem.'
-                                               ].join('\n');
+                                               ];
                                 h = (doc.page.height - doc.y),
                                 src_width = 320,
                                 src_height = 480,
@@ -162,6 +170,7 @@ exports.routes = {
                                 .font('Helvetica-Bold')
                                 .text(prize_name, img_x, y+(img_height*prize_y), {width: img_width, align: 'center'} )
                                 ;
+
                             // we need to get the width of that "Prize Name" string so we can underline it.
                             var underline_w = doc.widthOfString(prize_name),
                                 underline_x = img_x+(img_width-underline_w)/2
@@ -183,8 +192,9 @@ exports.routes = {
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(you_win_text, img_x, y+img_height+20, {align:'left', width: img_width } )
+                                .write_lines(you_win_text, img_x, y+img_height+20, {align:'left', width:img_width})
                                 ;
+
 
                             /**
                              * Block 2, redemption screen
@@ -209,10 +219,10 @@ exports.routes = {
                                 s_y = y + img_height*277/480,
                                 s_time_y = y+img_height*358/480,
                                 redeemed_text = ['STEP 2: Verify',
-                                                 '',
+                                                 //' ',
                                                  'Pressing "Redeem" brings up the Prize Screen. '+
                                                  'You should see the prize, your business logo, a security image and the current time.'
-                                                ].join('\n')
+                                                ]
                                 ;
 
                             doc
@@ -246,7 +256,7 @@ exports.routes = {
                                 // paragraph below
                                 .font('Helvetica')
                                 .fontSize(11)
-                                .text(redeemed_text, block_width+img_x, y+img_height+20, {align:'left', width: img_width } )
+                                .write_lines(redeemed_text, block_width+img_x, y+img_height+20, {align:'left', width: img_width } )
                                 ;
 
                             /**
@@ -274,15 +284,13 @@ exports.routes = {
                             doc
                                 .fontSize(14)
                                 .font('Heading Font')
-                                .text(['Contact Information:',
-                                    '',
+                                .write_lines(['Contact Information:',
                                     'Email:',
                                     'support@bozuko.com',
-                                    '',
                                     'Phone:',
                                     '415-2BOZUKO',
                                     '(415) 226-9856'
-                                ].join('\n'), block_width, y+block_height+10,{align: 'center', width: block_width} )
+                                ], block_width, y+block_height+10,{align: 'center', width: block_width} )
 
                             // cleanup
                             fs.unlinkSync(security_file);
@@ -293,7 +301,7 @@ exports.routes = {
                                 .replace(/['\*"]/,'');
 
                             res.contentType('application/pdf');
-                            res.header('Content-Disposition', 'inline, filename='+name+'_Redemption_Instructions.pdf');
+                            res.header('Content-Disposition', 'inline; filename='+name+'_Redemption_Instructions.pdf');
                             return res.end(doc.output(),'binary');
                         }
                     )
@@ -1114,6 +1122,12 @@ exports.routes = {
                                     if( error ) return cb(error);
                                     contest_json.play_count = play_count;
 
+                                    if (contest_json.engine_type === 'time') {
+                                        contest_json.window_divisor = contest.engine_options.window_divisor;
+                                        contest_json.throwahead_multiplier = contest.engine_options.throwahead_multiplier;
+                                        contest_json.end_buffer = contest.engine_options.buffer;
+                                    }
+
                                     return cb();
                                 });
 
@@ -1160,6 +1174,18 @@ exports.routes = {
                     delete prize._id;
                 });
 
+                if (data.engine_type === 'time') {
+                    if (data.window_divisor > 5) data.window_divisor = 5;
+                    if (data.window_divisor < 0) data.window_divisor = 0;
+                    data.engine_options.window_divisor = data.window_divisor;
+                    data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
+                    data.engine_options.buffer = data.end_buffer;
+                }
+                // remove unused variables
+                delete data.window_divisor;
+                delete data.throwahead_multiplier;
+                delete data.end_buffer;
+
                 var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
@@ -1196,6 +1222,7 @@ exports.routes = {
                     if( error ) return error.send(res);
 
                     var data = filter(req.body);
+                    console.log(data);
 
                     var prizes = data.prizes,
                         entry_config = data.entry_config,
@@ -1212,6 +1239,18 @@ exports.routes = {
 
                     // don't want to update this, will throw an error
                     delete data._id;
+
+                    if (data.engine_type === 'time') {
+                        if (data.window_divisor > 5) data.window_divisor = 5;
+                        if (data.window_divisor < 0) data.window_divisor = 0;
+                        data.engine_options.window_divisor = data.window_divisor;
+                        data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
+                        data.engine_options.buffer = data.end_buffer;
+                    }
+                    // remove unused variables
+                    delete data.window_divisor;
+                    delete data.throwahead_multiplier;
+                    delete data.end_buffer;
 
                     for( var p in data ){
                         if( data.hasOwnProperty(p) ){
@@ -1296,6 +1335,44 @@ exports.routes = {
                         return res.send({success: true});
                     });
                 });
+            }
+        }
+    },
+
+    '/contests/:id/report' : {
+        get: {
+            handler: function(req, res) {
+                var self = this;
+               // if (req.headers['accept'] !== 'text/csv') {
+               //    return Bozuko.error('http/unacceptable').send(res);
+               // }
+               var contest_id = req.param('id');
+               if (!contest_id) return Bozuko.error('contest/not_found').send(res);
+               return Bozuko.models.Contest.findById(contest_id, function(err, contest) {
+                   if (err) return err.send(res);
+                   if (!contest) return Bozuko.error('contest/not_found', contest_id).send(res);
+
+                   // Allow report generation if this user manages any page of this contest
+                   var allowed = false;
+
+                   if (self.restrictToUser) {
+                       if(~indexOf(req.session.user.manages, contest.page_id) ){
+                           allowed = true;
+                       } else {
+                           for (var i = 0; i < contest.page_ids.length; i++) {
+                               if (~indexOf(req.session.user.manages, contest.page_id[i])) {
+                                   allowed = true;
+                                   break;
+                               }
+                           }
+                       }
+                   } else {
+                       allowed = true;
+                   }
+
+                   if (!allowed) return Bozuko.error('bozuko/auth').send(res);
+                   return reporter.stream(contest, res);
+               });
             }
         }
     },

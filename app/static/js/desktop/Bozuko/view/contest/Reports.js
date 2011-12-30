@@ -1,18 +1,18 @@
 Ext.define('Bozuko.view.contest.Reports', {
-    
+
     alias : 'widget.contestreports',
     extend : 'Ext.panel.Panel',
-    
+
     requires : [
         'Bozuko.view.contest.Overview',
         'Bozuko.view.contest.Prizes',
         'Bozuko.view.chart.Basic',
         'Bozuko.view.contest.Players'
     ],
-    
+
     initComponent : function(){
         var me = this;
-        
+
         me.tbar = Ext.create('Ext.toolbar.Toolbar',{
             ref         :'contestform-navbar',
             cls         :'title-toolbar',
@@ -35,7 +35,7 @@ Ext.define('Bozuko.view.contest.Reports', {
                 text            :me.record.get('name')||'Untitled Campaign'
             }]
         });
-        
+
         Ext.apply(me, {
             layout          :'border',
             items : [{
@@ -77,8 +77,8 @@ Ext.define('Bozuko.view.contest.Reports', {
                 contest_id      :me.record.get('_id')
             }]
         });
-        
+
         me.callParent( arguments );
     }
-    
+
 });

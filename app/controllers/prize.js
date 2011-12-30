@@ -163,7 +163,7 @@ exports.routes = {
         }
     },
     
-    '/prizes/:id/resend' : {
+    '/prize/:id/resend' : {
         post : {
             access : 'mobile',
             
@@ -181,7 +181,7 @@ exports.routes = {
                     if( error ) return error.send(res);
                     if( !prizes.length ) return Bozuko.error('prize/not_exists').send(res);
                     
-                    prizes[0].sendEmail(user);
+                    prizes[0].sendEmail(user);                    
                     return Bozuko.transfer('success_message', {
                         
                         success: true,

@@ -78,7 +78,7 @@ Ext.define('Bozuko.controller.Contests' ,{
         panel.doComponentLayout();
         panel.remove(contest);
     },
-    
+
     onContestBackClick : function(btn){
         var panel = btn.up('contestspanel'),
             active = panel.getLayout().getActiveItem();

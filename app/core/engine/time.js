@@ -16,10 +16,11 @@ inherits(TimeEngine, Engine);
 var lookback_window_floor = 1000*60*3;
 
 TimeEngine.prototype.configure = function(opts) {
+    console.log('TimeEngine.configure: opts = '+inspect(opts));
     opts = opts || {};
     this.buffer = opts.buffer || 0.001;
 
-    this.window_divisor = opts.window_divisor || 5;
+    this.window_divisor = opts.window_divisor || 0.01;
     this.throwahead_multiplier = opts.throwahead_multiplier || 10;
 
     // Leave a buffer at the end so users can always win the last prizes.

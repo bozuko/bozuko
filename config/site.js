@@ -5,9 +5,10 @@ module.exports = {
     controllers: {
         only: [
             'site',
-			'my',
+	    'my',
             'mycroft',
-			'client'
+	    'client',
+            'codes'
         ]
     },
 
@@ -118,7 +119,7 @@ module.exports = {
 			key : '/ssl/bozuko.com/bozuko.com.key',
 			ca : '/ssl/bozuko.com/gd_bundle.crt',
 			cert: '/ssl/bozuko.com/bozuko.com.crt'
-            
+
 		},
         host: 'bozuko.com',
         port: 443
