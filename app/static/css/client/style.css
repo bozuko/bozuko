@@ -606,6 +606,39 @@ a:hover {
   margin-top: .5em;
   font-size: 11px;
 }
+.game-description .actions .share-buttons {
+  display: none;
+  margin-top: 6px;
+}
+.game-description .actions .share-buttons ul, .game-description .actions .share-buttons li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline;
+}
+.game-description .actions .share-buttons li {
+  margin: 5px;
+}
+.game-description .actions .share-buttons li a {
+  font-size: 11px;
+  display: inline-block;
+  padding: 2px 5px;
+  background-color: #e8e8e8;
+  background-image: -moz-linear-gradient(top, #e8e8e8, #ffffff);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #e8e8e8), color-stop(1, #ffffff)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#e8e8e8',EndColorStr='#ffffff');
+  /* IE6-9 */
+
+  border: 1px solid #ccc;
+  text-decoration: none;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 4px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+  background-clip: padding-box;
+}
 .game-description .loading .action {
   display: none;
 }
@@ -763,10 +796,11 @@ a:hover {
   cursor: pointer;
 }
 .you-win .bd .prize-desc {
-  margin-bottom: 20px;
+  position: relative;
+  margin: 10px 0;
   padding: 6px;
   background: #fff;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #ccc;
   -webkit-background-clip: padding-box;
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
@@ -774,6 +808,32 @@ a:hover {
   -ms-border-radius: 6px;
   border-radius: 6px;
   background-clip: padding-box;
+}
+.you-win .bd .prize-desc .text {
+  color: #000;
+  text-align: left;
+}
+.you-win .bd .prize-desc .arrow-border {
+  border-color: transparent transparent #ccc transparent;
+  border-style: solid;
+  border-width: 11px;
+  height: 0;
+  width: 0;
+  position: absolute;
+  top: -23px;
+  left: 50%;
+  margin-left: -11px;
+}
+.you-win .bd .prize-desc .arrow {
+  border-color: transparent transparent #FFFFFF transparent;
+  border-style: solid;
+  border-width: 10px;
+  height: 0;
+  width: 0;
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  margin-left: -10px;
 }
 .you-win .bd .prize-code {
   text-align: center;
