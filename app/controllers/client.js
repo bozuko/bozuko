@@ -125,6 +125,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
         // this is going to be the desktop display...
         res.locals = merge({}, Bozuko.require('controllers/site').locals);
         res.locals.meta['og:image'] = qr;
+        res.locals.meta.description = "Play this game on your phone for a chance to win free prizes!";
         res.locals.qr = qr;
         res.locals.contest = contest;
         res.locals.game = game;
