@@ -228,7 +228,8 @@ Contest.method('validateResults', function(callback) {
 
 Contest.method('getOfficialRules', function(){
 
-    var rules = this.replace_rules ? this.rules : Content.get('app/rules.txt');
+    var self = this,
+        rules = this.replace_rules ? this.rules : Content.get('app/rules.txt');
 
     if( !this.replace_rules && this.rules ){
         rules += "\n\n----------\n\n"+this.rules;
@@ -268,7 +269,16 @@ Contest.method('getOfficialRules', function(){
         if( prize.details ) prizes_str+= prizes.details+' ';
         var gcd = getGCD( prize.total, self.total_plays );
 
-        prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
+        switch(self.engine_type){
+            case 'order':
+                prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
+                break;
+            case 'time':
+            default:
+                prizes_str+= 'Odds of winning depend upon the number of participants playing the Game and the date and time of each play. ';
+                break;
+        }
+        
         total += (prize.value * prize.total);
     });
 
@@ -278,7 +288,15 @@ Contest.method('getOfficialRules', function(){
         if( prize.details ) prizes_str+= prizes.details+' ';
         var gcd = getGCD( prize.total, self.total_plays );
 
-        prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
+        switch(self.engine_type){
+            case 'order':
+                prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
+                break;
+            case 'time':
+            default:
+                prizes_str+= 'Odds of winning depend upon the number of participants playing the Game and the date and time of each play. ';
+                break;
+        }
         total += (prize.value * prize.total);
     });
 

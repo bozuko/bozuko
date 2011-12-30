@@ -431,11 +431,16 @@ Prize.method('share', function(args, callback){
 			if( contest.post_to_wall !== true ){
 				return cb();
 			}
+			
+			var link = contest.web_only ?
+				'https://bozuko.com/'+contest.alias||('/client/game/'+contest._id) :
+				'https://bozuko.com/p/'+prize.page_id
+				;
 
 			var options = {
 				user: user,
 				message: args.message || '',
-				link: 'https://bozuko.com/p/'+prize.page_id,
+				link: link,
 				picture: burl('/page/'+prize.page_id+'/image')
 			};
 
@@ -448,8 +453,9 @@ Prize.method('share', function(args, callback){
 
 			// fix this in the case of Bozuko
 			if( page.name.match(/^bozuko$/i) ) at='with';
-
-			options.description = 'You could too! Play '+gameName+' '+at+' '+page.name+' for your chance to win!';
+			
+			var game_type = contest.game=='scratch'? 'scratch ticket':'slot machine';
+			options.description = 'You could too! Play '+page.name+' '+game_type+' for your chance to win!';
 
 			return Bozuko.service('facebook').post(options, function(error){
 
