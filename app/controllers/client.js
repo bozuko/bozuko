@@ -116,7 +116,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
                 res.locals.stylesheets.push(style+'?'+now);
             });
             
-            res.locals.title = game.getName()+' - '+page.name+' | Bozuko Client';
+            res.locals.title = 'Play '+game.getName()+'!';
             res.locals.device = 'touch';
             res.locals.layout = 'client/layout';
             res.locals.cache_time = now;
@@ -124,12 +124,13 @@ exports.renderGame = function(req, res, contest_id, page_id){
         }
         // this is going to be the desktop display...
         res.locals = merge({}, Bozuko.require('controllers/site').locals);
-        res.locals.meta['og:image'] = qr;
-        res.locals.meta.description = "Play this game on your phone for a chance to win free prizes!";
+        res.locals.meta['og:image'] = burl('/page/'+page._id+'/image');
+        var game_type = contest.game_type == 'scratch' ? 'Scratch Ticket' : 'Slot Machine';
+        res.locals.meta.description = "Play this "+game_type+" on your phone for a chance to win free prizes!";
         res.locals.qr = qr;
         res.locals.contest = contest;
         res.locals.game = game;
-        res.locals.title = game.getName()+' - '+page.name+' | Bozuko';
+        res.locals.title = 'Play '+game.getName()+'!';
         res.locals.page = page;
         res.locals.content = contest.promo_copy;
         res.locals.short_url = burl(req.url).replace(/https?:\/\//, '').replace(/:(443|80)\//, '/');
