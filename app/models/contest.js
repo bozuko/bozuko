@@ -301,7 +301,7 @@ Contest.method('getOfficialRules', function(){
     });
 
     replacements.prizes = prizes_str;
-    replacements.arv = '$'+total;
+    replacements.arv = '$'+total.toFixed(2);
 
     var config = this.getEntryConfig();
     var entryMethod = Bozuko.entry( {contest: this, type: config.type} );
