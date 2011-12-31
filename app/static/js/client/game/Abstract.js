@@ -320,7 +320,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             // get the window width
             var mobile = window.innerWidth && window.innerWidth < 500;
             var url = (function(l){
-                return l.protocol+'//'+l.host+l.pathname;
+                return l.protocol+'//'+l.host.replace(/^api\./,'')+l.pathname+'?share-button=1';
             })(window.location);
             this.$description = this.app.createModal({
                 cls             :'game-description page-window modal-window-full',
