@@ -126,7 +126,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
         res.locals = merge({}, Bozuko.require('controllers/site').locals);
         res.locals.meta['og:image'] = burl('/page/'+page._id+'/image');
         if( Bozuko.env() == 'site' ) res.locals.meta['og:image'] = res.locals.meta['og:image'].replace(/\/\/bozuko\.com/, '//api.bozuko.com');
-        var game_type = contest.game_type == 'scratch' ? 'Scratch Ticket' : 'Slot Machine';
+        var game_type = contest.game == 'scratch' ? 'Scratch Ticket' : 'Slot Machine';
         res.locals.meta.description = "Play this "+game_type+" on your phone for a chance to win free prizes!";
         res.locals.qr = qr;
         res.locals.contest = contest;
