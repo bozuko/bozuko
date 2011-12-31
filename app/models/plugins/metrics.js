@@ -1,6 +1,22 @@
 var Metrics = module.exports = function(schema, options){
+
+    // Add all schema properties here, so we don't have to do it for each Metrics Model.
+    schema.add({
+        timestamp: {type: Date, index: true},
+        entries: {},
+        plays: {},
+        wins: {},
+        redemptions: {},
+        win_cost: {},
+        redemption_cost: {},
+        fb_posts: {},
+        fb_likes: {},
+        fb_checkins: {},
+        unique_users: {},
+        new_users: {}
+    });
+    
     schema.static('updateMetrics', function(field, value) {
-        console.log(this);
         var self = this;
         var date = new Date();
         var modifier = {$inc: {}};
@@ -27,8 +43,12 @@ var Metrics = module.exports = function(schema, options){
             modifier,
             {upsert: true},
             function(err) {
-                if (err) console.error('Failed to update metrics: '+err);
+                if (err) console.error('Failed to update metrics for '+this.modelName+': '+err);
             }
         );
+    });
+
+    schema.static('findMetrics', function(options, callback) {
+        return this.find({timestamp: {$gt: options.start, $lt: options.end}}, callback); 
     });
 };

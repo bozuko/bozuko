@@ -5,10 +5,6 @@ var min = 60000,
     year = 52*week
 ;
 
-exports.configure = function(models) {
-    this.models = models;
-};
-
 /*
  * Based on the start time and end time determine which metric granularities (buckets) to return.
  * Every time the user zooms or scrolls new data will be retrieved. Return nearby buckets so
@@ -16,41 +12,36 @@ exports.configure = function(models) {
  */
 exports.get = function(options, callback) {
     var buckets = [];
+    var rv = {};
     var window = options.end.getTime() - options.start.getTime();
     if (window < hr*3) {
-        buckets.push('minutes');
+        buckets.push('MetricsMinutely');
     }
     if (window < hr*72) {
-        buckets.push('hours');
+        buckets.push('MetricsHourly');
     }
-    if (window < day*180 && window > hr*24) {
-        buckets.push('days');
+    if (window > hr*24) {
+        buckets.push('MetricsDaily');
     }
-    if (window > day*7 && window < year*3) {
-        buckets.push('weeks');
-    }
+    return async.forEachSeries(buckets, function(bucket, cb) {
+        return Bozuko.models[bucket].findMetrics(options, function(err, docs) {
+            if (err) return cb(err);
+            rv[bucket] = docs;
+            return cb();
+        });
+    }, function(err) {
+        if (err) return callback(err);
+        return cb(null, rv);
+    });
 };
 
 exports.rebuild = function(options, callback) {
 };
 
-exports.schema = {
-    timestamp: {type: Date, index: true},
-    entries: {},
-    plays: {},
-    wins: {},
-    redemptions: {},
-    win_cost: {},
-    redemption_cost: {},
-    fb_posts: {},
-    fb_likes: {},
-    fb_checkins: {},
-    unique_users: {},
-    new_users: {}
-};
 
+var models = ['MetricsDaily', 'MetricsHourly', 'MetricsMinutely'];
 exports.update = function(field, value) {
     models.forEach(function(model) {
-        model.updateMetrics(field, value);
+        Bozuko.models[model].updateMetrics(field, value);
     });
 };

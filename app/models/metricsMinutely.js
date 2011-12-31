@@ -1,6 +1,5 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    metrics = Bozuko.require('core/metrics'),
     MetricsPlugin = require('./plugins/metrics')
 ;
 
@@ -16,5 +15,5 @@ var mongoose = require('mongoose'),
  * timestamp: "Thu Dec 22 2011 24:00:00 GMT-0500"
  */
 
-var MetricsMinutely = module.exports = new Schema(metrics.schema);
+var MetricsMinutely = module.exports = new Schema({});
 MetricsMinutely.plugin(MetricsPlugin);

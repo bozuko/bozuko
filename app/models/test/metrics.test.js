@@ -4,7 +4,7 @@ testsuite = require('./config/testsuite');
 
 exports['cleanup'] = function(test) {
     async.forEachSeries(
-        ['MetricsMinutely', 'MetricsHourly', 'MetricsDaily', 'MetricsWeekly'], 
+        ['MetricsMinutely', 'MetricsHourly', 'MetricsDaily'],
         function(model, cb) {
             Bozuko.models[model].remove({}, cb);
         }, function(err) {
