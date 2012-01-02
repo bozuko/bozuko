@@ -1,8 +1,15 @@
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId
+;
+
 var Metrics = module.exports = function(schema, options){
 
     // Add all schema properties here, so we don't have to do it for each Metrics Model.
     schema.add({
         timestamp: {type: Date, index: true},
+        contest_id: {type: ObjectId, index: true},
+        page_id: {type: ObjectId, index: true},
         entries: {},
         plays: {},
         wins: {},
