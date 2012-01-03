@@ -55,6 +55,7 @@ Ext.define('Bozuko.view.contest.Reports', {
                     xtype           :'bozukochartbasic',
                     title           :'Performance',
                     contest_id      :me.record.get('_id'),
+                    contest         :me.record,
                     bodyPadding     :10,
                     autoScroll      :true
                 },{

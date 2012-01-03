@@ -1564,6 +1564,27 @@ exports.routes = {
             }
         }
     },
+    
+    '/contests/:id/pages' : {
+        get : {
+            handler : function(req, res){
+                // get the contest...
+                return Bozuko.models.Contest.findById(req.param('id'), {page_ids:1, page_id:1}, function(error, contest){
+                    if( error || !contest ) return (error || new Error('Contest Not Found')).send(res);
+                    var ar = contest.page_ids;
+                    if( !ar.length ) ar = [contest.page_id];
+                    if( !ar.length ) return (new Error('Contest has no Pages')).send(res);
+                    return Bozuko.models.Page.find({_id: {$in: ar}}, function(error, pages){
+                        if( error || !pages.length ) return (new Error('Contest has no Pages')).send(res);
+                        return res.send({
+                            items: pages,
+                            count: pages.length
+                        });
+                    });
+                });
+            }
+        }
+    },
 
     '/contest/rules' : {
         post : {
