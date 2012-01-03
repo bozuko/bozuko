@@ -17,10 +17,20 @@ var path = process.env.HOME+'/bozuko/app/core/engine/simulator/input/'+argv.cont
 var plays = [];
 var wins = [];
 var redistributions = [];
+var start;
+var end;
 
+async.series([get_contest, get_wins_and_redists, get_plays, output_data_file]);
 
-async.series([get_wins_and_redists, get_plays, output_data_file]);
-
+function get_contest(cb) {
+    return fs.readFile(path+'/contest.json', function(err, json) {
+        if (err) return cb(err);
+        var contest = JSON.parse(json);
+        start = new Date(contest.start.$date);
+        end = new Date(contest.end.$date);
+        cb();
+    });
+}
 
 function get_wins_and_redists(cb) {
     return fs.readFile(path+'/results.json', 'utf8', function(err, jsonlines) {
@@ -46,7 +56,7 @@ function get_plays(cb) {
     return fs.readFile(path+'/plays.json', 'utf8', function(err, jsonlines) {
         var jsonarray = jsonlines.split("\n");
         jsonarray.forEach(function(json) {
-            var result = null; 
+            var result = null;
             try {
                result = JSON.parse(json);
             } catch (err) {
@@ -80,46 +90,48 @@ function buildKey(ts) {
  return ''+ts.getFullYear()+'-'+(ts.getMonth()+1)+'-'+ts.getDate()+'T'+ts.getHours();
 }
 
-function createBuckets() {
+var hr = 1000*60*60;
+
+function empty_buckets() {
+    var start_ms = start.getTime();
+    var end_ms = end.getTime();
+    var cur_ms = start_ms;
+    var key;
     var buckets = {};
+    while (cur_ms < end_ms) {
+        key = buildKey(new Date(cur_ms));
+        buckets[key] = {
+            plays: 0,
+            wins: 0,
+            redist: 0
+        };
+        cur_ms += hr;
+    }   
+    return buckets;
+}
+
+function createBuckets() {
     console.log("plays = "+plays.length);
     console.log("wins = "+wins.length);
     console.log("redistributions = "+redistributions.length);
+    console.log('lookback_window = '+
+       (end.getTime() - start.getTime())/56/5);
+    console.log('throwahead window = '+
+       (end.getTime() - start.getTime())/56*10);
+    
+    var buckets = empty_buckets();
+
     plays.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 1,
-                wins: 0,
-                redist: 0
-            };
-        } else {
-            buckets[key].plays++;
-        }
+        buckets[key].plays++;
     });
     wins.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 0,
-                wins: 1,
-                redist: 0
-            };
-        } else {
-            buckets[key].wins++;
-        }
+        buckets[key].wins++;
     });
     redistributions.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 0,
-                wins: 0,
-                redist: 1
-            };
-        } else {
-            buckets[key].redist++;
-        }
+        buckets[key].redist++;
     });
     return buckets;
 }
