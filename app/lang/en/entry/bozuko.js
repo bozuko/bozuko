@@ -9,5 +9,6 @@ module.exports = {
     wait_duration: 'Play Again %1$s',
     thanks_for_playing: 'Thanks For Playing',
     play: 'Play',
-    enter: 'Play Again!'
+    enter: 'Play Again!',
+    optin_enter: 'Subsribe to Play'
 };
