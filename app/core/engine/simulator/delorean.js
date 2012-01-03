@@ -184,45 +184,42 @@ function buildKey(ts) {
  return ''+ts.getFullYear()+'-'+(ts.getMonth()+1)+'-'+ts.getDate()+'T'+ts.getHours();
 }
 
+var hr = 1000*60*60;
+
+function empty_buckets() {
+    var start_ms = contest.start.getTime();
+    var end_ms = contest.end.getTime();
+    var cur_ms = start_ms;
+    var key;
+    var buckets = {};
+    while (cur_ms < end_ms) {
+        key = buildKey(new Date(cur_ms));
+        buckets[key] = {
+            plays: 0,
+            wins: 0,
+            redist: 0
+        };
+        cur_ms += hr;
+    }   
+    return buckets;
+}
+
 function createBuckets() {
     var buckets = {};
     console.log("plays = "+timestamps.length);
     console.log("wins = "+wins.length);
+    console.log("redistributions = "+redistributions.length);
     timestamps.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 1,
-                wins: 0,
-                redist: 0
-            };
-        } else {
-            buckets[key].plays++;
-        }
+        buckets[key].plays++;
     });
     wins.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 0,
-                wins: 1,
-                redist: 0
-            };
-        } else {
-            buckets[key].wins++;
-        }
+        buckets[key].wins++;
     });
     redistributions.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 0,
-                wins: 0,
-                redist: 1
-            };
-        } else {
-            buckets[key].redist++;
-        }
+        buckets[key].redist++;
     });
     return buckets;
 }
