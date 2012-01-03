@@ -66,11 +66,11 @@ function mongoimport(callback) {
     };
     async.series([
         function import_page(cb) {
-            exec('mongoimport --host pgdb1 --db bozuko_test9001 --collection pages --file ./page.json',
+            exec('mongoimport --host pgdb2 --db bozuko_test9001 --collection pages --file ./page.json',
                 opts, cb);
         },
         function import_contest(cb) {
-            exec('mongoimport --host pgdb1 --db bozuko_test9001 --collection contests --file ./contest.json',
+            exec('mongoimport --host pgdb2 --db bozuko_test9001 --collection contests --file ./contest.json',
                 opts, cb);
         }
     ], callback);
@@ -120,7 +120,7 @@ function run() {
                         delete data.entry_id;
                         delete data.user_id;
                         data.contest_id = new Oid(data.contest_id['$oid']);
-                        var timestamp = new Date(data.timestamp['$date']);
+                        var timestamp = new Date(data.history[0].timestamp['$date']);
                         data.timestamp = timestamp;
                         data.history = [{timestamp: timestamp}];
                         var result = new Bozuko.models.Result(data);
@@ -200,15 +200,15 @@ function empty_buckets() {
             redist: 0
         };
         cur_ms += hr;
-    }   
+    }
     return buckets;
 }
 
 function createBuckets() {
-    var buckets = {};
     console.log("plays = "+timestamps.length);
     console.log("wins = "+wins.length);
     console.log("redistributions = "+redistributions.length);
+    var buckets = empty_buckets();
     timestamps.forEach(function(ts) {
         var key = buildKey(ts);
         buckets[key].plays++;
