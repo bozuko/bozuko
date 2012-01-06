@@ -4,7 +4,9 @@ Ext.define('Bozuko.view.page.Settings' ,{
     alias           :'widget.pagesettings',
 
     requires        :[
-        'Bozuko.view.page.Preview'
+        'Bozuko.view.page.Preview',
+        'Bozuko.lib.form.field.Integration',
+        'Ext.ux.form.field.MultiSelect'
     ],
 
     autoScroll      :true,
@@ -24,7 +26,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
                     xtype           :'fieldset',
                     margin          :'10',
                     layout          :'anchor',
-                    style           :'background-color: #f3f3f3'
+                    style           :'background-color: #f3f3f3;'
                 },
                 tbar : [{
                     text            :'Save',
@@ -182,6 +184,119 @@ Ext.define('Bozuko.view.page.Settings' ,{
                         name            :'announcement',
                         fieldLabel      :'Announcement'
                     }]
+                },{
+                    title           :'Newsletter Integrations',
+                    defaults        :{
+                        anchor          :'0',
+                        hideLabel       :true,
+                        xtype           :'integration',
+                        listeners       :(function(){
+                            
+                            function createCombo(cmp, lists, select){
+                                var filtered = lists;
+                                if( cmp.integrationType == 'constantcontact'){
+                                    filtered = [];
+                                    Ext.Array.each(lists, function(list){
+                                        list.name = list.title.$t;
+                                        if(!list.id.match(/(active|do\-not\-mail|removed)$/)) filtered.push( list );
+                                    });
+                                }
+                                if( !cmp._listCombo ) cmp._listCombo = Ext.create('Ext.form.field.ComboBox', {
+                                    fieldLabel      :'Select Mailing List',
+                                    labelAlign      :'top',
+                                    queryMode       :'local',
+                                    editable        :false,
+                                    forceSelection  :true,
+                                    renderTo        :cmp.getEl().down('.list'),
+                                    valueField      :'id',
+                                    displayField    :'name',
+                                    width           :180,
+                                    store           :Ext.create('Ext.data.Store',{
+                                        fields          :['name','id'],
+                                        data            :filtered
+                                    }),
+                                    listeners       :{
+                                        change : function(){
+                                            me.record.set(cmp.integrationType+'_activelists', [this.getValue()]);
+                                            me.fireEvent('save', me);
+                                        }
+                                    }
+                                });
+                                if( select == true) {
+                                    cmp._listCombo.setValue(cmp._listCombo.store.first().get('id'));
+                                }
+                                if( Ext.isArray( select ) ){
+                                    cmp._listCombo.setValue(select[0]);
+                                }
+                            }
+                            
+                            function destroyCombo(cmp){
+                                if( cmp._listCombo ){
+                                    cmp._listCombo.destroy();
+                                    delete cmp._listCombo;
+                                }
+                            }
+                            
+                            function onRender(cmp){
+                                if( cmp.xtype !== 'integration' ) return;
+                                var lists = cmp.integrationType == 'mailchimp' ?
+                                    me.record.get('mailchimp_lists') :
+                                    me.record.get('constantcontact_lists');
+                                    
+                                window.page = me.record;
+                                    
+                                if( cmp.getValue() && lists && lists.length){
+                                    createCombo(cmp, lists, me.record.get(cmp.integrationType+'_activelists'));
+                                    
+                                }
+                            }
+                            
+                            function onConnect(cmp, values){
+                                if( cmp.integrationType == 'mailchimp' ){
+                                    me.record.set('mailchimp_dc', values.dc);
+                                    me.record.set('mailchimp_endpoint', values.api_endpoint);
+                                    me.record.set('mailchimp_lists', values.lists);
+                                }
+                                else{
+                                    me.record.set('constantcontact_username', values.username);
+                                    me.record.set('constantcontact_lists', values.lists);
+                                }
+                                createCombo(cmp, values.lists, true);
+                                me.fireEvent('save', me);
+                            }
+                            
+                            function onDisconnect(cmp){
+                                destroyCombo(cmp);
+                                me.fireEvent('save', me);
+                            }
+                            
+                            return {
+                                connect: onConnect,
+                                disconnect: onDisconnect,
+                                render: onRender
+                            };
+                        })()
+                    },
+                    items           :[{
+                        integrationType :'mailchimp',
+                        name            :'mailchimp_token'
+                    },{
+                        integrationType :'constantcontact',
+                        name            :'constantcontact_token',
+                        windowWidth     :1050,
+                        windowHeight    :400
+                    },{
+                        xtype           :'container',
+                        border          :false,
+                        style           :'padding-bottom: 10px;',
+                        items           :[{
+                            xtype           :'button',
+                            text            :'Download Subscribers as CSV',
+                            handler         :function(){
+                                window.open( Bozuko.Router.route('/pages/'+me.record.get('_id')+'/subscribers.csv') );
+                            }
+                        }]
+                    }]
                 }]
             },{
                 region          :'east',
@@ -189,7 +304,6 @@ Ext.define('Bozuko.view.page.Settings' ,{
                 xtype           :'pagepreview',
                 border          :false,
                 autoScroll      :true
-
             }]
         });
         me.callParent(arguments);
@@ -344,6 +458,8 @@ Ext.define('Bozuko.view.page.Settings' ,{
         values.betalink = window.location.protocol+'//'+window.location.host+'/beta/page/'+record.get('_id');
         values.sharelink = window.location.protocol+'//'+window.location.host+'/p/'+record.get('_id');
         me.getForm().setValues(values);
+        
+        // check to see if this record has newsletter integrations
 
         me.down('pagepreview').loadRecord( record );
     }

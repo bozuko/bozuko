@@ -52,7 +52,7 @@ FacebookCheckinMethod.prototype.getDescription = function(callback){
     // get the number of minutes:
     var duration = DateUtil.duration(self.config.duration, true);
     var description = "Check In on Facebook\n";
-    description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+    description+= self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration;
     if( self.config.options.enable_like ){
         var play = (self.config.tokens > 1 ? "Plays" : "Play" );
         description+= "\nLike us for "+self.config.tokens+" Bonus "+play+"!";
@@ -235,6 +235,9 @@ FacebookCheckinMethod.prototype._load = function( callback ){
 FacebookCheckinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
         var now = new Date();
+		if( +this.contest.end < Date.now() ){
+			return _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
+		}
         if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
             return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
         }

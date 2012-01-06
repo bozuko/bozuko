@@ -215,7 +215,7 @@ exports.routes = {
                 return Bozuko.service('facebook').login(
                     req,
                     res,
-                    'user',
+                    'web',
                     redirect,
                     null,
                     function(error, req, res){

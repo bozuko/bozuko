@@ -2,6 +2,7 @@
  * Checkin specific strings
  */
 module.exports = {
+    game_over: 'This game has ended',
     checkin_to_play: 'Check In to Play',
     wait: 'Play Again %1$s',
     wait_time: 'Play Again at %1$s',

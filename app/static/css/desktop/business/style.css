@@ -1440,6 +1440,7 @@ h1.intro {
 .need-a-hand .x-panel-body a {
   color: #ff6600;
 }
+<<<<<<< HEAD
 .page-filters .page-list-items {
   list-style: none;
   display: block;
@@ -1458,4 +1459,37 @@ h1.intro {
 }
 .page-filters .page-list-items li label input {
   margin-right: 6px;
+=======
+.x-form-integration-field {
+  padding: 4px 6px;
+}
+.x-form-integration-field .icon,
+.x-form-integration-field .text,
+.x-form-integration-field .button,
+.x-form-integration-field .list {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 5px;
+}
+.x-form-integration-field .icon {
+  border: 1px solid #ccc;
+  width: 156px;
+  height: 61px;
+  background: #fff;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 6px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  border-radius: 6px;
+  background-clip: padding-box;
+}
+.x-form-integration-field .mailchimp .icon {
+  background-image: url("/images/assets/mailchimp-btn.jpg");
+}
+.x-form-integration-field .constantcontact .icon {
+  background-image: url("/images/assets/cc-btn.jpg");
+>>>>>>> html5
 }

@@ -718,6 +718,31 @@ Contest.method('activateNextContest', function(reason, callback) {
     );
 });
 
+Contest.method('checkForEndOfGame', function(page, cb){
+    
+    var self = this,
+        end_notice_thresh = 0.9;
+        
+    if(typeof page == 'function'){
+        cb = page;
+        page = false;
+    }
+    if (self.end_alert_sent) return cb();
+    if ( (self.engine_type === 'order' && self.play_cursor > self.total_plays*end_notice_thresh) ||
+    (Date.now() > ( self.start.getTime()+(self.end.getTime() - self.start.getTime())*end_notice_thresh))) {
+        // don't wait for the email to get sent
+        if( page ){
+            page.sendEndOfGameAlert(page);
+            return cb();
+        }
+        return Bozuko.models.Page.findById(self.page_id, function(error, page){
+            self.sendEndOfGameAlert(page);
+            return cb();
+        });
+    }
+    return cb();
+});
+
 /*
  * page_id param is optional
  *
@@ -728,7 +753,6 @@ Contest.method('loadGameState', function(opts, callback){
     var page_id = opts.page ? opts.page._id : opts.page_id || this.page_id;
     var page = opts.page;
     var user = opts.user;
-    var end_notice_thresh = 0.9;
 
     var self = this,
     state = {
@@ -746,16 +770,7 @@ Contest.method('loadGameState', function(opts, callback){
     return async.series([
 
         function end_alert_check(cb) {
-            if (self.end_alert_sent) return cb();
-            if ( (self.engine_type === 'order' && self.play_cursor > self.total_plays*end_notice_thresh) ||
-            (Date.now() > ( self.start.getTime()+(self.end.getTime() - self.start.getTime())*end_notice_thresh))) {
-                // don't wait for the email to get sent
-                if (opts.page) {
-                    self.sendEndOfGameAlert(page);
-                }
-                return cb();
-            }
-            return cb();
+            self.checkForEndOfGame(cb);
         },
 
         function update_user(cb){
@@ -777,12 +792,12 @@ Contest.method('loadGameState', function(opts, callback){
 
         function load_state(cb){
             // Contest is over for this user
-            if (self.engine_type === 'order' && state.user_tokens === 0 && self.token_cursor == self.total_plays - self.total_free_plays) {
+            if( (self.engine_type === 'order' && state.user_tokens === 0 && self.token_cursor == self.total_plays - self.total_free_plays) ||
+                (+self.end < Date.now())){
                 state.game_over = true;
                 state.next_enter_time = 'Never';
-                state.button_text = 'Game Over';
+                state.button_text = 'Thanks for Playing!';
                 state.button_enabled = false;
-                return cb();
             }
 
             if (!page && page_id) {
@@ -1352,4 +1367,28 @@ Contest.static('autoRenew', function(callback) {
             });
         }
     );
+});
+
+/**
+ * Statically find any contests that are about to expire
+ * and call their check / send function
+ */
+Contest.static('notifyExpiring', function(callback){
+    Bozuko.models.Contest.find({
+        end_alert_sent  :{$ne: true},
+        active          :true,
+        end             :{$gt: new Date()},
+        $where : function(){
+            var end_notice_thresh = 0.9;
+            return ( (this.engine_type === 'order' && this.play_cursor > this.total_plays*end_notice_thresh) ||
+                (Date.now() > ( this.start.getTime()+(this.end.getTime() - this.start.getTime())*end_notice_thresh)));
+        }
+    }, function(error, contests){
+        if( error ) return callback( error );
+        async.forEachSeries(contests, function(contest, cb){
+            contest.checkForEndOfGame(cb);;
+        }, function(error){
+            return callback(error);
+        });
+    });
 });

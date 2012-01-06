@@ -52,6 +52,7 @@ module.exports = {
         },
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access,user_likes",
+			web:"email,publish_stream,user_likes",
             business:"email,manage_pages,offline_access"
         }
     },
@@ -74,6 +75,25 @@ module.exports = {
             secret: 'fnZx38rD1qzLcoyFQ4Se7haDr3pTSr2CG41UiMmv',
             bucket: 'bozuko'
         }
+    },
+	
+	mailchimp : {
+        // mark's dev
+        /* client_id: '881062973290',
+        client_secret: 'b0514f25bc9fb67c9e9b38e825fd0528'*/
+        // production
+        client_id: '698686499893',
+        client_secret: '6f818ad58ebd5f783772e4ffeee36178'
+    },
+    
+    constant_contact : {
+        /* mark's dev
+        client_id: 'e3ddf0de-b876-4493-a0b6-b0eb2daea0de',
+        client_secret: '0173052058004408bda0b6089a8acc00'*/
+        
+        // production
+        client_id: '4834f665-2168-4508-a1f8-1de2f51f506a',
+        client_secret: '6736a9a76cd742bca2927572a3a38fd3'
     },
 
     checkin: {

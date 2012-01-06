@@ -1,9 +1,3 @@
-/*
- * CSV format
- *
- * type, timestamp, user_id, page id, entry type, win, prize name, free play
- *
- */
 var Stream = require('stream').Stream,
     util = require('util')
 ;
@@ -11,7 +5,8 @@ var Stream = require('stream').Stream,
 exports.stream = function(contest, res) {
     res.header('content-type','text/csv');
     res.header('content-disposition', 'attachment; filename=report.csv');
-
+    res.write(labels());
+        
     var playFormatter = new CsvFormatter(formatPlay, contest);
     var query = Bozuko.models.Play.find({contest_id: contest._id});
     query.stream().pipe(playFormatter);
@@ -27,14 +22,24 @@ exports.stream = function(contest, res) {
     });
 };
 
+/*
+ * CSV format
+ *
+ * timestamp, type, user id, page name, prize, value 
+ *
+ */
+
+function labels() {
+    return "timestamp, type, user id, page name, prize, value\n";
+}
+
 function formatPlay(doc) {
-    return 'play,'+doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_id+",,"+(doc.win || '')+ 
-        ","+(doc.prize_name || '')+","+(doc.prize_value || 0)+","+(doc.free_play || '');
+    return doc.timestamp.toISOString()+",play,"+doc.user_id+",,"+
+        (doc.prize_name || (doc.free_play ? 'free play' : ''))+","+(doc.prize_value || 0);
 }
 
 function formatEntry(doc) {
-    return 'entry,'+doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_id+","+
-        doc.type+",,,,";
+    return doc.timestamp.toISOString()+",entry,"+doc.user_id+","+doc.page_name+",,";
 }
 
 function CsvFormatter(format, contest) {

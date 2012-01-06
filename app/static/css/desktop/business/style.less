@@ -1555,22 +1555,31 @@ h1.intro {
     }
 }
 
-.page-filters .page-list-items{
-    list-style: none;
-    display: block;
-    padding: 0;
-    margin: 0;
-    li {
+.x-form-integration-field{
+        
+    padding: 4px 6px;        
+    
+    .icon, .text, .button, .list{
         display: inline-block;
-        list-style: none;
-        float: none
-        padding: 0;
-        margin: 2px 6px 2px 0;
-        label {
-            white-space: nowrap;
-            input {
-                margin-right: 6px;
-            }
-        }
+        vertical-align: middle;
+        margin: 0 5px;
+    }
+    
+    .icon {
+        border: 1px solid #ccc;
+        width: 156px;
+        height: 61px;
+        background: #fff;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        .border_radius(6px);
+    }
+    
+    .mailchimp .icon{
+        background-image: url("/images/assets/mailchimp-btn.jpg");
+    }
+    
+    .constantcontact .icon{
+        background-image: url("/images/assets/cc-btn.jpg");
     }
 }

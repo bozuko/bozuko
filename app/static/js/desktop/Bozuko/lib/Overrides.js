@@ -1,3 +1,4 @@
+
 Ext.define('Bozuko.lib.Overrides', {
     
     constructor : function(){
@@ -34,6 +35,8 @@ Ext.define('Bozuko.lib.Overrides', {
             XMASKED         = Ext.baseCSSPrefix + "masked",
             XMASKEDRELATIVE = Ext.baseCSSPrefix + "masked-relative",
             data            = Ext.core.Element.data;
+                        
+            
         Ext.core.Element.prototype.mask = function(msg, msgCls) {
             var me  = this,
                 dom = me.dom,

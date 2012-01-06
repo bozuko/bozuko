@@ -71,7 +71,7 @@ FacebookLikeCheckinMethod.prototype.getDescription = function(callback){
     self.load(function(error){
         var duration = DateUtil.duration(self.config.duration, true);
         var description = "Like us on Facebook and Check In\n";
-            description+= self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+            description+= self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration;
         if( !self.user || (self.page && !self.user.likes(self.page))){
             description+="\nTap Like and wait a second.";
         }
@@ -250,8 +250,11 @@ FacebookLikeCheckinMethod.prototype._load = function( callback ){
 FacebookLikeCheckinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
         var now = new Date();
+		if( +this.contest.end < Date.now() ){
+			text = _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
+		}
         if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
-	    return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
+			return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
         }
         if( nextEntryTime.getTime() > now.getTime() ){
             var time_str = DateUtil.inAgo(nextEntryTime);

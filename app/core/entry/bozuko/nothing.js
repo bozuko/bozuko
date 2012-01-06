@@ -57,7 +57,7 @@ BozukoNothingMethod.prototype.getDescription = function(callback){
     // get the number of minutes:
     var duration = DateUtil.duration( this.config.duration, true );
     var description = "Play Bozuko\n";
-        description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+        description+= this.config.tokens+" "+(this.config.tokens > 1 ? "plays" : "play" )+" every "+duration;
     return callback(null, description);
 };
 
@@ -95,8 +95,11 @@ BozukoNothingMethod.prototype.getTokenCount = function(){
 BozukoNothingMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
         var now = new Date();
+		if( +this.contest.end < Date.now() ){
+			return _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
+		}
         if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
-	    return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
+			return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
         }
         if( nextEntryTime.getTime() > now.getTime() ){
             var time_str = DateUtil.inAgo( nextEntryTime );
