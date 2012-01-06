@@ -381,7 +381,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                     tag             :'a',
                                     target          :'_blank',
                                     href            :this.page.facebook_page,
-                                    html            :'Visit our Facebook Page',
+                                    html            :'Visit Our Facebook Page',
                                     cls             :'facebook'
                                 }]
                             }]
