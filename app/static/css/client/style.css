@@ -1319,6 +1319,10 @@ a:hover {
 .superscroll .scrollable {
   overflow: scroll;
 }
+.superscroll .scrollable::-webkit-scrollbar, .superscroll .scrollable::scrollbar {
+  width: 0;
+  height: 0;
+}
 .superscroll-bar {
   background: #666;
   background: rgba(0, 0, 0, 0.6);

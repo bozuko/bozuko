@@ -57,7 +57,7 @@ BozukoOptinMethod.prototype.getDescription = function(callback){
     // get the number of minutes:
     var duration = DateUtil.duration( this.config.duration, true );
     var description = "Subscribe to our Newsletter\n";
-        description+= this.config.tokens+" "+(this.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+        description+= this.config.tokens+" "+(this.config.tokens > 1 ? "plays" : "play" )+" every "+duration;
     return callback(null, description);
 };
 
@@ -128,8 +128,11 @@ BozukoOptinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     var text = '';
     if( !tokens ){
         var now = new Date();
-        if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
-	    text = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
+		if( +this.contest.end < Date.now() ){
+			text = _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
+		}
+        else if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
+			text = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
         } else if( +nextEntryTime > +now ){
             text = _t( this.user ? this.user.lang : 'en', 'entry/facebook/wait_duration', DateUtil.inAgo(nextEntryTime) );
         } else if( this.user ){
