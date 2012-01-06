@@ -81,9 +81,11 @@ module.exports = {
     },
 	
 	mailchimp : {
+		/*
         // mark's dev
-        /* client_id: '881062973290',
-        client_secret: 'b0514f25bc9fb67c9e9b38e825fd0528'*/
+        client_id: '881062973290',
+        client_secret: 'b0514f25bc9fb67c9e9b38e825fd0528'
+        */
         
 		/*
 		// production

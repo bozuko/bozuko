@@ -7,7 +7,8 @@ module.exports = {
             'beta',
             'admin',
 			'bozuko',
-            'mycroft'
+            'mycroft',
+			'integrations'
         ]
     },
 
