@@ -30,7 +30,17 @@ Ext.define('Bozuko.model.Page', {
         {name:'services',       type:'Array'},
         {name:'admins',         type:'Array'},
         {name:'has_contests',   type:'Boolean'},
-        {name:'pin',            type:'String'}
+        {name:'pin',            type:'String'},
+        {name:'mailchimp_token',type:'String'},
+        {name:'mailchimp_dc',   type:'String'},
+        {name:'mailchimp_endpoint', type:'String'},
+        {name:'mailchimp_lists',    type:'Array'},
+        {name:'mailchimp_activelists',    type:'Array'},
+        
+        {name:'constantcontact_token', type:'String'},
+        {name:'constantcontact_username', type:'String'},
+        {name:'constantcontact_lists', type:'Array'},
+        {name:'constantcontact_activelists', type:'Array'}
     ],
 
     service : function(name){

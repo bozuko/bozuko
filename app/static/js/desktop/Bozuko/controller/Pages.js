@@ -184,8 +184,8 @@ Ext.define('Bozuko.controller.Pages' ,{
     saveSettings : function(saveBtn){
         var me = this,
             form = saveBtn.up('form'),
-            values = this.getValues(form);
-            
+            values = this.getValues(form);        
+        
         form.record.set(values);
         form.record.commit();
         saveBtn.disable();

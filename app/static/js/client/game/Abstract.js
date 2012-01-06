@@ -204,7 +204,13 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             else{
                 self.updateAction(self.state.button_text);
                 if( self.state.button_text.match(/(thanks for playing|play again in)/i) ){
-                    sharebuttons.setStyle('display','block')
+                    sharebuttons.setStyle('display','block');
+                    if( self.state.button_text.match(/(thanks for playing)/i) ){
+                        sharebuttons.addClass('game-over');
+                    }
+                    else{
+                        sharebuttons.removeClass('game-over');
+                    }
                 }
             }
         }
@@ -359,6 +365,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             cls             :'links',
                             cn              :[{
                                 tag             :'li',
+                                cls             :'share',
                                 cn              :[{
                                     tag             :'a',
                                     target          :'_blank',
@@ -369,6 +376,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                 }]
                             },{
                                 tag             :'li',
+                                cls             :'facebook',
                                 cn              :[{
                                     tag             :'a',
                                     target          :'_blank',

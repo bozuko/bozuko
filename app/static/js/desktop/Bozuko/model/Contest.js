@@ -27,6 +27,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'name',               type:'String',              defaultValue:'Untitled Campaign'},
         {name:'alias',              type:'String'},
         {name:'promo_copy',         type:'String'},
+        {name:'end_alert_sent',     type:'Boolean'},
         {name:'win_frequency',      type:'Number',              defaultValue:2},
         {name:'engine_type',        type:'String'},
         {name:'engine_options',     type:'Object',              defaultValue:{mode:'odds'}},

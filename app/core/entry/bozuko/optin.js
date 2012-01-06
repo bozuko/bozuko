@@ -98,11 +98,29 @@ BozukoOptinMethod.prototype._load = function( callback ){
 	// we just need to know if this dude has opted in yet
 	if( !self.user ){
 		self._subscribed = false;
+		return callback();
 	}
 	Bozuko.models.Optin.findOne({user_id: self.user._id, page_id: self.page._id}, function(error, optin){
 		if( error ) return callback( error );
 		self._subscribed = !!optin;
 		return callback();
+	});
+};
+
+/**
+ * Perform all necessary actions accociated with this entry method (eg, checkin, check for location, etc)
+ *
+ * The callback function accepts an error argument, true or false, and an method specific data argument (facebook checkin id)
+ *
+ * @param {Function} callback The callback function
+ */
+BozukoOptinMethod.prototype.process = function( callback ){
+    var self = this;
+	return self.load(function(error){
+		if( error ) return callback( error );
+		if( self._subscribed ) return callback();
+		// create an optin record
+		return Bozuko.models.Optin.create(self.user, self.page, self.contest, callback);
 	});
 };
 
