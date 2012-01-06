@@ -798,7 +798,6 @@ Contest.method('loadGameState', function(opts, callback){
                 state.next_enter_time = 'Never';
                 state.button_text = 'Thanks for Playing!';
                 state.button_enabled = false;
-                return cb();
             }
 
             if (!page && page_id) {
