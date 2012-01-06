@@ -201,8 +201,8 @@ Ext.define('Bozuko.view.page.Settings' ,{
                                         if(!list.id.match(/(active|do\-not\-mail|removed)$/)) filtered.push( list );
                                     });
                                 }
-                                if( !cmp._listCombo ) cmp._listCombo = Ext.create('Ext.ux.form.field.MultiSelect', {
-                                    fieldLabel      :'Select Mailing Lists',
+                                if( !cmp._listCombo ) cmp._listCombo = Ext.create('Ext.form.field.ComboBox', {
+                                    fieldLabel      :'Select Mailing List',
                                     labelAlign      :'top',
                                     queryMode       :'local',
                                     editable        :false,
@@ -210,25 +210,23 @@ Ext.define('Bozuko.view.page.Settings' ,{
                                     renderTo        :cmp.getEl().down('.list'),
                                     valueField      :'id',
                                     displayField    :'name',
-                                    multiSelect     :true,
-                                    width           :150,
-                                    height          :80,
+                                    width           :180,
                                     store           :Ext.create('Ext.data.Store',{
                                         fields          :['name','id'],
                                         data            :filtered
                                     }),
                                     listeners       :{
                                         change : function(){
-                                            me.record.set(cmp.integrationType+'_activelists', this.getValue());
+                                            me.record.set(cmp.integrationType+'_activelists', [this.getValue()]);
                                             me.fireEvent('save', me);
                                         }
                                     }
                                 });
-                                if( select == true) cmp._listCombo.store.each(function(model){
-                                    cmp._listCombo.boundList.select(model, true);
-                                });
+                                if( select == true) {
+                                    cmp._listCombo.setValue(cmp._listCombo.store.first().get('id'));
+                                }
                                 if( Ext.isArray( select ) ){
-                                    cmp._listCombo.setValue(select);
+                                    cmp._listCombo.setValue(select[0]);
                                 }
                             }
                             
