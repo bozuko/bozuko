@@ -163,10 +163,10 @@ Ext.define('Admin.controller.Admin' ,{
         var me = this,
             nav = panel.down('toolbar[ref=navigation]'),
             pages = panel.down('[ref=pages]'),
-            accountBtn = nav.down('button[page=account]')
+            lastBtn = nav.down('button[page=resources]')
             ;
             
-        var i = nav.items.indexOf( accountBtn );
+        var i = nav.items.indexOf( lastBtn );
         nav.insert(i+1, {
             text        :'Admin',
             page        :'admin',
