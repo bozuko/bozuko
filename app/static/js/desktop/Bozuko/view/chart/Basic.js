@@ -63,6 +63,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                             {text:'Total Prize Wins', value:'Prize',fn:'sum'},
                             {text:'Redeemed Prizes', value:'Redeemed Prizes',fn:'sum'},
                             {text:'Facebook Likes', value:'Likes',fn:'sum'},
+                            {text:'Subscribers', value:'Optin',fn:'sum'},
                             {text:'Check Ins', value:'Checkins',fn:'sum'},
                             {text:'Unique Users', value:'Unique Users',fn:'average'},
                             {text:'New Users', value:'New Users',fn:'sum'},

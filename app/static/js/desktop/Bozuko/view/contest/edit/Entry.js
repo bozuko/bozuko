@@ -29,6 +29,7 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
                     {value:'facebook/likecheckin',text:'Facebook Like and Checkin'},
                     {value:'facebook/checkin',text:'Facebook Check-in'},
                     {value:'facebook/like',text:'Facebook Like'},
+                    {value:'bozuko/optin',text:'Newsletter Subscribe'},
                     {value:'bozuko/checkin',text:'Bozuko Check-in'},
                     {value:'bozuko/nothing',text:'Bozuko Play'}
                 ]

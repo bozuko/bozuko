@@ -58,6 +58,16 @@ Ext.define('Bozuko.view.page.Dashboard', {
                     anchor          :'0',
                     border          :false,
                     page_id         :me.page.get('_id')
+                },{
+                    xtype           :'container',
+                    border          :false,
+                    items           :[{
+                        xtype           :'button',
+                        text            :'Download Subscribers as CSV',
+                        handler         :function(){
+                            window.open( Bozuko.Router.route('/pages/'+me.page.get('_id')+'/subscribers.csv') );
+                        }
+                    }]
                 }]
             }]
         });
