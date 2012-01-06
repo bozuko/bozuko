@@ -369,8 +369,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                 cn              :[{
                                     tag             :'a',
                                     target          :'_blank',
-                                    //href            :'http://www.addthis.com/bookmark.php',
-                                    href            :'/client/share/'+(mobile?'m':'www')+'?url='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
+                                    // href            :'http://www.addthis.com/bookmark.php',
+                                    // href            :'/client/share/'+(mobile?'m':'www')+'?url='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
+                                    href            :'http://'+(mobile?'m':'www')+'.facebook.com/sharer.php?'
+                                                        +'u='+encodeURIComponent(url)
+                                                        +'&t='+encodeURIComponent(this.game.name)
+                                                        +'&display=popup',
                                     html            :'Share this Game',
                                     cls             :'share-btn'
                                 }]
@@ -415,13 +419,15 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
             this.$description.$shareButtons = this.$description.child('.share-buttons');
             this.$description.$shareButtons.setVisibilityMode(Ext.Element.DISPLAY);
-            if( !mobile ){
-                var btn = this.$description.$shareButtons.child('.share-btn');
-                btn.on('click', function(e){
+            
+            var btn = this.$description.$shareButtons.child('.share-btn');
+            btn.on('click', function(e){
+                if( _gaq ) _gaq.push(['_trackEvent', 'Share Button', 'clicked'])
+                if( !mobile ) {
                     e.stopEvent();
                     window.open(btn.dom.href, 'share_win', 'width=400,height=500');
-                });
-            }
+                }
+            });
             this.squareImage(this.$description.child('.page-pic'), this.page.image);
             this.updateDescription();
             var show = this.$description.show;
