@@ -215,7 +215,7 @@ exports.routes = {
                 return Bozuko.service('facebook').login(
                     req,
                     res,
-                    'user',
+                    'web',
                     redirect,
                     null,
                     function(error, req, res){
@@ -275,6 +275,22 @@ exports.routes = {
                     page_id = id_parts[1];
                 }
                 return this.renderGame(req, res, contest_id, page_id);
+            }
+        }
+    },
+    
+    '/client/share/:prefix' : {
+        get : {
+            handler : function(req, res){
+                var url = 'http://'+req.param('prefix')+'.facebook.com/sharer.php?'
+                    +'u='+encodeURIComponent(req.param('url'))
+                    +'&t='+req.param('title')
+                    +'&display=popup';
+                
+                res.locals.device='touch';
+                res.locals.url = url;
+                res.locals.title = 'Bozuko Sharer - '+req.param('title');
+                res.render('client/share');
             }
         }
     },

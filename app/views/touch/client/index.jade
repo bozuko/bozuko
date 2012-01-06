@@ -12,6 +12,6 @@ script(type="text/javascript")
   Bozuko.client.App.path = !{JSON.stringify(path)};
   Bozuko.client.App.facebookApp = {
     id: "#{Bozuko.cfg('facebook.app.id')}",
-    scope: "#{Bozuko.cfg('facebook.perms.user')}"
+    scope: "#{Bozuko.cfg('facebook.perms.web', "email,publish_stream,user_likes")}"
   };
   Bozuko.client.App.launch(!{JSON.stringify(config)});
