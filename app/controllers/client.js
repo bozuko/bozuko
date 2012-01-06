@@ -279,22 +279,6 @@ exports.routes = {
         }
     },
     
-    '/client/share/:prefix' : {
-        get : {
-            handler : function(req, res){
-                var url = 'http://'+req.param('prefix')+'.facebook.com/sharer.php?'
-                    +'u='+encodeURIComponent(req.param('url'))
-                    +'&t='+req.param('title')
-                    +'&display=popup';
-                
-                res.locals.device='touch';
-                res.locals.url = url;
-                res.locals.title = 'Bozuko Sharer - '+req.param('title');
-                res.render('client/share');
-            }
-        }
-    },
-    
     '/client/pdf' : {
         get : {
             handler : function(req, res){

@@ -422,7 +422,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
             var btn = this.$description.$shareButtons.child('.share-btn');
             btn.on('click', function(e){
-                if( _gaq ) _gaq.push(['_trackEvent', 'Share Button', 'clicked'])
+                if( _gaq ) _gaq.push(['_trackEvent', 'Web Game', 'Share', this.game.name+': '+this.game._id]);
                 if( !mobile ) {
                     e.stopEvent();
                     window.open(btn.dom.href, 'share_win', 'width=400,height=500');
