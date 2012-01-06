@@ -494,6 +494,22 @@ Bozuko.initHttpRedirect = function(){
 	redirect_server.listen(80);
 };
 
+Bozuko.initExpirationChecker = function(){
+	
+	(function check(){
+		Bozuko.models.Contest.notifyExpiring(function(error){
+			if( error ){
+				console.error( error.stack );
+				console.error( error );
+			}
+			else{
+				// run every 5 minutes
+				setTimeout( check, 1000 * 60 * 5 );
+			}
+		});
+	})();
+};
+
 var ms_per_hr = 1000*60*60;
 Bozuko.initStats= function(){
     var stats = Bozuko.require('util/stats');

@@ -12,6 +12,8 @@ var _t = Bozuko.t,
     indexOf = Bozuko.require('util/functions').indexOf,
     httpsUrl = Bozuko.require('util/functions').httpsUrl,
     async = require('async'),
+	MailChimpApi = Bozuko.require('util/mailchimp').Api,
+	ConstantContactApi = Bozuko.require('util/constantcontact').Api,
     inspect = require('util').inspect,
     rand = Bozuko.require('util/math').rand,
     Profiler = Bozuko.require('util/profiler'),
@@ -43,7 +45,8 @@ var Page = module.exports = new Schema({
         zip                 :String,
         country             :String
     },
-    /* deprecate */
+    
+	/* deprecate */
     owner_id            :{type:ObjectId, index: true},
     admins              :[ObjectId],
     beta_agreement      :{
@@ -51,10 +54,24 @@ var Page = module.exports = new Schema({
         signed_by           :{type:ObjectId},
         signed_date         :{type:Date}
     },
-    // code_block is a running total. Can't just search because contests may be deleted.
+    
+	// code_block is a running total. Can't just search because contests may be deleted.
     code_block          :{type:Number},
     code_prefix         :{type:String},
-    pin                 :{type:String, index: true}
+    pin                 :{type:String, index: true},
+	
+	// email services settings
+	mailchimp_token		:{type:String},
+	mailchimp_dc		:{type:String},
+	mailchimp_endpoint	:{type:String},
+	mailchimp_lists		:{type:Array},
+	mailchimp_activelists	:{type:Array},
+	
+	constantcontact_token	:{type:String},
+	constantcontact_username:{type:String},
+	constantcontact_lists	:{type:Array},
+	constantcontact_activelists	:{type:Array}
+	
 }, {safe: {w:2, wtimeout: 5000}});
 
 Page.index({admins: 1});
@@ -156,6 +173,16 @@ Page.static('getCodeInfo', function(page_id, callback) {
         if (page.code_block && page.code_prefix) return callback(null, page.code_block, page.code_prefix);
         return Bozuko.models.Page.setCodeInfo(page_id, callback);
     });
+});
+
+Page.method('getMailChimpApi', function(){
+	if( !this.mailchimp_token ) return false;
+	return new MailChimpApi( this.mailchimp_token, this.mailchimp_dc, this.mailchimp_endpoint );
+});
+
+Page.method('getConstantContactApi', function(){
+	if( !this.constantcontact_token ) return false;
+	return new ConstantContactApi( this.constantcontact_token, this.constantcontact_username );
 });
 
 Page.method('isAdmin', function(user, callback){

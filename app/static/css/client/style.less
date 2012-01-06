@@ -565,14 +565,31 @@ a, a:visited, a:link, a:hover {
             li {
                 margin: 5px;
                 a {
-                    font-size: 11px;
+                    font-size: 12px;
                     display: inline-block;
-                    padding: 2px 5px;
+                    padding: 3px 6px;
                     .background_gradient(#e8e8e8, #ffffff);
                     border: 1px solid #ccc;
                     text-decoration: none;
                     .border_radius(4px);
                 }
+            }
+            .share a {
+                background-color: #fb8719;
+                .background_gradient(#fb8719 * 1.1, #fb8719 * 0.9);
+                color: #ffffff;
+                border-color: #d1d1d3;
+            }
+            .facebook a {
+                .background_gradient(#1b7fb0 * 1.1, #1b7fb0 * 0.9);
+                border-color: #45aad9;
+                color: #ffffff;
+            }
+        }
+        
+        .game-over {
+            .share {
+                display: none;
             }
         }
     }
@@ -1133,6 +1150,10 @@ a, a:visited, a:link, a:hover {
     }
 }
 
+.superscroll .scrollable::-webkit-scrollbar, .superscroll .scrollable::scrollbar {
+  width: 0;
+  height: 0;
+}
 
 .superscroll-bar{
     background: #666;

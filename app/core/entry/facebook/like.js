@@ -85,7 +85,7 @@ FacebookLikeMethod.prototype.getDescription = function(callback){
         description += 'You must be within '+self.config.options.radius+ ' miles\n';
     }
 
-    description+=self.config.tokens+" "+(self.config.tokens > 1 ? "Plays" : "Play" )+" every "+duration;
+    description+=self.config.tokens+" "+(self.config.tokens > 1 ? "plays" : "play" )+" every "+duration;
     
     if( !self.user || (self.page && !self.user.likes(self.page))){
         description+="\nTap Like and wait a second.";
@@ -193,8 +193,11 @@ FacebookLikeMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     var text = '';
     if( !tokens ){
         var now = new Date();
-        if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
-	    text = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
+		if( +this.contest.end < Date.now() ){
+			text = _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
+		}
+        else if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
+			text = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
         } else if( +nextEntryTime > +now ){
             text = _t( this.user ? this.user.lang : 'en', 'entry/facebook/wait_duration', DateUtil.inAgo(nextEntryTime) );
         } else if( this.user ){

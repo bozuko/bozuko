@@ -66,11 +66,11 @@ function mongoimport(callback) {
     };
     async.series([
         function import_page(cb) {
-            exec('mongoimport --host pgdb1 --db bozuko_test9001 --collection pages --file ./page.json',
+            exec('mongoimport --host pgdb2 --db bozuko_test9001 --collection pages --file ./page.json',
                 opts, cb);
         },
         function import_contest(cb) {
-            exec('mongoimport --host pgdb1 --db bozuko_test9001 --collection contests --file ./contest.json',
+            exec('mongoimport --host pgdb2 --db bozuko_test9001 --collection contests --file ./contest.json',
                 opts, cb);
         }
     ], callback);
@@ -120,7 +120,7 @@ function run() {
                         delete data.entry_id;
                         delete data.user_id;
                         data.contest_id = new Oid(data.contest_id['$oid']);
-                        var timestamp = new Date(data.timestamp['$date']);
+                        var timestamp = new Date(data.history[0].timestamp['$date']);
                         data.timestamp = timestamp;
                         data.history = [{timestamp: timestamp}];
                         var result = new Bozuko.models.Result(data);
@@ -184,45 +184,42 @@ function buildKey(ts) {
  return ''+ts.getFullYear()+'-'+(ts.getMonth()+1)+'-'+ts.getDate()+'T'+ts.getHours();
 }
 
-function createBuckets() {
+var hr = 1000*60*60;
+
+function empty_buckets() {
+    var start_ms = contest.start.getTime();
+    var end_ms = contest.end.getTime();
+    var cur_ms = start_ms;
+    var key;
     var buckets = {};
+    while (cur_ms < end_ms) {
+        key = buildKey(new Date(cur_ms));
+        buckets[key] = {
+            plays: 0,
+            wins: 0,
+            redist: 0
+        };
+        cur_ms += hr;
+    }
+    return buckets;
+}
+
+function createBuckets() {
     console.log("plays = "+timestamps.length);
     console.log("wins = "+wins.length);
+    console.log("redistributions = "+redistributions.length);
+    var buckets = empty_buckets();
     timestamps.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 1,
-                wins: 0,
-                redist: 0
-            };
-        } else {
-            buckets[key].plays++;
-        }
+        buckets[key].plays++;
     });
     wins.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 0,
-                wins: 1,
-                redist: 0
-            };
-        } else {
-            buckets[key].wins++;
-        }
+        buckets[key].wins++;
     });
     redistributions.forEach(function(ts) {
         var key = buildKey(ts);
-        if (!buckets[key]) {
-            buckets[key] = {
-                plays: 0,
-                wins: 0,
-                redist: 1
-            };
-        } else {
-            buckets[key].redist++;
-        }
+        buckets[key].redist++;
     });
     return buckets;
 }

@@ -48,8 +48,9 @@ var proc = cluster( './app' )
         if( env === 'site' || env === 'playground' || env == 'dashboard' ){
             Bozuko.initHttpRedirect();
         }
-        if ( env === 'api' || 'playground' ) {
+        if ( env === 'api' || env === 'playground' || env === 'development' ) {
             Bozuko.initAutoRenew();
+            Bozuko.initExpirationChecker();
         }
     }
 //});

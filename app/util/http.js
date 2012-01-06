@@ -56,6 +56,7 @@ exports.request = function(config, callback){
     if( method == 'POST' && params && !body){
         body = qs.stringify(params);
         encoding = config.encoding || 'utf-8';
+        if( config.use_content_length ) headers['Content-Length'] = body.length;
     }
 
     var tid,
@@ -67,7 +68,7 @@ exports.request = function(config, callback){
             headers: headers,
             method: method
         };
-        
+    
     var request = http_.request(request_opts, function(response){
         
         switch( response.statusCode ){

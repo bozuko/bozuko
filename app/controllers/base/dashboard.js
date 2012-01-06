@@ -860,6 +860,7 @@ exports.routes = {
                     case 'Prize':
                     case 'Entry':
                     case 'Play':
+                    case 'Optin':
                         break;
 
                     default:
@@ -1117,6 +1118,16 @@ exports.routes = {
             handler : function(req, res){
                 // need logic here
                 res.send("TODO!");
+            }
+        }
+    },
+    
+    '/pages/:id/subscribers.csv' : {
+        get : {
+            handler : function(req, res){
+                res.header('Content-Type', 'text/csv');
+                res.header('Content-Disposition', 'attachment; filename=Subscribers.csv');
+                return Bozuko.models.Optin.getCSV(req.param('id'), res);
             }
         }
     },
@@ -1663,7 +1674,6 @@ exports.routes = {
                 layout: 'beta/howto/layout',
                 home_link: '#',
                 home_title: 'Bozuko How To',
-                layout: 'beta/layout',
                 device: 'desktop',
                 styles: [
                     'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
@@ -1676,7 +1686,6 @@ exports.routes = {
                 ]
             },
             handler : function(req, res){
-                res.locals.layout = 'beta/howto/layout';
                 return res.render('beta/howto');
             }
         }

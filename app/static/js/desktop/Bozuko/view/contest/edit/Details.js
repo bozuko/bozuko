@@ -53,6 +53,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             name            :'active',
             fieldLabel      :'Active'
         },{
+            xtype               :'checkbox',
+            name                :'end_alert_sent',
+            fieldLabel          :'End Alert Sent'
+        },{
             xtype               :'combo',
             name                :'engine_type',
             fieldLabel          :'Contest Engine',

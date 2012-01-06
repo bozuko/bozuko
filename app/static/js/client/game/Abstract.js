@@ -154,7 +154,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         
         sharebuttons.setStyle('display','none');
         if( self.state.button_enabled === false ){
-            if( !self.state.button_text.match(/thanks for playing/i) && !self.state.next_enter_time_ms && (self.game.entry_method.type == 'facebook/like' || self.game.entry_method.type == 'facebook/likecheckin')){
+            if( !self.state.button_text.match(/(thanks for playing|this game has ended)/i) && !self.state.next_enter_time_ms && (self.game.entry_method.type == 'facebook/like' || self.game.entry_method.type == 'facebook/likecheckin')){
                 
                 var url = self.page.like_button_url;
                 url+='?token='+self.app.user.token;
@@ -203,8 +203,14 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             }
             else{
                 self.updateAction(self.state.button_text);
-                if( self.state.button_text.match(/(thanks for playing|play again in)/i) ){
-                    sharebuttons.setStyle('display','block')
+                if( self.state.button_text.match(/(thanks for playing|play again in|this game has ended)/i) ){
+                    sharebuttons.setStyle('display','block');
+                    if( self.state.button_text.match(/(thanks for playing|this game has ended)/i) ){
+                        sharebuttons.addClass('game-over');
+                    }
+                    else{
+                        sharebuttons.removeClass('game-over');
+                    }
                 }
             }
         }
@@ -359,21 +365,27 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             cls             :'links',
                             cn              :[{
                                 tag             :'li',
+                                cls             :'share',
                                 cn              :[{
                                     tag             :'a',
                                     target          :'_blank',
-                                    //href            :'http://www.addthis.com/bookmark.php',
-                                    href            :'http://'+(mobile?'m':'www')+'.facebook.com/sharer.php?u='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
-                                    html            :'Share this Game'
-                                    // cls             :'addthis_button',
+                                    // href            :'http://www.addthis.com/bookmark.php',
+                                    // href            :'/client/share/'+(mobile?'m':'www')+'?url='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
+                                    href            :'http://'+(mobile?'m':'www')+'.facebook.com/sharer.php?'
+                                                        +'u='+encodeURIComponent(url)
+                                                        +'&t='+encodeURIComponent(this.game.name)
+                                                        +'&display=popup',
+                                    html            :'Share this Game',
+                                    cls             :'share-btn'
                                 }]
                             },{
                                 tag             :'li',
+                                cls             :'facebook',
                                 cn              :[{
                                     tag             :'a',
                                     target          :'_blank',
                                     href            :this.page.facebook_page,
-                                    html            :'Visit our Facebook Page',
+                                    html            :'Visit Our Facebook Page',
                                     cls             :'facebook'
                                 }]
                             }]
@@ -407,6 +419,15 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
             this.$description.$shareButtons = this.$description.child('.share-buttons');
             this.$description.$shareButtons.setVisibilityMode(Ext.Element.DISPLAY);
+            
+            var btn = this.$description.$shareButtons.child('.share-btn');
+            btn.on('click', function(e){
+                if( _gaq ) _gaq.push(['_trackEvent', 'Web Game', 'Share', this.game.name+': '+this.game._id]);
+                if( !mobile ) {
+                    e.stopEvent();
+                    window.open(btn.dom.href, 'share_win', 'width=400,height=500');
+                }
+            });
             this.squareImage(this.$description.child('.page-pic'), this.page.image);
             this.updateDescription();
             var show = this.$description.show;
@@ -432,6 +453,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         // add prizes...
         var instructions = this.game.entry_method.description.split('\n');
         instructions.shift();
+        instructions[0] = '<strong>'+instructions[0]+'</strong>';
         description.child('.instructions').update(
             instructions.join('<br />')
         );
