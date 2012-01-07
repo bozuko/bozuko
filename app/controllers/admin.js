@@ -444,6 +444,43 @@ exports.routes = {
             }
         }
     },
+    
+    '/admin/users/:id/friends.csv' : {
+        get : {
+            
+            handler : function(req, res){
+                res.header('Content-Type', 'text/csv');
+                // res.header('Content-Type', 'text/plain');
+                // get the user
+                return Bozuko.models.User.findById(req.param('id'), function(error, user){
+                    if( error ){
+                        console.error(error);
+                        return res.send(error.message);
+                    }
+                    if( !user ){
+                        return res.send('No User Found');
+                    }
+                    var name = user.name.replace(/"/, '\\"');
+                    res.header('Content-Disposition', 'attachment; filename="'+name+' Friends.csv"');
+                    var first = [user.service('facebook').sid, '"'+user.name+'"', 'http://facebook.com/profile.php?id='+user.service('facebook').sid];
+                    res.write( first.join(',')+'\n');
+                    var friends = user.service('facebook').internal.friends;
+                    
+                    friends.forEach(function(friend){
+                        console.log(friend);
+                        var row = [
+                            friend.id,
+                            '"'+friend.name+'"',
+                            'http://facebook.com/profile.php?id='+friend.id
+                        ];
+                        res.write(row.join(',')+'\n');
+                    });
+                    
+                    return res.end();
+                });
+            }
+        }
+    },
 
     '/admin/places' : {
 
