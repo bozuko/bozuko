@@ -199,6 +199,12 @@ Ext.define('Admin.controller.Admin' ,{
                     icon: "/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-check-16.png",
                     handler: me.allowUser,
                     scope: me
+                },{
+                    text: 'Download Friends as CSV',
+                    ref:'download',
+                    icon: "/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-down-16.png",
+                    handler: me.downloadUserStats,
+                    scope: me
                 }]
             });
         }
@@ -315,6 +321,12 @@ Ext.define('Admin.controller.Admin' ,{
                 me.getUsersStore().load();
             }
         });
+    },
+    
+    downloadUserStats : function(){
+        window.open(
+            Bozuko.Router.route('/users/'+this.contextUser.get('_id')+'/friends.csv')
+        );
     },
     
     addPage : function(){
