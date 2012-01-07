@@ -1440,26 +1440,6 @@ h1.intro {
 .need-a-hand .x-panel-body a {
   color: #ff6600;
 }
-<<<<<<< HEAD
-.page-filters .page-list-items {
-  list-style: none;
-  display: block;
-  padding: 0;
-  margin: 0;
-}
-.page-filters .page-list-items li {
-  display: inline-block;
-  list-style: none;
-  float: none
-        padding: 0;
-  margin: 2px 6px 2px 0;
-}
-.page-filters .page-list-items li label {
-  white-space: nowrap;
-}
-.page-filters .page-list-items li label input {
-  margin-right: 6px;
-=======
 .x-form-integration-field {
   padding: 4px 6px;
 }
@@ -1491,5 +1471,4 @@ h1.intro {
 }
 .x-form-integration-field .constantcontact .icon {
   background-image: url("/images/assets/cc-btn.jpg");
->>>>>>> html5
 }
