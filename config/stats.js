@@ -6,7 +6,7 @@ module.exports = {
 
         name: 'bozuko_stats',
         replicaSet: true,
-        hosts: ['192.168.175.164', '192.168.175.163'],
+        hosts: ['127.0.0.1:27018', '127.0.0.1:27019'],
         options: {
             server: {},
             replset: {},
