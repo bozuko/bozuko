@@ -6,7 +6,7 @@ module.exports = {
 
         name: 'bozuko_stats',
         replicaSet: true,
-        hosts: ['pgdb1', 'pgdb2'],
+        hosts: ['pgdb1', 'pgdb1:27018'],
         options: {
             server: {},
             replset: {},
