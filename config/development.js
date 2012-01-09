@@ -45,7 +45,7 @@ module.exports = {
     db:{
         name: 'bozuko_dev'+port,
         replicaSet: true,
-        hosts: ['pgdb1', 'pgdb2'],
+        hosts: ['pgdb1', 'pgdb1:27018'],
         options: {
             server: {poolSize: 25},
             replset: {},
