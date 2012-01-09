@@ -1,5 +1,6 @@
 var async = require('async'),
-    http = Bozuko.require('util/http');
+    http = Bozuko.require('util/http'),
+    inspect = require('util').inspect;
 
 exports.session = false;
 
@@ -174,6 +175,8 @@ exports.routes = {
 
                 var object = req.param('object');
                 var entry = req.param('entry');
+                console.log('pubsub entry = '+inspect(entry));
+                console.log('pubsub object = '+inspect(object));
 
                 if( Bozuko.env() === 'api'){
 
@@ -200,7 +203,10 @@ exports.routes = {
                             return cb();
                         });
                     }, function (error){
-                        if(error) console.error(error);
+                        if(error) {
+                            console.error(error);
+                            console.log(error);
+                        }
                     });
                 }
 
@@ -222,6 +228,10 @@ exports.routes = {
                                 return cb();
                             });
                         }, function(error){
+                            if (error) {
+                                console.error(error);
+                                console.log(error); // for context with the request
+                            }
                             return res.send({});
                         });
 
@@ -231,10 +241,12 @@ exports.routes = {
                          *
                          * track permissions in the internal object
                          */
+                         console.log('pubsub permissions');
                         return res.send({});
 
 
                     default:
+                        console.log("pubsub default");
                         return res.send({});
                 }
             }
