@@ -12,9 +12,26 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
         _gaq.push(['_setAccount', 'UA-22885354-1']);
         _gaq.push(['_trackPageview']);
       
-      script(type="text/javascript",src="https://sssl.google-analytics.com/ga.js")
+      script(type="text/javascript",src="https://ssl.google-analytics.com/ga.js")
     script(type="text/javascript")
-      window.location = "#{redirect}";
+      (function(){
+        var i=0;
+        function redirect(){
+          location = "#{redirect}";
+        };
+        function checkIfAnalyticsLoaded() {
+          if (window._gat && window._gat._getTracker ) {
+            redirect();
+          } else if(i++ < 2000 / 50){
+            // Probably want to cap the total number of times you call this.
+            setTimeout(checkIfAnalyticsLoaded, 50);
+          }
+          else{
+            redirect();
+          }
+        }
+        checkIfAnalyticsLoaded();
+      })();
       
     p(style="font-family:Helvetica,Tahoma;font-size:12px;text-align: center;")
       | If you are not automatically redirected, please  
