@@ -179,11 +179,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         try{
             FB.init({
                 appId: Bozuko.client.App.facebookApp.id,
-                channelUrl: channel,
                 status: true, 
                 cookie: true,
-                xfbml: true,
-                oauth: true
+                fbml: true
             });
 
             FB.Event.subscribe('auth.logout', function(){
