@@ -328,7 +328,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         // test for qr reader on iphone...
         var qr = navigator.userAgent.match(/i(phone|pad|pod)/i ) && !navigator.userAgent.match(/safari/i);
         
-        if( !qr && !Ext.isIE7 && !Ext.isIE8 ){
+        if( !qr ){
             FB.login(function(){},{scope: Bozuko.client.App.facebookApp.scope});
             this.showLoading('Logging in...');
         }

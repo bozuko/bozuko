@@ -432,10 +432,12 @@ Prize.method('share', function(args, callback){
 				return cb();
 			}
 			
-			var link = contest.web_only ?
-				'https://bozuko.com/'+contest.alias||('/client/game/'+contest._id) :
+			var link = burl( contest.web_only ?
+				(contest.alias||('/client/game/'+contest._id)) :
 				'https://bozuko.com/p/'+prize.page_id
-				;
+			);
+			
+			link = link.replace(/(api\.|:(443|80))/, '');
 
 			var options = {
 				user: user,
