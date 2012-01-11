@@ -437,7 +437,7 @@ Prize.method('share', function(args, callback){
 				'https://bozuko.com/p/'+prize.page_id
 			);
 			
-			link = link.replace(/(api\.|:(443|80))/, '');
+			link = link.replace(/api\./, '').replace(/:(443|80)\//, '/');
 
 			var options = {
 				user: user,
