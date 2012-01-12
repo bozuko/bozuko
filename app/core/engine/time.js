@@ -19,8 +19,8 @@ TimeEngine.prototype.configure = function(opts) {
     console.log('TimeEngine.configure: opts = '+inspect(opts));
     opts = opts || {};
     this.buffer = opts.buffer || 0.001;
-    this.lookback_threshold = opts.lookback_threshold || 0.15;
-    this.window_divisor = opts.window_divisor || 5; 
+    this.lookback_threshold = opts.lookback_threshold || 0.1;
+    this.window_divisor = opts.window_divisor || 3; 
     this.throwahead_multiplier = opts.throwahead_multiplier || 10;
 
     // Leave a buffer at the end so users can always win the last prizes.
