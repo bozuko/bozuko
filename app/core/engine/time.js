@@ -19,8 +19,8 @@ TimeEngine.prototype.configure = function(opts) {
     console.log('TimeEngine.configure: opts = '+inspect(opts));
     opts = opts || {};
     this.buffer = opts.buffer || 0.001;
-
-    this.window_divisor = opts.window_divisor || 0.01;
+    this.lookback_threshold = opts.lookback_threshold || 0.15;
+    this.window_divisor = opts.window_divisor || 5; 
     this.throwahead_multiplier = opts.throwahead_multiplier || 10;
 
     // Leave a buffer at the end so users can always win the last prizes.
@@ -28,6 +28,8 @@ TimeEngine.prototype.configure = function(opts) {
         (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.buffer));
 
     this.buffer_start = new Date(this.contest.start.getTime() + this.contest_duration);
+    this.lookback_threshold_start = new Date(this.contest.end.getTime() - 
+        Math.floor((this.contest.end.getTime() - this.contest.start.getTime())*this.lookback_threshold));
     this.step =  Math.floor(
         (this.contest_duration)/this.contest.totalPrizes());
     this.lookback_window = Math.round(this.step/this.window_divisor);
@@ -37,7 +39,8 @@ TimeEngine.prototype.configure = function(opts) {
     this.throwahead_window = Math.round(this.step*this.throwahead_multiplier);
     console.log("throwahead window = "+this.throwahead_window);
     console.log("lookback_window = "+this.lookback_window);
-
+    console.log("lookback_threshold_start = "+this.lookback_threshold_start);
+    console.log("buffer_start = "+this.buffer_start);
     if (this.contest.free_play_pct) {
         this.free_play_odds = Math.round(1/(this.contest.free_play_pct/100));
     }
@@ -144,7 +147,7 @@ TimeEngine.prototype.play = function(memo, callback) {
     // In other words, disregard the lookback window. We do this so that all prizes
     // get handed out before the contest expires.
     //
-    if (now > this.buffer_start.getTime()) {
+    if (now > this.lookback_threshold_start.getTime()) {
         memo.query = self.contest.noLookbackQuery(memo);
     } else {
         memo.query = self.contest.lookbackQuery(memo);
