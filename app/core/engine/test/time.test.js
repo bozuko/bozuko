@@ -212,38 +212,6 @@ exports['lose and redistribute'] = function(test) {
     });
 };
 
-exports['lose, but don\'t redistribute - inside buffer'] = function(test) {
-    var engine = new TimeEngine(contest);
-    // Set engine.lookback_window to 1ms so we can force a redistribution
-    engine.lookback_window = 1;
-    var last_win_time = null;
-    Bozuko.models.Result.findOne({timestamp: {$lt: engine.buffer_start}}, {timestamp: 1}, {sort: {timestamp: 1}}, function(err, result) {
-        if (result) last_win_time = result.timestamp.getTime();
-
-        // Set the timestamp to right before the buffer so we don't get a redistribution into the buffer
-        var memo = {
-            timestamp: new Date(engine.buffer_start.getTime()-1),
-            user: user,
-            entry: entry
-        };
-        engine.play(memo, function(err, memo) {
-            test.ok(!err);
-            test.ok(!memo.result);
-
-            // Only check to see if the last play wasn't redistributed if there was a free one before
-            // engine.buffer_start. There should almost always be a last_win_time.
-            if (last_win_time) {
-                return Bozuko.models.Result.findOne({timestamp: new Date(last_win_time)}, function(err, result) {
-                    test.ok(!err);
-                    test.ok(result);
-                    test.done();
-                });
-            }
-            return test.done();
-        });
-    });
-};
-
 exports['play at end of contest and win remaining 3 prizes'] = function(test) {
     var engine = new TimeEngine(contest);
 
