@@ -121,14 +121,14 @@ Ext.define('Bozuko.view.chart.Basic', {
                         value           :new Date(Date.now() - 1000*60*60*24*6),
                         dateFormat      :'d/m/Y',
                         editable        :false,
-                        width           :100
+                        width           :95
                     },{xtype:'splitter'},{
                         xtype           :'datefield',
                         name            :'to_time',
                         value           :new Date(),
                         editable        :false,
                         dateFormat      :'d/m/Y',
-                        width           :100
+                        width           :95
                     }]
                     
                 },{
@@ -333,66 +333,38 @@ Ext.define('Bozuko.view.chart.Basic', {
                 j = chartControls.items.indexOf(dateRange)
                 ;
                 
-            var filterBtn = chartControls.insert( j+1, {
-                xtype           :'button',
-                enableToggle    :true,
-                text            :'Page Filters',
-                toggleHandler   :function(btn){
-                    filterPanel[btn.pressed?'show':'hide']();
-                }
-            });
-            chartControls.insert( j+1, {xtype:'splitter'});
-            
-            var filterPanel = me.insert(i+1, {
-                xtype           :'panel',
-                hidden          :true,
-                title           :'Page Filters',
-                bodyPadding     :10,
-                items           :[{
-                    xtype           :'dataview',
-                    ref             :'page-filters',
-                    
-                    cls             :'page-filters',
-                    
-                    emptyText       :'No Pages to Filter',
-                    deferEmptyText  :false,
-                    
-                    disableSelection:true,
-                    autoHeight      :true,
-                    
-                    itemSelector    :'.page-item',
-                    
-                    tpl         :new Ext.XTemplate(
-                        '<ul class="page-list-items">',
-                            '<tpl for=".">',
-                                '<li class="page-item">',
-                                    '<label><input type="checkbox" value="{_id}" checked /><span>{name}</span></label>',
-                                '</li>',
-                            '</tpl>',
-                        '</ul>'
-                    ),
-                    
-                    store : Ext.create('Ext.data.Store', {
-                        fields : ['name', '_id'],
-                        proxy : {
-                            type: 'rest',
-                            url: Bozuko.Router.route('/contests/'+me.contest.get('_id')+'/pages'),
-                            reader : {
-                                type: 'json',
-                                root: 'items'
+            var filterPanel = me.insert(i, {
+                xtype           :'combo',
+                ref             :'page-filter',
+                hideLabel       :true,
+                forceSelection  :true,
+                width           :250,
+                editable        :false,
+                value           :'',
+                displayField    :'name',
+                valueField      :'_id',
+                store : Ext.create('Ext.data.Store', {
+                    fields : ['name', '_id'],
+                    proxy : {
+                        type: 'rest',
+                        url: Bozuko.Router.route('/contests/'+me.contest.get('_id')+'/pages'),
+                        reader : {
+                            type: 'json',
+                            root: 'items',
+                            getResponseData: function( response ){
+                                var data = Ext.data.reader.Json.prototype.getResponseData.apply(this, arguments);
+                                data.items.unshift({_id:'', name:'All Locations'});
+                                return data;
                             }
-                        },
-                        autoLoad : true                        
-                    }),
-                    
-                    listeners : {
-                        refresh         :function(cmp){
-                            cmp.getEl().select('input').on('click', function(){
-                                me.updateChart();
-                            });
+                        }
+                    },
+                    autoLoad : true,
+                    listeners :{
+                        load : function(){
+                            me.down('[ref=page-filter]').setValue('');
                         }
                     }
-                }]
+                })
             });
         }
         
@@ -587,22 +559,19 @@ Ext.define('Bozuko.view.chart.Basic', {
             model : me.modelField.getValue(),
             timezoneOffset : (new Date()).getTimezoneOffset()
         };
-        if( me.page_id ){
+        if( !me.contest_id && me.page_id ){
             me.chartProxy.extraParams.page_id = me.page_id;
         }
         if (me.contest_id ){
             me.chartProxy.extraParams.contest_id = me.contest_id;
         }
-        if( me.down('[ref=page-filters]') ){
-            var ids = [];
-            if( !me.down('[ref=page-filters]').getEl().select('input') ){
-                ids = me.contest.get('page_ids');
+        if( me.down('[ref=page-filter]') ){
+            var pf = me.down('[ref=page-filter]'),
+                page_id;
+                
+            if( (page_id = pf.getValue()) ){
+                me.chartProxy.extraParams.page_id = page_id;
             }
-            me.down('[ref=page-filters]').getEl().select('input:checked').each(function(el){
-                // okay we can do this...
-                ids.push(el.dom.value);
-            });
-            me.chartProxy.extraParams.page_ids = ids.join(',');
         }
         if( me.chart.axes.get(0).setTitle ){
             me.chart.axes.get(0).setTitle(me.modelField.getRawValue());
@@ -635,7 +604,6 @@ Ext.define('Bozuko.view.chart.Basic', {
                 else{
                     me.dateFormat = me.chart.axes.get(1).dateFormat='g:i a';
                 }
-                
             }
             else if( /minute/i.test(time[0])){
                 if( time[1] > 1 ){
