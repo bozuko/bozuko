@@ -31,7 +31,8 @@ CountsReport.prototype.run = function run(callback){
         query = opts.query || {},
         model = opts.model || 'Entry',
         end = opts.end || new Date(),
-        start, length = opts.length || 1;
+        start = opts.start || null,
+        length = opts.length || 1;
         tzOffset = (opts.timezoneOffset||0)*1000*60;
         
     if( !Bozuko.models[model] ) return callback( new Error("Invalid Model") );
@@ -48,7 +49,7 @@ CountsReport.prototype.run = function run(callback){
         }
     }
     
-    switch( interval ){
+    if( !start ) switch( interval ){
         
         case 'Year':
             end = new Date( Date.UTC(parseInt(end.getUTCFullYear(),10)+1,0,1) );

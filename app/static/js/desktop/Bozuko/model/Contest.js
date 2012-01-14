@@ -24,6 +24,7 @@ Ext.define('Bozuko.model.Contest', {
     fields: [
         {name:'_id',                type:'String'},
         {name:'page_id',            type:'String'},
+        {name:'page_ids',           type:'Array'},
         {name:'name',               type:'String',              defaultValue:'Untitled Campaign'},
         {name:'alias',              type:'String'},
         {name:'promo_copy',         type:'String'},

@@ -447,7 +447,6 @@ exports.routes = {
     
     '/admin/users/:id/friends.csv' : {
         get : {
-            
             handler : function(req, res){
                 res.header('Content-Type', 'text/csv');
                 // res.header('Content-Type', 'text/plain');
