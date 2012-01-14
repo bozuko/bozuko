@@ -322,6 +322,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     },
     
     getDescription : function(){
+        var self = this;        
         if( !this.$description ){
             // get the window width
             var mobile = window.innerWidth && window.innerWidth < 500;
@@ -422,7 +423,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
             var btn = this.$description.$shareButtons.child('.share-btn');
             btn.on('click', function(e){
-                if( window._gaq ) _gaq.push(['_trackEvent', 'Web Game', 'Share', this.game.name+': '+this.game._id]);
+                if( window._gaq ) _gaq.push(['_trackEvent', 'Web Game', 'Share', self.game.name+': '+self.game.id]);
                 if( !mobile ) {
                     e.stopEvent();
                     window.open(btn.dom.href, 'share_win', 'width=400,height=500');
@@ -431,7 +432,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             this.squareImage(this.$description.child('.page-pic'), this.page.image);
             this.updateDescription();
             var show = this.$description.show;
-            var self = this;
             this.$description.show = function(){
                 show.apply(this, arguments);
                 var bd = self.$description.child('.bd');
