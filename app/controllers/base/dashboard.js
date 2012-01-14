@@ -1235,6 +1235,7 @@ exports.routes = {
                                         contest_json.window_divisor = contest.engine_options.window_divisor;
                                         contest_json.throwahead_multiplier = contest.engine_options.throwahead_multiplier;
                                         contest_json.end_buffer = contest.engine_options.buffer;
+                                        contest_json.lookback_threshold = contest.engine_options.lookback_threshold;
                                     }
 
                                     return cb();
@@ -1289,11 +1290,13 @@ exports.routes = {
                     data.engine_options.window_divisor = data.window_divisor;
                     data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
                     data.engine_options.buffer = data.end_buffer;
+                    data.engine_options.lookback_threshold = data.lookback_threshold;
                 }
                 // remove unused variables
                 delete data.window_divisor;
                 delete data.throwahead_multiplier;
                 delete data.end_buffer;
+                delete data.lookback_threshold;
 
                 var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
@@ -1355,11 +1358,13 @@ exports.routes = {
                         data.engine_options.window_divisor = data.window_divisor;
                         data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
                         data.engine_options.buffer = data.end_buffer;
+                        data.engine_options.lookback_threshold = data.lookback_threshold;
                     }
                     // remove unused variables
                     delete data.window_divisor;
                     delete data.throwahead_multiplier;
                     delete data.end_buffer;
+                    delete data.lookback_threshold;
 
                     for( var p in data ){
                         if( data.hasOwnProperty(p) ){
