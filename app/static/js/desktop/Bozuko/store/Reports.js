@@ -13,6 +13,7 @@ Ext.define('Bozuko.store.Reports', {
                 var data = Ext.data.reader.Json.prototype.getResponseData.apply(this, arguments);
                 this._unit = data.unit;
                 this._label = data.label;
+                return data;
             }
         }
     },
@@ -21,11 +22,13 @@ Ext.define('Bozuko.store.Reports', {
     autoLoad: true,
     
     getUnit : function(){
-        return this._unit || 'day';
+        return this.proxy.reader._unit || 'day';
     },
     
     getLabel : function(){
-        return this._label || 'Day';
+        return this.proxy.reader._label || 'Day';
     }
     
+}, function(){
+    this.prototype.proxy.url = Bozuko.Router.route(this.prototype.proxy.url);
 });

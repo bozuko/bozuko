@@ -718,6 +718,8 @@ exports.routes = {
 
                 var time = req.param('time') || 'week-1',
                     tzOffset = parseInt(req.param('timezoneOffset', 0), 10),
+                    from = req.param('from'),
+                    to = req.param('to'),
                     query = {},
                     options ={},
                     model = req.param('model') || 'Entry'
@@ -733,75 +735,34 @@ exports.routes = {
                 if( req.param('contest_id') ){
                     query.contest_id = new ObjectId(req.param('contest_id'));
                 }
-
-                time = time.split('-');
-                if( time.length != 2 ) throw new Error('Invalid time argument');
-                time[1] = parseInt( time[1], 10 );
-
-                options.interval = time[0].substr(0,1).toUpperCase()+time[0].substr(1);
-                options.length = time[1];
-
-                switch( time[0] ){
-                    case 'year':
-                        if( time[1] > 1 ){
-                            options.unit = 'Year';
-                        }
-                        else{
-                            options.unit = 'Month';
-                        }
-                        break;
-
-                    case 'month':
-                        if( time[1] > 2 ){
-                            if( time[1] > 5 ){
-                                options.unit = 'Month';
-                            }
-                            else{
-                                options.unit = 'Week';
-                            }
-                        }
-                        else{
-                            options.unit = 'Day';
-                        }
-                        break;
-
-                    case 'week':
-                        if( time[1] > 4 ){
-                            options.unit = 'Week';
-                        }
-                        else{
-                            options.unit = 'Day';
-                        }
-                        break;
-
-                    case 'hour':
-                        if( time[1] > 1 ){
-                            options.unit = 'Hour';
-                        }
-                        else{
-                            options.unit = 'Minute';
-                        }
-                        break;
-
-                    case 'day':
-                        if( time[1] > 3 ){
-                            options.unit = 'Day';
-                        }
-                        else{
-                            options.unit = 'Hour';
-                        }
-                        break;
-
-                    case 'minute':
-                        options.unit = 'Minute';
-                        if( time[1] == 1 ){
-                            options.interval = 'Second';
-                            options.length = 60;
-                            options.unit = 'Second';
-                            options.unitInterval = 5;
-                        }
-                        break;
+                
+                // hey now... lets check for the times
+                from = Date.parse(from);
+                to = Date.parse(to);
+                
+                var diff = to-from;
+                
+                if( diff < 4 * DateUtil.DAY ){
+                    options.unit = 'Hour';
+                    if( diff > 2 * DateUtil.DAY ){
+                        options.unitInterval = 2;
+                    }
                 }
+                else if( diff < 1 * DateUtil.MONTH ){
+                    options.unit = 'Day';
+                }
+                else if( diff < 6 * DateUtil.MONTH ){
+                    options.unit = 'Week';
+                }
+                else if( diff < 2 * DateUtil.YEAR ){
+                    options.unit = 'Month';
+                }
+                else {
+                    options.unit = 'Year';
+                }
+                options.interval = options.unit;
+                options.length = diff / DateUtil[options.unit.toUpperCase()] + 1;
+                options.end = new Date(to);
 
                 var model = req.param('model') || 'Entry';
                 options.timezoneOffset = tzOffset;
@@ -866,13 +827,13 @@ exports.routes = {
                     default:
                         throw "Invalid model";
                 }
-
+                
                 return Report.run( 'interval', options, function(error, results){
                     if( error ){
                         console.error(require('util').inspect(error));
                         return error.send( res );
                     }
-                    return res.send( {items: results} );
+                    return res.send( {items: results, unit: options.unit} );
                 });
             }
         }

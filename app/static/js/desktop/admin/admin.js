@@ -1,3 +1,4 @@
+Ext.USE_NATIVE_JSON = true;
 Ext.Loader.setConfig({enabled:true});
 Ext.Loader.setPath('Ext.ux', '/js/ext-4.0/ux');
 Ext.Loader.setPath('Bozuko', '/js/desktop/Bozuko');
