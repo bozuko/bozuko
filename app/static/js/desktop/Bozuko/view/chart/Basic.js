@@ -9,6 +9,14 @@ Ext.define('Bozuko.view.chart.Basic', {
     
     totalsLabel : "Page Totals",
     
+    formats : {
+        'hour'  :'ga',
+        'day'   :'d M',
+        'week'  :'d M',
+        'month' :'M Y',
+        'year'  :'Y'
+    },
+    
     initComponent : function(){
         var me = this;
         
@@ -74,40 +82,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                         scope           :me,
                         change          :me.updateChart
                     }
-                },{xtype:'splitter'},/*{
-                    xtype           :'combo',
-                    hideLabel       :true,
-                    forceSelection  :true,
-                    editable        :false,
-                    name            :'time',
-                    queryMode       :'local',
-                    displayField    :'text',
-                    value           :'week-1',
-                    valueField      :'value',
-                    width           :190,
-                    
-                    store           :Ext.create('Ext.data.Store',{
-                        fields          :['text','value'],
-                        data            :[
-                            {text:'Last Minute (by Second)',    value:'minute-1'},
-                            {text:'Last 10 Minutes (by Minute)', value:'minute-10'},
-                            {text:'Last Day (by Hour)', value:'hour-24'},
-                            {text:'Last Two Days (by Hour)', value:'hour-48'},
-                            {text:'Last Week (by Day)', value:'week-1'},
-                            {text:'Last Two Weeks (by Day)', value:'week-2'},
-                            {text:'Last Month (by Day)', value:'week-4'},
-                            {text:'Last 6 Months (by Week)', value:'week-24'},
-                            {text:'Last 6 Months (by Month)', value:'month-6'},
-                            {text:'Last Year (by Month)', value: 'month-12'},
-                            {text:'Last 5 Years (by Year)', value: 'year-5'}
-                        ]
-                    }),
-                    
-                    listeners       :{
-                        scope           :me,
-                        change          :me.updateChart
-                    }
-                },*/{
+                },{xtype:'splitter'},{
                     ref             :'date-range',
                     xtype           :'fieldcontainer',
                     fieldLabel      :'Date Range',
@@ -115,6 +90,12 @@ Ext.define('Bozuko.view.chart.Basic', {
                     width           :280,
                     border          :false,
                     layout          :'hbox',
+                    defaults        :{
+                        listeners       :{
+                            select          :me.onDateChange,
+                            scope           :me
+                        }
+                    },
                     items           :[{
                         xtype           :'datefield',
                         name            :'from_time',
@@ -248,6 +229,10 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.on('render', me.renderChart, me, {delay:200});
     },
     
+    onDateChange : function(){
+        this.updateChart();
+    },
+    
     renderChart : function(){
         
         var me = this,
@@ -317,6 +302,9 @@ Ext.define('Bozuko.view.chart.Basic', {
                 }],
                 listeners : {
                     scope           :me,
+                    beforerefresh   :function(){
+                        me.setDateFormat(me.chartStore.getUnit());
+                    },
                     refresh         :me.onChartRefresh,
                     render          :me.onChartRefresh
                 }
@@ -364,7 +352,11 @@ Ext.define('Bozuko.view.chart.Basic', {
                             me.down('[ref=page-filter]').setValue('');
                         }
                     }
-                })
+                }),
+                listeners       :{
+                    scope           :me,
+                    select          :me.updateChart
+                }
             });
         }
         
@@ -375,6 +367,10 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.fromField = me.down('[name=from_time]');
         me.toField = me.down('[name=to_time]');
         me.modelField = me.down('[name=model]');
+        
+        me.toField.getPicker().on('show', function(){
+            me.toField.setMaxValue( new Date() );
+        });
         
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
@@ -397,7 +393,6 @@ Ext.define('Bozuko.view.chart.Basic', {
             
             var fn = me.modelField.store.findRecord('value', me.modelField.getValue()).get('fn') || 'sum';
             var total = me.chartStore[fn]('count');
-            
             
             if( !total ){
                 redraw = !axis.maximum;
@@ -517,6 +512,7 @@ Ext.define('Bozuko.view.chart.Basic', {
         me.isLoading = true;
         if( me.chart && me.chart.store ) me.chart.store.load(function(){
             me.isLoading = false;
+            
             if( me.loadAgain ){
                 me.loadAgain = false;
                 me.loadStore();
@@ -552,8 +548,10 @@ Ext.define('Bozuko.view.chart.Basic', {
     
     updateChart : function(){
         var me = this;
+        // set max min values...
+        me.fromField.setMaxValue( me.toField.getValue() );
+        me.toField.setMinValue( me.fromField.getValue() );
         me.chartProxy.extraParams = {
-            time : 'week-1', // me.timeField.getValue(),
             from : me.fromField.getValue(),
             to: me.toField.getValue(),
             model : me.modelField.getValue(),
@@ -575,49 +573,13 @@ Ext.define('Bozuko.view.chart.Basic', {
         }
         if( me.chart.axes.get(0).setTitle ){
             me.chart.axes.get(0).setTitle(me.modelField.getRawValue());
-            var time = 'week-1';
-            time[1] = parseInt( time[1], 10 );
-            if( /year/i.test(time[0]) ){
-                if( time[1] > 1 ){
-                    me.dateFormat = me.chart.axes.get(1).dateFormat='Y';
-                }
-                else{
-                    me.dateFormat = me.chart.axes.get(1).dateFormat='M Y';
-                }
-            }
-            else if( /month/i.test(time[0]) && time[1] > 1 ){
-                if( time[1] == 3 ){
-                    me.dateFormat = me.chart.axes.get(1).dateFormat='\\Week W';
-                }
-                else{
-                    me.dateFormat = me.chart.axes.get(1).dateFormat='M Y';
-                }
-            }
-            else if( /day/i.test(time[0])){
-                me.dateFormat = me.chart.axes.get(1).dateFormat='ga';
-                
-            }
-            else if( /hour/i.test(time[0])){
-                if( time[1] > 1 ){
-                    me.dateFormat = me.chart.axes.get(1).dateFormat='ga';
-                }
-                else{
-                    me.dateFormat = me.chart.axes.get(1).dateFormat='g:i a';
-                }
-            }
-            else if( /minute/i.test(time[0])){
-                if( time[1] > 1 ){
-                    me.dateFormat = me.chart.axes.get(1).dateFormat='g:ia';
-                }
-                else{
-                    me.dateFormat = me.chart.axes.get(1).dateFormat='g:i:sa';
-                }
-            }
-            else{
-                me.dateFormat = me.chart.axes.get(1).dateFormat='d M';
-            }
         }
         me.chartStore.load();
+    },
+    
+    setDateFormat : function(unit){
+        var me = this;
+        me.dateFormat = me.formats[unit.toLowerCase()];
     }
     
 });

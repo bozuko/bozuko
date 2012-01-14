@@ -1,0 +1,2 @@
+mongod --replSet playground --port 27018 --dbpath /var/lib/pgdb1 --bind_ip '127.0.0.1' --journal &
+mongod --replSet playground --port 27019 --dbpath /var/lib/pgdb2 --bind_ip '127.0.0.1' --journal &

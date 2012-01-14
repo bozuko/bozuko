@@ -63,7 +63,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.stylesheet.rule('.modal-window-full', {
             'min-height': (this.height-30-6)+'px'
         });
-        if( Modernizr.touch ) this.stylesheet.rule('body',{
+        if( Modernizr.touch && !window.navigator.userAgent.match(/i(pad|pod|phone)/i) ) this.stylesheet.rule('body',{
             'width': this.width+'px'
         });
         (function(){
@@ -179,11 +179,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         try{
             FB.init({
                 appId: Bozuko.client.App.facebookApp.id,
-                channelUrl: channel,
                 status: true, 
                 cookie: true,
-                xfbml: true,
-                oauth: true
+                fbml: true
             });
 
             FB.Event.subscribe('auth.logout', function(){
@@ -330,7 +328,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         // test for qr reader on iphone...
         var qr = navigator.userAgent.match(/i(phone|pad|pod)/i ) && !navigator.userAgent.match(/safari/i);
         
-        if( !qr && !Ext.isIE7 && !Ext.isIE8 ){
+        if( !qr ){
             FB.login(function(){},{scope: Bozuko.client.App.facebookApp.scope});
             this.showLoading('Logging in...');
         }
