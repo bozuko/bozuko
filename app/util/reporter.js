@@ -117,11 +117,13 @@ util.inherits(CsvFormatter, Stream);
 
 CsvFormatter.prototype.write = function(doc) {
     var str = '';
-    for (var i = 0; i < this.contest.prizes.length; i++) {
-       if (doc.prize_name == this.contest.prizes[i].name) {
-           doc.prize_value = this.contest.prizes[i].value;
-           break;
-       }
+    if (this.format === formatPlay) {
+        for (var i = 0; i < this.contest.prizes.length; i++) {
+            if (doc.prize_name == this.contest.prizes[i].name) {
+                doc.prize_value = this.contest.prizes[i].value;
+                break;
+            }
+        }
     }
     str += this.format(doc) + '\n';
     this.emit('data', str);
