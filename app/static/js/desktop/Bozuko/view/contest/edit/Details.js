@@ -75,7 +75,7 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
         },{
             xtype               :'textfield',
             name                :'window_divisor',
-            fieldLabel          :'lbwDiv - not for Mark F'
+            fieldLabel          :'Window divisor'
         },{
             xtype               :'textfield',
             name                :'throwahead_multiplier',
@@ -83,7 +83,11 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
         },{
             xtype               :'textfield',
             name                :'end_buffer',
-            fieldLabel          :'End of game buffer (pct)'
+            fieldLabel          :'End of game buffer' 
+        },{
+            xtype               :'textfield',
+            name                :'lookback_threshold',
+            fieldLabel          :'Lookback Threshold'
         },{
             xtype           :'htmleditor',
             name            :'promo_copy',
