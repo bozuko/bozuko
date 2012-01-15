@@ -744,9 +744,9 @@ exports.routes = {
                 from.setMinutes(0);
                 from.setSeconds(0);
                 
-                to.setHours(23);
-                to.setMinutes(59);
-                to.setSeconds(59);
+                to.setHours(24);
+                to.setMinutes(0);
+                to.setSeconds(0);
                 
                 var diff = +to-from;
                 
