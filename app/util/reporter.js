@@ -58,7 +58,7 @@ function write_summary(res, contest, callback) {
 var page_map = {};
 
 function write_details(res, contest) {
-    res.write('Entry\n');
+    res.write('Entries\n');
     res.write('Timestamp, User Id, Place\n');
     var formatter = new CsvFormatter(formatEntry, contest);
     var query = Bozuko.models.Entry.find({contest_id: contest._id});
