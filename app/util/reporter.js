@@ -28,7 +28,7 @@ function write_summary(res, contest, callback) {
    var next_hr = new Date(current_hr.getTime() + hr);
 
    // write out the summary labels
-   res.write('Hourly Summary, Entries, Plays, Prizes Won, Prizes Redeemed\n');
+   res.write('Hourly Summary (EST), Entries, Plays, Prizes Won, Prizes Redeemed\n');
    
    async.whilst(function() {
        return current_hr <= end_hr;
@@ -59,21 +59,21 @@ var page_map = {};
 
 function write_details(res, contest) {
     res.write('Entries\n');
-    res.write('Timestamp, User Id, Place\n');
+    res.write('Timestamp (UTC), User Id, Place\n');
     var formatter = new CsvFormatter(formatEntry, contest);
     var query = Bozuko.models.Entry.find({contest_id: contest._id});
     query.stream().pipe(formatter);
     formatter.pipe(res, {end: false});
     formatter.on('end', function() {
         res.write('\n\nPlays\n');
-        res.write('Timestamp, User Id, Place, Prize, Value\n');
+        res.write('Timestamp (UTC), User Id, Place, Prize, Value\n');
         var playFormatter = new CsvFormatter(formatPlay, contest);
         var query = Bozuko.models.Play.find({contest_id: contest._id});
         query.stream().pipe(playFormatter);
         playFormatter.pipe(res, {end: false});
         playFormatter.on('end', function() {
             res.write('\n\nPrizes\n');
-            res.write('Timestamp, User Id, Place, Activity, Value\n');
+            res.write('Timestamp (UTC), User Id, Place, Activity, Value\n');
             var prizeFormatter = new CsvFormatter(formatPrize, contest);
             var query = Bozuko.models.Prize.find({contest_id: contest._id});
             query.stream().pipe(prizeFormatter);
