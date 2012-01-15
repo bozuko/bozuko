@@ -737,10 +737,18 @@ exports.routes = {
                 }
                 
                 // hey now... lets check for the times
-                from = Date.parse(from);
-                to = Date.parse(to);
+                from = new Date(Date.parse(from));
+                to = new Date(Date.parse(to));
                 
-                var diff = to-from;
+                from.setHours(0);
+                from.setMinutes(0);
+                from.setSeconds(0);
+                
+                to.setHours(23);
+                to.setMinutes(59);
+                to.setSeconds(59);
+                
+                var diff = +to-from;
                 
                 if( diff < 4 * DateUtil.DAY ){
                     options.unit = 'Hour';
@@ -762,7 +770,7 @@ exports.routes = {
                 }
                 options.interval = options.unit;
                 options.length = diff / DateUtil[options.unit.toUpperCase()] + 1;
-                options.end = new Date(to);
+                options.end = to;
 
                 var model = req.param('model') || 'Entry';
                 options.timezoneOffset = tzOffset;

@@ -289,7 +289,8 @@ Ext.define('Bozuko.view.chart.Basic', {
                         width: 150,
                         height: 50,
                         renderer: function(storeItem, item) {
-                            this.setTitle(Ext.Date.format(storeItem.get('timestamp'),me.dateFormat));
+                            var v = Ext.Date.format(storeItem.get('timestamp'),me.dateFormat)
+                            this.setTitle(me.chartStore.getUnit().toLowerCase() == 'week' ? 'Week of '+v : v);
                             var count = me.modelField.getValue().match(/cost/i) ?
                                 Ext.util.Format.usMoney(storeItem.get('count')) :
                                 storeItem.get('count');
