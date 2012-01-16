@@ -175,6 +175,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
                     }]
                 },{
                     title           :'Business',
+                    hidden          :me.record.get('is_enterprise'),
                     defaults        :{
                         anchor          :'0'
                     },
@@ -302,6 +303,7 @@ Ext.define('Bozuko.view.page.Settings' ,{
                 region          :'east',
                 title           :'Page Preview',
                 xtype           :'pagepreview',
+                hidden          :me.record.get('is_enterprise'),
                 border          :false,
                 autoScroll      :true
             }]

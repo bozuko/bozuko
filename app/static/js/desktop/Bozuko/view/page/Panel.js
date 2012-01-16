@@ -103,6 +103,7 @@ Ext.define('Bozuko.view.page.Panel', {
                     border          :false,
                     store           :Ext.create('Bozuko.store.Contests', {
                         page_id         :me.page.get('_id'),
+                        page            :me.page,
                         autoLoad        :true
                     })
                 },{

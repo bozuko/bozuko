@@ -47,6 +47,15 @@ Ext.application({
                 success: function(record){
                     me.record = record;
                     
+                    // lets add a class to the html tag
+                    Ext.getBody().addCls(record.get('is_enterprise')?'bozuko-enterprise':'bozuko-local');
+                    var logo = Ext.DomQuery.selectNode('.hd h1.logo');
+                    Ext.fly(logo).createChild({
+                        tag: 'span',
+                        cls: 'subtitle',
+                        html: record.get('is_enterprise') ? 'Enterprise' : 'Local'
+                    });
+                    
                     me.titleNode = Ext.get( Ext.DomQuery.selectNode('.page-info h3') );
                     
                     if( Bozuko.beta.user_pages.length > 1 ){

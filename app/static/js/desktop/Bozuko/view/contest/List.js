@@ -104,6 +104,9 @@ Ext.define('Bozuko.view.contest.List' ,{
                         '<tpl if="this.canEdit(values)">',
                             '<li><a href="/" onclick="return false;" class="edit builder">Open</a></li>',
                         '</tpl>',
+                        '<tpl if="this.canReview(values)">',
+                            '<li><a href="/" onclick="return false;" class="review builder">Review</a></li>',
+                        '</tpl>',
                         '<tpl if="this.canCopy(values)">',
                             '<li><a href="/" onclick="return false;" class="copy">Copy</a></li>',
                         '</tpl>',
@@ -163,6 +166,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                     
                     canCopy : function(values){
                         if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'copy')) return '';
+                        if( me.page.get('is_enterprise') ) return '';
                         return true;
                     },
                     

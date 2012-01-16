@@ -49,6 +49,7 @@ Ext.define('Bozuko.view.page.Resources' ,{
             },{
                 xtype               :'fieldset',
                 title               :'Website Stamps',
+                hidden              :me.page.get('is_enterprise'),
                 autoHeight          :true,
                 items               :[{
                     xtype               :'dataview',

@@ -10,6 +10,22 @@ Ext.define('Bozuko.view.page.Welcome' ,{
     initComponent : function(){
         var me = this;
         
+        var links = [
+            {article:'create-a-game', text:'How to Create a Game', enterprise: false, local: true},
+            {article:'prize-tips', text:'Prize Tips', enterprise: true, local: true},
+            {article:'redeem-prizes', text:'How to Redeem Prizes', enterprise: true, local: true},
+            {article:'contact', text:'Contact Us', enterprise: true, local: true}
+        ];
+        
+        var html = ['<ul>'],
+            enterprise = me.page.get('is_enterprise');
+        Ext.each( links, function(link){
+            if( (enterprise && link.enterprise) || (!enterprise && link.local) ){
+                html.push('<li><a class="howto" data-article="'+link.article+'" href="javascript:;">'+link.text+'</a></li>');
+            }
+        });
+        html.push('</ul>');
+        
         Ext.apply( me, {
             
             layout              :'border',
@@ -24,18 +40,6 @@ Ext.define('Bozuko.view.page.Welcome' ,{
                 listeners           :{
                     'added'             :function(panel){
                         // lets get the content for this page...
-                        /*
-                        panel.addDocked({
-                            dock            :'bottom',
-                            xtype           :'toolbar',
-                            items           :[{
-                                text            :'Reload',
-                                handler         :function(){
-                                    panel.loadPage();
-                                }
-                            }]
-                        })
-                        */
                         panel.loadPage(panel);
                     }
                 },
@@ -64,14 +68,7 @@ Ext.define('Bozuko.view.page.Welcome' ,{
                 width               :320,
                 autoScroll          :true,
                 bodyPadding         :10,
-                html                :[
-                    '<ul>',
-                        '<li><a class="howto" data-article="create-a-game" href="javascript:;">How to Create a Game</a></li>',
-                        '<li><a class="howto" data-article="prize-tips" href="javascript:;">Prizes Tips and Concepts</a></li>',
-                        '<li><a class="howto" data-article="redeem-prizes" href="javascript:;">How to Redeem Prizes</a></li>',
-                        '<li><a class="howto" data-article="contact" href="javascript:;">Contact Us</a></li>',
-                    '</ul>'
-                ],
+                html                :html,
                 listeners           :{
                     render              :function(panel){
                         setTimeout(function(){
