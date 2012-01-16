@@ -1272,9 +1272,8 @@ exports.routes = {
                 if(this.restrictToUser && !~indexOf(req.session.user.manages, page_id)){
                     return Bozuko.error('bozuko/auth').send(res);
                 }
-
+                
                 delete data._id;
-
                 delete data.play_cursor;
                 delete data.state;
                 delete data.total_entries;
@@ -1287,6 +1286,9 @@ exports.routes = {
                 prizes.forEach(function(prize){
                     delete prize._id;
                 });
+
+                // weird issue - change page_ids from '' to [];
+                if (data.page_ids == '') data.page_ids = [];
 
                 // any other _id things?
                 consolation_prizes.forEach(function(prize){
@@ -1306,7 +1308,6 @@ exports.routes = {
                 delete data.throwahead_multiplier;
                 delete data.end_buffer;
                 delete data.lookback_threshold;
-
                 var contest = new Bozuko.models.Contest(data);
                 return contest.save( function(error){
                     if( error ) return error.send( res );
@@ -1343,7 +1344,6 @@ exports.routes = {
                     if( error ) return error.send(res);
 
                     var data = filter(req.body);
-                    console.log(data);
 
                     var prizes = data.prizes,
                         entry_config = data.entry_config,
@@ -1374,6 +1374,9 @@ exports.routes = {
                     delete data.throwahead_multiplier;
                     delete data.end_buffer;
                     delete data.lookback_threshold;
+
+                    // weird issue - change page_ids from '' to [];
+                    if (data.page_ids == '') data.page_ids = [];
 
                     for( var p in data ){
                         if( data.hasOwnProperty(p) ){
