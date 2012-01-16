@@ -30,6 +30,7 @@ Ext.define('Bozuko.view.page.Dashboard', {
                 items           :[{
                     xtype           :'form',
                     border          :false,
+                    hidden          :me.page.get('is_enterprise'),
                     anchor          :'0',
                     defaults        :{
                         border          :false,

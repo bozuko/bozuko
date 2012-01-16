@@ -30,6 +30,7 @@ script
   if( !window.Bozuko ) Bozuko = {};
   Bozuko.routePath = '/beta';
   Bozuko.beta = {
+    enterprise: #{JSON.stringify(page.is_enterprise)},
     user_id: '#{user.id}',
     page_id:'#{page.id}',
     user_pages: !{JSON.stringify(user_pages)}

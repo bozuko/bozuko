@@ -99,7 +99,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                     items           :[{
                         xtype           :'datefield',
                         name            :'from_time',
-                        value           :new Date(Date.now() - 1000*60*60*24*6),
+                        value           :new Date(Date.now() - 1000*60*60*24*7),
                         dateFormat      :'d/m/Y',
                         editable        :false,
                         width           :95

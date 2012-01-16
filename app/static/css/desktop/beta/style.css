@@ -33,6 +33,19 @@ body .hd {
   background-color: #666;
   color: #fff;
 }
+body .hd .logo {
+  position: relative;
+}
+body .hd .logo .subtitle {
+  position: absolute;
+  right: 14px;
+  bottom: -2px;
+  color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 18px;
+  text-shadow: 2px 2px 6px #000000;
+}
 body .hd h3.tagline {
   position: absolute;
   text-indent: -9999em;
@@ -70,6 +83,7 @@ body .hd .right-side .page-info img {
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
   border-radius: 6px;
   background-clip: padding-box;
   float: right;
@@ -165,6 +179,7 @@ body .hd .right-side .page-info h3 {
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
   border-radius: 6px;
   background-clip: padding-box;
   box-shadow: inset 4px 4px 4px #dddddd, inset -4px -4px 4px #dddddd;
@@ -198,6 +213,7 @@ body .hd .right-side .page-info h3 {
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
   border-radius: 6px;
   background-clip: padding-box;
   display: block;
@@ -233,6 +249,7 @@ body .hd .right-side .page-info h3 {
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
 }
@@ -285,6 +302,7 @@ body .hd .right-side .page-info h3 {
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
   color: #fff;
@@ -301,6 +319,7 @@ body .hd .right-side .page-info h3 {
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
   color: #333;
@@ -324,6 +343,7 @@ body .hd .right-side .page-info h3 {
   -webkit-border-radius: 10px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
   color: #333;
@@ -400,6 +420,7 @@ body .hd .right-side .page-info h3 {
   -webkit-border-radius: 4px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
   border-radius: 4px;
   background-clip: padding-box;
   margin: 0 0 10px;
@@ -487,6 +508,7 @@ body .hd .right-side .page-info h3 {
   -webkit-border-radius: 4px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
   border-radius: 4px;
   background-clip: padding-box;
 }

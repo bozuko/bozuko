@@ -41,6 +41,10 @@ Ext.define('Admin.view.page.Admin' ,{
                     fieldLabel      :'Active'
                 },{
                     xtype           :'checkbox',
+                    name            :'is_enterprise',
+                    fieldLabel      :'Enterprise'
+                },{
+                    xtype           :'checkbox',
                     name            :'test',
                     fieldLabel      :'Test page'
                 },{

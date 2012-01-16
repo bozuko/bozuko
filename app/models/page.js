@@ -22,6 +22,7 @@ var _t = Bozuko.t,
 
 var Page = module.exports = new Schema({
     children            :[ObjectId],
+	is_enterprise		:{type:Boolean, default: false},
     category            :{type:String, index: true},
     website             :{type:String},
     phone               :{type:String},

@@ -744,9 +744,9 @@ exports.routes = {
                 from.setMinutes(0);
                 from.setSeconds(0);
                 
-                to.setHours(24);
-                to.setMinutes(0);
-                to.setSeconds(0);
+                to.setHours(23);
+                to.setMinutes(59);
+                to.setSeconds(59);
                 
                 var diff = +to-from;
                 
@@ -771,6 +771,7 @@ exports.routes = {
                 options.interval = options.unit;
                 options.length = diff / DateUtil[options.unit.toUpperCase()] + 1;
                 options.end = to;
+                options.start = from;
 
                 var model = req.param('model') || 'Entry';
                 options.timezoneOffset = tzOffset;
@@ -1634,7 +1635,10 @@ exports.routes = {
                         res.locals.active_count = active;
                         res.locals.contests = contests;
                         res.locals.page = page;
-                        return res.render('beta/content/welcome');
+                        
+                        var welcome = page.is_enterprise ? 'welcome-enterprise' : 'welcome';
+                        
+                        return res.render('beta/content/'+welcome);
                     });
                 });
 
