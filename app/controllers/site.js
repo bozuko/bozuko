@@ -36,8 +36,8 @@ exports.locals = {
         link: '/mobile-app',
         text: 'Mobile App'
     },{
-        link: '/beta',
-        text: 'Bozuko for Business'
+        link: '/contact',
+        text: 'Contact'
     }],
     head_scripts:[
         '/js/jquery/jquery.tools.min-1.2.6.js',
