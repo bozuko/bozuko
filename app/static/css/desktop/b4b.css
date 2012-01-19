@@ -61,11 +61,11 @@
 .site-b4b-enterprise .bd {
   background: #ffffff url("/images/desktop/site/enterprise/bg-bd.jpg") 0 0 repeat-x;
 }
-.site-b4b-enterprise .page-width {
+.site-b4b-enterprise .bd .page-width {
   width: auto;
   background: transparent url("/images/desktop/site/enterprise/img-hero.jpg") 50% 0 no-repeat;
 }
-.site-b4b-enterprise .page-width .wrap {
+.site-b4b-enterprise .bd .page-width .wrap {
   padding: 0;
   width: 960px;
   margin: 0 auto;
