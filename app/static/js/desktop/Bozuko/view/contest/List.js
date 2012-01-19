@@ -105,7 +105,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                             '<li><a href="/" onclick="return false;" class="edit builder">Open</a></li>',
                         '</tpl>',
                         '<tpl if="this.canReview(values)">',
-                            '<li><a href="/" onclick="return false;" class="review builder">Review</a></li>',
+                            '<li><a href="/" onclick="return false;" class="review">Review</a></li>',
                         '</tpl>',
                         '<tpl if="this.canCopy(values)">',
                             '<li><a href="/" onclick="return false;" class="copy">Copy</a></li>',
@@ -160,13 +160,20 @@ Ext.define('Bozuko.view.contest.List' ,{
                         return this.isAdmin() || ~Ext.Array.indexOf(['draft', 'published'], values.state);
                     },
                     
+                    canReview : function(values){
+                        if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'review')){
+                            return false;
+                        }
+                        return true
+                    },
+                    
                     canUseBuilder : function(){
                         return window.location.hostname.match(/playground/);
                     },
                     
                     canCopy : function(values){
                         if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'copy')) return '';
-                        if( me.page.get('is_enterprise') ) return '';
+                        if( !window.location.pathname.match(/admin/i) && me.page.get('is_enterprise') ) return '';
                         return true;
                     },
                     

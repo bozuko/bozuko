@@ -221,7 +221,7 @@ exports.routes = {
     '/bozuko-for-business' : {
         get : {
 
-            title: 'Bozuko for Business',
+            title: 'Bozuko for Business - Local',
             locals: {
                 html_classes: ['site-b4b']
             },
@@ -229,6 +229,71 @@ exports.routes = {
             handler: function(req, res) {
                 res.locals.head_scripts.push('/js/desktop/site/b4b.js?v2');
                 res.render('site/bozuko-for-business');
+            }
+        }
+    },
+    '/enterprise' : {
+        aliases: ['/bozuko-for-business/enterprise'],
+        get : {
+
+            title: 'Bozuko for Business - Enterprise',
+            locals: {
+                html_classes: ['site-b4b-enterprise'],
+                utility_bar: false,
+                nav: [{
+                    link: '/',
+                    text: 'Home'
+                },{
+                    link: '/local',
+                    text: 'Local'
+                },{
+                    link: '/enterprise',
+                    text: 'Enterprise'
+                }]         
+            },
+
+            handler: function(req, res) {
+                res.locals.head_scripts.push('/js/desktop/site/business.js');
+                res.locals.styles.push('/css/desktop/b4b.css');
+                res.render('site/enterprise');
+            }
+        }
+    },
+    '/enterprise/form' : {
+        post : {
+            handler: function(req, res){
+                // check the form...
+                var name = req.param('name'),
+                    email = req.param('email'),
+                    message = req.param('message'),
+                    success = true
+                    ;
+
+                try{
+                    validator.check(name, 'Please enter your name').notEmpty();
+                    validator.check(email, 'Please enter a valid email address').isEmail();
+                    validator.check(message, 'Message cannot be empty').notEmpty();
+                }catch(e){
+                    res.locals.token = getToken(req.session, true);
+                    res.locals.errors = [e.message];
+
+                    res.locals.name = name;
+                    res.locals.email = email;
+                    res.locals.message = message;
+
+                    return res.send({success:false});
+                }
+
+                // send an email...
+                
+                mailer.send({
+                    to: 'info@bozuko.com',
+                    reply_to: email,
+                    subject: "New Bozuko Enterprise Inquiry",
+                    body: name+' <'+email+'> sent the following message:\n\n'+message
+                });
+                
+                return res.send({success:true});
             }
         }
     },

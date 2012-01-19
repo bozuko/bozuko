@@ -837,6 +837,8 @@ exports.routes = {
                         throw "Invalid model";
                 }
                 
+                console.log(options);
+                
                 return Report.run( 'interval', options, function(error, results){
                     if( error ){
                         console.error(require('util').inspect(error));

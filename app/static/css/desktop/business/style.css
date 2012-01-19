@@ -118,6 +118,9 @@ body .big-button, body .small-button, body .medium-button {
 .app-buttons li .reports {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-report-bar-24.png');
 }
+.app-buttons li .review {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-audit-24.png');
+}
 .app-buttons li .export {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-down-24.png');
 }

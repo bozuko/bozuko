@@ -41,6 +41,9 @@ Ext.define('Bozuko.controller.Contests' ,{
             'contestform button[action=back]' : {
                 click           :this.onContestBackClick
             },
+            'contestreview button[action=back]' : {
+                click           :this.onContestBackClick
+            },
             'contestbuilder button[action=back]' : {
                 click           :this.onContestBuilderBackClick
             },
@@ -373,6 +376,10 @@ Ext.define('Bozuko.controller.Contests' ,{
                 this.openContest( record, view );
                 break;
             
+            case 'review':
+                this.reviewContest( record, view );
+                break;
+            
             case 'export':
                 this.exportContest( record );
                 break;
@@ -433,6 +440,36 @@ Ext.define('Bozuko.controller.Contests' ,{
             panel.cards[id].setRecord( record );
         }
         panel.getLayout().setActiveItem(panel.cards[id]);
+        panel.doComponentLayout();
+    },
+    
+    reviewContest : function(record, cmp){
+        // create a new
+        var panel = cmp.up('contestspanel'),
+            id = record.get('_id');
+
+        if( !panel.reviews ) panel.reviews = {};
+        if( !panel.reviews[id] ){
+            panel.reviews[id] = panel.add({
+                border: false,
+                xtype: 'contestreview',
+                tbar: [{
+                    scale       :'medium',
+                    text        :'Back',
+                    action      :'back',
+                    icon        :'/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-circle-direction-left-24.png'
+                }],
+                bodyPadding: 10,
+                contest: record,
+                autoScroll: true,
+                listeners :{
+                    destroy : function(){
+                        delete panel.reviews[record.get('_id')];
+                    }
+                }
+            });
+        }
+        panel.getLayout().setActiveItem(panel.reviews[id]);
         panel.doComponentLayout();
     },
     
