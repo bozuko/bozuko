@@ -54,12 +54,12 @@ html body .ft {
   height: 48px;
   text-indent: -9999em;
   left: -26px;
-  top: -120px;
+  top: 0px;
   background: transparent url("/images/desktop/site/beta/blog-tab.png") 0 0 no-repeat;
 }
 .beta-right .fixed {
   position: absolute;
-  top: 0;
+  top: 125px;
   left: 0;
   width: 100%;
   padding-top: 120px;
