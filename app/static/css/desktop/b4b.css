@@ -1,0 +1,223 @@
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
+.page-width {
+  width: 960px;
+}
+.hd {
+  background: #000000 url("/images/desktop/site/enterprise/bg-hd.jpg") 0 0 repeat-x;
+  padding-bottom: 0;
+}
+.hd h1.logo {
+  margin-left: -30px;
+}
+.hd h1.logo a {
+  width: 729px;
+  height: 125px;
+  background: transparent url("/images/desktop/site/enterprise/img-logo.jpg") 0 0 no-repeat;
+}
+.hd .nav {
+  position: absolute;
+  right: 30px;
+  top: 2px;
+  margin-top: 0;
+}
+.hd .nav li {
+  margin: 6px 0 0 12px;
+}
+.hd .nav li a {
+  background: transparent none !important;
+  font-family: "open sans";
+  text-transform: none;
+  color: #aaa;
+}
+.hd .nav li a span {
+  font-size: 12px;
+  background: transparent none !important;
+}
+.hd .nav li a span em {
+  line-height: 1.1em;
+  padding: 0;
+  background: transparent none !important;
+}
+.hd .nav li a:hover {
+  color: #ddd;
+}
+.hd .nav li a.active {
+  color: #fff;
+}
+.bd {
+  background: #ffffff url("/images/desktop/site/enterprise/bg-bd.jpg") 0 0 repeat-x;
+  padding: 0;
+}
+.bd .top-line, .bd .bottom-line {
+  display: none;
+}
+.bd .page-width {
+  width: auto;
+  background: transparent url("/images/desktop/site/enterprise/img-hero.jpg") 50% 0 no-repeat;
+}
+.bd .page-width .wrap {
+  padding: 0;
+  width: 960px;
+  margin: 0 auto;
+  position: relative;
+}
+.ft {
+  border-top: 5px solid #ddd;
+}
+.enterprise-hero {
+  height: 483px;
+  border-bottom: 1px solid #ccc;
+}
+.enterprise-hero .text {
+  font-family: "open sans";
+  font-weight: 500;
+  font-style: italic;
+  text-transform: uppercase;
+  font-size: 26px;
+  color: #555;
+  line-height: 1.4em;
+  position: absolute;
+  width: 310px;
+  left: 0;
+  top: 175px;
+}
+.enterprise-hero .quote {
+  font-family: "open sans";
+  font-weight: 300;
+  font-style: italic;
+  font-size: 18px;
+  color: #555;
+  line-height: 1.4em;
+  position: absolute;
+  width: 310px;
+  left: 0;
+  top: 340px;
+}
+.enterprise-hero .quote .attr {
+  padding-top: .5em;
+  text-align: right;
+}
+.enterprise-body {
+  border-top: 1px solid #fff;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-family: "open sans";
+  color: #666;
+}
+.enterprise-body .line {
+  margin-right: -15px;
+  margin-bottom: 20px;
+}
+.enterprise-body h3 {
+  font-family: "open sans";
+  color: #666;
+  font-weight: 600;
+  font-size: 20px;
+}
+.enterprise-body .block {
+  padding-right: 15px;
+}
+.enterprise-body .block p {
+  min-height: 5.5em;
+}
+.enterprise-body .block img {
+  display: block;
+}
+.enterprise-body .learn-more {
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 6px;
+  -moz-box-shadow: 0 0 5px #666666;
+  -webkit-box-shadow: 0 0 5px #666666;
+  box-shadow: 0 0 5px #666666;
+}
+.enterprise-body .learn-more p {
+  font-size: 20px;
+  margin: 0;
+  padding: 20px 0;
+  text-align: center;
+  background: #000000 url("/images/desktop/site/enterprise/bg-learn_more.jpg") 0 0 repeat-x;
+  color: #ccc;
+  font-weight: 500;
+  font-style: italic;
+}
+.enterprise-body .learn-more p a {
+  padding: 0 auto;
+  color: #fff;
+  width: 226px;
+  margin-left: 10px;
+  font-style: normal;
+  overflow: visible;
+  display: inline-block;
+  vertical-align: middle;
+  background: transparent url("/images/desktop/site/enterprise/bg-orange_button.png") 0 0 no-repeat;
+}
+.enterprise-body .learn-more p a span {
+  font-family: "open sans";
+  font-weight: 600;
+  line-height: 40px;
+  height: 40px;
+  display: inline-block;
+  white-space: nowrap;
+}
+#contact-form {
+  width: 620px;
+  border: 4px solid #00a24f;
+  -moz-box-shadow: 0 0 20px #000000;
+  -webkit-box-shadow: 0 0 20px #000000;
+  box-shadow: 0 0 20px #000000;
+  background: #fff;
+  z-index: 20000;
+  padding: 10px 20px;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  border-radius: 10px;
+  background-clip: padding-box;
+  font-family: "open sans";
+}
+#contact-form h2 {
+  font-family: "open sans";
+  text-transform: none;
+}
+#contact-form .big-button {
+  font-family: "open sans";
+}
+#contact-form .close {
+  position: absolute;
+  top: -13px;
+  right: -13px;
+  width: 27px;
+  height: 27px;
+  cursor: pointer;
+  background: transparent url("/images/desktop/site/beta/img_close.png") 50% 50% no-repeat;
+}
+#contact-form .callus {
+  margin-top: 10px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+#contact-form .number {
+  float: right;
+  color: #01a9d8;
+}
+#contact-form .error {
+  color: red;
+  padding: 4px;
+  font-weight: bold;
+}
+.green {
+  color: #00a24f;
+}

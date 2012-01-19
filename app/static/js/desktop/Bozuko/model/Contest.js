@@ -41,7 +41,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'auto_rules',         type:'Boolean',             defaultValue:true},
         {name:'replace_rules',      type:'Boolean',             defaultValue:false},
         {name:'rules',              type:'String'},
-        {name:'entry_config',       type:'Array',               defaultValue:[{type:'facebook/checkin',tokens:3,duration:1000*60*60*24}]},
+        {name:'entry_config',       type:'Array',               defaultValue:[{type:'facebook/checkin',tokens:1,duration:1000*60*60*24}]},
         {name:'consolation_config', type:'Array'},
         {name:'free_play_pct',      type:'Number',              defaultValue:'30%'},
         {name:'active',             type:'Boolean'},
@@ -92,6 +92,10 @@ Ext.define('Bozuko.model.Contest', {
 
                 case 'bozuko/nothing':
                     type = 'Bozuko Play';
+                    break;
+                
+                case 'bozuko/optin':
+                    type = 'Newsletter Subscription';
                     break;
 
                 case 'facebook/like':

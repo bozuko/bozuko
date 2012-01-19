@@ -68,11 +68,9 @@ Ext.define( 'Bozuko.view.contest.builder.Panel', {
                     contest             :me.contest
                 },
                 items: [{
-                    xtype               :'contestbuildergeneral'
+                    xtype               :'contestbuildergame'
                 },{
                     xtype               :'contestbuilderentry'
-                },{
-                    xtype               :'contestbuildergame'
                 },{
                     xtype               :'contestbuilderprizes'
                 },{

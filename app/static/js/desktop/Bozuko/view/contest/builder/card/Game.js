@@ -17,6 +17,102 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         me.currentGame = null;
         Ext.apply( me.form, {
             items : [{
+                xtype               :'container',
+                border              :false,
+                arrowCt             :true,
+                style               :'position: relative; overflow: visible',
+                layout              :{
+                    type                :'hbox'
+                },
+                items               :[{
+                    
+                    labelAlign          :'top',
+                    xtype               :'fieldcontainer',
+                    border              :false,
+                    fieldLabel          :'Start',
+                    layout              :'hbox',
+                    flex                :1,
+                    autoHeight          :true,
+                    fieldLabel          :'Start Date',
+                    helpText            :[
+                        "<p>",
+                            'This is the date and time your game will be available to players in the mobile application.',
+                        '</p>'
+                    ],
+                    
+                    items               :[{
+                        xtype               :'datefield',
+                        name                :'start',
+                        allowBlank          :false,
+                        format              :'m-d-Y',
+                        fieldLabel          :'Start Date',
+                        hideLabel           :true,
+                        autoHeight          :true,
+                        flex                :1,
+                        emptyText           :'Start Date of the Campaign',
+                        
+                        listeners           :{
+                            scope               :me,
+                            focus               :function(field){
+                                if( !field.isExpanded ) field.onTriggerClick();
+                            },
+                            select              :me.onStartChange
+                        }
+                    },{xtype:'splitter'},{
+                        xtype               :'timefield',
+                        name                :'start_time',
+                        value               :new Date(2011,1,1,12),
+                        editable            :false,
+                        allowBlank          :false,
+                        hideLabel           :true,
+                        autoHeight          :true,
+                        flex                :1,
+                        increment           :60
+                    }]
+                },{xtype:'splitter', width: 20},{
+                    labelAlign          :'top',
+                    xtype               :'fieldcontainer',
+                    border              :false,
+                    fieldLabel          :'End Date',
+                    layout              :'hbox',
+                    flex                :1,
+                    autoHeight          :true,
+                    helpText            :[
+                        "<p>",
+                            'This is the cut-off date for your game. Your game ends when total entries are exhausted or this date hits.',
+                        '</p>'
+                    ],
+                    
+                    items               :[{
+                        flex                :1,
+                        xtype               :'datefield',
+                        name                :'end',
+                        allowBlank          :false,
+                        format              :'m-d-Y',
+                        fieldLabel          :'End Date',
+                        hideLabel           :true,
+                        autoHeight          :true,
+                        listeners           :{
+                            scope               :me,
+                            focus               :function(field){
+                                if( !field.isExpanded ) field.onTriggerClick();
+                            },
+                            select              :me.onEndChange
+                        }
+                        
+                    },{xtype:'splitter'},{
+                        xtype               :'timefield',
+                        name                :'end_time',
+                        value               :new Date(2011,1,1,12),
+                        editable            :false,
+                        allowBlank          :false,
+                        hideLabel           :true,
+                        autoHeight          :true,
+                        flex                :1,
+                        increment           :60
+                    }]
+                }]
+            },{
                 xtype           :'dataview',
                 trackOver       :true,
                 overItemCls     :'x-dataview-item-over',
@@ -76,6 +172,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
             },{
                 xtype               :'textfield',
                 emptyText           :'Leave blank for default name (Slots, Scratch, etc)',
+                ref                 :'game-name',
                 name                :'game_config.name',
                 fieldLabel          :'Game Name',
                 helpText            :[
@@ -121,13 +218,32 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                         data                :[{value:1},{value:2},{value:3},{value:4},{value:5}]
                     })
                 }]
+            },{
+                xtype               :'hidden',
+                name                :'game_config.custom_background',
+                name                :'game_config.custom_icon'
             }]
         });
         
         me.callParent(arguments);
         me.on('activate', me.updateOptions, me);
+        me.on('render', me.onStartChange, me);
+        me.on('render', me.onEndChange, me);
         me.dataview = me.down('dataview');
     },
+    
+     
+    onStartChange : function(value){
+        var me = this;
+        
+        me.down('datefield[name=end]').setMinValue(me.down('datefield[name=start]').getValue());
+    },
+    onEndChange : function(value){
+        var me = this;
+        
+        me.down('datefield[name=start]').setMaxValue(me.down('datefield[name=end]').getValue());
+    },
+    
     
     updateOptions : function(){
         var me = this;
@@ -165,6 +281,8 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         }
         
         me.form.getForm().setValues(values);
+        me.down('[name=start_time]').setValue(me.contest.get('start'));
+        me.down('[name=end_time]').setValue(me.contest.get('end'));
     },
     
     loadGame : function(){
@@ -194,7 +312,12 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         var me = this,
             selections = me.dataview.getSelectionModel().getSelection(),
             values = me.getValues(),
-            game = null;
+            game = null,
+            start_time = me.down('[name=start_time]').getValue(),
+            end_time = me.down('[name=end_time]').getValue()
+            ;
+        
+        
         
         if( selections.length ){
             game = selections[0].get('game');
@@ -202,14 +325,39 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         Ext.apply( me.game_cfg, values.game_config);
         Ext.apply( me.entry_cfg, values.entry_config);
         
+        me.contest.set('start', me.down('[name=start]').getValue());
+        me.contest.set('end', me.down('[name=end]').getValue());
+        
+        me.contest.get('start').setHours(start_time.getHours());
+        me.contest.get('start').setMinutes(start_time.getMinutes());
+        me.contest.get('start').setSeconds(start_time.getSeconds());
+        
+        me.contest.get('end').setHours(end_time.getHours());
+        me.contest.get('end').setMinutes(end_time.getMinutes());
+        me.contest.get('end').setSeconds(end_time.getSeconds());
+        
         me.contest.set('game_config', me.game_cfg);
         me.contest.set('game', game);
+        me.contest.set('name', values.game_config.name+' - '+Ext.Date.format(me.contest.get('start'), 'm-d-Y'));
     },
     
     onSelectionChange : function(view, selections){
         var me = this;
         if( selections.length ){
             me.dataview.getEl().down('.entry-description').update(selections[0].get('description'));
+        }
+        var r = selections[0];
+        var n = me.getValues().game_config.name;
+        var same = false;
+        view.store.each(function(i){
+            if(i.get('title') == n){
+                same=true;
+                return false;
+            }
+            return true;
+        });
+        if( n == '' || same ){
+            me.down('[ref=game-name]').setValue(r.get('title'));
         }
         me.updateRecord();
         me.updateOptions();
@@ -263,12 +411,19 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                             '<div class="theme-content">',
                                 '<input style="position: absolute; top: -99999em; left: -99999em;" type="radio" name="focus_field" />',
                                 '<div class="title">{title}</div>',
-                                '<img src="{icon}" />',
+                                '<img src="{[this.getIcon(xindex-1)]}" />',
                                 '<div class="description">{description}</div>',
                             '</div>',
                         '</div>',
                     '</tpl>',
-                '</div>'
+                '</div>',
+                {
+                    getIcon : function(index){
+                        var item = me.down('[ref=theme-chooser]').store.getAt(index);
+                        if( me.contest.get('game') !== 'scratch' && item.get('name') !== 'custom') return item.get('icon');
+                        return me.contest.get('game_config').custom_icon || item.get('icon');
+                    }
+                }
             ),
             
             store : Ext.create('Ext.data.Store', {
@@ -309,6 +464,9 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                             beforeshow : function updateTipBody(tip){
                                 var record = view.getRecord(tip.triggerElement),
                                     preview = record.get('preview');
+                                    
+                                if(me.contest.get('game') == 'scratch' && record.get('name') == 'custom')
+                                    preview = me.contest.get('game_config').custom_background;
                                     
                                 tip.update('<img src="'+preview+'" height="210" />');
                             }

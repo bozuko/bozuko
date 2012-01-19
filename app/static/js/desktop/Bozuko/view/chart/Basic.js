@@ -208,7 +208,6 @@ Ext.define('Bozuko.view.chart.Basic', {
                 xtype           :'panel',
                 border          :'false',
                 anchor          :'0',
-                height          :60,
                 width           :'100%',
                 layout          :{
                     type: 'vbox',

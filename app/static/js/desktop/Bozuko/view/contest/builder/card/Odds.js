@@ -7,7 +7,7 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         'Bozuko.view.contest.builder.Card',
         'Bozuko.lib.form.field.WinFrequency'
     ],
-    name            :"Contest Odds",
+    name            :"Prize Serving",
     cls             :'builder-card contest-odds-card',
     overview        :[
     ],
