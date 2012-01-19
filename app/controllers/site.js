@@ -65,7 +65,7 @@ exports.afterRoute = function(){
 
     app.use(function(req,res){
         
-        if( req.url.match(/^\/(admin|beta|listen|local).*/ )){
+        if( req.url.match(/^\/(admin|beta|listen).*/ )){
             return res.redirect('https://dashboard.bozuko.com'+req.url);
         }
         
@@ -77,6 +77,8 @@ exports.afterRoute = function(){
         return self.refs.notFound(req,res,next,err);
     });
 };
+
+var now = Date.now();
 
 exports.routes = {
     
@@ -218,17 +220,37 @@ exports.routes = {
             }
         }
     },
-    '/bozuko-for-business' : {
+    '/local' : {
+        aliases: ['/bozuko-for-business', '/bozuko-for-business/local'],
         get : {
 
             title: 'Bozuko for Business - Local',
             locals: {
-                html_classes: ['site-b4b']
+                html_classes: ['site-b4b-local'],
+                utility_bar: false,
+                nav: [{
+                    link: '/',
+                    text: 'Home'
+                },{
+                    link: '/local',
+                    text: 'Local'
+                },{
+                    link: '/enterprise',
+                    text: 'Enterprise'
+                }]
             },
 
             handler: function(req, res) {
-                res.locals.head_scripts.push('/js/desktop/site/b4b.js?v2');
-                res.render('site/bozuko-for-business');
+                
+                res.locals.styles.push(
+                    '/css/desktop/b4b.css',
+                    '/css/desktop/beta/landing.css?'+now,
+                    '/css/desktop/beta/style.css?'+now
+                );
+                res.locals.head_scripts.push(
+                    '/js/desktop/beta/welcome.js'
+                );
+                res.render('site/local');
             }
         }
     },

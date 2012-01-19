@@ -64,7 +64,6 @@ exports.restrictToUser = true;
 
 exports.routes = {
     '/beta/(page/:page_id)?' : {
-        alias: '/local',
         get : {
             handler : function(req, res){
                 var user = req.session.user,
