@@ -227,6 +227,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         });
         
         me.callParent(arguments);
+        me.un('activate', me.focusFirstField, me );
         me.on('activate', me.updateOptions, me);
         me.on('render', me.onStartChange, me);
         me.on('render', me.onEndChange, me);
