@@ -29,7 +29,6 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     labelAlign          :'top',
                     xtype               :'fieldcontainer',
                     border              :false,
-                    fieldLabel          :'Start',
                     layout              :'hbox',
                     flex                :1,
                     autoHeight          :true,
@@ -220,7 +219,9 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 }]
             },{
                 xtype               :'hidden',
-                name                :'game_config.custom_background',
+                name                :'game_config.custom_background'
+            },{
+                xtype               :'hidden',
                 name                :'game_config.custom_icon'
             }]
         });
@@ -281,6 +282,8 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         }
         
         me.form.getForm().setValues(values);
+        me.down('[name=start]').setValue(me.contest.get('start'));
+        me.down('[name=end]').setValue(me.contest.get('end'));
         me.down('[name=start_time]').setValue(me.contest.get('start'));
         me.down('[name=end_time]').setValue(me.contest.get('end'));
     },
@@ -325,16 +328,21 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
         Ext.apply( me.game_cfg, values.game_config);
         Ext.apply( me.entry_cfg, values.entry_config);
         
-        me.contest.set('start', me.down('[name=start]').getValue());
-        me.contest.set('end', me.down('[name=end]').getValue());
-        
-        me.contest.get('start').setHours(start_time.getHours());
-        me.contest.get('start').setMinutes(start_time.getMinutes());
-        me.contest.get('start').setSeconds(start_time.getSeconds());
-        
-        me.contest.get('end').setHours(end_time.getHours());
-        me.contest.get('end').setMinutes(end_time.getMinutes());
-        me.contest.get('end').setSeconds(end_time.getSeconds());
+        try{
+            
+            me.contest.set('start', me.down('[name=start]').getValue());
+            me.contest.set('end', me.down('[name=end]').getValue());
+            
+            me.contest.get('start').setHours(start_time.getHours());
+            me.contest.get('start').setMinutes(start_time.getMinutes());
+            me.contest.get('start').setSeconds(start_time.getSeconds());
+            
+            me.contest.get('end').setHours(end_time.getHours());
+            me.contest.get('end').setMinutes(end_time.getMinutes());
+            me.contest.get('end').setSeconds(end_time.getSeconds());
+        } catch(e){
+            // problem with the dates...
+        }
         
         me.contest.set('game_config', me.game_cfg);
         me.contest.set('game', game);

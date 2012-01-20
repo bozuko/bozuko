@@ -51,7 +51,6 @@ Ext.define('Bozuko.view.contest.builder.card.General', {
                     layout              :'hbox',
                     flex                :1,
                     autoHeight          :true,
-                    fieldLabel          :'Start Date',
                     helpText            :[
                         "<p>",
                             'This is the date and time your game will be available to players in the mobile application.',
