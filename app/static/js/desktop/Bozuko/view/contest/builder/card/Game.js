@@ -428,7 +428,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                 {
                     getIcon : function(index){
                         var item = me.down('[ref=theme-chooser]').store.getAt(index);
-                        if( me.contest.get('game') !== 'scratch' && item.get('name') !== 'custom') return item.get('icon');
+                        if( !(me.contest.get('game') === 'scratch' && item.get('name') === 'custom') ) return item.get('icon');
                         return me.contest.get('game_config').custom_icon || item.get('icon');
                     }
                 }
