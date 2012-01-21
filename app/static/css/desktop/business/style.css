@@ -30,6 +30,9 @@ body .big-button, body .small-button, body .medium-button {
   line-height: 1.3em;
   margin-bottom: 1em;
 }
+.x-btn em {
+  font-style: normal;
+}
 .campaigns-body {
   clear: both;
 }
@@ -945,6 +948,9 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .contest-odds-card input {
   text-align: center;
+}
+.contest-builder .contest-odds-card .combo input {
+  text-align: left;
 }
 .contest-builder .builder-prize-form {
   margin-bottom: 10px;

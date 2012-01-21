@@ -42,6 +42,7 @@ Ext.define('Bozuko.view.chart.Basic', {
         Ext.apply(me, {
             
             layout: 'anchor',
+            autoHeight: true,
             
             dateFormat: 'D M d',
             
@@ -120,9 +121,9 @@ Ext.define('Bozuko.view.chart.Basic', {
                     ref             :'chart-total'
                 }]
             },{
-            
                 xtype           :'component',
                 ref             :'stats-block',
+                autoHeight      :true,
                 tpl             :new Ext.XTemplate(
                     '<div class="stats-block">',
                         '<table class="main-table">',
@@ -206,19 +207,16 @@ Ext.define('Bozuko.view.chart.Basic', {
                 )
             }, {
                 xtype           :'panel',
-                border          :'false',
+                border          :false,
+                style           :'text-align:center',
                 anchor          :'0',
-                width           :'100%',
-                layout          :{
-                    type: 'vbox',
-                    align: 'center'
-                },
+                autoHeight      :true,
                 items           :[{
+                    autoHeight      :true,
                     xtype           :'button',
                     hidden          : me.contest_id ? false : true,
-                    text            :'Download CSV',
-                    href            : Bozuko.Router.route('/contests/'+me.contest_id+'/report'),
-                    cls             :'site-button'
+                    text            :'Download Report CSV',
+                    href            : Bozuko.Router.route('/contests/'+me.contest_id+'/report')
                 }]
             }]
         });
