@@ -248,14 +248,14 @@ Ext.define('Bozuko.view.chart.Basic', {
                     fields      :['count'],
                     title       :'Entries',
                     inflections :[],
-                    grid: {
+                    grid: false /*{
                         odd: {
                             opacity: .5,
                             fill: '#ddd',
                             stroke: '#bbb',
                             'stroke-width': 1
                         }
-                    },
+                    } */,
                     label:      {
                         renderer    :function(value){
                             if( me.modelField.getValue().match(/cost/i) ){
