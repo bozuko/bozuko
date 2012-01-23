@@ -4,6 +4,11 @@ module.exports = {
         code:500,
         message: function(){ return this.data.type+": "+this.data.message; }
     },
+    checkin: {
+        code:403,
+        title: "Facebook Error",
+        message: "Sorry, checking in to this place is currently unavailable. :("
+    },
     auth : {
         code:403,
         title:"Password Changed",
