@@ -30,6 +30,9 @@ body .big-button, body .small-button, body .medium-button {
   line-height: 1.3em;
   margin-bottom: 1em;
 }
+.x-btn em {
+  font-style: normal;
+}
 .campaigns-body {
   clear: both;
 }
@@ -117,6 +120,9 @@ body .big-button, body .small-button, body .medium-button {
 }
 .app-buttons li .reports {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-report-bar-24.png');
+}
+.app-buttons li .review {
+  background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/clipboard-audit-24.png');
 }
 .app-buttons li .export {
   background-image: url('/images/icons/SweetiePlus-v2-SublinkInteractive/with-shadows/badge-square-direction-down-24.png');
@@ -942,6 +948,9 @@ fieldset .x-fieldset-header {
 }
 .contest-builder .contest-odds-card input {
   text-align: center;
+}
+.contest-builder .contest-odds-card .combo input {
+  text-align: left;
 }
 .contest-builder .builder-prize-form {
   margin-bottom: 10px;

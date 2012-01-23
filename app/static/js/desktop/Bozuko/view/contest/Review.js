@@ -28,17 +28,19 @@ Ext.define('Bozuko.view.contest.Review', {
             tpl : new Ext.XTemplate(
                 '<div class="campaign-overview">',
                     '<div class="row big-row first-row">',
-                        '<div class="label">Campaign:</div>',
+                        '<div class="label">Game:</div>',
                         '<div class="content">{name}</div>',
                     '</div>',
                     '<div class="row timeline">',
                         '<div class="label">Timeline:</div>',
                         '<div class="content">{[this.timeline()]}</div>',
                     '</div>',
-                    '<div class="row entry">',
-                        '<div class="label">Contest Odds:</div>',
-                        '<div class="content">{[this.contestOdds()]}</div>',
-                    '</div>',
+                    '<tpl if="this.showContestOdds()">',
+                        '<div class="row entry">',
+                            '<div class="label">Contest Odds:</div>',
+                            '<div class="content">{[this.contestOdds()]}</div>',
+                        '</div>',
+                    '</tpl>',
                     '<div class="row entry">',
                         '<div class="label">Entry Method:</div>',
                         '<div class="content">{[this.entryMethod()]}</div>',
@@ -70,11 +72,13 @@ Ext.define('Bozuko.view.contest.Review', {
                                ' &mdash; '+
                                Ext.Date.format(me.contest.get('end'),fmt)
                     },
+                    showContestOdds : function(){
+                        return me.contest.get('engine_type') !== 'time';
+                    },
                     entryMethod : function(){
                         
                         // lets get the icon
-                        var img = Ext.data.StoreManager
-                            .lookup('entry-types')
+                        var img = Ext.create('Bozuko.store.EntryTypes')
                             .findRecord('type', me.contest.getEntryConfig().type)
                             .get('img');
                         
@@ -94,8 +98,7 @@ Ext.define('Bozuko.view.contest.Review', {
                     game : function(){
                         
                         // lets get the icon
-                        var img = Ext.data.StoreManager
-                            .lookup('games')
+                        var img = Ext.create('Bozuko.store.Games')
                             .findRecord('game', me.contest.get('game') )
                             .get('img');
                         
@@ -120,20 +123,6 @@ Ext.define('Bozuko.view.contest.Review', {
                             var themeName = cfg.theme.substr(0,1).toUpperCase()+cfg.theme.substr(1),
                                 img = Bozuko.Router.route('/themes/'+game+'/'+cfg.theme+'/image');
                                 
-                                /*
-                            // try to get the theme from the game panel
-                            var themeChooser = me.up('contestbuilder')
-                                .down('contestbuildergame [ref=theme-chooser]')
-                                ;
-                            if( themeChooser ){
-                                var record= themeChooser
-                                    .store.findRecord('theme', cfg.theme )
-                                    ;
-                                themeName = record.get('title');
-                                img = record.get('icon');
-                            }
-                                */
-                            
                             return [
                                 '<div class="row game-theme">',
                                     '<div class="label">Game Theme:</div>',
@@ -183,9 +172,9 @@ Ext.define('Bozuko.view.contest.Review', {
                             
                             html = html.concat([
                                 '<div class="',classes.join(' '),'">',
-                                    '<div class="prize-odds">',
-                                        'Odds: ',me.contest.getPrizeOdds(i),
-                                    '</div>',
+                                    me.contest.get('engine_type') == 'odds' ? '<div class="prize-odds">'+
+                                        'Odds: '+me.contest.getPrizeOdds(i)+
+                                    '</div>' : '',
                                     '<div class="prize-name">',
                                         prize.get('name'),
                                     '</div>',

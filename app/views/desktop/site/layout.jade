@@ -27,7 +27,7 @@ html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",c
     
   body
     .page
-      -if( true || Bozuko.env() != 'site' )
+      -if( locals.utility_bar !== false )
         .utility
           .page-width
             .user-bar
@@ -77,7 +77,9 @@ html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",c
                 li
                   a(href="/mobile-app") Mobile App
                 li
-                  a(href="/beta") Bozuko for Business 
+                  a(href="/local") Bozuko for Local Business
+                li
+                  a(href="/enterprise") Bozuko for Enterprise
                 li
                   a(href="/contact") Contact 
                 li

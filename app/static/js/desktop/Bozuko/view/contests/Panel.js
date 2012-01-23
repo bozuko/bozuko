@@ -24,8 +24,10 @@ Ext.define('Bozuko.view.contests.Panel', {
                 text        :'All Games'
             }]
         });
+        
+        
 
-        tbar.add('-',{
+        if( window.location.pathname.match(/^\/admin/) || !me.page.get('is_enterprise') ) tbar.add('-', {
             hidden          :false,
             action          :'builder',
             text            :'Create a Game',
@@ -45,7 +47,7 @@ Ext.define('Bozuko.view.contests.Panel', {
                     xtype           :'contestlist',
                     store           :me.store,
                     autoScroll      :true,
-                    actionButtons   :Bozuko.beta?['report','edit','copy','delete','cancel']:null
+                    actionButtons   :Bozuko.beta?['report','edit','copy','delete','cancel','review']:null
                 }]
             }]
         });
