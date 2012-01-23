@@ -1303,7 +1303,15 @@ exports.routes = {
                     data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
                     data.engine_options.buffer = data.end_buffer;
                     data.engine_options.lookback_threshold = data.lookback_threshold;
+                    data.total_entries = 0;
+                    data.total_plays = 0;
                 }
+                
+                if( !data.consolation_config || !data.consolation_config.length ){
+                    data.consolation_config = [{enabled: false, who:null, when: null}];
+                }
+                
+                
                 // remove unused variables
                 delete data.window_divisor;
                 delete data.throwahead_multiplier;
@@ -1361,6 +1369,10 @@ exports.routes = {
 
                     // don't want to update this, will throw an error
                     delete data._id;
+                    
+                    if( !data.consolation_config || !data.consolation_config.length ){
+                        data.consolation_config = [{enabled: false, who:null, when: null}];
+                    }
 
                     if (data.engine_type === 'time') {
                         if (data.window_divisor > 5) data.window_divisor = 5;
@@ -1369,6 +1381,8 @@ exports.routes = {
                         data.engine_options.throwahead_multiplier = data.throwahead_multiplier;
                         data.engine_options.buffer = data.end_buffer;
                         data.engine_options.lookback_threshold = data.lookback_threshold;
+                        data.total_entries = 0;
+                        data.total_plays = 0;
                     }
                     // remove unused variables
                     delete data.window_divisor;
