@@ -102,7 +102,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                         var i = builder.down('[region=center]').items.indexOf(builder.down('contestbuilderodds'));
                         if( builder.query('[ref=step-btn]')[i].isDisabled() ) return '';
                         
-                        return me.contest.get('engine_type') == 'odds' ?
+                        return me.contest.get('engine_type') == 'order' ?
                         [
                             '1 in '+me.contest.get('win_frequency').toFixed(1)+' entries will win',
                             '<br />',

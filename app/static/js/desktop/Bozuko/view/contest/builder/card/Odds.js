@@ -30,6 +30,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
                 xtype               :'combo',
                 cls                 :'combo',
                 mode                :'local',
+                anchor              :false,
+                width               :220,
                 editable            :false,
                 forceSelection      :true,
                 fieldLabel          :'Distribution Type',
@@ -260,7 +262,8 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         var type = me.down('[name=engine_type]').getValue()||'order';
         Ext.each(me.query('[refCls=container]'), function(cmp){cmp.hide()});
         me.down('[ref='+type+'-container]').show();
-        
+        me.updateContest();
+        me.onFieldFocus();
     },
     
     initSwitcher : function(cmp){
@@ -320,6 +323,30 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
             field.enable();
             field.focus();
         });
+    },
+    
+    onFieldFocus : function(){
+        
+        var me = this;
+        
+        var oddsText = [
+            'Odds based prize serving ensures that prizes track play.  In other words, the more people are playing, the more prizes go out.',
+            '',
+            'Your prizes will be distributed on a fixed odds basis shown in the table to the right.  Enter the overall odds that a player wins any prize when they enter this game. Note the effect overall odds have on individual prize odds and the total number of entries. '+
+            'Example: If the overall odds are 1 in 4, you would expect that for every four players, on average one will win a prize.',
+            '',
+            'Your game will end when total entries have been exhausted or the cut-off date selected in step #1 is reached.'
+        ];
+        
+        var timeText = [
+            'Time based prize serving ensures that your game will span the selected time period.  The same number of prizes go out regardless of how many people are playing.  Your prizes will be distributed randomly over the time period selected in step #1.',
+            '',
+            'Example: If you have entered 100 total prizes over a 30 day period, your 100 prizes will be randomly awarded at different points of time within that 30 day period.',
+            '',
+            'Your game will end when the cut-off date selected in step #1 is reached.'
+        ];
+        
+        me.updateHelpText( (me.down('[name=engine_type]').getValue() == 'order' ? oddsText : timeText).join('<br />') );
     },
     
     onFieldBlur : function(){},
