@@ -78,7 +78,7 @@ Ext.define('Bozuko.view.contest.builder.card.Game', {
                     autoHeight          :true,
                     helpText            :[
                         "<p>",
-                            'This is the cut-off date for your game. Your game ends when total entries are exhausted or this date hits.',
+                            'This is the cut-off date for your game. Settings in the Prize Serving step may have an effect on when your game actually ends.',
                         '</p>'
                     ],
                     
