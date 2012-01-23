@@ -48,7 +48,7 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                     '</tpl>',
                     '<tpl if="this.getOdds()">',
                         '<div class="info-row">',
-                            '<div class="label">Contest Odds</div>',
+                            '<div class="label">Prize Serving</div>',
                             '<div class="value">{[this.getOdds()]}</div>',
                         '</div>',
                     '</tpl>',
@@ -102,10 +102,14 @@ Ext.define( 'Bozuko.view.contest.builder.Preview', {
                         var i = builder.down('[region=center]').items.indexOf(builder.down('contestbuilderodds'));
                         if( builder.query('[ref=step-btn]')[i].isDisabled() ) return '';
                         
-                        return [
+                        return me.contest.get('engine_type') == 'odds' ?
+                        [
                             '1 in '+me.contest.get('win_frequency').toFixed(1)+' entries will win',
                             '<br />',
                             me.contest.get('total_entries')+' Total Entries'
+                        ].join('') :
+                        [
+                            'Prizes will distributed over total time period.'
                         ].join('')
                     }
                 }

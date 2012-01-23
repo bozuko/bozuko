@@ -211,7 +211,7 @@ body {
 .site-home .bd .page-width .hero .city {
   z-index: 1;
   position: relative;
-  background: transparent url("/images/desktop/site/home/cityscape2.jpg") repeat-x 50% 0;
+  background: transparent url("/images/desktop/site/home/cityscape3.jpg") repeat-x 50% 0;
   height: 342px;
 }
 .site-home .bd .page-width .hero .city .bottom-line {
@@ -352,34 +352,59 @@ body {
 .site-home .bd .page-width .middle h3.biz {
   padding-top: .8em;
   margin-top: .8em;
+  margin-bottom: .5em;
   border-top: 2px solid #eee;
 }
-.site-home .bd .page-width .middle .business-owners {
-  padding-left: 100px;
-  background: transparent url("/images/desktop/site/home/beta-burst.jpg") 0 50% no-repeat;
-  font-weight: 800;
+.site-home .bd .page-width .middle .line {
+  margin-right: -20px;
 }
-.site-home .bd .page-width .middle .business-owners img {
-  margin-left: 10px;
-  float: right;
+.site-home .bd .page-width .middle .line .block {
+  padding-right: 20px;
+}
+.site-home .bd .page-width .middle .line .block img {
+  max-width: 100%;
+}
+.site-home .bd .page-width .middle .line .block .text {
+  padding-left: 10px;
+}
+.site-home .bd .page-width .middle .line .block .text h4 {
+  font-size: 14px;
+  font-family: "open sans";
+  font-weight: 700;
+}
+.site-home .bd .page-width .middle .line .block .text p {
+  font-size: 13px;
+  line-height: 1.5em;
+}
+.site-home .bd .page-width .middle .line .vertical-line {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  bottom: 0;
+  width: 2px;
+  left: -12px;
+  background: #efefef;
+}
+.site-home .bd .page-width .middle .line .unit {
+  position: relative;
+}
+.site-home .bd .page-width .middle .line .lastUnit {
+  overflow: visible;
 }
 .site-home .bd .page-width .middle .download-buttons {
   float: right;
   display: inline-block;
   vertical-align: middle;
-  margin-left: 10px;
-}
-.site-home .bd .page-width .middle .download-buttons a {
-  margin-right: 10px;
 }
 .site-home .bd .page-width .middle .download-buttons img {
-  height: 36px;
+  height: 28px;
 }
 .site-home .bd .page-width .middle .download-buttons .android-market {
   margin-right: 0;
 }
 .site-home .bd .page-width .middle .download-buttons .android-market img {
-  height: 34px;
+  margin-left: 10px;
+  height: 26px;
   border: 1px solid #ccc;
 }
 .site-home .bd .page-width .middle .page-width {
@@ -387,7 +412,7 @@ body {
   margin: 0 auto;
 }
 .site-home .bd .page-width .middle .page-width .main-col {
-  width: 550px;
+  width: 600px;
   float: left;
 }
 .site-home .bd .page-width .middle .page-width .right-col {

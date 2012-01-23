@@ -21,7 +21,7 @@
 			doc					= $((jQuery.browser.msie && jQuery.browser.version == 8 ) ? document.documentElement : document),
 			opts, bottomPos, pastStartOffset, objFartherThanTopPos, objBiggerThanWindow, newpos, checkTimer, lastDocPos = doc.scrollTop(),
 			parentPaddingTop 	= parseInt($obj.parent().css('padding-top')),
-			startOffset 		= $obj.parent().parent().offset().top;
+			startOffset 		= options.startOffset || $obj.parent().parent().offset().top;
 			
 		
             
@@ -68,7 +68,7 @@
 					newpos = bottomPos;
 				}
 				if ( doc.scrollTop() < opts.startOffset ){ // if window scrolled < starting offset, then reset Obj position (opts.offsetY);
-					newpos = parentPaddingTop;
+					newpos = opts.startOffset;
 				}
 				$obj.delay(opts.delay).animate({ top: newpos }, opts.duration , opts.easing );
 			}
@@ -81,7 +81,7 @@
 
 jQuery(function($){
 	
-    $('.fixed').stickyfloat({lockBottom: true, duration: 400, offsetY: 70});
+    $('.fixed').stickyfloat({lockBottom: true, duration: 400, offsetY: 70, startOffset: 125});
 	
 	$('#welcome-form-container').appendTo($('body'));
 	

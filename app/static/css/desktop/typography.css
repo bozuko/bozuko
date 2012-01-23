@@ -26,7 +26,10 @@ a:hover {
 p {
   margin: 1em 0;
 }
-a {
+a,
+a:link,
+a:visited,
+a:hover {
   transition: color 0.5s linear;
   -moz-transition: color 0.5s linear;
   -o-transition: color 0.5s linear;
@@ -112,6 +115,7 @@ em {
   -webkit-border-radius: 4px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
   border-radius: 4px;
   background-clip: padding-box;
   border: 1px solid #006b37;
@@ -159,6 +163,7 @@ body .site-button-disabled:hover, body .site-button-disabled:active {
   -webkit-border-radius: 4px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
   border-radius: 4px;
   background-clip: padding-box;
   border: 1px solid #006b37;
@@ -194,6 +199,7 @@ body .site-button-disabled:hover, body .site-button-disabled:active {
   -webkit-border-radius: 4px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
   border-radius: 4px;
   background-clip: padding-box;
   border: 1px solid #006b37;
@@ -229,6 +235,7 @@ body .site-button-disabled:hover, body .site-button-disabled:active {
   -webkit-border-radius: 4px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
   border-radius: 4px;
   background-clip: padding-box;
   border: 1px solid #006b37;
@@ -277,6 +284,7 @@ body .site-button-disabled:hover, body .site-button-disabled:active {
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
   border-radius: 6px;
   background-clip: padding-box;
   border: 1px solid #aaa;
@@ -290,6 +298,7 @@ body .site-button-disabled:hover, body .site-button-disabled:active {
   -webkit-border-radius: 6px;
   -moz-background-clip: padding-box;
   -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
   border-radius: 6px;
   background-clip: padding-box;
   border: 1px solid #aaa;

@@ -7,9 +7,10 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         'Bozuko.view.contest.builder.Card',
         'Bozuko.lib.form.field.WinFrequency'
     ],
-    name            :"Contest Odds",
+    name            :"Prize Serving",
     cls             :'builder-card contest-odds-card',
     overview        :[
+        
     ],
     
     oddsText : 'Overall Odds per Entry',
@@ -23,167 +24,203 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         me.mode = me.engine_options.mode || 'odds';
         
         Ext.apply(me.form, {
-            
             items               :[{
-                xtype               :'component',
-                ref                 :'intro',
-                autoEl              :{
-                    tag                 :'h2'
+                name                :'engine_type',
+                value               :'time',
+                xtype               :'combo',
+                cls                 :'combo',
+                mode                :'local',
+                editable            :false,
+                forceSelection      :true,
+                fieldLabel          :'Distribution Type',
+                displayField        :'name',
+                valueField          :'value',
+                store               :{
+                    data                :[{name:'Odds Based', value:'order'},{name:'Time Based', value:'time'}],
+                    fields              :['name','value']
                 },
-                html : me.getIntroHTML()
+                listeners           :{
+                    change              :me.onEngineChange,
+                    scope               :me
+                }
             },{
+                ref                 :'time-container',
+                refCls              :'container',
                 xtype               :'container',
                 border              :false,
-                layout              :'anchor',
-                height              :50,
-                defaults            :me.form.defaults,
                 items               :[{
-                    xtype               :'winfrequencyfield',
-                    name                :'win_frequency',
-                    xmode               :'odds',
-                    hideLabel           :true,
-                    helpText            :[
-                        '<p>Enter the overall odds that a player wins any prize when they enter this game. ',
-                        'Note the effect overall odds have on individual prize odds and the total number of entries.</p>',
-                        '<p>Example:  If the overall odds are 1 in 4, you would expect that for every four players, on average one will win a prize.</p>'
-                    ],
-                    listeners           :{
-                        scope               :me,
-                        change              :me.updateContest
-                    }
+                    xtype               :'component',
+                    autoEl              :{tag:'p'},
+                    html                :[
+                        'Distribute the prizes over the course of the contest.'
+                    ].join('')
+                }]
+            },{
+                ref                 :'order-container',
+                refCls              :'container',
+                xtype               :'container',
+                border              :false,
+                hidden              :true,
+                items:[{
+                    xtype               :'component',
+                    ref                 :'intro',
+                    autoEl              :{
+                        tag                 :'h2'
+                    },
+                    html : me.getIntroHTML()
                 },{
                     xtype               :'container',
-                    arrowCt             :'true',
-                    style               :'position:relative; overflow: visible',
-                    layout              :{
-                        type                :'hbox',
-                        pack                :'center'
-                    },
                     border              :false,
+                    layout              :'anchor',
+                    height              :50,
+                    defaults            :me.form.defaults,
                     items               :[{
-                        xtype               :'textfield',
-                        name                :'total_entries',
-                        xmode               :'entry',
-                        style               :'text-align:center;',
-                        maskRE              :/0-9/,
-                        hidden              :true,
-                        disabled            :true,
-                        fieldLabel          :'Total Entries',
+                        xtype               :'winfrequencyfield',
+                        name                :'win_frequency',
+                        xmode               :'odds',
                         hideLabel           :true,
-                        width               :100,
                         helpText            :[
-                            '<p>Enter the total number of player entries you would like for this game.  Note the effect your total number of entries has on the overall odds.</p>',
-                            '<p>Example: If you have 10 total prize quantity and enter 100 total entries, the overall odds of any player entry winning is 1 in 10.</p>'
+                            '<p>Enter the overall odds that a player wins any prize when they enter this game. ',
+                            'Note the effect overall odds have on individual prize odds and the total number of entries.</p>',
+                            '<p>Example:  If the overall odds are 1 in 4, you would expect that for every four players, on average one will win a prize.</p>'
                         ],
                         listeners           :{
                             scope               :me,
                             change              :me.updateContest
                         }
+                    },{
+                        xtype               :'container',
+                        arrowCt             :'true',
+                        style               :'position:relative; overflow: visible',
+                        layout              :{
+                            type                :'hbox',
+                            pack                :'center'
+                        },
+                        border              :false,
+                        items               :[{
+                            xtype               :'textfield',
+                            name                :'total_entries',
+                            xmode               :'entry',
+                            style               :'text-align:center;',
+                            maskRE              :/0-9/,
+                            hidden              :true,
+                            disabled            :true,
+                            fieldLabel          :'Total Entries',
+                            hideLabel           :true,
+                            width               :100,
+                            helpText            :[
+                                '<p>Enter the total number of player entries you would like for this game.  Note the effect your total number of entries has on the overall odds.</p>',
+                                '<p>Example: If you have 10 total prize quantity and enter 100 total entries, the overall odds of any player entry winning is 1 in 10.</p>'
+                            ],
+                            listeners           :{
+                                scope               :me,
+                                change              :me.updateContest
+                            }
+                        }]
+                    },{
+                        xtype               :'container',
+                        border              :false,
+                        style               :'text-align:center; position: relative;margin-bottom: 20px;',
+                        items               :[{
+                            xtype               :'component',
+                            ref                 :'switcher',
+                            autoEl              :{
+                                tag                 :'a',
+                                cls                 :'switcher',
+                                href                :'/',
+                                style               :{
+                                    position            :'absolute',
+                                    left                :'-99999em',
+                                    top                 :'-99999em'
+                                }
+                            },
+                            listeners           :{
+                                render              :me.initSwitcher,
+                                scope               :me
+                            }
+                        }]
                     }]
                 },{
-                    xtype               :'container',
-                    border              :false,
-                    style               :'text-align:center; position: relative;margin-bottom: 20px;',
-                    items               :[{
-                        xtype               :'component',
-                        ref                 :'switcher',
-                        autoEl              :{
-                            tag                 :'a',
-                            cls                 :'switcher',
-                            href                :'/',
-                            style               :{
-                                position            :'absolute',
-                                left                :'-99999em',
-                                top                 :'-99999em'
-                            }
-                        },
-                        listeners           :{
-                            render              :me.initSwitcher,
-                            scope               :me
-                        }
-                    }]
-                }]
-            },{
-                xtype               :'dataview',
-                store               :me.contest.prizes(),
-                itemSelector        :'.prize-odds',
-                trackOver           :false,
-                tpl                 :new Ext.XTemplate(
-                    '<div class="odds-tables">',
-                        '<div class="overview">',
-                            '<div class="alternate">{[this.getAlternate()]}</div>',
-                        '</div>',
-                        '<div class="prizes-odds">',
-                            '<table>',
-                                '<tr>',
-                                    '<th>Prize Name</th>',
-                                    '<th>Quantity</th>',
-                                    '<th>Odds per Play</th>',
-                                    '<th>Odds per Entry</th>',
-                                '</tr>',
-                                '<tpl for=".">',
-                                    '<tr class="prize-odds">',
-                                        '<td class="prize-name">{name}</td>',
-                                        '<td class="prize-total">{total}</td>',
-                                        '<td class="prize-odds-value">',
-                                            '{[this.getPrizePlayOdds(xindex)]}',
-                                        '</td>',
-                                        '<td class="prize-odds-value">',
-                                            '{[this.getPrizeOdds(xindex)]}',
-                                        '</td>',
+                    xtype               :'dataview',
+                    store               :me.contest.prizes(),
+                    itemSelector        :'.prize-odds',
+                    trackOver           :false,
+                    tpl                 :new Ext.XTemplate(
+                        '<div class="odds-tables">',
+                            '<div class="overview">',
+                                '<div class="alternate">{[this.getAlternate()]}</div>',
+                            '</div>',
+                            '<div class="prizes-odds">',
+                                '<table>',
+                                    '<tr>',
+                                        '<th>Prize Name</th>',
+                                        '<th>Quantity</th>',
+                                        '<th>Odds per Play</th>',
+                                        '<th>Odds per Entry</th>',
                                     '</tr>',
-                                '</tpl>',
-                                '<tr class="footer">',
-                                    '<th>Total</th>',
-                                    '<td>{[this.totalPrizes()]}</td>',
-                                    '<td>{[this.overallPlayOdds()]}</td>',
-                                    '<td>{[this.overallEntryOdds()]}</td>',
-                                '</tr>',
-                            '</table>',
+                                    '<tpl for=".">',
+                                        '<tr class="prize-odds">',
+                                            '<td class="prize-name">{name}</td>',
+                                            '<td class="prize-total">{total}</td>',
+                                            '<td class="prize-odds-value">',
+                                                '{[this.getPrizePlayOdds(xindex)]}',
+                                            '</td>',
+                                            '<td class="prize-odds-value">',
+                                                '{[this.getPrizeOdds(xindex)]}',
+                                            '</td>',
+                                        '</tr>',
+                                    '</tpl>',
+                                    '<tr class="footer">',
+                                        '<th>Total</th>',
+                                        '<td>{[this.totalPrizes()]}</td>',
+                                        '<td>{[this.overallPlayOdds()]}</td>',
+                                        '<td>{[this.overallEntryOdds()]}</td>',
+                                    '</tr>',
+                                '</table>',
+                            '</div>',
                         '</div>',
-                    '</div>',
-                    {
-                        getAlternate : function(){
-                            if( me.mode=='odds' ){
-                                return '<strong>'+me.contest.get('total_entries')+'</strong> Total Entries';
+                        {
+                            getAlternate : function(){
+                                if( me.mode=='odds' ){
+                                    return '<strong>'+me.contest.get('total_entries')+'</strong> Total Entries';
+                                }
+                                else{
+                                    return '1 in <strong>'+me.contest.get('win_frequency').toFixed(1)+'</strong> Overall Odds';
+                                }
+                            },
+                            
+                            totalEntries : function(){
+                                return me.contest.get('total_entries').getValue();
+                            },
+                            
+                            totalPlays : function(){
+                                return me.contest.getTotalPlays();
+                            },
+                            
+                            totalPrizes : function(){
+                                return me.contest.getTotalPrizeCount();
+                            },
+                            
+                            overallPlayOdds : function(){
+                                var value = me.contest.getTotalPlays() / me.contest.getTotalPrizeCount();
+                                return '1 in '+value.toFixed(1);
+                            },
+                            
+                            overallEntryOdds : function(){
+                                var value = me.contest.get('total_entries') / me.contest.getTotalPrizeCount();
+                                return '1 in '+value.toFixed(1);
+                            },
+                            
+                            getPrizeOdds : function(index){
+                                return me.contest.getPrizeOdds(index-1);
+                            },
+                            
+                            getPrizePlayOdds : function(index){
+                                return me.contest.getPrizePlayOdds(index-1);
                             }
-                            else{
-                                return '1 in <strong>'+me.contest.get('win_frequency').toFixed(1)+'</strong> Overall Odds';
-                            }
-                        },
-                        
-                        totalEntries : function(){
-                            return me.contest.get('total_entries').getValue();
-                        },
-                        
-                        totalPlays : function(){
-                            return me.contest.getTotalPlays();
-                        },
-                        
-                        totalPrizes : function(){
-                            return me.contest.getTotalPrizeCount();
-                        },
-                        
-                        overallPlayOdds : function(){
-                            var value = me.contest.getTotalPlays() / me.contest.getTotalPrizeCount();
-                            return '1 in '+value.toFixed(1);
-                        },
-                        
-                        overallEntryOdds : function(){
-                            var value = me.contest.get('total_entries') / me.contest.getTotalPrizeCount();
-                            return '1 in '+value.toFixed(1);
-                        },
-                        
-                        getPrizeOdds : function(index){
-                            return me.contest.getPrizeOdds(index-1);
-                        },
-                        
-                        getPrizePlayOdds : function(index){
-                            return me.contest.getPrizePlayOdds(index-1);
                         }
-                    }
-                )
-                
+                    )
+                }]
             }]
         });
         
@@ -215,6 +252,15 @@ Ext.define('Bozuko.view.contest.builder.card.Odds', {
         else{
             me.down('[name=total_entries]').setValue(me.contest.get('total_entries')||500);
         }
+        me.down('[name=engine_type]').setValue(me.contest.get('engine_type')||'order');
+    },
+    
+    onEngineChange : function(){
+        var me = this;
+        var type = me.down('[name=engine_type]').getValue()||'order';
+        Ext.each(me.query('[refCls=container]'), function(cmp){cmp.hide()});
+        me.down('[ref='+type+'-container]').show();
+        
     },
     
     initSwitcher : function(cmp){

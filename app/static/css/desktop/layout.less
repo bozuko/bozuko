@@ -239,7 +239,7 @@ body{
                 .city {
                     z-index: 1;
                     position: relative;
-                    background: transparent url("/images/desktop/site/home/cityscape2.jpg") repeat-x 50% 0;
+                    background: transparent url("/images/desktop/site/home/cityscape3.jpg") repeat-x 50% 0;
                     height: 342px;
                     
                     .bottom-line {
@@ -403,35 +403,63 @@ body{
                 h3.biz {
                     padding-top: .8em;
                     margin-top: .8em;
+                    margin-bottom: .5em;
                     border-top: 2px solid #eee;
                 }
                 
-                .business-owners {
-                    padding-left: 100px;
-                    background: transparent url("/images/desktop/site/home/beta-burst.jpg") 0 50% no-repeat;
-                    font-weight: 800;
-                    img {
-                        margin-left: 10px;
-                        float: right;
+                
+                .line{
+                    margin-right: -20px;
+                    .block{
+                        padding-right: 20px;
+                        img {
+                            max-width: 100%;
+                        }
+                        .text{
+                            padding-left: 10px;
+                            h4 {
+                                font-size: 14px;
+                                font-family: "open sans";
+                                font-weight: 700;
+                            }
+                            p {
+                                font-size: 13px;
+                                line-height: 1.5em;
+                            }
+                        }
+                    }
+                    .vertical-line {
+                        position: absolute;
+                        top: 0;
+                        height: 100%;
+                        bottom: 0;
+                        width: 2px;
+                        left: -12px;
+                        background: #efefef;
+                    }
+                    .unit {
+                        position: relative;
+                    }
+                    .lastUnit {
+                        overflow: visible;
                     }
                 }
-                
                 .download-buttons {
                     float: right;
                     display: inline-block;
                     vertical-align: middle;
-                    margin-left: 10px;
                     
                     a {
-                        margin-right: 10px;
+                        
                     }
                     img {
-                        height: 36px;
+                        height: 28px;
                     }
                     .android-market {
                         margin-right: 0;
                         img{
-                            height: 34px;
+                            margin-left: 10px;
+                            height: 26px;
                             border: 1px solid #ccc;
                         }
                     }
@@ -443,8 +471,10 @@ body{
                     margin: 0 auto;
                     
                     .main-col {
-                        width: 550px;
+                        width: 600px;
                         float: left;
+                        
+                        
                     }
                     
                     .right-col {

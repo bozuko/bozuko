@@ -39,6 +39,9 @@ CountsReport.prototype.run = function run(callback){
     
     if(tzOffset){
         end = new Date(end.getTime() - tzOffset);
+        if( start ){
+            start = new Date(start.getTime() - tzOffset);
+        }
     }
     
     if( unit === 'Week' ){
