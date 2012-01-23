@@ -42,7 +42,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'replace_rules',      type:'Boolean',             defaultValue:false},
         {name:'rules',              type:'String'},
         {name:'entry_config',       type:'Array',               defaultValue:[{type:'facebook/like',tokens:1,duration:1000*60*60*24}]},
-        {name:'consolation_config', type:'Array'},
+        {name:'consolation_config', type:'Array',               defaultValue:[{enabled: false}]},
         {name:'free_play_pct',      type:'Number',              defaultValue:'30%'},
         {name:'active',             type:'Boolean'},
         {name:'web_only',           type:'Boolean',             defaultValue:false},

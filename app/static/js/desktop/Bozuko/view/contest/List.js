@@ -184,7 +184,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                     
                     canDelete : function(values){
                         if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'delete')) return '';
-                        return ~Ext.Array.indexOf(['draft','published'],values.state);
+                        return this.isAdmin() || ~Ext.Array.indexOf(['draft','published'],values.state);
                     },
                     
                     canCancel : function(values){
