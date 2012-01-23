@@ -86,7 +86,7 @@ exports.graph = function(path, options, callback){
             if( result.error.message.match(/(changed the password|validating access token)/i) ){
                 return callback( Bozuko.error('facebook/auth') );
             }
-            if ( result.error.message.match(/Checking in to this place is currently unavailable)/) ){
+            if ( result.error.message.match(/Checking in to this place is currently unavailable/) ){
                 return callback( Bozuko.error('facebook/checkin') );
             }
             // log the error...
