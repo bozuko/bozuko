@@ -30,7 +30,7 @@ Ext.define('Bozuko.lib.form.field.Duration', {
                 width           :40,
                 xtype           :'textfield',
                 ref             :'value',
-                allowBlank      :false,
+                allowBlank      :me.allowBlank,
                 regexMask       :/[0-9\.]/
             },{
                 xtype           :'splitter'
