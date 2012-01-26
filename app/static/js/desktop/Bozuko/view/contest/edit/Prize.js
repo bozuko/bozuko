@@ -40,11 +40,12 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 fieldLabel      :'Description',
                 allowBlank      :false
             },{
-                xtype           :'duration',
+                xtype           :'textfield',
                 name            :'instructions',
                 fieldLabel      :'Instructions',
                 allowBlank      :false
             },{
+                xtype           :'duration',
                 name            :'duration',
                 fieldLabel      :'Redemption Period',
                 allowBlank      :false,
