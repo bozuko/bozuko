@@ -73,21 +73,61 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
                 data                :[{value:'order',text:'Order Based'},{value:'time',text:'Time Based'}]
             })
         },{
-            xtype               :'textfield',
-            name                :'window_divisor',
-            fieldLabel          :'Window divisor'
+            xtype               :'fieldcontainer',
+            fieldLabel          :'Window Divisor',
+            layout              :'hbox',
+            items               :[{
+                width               :80,
+                xtype               :'textfield',
+                name                :'window_divisor',
+                hideLabel           :true,
+                listeners           :{scope: me, change: me.onTimeValueChange}
+            },{xtype: 'splitter'},{
+                xtype               :'component',
+                ref                 :'window_divisor_text'
+            }]
         },{
-            xtype               :'textfield',
-            name                :'throwahead_multiplier',
-            fieldLabel          :'Throwahead Multiplier'
+            xtype               :'fieldcontainer',
+            fieldLabel          :'Throwahead Multiplier',
+            layout              :'hbox',
+            items               :[{
+                width               :80,
+                xtype               :'textfield',
+                name                :'throwahead_multiplier',
+                hideLabel           :true,
+                listeners           :{scope: me, change: me.onTimeValueChange}
+            },{xtype: 'splitter'},{
+                xtype               :'component',
+                ref                 :'throwahead_multiplier_text'
+            }]
         },{
-            xtype               :'textfield',
-            name                :'end_buffer',
-            fieldLabel          :'End of game buffer' 
+            xtype               :'fieldcontainer',
+            fieldLabel          :'End of Game Buffer',
+            layout              :'hbox',
+            items               :[{
+                width               :80,
+                xtype               :'textfield',
+                name                :'end_buffer',
+                hideLabel           :true,
+                listeners           :{scope: me, change: me.onTimeValueChange}
+            },{xtype: 'splitter'},{
+                xtype               :'component',
+                ref                 :'end_buffer_text'
+            }]
         },{
-            xtype               :'textfield',
-            name                :'lookback_threshold',
-            fieldLabel          :'Lookback Threshold'
+            xtype               :'fieldcontainer',
+            fieldLabel          :'Lookback Threshold',
+            layout              :'hbox',
+            items               :[{
+                width               :80,
+                xtype               :'textfield',
+                name                :'lookback_threshold',
+                hideLabel           :true,
+                listeners           :{scope: me, change: me.onTimeValueChange}
+            },{xtype: 'splitter'},{
+                xtype               :'component',
+                ref                 :'lookback_threshold_text'
+            }]
         },{
             xtype           :'htmleditor',
             name            :'promo_copy',
@@ -96,5 +136,24 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             fieldLabel      :'Promotional Copy'
         }];
         me.callParent();
+    },
+    
+    onTimeValueChange : function(cmp){
+        var me = this,
+            name = cmp.name,
+            text = name+'_text',
+            text_cmp = cmp.up('fieldcontainer').down('[ref='+text+']'),
+            start = me.down('[name=start]').getValue(),
+            end = me.down('[name=end]').getValue(),
+            duration = +end -start
+            ;
+        
+        switch(name){
+            case 'window_divisor':
+                
+                break;
+            default:
+                break;
+        }
     }
 });

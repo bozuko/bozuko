@@ -68,7 +68,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
         var qr = 'http://api.qrserver.com/v1/create-qr-code/?size=320x320&color=006b37&data='+encodeURIComponent(burl(req.url));
         var game = contest.getGame();
         
-        if( req.session.device == 'touch' || req.param('play') ){
+        if( req.session.device == 'tablet' || req.session.device == 'touch' || req.param('play') ){
             
             if( Bozuko.env() == 'site' ){
                 return res.redirect('https://api.bozuko.com'+req.url);
