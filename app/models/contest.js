@@ -80,7 +80,9 @@ Contest.virtual('state')
     .get(function(){
         var now = new Date().getTime();
         if( !this.active ) return Contest.DRAFT;
-        if( this.engine_type === 'order' && (this.play_cursor+1 >= this.total_plays) ) {
+        if( (this.engine_type === 'order' && (this.play_cursor+1 >= this.total_plays) ) ||
+            now > this.end
+        ) {
             return Contest.COMPLETE;
         }
         if( now > this.start.getTime() && now < this.end.getTime() ) {

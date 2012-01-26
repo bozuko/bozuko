@@ -40,17 +40,23 @@ var _scrollbarSize,
 function getScrollbarSize(){
     if( !_scrollbarSize ){
         var tmp = Ext.get(document.body).createChild({
+			cls			:'superscroll',
             style       :'top:-200px; left: -200px; width: 50px; height: 50px; overflow: hidden; position: absolute;',
             cn:[{
-                tag         :'div',
-                style       :'height: 100px'
+				cls			:'scrollable',
+				style		:'width: 50px; height: 50px; overflow: hidden;',
+				cn			:[{
+					cls			:'test',
+					tag         :'div',
+					style       :'height: 100px'
+				}]
             }]
         });
         
         // get the initial size...
-        var dom = tmp.child('div').dom;
-        var s1 = tmp.child('div').getWidth();
-        tmp.setStyle('overflow-y', 'scroll');
+        var dom = tmp.child('.test').dom;
+        var s1 = tmp.child('.test').getWidth();
+        tmp.down('.scrollable').setStyle('overflow-y', 'scroll');
         dom.innerHTML = '.';
         var s2 = tmp.child('div').getWidth();
         _scrollbarSize = s1-s2;

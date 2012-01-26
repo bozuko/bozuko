@@ -145,7 +145,10 @@ Ext.define('Bozuko.view.contest.List' ,{
                         if( server != 'bozuko.com' && !~['80','443'].indexOf(p) ){
                             server+= ':'+p;
                         }
-                        var link = 'https://'+server+'/client/game/'+(values.alias||values._id);
+                        var link = values.alias ?
+                            ('https://'+server+'/'+values.alias) : 
+                            ('https://'+server+'/client/game/'+values._id)
+                            ;
                         return '<a target="_blank" href="'+link+'" class="html5">'+link+'</a>';
                     },
                     
@@ -306,6 +309,7 @@ Ext.define('Bozuko.view.contest.List' ,{
         data.name = record.get('name') || 'Untitled';
         data.game = record.get('game');
         data.state = record.get('state');
+        data.alias = record.get('alias');
         data.State = Ext.String.capitalize( record.get('state') );
         data.game_type = record.get('game');
         data.game = Ext.String.capitalize(data.game);
