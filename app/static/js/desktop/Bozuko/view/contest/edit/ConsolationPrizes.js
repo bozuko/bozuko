@@ -51,7 +51,7 @@ Ext.define('Bozuko.view.contest.edit.ConsolationPrizes' ,{
                     displayField    :'text',
                     valueField      :'value'
                 },{
-                    xtype: 'textfield',
+                    xtype: 'duration',
                     name: 'duration',
                     fieldLabel: 'Interval (only when above is interval)'
                 }]
