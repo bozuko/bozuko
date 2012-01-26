@@ -665,7 +665,11 @@ Ext.define('Bozuko.controller.Contests' ,{
     
     getValues : function(form, selector){
         var values = {};
-        selector = selector ? (selector+' field'+', '+selector+' htmleditor') : 'field, htmleditor';
+        var types= ['field','htmleditor','duration'];
+        if( selector ) Ext.each(types, function(type){
+            type = selector+' '+type;
+        });
+        selector = types.join(', ');
         Ext.Array.each(form.query( selector ), function(field){
             var name = field.getName();
             var ns = name.split('.'), cur = values;

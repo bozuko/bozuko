@@ -3,7 +3,7 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
     extend: 'Ext.form.Panel',
     alias : 'widget.contestformentry',
     
-    requires: [],
+    requires: ['Bozuko.lib.form.field.Duration'],
     
     layout: 'anchor',
     defaults: {
@@ -49,10 +49,16 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
             hidden          :true
         },{
             xtype           :'textfield',
+            name            :'options.radius',
+            fieldLabel      :'Radius (mi)',
+            regex           :/[0-9]/,
+            hidden          :true
+        },{
+            xtype           :'textfield',
             name            :'tokens',
             fieldLabel      :'Plays per Entry'
         },{
-            xtype           :'textfield',
+            xtype           :'duration',
             name            :'duration',
             fieldLabel      :'Entry Duration (ms)',
             value           :1000 * 60 * 60
@@ -67,10 +73,13 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
     onEntryTypeChange : function(field, value){
         var fn = value == 'facebook/checkin' ? 'show' : 'hide';
         this.down('[name=options.enable_like]')[fn]();
+        fn = value == 'facebook/like' ? 'show' : 'hide';
+        this.down('[name=options.radius]')[fn]();
     },
     
     setValues : function(values){
         values['options.enable_like'] = values.options ? values.options.enable_like : false;
+        values['options.radius'] = values.options ? values.options.radius : false;
         this.getForm().setValues(values);
     }
 });

@@ -1142,16 +1142,16 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
         }
         
-        if( self.game.entry_method.type.match(/checkin/)){
+        if( self.game.entry_method.use_location ){
             // we should get the location
             navigator.geolocation.getCurrentPosition(function(position){
                 do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
             }, function(){
-                self.app.showLoading('We need your location to play :(');
+                do_entry(0,0,0);
             })
         }
         else{
-            do_entry(0,0);
+            do_entry(0,0,0);
         }
     },
     

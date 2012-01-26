@@ -16,14 +16,14 @@ var entry_method = {
         use_location: "Boolean",
         small_image: "String",
         description: "String"
-    }/*,
+    },
     
     create : function(entry, user, callback){
-        console.error(require('util').inspect(entry));
+        entry.use_location = false;
         if( !['facebook/checkin','bozuko/checkin'].indexOf( entry.type ) ) entry.use_location = true;
         else if ( entry.config.options.radius ) entry.use_location = true;
         return this.sanitize(entry, null, user, callback);
-    }*/
+    }
 };
 
 

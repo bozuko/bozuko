@@ -3,7 +3,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
     extend: 'Ext.form.Panel',
     alias : 'widget.contestformprize',
 
-    requires: [],
+    requires: ['Bozuko.lib.form.field.Duration'],
     border          :false,
     autoHeight      :true,
 
@@ -40,6 +40,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 fieldLabel      :'Description',
                 allowBlank      :false
             },{
+                xtype           :'duration',
                 name            :'instructions',
                 fieldLabel      :'Instructions',
                 allowBlank      :false

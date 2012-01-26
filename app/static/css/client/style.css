@@ -501,8 +501,10 @@ a:hover {
   height: 63px;
 }
 .game-description .hd .content .name {
-  font-size: 14px;
-  font-weight: 500;
+  font-family: "open sans";
+  font-size: 15px;
+  text-shadow: 1px 1px 2px #000;
+  font-weight: 700;
   margin-bottom: .4em;
 }
 .game-description .hd .content .name img {
