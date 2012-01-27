@@ -244,12 +244,9 @@ exports.routes = {
                 
                 res.locals.styles.push(
                     '/css/desktop/b4b.css',
-                    '/css/desktop/beta/landing.css?'+now,
                     '/css/desktop/beta/style.css?'+now
                 );
-                res.locals.head_scripts.push(
-                    '/js/desktop/beta/welcome.js'
-                );
+                
                 res.render('site/local');
             }
         }
@@ -281,13 +278,14 @@ exports.routes = {
             }
         }
     },
-    '/enterprise/form' : {
+    '/(enterprise|local)/form' : {
         post : {
             handler: function(req, res){
                 // check the form...
                 var name = req.param('name'),
                     email = req.param('email'),
                     message = req.param('message'),
+                    type = req.url.match(/local/) ? 'Local' : 'Enterprise',
                     success = true
                     ;
 
@@ -311,7 +309,7 @@ exports.routes = {
                 mailer.send({
                     to: 'info@bozuko.com',
                     reply_to: email,
-                    subject: "New Bozuko Enterprise Inquiry",
+                    subject: "New Bozuko "+type+" Inquiry",
                     body: name+' <'+email+'> sent the following message:\n\n'+message
                 });
                 

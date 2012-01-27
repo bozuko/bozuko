@@ -142,7 +142,6 @@ Ext.define('Bozuko.view.contest.List' ,{
                             server = 'bozuko.com';
                         }
                         var p = window.location.port;
-                        console.log(server, p);
                         if( server != 'bozuko.com' && !~['80','443',''].indexOf(String(p)) ){
                             server+= ':'+p;
                         }
