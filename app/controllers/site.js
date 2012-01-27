@@ -278,7 +278,7 @@ exports.routes = {
             }
         }
     },
-    '/(enterprise|local)/form' : {
+    '/enterprise/form' : {
         post : {
             handler: function(req, res){
                 // check the form...
