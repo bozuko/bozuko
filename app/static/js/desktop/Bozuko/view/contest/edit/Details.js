@@ -147,17 +147,37 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             start = me.down('[name=start]').getValue(),
             end = me.down('[name=end]').getValue(),
             duration = +end -start,
+            prize_count = me.up('contestform').contest.getTotalPrizeCount(),
             step = Math.floor( duration / me.up('contestform').contest.getTotalPrizeCount() )
             ;
+        if( !prize_count || !value ) return text_cmp.update('');
         
         switch(name){
             case 'window_divisor':
                 var lookback_window = Math.round(step / value);
-                text_cmp.getEl().update('Lookback Window: '+me.duration(lookback_window));
+                text_cmp.update('Lookback Window: '+me.duration(lookback_window));
                 break;
+            
+            case 'throwahead_multiplier':
+                
+                var throwahead_window = Math.round(step * value);
+                text_cmp.update('Throwahead Window: '+me.duration(throwahead_window));
+                break;
+            
+            case 'end_buffer':
+                var date = new Date( +start +Math.floor((+end-start)*(1-value)) );
+                text_cmp.update('Contest End: '+Ext.Date.format(date,'Y-m-d h:i a'));
+                
+            case 'lookback_threshold':
+                var date = new Date(+end - Math.floor((+end -start)*value));
+                text_cmp.update('Lookback Threshold Start: '+Ext.Date.format(date,'Y-m-d h:i a'));
+                break;
+                
             default:
                 break;
         }
+        
+        return true;
     },
     
     duration : function(ms, hide1){
@@ -166,6 +186,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             if( !pstr ) pstr = str+'s';
             var ret = hide1 && num===1 ? '' : (num+' ');
             return ret+ (num === 1 ? str : pstr);
+        }
+        
+        function round5(x){
+            return (x % 5) >= 2.5 ? parseInt(x / 5) * 5 + 5 : parseInt(x / 5) * 5;
         }
 
         
