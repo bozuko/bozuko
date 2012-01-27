@@ -243,8 +243,7 @@ exports.routes = {
             handler: function(req, res) {
                 
                 res.locals.styles.push(
-                    '/css/desktop/b4b.css',
-                    '/css/desktop/beta/style.css?'+now
+                    '/css/desktop/b4b.css'
                 );
                 
                 res.render('site/local');
