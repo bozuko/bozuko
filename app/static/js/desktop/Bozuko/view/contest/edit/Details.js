@@ -166,7 +166,7 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             
             case 'end_buffer':
                 var date = new Date( +start +Math.floor((+end-start)*(1-value)) );
-                text_cmp.update('Contest End: '+Ext.Date.format(date,'Y-m-d h:i a'));
+                text_cmp.update('End Buffer Start: '+Ext.Date.format(date,'Y-m-d h:i a'));
                 
             case 'lookback_threshold':
                 var date = new Date(+end - Math.floor((+end -start)*value));
