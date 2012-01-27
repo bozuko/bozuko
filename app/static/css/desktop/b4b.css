@@ -52,8 +52,72 @@
 .hd .nav li a.active {
   color: #fff;
 }
+.b4b-body {
+  border-top: 1px solid #fff;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-family: "open sans";
+  color: #666;
+}
+.b4b-body .line {
+  margin-right: -15px;
+  margin-bottom: 20px;
+}
+.b4b-body h3 {
+  font-family: "open sans";
+  color: #666;
+  font-weight: 600;
+  font-size: 20px;
+}
+.b4b-body .block {
+  padding-right: 15px;
+}
+.b4b-body .block p {
+  min-height: 5.5em;
+}
+.b4b-body .block img {
+  display: block;
+}
+.b4b-body .learn-more {
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 6px;
+  -moz-box-shadow: 0 0 5px #666666;
+  -webkit-box-shadow: 0 0 5px #666666;
+  box-shadow: 0 0 5px #666666;
+}
+.b4b-body .learn-more p {
+  font-size: 20px;
+  margin: 0;
+  padding: 20px 0;
+  text-align: center;
+  background: #000000 url("/images/desktop/site/enterprise/bg-learn_more.jpg") 0 0 repeat-x;
+  color: #ccc;
+  font-weight: 500;
+  font-style: italic;
+}
+.b4b-body .learn-more p a {
+  padding: 0 auto;
+  color: #fff;
+  width: 226px;
+  margin-left: 10px;
+  font-style: normal;
+  overflow: visible;
+  display: inline-block;
+  vertical-align: middle;
+  background: transparent url("/images/desktop/site/enterprise/bg-orange_button.png") 0 0 no-repeat;
+}
+.b4b-body .learn-more p a span {
+  font-family: "open sans";
+  font-weight: 600;
+  line-height: 40px;
+  height: 40px;
+  display: inline-block;
+  white-space: nowrap;
+}
 .site-b4b-enterprise .hd {
   background: #000000 url("/images/desktop/site/enterprise/bg-hd.jpg") 0 0 repeat-x;
+  height: 125px;
 }
 .site-b4b-enterprise .hd h1.logo a {
   background: transparent url("/images/desktop/site/enterprise/img-logo.jpg") 0 0 no-repeat;
@@ -73,6 +137,7 @@
 }
 .site-b4b-local .hd {
   background: #000000 url("/images/desktop/site/local/bg-hd.jpg") 0 0 repeat-x !important;
+  height: 125px;
 }
 .site-b4b-local .hd h1.logo a {
   background: transparent url("/images/desktop/site/local/img-logo.jpg") 0 0 no-repeat !important;
@@ -85,6 +150,26 @@
 }
 .site-b4b-local .nav li a.active {
   color: #fff;
+}
+.site-b4b-local .bd {
+  background: #ffffff url("/images/desktop/site/local/bg-bd.jpg") 0 0 repeat-x;
+}
+.site-b4b-local .bd .page-width {
+  width: auto;
+  background: transparent url("/images/desktop/site/local/img-hero.jpg") 50% 0 no-repeat;
+}
+.site-b4b-local .bd .page-width .wrap {
+  padding: 0;
+  width: 960px;
+  margin: 0 auto;
+  position: relative;
+}
+.site-b4b-local .learn-more p {
+  color: #fff;
+  background: #000000 url("/images/desktop/site/local/bg-learn_more.jpg") 0 0 repeat-x;
+}
+.site-b4b-local .learn-more p a {
+  background: transparent url("/images/desktop/site/local/bg-orange_button.png") 0 0 no-repeat;
 }
 .bd {
   padding: 0;
@@ -128,68 +213,33 @@
   padding-top: .5em;
   text-align: right;
 }
-.enterprise-body {
-  border-top: 1px solid #fff;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  font-family: "open sans";
-  color: #666;
-}
-.enterprise-body .line {
-  margin-right: -15px;
-  margin-bottom: 20px;
-}
-.enterprise-body h3 {
-  font-family: "open sans";
-  color: #666;
-  font-weight: 600;
-  font-size: 20px;
-}
-.enterprise-body .block {
-  padding-right: 15px;
-}
-.enterprise-body .block p {
-  min-height: 5.5em;
-}
-.enterprise-body .block img {
+.local-cta {
+  position: absolute;
   display: block;
+  cursor: pointer;
+  top: -66px;
+  width: 368px;
+  height: 66px;
+  right: 24px;
+  background: transparent url("/images/desktop/site/local/img-cta.jpg") 100% 100% no-repeat;
 }
-.enterprise-body .learn-more {
-  border: 1px solid #ccc;
-  background: #fff;
-  padding: 6px;
-  -moz-box-shadow: 0 0 5px #666666;
-  -webkit-box-shadow: 0 0 5px #666666;
-  box-shadow: 0 0 5px #666666;
+.local-cta span {
+  display: none;
 }
-.enterprise-body .learn-more p {
-  font-size: 20px;
-  margin: 0;
-  padding: 20px 0;
-  text-align: center;
-  background: #000000 url("/images/desktop/site/enterprise/bg-learn_more.jpg") 0 0 repeat-x;
-  color: #ccc;
+.local-hero {
+  height: 547px;
+  border-bottom: 1px solid #ccc;
+}
+.local-hero .text {
+  font-family: "open sans";
   font-weight: 500;
   font-style: italic;
-}
-.enterprise-body .learn-more p a {
-  padding: 0 auto;
-  color: #fff;
-  width: 226px;
-  margin-left: 10px;
-  font-style: normal;
-  overflow: visible;
-  display: inline-block;
-  vertical-align: middle;
-  background: transparent url("/images/desktop/site/enterprise/bg-orange_button.png") 0 0 no-repeat;
-}
-.enterprise-body .learn-more p a span {
-  font-family: "open sans";
-  font-weight: 600;
-  line-height: 40px;
-  height: 40px;
-  display: inline-block;
-  white-space: nowrap;
+  text-transform: uppercase;
+  font-size: 28px;
+  color: #555;
+  line-height: 1.4em;
+  text-align: center;
+  padding-top: 10px;
 }
 #contact-form {
   width: 620px;

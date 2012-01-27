@@ -49,106 +49,7 @@
     }
 }
 
-.site-b4b-enterprise {
-    .hd{
-        background: #000 url("/images/desktop/site/enterprise/bg-hd.jpg") 0 0 repeat-x;
-        h1.logo {
-            a {
-                background: transparent url("/images/desktop/site/enterprise/img-logo.jpg") 0 0 no-repeat;
-            }
-        }
-    }
-    .bd {
-        background: #fff url("/images/desktop/site/enterprise/bg-bd.jpg") 0 0 repeat-x;
-        .page-width {
-            width: auto;
-            background: transparent url("/images/desktop/site/enterprise/img-hero.jpg") 50% 0 no-repeat;
-            .wrap {
-                padding: 0;
-                width: 960px;
-                margin: 0 auto;
-                position: relative;
-            }
-        }
-    }
-}
-
-.site-b4b-local {
-    .hd{
-        background: #000 url("/images/desktop/site/local/bg-hd.jpg") 0 0 repeat-x !important;
-        h1.logo {
-            a {
-                background: transparent url("/images/desktop/site/local/img-logo.jpg") 0 0 no-repeat !important;
-            }
-        }   
-    }
-    .nav {
-        li {
-            a {
-                color: #56bf6d * 2;
-                span {
-                }
-                &:hover{
-                    color: #56bf6d * 2.4;
-                }
-                &.active {
-                    color: #fff;
-                }
-            }
-        }
-    }
-}
-
-.bd {
-    padding: 0;
-    .top-line, .bottom-line {
-        display: none;
-    }
-}
-
-.ft {
-    border-top: 5px solid #ddd;
-}
-
-
-.enterprise-hero {
-    height: 483px;
-    border-bottom: 1px solid #ccc;
-    
-    .text{
-        font-family: "open sans";
-        font-weight: 500;
-        font-style: italic;
-        text-transform: uppercase;
-        font-size: 26px;
-        color: #555;
-        line-height: 1.4em;
-        position: absolute;
-        width: 310px;
-        left: 0;
-        top: 175px;
-        
-    }
-    
-    .quote {
-        font-family: "open sans";
-        font-weight: 300;
-        font-style: italic;
-        font-size: 18px;
-        color: #555;
-        line-height: 1.4em;
-        position: absolute;
-        width: 310px;
-        left: 0;
-        top: 340px;
-        .attr {
-            padding-top: .5em;
-            text-align: right;
-        }
-    }
-}
-
-.enterprise-body {
+.b4b-body {
     border-top: 1px solid #fff;
     padding-top: 20px;
     padding-bottom: 20px;
@@ -215,6 +116,161 @@
     }
 }
 
+
+.site-b4b-enterprise {
+    .hd{
+        background: #000 url("/images/desktop/site/enterprise/bg-hd.jpg") 0 0 repeat-x;
+        height: 125px;
+        h1.logo {
+            a {
+                background: transparent url("/images/desktop/site/enterprise/img-logo.jpg") 0 0 no-repeat;
+            }
+        }
+    }
+    .bd {
+        background: #fff url("/images/desktop/site/enterprise/bg-bd.jpg") 0 0 repeat-x;
+        .page-width {
+            width: auto;
+            background: transparent url("/images/desktop/site/enterprise/img-hero.jpg") 50% 0 no-repeat;
+            .wrap {
+                padding: 0;
+                width: 960px;
+                margin: 0 auto;
+                position: relative;
+            }
+        }
+    }
+}
+
+.site-b4b-local {
+    .hd{
+        background: #000 url("/images/desktop/site/local/bg-hd.jpg") 0 0 repeat-x !important;
+        height: 125px;
+        h1.logo {
+            a {
+                background: transparent url("/images/desktop/site/local/img-logo.jpg") 0 0 no-repeat !important;
+            }
+        }   
+    }
+    .nav {
+        li {
+            a {
+                color: #56bf6d * 2;
+                span {
+                }
+                &:hover{
+                    color: #56bf6d * 2.4;
+                }
+                &.active {
+                    color: #fff;
+                }
+            }
+        }
+    }
+    .bd {
+        background: #fff url("/images/desktop/site/local/bg-bd.jpg") 0 0 repeat-x;
+        .page-width {
+            width: auto;
+            background: transparent url("/images/desktop/site/local/img-hero.jpg") 50% 0 no-repeat;
+            .wrap {
+                padding: 0;
+                width: 960px;
+                margin: 0 auto;
+                position: relative;
+            }
+        }
+    }
+    .learn-more {
+        p {
+            color: #fff;
+            background: #000 url("/images/desktop/site/local/bg-learn_more.jpg") 0 0 repeat-x;
+            
+            a {
+                background: transparent url("/images/desktop/site/local/bg-orange_button.png") 0 0 no-repeat;
+            }
+        }
+    }
+}
+
+.bd {
+    padding: 0;
+    .top-line, .bottom-line {
+        display: none;
+    }
+}
+
+.ft {
+    border-top: 5px solid #ddd;
+}
+
+
+.enterprise-hero {
+    height: 483px;
+    border-bottom: 1px solid #ccc;
+    
+    .text{
+        font-family: "open sans";
+        font-weight: 500;
+        font-style: italic;
+        text-transform: uppercase;
+        font-size: 26px;
+        color: #555;
+        line-height: 1.4em;
+        position: absolute;
+        width: 310px;
+        left: 0;
+        top: 175px;
+        
+    }
+    
+    .quote {
+        font-family: "open sans";
+        font-weight: 300;
+        font-style: italic;
+        font-size: 18px;
+        color: #555;
+        line-height: 1.4em;
+        position: absolute;
+        width: 310px;
+        left: 0;
+        top: 340px;
+        .attr {
+            padding-top: .5em;
+            text-align: right;
+        }
+    }
+}
+
+.local-cta {
+    position: absolute;
+    display: block;
+    cursor: pointer;
+    top: -66px;
+    width: 368px;
+    height: 66px;
+    right: 24px;
+    background: transparent url("/images/desktop/site/local/img-cta.jpg") 100% 100% no-repeat;
+    span {
+        display: none;
+    }
+}
+
+.local-hero {
+    height: 547px;
+    border-bottom: 1px solid #ccc;
+    
+    .text{
+        font-family: "open sans";
+        font-weight: 500;
+        font-style: italic;
+        text-transform: uppercase;
+        font-size: 28px;
+        color: #555;
+        line-height: 1.4em;
+        text-align: center;
+        padding-top: 10px;
+    }
+}
 
 #contact-form {
     width: 620px;
