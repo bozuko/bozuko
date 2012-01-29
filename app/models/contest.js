@@ -60,6 +60,7 @@ var Contest = module.exports = new Schema({
     results                 :{},
     play_cursor             :{type:Number, default: -1},
     token_cursor            :{type:Number, default: 0},
+    redistributions         :{type:Number, default: 0},
     winners                 :[ObjectId],
     end_alert_sent          :{type:Boolean},
     next_contest            :[NextContest],
@@ -360,6 +361,7 @@ Contest.method('getEngine', function() {
         if( type == '') type = 'order';
         var Engine = Bozuko.require('core/engine/'+type);
         this._engine = new Engine( this );
+        console.log('engine_options = '+inspect(this.engine_options));
         this._engine.configure(this.engine_options);
     }
     return this._engine;
