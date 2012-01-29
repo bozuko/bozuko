@@ -55,6 +55,8 @@ contest.prizes.push({
     redeemed: 0,
     is_email: false
 });
+contest.engine_options = {multiplay: false};
+contest.markModified('engine_options');
 
 var entry_opts = {
     type: 'facebook/checkin',
@@ -164,7 +166,6 @@ exports['create 5 day contest - 1 prize/hr'] = function(test) {
     contest.prizes[0].total = 24*5;
     contest.start = new Date(Date.now() - day*5);
     contest.end = new Date(contest.start.getTime()+1000*60*60*24*5);
-    engine.configure();
     Bozuko.models.Result.remove(function(){
         exports['generate contest results'](test);
     });
