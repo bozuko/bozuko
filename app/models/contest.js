@@ -940,6 +940,14 @@ Contest.method('redistributeTimeResult', function(memo, callback) {
             if (result) {
                 console.log("contest: "+self._id+" timestamp redistributed from "+
                     result.timestamp+" to "+memo.new_time+" at "+memo.timestamp);
+                // For Analytics
+                Bozuko.models.Contest.update(
+                    {_id: self._id},
+                    {$inc: {redistributions: 1}},
+                    function(err) {
+                        if (err) console.error('Redistribution analytics error: '+err);
+                    }
+                );
             }
             return callback(null, memo);
         }
