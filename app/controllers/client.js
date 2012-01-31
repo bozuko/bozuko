@@ -256,7 +256,26 @@ exports.routes = {
     
     '/client/test' : {
         get : {
+            locals : {
+                layout: 'site/layout',
+                device: 'desktop',
+                meta: [],
+                title: 'Test',
+                head_scripts:[
+                    '/js/jquery/jquery.tools.min-1.2.6.js',
+                    '/js/jquery/plugins/jquery.easing-1.3.js',
+                    '/js/modernizr/min.js',
+                    '/js/desktop/site/global.js'
+                ],
+                styles:[
+                    'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300',
+                    // Date now forces styles to refresh after a server reboot
+                    '/css/desktop/style.css?'+Date.now(),
+                    '/css/desktop/layout.css?'+Date.now()
+                ]
+            },
             handler : function(req, res){
+                
                 res.render('client/test');
             }
         }
@@ -275,6 +294,14 @@ exports.routes = {
                     page_id = id_parts[1];
                 }
                 return this.renderGame(req, res, contest_id, page_id);
+            }
+        }
+    },
+    
+    '/client/loader' : {
+        get : {
+            handler : function(req, res){
+                res.redirect('/js/client/loader.js');
             }
         }
     },

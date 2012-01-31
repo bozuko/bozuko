@@ -100,6 +100,11 @@ var adminAuth = basicAuth(function(user,pass,cb){
         secure: true
     });
     return conn.connect(function(error){
+        try{
+            conn.logout();
+        }catch(e){
+            // no more open connections!
+        }
         if( error ) {
              console.error('auth error: '+error);
              return cb(error);
