@@ -37,3 +37,6 @@ Thumbs.db
 .sass-cache
 
 *~
+
+# VIM swap files
+*.swp

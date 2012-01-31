@@ -33,6 +33,9 @@ var ll = [42.646, -71.303];
 var contest = new Bozuko.models.Contest({
     engine_type: 'time',
     game: 'slots',
+    engine_options: {
+        multiplay: false
+    },
     game_config: {
         theme: 'default'
     },
@@ -102,7 +105,7 @@ exports['remove results'] = function(test) {
 exports['Lookback Window floor'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime()+5000);
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     test.equal(engine.lookback_window, 1000*60*3);
     test.done();
 };
@@ -113,7 +116,7 @@ exports['generate 5 results '] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + hr);
 
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -138,7 +141,7 @@ exports['win'] = function(test) {
     results.sort(function(a, b) {
         return a.timestamp.getTime() - b.timestamp.getTime();
     });
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var memo = {
         timestamp: new Date(results[result_cursor].timestamp.getTime()+1),
         user: user,
@@ -155,7 +158,7 @@ exports['win'] = function(test) {
 
 exports['free spin and win'] = function(test) {
     contest.free_play_pct = 100;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var memo = {
         timestamp: new Date(results[result_cursor].timestamp.getTime()+1),
         user: user,
@@ -213,7 +216,7 @@ exports['lose and redistribute'] = function(test) {
 };
 
 exports['play at end of contest and win remaining 3 prizes'] = function(test) {
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
 
     var win = function(cb) {
         var memo = {
@@ -259,7 +262,7 @@ exports['publish 1 month / 1 prize contest'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 30*day);
     contest.prizes[0].total = 1;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     results = [];
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
@@ -290,7 +293,7 @@ function num_redistributions(callback) {
 var timestamps = [];
 var win_timestamp;
 exports['play out contest randomly'] = function(test) {
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     for (var i = 0; i < 200; i++) {
         timestamps.push(rand(contest.start.getTime(),contest.end.getTime()));
     }
@@ -315,9 +318,9 @@ exports['play out contest randomly'] = function(test) {
             cb(null);
         });
     }, function(err) {
-	return num_redistributions(function(err, ct) {
-	    console.log("lookback window = "+engine.lookback_window/1000+" sec");
-	    test.equal(win_ct, 1);
+	    return num_redistributions(function(err, ct) {
+	        console.log("lookback window = "+engine.lookback_window/1000+" sec");
+	        test.equal(win_ct, 1);
 	    test.done();
 	});
     });
@@ -347,7 +350,7 @@ exports['publish 3 hrs / 1000 prize contest'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 3*hr);
     contest.prizes[0].total = 1000;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err, _results) {
         test.ok(!err);
 
@@ -363,7 +366,7 @@ var play_buckets = [];
 var win_buckets = [];
 
 exports['play out 3hr contest randomly'] = function(test) {
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var end = contest.end.getTime();
     var date = start;
@@ -403,12 +406,12 @@ exports['play out 3hr contest randomly'] = function(test) {
         test.ok(total_plays >= 1000);
         console.log("contest played out in "+(date-start)/(1000*60)+' minutes');
         console.log("total plays = "+total_plays);
-	console.log("total wins = "+total_wins);
+    	console.log("total wins = "+total_wins);
         test.equal(total_wins, 1000);
-	return num_redistributions(function(err, ct) {
-	    console.log("lookback window = "+engine.lookback_window/1000+" sec");
-	    test.done();
-	});
+	    return num_redistributions(function(err, ct) {
+	        console.log("lookback window = "+engine.lookback_window/1000+" sec");
+	        test.done();
+	    });
     });
 };
 
@@ -439,7 +442,7 @@ exports['publish 4 hrs / 50 prize contest'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err, _results) {
         test.ok(!err);
 
@@ -453,7 +456,7 @@ exports['publish 4 hrs / 50 prize contest'] = function(test) {
 var wins = [];
 exports['play out contest - most play in first 2 hours - 25/25/15/1'] = function(test) {
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 25; i++) {
@@ -517,7 +520,7 @@ exports['publish 4 hrs / 50 prize contest - again'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -531,7 +534,7 @@ exports['publish 4 hrs / 50 prize contest - again'] = function(test) {
 exports['play out contest - most play in first 2 hours - 12/12/6/0'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 12; i++) {
@@ -594,7 +597,7 @@ exports['publish 4 hrs / 50 prize contest - again again'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -608,7 +611,7 @@ exports['publish 4 hrs / 50 prize contest - again again'] = function(test) {
 exports['play out contest - most play in first 2 hours - 100/100/30/10'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 100; i++) {
@@ -675,7 +678,7 @@ exports['publish sinusoidal - 12 hrs'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 12*hr);
     contest.prizes[0].total = 100;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -689,7 +692,7 @@ exports['publish sinusoidal - 12 hrs'] = function(test) {
 exports['play out contest - sinusoidal by hr'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var i = 0;
     for (var j = 0; j < 3; j++) {
 	var start = contest.start.getTime()+j*4*hr;
@@ -754,7 +757,7 @@ exports['publish 4 hrs / 50 prize contest - reverse RRS'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -768,7 +771,7 @@ exports['publish 4 hrs / 50 prize contest - reverse RRS'] = function(test) {
 exports['play out contest - most play in last 2 hours - 0/0/50/10'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 50; i++) {
@@ -828,7 +831,7 @@ exports['publish 4 hrs / 3 prize contest - sparse crappy game'] = function(test)
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 3;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -842,7 +845,7 @@ exports['publish 4 hrs / 3 prize contest - sparse crappy game'] = function(test)
 exports['play out contest - sparse prizes/sparse play'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 10; i++) {
@@ -898,7 +901,7 @@ exports['4 hrs - 50 prizes - 0/25/50/100'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -912,7 +915,7 @@ exports['4 hrs - 50 prizes - 0/25/50/100'] = function(test) {
 exports['play out contest - 4 hrs - 50 prizes - 0/25/50/100'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 25; i++) {
@@ -976,7 +979,7 @@ exports['4 hrs - 50 prizes - 0/50/50/0'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -990,7 +993,7 @@ exports['4 hrs - 50 prizes - 0/50/50/0'] = function(test) {
 exports['play out contest - 4 hrs - 50 prizes - 0/50/50/0'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 50; i++) {
@@ -1050,7 +1053,7 @@ exports['4 hrs - 50 prizes - 100/100/100/100'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 50;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -1064,7 +1067,7 @@ exports['4 hrs - 50 prizes - 100/100/100/100'] = function(test) {
 exports['play out contest - 4hrs - 50 prizes - 100/100/100/100'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 100; i++) {
@@ -1130,7 +1133,7 @@ exports['4 hrs - 100 prizes - 50/25/10/100'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 100;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -1144,7 +1147,7 @@ exports['4 hrs - 100 prizes - 50/25/10/100'] = function(test) {
 exports['play out contest - 4hrs - 100 prizes - 50/25/10/100'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     var i = 0;
     for (i = 0; i < 50; i++) {
@@ -1210,7 +1213,7 @@ exports['4 hrs - 1 prize - 0/0/0/1'] = function(test) {
     contest.start = new Date();
     contest.end = new Date(contest.start.getTime() + 4*hr);
     contest.prizes[0].total = 1;
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err) {
         test.ok(!err);
 
@@ -1224,7 +1227,7 @@ exports['4 hrs - 1 prize - 0/0/0/1'] = function(test) {
 exports['play out contest - 1 prize - 0/0/0/1'] = function(test) {
     wins = [];
     timestamps = [];
-    var engine = new TimeEngine(contest);
+    var engine = new TimeEngine(contest, {multiplay: false});
     var start = contest.start.getTime();
     timestamps.push(rand(start+hr*3, start+hr*4));
 
