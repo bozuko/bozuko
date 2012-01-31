@@ -6,9 +6,10 @@ var Engine = require('../engine'),
 ;
 var safe = {w:2, wtimeout: 5000};
 
-var TimeEngine = module.exports = function(contest) {
+var TimeEngine = module.exports = function(contest, opts) {
+    var options = opts || {};
     Engine.call(this, contest);
-    this.configure({});
+    this.configure(options);
 };
 
 inherits(TimeEngine, Engine);
@@ -22,6 +23,14 @@ TimeEngine.prototype.configure = function(opts) {
     this.lookback_threshold = opts.lookback_threshold || 0.1;
     this.window_divisor = opts.window_divisor || 3; 
     this.throwahead_multiplier = opts.throwahead_multiplier || 10;
+
+    // We have lots of tests that are single entry/ multiple play, but always need to actually check
+    // the results. This setting allows us to disable the multiplay feature for the tests.
+    if (opts.multiplay === undefined) {
+        this.multiplay = true;
+    } else {
+        this.multiplay = opts.multiplay;
+    }
 
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
@@ -41,6 +50,7 @@ TimeEngine.prototype.configure = function(opts) {
     console.log("lookback_window = "+this.lookback_window);
     console.log("lookback_threshold_start = "+this.lookback_threshold_start);
     console.log("buffer_start = "+this.buffer_start);
+    console.log("multiplay = "+this.multiplay);
     if (this.contest.free_play_pct) {
         this.free_play_odds = Math.round(1/(this.contest.free_play_pct/100));
     }
@@ -122,6 +132,16 @@ TimeEngine.prototype.enter = function(tokens, callback) {
     return callback(null);
 };
 
+/*
+ * For multiplay scenarios determine whether or not to actually use the time algorithm.
+ */
+var failEarly =
+TimeEngine.failEarly = function(tokens) {
+    if (tokens === 0) return false;
+    if (rand(0, tokens+1) === 1) return false; 
+    return true;
+};
+
 
 /**
  * Play an entry token
@@ -141,6 +161,10 @@ TimeEngine.prototype.play = function(memo, callback) {
             memo.result = 'free_play';
             return callback(null, memo);
         }
+    }
+
+    if (this.multiplay) {
+        if (failEarly(memo.entry.tokens)) return callback(null, memo);
     }
 
     // If we are into the buffer region, then allow wins on any previous prize.
