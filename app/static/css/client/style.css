@@ -15,6 +15,7 @@ body {
   margin: 0;
   font-family: "helvetica nueue", "helvetica", "arial", "sans";
   font-size: 13px;
+  overflow: hidden;
 }
 h1,
 h2,
