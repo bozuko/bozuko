@@ -31,6 +31,16 @@ Ext.define('Bozuko.view.contest.Review', {
                         '<div class="label">Game:</div>',
                         '<div class="content">{name}</div>',
                     '</div>',
+                    '<tpl if="this.embeddable()">',
+                        '<div class="row entry">',
+                            '<div class="label">Embed Code:</div>',
+                            '<div class="content">',
+                                '<textarea style="background: #fff; padding: 4px; border: 1px solid #ccc; font-family: Courier New; display: block; width: 98%; height: 30px; font-size: 11px; ">',
+                                    '{[this.getEmbedCode()]}',
+                                '</textarea>',
+                            '</div>',
+                        '</div>',
+                    '</tpl>',
                     '<div class="row timeline">',
                         '<div class="label">Timeline:</div>',
                         '<div class="content">{[this.timeline()]}</div>',
@@ -74,6 +84,18 @@ Ext.define('Bozuko.view.contest.Review', {
                     },
                     showContestOdds : function(){
                         return me.contest.get('engine_type') !== 'time';
+                    },
+                    embeddable : function(){
+                        return me.contest.get('web_only');
+                    },
+                    getEmbedCode : function(){
+                        var l = window.location,
+                            h = l.host.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko'),
+                            url = l.protocol+'//'+h+'/client/loader/?game='+me.contest.get('_id')
+                            ;
+                        url = url.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko');
+                        
+                        return '<script type="text/javascript" src="'+url+'"></script>';
                     },
                     entryMethod : function(){
                         
