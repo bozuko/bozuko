@@ -165,7 +165,7 @@ FacebookLikeMethod.prototype.validate = function( callback ){
         }
 
         // Only let this user enter the contest if they are within the like radius
-        if (self.config.options.radius && self.options.ll ) {
+        if ( self.config.options && self.config.options.radius && self.options.ll ) {
             var distance = Geo.distance(self.options.ll, self.page.coords);
             if (distance > self.config.options.radius) {
                 var data = {

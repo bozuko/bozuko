@@ -47,6 +47,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.app.on('user', this.onUserState, this);
         this.app.on('nouser', this.onUserState, this);
         this.app.on('logout', this.onLogout, this);
+        
     },
     
     onLogout : function(){
@@ -220,6 +221,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     },
     
     next : function(callback){
+        
         var self = this;
         callback = callback && typeof callback == 'function' ? callback : function(){};
         
