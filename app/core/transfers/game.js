@@ -21,7 +21,7 @@ var entry_method = {
     create : function(entry, user, callback){
         entry.use_location = false;
         if( !['facebook/checkin','bozuko/checkin'].indexOf( entry.type ) ) entry.use_location = true;
-        else if ( entry.config.options.radius ) entry.use_location = true;
+        else if ( entry.config.options && entry.config.options.radius ) entry.use_location = true;
         return this.sanitize(entry, null, user, callback);
     }
 };
