@@ -378,7 +378,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                                         +'u='+encodeURIComponent(url)
                                                         +'&t='+encodeURIComponent(this.game.name)
                                                         +'&display=popup',
-                                    html            :'Share this Game',
+                                    html            :'Share This Game',
                                     cls             :'share-btn'
                                 }]
                             },{
