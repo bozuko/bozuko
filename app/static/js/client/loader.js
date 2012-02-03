@@ -85,7 +85,7 @@ var Bozuko={};
     {
         
         if( el.addEventListener ) return el.addEventListener(event,listener,false);
-        if (elem.attachEvent) return el.attachEvent("on"+event, listener );
+        if (el.attachEvent) return el.attachEvent("on"+event, listener );
         return false;
     }
     

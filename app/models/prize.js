@@ -188,7 +188,8 @@ Prize.method('sendEmail', function(user) {
             '{name}':user.name,
             '{email}':user.email,
             '{prize}':self.name,
-            '{code}':self.email_code
+            '{code}':self.email_code,
+			'{bozuko_code}':self.code
         };
 
     Object.keys(subs).forEach(function(key){
@@ -345,7 +346,9 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			body: [
 				'Hi '+self.user_name+',',
 				'',
-				'Please see the attachment for your prize',
+				'Congratulations - you just won "'+self.name+'". Please see the attachment for your prize.',
+				'',
+				'-'+self.page_name
 			].join('\n'),
 			attachments: attachments
 		}, function(err, success, record) {
