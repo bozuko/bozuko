@@ -380,11 +380,24 @@ exports.routes = {
                 }
                 switch( user_filter ){
                     case 'blocked':
+                        /*
                         selector.$or = [
                             {allowed: false},
                             {allowed: {$exists: false}}
                         ];
                         selector.blocked = true;
+                        */
+                        selector.$and = [{
+                            $or: [
+                                {allowed: false},
+                                {allowed: {$exists: false}}
+                            ]
+                        },{
+                            $or: [
+                                {blocked: true},
+                                {soft_block: true}
+                            ]
+                        }];
                         break;
                     case 'allowed':
                         selector.allowed = true;
@@ -435,6 +448,7 @@ exports.routes = {
                 Bozuko.models.User.findOne({_id:id}, function(error, user){
                     if( error ) return error.send( res );
                     user.blocked = false;
+                    user.soft_block = false;
                     user.allowed = true;
                     return user.save(function(error){
                         if( error ) return error.send(res);

@@ -326,27 +326,34 @@ Prize.static('search', function(){
 
 Prize.method('emailPrizeScreen', function(user, security_img) {
     var self = this;
-    return this.getImages(user, security_img, function(err, images) {
-        if (err) {
-            return console.error('emailPrizeScreen: failed to retrieve images for prize: '+self._id);
-        }
-        var pdf = self.createPdf(user, images);
-        var attachments = [{
-            filename: 'bozuko_prize.pdf',
-            contents: new Buffer(pdf, 'binary')
-        }];
-        return mail.send({
-            user_id: user._id,
-            to: user.email,
-            subject: 'You just won a Bozuko prize!',
-            body: 'Please see the attachment for your prize',
-            attachments: attachments
-        }, function(err, success, record) {
-            if (err || !success) {
-                console.error('Error emailing prize screen: '+err);
-            }
-        });
-    });
+	
+	return this.getImages(user, security_img, function(err, images) {
+		if (err) {
+			return console.error('emailPrizeScreen: failed to retrieve images for prize: '+self._id);
+		}
+		var pdf = self.createPdf(user, images);
+		var attachments = [{
+			filename: 'bozuko_prize.pdf',
+			contents: new Buffer(pdf, 'binary')
+		}];
+		// lets get the page name...
+		
+		return mail.send({
+			user_id: user._id,
+			to: user.email,
+			subject: 'Congratulations! You won a prize from '+self.page_name,
+			body: [
+				'Hi '+self.user_name+',',
+				'',
+				'Please see the attachment for your prize',
+			].join('\n'),
+			attachments: attachments
+		}, function(err, success, record) {
+			if (err || !success) {
+				console.error('Error emailing prize screen: '+err);
+			}
+		});
+	});
 });
 
 Prize.method('getImages', function(user, security_img, callback) {
@@ -437,6 +444,8 @@ Prize.method('share', function(args, callback){
 				'https://bozuko.com/p/'+prize.page_id
 			);
 			
+			if( contest.share_url ) link = contest.share_url;
+			
 			link = link.replace(/api\./, '').replace(/:(443|80)\//, '/');
 
 			var options = {
@@ -458,6 +467,9 @@ Prize.method('share', function(args, callback){
 			
 			var game_type = contest.game=='scratch'? 'scratch ticket':'slot machine';
 			options.description = 'You could too! Play '+page.name+' '+game_type+' for your chance to win!';
+			if( contest.share_description ) {
+				options.description = options.share_description;
+			}
 
 			return Bozuko.service('facebook').post(options, function(error){
 

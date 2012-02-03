@@ -26,6 +26,7 @@ var User = module.exports = new Schema({
     image               :{type:String, get: httpsUrl},
     gender              :{type:String},
     suspect             :{type:Boolean},
+    soft_block          :{type:Boolean, default: false},
     blocked             :{type:Boolean, default: false},
     allowed             :{type:Boolean, default: false},
     email               :{type:String, index: true},
@@ -79,7 +80,7 @@ User.method('claimReward', function(reward, callback) {
 });
 
 User.method('isBlocked', function(){
-    return this.blocked && !this.allowed;
+    return (this.soft_block || this.blocked) && !this.allowed;
 });
 
 User.method('canManage', function(page, callback){
@@ -174,14 +175,17 @@ User.method('updateInternals', function(force, callback){
         // Block users with less than configured min friends
         var min_friends = Bozuko.cfg('user.block.min_friends',4);
         if (self.service('facebook').internal.friend_count < min_friends && !self.allowed) {
-            self.blocked = true;
+            self.soft_block = true;
+        }
+        else {
+            self.soft_block = false;
         }
         return self.save(function(err) {
             if (err) {
                 console.error("Error saving user: "+self.name+" "+self._id);
                 return callback(err);
             }
-            if (self.blocked && !self.allowed) {
+            if ( (self.soft_block || self.blocked) && !self.allowed) {
                 console.error("Fraudulent user blocked: "+self.name+" "+self._id);
                 return callback(Bozuko.error('user/blocked'));
             }

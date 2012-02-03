@@ -74,6 +74,21 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
                 data                :[{value:'order',text:'Order Based'},{value:'time',text:'Time Based'}]
             })
         },{
+            xtype           :'textfield',
+            name            :'share_url',
+            fieldLabel      :'Share Url',
+            emptyText       :'Leave empty for share pages to go to default page.'
+        },{
+            xtype           :'textfield',
+            name            :'share_title',
+            fieldLabel      :'Share Title',
+            emptyText       :'Leave empty for default text.'
+        },{
+            xtype           :'textfield',
+            name            :'share_description',
+            fieldLabel      :'Share Description',
+            emptyText       :'Leave empty for default description.'
+        },{
             xtype               :'fieldcontainer',
             fieldLabel          :'Window Divisor',
             layout              :'hbox',

@@ -2,16 +2,24 @@ var Bozuko={};
 
 (function _bozuko_client_loader(exports){
     
-    var default_game_id, server, ready, index=0, id, options={
-        width       :350,
-        height      :454
-    };
+    var default_game_id,
+        server,
+        ready,
+        index=0,
+        id,
+        tab,
+        options={
+            width       :350,
+            height      :454,
+            tabText     :'Play Our Game!'
+        };
     
     parse_script_url();
     parse_url();
     
     exports.show = show;
     exports.hide = hide;
+    exports.setupTab = setupTab;
     
     var scripts = ['https://s3.amazonaws.com/bozuko/public/scripts/tinybox2/tinybox.js'];
     if( !document.querySelectorAll )
@@ -22,6 +30,8 @@ var Bozuko={};
         server+'/css/client/embed.css'
     ]);
     _load_scripts(scripts, on_script_loaded);
+    
+    
     
     function on_script_loaded()
     {
@@ -35,9 +45,54 @@ var Bozuko={};
         if( options.openOnLaunch ){
             show();
         }
+        
+        if( options.tab ){
+            setupTab( options.tab, options.tabText );
+        }
     }
     
+    function setupTab(position, text)
+    {
+        if( tab ) return;
+        tab = document.createElement('a');
+        tab.className = 'bozuko-tab bozuko-tab-'+position;
+        listen( tab, 'click', show );
+        document.body.appendChild( tab );
+    }
+    
+    /**
+     * DOM utilities
+     */
+    function setStyles(el, styles)
+    {
+        for( var i in styles ){
+            if( styles.hasOwnProperty(i) ){
+                addStyle(el, i, styles[i]);
+            }
+        }
+    }
+    
+    function setStyle(el, prop, value)
+    {
+        try{
+            el.style[prop] = value;
+        }catch(e){
+            // probably IE, that crazy SOB
+        }
+    }
+    
+    function listen(el, event, listener)
+    {
+        
+        if( el.addEventListener ) return el.addEventListener(event,listener,false);
+        if (elem.attachEvent) return el.attachEvent("on"+event, listener );
+        return false;
+    }
+    
+    
     function show(game_id){
+        if( typeof game_id !== 'string' ) game_id = false;
+        
         r(function(){
             
             var id = 'bozuko_game_'+(index++);
@@ -111,8 +166,12 @@ var Bozuko={};
         // okay... lets get the params
         var p = string.split('&');
         for(var j=0; j<p.length; j++){
-            var v = p[j].split('=', 2);
-            o[v[0]] = unescape(v[1]);
+            var v = p[j].split('=', 2),
+                val = unescape(v[1]);
+                
+            if( val === '0' || val === 'false' ) val = false;
+            
+            o[v[0]] = val;
         }
         return o;
     }
@@ -161,16 +220,9 @@ var Bozuko={};
      * Document Ready Detection
      */
     function r(f){
-        if( ready ){
-            f();
-            return;
-        }
-        if( /in/.test(document.readyState) ){
-            setTimeout(function(){r(f);},9);
-        }
-        else{
-            ready=true;
-            f();
-        }
+        if( ready ) return f();
+        if( /in/.test(document.readyState) ) return setTimeout(function(){r(f);},9);
+        ready=true;
+        return f();
     }
 })(Bozuko);
