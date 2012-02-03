@@ -3,11 +3,11 @@
  */
 module.exports = {
     checkin_to_play: 'Check In to Play',
-    wait: 'Play Again %1$s',
-    wait_time: 'Play Again at %1$s',
-    wait_day: 'Play Again in %1$s',
-    wait_duration: 'Play Again %1$s',
+    wait: 'Play again %1$s',
+    wait_time: 'Play again at %1$s',
+    wait_day: 'Play again in %1$s',
+    wait_duration: 'Play again %1$s',
     like_enter: 'Like us on Facebook to Play',
     play: 'Play',
-    enter: 'Play Again!'
+    enter: 'Play again!'
 };
