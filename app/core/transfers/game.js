@@ -120,11 +120,6 @@ var game = {
         obj = this.merge(obj, game);
         obj.rules = game.contest.getOfficialRules();
         obj.id = game.contest.id;
-        console.log([
-            game.contest.web_only,
-            game.contest.share_url,
-            game.contest.share_title
-        ]);
         if( game.contest.web_only ){
             obj.share_url = game.contest.share_url || burl('/client/game/'+game.contest.id);
             obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';

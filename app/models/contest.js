@@ -40,7 +40,7 @@ var Contest = module.exports = new Schema({
     web_only                :{type:Boolean, default:false},
     share_url               :{type:String},
     share_title             :{type:String},
-    share_message           :{type:String},
+    share_description       :{type:String},
     plays                   :[Play],
     game                    :{type:String},
     game_config             :{},
