@@ -1,0 +1,22 @@
+.bozuko-tab {
+  position: absolute;
+  position: fixed;
+  z-index: 20;
+  transition: none;
+  cursor: pointer;
+}
+.bozuko-tab span {
+  display: none;
+}
+.bozuko-tab {
+  right: 0;
+  top: 50%;
+  margin-top: -110px;
+  width: 54px;
+  height: 201px;
+  display: block;
+  background: transparent url("/images/client/playgame-vertical.png?v3") scroll 0 0 no-repeat;
+}
+.bozuko-tab:hover {
+  background-position: 100% 0;
+}

@@ -56,7 +56,7 @@ exports.transfer_objects = {
                 var fid = page.registered ? page.service('facebook').sid : page.id;
                 
                 page.liked = false;
-                page.image = page.image;
+                page.image = page.registered ? burl('/page/'+page.id+'/image') : page.image;
                 page.like_url = burl('/facebook/'+fid+'/like.html');
                 page.like_button_url = burl('/facebook/'+fid+'/like_button.html');
                 page.links = {

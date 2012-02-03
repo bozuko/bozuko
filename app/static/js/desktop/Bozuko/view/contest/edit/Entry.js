@@ -55,10 +55,10 @@ Ext.define('Bozuko.view.contest.edit.Entry' ,{
             hidden          :true,
             setValue        :function(v){
                 if( v === false ) v = '';
-                return Ext.form.field.Textfield.prototype.setValue.call(this, v);
+                return Ext.form.field.Text.prototype.setValue.call(this, v);
             },
             getValue        :function(){
-                var v = Ext.form.field.Textfield.prototype.getValue.call(this);
+                var v = Ext.form.field.Text.prototype.getValue.call(this);
                 return v || false;
             }
         },{

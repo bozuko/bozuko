@@ -106,7 +106,10 @@ exports.renderGame = function(req, res, contest_id, page_id){
             
             res.locals.meta = {};
             res.locals.meta['og:image'] = qr;
-            res.locals.scripts = ['https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js'];
+            res.locals.scripts = [
+                'https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js',
+                '/js/modernizr/min.js'
+            ];
             scripts.forEach(function(script){
                 res.locals.scripts.push(script+'?'+now);
             });

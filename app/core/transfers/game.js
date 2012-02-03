@@ -1,3 +1,5 @@
+var burl = Bozuko.require('util/url').create;
+
 var game_prize = {
     doc: "A prize that can be won in a game",
     def: {
@@ -88,6 +90,9 @@ var game = {
         type: "String",
         name: "String",
         post_to_wall: 'Boolean',
+        share_url : 'String',
+        share_title: 'String',
+        share_description: 'String',
         image: "String",
         description: "String",
         list_message: "String",
@@ -115,6 +120,21 @@ var game = {
         obj = this.merge(obj, game);
         obj.rules = game.contest.getOfficialRules();
         obj.id = game.contest.id;
+        console.log([
+            game.contest.web_only,
+            game.contest.share_url,
+            game.contest.share_title
+        ]);
+        if( game.contest.web_only ){
+            obj.share_url = game.contest.share_url || burl('/client/game/'+game.contest.id);
+            obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
+            obj.share_description = game.contest.share_description || 'Play '+game.getName()+' for a chance to win big prizes!';
+        }
+        else {
+            obj.share_url = game.contest.share_url || burl('/client/game/'+game.contest.id);
+            obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
+            obj.share_description = game.contest.share_description || 'Play '+game.getName()+' on your phone for a chance to win big prizes!';
+        }
         obj.type = game.getType();
         obj.name = game.getName();
         obj.config = game.getConfig();

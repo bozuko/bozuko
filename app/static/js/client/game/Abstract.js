@@ -327,7 +327,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         var self = this;        
         if( !this.$description ){
             // get the window width
-            var mobile = window.innerWidth && window.innerWidth < 500;
+            var mobile = Modernizr.touch;
             var url = (function(l){
                 return l.protocol+'//'+l.host.replace(/^api\./,'')+l.pathname+'?share-button=1';
             })(window.location);
@@ -426,10 +426,16 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             var btn = this.$description.$shareButtons.child('.share-btn');
             btn.on('click', function(e){
                 if( window._gaq ) _gaq.push(['_trackEvent', 'Web Game', 'Share', self.game.name+': '+self.game.id]);
-                if( !mobile ) {
-                    e.stopEvent();
-                    window.open(btn.dom.href, 'share_win', 'width=400,height=500');
-                }
+                e.stopEvent();
+                var opts = {
+                    method: 'feed',
+                    link: self.game.share_url,
+                    name: self.game.share_title,
+                    description: self.game.share_description,
+                    picture: self.page.image
+                };
+                if( !mobile ) opts.display = 'popup';
+                FB.ui(opts);
             });
             this.squareImage(this.$description.child('.page-pic'), this.page.image);
             this.updateDescription();
