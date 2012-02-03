@@ -109,7 +109,11 @@ var Bozuko={};
                         iframe = box.getElementsByTagName('iframe')[0],
                         cw = iframe.contentWindow;
                     
-                    iframe.setAttribute('scrolling', 'no');
+                    var poweredBy = document.createElement('a');
+                    poweredBy.setAttribute('href', 'https://bozuko.com');
+                    poweredBy.setAttribute('target', '_blank');
+                    poweredBy.setAttribute('class', 'bozuko-powered');
+                    box.appendChild(poweredBy);
                     
                     if( cw.addEventListener ) cw.addEventListener('message', function(message){
                         if( message.data === 'gamedone' ){
