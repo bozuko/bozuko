@@ -40,7 +40,8 @@ Ext.namespace('Bozuko.client.game');
             loading : {
                 entry : 'Loading...',
                 result : 'Getting a ticket...'
-            }
+            },
+            instructions: 'Match 3 to Win!'
         },
         
         scratchMasks: [
@@ -103,8 +104,15 @@ Ext.namespace('Bozuko.client.game');
             this.on('enter', this.onEnter, this);
             this.on('result', this.onResult, this);
             // this.on('scratch', this.onScratch, this);
+            //this.on('updatedescription', this.onUpdateDescription, this);
             
             this.init();
+        },
+        
+        onUpdateDescription : function(description){
+            description.child('.above-prizes').update(
+                '<h2>'+this.lang.instructions+'</h2>'
+            );
         },
         
         init : function(){
