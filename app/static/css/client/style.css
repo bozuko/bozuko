@@ -687,6 +687,15 @@ a:hover {
   padding: 10px;
   overflow-x: hidden;
 }
+.game-description .bd .above-prizes h2 {
+  text-align: center;
+  margin: 0  0 .25em;
+  padding: 2px 0;
+  font-family: "open sans";
+  font-size: 25px;
+  color: #00a24f;
+  text-shadow: 1px 1px 1px #fff, 2px 2px 6px #666;
+}
 .game-description .bd .section h4 {
   color: #333;
   margin: 0 0 5px 10px;

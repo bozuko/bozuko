@@ -89,7 +89,7 @@
 .b4b-body .learn-more p {
   font-size: 20px;
   margin: 0;
-  padding: 20px 0;
+  padding: 16px 0;
   text-align: center;
   background: #000000 url("/images/desktop/site/enterprise/bg-learn_more.jpg") 0 0 repeat-x;
   color: #ccc;
@@ -195,7 +195,7 @@
   position: absolute;
   width: 310px;
   left: 0;
-  top: 175px;
+  top: 100px;
 }
 .enterprise-hero .quote {
   font-family: "open sans";
@@ -210,8 +210,12 @@
   top: 340px;
 }
 .enterprise-hero .quote .attr {
+  font-size: 12px;
+  font-style: normal;
   padding-top: .5em;
   text-align: right;
+  margin-left: 70px;
+  line-height: 1.4em;
 }
 .local-cta {
   position: absolute;

@@ -400,6 +400,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     cn              :[{
                         cls             :'scrollable',
                         cn              :[{
+                            cls             :'above-prizes'
+                        },{
                             cls             :'section prizes',
                             cn              :[{
                                 tag             :'h4',
@@ -467,6 +469,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         );
         var ul = description.child('.prizes ul');
         ul.update('');
+        this.fireEvent('updatedescription', description);
         for(var i=0; i<this.game.prizes.length; i++){
             var p = this.game.prizes[i];
             var li = ul.createChild({

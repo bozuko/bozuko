@@ -2,6 +2,12 @@ var Bozuko={};
 
 (function _bozuko_client_loader(exports){
     
+    /* Public API */
+    exports.show = show;
+    exports.hide = hide;
+    exports.setupTab = setupTab;
+    
+    /* Private Variables */
     var default_game_id,
         server,
         ready,
@@ -15,11 +21,8 @@ var Bozuko={};
         };
     
     parse_script_url();
-    parse_url();
-    
-    exports.show = show;
-    exports.hide = hide;
-    exports.setupTab = setupTab;
+    parse_url_search();
+    parse_url_hash();
     
     var scripts = ['https://s3.amazonaws.com/bozuko/public/scripts/tinybox2/tinybox.js'];
     if( !document.querySelectorAll )
@@ -153,9 +156,21 @@ var Bozuko={};
         }
     }
     
-    function parse_url()
+    function parse_url_search()
     {
         var s = window.location.search;
+        if( !s || s.length < 2 ) return;
+        var o = parse_query_string(s.substr(1));
+        for(var i in o){
+            if( o.hasOwnProperty(i) && /^boz_/.test(i) && i.length > 4){
+                options[i.substr(4)] = o[i];
+            }
+        }
+    }
+    
+    function parse_url_hash()
+    {
+        var s = window.location.hash;
         if( !s || s.length < 2 ) return;
         var o = parse_query_string(s.substr(1));
         for(var i in o){
@@ -171,10 +186,9 @@ var Bozuko={};
         var p = string.split('&');
         for(var j=0; j<p.length; j++){
             var v = p[j].split('=', 2),
-                val = unescape(v[1]);
+                val = v.length == 2 ? unescape(v[1]) : true;
                 
             if( val === '0' || val === 'false' ) val = false;
-            
             o[v[0]] = val;
         }
         return o;
@@ -223,7 +237,8 @@ var Bozuko={};
     /**
      * Document Ready Detection
      */
-    function r(f){
+    function r(f)
+    {
         if( ready ) return f();
         if( /in/.test(document.readyState) ) return setTimeout(function(){r(f);},9);
         ready=true;
