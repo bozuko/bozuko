@@ -246,7 +246,7 @@ exports['play all tokens at page 2 - success'] = function(test) {
                         test.equal(gs.button_action, 'play');
                         test.ok(gs.links.game_result);
                     } else {
-                        test.equal(gs.button_text, 'Play Again!');
+                        test.equal(gs.button_text, 'Play again!');
                         test.equal(gs.button_action, 'enter');
                         test.ok(!gs.links.game_result);
                     }
