@@ -4,6 +4,7 @@ var Content = Bozuko.require('util/content'),
     inspect = require('util').inspect,
     filter = Bozuko.require('util/functions').filter,
     async = require('async'),
+    facebook = Bozuko.require('util/facebook'),
     crypto = require('crypto');
 
 
@@ -710,8 +711,34 @@ exports.routes = {
             },
             
             handler : function(req, res){
-                if( req.url.match(/tab/) ) res.locals.html_classes = ['facebook-520'];
-                return res.render('site/facebook/advertisement');
+                var sr;
+                function renderAdvertisement(){
+                    return res.render('site/facebook/advertisement');
+                }
+                
+                if( req.url.match(/tab/) && (sr = req.param('signed_request'))){
+                    res.locals.html_classes = ['facebook-520'];
+                    // lets see if this place has a game
+                    sr = facebook.parse_signed_request(sr);
+                    var id = sr.page.id;
+                    return Bozuko.models.Page.findByService('facebook', id, {active:1}, function(error, page){
+                        if( error || !page ) return renderAdvertisement();
+                        return Bozuko.models.Contest.find({
+                            active: true,
+                            web_only: true,
+                            $or: [{page_id: page._id}, {page_ids: page._id}],
+                            start: {$lt: now},
+                            end: {$gt: now}
+                        }, {results: 0, plays: 0}, {sort: {timestamp:-2}, limit:1}, function(error, contests){
+                            if( error || !contests.length ) return renderAdvertisement();
+                            var c = contests[0];
+                            // forward to the client...
+                            return res.redirect('/client/game/'+c._id+'?play=1&facebook_tab=1');
+                        });
+                    });
+                }
+                return renderAdvertisement();
+                
             }
         }
     },
