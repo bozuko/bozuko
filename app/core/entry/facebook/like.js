@@ -196,6 +196,9 @@ FacebookLikeMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
 		if( +this.contest.end < Date.now() ){
 			text = _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
 		}
+		else if( +this.contest.start < Date.now() ){
+			text = _t( this.user ? this.user.lang : 'en', 'entry/game_starts', DateUtil.inAgo(this.contest.start) );
+		}
         else if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
 			text = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
         } else if( +nextEntryTime > +now ){
