@@ -271,7 +271,11 @@ Entry.prototype.getButtonText = function(nextEntryTime, tokens){
 Entry.prototype.getButtonEnabled = function( nextEntryTime, tokens ){
     var enabled = true;
     var now = new Date();
-    if( nextEntryTime > now && tokens === 0) enabled = false;
+    if( !tokens && (
+		nextEntryTime > now ||
+		+this.contest.start > now ||
+		+this.contest.end < now)
+	) enabled = false;
     return enabled;
 };
 
