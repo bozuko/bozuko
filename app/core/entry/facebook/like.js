@@ -220,9 +220,7 @@ FacebookLikeMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
 
 FacebookLikeMethod.prototype.getButtonEnabled = function( nextEntryTime, tokens){
     if( tokens ) return true;
-    var enabled = true;
-    var now = new Date();
-	if( (nextEntryTime.getTime() >= this.contest.end.getTime() || nextEntryTime > now) && tokens === 0) enabled = false;
+    var enabled = EntryMethod.prototype.getButtonEnabled.call(this, nextEntryTime, tokens);
     if( enabled && this.user && !this.user.likes(this.page) ) enabled = false;
     return enabled;
 };
