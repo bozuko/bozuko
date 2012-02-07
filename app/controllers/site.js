@@ -719,7 +719,12 @@ exports.routes = {
                 if( req.url.match(/tab/) && (sr = req.param('signed_request'))){
                     res.locals.html_classes = ['facebook-520'];
                     // lets see if this place has a game
-                    sr = facebook.parse_signed_request(sr);
+                    try{ 
+                        sr = facebook.parse_signed_request(sr);
+                    }catch(e){
+                        console.log(e);
+                    }
+                    if( !sr ) return renderAdvertisement();
                     var id = sr.page.id;
                     return Bozuko.models.Page.findByService('facebook', id, {active:1}, function(error, page){
                         if( error || !page ) return renderAdvertisement();
