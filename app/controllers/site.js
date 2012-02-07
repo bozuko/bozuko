@@ -683,6 +683,22 @@ exports.routes = {
         }
     },
     
+    '/facebook/tab/:contest' : {
+        get : {
+            ref: 'facebookContest',
+            title : 'Bozuko - Facebook Tab',
+            handler : function(req, res){
+                return res.redirect('/client/game/'+req.param('contest')+'?play=1&facebook_tab=1');
+            }
+        },
+        
+        post : {
+            handler : function(req, res){
+                this.refs['facebookContest'](req, res);
+            }
+        }
+    },
+    
     '/facebook/app' : {
         
         alias: '/facebook/tab',
