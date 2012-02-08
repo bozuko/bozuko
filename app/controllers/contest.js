@@ -40,7 +40,6 @@ exports.routes = {
                 });
             }
         }
-
     },
 
     /**
@@ -244,10 +243,29 @@ exports.routes = {
                         return contest.loadGameState(opts, function(error){
                             return Bozuko.transfer('game_state', contest.game_state, user, function(error, result){
                                 if (error) return error.send(res);
-                                res.send( result );
+                                return res.send( result );
                             });
                         });
                     });
+                });
+            }
+        }
+    },
+	
+	'/game/:id/share' : {
+        get : {
+            handler : function(req, res, next){
+                // find game
+                return Bozuko.models.Contest.findOne(req.param('id'), {results: 0, page: 0}, function(error, contest){
+                    if( error || !contests ) return next();
+                    // do we have a share url?
+                    var type = req.session.device;
+                    switch(type){
+                        case 'touch':
+                            return res.redirect('/contest/'+contest._id);
+                        default:
+                            return res.redirect(contest.share_url || '/contest/'+contest._id);
+                    }
                 });
             }
         }
