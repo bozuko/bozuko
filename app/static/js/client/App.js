@@ -53,8 +53,12 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( !this.validPath() ){
             return;
         }
-        
-        this.width = Math.min( 520, Math.max( this.config.width || Math.min(window.innerWidth||document.documentElement.clientWidth, window.innerHeight||document.documentElement.clientHeight), 320 ) );
+        if( config.facebook_tab ){
+            this.width = 420;
+        }
+        else {
+            this.width = Math.min( 520, Math.max( this.config.width || Math.min(window.innerWidth||document.documentElement.clientWidth, window.innerHeight||document.documentElement.clientHeight), 320 ) );
+        }
         this.height = this.width/this.dimensions.x*this.dimensions.y;
         this.stylesheet = Bozuko.client.util.Stylesheet.create('app');
         this.stylesheet.rule('.modal-window', {
