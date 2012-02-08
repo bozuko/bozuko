@@ -256,10 +256,13 @@ exports.routes = {
         get : {
             handler : function(req, res, next){
                 // find game
-                return Bozuko.models.Contest.findOne(req.param('id'), {results: 0, page: 0}, function(error, contest){
-                    if( error || !contest ) return next();
+                return Bozuko.models.Contest.find({_id:req.param('id')}, {share_url: 1}, {limit:1}, function(error, contests){
+                    if( error || !contests.length ) return next();
+					var contest = contests[0];
                     // do we have a share url?
                     var type = req.session.device;
+					console.error(type);
+					console.error(require('util').inspect(contest));
                     switch(type){
                         case 'touch':
                             return res.redirect('/client/game/'+contest._id);
