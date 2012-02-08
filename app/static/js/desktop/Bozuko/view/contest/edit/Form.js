@@ -113,10 +113,6 @@ Ext.define('Bozuko.view.contest.edit.Form' ,{
                     }
                 }
             }]
-        },{
-            region: 'east',
-            width: 200,
-            xtype: 'contestformpreview'
         }];
 
         me.bbar = ['->',{

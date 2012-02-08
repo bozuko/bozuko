@@ -309,8 +309,17 @@ Ext.define('Bozuko.view.chart.Basic', {
             };
             
         var i = me.items.indexOf(me.down('[ref=chart-controls]'));
-        
         me.insert(i+1, chartCfg);
+        
+        if( me.contest && me.contest.get('engine_type') == 'time' && window.location.pathname.match(/\/admin/)){
+            // add the redistirubtions
+            i = me.items.indexOf(me.down('[ref=stats-block]'));
+            me.insert(i, {
+                ref             :'redistributions',
+                xtype           :'component',
+                html            :'<h3 style="text-align:center; color: black; font-size: 18px;"><span class="redistibutions">'+me.contest.get('redistributions')+'</span> Redistributions'
+            });
+        }
         
         // now we want to see if there are multiple places to filter
         if( me.contest && me.contest.get('page_ids') && me.contest.get('page_ids').length ){
@@ -372,17 +381,25 @@ Ext.define('Bozuko.view.chart.Basic', {
         
         var filter = {};
         if( me.page_id ) filter.page_id = me.page_id;
+        if( me.contest ) filter.contest_id = me.contest.get('_id');
         
         Bozuko.PubSub.subscribe('contest/entry', filter, me.getCallback('entry') );
         Bozuko.PubSub.subscribe('contest/play', filter, me.getCallback('play') );
         Bozuko.PubSub.subscribe('contest/win', filter, me.getCallback('win') );
         Bozuko.PubSub.subscribe('prize/redeemed', filter, me.getCallback('redeemed') );
         
+        if( me.contest ) {
+            Bozuko.PubSub.subscribe('contest/redistribute', filter, me.getCallback('redistribution') );
+        }
+        
         me.on('destroy', function(){
             Bozuko.PubSub.unsubscribe('contest/entry', filter, me.getCallback('entry') );
             Bozuko.PubSub.unsubscribe('contest/play', filter, me.getCallback('play') );
             Bozuko.PubSub.unsubscribe('contest/win', filter, me.getCallback('win') );
             Bozuko.PubSub.unsubscribe('prize/redeemed', filter, me.getCallback('redeemed') );
+            if( me.contest ) {
+                Bozuko.PubSub.unsubscribe('contest/redistribute', filter, me.getCallback('redistribution') );
+            }
         });
         
         me.chartStore.on('load', function(){
@@ -480,6 +497,10 @@ Ext.define('Bozuko.view.chart.Basic', {
                     if( !me.isVisible() ) return;
                     me.updateStats();
                     if( ~Ext.Array.indexOf(['Redeemed Prizes', 'Share', 'Prize Cost'], model()) ) me.loadStore();
+                },
+                redistribution: function(item, callback){
+                    callback();
+                    me.down('[ref=redistributions]').getEl().down('.redistributions').update(item.redistributions);
                 }
             };
         return callbacks[name];
