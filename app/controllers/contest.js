@@ -257,7 +257,7 @@ exports.routes = {
             handler : function(req, res, next){
                 // find game
                 return Bozuko.models.Contest.findOne(req.param('id'), {results: 0, page: 0}, function(error, contest){
-                    if( error || !contests ) return next();
+                    if( error || !contest ) return next();
                     // do we have a share url?
                     var type = req.session.device;
                     switch(type){
