@@ -262,9 +262,9 @@ exports.routes = {
                     var type = req.session.device;
                     switch(type){
                         case 'touch':
-                            return res.redirect('/contest/'+contest._id);
+                            return res.redirect('/client/game/'+contest._id);
                         default:
-                            return res.redirect(contest.share_url || '/contest/'+contest._id);
+                            return res.redirect(contest.share_url || '/client/game/'+contest._id);
                     }
                 });
             }
