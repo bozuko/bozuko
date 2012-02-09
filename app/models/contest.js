@@ -501,14 +501,13 @@ Contest.method('publish', function(callback){
             });
         });
     }
-
     if (this.start.getTime() < Date.now()) {
         this.start = new Date();
         return this.save(function(err) {
             return publishResults();
         });
     }
-
+    
     return publishResults();
 });
 
