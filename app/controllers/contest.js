@@ -198,6 +198,8 @@ exports.routes = {
                         if( !page ) return callback( Bozuko.error('contest/page_not_found'));
                         options.page = page;
                         options.type = contest.getEntryConfig().type;
+						options.device = req.session.mobile_version;
+						options.url = req.header('Referer');
                         options.user = req.session.user;
                         options.contest = contest;
 
