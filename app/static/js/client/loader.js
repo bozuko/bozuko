@@ -25,6 +25,8 @@ var Bozuko={};
     parse_url_hash();
     
     var scripts = ['https://s3.amazonaws.com/bozuko/public/scripts/tinybox2/tinybox.js'];
+    if( !window['Modernizer'] )
+        scripts.push(server+'/js/modernizr/min.js');
     if( !document.querySelectorAll )
         scripts.push('https://s3.amazonaws.com/bozuko/public/scripts/sizzle.js');
     
@@ -44,13 +46,11 @@ var Bozuko={};
     
     function init()
     {
-        // do we have a game...
-        if( options.openOnLaunch ){
-            show();
-        }
-        
         if( options.tab ){
             setupTab( options.tab, options.tabText );
+        }
+        if( options.openOnLaunch ){
+            show();
         }
     }
     
@@ -95,6 +95,19 @@ var Bozuko={};
     
     function show(game_id){
         if( typeof game_id !== 'string' ) game_id = false;
+        
+        
+        if( Modernizr.touch ) {
+            // lets just open a new window
+            try{
+                window.open(
+                    server+'/client/game/'+(game_id || options.game)+'?play=1'
+                );
+            }catch(e){
+                window.location.href = server+'/client/game/'+(game_id || options.game)+'?play=1';
+            }
+            return;
+        }
         
         r(function(){
             
@@ -243,5 +256,24 @@ var Bozuko={};
         if( /in/.test(document.readyState) ) return setTimeout(function(){r(f);},9);
         ready=true;
         return f();
+    }
+    
+    /**
+     * Window Size
+     */
+    function get_window_dimensions()
+    {
+        return {
+            width: get_window_dimension('width'),
+            height: get_window_dimension('height')
+        }
+    }
+    function get_window_dimension(type)
+    {
+        type = type.substr(0,1).toUpperCase()+type.substr(1);
+        return window['inner'+type] ||
+            (document.documentElement && document.documentElement['offset'+type] ?
+                document.documentElement['offset'+type] : document.body['offset'+type]
+            );
     }
 })(Bozuko);
