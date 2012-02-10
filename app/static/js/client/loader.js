@@ -101,10 +101,10 @@ var Bozuko={};
             // lets just open a new window
             try{
                 window.open(
-                    server+'/client/game/'+(game_id || options.game)+'?play=1'
+                    server+'/client/game/'+(game_id || options.game)+'?play=1&location=mobile-popout&source='+escape(window.location.url)
                 );
             }catch(e){
-                window.location.href = server+'/client/game/'+(game_id || options.game)+'?play=1';
+                window.location.href = server+'/client/game/'+(game_id || options.game)+'?play=1&location=mobile-popout&source='+escape(window.location.url);
             }
             return;
         }
@@ -115,7 +115,7 @@ var Bozuko={};
             
             TINY.box.show({
                 boxid: id,
-                iframe: server+'/client/game/'+(game_id || options.game)+'?play=1',
+                iframe: server+'/client/game/'+(game_id || options.game)+'?play=1&location=embedded&source='+escape(window.location.url),
                 animate: false,
                 width: options.width,
                 height: options.height,
