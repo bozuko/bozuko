@@ -167,7 +167,7 @@ var pages = [
     // hookslides
     '181069118581729', // owl watch
     '170323862989289', // antonio's barber shop
-    '165703316805011', // st. memorial hospital
+    '142578165808616', // st. memorial hospital
     "120199624663908", // dunks
     '103621403038522', 	// middlesex
     // boston
@@ -202,7 +202,7 @@ function add_page(id, callback){
             page.test = true;
             
             if (id === '170323862989289' ) assert.page1 = page;
-            if (id === '165703316805011') assert.page2 = page;
+            if (id === '142578165808616') assert.page2 = page;
             return page.save(function(err) {
                 console.log('page.id: '+page.id);
                 return callback(err);
