@@ -50,7 +50,7 @@ var Bozuko={};
             setupTab( options.tab, options.tabText );
         }
         if( options.openOnLaunch ){
-            show();
+            show(null, true);
         }
     }
     
@@ -93,12 +93,15 @@ var Bozuko={};
     }
     
     
-    function show(game_id){
+    function show(game_id, open){
         if( typeof game_id !== 'string' ) game_id = false;
         
         
         if( Modernizr.touch ) {
-            // lets just open a new window
+            if( open ){
+                window.location.href = server+'/client/game/'+(game_id || options.game)+'?play=1&location=mobile-popout&source='+encodeURIComponent(window.location.href);
+                return;
+            }
             try{
                 window.open(
                     server+'/client/game/'+(game_id || options.game)+'?play=1&location=mobile-popout&source='+encodeURIComponent(window.location.href)
