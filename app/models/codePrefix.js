@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     codify = require('codify')
 ;
 
-var safe = {w:2, wtimeout: 5000};
+var safe = {j:true};
 
 var CodePrefix = module.exports = new Schema({
     count          :{type:Number, index: true, default: 1}

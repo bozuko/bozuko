@@ -14,7 +14,7 @@ var mongoose = require('mongoose'),
     DateUtil = Bozuko.require('util/date')
     ;
 
-var safe = {w:2, wtimeout: 5000};
+var safe = {j:true};
 var User = module.exports = new Schema({
     name                :{type:String, index: true},
     phones              :[Phone],

@@ -73,7 +73,7 @@ var Page = module.exports = new Schema({
 	constantcontact_lists	:{type:Array},
 	constantcontact_activelists	:{type:Array}
 	
-}, {safe: {w:2, wtimeout: 5000}});
+}, {safe: {j:true}});
 
 Page.index({admins: 1});
 

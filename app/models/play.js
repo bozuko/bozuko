@@ -18,4 +18,4 @@ var Play = module.exports = new Schema({
     consolation             :{type:Boolean},
     consolation_prize_id    :{type:ObjectId,        index: true},
     consolation_prize_name  :{type:String,          default: false}
-},{safe: {w:2, wtimeout: 5000}});
+},{safe: {j:true}});
