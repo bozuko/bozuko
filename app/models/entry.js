@@ -12,6 +12,8 @@ var Entry = module.exports = new Schema({
     user_name               :{type:String},
     page_name               :{type:String},
     type                    :{type:String},
+    device                  :{type:String},
+    url                     :{type:String},
     action_id               :{type:ObjectId},
     timestamp               :{type:Date,        default: Date.now, index: true},
     wall_posts              :{type:Number,      default: 0},

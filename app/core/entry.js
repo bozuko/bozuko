@@ -8,6 +8,8 @@ var Entry = module.exports = function(opts) {
     this.type = opts.type;
     this.page = opts.page;
     this.contest = opts.contest;
+	this.device = opts.device;
+	this.url = opts.url;
     this.user = opts.user;
     this.ll = opts.ll;
     this.accuracy = opts.accuracy;
@@ -182,6 +184,8 @@ Entry.prototype.loadEntryModel = function(entry){
     entry.user_name = this.user.name;
     entry.page_name = this.page ? this.page.name : null;
     entry.type = this.type;
+	entry.device = this.device;
+	entry.url = this.url;
     entry.tokens = this.getTokenCount();
     entry.initial_tokens = this.getTokenCount();
     entry.timestamp = new Date();
@@ -269,9 +273,17 @@ Entry.prototype.getButtonText = function(nextEntryTime, tokens){
 };
 
 Entry.prototype.getButtonEnabled = function( nextEntryTime, tokens ){
-    var enabled = true;
-    var now = new Date();
-    if( nextEntryTime > now && tokens === 0) enabled = false;
+    var enabled = true,
+		now = Date.now();
+		
+    if( !tokens && (
+		+nextEntryTime > now ||
+		+this.contest.start > now ||
+		+this.contest.end < now)
+	) enabled = false;
+	
+	
+	
     return enabled;
 };
 

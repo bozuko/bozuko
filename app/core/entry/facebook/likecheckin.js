@@ -251,7 +251,10 @@ FacebookLikeCheckinMethod.prototype.getButtonText = function( nextEntryTime, tok
     if( !tokens ){
         var now = new Date();
 		if( +this.contest.end < Date.now() ){
-			text = _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
+			return _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
+		}
+		else if( +this.contest.start > Date.now() ){
+			return _t( this.user ? this.user.lang : 'en', 'entry/game_starts', DateUtil.inAgo(this.contest.start) );
 		}
         if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
 			return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
@@ -276,9 +279,7 @@ FacebookLikeCheckinMethod.prototype.getButtonText = function( nextEntryTime, tok
 
 FacebookLikeCheckinMethod.prototype.getButtonEnabled = function( nextEntryTime, tokens ){
     if( tokens ) return true;
-    var enabled = true;
-    var now = new Date();
-    if( nextEntryTime > now && tokens === 0) enabled = false;
+    var enabled = EntryMethod.prototype.getButtonEnabled.call(this, nextEntryTime, tokens);
     if( enabled && this.user && !this.user.likes(this.page) ) enabled = false;
     return enabled;
 };

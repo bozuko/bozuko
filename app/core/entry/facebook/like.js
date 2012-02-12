@@ -196,6 +196,9 @@ FacebookLikeMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
 		if( +this.contest.end < Date.now() ){
 			text = _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
 		}
+		else if( +this.contest.start > Date.now() ){
+			text = _t( this.user ? this.user.lang : 'en', 'entry/game_starts', DateUtil.inAgo(this.contest.start) );
+		}
         else if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
 			text = _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
         } else if( +nextEntryTime > +now ){
@@ -217,9 +220,7 @@ FacebookLikeMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
 
 FacebookLikeMethod.prototype.getButtonEnabled = function( nextEntryTime, tokens){
     if( tokens ) return true;
-    var enabled = true;
-    var now = new Date();
-	if( (nextEntryTime.getTime() >= this.contest.end.getTime() || nextEntryTime > now) && tokens === 0) enabled = false;
+    var enabled = EntryMethod.prototype.getButtonEnabled.call(this, nextEntryTime, tokens);
     if( enabled && this.user && !this.user.likes(this.page) ) enabled = false;
     return enabled;
 };

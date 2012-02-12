@@ -155,7 +155,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         
         sharebuttons.setStyle('display','none');
         if( self.state.button_enabled === false ){
-            if( !self.state.button_text.match(/(thanks for playing|this game has ended)/i) && !self.state.next_enter_time_ms && (self.game.entry_method.type == 'facebook/like' || self.game.entry_method.type == 'facebook/likecheckin')){
+            if( !self.state.button_text.match(/(this game starts|thanks for playing|this game has ended)/i) && !self.state.next_enter_time_ms && (self.game.entry_method.type == 'facebook/like' || self.game.entry_method.type == 'facebook/likecheckin')){
                 
                 var url = self.page.like_button_url;
                 url+='?token='+self.app.user.token;

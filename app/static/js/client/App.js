@@ -53,8 +53,12 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( !this.validPath() ){
             return;
         }
-        
-        this.width = Math.min( 500, Math.max( this.config.width || Math.min(window.innerWidth||document.documentElement.clientWidth, window.innerHeight||document.documentElement.clientHeight), 320 ) );
+        if( config.facebook_tab ){
+            this.width = 420;
+        }
+        else {
+            this.width = Math.min( 520, Math.max( this.config.width || Math.min(window.innerWidth||document.documentElement.clientWidth, window.innerHeight||document.documentElement.clientHeight), 320 ) );
+        }
         this.height = this.width/this.dimensions.x*this.dimensions.y;
         this.stylesheet = Bozuko.client.util.Stylesheet.create('app');
         this.stylesheet.rule('.modal-window', {
@@ -66,7 +70,10 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( Modernizr.touch && !window.navigator.userAgent.match(/i(pad|pod|phone)/i) ) this.stylesheet.rule('body',{
             'width': this.width+'px'
         });
-        (function(){
+        if( config.facebook_tab ){
+            FB.Canvas.setSize({height:this.height});
+        }
+        else (function(){
             var h =  window.innerHeight||document.documentElement.clientHeight;
             this.stylesheet.rule('body', {
                 'min-height': h+'px'
@@ -77,6 +84,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     'padding-top': padding+'px',
                     'min-height': (h-padding)+'px'
                 });
+                
             }
             this.scrollToTop();
         }).defer(500, this);

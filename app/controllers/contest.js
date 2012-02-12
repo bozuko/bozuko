@@ -40,7 +40,6 @@ exports.routes = {
                 });
             }
         }
-
     },
 
     /**
@@ -199,6 +198,8 @@ exports.routes = {
                         if( !page ) return callback( Bozuko.error('contest/page_not_found'));
                         options.page = page;
                         options.type = contest.getEntryConfig().type;
+						options.device = req.session.mobile_version;
+						options.url = req.header('Referer');
                         options.user = req.session.user;
                         options.contest = contest;
 
@@ -244,10 +245,32 @@ exports.routes = {
                         return contest.loadGameState(opts, function(error){
                             return Bozuko.transfer('game_state', contest.game_state, user, function(error, result){
                                 if (error) return error.send(res);
-                                res.send( result );
+                                return res.send( result );
                             });
                         });
                     });
+                });
+            }
+        }
+    },
+	
+	'/game/:id/share' : {
+        get : {
+            handler : function(req, res, next){
+                // find game
+                return Bozuko.models.Contest.find({_id:req.param('id')}, {share_url: 1}, {limit:1}, function(error, contests){
+                    if( error || !contests.length ) return next();
+					var contest = contests[0];
+                    // do we have a share url?
+                    var type = req.session.device;
+					console.error(type);
+					console.error(require('util').inspect(contest));
+                    switch(type){
+                        case 'touch':
+                            return res.redirect('/client/game/'+contest._id);
+                        default:
+                            return res.redirect(contest.share_url || '/client/game/'+contest._id);
+                    }
                 });
             }
         }

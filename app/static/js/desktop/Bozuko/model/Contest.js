@@ -58,7 +58,8 @@ Ext.define('Bozuko.model.Contest', {
         {name:'play_cursor',        type:'Number',              defaultValue:-1},
         {name:'token_cursor',       type:'Number',              defaultValue:0},
         {name:'entry_count',        type:'Number'},
-        {name:'play_count',         type:'Number'}
+        {name:'play_count',         type:'Number'},
+        {name:'redistributions',    type:'Number',              defaultValue:0}
     ],
 
     hasMany: [
