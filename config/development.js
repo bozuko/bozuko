@@ -44,8 +44,7 @@ module.exports = {
 
     db:{
         name: 'bozuko_dev'+port,
-        replicaSet: true,
-        hosts: ['pgdb1', 'pgdb1:27018'],
+        host: '127.0.0.1',
         options: {
             server: {poolSize: 25},
             replset: {},
@@ -155,7 +154,7 @@ module.exports = {
             ca : '/ssl/wildcard/gd_bundle.crt',
             cert: '/ssl/wildcard/bozuko.com.crt'
         },
-        host: 'playground.bozuko.com',
+        host: '97.107.133.211',
         port: port
     },
 

@@ -3,13 +3,6 @@ module.exports = {
     test_mode: false,
 
     controllers: {
-        only: [
-            'site',
-			'my',
-            'mycroft',
-			'client',
-            'codes'
-        ]
     },
 
     client: {
