@@ -9,7 +9,6 @@
   display: none;
 }
 .bozuko-tab {
-  position: absolute;
   right: 0;
   top: 50%;
   margin-top: -110px;

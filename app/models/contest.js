@@ -501,14 +501,13 @@ Contest.method('publish', function(callback){
             });
         });
     }
-
     if (this.start.getTime() < Date.now()) {
         this.start = new Date();
         return this.save(function(err) {
             return publishResults();
         });
     }
-
+    
     return publishResults();
 });
 
@@ -949,6 +948,11 @@ Contest.method('redistributeTimeResult', function(memo, callback) {
                     {$inc: {redistributions: 1}},
                     function(err) {
                         if (err) console.error('Redistribution analytics error: '+err);
+                        else Bozuko.publish('contest/redistribute', {
+                            contest_id: self._id,
+                            contest_name: self.name,
+                            restributions: self.redistributions
+                        });
                     }
                 );
             }

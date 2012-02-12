@@ -40,6 +40,12 @@ Ext.define('Bozuko.view.contest.Review', {
                                 '</textarea>',
                             '</div>',
                         '</div>',
+                        '<div class="row entry">',
+                            '<div class="label">Facebook Tab Url:</div>',
+                            '<div class="content">',
+                                '{[this.getFacebookTabUrl()]}',
+                            '</div>',
+                        '</div>',
                     '</tpl>',
                     '<div class="row timeline">',
                         '<div class="label">Timeline:</div>',
@@ -96,6 +102,13 @@ Ext.define('Bozuko.view.contest.Review', {
                         url = url.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko');
                         
                         return '<script type="text/javascript" src="'+url+'"></script>';
+                    },
+                    getFacebookTabUrl : function(){
+                        var l = window.location,
+                            h = l.host.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko'),
+                            url = l.protocol+'//'+h+'/facebook/tab/'+me.contest.get('_id')
+                            ;
+                        return url;
                     },
                     entryMethod : function(){
                         

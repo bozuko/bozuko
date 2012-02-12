@@ -98,6 +98,9 @@ BozukoNothingMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
 		if( +this.contest.end < Date.now() ){
 			return _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
 		}
+		if( +this.contest.start > Date.now() ){
+			return _t( this.user ? this.user.lang : 'en', 'entry/game_starts', DateUtil.inAgo(this.contest.start) );
+		}
         if (nextEntryTime.getTime() >= this.contest.end.getTime()) {
 			return _t( this.user ? this.user.lang : 'en', 'entry/bozuko/thanks_for_playing' );
         }

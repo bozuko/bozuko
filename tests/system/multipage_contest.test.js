@@ -184,8 +184,8 @@ exports['enter contest at page2 - fail - too soon'] = function(test) {
 };
 
 exports['wait 10 seconds to enter again'] = function(test) {
-    console.log("Waiting 10 seconds to enter contest at page2");
-    setTimeout(test.done, 10000);
+    console.log("Waiting 30 seconds to enter contest at page2 - the location moved so we have to wait longer to avoid too far too soon error");
+    setTimeout(test.done, 30000);
 };
 
 // In reality a client won't do this as the play button should be displayed. But this can be done

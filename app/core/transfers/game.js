@@ -121,12 +121,12 @@ var game = {
         obj.rules = game.contest.getOfficialRules();
         obj.id = game.contest.id;
         if( game.contest.web_only ){
-            obj.share_url = game.contest.share_url || burl('/client/game/'+game.contest.id);
+            obj.share_url = burl('/game/'+game.contest.id+'/share');
             obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
             obj.share_description = game.contest.share_description || 'Play '+game.getName()+' for a chance to win big prizes!';
         }
         else {
-            obj.share_url = game.contest.share_url || burl('/client/game/'+game.contest.id);
+            obj.share_url = burl('/game/'+game.contest.id+'/share');
             obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
             obj.share_description = game.contest.share_description || 'Play '+game.getName()+' on your phone for a chance to win big prizes!';
         }
