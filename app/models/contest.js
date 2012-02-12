@@ -22,7 +22,7 @@ var mongoose = require('mongoose'),
     jade = require('jade'),
     NextContest = require('./embedded/contest/next_contest')
 ;
-var safe = {w:2, wtimeout:5000};
+var safe = {j:true};
 
 function enum_engine_type(type) {
     if (type !== 'order' && type !== 'time') return 'order';
@@ -68,7 +68,7 @@ var Contest = module.exports = new Schema({
     end_alert_sent          :{type:Boolean},
     next_contest            :[NextContest],
     parent                  :{type:ObjectId, index: {sparse: true}}
-}, {safe: {w:2, wtimeout: 5000}});
+}, {safe: safe});
 
 Contest.ACTIVE = 'active';
 Contest.PUBLISHED = 'published';
@@ -1222,7 +1222,7 @@ Contest.method('savePrize', function(opts, callback) {
         if( prize.won || prize.won === 0) Bozuko.models.Contest.collection.update(
             {'prizes._id':prize._id},
             {$inc: {'prizes.$.won':1}},
-            {safe: {w:2, wtimeout: 5000}},
+            {safe: {j:true}},
             function(error){
                 if( error ) console.error( error );
             }

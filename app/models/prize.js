@@ -15,7 +15,7 @@ var mongoose = require('mongoose'),
     fs = require('fs')
 ;
 
-var safe = {w:2, wtimeout: 5000};
+var safe = {j:true};
 var Prize = module.exports = new Schema({
     contest_id              :{type:ObjectId, index:true},
     page_id                 :{type:ObjectId, index:true},
@@ -111,7 +111,7 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
         if( self.prize_id ) Bozuko.models.Contest.collection.update(
             {'prizes._id':self.prize_id},
             {$inc: {'prizes.$.redeemed':1}},
-	    {safe: {w:2, wtimeout: 5000}},
+	    {safe: safe},
             function(error){
                 if( error ) console.error( error );
                 else console.log('updated redeemed');

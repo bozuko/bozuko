@@ -15,7 +15,7 @@ var Customer = module.exports = new Schema({
     created                   :{type:Date},
     last_modified             :{type:Date},
     subscriptions             :[Subscription]
-}, {safe: {w:2, wtimeout: 5000}});
+}, {safe: {j:true}});
 
 
 function getCustomerStatus(gateway, page_id, callback) {

@@ -12,7 +12,7 @@ var Optin = module.exports = new Schema({
     last_name               :{type:String},
     email                   :{type:String},
     timestamp               :{type:Date,        index: true,    default: Date.now}
-}, {safe: {w:2, wtimeout: 5000}});
+}, {safe: {j:true}});
 
 Optin.method('notifyMailchimp', function(user, page){
     var api = page.getMailChimpApi();

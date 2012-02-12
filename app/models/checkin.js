@@ -12,7 +12,7 @@ var Checkin = module.exports = new Schema({
     message                 :{type:String},
     service                 :{type:String,      index: true},
     data                    :{}
-}, {safe: {w:2, wtimeout: 5000}});
+}, {safe: {j:true}});
 Checkin.plugin(Coords);
 
 Checkin.method('getPage', function(callback){

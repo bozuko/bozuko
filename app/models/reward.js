@@ -2,7 +2,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
-var safe = {w:2, wtimeout:5000};
+var safe = {j:true};
 
 var Reward = module.exports = new Schema({
     name                    :{type:String},
