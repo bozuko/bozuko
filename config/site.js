@@ -35,7 +35,7 @@ module.exports = {
 
     db:{
         name: 'bozuko_production',
-	    host: 'db2',
+	    host: '192.168.175.161',
         options: {
             server: {poolSize: 10},
             replset: {},
