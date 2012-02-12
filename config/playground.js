@@ -36,10 +36,8 @@ module.exports = {
     },
 
     db:{
-
         name: 'bozuko_playground',
-        replicaSet: true,
-        hosts: ['pgdb1', 'pgdb1:27018'],
+        host: '127.0.0.1', 
         options: {
             server: {poolSize: 25},
             replset: {},

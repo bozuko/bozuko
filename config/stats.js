@@ -3,10 +3,8 @@ var port = 5100;
 module.exports = {
 
     db:{
-
         name: 'bozuko_stats',
-        replicaSet: true,
-        hosts: ['pgdb1', 'pgdb1:27018'],
+        host: '127.0.0.1',
         options: {
             server: {},
             replset: {},
