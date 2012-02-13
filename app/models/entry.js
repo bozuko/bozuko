@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 
 var Entry = module.exports = new Schema({
     contest_id              :{type:ObjectId,    index: true},
-    page_id                 :{type:ObjectId,    index: true},
+    page_id                 :{type:ObjectId},
     user_id                 :{type:ObjectId,    index: true},
     /* page and user names for searching */
     user_name               :{type:String},
@@ -15,11 +15,13 @@ var Entry = module.exports = new Schema({
     device                  :{type:String},
     url                     :{type:String},
     action_id               :{type:ObjectId},
-    timestamp               :{type:Date,        default: Date.now, index: true},
+    timestamp               :{type:Date,        default: Date.now},
     wall_posts              :{type:Number,      default: 0},
     tokens                  :{type:Number},
     initial_tokens          :{type:Number}
 }, {safe: {j:true}});
+
+Entry.index({contest_id: 1, user_id: 1, timestamp: -1});
 
 Entry.static('getUserInfo', function(contest_id, user_id, callback) {
 
