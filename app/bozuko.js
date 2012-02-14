@@ -267,9 +267,12 @@ function initApplication(app){
 		};
 	})());
 
+	
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser());
+	
+	app.use(Bozuko.require('middleware/redirection')());
 
     Bozuko.sessionStore = new BozukoStore({
         reapInterval: 1000 * 60 * 5,
