@@ -617,7 +617,8 @@ a:hover {
   display: none;
   margin-top: 6px;
 }
-.game-description .actions .share-buttons ul, .game-description .actions .share-buttons li {
+.game-description .actions .share-buttons ul,
+.game-description .actions .share-buttons li {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -1108,7 +1109,8 @@ a:hover {
   display: block;
   font-size: 12px;
 }
-.you-win .ft .sharebox label input, .you-win .ft .sharebox label span {
+.you-win .ft .sharebox label input,
+.you-win .ft .sharebox label span {
   display: inline-block;
   vertical-align: middle;
 }
@@ -1327,10 +1329,19 @@ a:hover {
 .my-prizes .bd ul li.expired .prize-body .state {
   color: #ff0033;
 }
+.bozuko-powered {
+  display: block;
+  cursor: pointer;
+  width: 129px;
+  height: 65px;
+  margin: 10px auto;
+  background: transparent url("/images/client/powered-by-facebook.png?v2") scroll 0 0 no-repeat;
+}
 .prize-shared .ft .sharebox {
   display: none;
 }
-.prize-is-email .prize-code, .prize-is-barcode .prize-code {
+.prize-is-email .prize-code,
+.prize-is-barcode .prize-code {
   display: none;
 }
 .prize-is-user-redeemable.prize-active .bd .message {
@@ -1343,7 +1354,8 @@ a:hover {
 .superscroll .scrollable {
   overflow: scroll;
 }
-.superscroll .scrollable::-webkit-scrollbar, .superscroll .scrollable::scrollbar {
+.superscroll .scrollable::-webkit-scrollbar,
+.superscroll .scrollable::scrollbar {
   width: 0;
   height: 0;
 }
