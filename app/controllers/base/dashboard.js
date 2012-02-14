@@ -857,6 +857,7 @@ exports.routes = {
                 var self = this,
                     reports = {},
                     selector = {},
+                    uids = [],
                     contest_id = req.param('contest_id'),
                     page_id = req.param('page_id')
                     ;
@@ -886,10 +887,30 @@ exports.routes = {
 
                             var sel = merge({}, selector);
 
-                            Bozuko.models.Entry.collection.distinct('user_id', sel, function(error, user_ids){
+                            return Bozuko.models.Entry.collection.distinct('user_id', sel, function(error, user_ids){
                                 if( error ) return cb( error );
                                 reports.users = user_ids.length;
-                                return cb();
+                                
+                                return async.parallel([
+                                    function total_male(_cb){
+                                        
+                                        return Bozuko.models.User.count({gender:'male', _id:{$in:user_ids}}, function(error, count){
+                                            if( error ) return _cb( error );
+                                            reports.male = count;
+                                            return _cb();
+                                        });
+                                    },
+                                    
+                                    function total_female(_cb){
+                                        return Bozuko.models.User.count({gender:'female', _id:{$in:user_ids}}, function(error, count){
+                                            if( error ) return _cb( error );
+                                            reports.female = count;
+                                            return _cb();
+                                        });
+                                    }
+                                ], function(error){
+                                    return cb(error);
+                                });
                             });
                         },
 
