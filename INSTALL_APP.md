@@ -23,13 +23,6 @@ Open /etc/hosts and add the hostname to the end of the localhost line
 
     127.0.0.1 localhost app1 app1.bozuko.com
 
-#### Prevent DHCP from setting the hostname
-    emacs /etc/default/dhcpcd 
-
-Comment out SET_HOSTNAME
-
-     #SET_HOSTNAME='yes'
-
 #### Install git
     apt-get install git
 
