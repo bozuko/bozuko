@@ -1,7 +1,7 @@
 var burl = Bozuko.require('util/url').create;
 
-module.exports = function poweredby(){
-    return function locals(req, res, next){
+module.exports = function redirection(){
+    return function redirection(req, res, next){
         var host = Bozuko.cfg('server.host'),
             port = Bozuko.cfg('server.port'),
             header = req.header('host')
