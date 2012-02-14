@@ -71,7 +71,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             'width': this.width+'px'
         });
         if( config.facebook_tab ){
-            FB.Canvas.setSize({height:this.height});
+            FB.Canvas.setSize({height:this.height + 100});
         }
         else (function(){
             var h =  window.innerHeight||document.documentElement.clientHeight;
@@ -111,6 +111,15 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.$body = Ext.get(this.ct).createChild({
             cls         :'app'
         });
+        
+        if( this.facebook_tab ){
+            this.$poweredBy = Ext.get(this.ct).createChild({
+                cls         :'bozuko-powered',
+                tag         :'a',
+                target      :'_blank',
+                href        :'https://bozuko.com'
+            });
+        }
         
         this.$mask = this.$body.createChild({
             cls         :'mask'
