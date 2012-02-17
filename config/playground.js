@@ -145,7 +145,6 @@ module.exports = {
     },
 
     server: {
-		enabled_redirect: false,
         auth: false,
         ssl: true,
 		ssl_config:{
