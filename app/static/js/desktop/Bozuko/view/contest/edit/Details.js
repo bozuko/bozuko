@@ -61,7 +61,6 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             xtype               :'combo',
             name                :'engine_type',
             fieldLabel          :'Contest Engine',
-            width               :100,
             allowBlank          :false,
             editable            :false,
             forceSelection      :true,

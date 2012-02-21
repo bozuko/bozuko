@@ -814,7 +814,7 @@ Prize.method('createPdf', function(user, images, callback){
 	
 	doc.moveDown();
 	
-	doc.text('Thanks for playing Bozuko! Have any issues? Contact support@bozuko.com. This prize may be redeemed one time. XOXO.', {width: width});
+	doc.text('Thanks for playing Bozuko! Have any issues? Contact support@bozuko.com. This prize may be redeemed one time.', {width: width});
 	
 	// get the bottom..
 	y = doc.y +5;
