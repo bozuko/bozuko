@@ -137,7 +137,8 @@ html(
       });
       function beta_logout(link){
         // attach facebook logout to logout button
-        if( FB.getSession() ) FB.logout(function(){
+        var auth;
+        if( (auth = FB.getAuthResponse()) && auth.userID ) FB.logout(function(){
           window.location.href = link.href;
         });
         else window.location.href = link.href;
