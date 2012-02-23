@@ -164,6 +164,12 @@ Ext.application({
                     me.setHeight();
                     Ext.EventManager.onWindowResize(me.setHeight, me);
                     
+                    var logout = window.beta_logout;
+                    window.beta_logout = function(link){
+                        me.preventCloseWarning = true;
+                        logout(link);
+                    }
+                    
                     // prevent unintentional leaving of the page
                     window.onbeforeunload = function(e){
                         if( !me.preventCloseWarning ){
