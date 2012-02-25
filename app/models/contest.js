@@ -1379,6 +1379,7 @@ Contest.static('autoRenew', function(callback) {
         {active: true, 'next_contest.0.contest_id': {$exists: true}, 'next_contest.0.active': false,
         $and: [{end: {$gt: new Date()}}, {end: {$lt: end_time}}]},
         function(err, contests) {
+            if( err ) return callback(err);
             return async.forEach(contests, function(contest, cb) {
                 return contest.activateNextContest('time', cb);
             }, function(err) {

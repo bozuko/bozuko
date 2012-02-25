@@ -21,6 +21,7 @@ module.exports = {
     },
 
     admin : {
+		notifications: true,
         winners_list:{
             poll_interval: 1000
         }
