@@ -1344,7 +1344,7 @@ exports.routes = {
                     return Bozuko.models.Page.setCodeInfo(page_id, function(err) {
                         if (err) return error.send(res);
 
-                        if( Bozuko.env() == 'dashboard' ) {
+                        if( Bozuko.cfg('admin.notifications', false) ) {
                             Bozuko.models.Page.findById( contest.page_id, function(error, page){
                                 if( error ) return;
                                 Bozuko.require('util/mail').send({
@@ -1556,7 +1556,7 @@ exports.routes = {
                                 page.save();
                             }
 
-                            if( Bozuko.env() == 'dashboard' ) Bozuko.require('util/mail').send({
+                            if( ozuko.cfg('admin.notifications', false) ) Bozuko.require('util/mail').send({
                                 to: 'info@bozuko.com',
                                 subject: 'Contest Published',
                                 body: [
