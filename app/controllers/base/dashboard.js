@@ -1556,7 +1556,7 @@ exports.routes = {
                                 page.save();
                             }
 
-                            if( ozuko.cfg('admin.notifications', false) ) Bozuko.require('util/mail').send({
+                            if( Bozuko.cfg('admin.notifications', false) ) Bozuko.require('util/mail').send({
                                 to: 'info@bozuko.com',
                                 subject: 'Contest Published',
                                 body: [
