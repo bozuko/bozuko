@@ -198,8 +198,11 @@ FacebookService.prototype.search = function(options, callback){
     var params = {
         type : options.center ? 'place' : 'page'
     };
-
-    if( options.center ) params.center = options.center[1]+','+options.center[0];
+	
+    if( options.center ){
+		params.center = options.center[1]+','+options.center[0];
+		params.distance = options.distance || 10000;
+	}
     if( options.query ) params.q = options.query;
     if( !options.fields ) {
         options.fields = ['name','category','checkins','location','website','phone','link'];
@@ -224,7 +227,7 @@ FacebookService.prototype.search = function(options, callback){
             if( error ) return callback( error );
             // these need to be mapped to
             // generic Bozuko.objects
-            return callback(null, self.sanitizePlaces(results.data));
+			return callback(null, self.sanitizePlaces(results.data));
         }
     );
 };
