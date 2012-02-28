@@ -635,7 +635,7 @@ Page.static('search', function(options, callback){
          */
         serviceSearch = false;
     }
-
+	
     /**
      * This is a standard center search, we will use a service to get
      * additional results, but also do a search
@@ -770,7 +770,7 @@ Page.static('search', function(options, callback){
 
 
                 if( !serviceSearch ){
-                    pages.sort( sort_by('_distance') );
+					pages.sort( sort_by('_distance') );
                     pages.sort( 'featured' );
                     return return_pages( pages );
                 }
@@ -782,9 +782,8 @@ Page.static('search', function(options, callback){
                 var service = options.service || Bozuko.config.defaultService;
 
                 return Bozuko.service(service).search(options, function(error, _results){
-
-                    if( error ){
-
+					
+					if( error ){
                         console.error( error );
                         pages.sort( sort_by('_distance') );
                         return return_pages( pages );
