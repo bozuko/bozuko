@@ -157,6 +157,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         if( self.state.button_enabled === false ){
             if( !self.state.button_text.match(/(this game starts|thanks for playing|this game has ended)/i) && !self.state.next_enter_time_ms && (self.game.entry_method.type == 'facebook/like' || self.game.entry_method.type == 'facebook/likecheckin')){
                 
+                if( self.getDescription().child('iframe.like-button-frame') ) return;
+                
                 var url = self.page.like_button_url;
                 url+='?token='+self.app.user.token;
                 
@@ -166,12 +168,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     '<span class="like-loading">'+
                         '<span class="loading">&nbsp;</span>'+
                     '</span>'+
-                    '<iframe src="'+url+'" frameborder="0" class="like-button-frame"></iframe>'+
+                    '<iframe id="likeFrame" name="likeFrame" src="'+url+'" frameborder="0" scrolling="no" class="like-button-frame"></iframe>'+
                     '</div>'
                 );
                 
-                var frame=0,
-                    ct=self.getDescription().child('.like-container'),
+                var ct=self.getDescription().child('.like-container'),
+                    frame=0,
                     loader=self.getDescription().child('.like-loading .loading'),
                     interval = setInterval(function(){
                         loader.setStyle('background-position', (-frame*16)+'px 0');
@@ -179,28 +181,19 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         if( frame > 7 ) frame=0;
                     }, 100);
                 
-                var iframe = self.getDescription().child('iframe');
-                self.getDescription().child('iframe').on('load', function(){
-                    var win = iframe.dom.contentWindow || iframe.dom.contentDocument;
-                    if( !win.document ) { 
-                        win = win.getParentNode();
+                window.notifyFn = function(state){
+                    switch(state){
+                        case 'facebook/like_loaded':
+                            clearInterval(interval);
+                            ct.removeClass('like-container-loading');
+                            break;
+                        
+                        case 'facebook/liked':
+                            self.updateState(true);
+                            break;
                     }
-                    win.notifyFn = function(state){
-                        switch(state){
-                            
-                            case 'facebook/like_loaded':
-                                clearInterval(interval);
-                                ct.removeClass('like-container-loading');
-                                break;
-                            
-                            case 'facebook/liked':
-                                self.updateState(true);
-                                break;
-                            
-                        }
-                    }
-                    
-                }, this);
+                }
+                
             }
             else{
                 self.updateAction(self.state.button_text);

@@ -28,8 +28,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
       #touch-killer{ background: transparent; display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
     script(type="text/javascript")
       function broadcast(state){
-        if( window.notifyFn ){
-          window.notifyFn(state);
+        if( window.parent && window.parent.notifyFn ){
+          window.parent.notifyFn(state);
         }
         else{
           window.location = 'bozuko://'+state;
@@ -82,7 +82,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                           callback();
                       }
                   };
-                  req.open('GET', '/user?liked='+fb_id+'&token='+token+'&nocache='+Date.now());
+                  req.open('GET', '/user?liked='+fb_id+'&token='+token+'&nocache='+(new Date()).getTime());
                   setTimeout(function(){
                     req.send();
                   }, 200);
@@ -170,9 +170,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                 var iframes;
                 if( (iframes = likeBtn.getElementsByTagName('iframe')).length ){
                   clearInterval(interval);
-                  iframes[0].onload = function(){
-                    showLikeButton();
-                  };
+                  showLikeButton();
                 }
             }, 200);
           };
