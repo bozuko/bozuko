@@ -337,9 +337,9 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			filename: 'bozuko_prize.pdf',
 			contents: new Buffer(pdf, 'binary')
 		}];
-		// lets get the page name...
 		
-		return mail.send({
+		// lets get the page name...
+		return mail.sendView('prize/pdf', {prize: self, user: user}, {
 			user_id: user._id,
 			to: user.email,
 			subject: 'Congratulations! You won a prize from '+self.page_name,
