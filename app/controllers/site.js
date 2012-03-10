@@ -771,7 +771,7 @@ exports.routes = {
                     alias = req.param('alias');
                     
                 if( ~alias.indexOf('/') ) return next();
-                return Bozuko.models.Contest.find({alias: alias}, {results: 0, page: 0}, {limit: 1}, function(error, contests){
+                return Bozuko.models.Contest.find({alias: alias}, {results: 0, page: 0}, {sort: {start: -1}, limit: 1}, function(error, contests){
                     if( error || !contests.length ) return next();
                     if( !Bozuko.controllers.Client ){
                         console.log('Please enable the Client controller');

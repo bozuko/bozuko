@@ -108,7 +108,8 @@ EmailMessage.sendView = function(filename, options, params, callback){
         }
 
         options.body = html;
-        return jade.renderFile(Bozuko.dir+'/app/views/email/layout.jade', options, function(error, html){
+        var layout = options.layout || (options.userLayout ? 'userlayout.jade' : 'layout.jade');
+        return jade.renderFile(Bozuko.dir+'/app/views/email/'+layout, options, function(error, html){
             if( error ) return callback(error);
             params.html = html;
             return EmailMessage.send( params, callback );
