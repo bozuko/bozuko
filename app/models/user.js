@@ -179,6 +179,7 @@ User.method('updateInternals', function(force, callback){
         }
         else {
             self.soft_block = false;
+            self.allowed = true;
         }
         return self.save(function(err) {
             if (err) {

@@ -339,7 +339,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 		}];
 		
 		// lets get the page name...
-		return mail.sendView('prize/pdf', {prize: self, user: user}, {
+		return mail.sendView('prize/pdf', {prize: self, user: user, userLayout: true}, {
 			user_id: user._id,
 			to: user.email,
 			subject: 'Congratulations! You won a prize from '+self.page_name,
