@@ -322,7 +322,7 @@ Contest.method('getOfficialRules', function(){
 
 Contest.method('getTotalPrizeCount', function(){
     var count = 0;
-    if( me.prizes && me.prizes.length ) me.prizes.forEach(function(prize){
+    if( this.prizes && this.prizes.length ) this.prizes.forEach(function(prize){
         count += prize.total;
     });
     return count;
@@ -1003,8 +1003,22 @@ Contest.method('processResult', function(memo, callback) {
     memo.prize_code = result ? result.code : false;
     memo.prize_count = result ? result.count : false;
     memo.free_play = false;
-    return callback(null, memo);
 
+    console.log('memo.win = '+memo.win);
+    console.log('contest.win_frequency = '+this.win_frequency);
+
+    if (memo.win && this.win_frequency == 1) {
+      console.log('memo.entry');
+      console.log(memo.entry);
+      // We need to mark the entry as a win
+      memo.entry.win = true;
+      memo.entry.save(function(err) {
+        if (err) return callback(err);
+        callback(null, memo);
+      });
+    } else {
+      return callback(null, memo);
+    }
 });
 
 Contest.method('savePrizes', function(memo, callback) {
