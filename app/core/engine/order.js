@@ -153,7 +153,6 @@ OrderEngine.prototype.failEarly = function(entry) {
 OrderEngine.prototype.play = function(memo, callback) {
     var self = this;
 
-    console.log(memo.entry);
     if (this.failEarly(memo.entry)) return callback(null, memo);
 
     async.reduce(
@@ -173,6 +172,9 @@ OrderEngine.prototype.play = function(memo, callback) {
  * @returns {Boolean} If there is enough tokens
  */
 OrderEngine.prototype.allowEntry = function(entry){
+     if (this.contest.win_frequency == 1) {
+       return this.contest.token_cursor < this.contest.total_plays;
+     }
     return this.contest.token_cursor + entry.getTokenCount() <= this.contest.total_plays - this.contest.total_free_plays;
 };
 

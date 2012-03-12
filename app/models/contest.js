@@ -543,6 +543,8 @@ Contest.method('allowEntry', function(opts, callback) {
 
 Contest.method('incrementTokenCursor', function(tokens, callback) {
 
+    // We only hit the array once for each entry when win_frequncy == 1
+    if (this.win_frequency == 1) tokens = 1;
     var prof = new Profiler('/models/contest/enter');
     Bozuko.models.Contest.findAndModify(
         { _id: this._id, token_cursor: {$lte : this.total_plays - this.total_free_plays - tokens}},
