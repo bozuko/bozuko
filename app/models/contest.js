@@ -322,7 +322,7 @@ Contest.method('getOfficialRules', function(){
 
 Contest.method('getTotalPrizeCount', function(){
     var count = 0;
-    if( me.prizes && me.prizes.length ) me.prizes.forEach(function(prize){
+    if( this.prizes && this.prizes.length ) this.prizes.forEach(function(prize){
         count += prize.total;
     });
     return count;
@@ -543,6 +543,8 @@ Contest.method('allowEntry', function(opts, callback) {
 
 Contest.method('incrementTokenCursor', function(tokens, callback) {
 
+    // We only hit the array once for each entry when win_frequncy == 1
+    if (this.win_frequency == 1) tokens = 1;
     var prof = new Profiler('/models/contest/enter');
     Bozuko.models.Contest.findAndModify(
         { _id: this._id, token_cursor: {$lte : this.total_plays - this.total_free_plays - tokens}},
@@ -1003,8 +1005,22 @@ Contest.method('processResult', function(memo, callback) {
     memo.prize_code = result ? result.code : false;
     memo.prize_count = result ? result.count : false;
     memo.free_play = false;
-    return callback(null, memo);
 
+    console.log('memo.win = '+memo.win);
+    console.log('contest.win_frequency = '+this.win_frequency);
+
+    if (memo.win && this.win_frequency == 1) {
+      console.log('memo.entry');
+      console.log(memo.entry);
+      // We need to mark the entry as a win
+      memo.entry.win = true;
+      memo.entry.save(function(err) {
+        if (err) return callback(err);
+        callback(null, memo);
+      });
+    } else {
+      return callback(null, memo);
+    }
 });
 
 Contest.method('savePrizes', function(memo, callback) {
