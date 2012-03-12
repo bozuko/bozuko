@@ -180,6 +180,16 @@ module.exports = {
     },
 
     email : {
+		smtp:{
+            host: "email-smtp.us-east-1.amazonaws.com",
+            port: 465,
+            ssl: true,
+            use_authentication: true,
+            users: [
+                {user: 'AKIAJBO4JDTBEHQM2M2Q',     pass: 'AtTBtmkjqvWOsNaTEmAex3N2Fj8X8mntA9aXkc7Xd6iw'}
+            ]
+        },
+		/*
         smtp:{
             host: "smtp.gmail.com",
             port: 465,
@@ -192,6 +202,7 @@ module.exports = {
                 {user: 'mailer4@bozuko.com',    pass: 'fwdaz3v4'}
             ]
         },
+		*/
         retry:{
             attempts: 3,
             delay: 1000*60*5 // every 5 minutes

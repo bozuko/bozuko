@@ -151,20 +151,17 @@ module.exports = {
 
     email : {
         smtp:{
-            host: "smtp.gmail.com",
+            host: "email-smtp.us-east-1.amazonaws.com",
             port: 465,
             ssl: true,
             use_authentication: true,
             users: [
-                {user: 'mailer@bozuko.com',     pass: '7axxn7d8'},
-                {user: 'mailer2@bozuko.com',    pass: '7zscpk94'},
-                {user: 'mailer3@bozuko.com',    pass: '43zbbpu9'},
-                {user: 'mailer4@bozuko.com',    pass: 'fwdaz3v4'}
+                {user: 'AKIAJBO4JDTBEHQM2M2Q',     pass: 'AtTBtmkjqvWOsNaTEmAex3N2Fj8X8mntA9aXkc7Xd6iw'}
             ]
         },
         retry:{
             attempts: 3,
-            delay: 1000*60*5 // every 5 minutes
+            delay: 1000*60*1 // every minute
         },
         sender: 'Bozuko Mailer <mailer@bozuko.com>'
     },

@@ -180,7 +180,7 @@ module.exports = {
         },
         retry:{
             attempts: 3,
-            delay: 1000*60*5 // every 5 minutes
+            delay: 1000*60*1 // every minute
         },
         sender: 'Bozuko Mailer <mailer@bozuko.com>'
     },
