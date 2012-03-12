@@ -26,12 +26,20 @@ OrderEngine.prototype.generateResults = function(Page, page_id, callback) {
         entryMethod.configure( entryConfig );
 
         var max = entryMethod.getMaxTokens(),
-            totalPlays = max*contest.total_entries,
-            freePlays = Math.floor(contest.free_play_pct/100*totalPlays) || 0,
             ar = [],
             primer = [],
-            remainder = [];
-
+            remainder = [],
+            total_plays;
+        
+        // If win_frequency == 1, we want every player to win exactly one time
+        // and will use failEarly() in plays, so we only hit the array once
+        // for each player per entry.
+        if (self.contest.win_frequency == 1) {
+          totalPlays = contest.total_entries;
+        } else {
+          totalPlays = max*contest.total_entries;
+        }
+        var freePlays = Math.floor(contest.free_play_pct/100*totalPlays) || 0,
         totalPlays = totalPlays + freePlays;
 
         // By default set the primer_end to 10%. Single prizes will go out after primer_end even if
@@ -131,8 +139,22 @@ OrderEngine.prototype.generateResults = function(Page, page_id, callback) {
     });
 };
 
+/*
+ * If the contest needs exactly one win per entry, we use this to determine losses.
+ */
+OrderEngine.prototype.failEarly = function(entry) {
+    if (this.contest.win_frequency != 1) return false;
+    if (entry.win) return true;
+    if (entry.tokens == 0) return false;
+    if (rand(0, entry.tokens+1) == 1) return false; 
+    return true;
+};
+
 OrderEngine.prototype.play = function(memo, callback) {
     var self = this;
+
+    if (this.failEarly(memo.entry)) return callback(null, memo);
+
     async.reduce(
         [this.contest.incrementPlayCursor, this.contest.getOrderResult],
         memo,
@@ -150,6 +172,9 @@ OrderEngine.prototype.play = function(memo, callback) {
  * @returns {Boolean} If there is enough tokens
  */
 OrderEngine.prototype.allowEntry = function(entry){
+     if (this.contest.win_frequency == 1) {
+       return this.contest.token_cursor < this.contest.total_plays;
+     }
     return this.contest.token_cursor + entry.getTokenCount() <= this.contest.total_plays - this.contest.total_free_plays;
 };
 
@@ -158,6 +183,5 @@ OrderEngine.prototype.allowEntry = function(entry){
  *
  */
 OrderEngine.prototype.enter = function(tokens, callback) {
-//    console.log("this.contest = "+inspect(this.contest));
     return this.contest.incrementTokenCursor(tokens, callback);
 };
