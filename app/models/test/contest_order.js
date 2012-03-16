@@ -127,9 +127,6 @@ exports['play  3 times'] = function(test) {
         test.ok(!err);
         var res = results[0];
         test.deepEqual(res.play.game, 'slots');
-        test.deepEqual(res.play.play_cursor+0, 0);
-        test.deepEqual(results[1].play.play_cursor+0, 1);
-        test.deepEqual(results[2].play.play_cursor+0, 2);
 
         contest.loadGameState({page: page, user: user}, function(err, state) {
             if (!free_play) {
@@ -166,7 +163,7 @@ exports['play fail - no tokens'] = function(test) {
     };
     contest.play(opts, function(err, result) {
         test.ok(err);
-        var play_cursor = free_play ? 3 : 2;
+        var play_cursor = free_play ? 1 : 0;
         Bozuko.models.Contest.findOne({_id: contest._id}, function(err, c) {
             test.ok(!err);
             test.deepEqual(c.play_cursor+0, play_cursor);

@@ -30,7 +30,7 @@ var _contest = {
     next_contest:[{}],
     entry_config: [{
         type: "facebook/checkin",
-        tokens: 3,
+        tokens: 1,
         duration: 2
     }],
     start: start,
@@ -99,7 +99,7 @@ exports['enter contest - create second contest as side effect'] = function(test)
             Bozuko.models.Contest.count({name: 'auto-renew', 'next_contest.0.active': true}, function(err, count) {
                 test.ok(!err);
                 test.equal(count, 1);
-                Bozuko.models.Contest.count({name: 'auto-renew (Copy)'}, function(err, count) {
+                Bozuko.models.Contest.count({name: /auto-renew.+(Copy)/}, function(err, count) {
                     test.equal(count, 1);
                     test.done();
                 });
@@ -109,7 +109,8 @@ exports['enter contest - create second contest as side effect'] = function(test)
 };
 
 exports['play out contest'] = function(test) {
-    async.series([play, play, play], function(err, results) {
+    async.series([play], function(err, results) {
+      console.log(err);
         test.ok(!err);
         test.done();
     });
@@ -123,7 +124,7 @@ exports['create and publish a third contest'] = function(test) {
 };
 
 exports['set contest2.nextContest().contest_id to the newly created third contest'] = function(test) {
-    Bozuko.models.Contest.findOne({name: 'auto-renew (Copy)'}, function(err, contest2) {
+    Bozuko.models.Contest.findOne({name: /auto-renew.+(Copy)/}, function(err, contest2) {
         test.ok(!err);
         contest2.nextContest().contest_id = final_contest._id;
         contest2.save(function(err) {
@@ -183,7 +184,7 @@ var expiring_contest_end = null;
 exports['ensure a new contest is created via autoRenew with start date at end of last contest'] = function(test) {
     Bozuko.models.Contest.autoRenew(function(err) {
         test.ok(!err);
-        Bozuko.models.Contest.findOne({name: 'expiring (Copy)'}, function(err, c) {
+        Bozuko.models.Contest.findOne({name: /expiring.+(Copy)/}, function(err, c) {
             test.ok(!err);
             test.equal(c.start.getTime(), expiring_contest.end.getTime());
             expiring_contest_end = expiring_contest.end;
@@ -205,7 +206,7 @@ exports['ensure a new contest is created via autoRenew with start date at end of
 exports['ensure another contest isn\'t created when autoRenew is called again'] = function(test) {
     Bozuko.models.Contest.autoRenew(function(err) {
         test.ok(!err);
-        Bozuko.models.Contest.findOne({name: 'expiring (Copy)'}, function(err, c) {
+        Bozuko.models.Contest.findOne({name: /expiring.+(Copy)/}, function(err, c) {
             // Ensure the time of the created contest didn't change
             test.equal(expiring_contest_end.getTime(), c.start.getTime());
             Bozuko.models.Contest.count({}, function(err, count) {
@@ -224,7 +225,7 @@ exports['enter the contest that is about to expire - ensure another contest is n
         Bozuko.models.Contest.count({}, function(err, count) {
             test.ok(!err);
             test.equal(count, 5);
-            Bozuko.models.Contest.findOne({name: 'expiring (Copy)'}, function(err, c) {
+            Bozuko.models.Contest.findOne({name: /expiring.+(Copy)/}, function(err, c) {
                 // Ensure that the time for the active next_contest is bumped up to now, since the contest
                 // just ended due to entries and the start date is in the future
                 test.ok(c.start.getTime() <= Date.now());
