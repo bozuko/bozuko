@@ -18,7 +18,10 @@ var Entry = module.exports = new Schema({
     timestamp               :{type:Date,        default: Date.now},
     wall_posts              :{type:Number,      default: 0},
     tokens                  :{type:Number},
-    initial_tokens          :{type:Number}
+    initial_tokens          :{type:Number},
+
+    // Did a win already occurr?  Only used for games with win_frequency == 1
+    win                     :{type:Boolean}
 }, {safe: {j:true}});
 
 Entry.index({contest_id: 1, user_id: 1, timestamp: -1});
