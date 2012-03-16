@@ -15,6 +15,7 @@ var Bozuko={};
         id,
         tab,
         options={
+            tab         :1,
             width       :350,
             height      :454,
             tabText     :'Play Our Game!'
