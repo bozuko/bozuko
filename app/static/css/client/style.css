@@ -794,7 +794,9 @@ a:hover {
   width: 16px;
 }
 .like-container-loading .like-button-frame {
-  display: none;
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
 }
 .like-container-loading .like-loading {
   display: inline-block;
