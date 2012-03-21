@@ -27,7 +27,12 @@ h6 {
   font-family: "helvetica nueue", "helvetica", "arial", "sans";
 }
 .facebook-tab body {
-  background: #fff;
+  background-color: #e3e3e3;
+  background-image: -moz-linear-gradient(top, #e3e3e3, #ffffff);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #e3e3e3), color-stop(1, #ffffff)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#e3e3e3',EndColorStr='#ffffff');
+  /* IE6-9 */
+
 }
 #container {
   margin: 0 auto;
