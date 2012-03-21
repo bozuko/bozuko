@@ -65,6 +65,20 @@ a:hover {
   margin: 0 auto;
   font-size: 100%;
 }
+.facebook-tab .app {
+  margin: 20px auto;
+  border: 4px solid #ccc;
+  -webkit-background-clip: padding-box;
+  -webkit-border-radius: 10px;
+  -moz-background-clip: padding-box;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  border-radius: 10px;
+  background-clip: padding-box;
+  -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
 .mask {
   width: 100%;
   height: 100%;
