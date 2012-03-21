@@ -27,7 +27,7 @@ h6 {
   font-family: "helvetica nueue", "helvetica", "arial", "sans";
 }
 .facebook-tab body {
-  background: #ffffff url("../images/facebook-tab-bg.png") 0 0 repeat-x;
+  background: #ffffff url("/images/client/facebook-tab-bg.png") 0 0 repeat-x;
 }
 #container {
   margin: 0 auto;
