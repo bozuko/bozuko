@@ -47,6 +47,10 @@ Ext.define('Bozuko.view.contest.Review', {
                             '</div>',
                         '</div>',
                     '</tpl>',
+                    '<div class="row share">',
+                        '<div class="label">Share URL:</div>',
+                        '<div class="content">{[this.shareUrl()]}</div>',
+                    '</div>',
                     '<div class="row timeline">',
                         '<div class="label">Timeline:</div>',
                         '<div class="content">{[this.timeline()]}</div>',
@@ -149,6 +153,14 @@ Ext.define('Bozuko.view.contest.Review', {
                     gameName : function(){
                         var cfg = me.contest.get('game_config');
                         return cfg.name || (me.contest.get('game')=='slots'?'Slots':'Scratch');
+                    },
+                    
+                    shareUrl : function(){
+                        var l = window.location,
+                            h = l.host.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko'),
+                            url = l.protocol+'//'+h+'/game/'+me.contest.get('_id')+'/share'
+                            ;
+                        return url;
                     },
                     
                     gameOptions : function(){
