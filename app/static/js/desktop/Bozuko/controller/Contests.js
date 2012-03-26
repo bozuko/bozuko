@@ -323,6 +323,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                         copy.set('total_plays', 0);
                         copy.set('play_cursor', -1);
                         copy.set('token_cursor', 0);
+                        copy.set('end_alert_sent', false);
                         copy.phantom = true;
                         // save the copy
                         copy.save({
