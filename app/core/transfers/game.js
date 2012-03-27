@@ -22,7 +22,7 @@ var entry_method = {
     
     create : function(entry, user, callback){
         entry.use_location = false;
-        if( !['facebook/checkin','bozuko/checkin'].indexOf( entry.type ) ) entry.use_location = true;
+        if( ~['facebook/checkin','bozuko/checkin'].indexOf( entry.type ) ) entry.use_location = true;
         else if ( entry.config.options && entry.config.options.radius ) entry.use_location = true;
         return this.sanitize(entry, null, user, callback);
     }
@@ -57,7 +57,15 @@ var game_result = {
         };
 
         if( ret.consolation ){
-            ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize just for playing!";
+            /**
+             * TODO
+             * 
+             * This is a temporary workaround for consolation prizes. We probably want to handle
+             * this futher back in the stack, but this is fine for now.
+             */
+            // ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize just for playing!";
+            ret.win = true;
+            ret.consolation = false;
         }
 
         var page_id = result.contest.game_state.page_id;

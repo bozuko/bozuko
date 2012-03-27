@@ -24,6 +24,7 @@ var Page = module.exports = new Schema({
     children            :[ObjectId],
 	is_enterprise		:{type:Boolean, default: false},
     category            :{type:String, index: true},
+	alias				:{type:String, index: true},
     website             :{type:String},
     phone               :{type:String},
     description         :{type:String},
