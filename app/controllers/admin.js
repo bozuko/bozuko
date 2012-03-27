@@ -499,7 +499,10 @@ exports.routes = {
 
         get : {
             handler : function(req, res){
-                var options = {};
+                var options = {}
+                  , fn = 'search'
+                  ;
+                  
                 if( req.param('ll') ){
                     var ll = (req.param('ll') || '').split(',');
                     if( ll.length !== 2 ){
@@ -513,12 +516,26 @@ exports.routes = {
                     if( Array.isArray(filter) ) filter.forEach( function(f){
                         options[f.property] = f.value;
                     });
+                    
+                    if( options.query && options.query.match(/^\//) || options.query.match(/https?\:\/\/www\.facebook\.com\//) ){
+                        var id = options.query.replace( /^(https?\:\/\/www\.facebook\.com)?\//, '');
+                        // we are going to try try and
+                        options = {place_id: id};
+                        fn = 'place';
+                    }
+                    
                 }
-                if( Object.keys( options ).length === 0 ){
+                if( fn === 'search' && Object.keys( options ).length === 0 ){
                     return res.send( {items:[]} );
                 }
-                return Bozuko.service('facebook').search(options, function(error, places){
+                return Bozuko.service('facebook')[fn](options, function(error, places){
                     if( error ) return error.send( res );
+                    
+                    
+                    if( !places.forEach ) places = [places];
+                    
+                    
+                    
                     // get rid of the ones we already have...
                     var ids = [];
                     var map = {};

@@ -32,11 +32,19 @@ exports.find = function( alias, callback ){
         function get_game(cb){
             var alias = game_alias;
             
+            if( !alias && page ){
+                // get the latest web only game
+                return get_latest_game( page._id, function( error, _game){
+                    if( _game ) game = _game;
+                    cb();
+                });
+            }
+            
             if( !alias && !page ){
                 alias = page_alias;
             }
             
-            find_game( alias, function(error, _game){
+            return find_game( alias, function(error, _game){
                 if( _game ) game = _game;
                 cb();
             });
@@ -57,6 +65,17 @@ function find_page( page_alias, callback ){
 function find_game( game_alias, callback ){
     Bozuko.models.Contest.find({
         alias: game_alias,
+        active: true,
+		web_only: true
+	}, {results: 0, page: 0}, {limit: 1, sort:{start:-1}}, function(error, games){
+        if( error ) return callback( error );
+        return callback( null, games.length ? games[0] : null );
+    });
+}
+
+function get_latest_game( page_id, callback ){
+    Bozuko.models.Contest.find({
+        $or: [{page_id: page_id}, {page_ids: page_id}],
         active: true,
 		web_only: true
 	}, {results: 0, page: 0}, {limit: 1, sort:{start:-1}}, function(error, games){
