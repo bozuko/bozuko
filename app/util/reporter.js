@@ -109,7 +109,7 @@ function streamPrizes(res, contest, callback) {
 
 function streamUsers(res, contest, callback) {
     res.write('\n\nUsers\n');
-    res.write('User Id, Gender, Friend Count\n');
+    res.write('User Id, Gender, Friend Count, Hometown, Location\n');
     Bozuko.models.Entry.distinct("user_id", {contest_id: contest._id}, function(err, user_ids) {
         if (err) return callback(err);
         async.forEach(user_ids, function(user_id, cb) {
@@ -117,7 +117,10 @@ function streamUsers(res, contest, callback) {
                 if (err) return cb(err);
                 var internal = user.services[0].internal;
                 var data = user.services[0].data;
-                res.write(user.id+','+user.gender+','+internal.friend_count+'\n');
+                var str = user.id+','+user.gender+','+internal.friend_count +
+                    (data.hometown ? data.hometown.name : 'NA') + ',' +
+                    (data.location ? data.location.name : 'NA') +'\n';
+                res.write(str);
                 console.log(user.services[0]);
                 cb();
             });
