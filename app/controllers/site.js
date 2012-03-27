@@ -1,6 +1,7 @@
 var Content = Bozuko.require('util/content'),
     validator = require('validator'),
     mailer = Bozuko.require('util/mail'),
+    alias = Bozuko.require('core/alias'),
     inspect = require('util').inspect,
     filter = Bozuko.require('util/functions').filter,
     async = require('async'),
@@ -764,20 +765,20 @@ exports.routes = {
         }
     },
     
-    '/:alias':{
+    '/:page_alias/:contest_alias':{
+        
+        aliases: ['/:page_alias'],
+        
         get : {
             handler : function(req, res, next){
-                var self = this,
-                    alias = req.param('alias');
+                alias.find( req.path, function(error, found){
                     
-                if( ~alias.indexOf('/') ) return next();
-                return Bozuko.models.Contest.find({alias: alias}, {results: 0, page: 0}, {sort: {start: -1}, limit: 1}, function(error, contests){
-                    if( error || !contests.length ) return next();
+                    if( error || !found || !found.game) return next();
                     if( !Bozuko.controllers.Client ){
                         console.log('Please enable the Client controller');
                         return next();
                     }
-                    return Bozuko.controllers.Client.renderGame(req, res, contests[0]);
+                    return Bozuko.controllers.Client.renderGame(req, res, found.game._id );
                 });
             }
         }

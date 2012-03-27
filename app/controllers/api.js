@@ -1,3 +1,5 @@
+var alias = Bozuko.require('core/alias');
+
 exports.session = false;
 
 exports.routes = {
@@ -22,21 +24,19 @@ exports.routes = {
         }
     },
     
-    '/:alias':{
+    '/:page_alias/:contest_alias':{
+        
+        aliases: ['/:page_alias'],
         get : {
             handler : function(req, res, next){
-                var self = this,
-                    alias = req.param('alias');
                 
-                if( ~alias.indexOf('/') ) return next();
-                return Bozuko.models.Contest.find({alias: alias}, {results: 0, page: 0}, {limit: 1}, function(error, contests){
-                    
-                    if( error || !contests.length ) return next();
-                    
-                    if( Bozuko.controllers.Client ){
-                        return Bozuko.controllers.Client.renderGame(req, res, contests[0]);
+                return alias.find( req.path, function(error, found){
+                    if( error || !found|| !found.game) return next();
+                    if( !Bozuko.controllers.Client ){
+                        console.log('Please enable the Client controller');
+                        return next();
                     }
-                    return next();
+                    return Bozuko.controllers.Client.renderGame(req, res, found.game._id);
                 });
             }
         }

@@ -33,6 +33,10 @@ Ext.define('Admin.view.page.Admin' ,{
                 },
                 items           :[{
                     xtype           :'textfield',
+                    name            :'alias',
+                    fieldLabel      :'Alias'
+                },{
+                    xtype           :'textfield',
                     name            :'image',
                     fieldLabel      :'Image'
                 },{

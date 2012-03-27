@@ -16,6 +16,7 @@ Ext.define('Bozuko.model.Page', {
     fields: [
         {name:'_id',            type:'String'},
         {name:'name',           type:'String'},
+        {name:'alias',          type:'String'},
         {name:'is_enterprise',  type:'Boolean'},
         {name:'category',       type:'String'},
         {name:'website',        type:'String'},
