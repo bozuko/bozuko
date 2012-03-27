@@ -534,8 +534,8 @@ FacebookService.prototype.place = function(options, callback){
     facebook.graph('/'+options.place_id, {
         params: params
     },function(error, result){
-        if( error ) return callback( error );
-        return callback(null, self.sanitizePlace(result) );
+		if( error ) return callback( error );
+		return callback(null, self.sanitizePlace(result) );
     });
 
 };
@@ -643,6 +643,7 @@ FacebookService.prototype._sanitizePlace = function(place){
         id: place.id,
         checkins: place.checkins||0,
         likes: place.likes,
+		link: place.link,
         website: place.website,
         phone: place.phone,
         name: place.name,
