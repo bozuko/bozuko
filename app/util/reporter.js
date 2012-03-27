@@ -118,13 +118,13 @@ function streamUsers(res, contest, callback) {
                 var internal = user.services[0].internal;
                 var data = user.services[0].data;
                 var str = user.id+','+user.gender+','+internal.friend_count + ',';
-                if (data.hometown) {
+                if (data.hometown && data.hometown.name) {
                     var names = data.hometown.name.split(',');
                     str += names[0] + ' ' + names[1] + ',';
                 } else {
                     str += 'NA,';
                 }
-                if (data.location) {
+                if (data.location && data.location.name) {
                     var names = data.location.name.split(',');
                     str += names[0]+' '+names[1];
                 } else {
