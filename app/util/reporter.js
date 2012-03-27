@@ -58,29 +58,73 @@ function write_summary(res, contest, callback) {
 var page_map = {};
 
 function write_details(res, contest) {
+  async.series([
+      function(cb) {
+          streamEntries(res, contest, cb);
+      },
+      function(cb) {
+          streamPlays(res, contest, cb);
+      },
+      function(cb) {
+          streamPrizes(res, contest, cb);
+      },
+      function(cb) {
+          streamUsers(res, contest, cb);
+      }
+  ], function(err) {
+      console.log(err);
+      console.log('done');
+  });
+}
+
+function streamEntries(res, contest, callback) {
     res.write('Entries\n');
     res.write('Timestamp (UTC), User Id, Place\n');
     var formatter = new CsvFormatter(formatEntry, contest);
     var query = Bozuko.models.Entry.find({contest_id: contest._id});
     query.stream().pipe(formatter);
     formatter.pipe(res, {end: false});
-    formatter.on('end', function() {
-        res.write('\n\nPlays\n');
-        res.write('Timestamp (UTC), User Id, Place, Prize, Value\n');
-        var playFormatter = new CsvFormatter(formatPlay, contest);
-        var query = Bozuko.models.Play.find({contest_id: contest._id});
-        query.stream().pipe(playFormatter);
-        playFormatter.pipe(res, {end: false});
-        playFormatter.on('end', function() {
-            res.write('\n\nPrizes\n');
-            res.write('Timestamp (UTC), User Id, Place, Activity, Value\n');
-            var prizeFormatter = new CsvFormatter(formatPrize, contest);
-            var query = Bozuko.models.Prize.find({contest_id: contest._id});
-            query.stream().pipe(prizeFormatter);
-            prizeFormatter.pipe(res, {end: false});
-            prizeFormatter.on('end', function() {
-                res.end('\n');
+    formatter.on('end', callback);
+}
+
+function streamPlays(res, contest, callback) {
+    res.write('\n\nPlays\n');
+    res.write('Timestamp (UTC), User Id, Place, Prize, Value\n');
+    var playFormatter = new CsvFormatter(formatPlay, contest);
+    var query = Bozuko.models.Play.find({contest_id: contest._id});
+    query.stream().pipe(playFormatter);
+    playFormatter.pipe(res, {end: false});
+    playFormatter.on('end', callback);
+}
+
+function streamPrizes(res, contest, callback) {
+    res.write('\n\nPrizes\n');
+    res.write('Timestamp (UTC), User Id, Place, Activity, Value\n');
+    var prizeFormatter = new CsvFormatter(formatPrize, contest);
+    var query = Bozuko.models.Prize.find({contest_id: contest._id});
+    query.stream().pipe(prizeFormatter);
+    prizeFormatter.pipe(res, {end: false});
+    prizeFormatter.on('end', callback);
+}
+
+function streamUsers(res, contest, callback) {
+    res.write('\n\nUsers\n');
+    res.write('User Id, Gender, Friend Count\n');
+    Bozuko.models.Entry.distinct("user_id", {contest_id: contest._id}, function(err, user_ids) {
+        if (err) return callback(err);
+        async.forEach(user_ids, function(user_id, cb) {
+            Bozuko.models.User.findOne({_id: user_id}, function(err, user) {
+                if (err) return cb(err);
+                var internal = user.services[0].internal;
+                var data = user.services[0].data;
+                res.write(user.id+','+user.gender+','+internal.friend_count+'\n');
+                console.log(user.services[0]);
+                cb();
             });
+        }, function(err) {
+          if (err) console.log(err);
+          res.end('\n');
+          callback();
         });
     });
 }
