@@ -29,6 +29,9 @@ exports.find = function( alias, callback ){
         },
         
         function get_game(cb){
+			
+			if( game_alias && !page ) return cb();
+			
             var alias = game_alias;
             
             if( !alias && page ){

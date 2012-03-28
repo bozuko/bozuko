@@ -442,12 +442,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         var self = this,
             api = this.api;
             
-        console.log(path);
-            
         api.call( path, function(gameResponse){
             // we also need to get the page
-            
-            console.log( gameResponse );
             
             if( !gameResponse.ok ){
                 // handle this error
