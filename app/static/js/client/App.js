@@ -48,7 +48,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         Bozuko.client.App.superclass.constructor.call(this, config);
         
         this.on('pagedata', function(data){
-            this.updateBranding();
+            self.updateBranding();
         });
         if( !this.validPath() ){
             return;
