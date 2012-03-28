@@ -312,7 +312,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     getBrandingElements : function(){
         if( !this.page ) return [];
-        console.log( this.page );
         return [{
             tag         :'table',
             style       :'margin: 0 auto',
