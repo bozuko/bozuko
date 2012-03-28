@@ -1,5 +1,6 @@
 var async = require('async'),
     s3 = Bozuko.require('util/s3'),
+    alias = Bozuko.require('core/alias'),
     Facebook = Bozuko.require('util/facebook'),
     burl = Bozuko.require('util/url').create,
     merge = Bozuko.require('util/functions').merge,
@@ -24,6 +25,9 @@ exports.renderGame = function(req, res, contest_id, page_id){
     
     var contest, page;
     
+    contest_id = String( contest_id );
+    if( page_id ) page_id = String( page_id );
+    
     return async.series([
         
         function get_contest(cb){
@@ -43,7 +47,8 @@ exports.renderGame = function(req, res, contest_id, page_id){
             
             if( page_id ){
                 var pid = String(contest.page_id);
-                if( !contest.page_id == pid || !~indexOf(pid, contest.page_ids) ){
+                
+                if( String(contest.page_id) != pid && !~indexOf(pid, contest.page_ids) ){
                     return cb(new Error('Invalid Page Id'));
                 }
             }
@@ -286,19 +291,16 @@ exports.routes = {
         }
     },
     
-    '/client/game/:id' : {
+    '/client/game/:page/:game' : {
+        alias : '/client/game/:page',
         get : {
             handler : function(req, res){
-                var contest_id = req.param('id'),
-                    page_id, contest, page,
-                    device = req.session.device;
-                    
-                if( ~contest_id.indexOf('-') ){
-                    var id_parts = contest_id.split('-');
-                    contest_id = id_parts[0];
-                    page_id = id_parts[1];
-                }
-                return this.renderGame(req, res, contest_id, page_id);
+                var self = this
+                  , path = req.path.replace(/^\/client\/game\//, '');
+                
+                return alias.find(path, function(error, found){
+                    return self.renderGame(req, res, found && found.game ? found.game._id : null, found  && found.page ? found.page._id : null );
+                });
             }
         }
     },

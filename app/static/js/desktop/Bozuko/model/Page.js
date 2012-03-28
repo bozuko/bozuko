@@ -23,6 +23,7 @@ Ext.define('Bozuko.model.Page', {
         {name:'image',          type:'String'},
         {name:'twitter_id',     type:'String'},
         {name:'featured',       type:'Boolean'},
+        {name:'nobranding',     type:'Boolean'},
         {name:'announcement',   type:'String'},
         {name:'active',         type:'Boolean'},
         {name:'location',       type:'Object'},

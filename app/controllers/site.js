@@ -684,18 +684,27 @@ exports.routes = {
         }
     },
     
-    '/facebook/tab/:contest' : {
+    '/facebook/tab/:page/:game' : {
+        alias: '/facebook/tab/:page',
         get : {
             ref: 'facebookContest',
             title : 'Bozuko - Facebook Tab',
             handler : function(req, res){
-                return res.redirect('/client/game/'+req.param('contest')+'?play=1&facebook_tab=1');
+                
+                var page = req.param('page')
+                  , game = req.param('game')
+                  ;
+                
+                var parts = [page];
+                if( game ) parts.push( game );
+                
+                return res.redirect('/client/game/'+parts.join('/')+'?play=1&facebook_tab=1');
             }
         },
         
         post : {
             handler : function(req, res){
-                this.refs['facebookContest'](req, res);
+                this.refs.facebookContest(req, res);
             }
         }
     },

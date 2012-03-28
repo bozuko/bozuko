@@ -48,7 +48,16 @@ exports.find = function( alias, callback ){
                 if( _game ) game = _game;
                 cb();
             });
-        }
+        },
+		
+		function double_check_game(cb){
+			if( page || !game ) return cb();
+			return Bozuko.models.Page.findById( game.page_id, function(error, _page){
+				if( !error && _page ) page = _page;
+				return cb();
+			});
+		}
+		
     ], function do_return(err){
         return callback(null, {
             page: page,
@@ -59,12 +68,14 @@ exports.find = function( alias, callback ){
 };
 
 function find_page( page_alias, callback ){
-    Bozuko.models.Page.findOne({alias: page_alias}, callback);
+    Bozuko.models.Page.findOne({
+		$or: [{alias: page_alias}, {id: page_alias}]
+	},callback);
 }
 
 function find_game( game_alias, callback ){
     Bozuko.models.Contest.find({
-        alias: game_alias,
+        $or: [{alias: game_alias}, {id: game_alias}],
         active: true,
 		web_only: true
 	}, {results: 0, page: 0}, {limit: 1, sort:{start:-1}}, function(error, games){

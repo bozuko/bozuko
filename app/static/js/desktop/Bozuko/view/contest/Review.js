@@ -101,8 +101,18 @@ Ext.define('Bozuko.view.contest.Review', {
                     getEmbedCode : function(){
                         var l = window.location,
                             h = l.host.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko'),
-                            url = l.protocol+'//'+h+'/client/loader/?game='+me.contest.get('_id')
-                            ;
+                            url = l.protocol+'//'+h+'/client/loader/?game=',
+                            page = me.up('pagepanel').page;
+                        
+                        url += page.get('alias') || page.get('_id');
+                        url += ('/' + (me.contest.get('alias') || me.contest.get('_id')));
+                        
+                        
+                        // should we have branding here?
+                        if( me.up('pagepanel').page.get('nobranding') ){
+                            url+= '&nobranding=1';
+                        }
+                        
                         url = url.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko');
                         
                         return '<script type="text/javascript" src="'+url+'"></script>';
@@ -110,7 +120,10 @@ Ext.define('Bozuko.view.contest.Review', {
                     getFacebookTabUrl : function(){
                         var l = window.location,
                             h = l.host.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko'),
-                            url = l.protocol+'//'+h+'/facebook/tab/'+me.contest.get('_id')
+                            page = me.up('pagepanel').page,
+                            url = l.protocol+'//'+h+'/facebook/tab/'+
+                                (page.get('alias') || page.get('_id')) + '/' +
+                                (me.contest.get('alias') || me.contest.get('_id'))
                             ;
                         return url;
                     },
