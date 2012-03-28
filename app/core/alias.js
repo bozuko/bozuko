@@ -1,5 +1,4 @@
 var async = require('async')
-  , ObjectId = require('mongoose').Schema.ObjectId
   ;
 
 /**
@@ -69,13 +68,13 @@ exports.find = function( alias, callback ){
 
 function find_page( page_alias, callback ){
     Bozuko.models.Page.findOne({
-		$or: [{alias: page_alias}, {_id: new ObjectId(page_alias)}]
+		$or: [{alias: page_alias}, {_id: page_alias}]
 	},callback);
 }
 
 function find_game( game_alias, callback ){
     Bozuko.models.Contest.find({
-        $or: [{alias: game_alias}, {_id: new ObjectId(game_alias)}],
+        $or: [{alias: game_alias}, {_id: game_alias}],
         active: true
 	}, {results: 0, page: 0}, {limit: 1, sort:{start:-1}}, function(error, games){
         if( error ) return callback( error );
