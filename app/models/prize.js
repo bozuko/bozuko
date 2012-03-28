@@ -208,8 +208,7 @@ Prize.method('sendEmail', function(user) {
         to: user.email,
         subject: subject,
         html: body,
-        body: text,
-		sender : this.page_name
+        body: text
     };
 
 	if( self.email_replyto && self.email_replyto != '' ){
