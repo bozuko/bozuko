@@ -774,6 +774,12 @@ exports.routes = {
         }
     },
     
+    '/redirect' : {
+        get : function(req, res, next){
+            res.redirect( req.param('url') );
+        }
+    },
+    
     '/:page_alias/:contest_alias':{
         
         aliases: ['/:page_alias'],
