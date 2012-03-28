@@ -124,7 +124,6 @@ exports.renderGame = function(req, res, contest_id, page_id){
                 res.locals.stylesheets.push(style+'?'+now);
             });
             res.locals.html_classes = [];
-            console.log(req.param);
             if( req.param('facebook_tab') ) res.locals.html_classes.push('facebook-tab');
             res.locals.title = 'Play '+game.getName()+'!';
             res.locals.device = 'touch';
