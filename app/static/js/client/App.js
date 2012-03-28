@@ -115,6 +115,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( this.facebook_tab ){
             this.$poweredBy = Ext.get(this.ct).createChild({
                 cls         :'bozuko-powered',
+                style       :'display: none',
                 tag         :'a',
                 target      :'_blank',
                 href        :'https://bozuko.com'
@@ -463,6 +464,10 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 
                 self.page = pageResponse.data;
                 self.fireEvent('pagedata', pageResponse.data, self);
+                
+                if( !self.page.nobranding && self.$poweredBy){
+                    self.$poweredBy.show();
+                }
                 
                 self.scratch = new Bozuko.client.game.Scratch({
                     width: self.$body.getWidth(),

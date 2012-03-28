@@ -128,18 +128,21 @@ var Bozuko={};
                     var box = document.getElementById(id),
                         iframe = box.getElementsByTagName('iframe')[0],
                         cw = iframe.contentWindow;
+                        
+                    if( cw.addEventListener ) cw.addEventListener('message', function(message){
+                        if( message.data === 'gamedone' ){
+                            setTimeout( hide, 1000 );
+                        }
+                    });
                     
+                    // check if we should hide this...
+                    if( options.nobranding ) return;
                     var poweredBy = document.createElement('a');
                     poweredBy.setAttribute('href', 'https://bozuko.com');
                     poweredBy.setAttribute('target', '_blank');
                     poweredBy.setAttribute('class', 'bozuko-powered');
                     box.appendChild(poweredBy);
                     
-                    if( cw.addEventListener ) cw.addEventListener('message', function(message){
-                        if( message.data === 'gamedone' ){
-                            setTimeout( hide, 1000 );
-                        }
-                    });
                 }
             });
         });

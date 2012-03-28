@@ -10,6 +10,7 @@ exports.transfer_objects = {
             id: "String",
             name: "String",
             image: "String",
+            nobranding: "Boolean",
             share_url: "String",
             like_url: "String",
             like_button_url: "String",

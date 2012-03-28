@@ -26,6 +26,7 @@ var Page = module.exports = new Schema({
     category            :{type:String, index: true},
 	alias				:{type:String, index: true},
     website             :{type:String},
+	nobranding			:{type:Boolean},
     phone               :{type:String},
     description         :{type:String},
     is_location         :{type:Boolean},

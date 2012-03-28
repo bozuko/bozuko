@@ -41,6 +41,10 @@ Ext.define('Admin.view.page.Admin' ,{
                     fieldLabel      :'Image'
                 },{
                     xtype           :'checkbox',
+                    name            :'nobranding',
+                    fieldLabel      :'Remove Branding'
+                },{
+                    xtype           :'checkbox',
                     name            :'active',
                     fieldLabel      :'Active'
                 },{
