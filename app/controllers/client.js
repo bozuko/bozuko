@@ -22,11 +22,13 @@ exports.session = false;
 var now = Date.now();
 
 exports.renderGame = function(req, res, contest_id, page_id){
+    console.log( {contest_id: contest_id, page_id: page_id});
     
     var contest, page;
     
     contest_id = String( contest_id );
     if( page_id ) page_id = String( page_id );
+    
     
     return async.series([
         

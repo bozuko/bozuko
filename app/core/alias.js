@@ -11,8 +11,6 @@ exports.find = function( alias, callback ){
       , page_alias = parts.length ? parts.shift() : null
       , game_alias = parts.length ? parts.shift() : null
       ;
-      
-    
     
     if( !page_alias ) return callback(null, {
         page: null,
@@ -61,7 +59,8 @@ exports.find = function( alias, callback ){
 		}
 		
     ], function do_return(err){
-        return callback(null, {
+		
+		return callback(null, {
             page: page,
             game: game
         });
@@ -72,7 +71,7 @@ exports.find = function( alias, callback ){
 function find_page( page_alias, callback ){
     Bozuko.models.Page.findOne({
 		$or: [{alias: page_alias}, {_id: page_alias}]
-	},callback);
+	}, callback);
 }
 
 function find_game( game_alias, callback ){
