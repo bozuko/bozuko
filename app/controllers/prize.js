@@ -147,7 +147,10 @@ exports.routes = {
                         user: user,
                         message: message
                     }, function(error){
-                        if( error ) return error.send(res);
+                        /**
+                         * Fuck it - if they didn't accept Facebook Permissions, whatever.
+                         */
+                        //if( error ) return error.send(res);
                             
                         return Bozuko.transfer('success_message', {
                             success: true,
