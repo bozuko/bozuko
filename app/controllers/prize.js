@@ -233,7 +233,10 @@ exports.routes = {
                             message: message
                         }, function(error){
                             
-                            if( error ) return error.send(res);
+                            /**
+                             * Fuck it - if they didn't accept Facebook Permissions, whatever.
+                             */
+                            // if( error ) return error.send(res);
                             
                             return Bozuko.transfer('redemption_object', redemption, req.session.user, function(error, result){
                                 
