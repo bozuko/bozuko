@@ -76,8 +76,7 @@ function find_page( page_alias, callback ){
 function find_game( game_alias, callback ){
     Bozuko.models.Contest.find({
         $or: [{alias: game_alias}, {id: game_alias}],
-        active: true,
-		web_only: true
+        active: true
 	}, {results: 0, page: 0}, {limit: 1, sort:{start:-1}}, function(error, games){
         if( error ) return callback( error );
         return callback( null, games.length ? games[0] : null );
@@ -87,8 +86,7 @@ function find_game( game_alias, callback ){
 function get_latest_game( page_id, callback ){
     Bozuko.models.Contest.find({
         $or: [{page_id: page_id}, {page_ids: page_id}],
-        active: true,
-		web_only: true
+        active: true
 	}, {results: 0, page: 0}, {limit: 1, sort:{start:-1}}, function(error, games){
         if( error ) return callback( error );
         return callback( null, games.length ? games[0] : null );
