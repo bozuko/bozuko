@@ -11,7 +11,7 @@ inherits(CougarTheme, ScratchTheme);
 
 CougarTheme.prototype.name = 'kccougars';
 CougarTheme.prototype.images = {
-    'background'    :'background.png'
+    'background'    :'background.jpg'
 };
 
 CougarTheme.prototype.base = 'https://s3.amazonaws.com/bozuko/public/scratch/themes/MILB/KaneCountyCougars/theme';
