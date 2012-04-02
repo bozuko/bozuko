@@ -176,7 +176,7 @@ Ext.define('Bozuko.view.contest.List' ,{
                     
                     canCopy : function(values){
                         if( me.actionButtons && !~Ext.Array.indexOf(me.actionButtons,'copy')) return '';
-                        if( !window.location.pathname.match(/admin/i) && me.page.get('is_enterprise') ) return '';
+                        // if( !window.location.pathname.match(/admin/i) && me.page.get('is_enterprise') ) return '';
                         return true;
                     },
                     
