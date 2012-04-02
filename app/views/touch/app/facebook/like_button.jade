@@ -183,6 +183,18 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               img.style.zIndex = '1';
               img.src="/images/assets/facebook/like-liked-#{isAndroid?'android':'iphone'}.png";
               document.body.appendChild(img);
+              
+              var req = new XMLHttpRequest();
+              req.onreadystatechange = function(){
+                if(req.readyState == 4){
+                  broadcast("facebook/liked");
+                }
+              };
+              req.open('GET', '/user?liked='+fb_id+'&token='+token+'&nocache='+(new Date()).getTime());
+              setTimeout(function(){
+                req.send();
+              }, 200);
+              
           }
           
           (function () {
