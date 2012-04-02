@@ -32,7 +32,7 @@ exports['win'] = function(test) {
 };
 
 exports['free_spin'] = function(test) {
-    var result = slots.process(4);
+    var result = slots.process('free_play');
     test.equal(result[0], 'free_spin');
     test.equal(result[0], result[1]);
     test.equal(result[1], result[2]);
