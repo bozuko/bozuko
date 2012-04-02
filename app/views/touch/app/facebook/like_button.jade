@@ -193,6 +193,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
           }());
       -else
         script(type="text/javascript")
+          broadcast("facebook/liked");
           broadcast("facebook/like_loaded");
       script(type="text/javascript")
         document.ontouchmove = function (e) {
