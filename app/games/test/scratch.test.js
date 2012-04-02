@@ -74,7 +74,7 @@ exports['win'] = function(test) {
 exports['free_spin'] = function(test) {
     var used_nums = {}, results = {};
     var val, free_spin_val;
-    var nums = scratch.process(contest.prizes.length).numbers;
+    var nums = scratch.process('free_play').numbers;
     
     for (var i = 0; i < size; i++) {
         val = nums[i].number;
