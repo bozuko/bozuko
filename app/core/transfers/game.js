@@ -65,7 +65,7 @@ var game_result = {
              */
             // ret.message = "You lost, bummer!\nBut, because we are such good sports, we are going to give you a prize just for playing!";
             ret.win = true;
-            ret.consolation = false;
+            ret.consolation = true;
         }
 
         var page_id = result.contest.game_state.page_id;

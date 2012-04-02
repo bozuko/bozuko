@@ -845,8 +845,14 @@ Contest.method('play', function(memo, callback){
 
     var engine = this.getEngine();
     async.reduce(
-        ['spendEntryToken', engine.play, 'processResult',
-         'savePrizes', 'savePlay'],
+        ['spendEntryToken',
+         engine.play,
+         'processResult',
+         'savePrizes',
+         // moved processGameResult to after process result so we can make
+         // consolation prizes look like actual wins
+         'processGameResult',
+         'savePlay'],
         memo,
         function(memo, fn, cb) {
             if (typeof fn === 'string') return self[fn](memo, cb);
@@ -967,8 +973,6 @@ Contest.method('spendEntryToken', function(memo, callback) {
     var self = this;
     var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration'));
 
-	console.log(inspect({contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}}));
-
     Bozuko.models.Entry.findAndModify(
         {contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}},
         [],
@@ -993,14 +997,14 @@ Contest.method('processResult', function(memo, callback) {
     // Did we win a free_play? If so there isn't a prize.
     if (result === 'free_play') {
         var free_play_index = this.prizes.length;
-        memo.game_result = Bozuko.game(this).process(free_play_index );
+        //memo.game_result = Bozuko.game(this).process(free_play_index );
         memo.free_play = true;
         memo.prize_index = false;
         return this.incrementEntryToken(memo, callback);
     }
 
     // We didn't get a free play. Did the user win?
-    memo.game_result = Bozuko.game( this ).process( result ? result.index : false );
+    //memo.game_result = Bozuko.game( this ).process( result ? result.index : false );
     memo.prize_index = result ? result.index : false;
     memo.prize_code = result ? result.code : false;
     memo.prize_count = result ? result.count : false;
@@ -1021,6 +1025,24 @@ Contest.method('processResult', function(memo, callback) {
     } else {
       return callback(null, memo);
     }
+});
+
+Contest.method('processGameResult', function(memo, callback){
+    var result = memo.result;
+    try{
+    if( memo.result == 'free_play')
+        memo.game_result = Bozuko.game(this).process('free_play');
+        
+    else if( memo.consolation )
+        memo.game_result = Bozuko.game(this).process('consolation');
+    
+    else
+        memo.game_result = Bozuko.game(this).process( result ? result.index : false );
+    }
+    catch(e){
+        return callback(e);
+    }
+    return callback(null, memo);
 });
 
 Contest.method('savePrizes', function(memo, callback) {

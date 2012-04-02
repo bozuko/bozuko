@@ -54,9 +54,13 @@ Slots.prototype.process = function(outcome){
 
     else {
         var icon;
-        if( outcome === this.contest.prizes.length ){
+        if( outcome === 'free_play' ){
             icon = 'free_spin';
         }
+		else if( outcome === 'consolation' ){
+			// get the next one
+			icon = icons[ self.prizes.length ];
+		}
         else{
 			var index = self.prizes.indexOf( self.contest.prizes[outcome] );
             icon = icons[index];
