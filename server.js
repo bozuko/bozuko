@@ -45,9 +45,7 @@ var proc = cluster( './app' )
         if( env === 'api' ){
             Bozuko.initFacebookPubSub();
         }
-        if( env === 'site' || env === 'playground' || env == 'dashboard' ){
-            Bozuko.initHttpRedirect();
-        }
+        Bozuko.initHttpRedirect();
         if ( env === 'api' || env === 'playground' || env === 'development' ) {
             Bozuko.initAutoRenew();
             Bozuko.initExpirationChecker();

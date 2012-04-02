@@ -487,6 +487,7 @@ Bozuko.initHttpRedirect = function(){
 	var redirect_server = http.createServer(function(req, res){
 		var ssl_url = (config.server.ssl ? 'https://' : 'http://')
 					+ config.server.host
+					+':'+config.server.port
 					+ req.url;
 
 		res.writeHead(301, {
@@ -495,7 +496,7 @@ Bozuko.initHttpRedirect = function(){
 		res.end();
 	});
 
-	redirect_server.listen(80);
+	redirect_server.listen(config.server.port == 443 ? 80 : config.server.port+100);
 };
 
 Bozuko.initExpirationChecker = function(){
