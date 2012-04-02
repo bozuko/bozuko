@@ -189,6 +189,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             break;
                         
                         case 'facebook/liked':
+                            alert('hello!');
                             self.app.api.call(self.app.user.links.user, function(result){
                                 self.updateState(true);
                             });
