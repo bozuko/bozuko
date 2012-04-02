@@ -134,6 +134,12 @@ exports.renderGame = function(req, res, contest_id, page_id){
             return res.render('client/index');
         }
         // this is going to be the desktop display...
+        
+        var share = contest.get('share_url');
+        if( share ){
+            return res.redirect( share );
+        }
+        
         res.locals = merge({}, Bozuko.require('controllers/site').locals);
         res.locals.meta['og:image'] = burl('/page/'+page._id+'/image');
         if( Bozuko.env() == 'site' ) res.locals.meta['og:image'] = res.locals.meta['og:image'].replace(/\/\/bozuko\.com/, '//api.bozuko.com');

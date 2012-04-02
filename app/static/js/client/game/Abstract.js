@@ -463,8 +463,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         var ul = description.child('.prizes ul');
         ul.update('');
         this.fireEvent('updatedescription', description);
-        for(var i=0; i<this.game.prizes.length; i++){
-            var p = this.game.prizes[i];
+        var prizes = this.game.prizes;
+        if( this.game.consolation_prizes ){
+            prizes = prizes.concat( this.game.consolation_prizes );
+        }
+        for(var i=0; i< prizes.length; i++){
+            var p = prizes[i];
             var li = ul.createChild({
                 tag         :'li',
                 cn          :[{

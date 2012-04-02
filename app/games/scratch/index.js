@@ -59,12 +59,18 @@ Scratch.prototype.process = function(outcome) {
     } else {
         numbers = win(this.contest, outcome);
     }
-
     return numbers;
 };
 
 function randomPrize( contest, exclude ){
     var ar = [], prizes = contest.prizes.slice(0);
+    
+    if( contest.consolation_config && contest.consolation_config.length &&
+        contest.consolation_prizes && contest.consolation_prizes.length
+    ){
+        prizes = prizes.concat( contest.consolation_prizes.slice(0, 1) );
+    }
+    
     if( exclude === undefined || exclude === prizes.length ) prizes.push({name:'Free Play'});
     for( var i=0; i < prizes.length; i++) ar.push(i);
     if( exclude !== undefined && exclude < prizes.length ) ar.splice( exclude, 1);
@@ -75,10 +81,15 @@ function win(contest, winIndex) {
     var ar = [], prize;
     for (var i = 0; i < size; i++) { ar[i] = i; }
 
-    if( winIndex === contest.prizes.length ){
+    if( winIndex === 'free_play' ){
         // free spin!
         prize = {name:'Free Play'};
     }
+    
+    else if( winIndex === 'consolation'){
+        prize = contest.consolation_prizes[0];
+    }
+    
     else{
         prize = contest.prizes[winIndex];
     }
