@@ -194,8 +194,8 @@ Prize.method('sendEmail', function(user) {
 
     Object.keys(subs).forEach(function(key){
         var re = new RegExp(XRegExp.escape(key), "gi");
-        subject = subject.replace(re, subs[key] );
-        body = body.replace(re, subs[key] );
+        subject = subject.replace(re, subs[key]||'' );
+        body = body.replace(re, subs[key]||'' );
     });
 
     var text = body
