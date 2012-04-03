@@ -305,9 +305,19 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.showLoading(
             'Please login with Facebook to play <a href="#" class="facebook-login">Login With Facebook</a>'
         );
-        this._loader.$el.child('.facebook-login').on('click', function(){
-            this.doLogin();
-        }, this);
+        var self = this;
+        this._loader.$el.child('.facebook-login').dom.onclick = function(){
+            // test for qr reader on iphone...
+            var qr = navigator.userAgent.match(/i(phone|pad|pod)/i ) && !navigator.userAgent.match(/safari/i);
+            
+            if( !qr ){
+                FB.login(function(){},{scope: Bozuko.client.App.facebookApp.scope});
+                self.showLoading('Logging in...');
+            }
+            else{
+                window.top.location = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
+            }
+        };
     },
     
     getBrandingElements : function(){
