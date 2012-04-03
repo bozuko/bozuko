@@ -2,11 +2,6 @@
 var DateUtil = require('../app/util/date');
 var braintree = require('braintree');
 
-var port = 6999 + process.getuid();
-
-// Reserve the docs port for our contractors.
-if (process.env.USER === 'docs') port = 7002;
-
 module.exports = {
 
     test_mode: false,
@@ -43,7 +38,7 @@ module.exports = {
     },
 
     db:{
-        name: 'bozuko_dev'+port,
+        name: 'bozuko_cfa',
         host: '127.0.0.1',
         options: {
             server: {poolSize: 25},
@@ -154,8 +149,8 @@ module.exports = {
             ca : '/ssl/wildcard/gd_bundle.crt',
             cert: '/ssl/wildcard/bozuko.com.crt'
         },
-        host: 'cfapromo.bozuko.com',
-        port: port
+        host: 'cfa.bozuko.com',
+        port: 443
     },
 
     pubsub: {
