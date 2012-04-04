@@ -21,6 +21,14 @@ Ext.define('Bozuko.store.EntryTypes', {
             '<p>A player must be present at your location and all entries post to player\'s walls.  Using the Bozuko app, players can "check in and play" with a single button.</p>'
         ].join('')
     },{
+        type: 'facebook/likecheckin',
+        title: 'Facebook Like + Check in',
+        hidden: false,
+        img:'/images/desktop/app/builder/entry/facebook-checkin-fit.png',
+        description: [
+            '<p>A player must like your page and be present at your location and all entries post to player\'s walls.  Using the Bozuko app, players can "check in and play" with a single button.</p>'
+        ].join('')
+    },{
         type: 'bozuko/checkin',
         title: 'Bozuko Check in',
         hidden: true,
