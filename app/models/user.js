@@ -17,6 +17,8 @@ var mongoose = require('mongoose'),
 var safe = {j:true};
 var User = module.exports = new Schema({
     name                :{type:String, index: true},
+    // 'local' users are bozuko only users with an email and password (no service)
+    local               :{type:String},    
     phones              :[Phone],
     token               :{type:String, index: true},
     salt                :{type:Number},
