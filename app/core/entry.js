@@ -205,6 +205,9 @@ Entry.prototype.validate = function( callback ){
         // check for user
         if( !self.user ) return callback(null, false);
 
+        // Only allow local users on contests with entry type bozuko/nothing
+        if (self.user.local && (self.type != 'bozuko/nothing')) return callback(null, false); 
+
         // check that the engine allows entry
         if (!self.getEngine().allowEntry(self)) {
             return callback(null, false);

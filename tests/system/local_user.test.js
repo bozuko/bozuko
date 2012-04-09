@@ -2,6 +2,7 @@ var testsuite = require('./config/testsuite-local'),
     request = testsuite.request,
     page = testsuite.page,
     contest = testsuite.contest,
+    fb_contest = testsuite.fb_contest
     ll = '42.646261785714,-71.303897114286';
 
 exports.setup = function(test) {
@@ -55,6 +56,20 @@ exports['Login'] = function(test) {
     });
 };
 
+// Local users can only enter contests of type bozuko/nothing
+exports['Enter FB contest and fail'] = function(test) {
+    var uri = '/game/'+fb_contest.id+'-'+page.id+'/entry';
+    request({method: 'POST', uri: uri, json: {
+        ll: ll,
+        token: token
+    }}, function(err, res, body) {
+        test.ok(!err);
+        test.notEqual(res.statusCode, 200);
+        console.log(body);
+        test.done();
+    });
+};
+
 exports['Enter contest'] = function(test) {
     var uri = '/game/'+contest.id+'-'+page.id+'/entry';
     request({method: 'POST', uri: uri, json: {
@@ -63,6 +78,19 @@ exports['Enter contest'] = function(test) {
     }}, function(err, res, body) {
         test.ok(!err);
         test.equal(res.statusCode, 200);
+        console.log(body);
+        test.done();
+    });
+};
+
+exports['Enter contest again and fail'] = function(test) {
+    var uri = '/game/'+contest.id+'-'+page.id+'/entry';
+    request({method: 'POST', uri: uri, json: {
+        ll: ll,
+        token: token
+    }}, function(err, res, body) {
+        test.ok(!err);
+        test.notEqual(res.statusCode, 200);
         console.log(body);
         test.done();
     });

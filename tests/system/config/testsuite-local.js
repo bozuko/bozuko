@@ -28,8 +28,13 @@ exports.setup = function(callback) {
     async.series([
         cleanup,
         add_page,
-        add_contest,
-        publish_contest
+        function(cb) {
+            add_contest(contest, cb);
+        },
+        function(cb) {
+            add_contest(fb_contest, cb);
+        },
+        publish_contests
     ], callback);
 };
 
@@ -42,6 +47,23 @@ var contest = exports.contest = new Bozuko.models.Contest({
     },
     entry_config: [{
         type: "bozuko/nothing",
+        tokens: 3,
+        duration: 1000 
+    }],
+    win_frequency: 1,
+    start: new Date(),
+    end: new Date(Date.now()+1000),
+    free_play_pct: 0
+});
+
+var fb_contest = exports.fb_contest = new Bozuko.models.Contest({
+    engine_type: 'order',
+    game: 'slots',
+    game_config: {
+        theme: 'default'
+    },
+    entry_config: [{
+        type: "facebook/checkin",
         tokens: 3,
         duration: 1000 
     }],
@@ -69,8 +91,8 @@ function add_page(cb) {
     page.save(cb);
 }
 
-function add_contest(cb) {
-    contest.prizes.push({
+function add_contest(_contest, cb) {
+    _contest.prizes.push({
         name: 'DBC $10 giftcard',
         value: '0',
         description: 'Gonna create some sick desynes fer you',
@@ -83,10 +105,16 @@ function add_contest(cb) {
         email_body: 'Give the gift code to the proprietor and watch him amaze you!',
         email_codes: ["15h1ttyd3s1gn"]
     });
-    contest.page_id = exports.page._id;
-    contest.save(cb);
+    _contest.page_id = exports.page._id;
+    _contest.save(cb);
 }
 
-function publish_contest(cb) { 
-    contest.publish(cb);
+function publish_contests(callback) { 
+    async.series([
+        function(cb) {
+            contest.publish(cb);
+        },
+        function(cb) {
+            fb_contest.publish(cb); 
+        }], callback);
 }
