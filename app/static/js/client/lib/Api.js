@@ -80,7 +80,7 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
             data;
             
         // did we just shit ourselves?
-        if( !success ) console.log(arguments);
+        //if( !success ) console.log(arguments);
         
         try{
             data = JSON.parse(response.responseText);

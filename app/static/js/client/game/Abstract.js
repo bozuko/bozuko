@@ -1125,13 +1125,13 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 method: 'post'
             },function(result){
                 
+                self.app.hideLoading();
+                
                 if( !result.ok ){
-                    self.updateAction('Error');
                     self.showDescription();
+                    self.updateActionFromState();
                     return;
                 }
-                
-                self.app.hideLoading();
                 
                 Ext.each( result.data, function(state){
                     if( state.game_id == self.game.id ){
@@ -1173,8 +1173,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             method: 'post'
         },function(result){
             
+            self.app.hideLoading();
+            
             if( !result.ok ){
-                self.updateAction('Error');
+                self.updateActionFromState();
                 self.showDescription();
                 return;
             }
@@ -1183,7 +1185,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 self.updatePrizes();
             }
             
-            self.app.hideLoading();
             self.game_result = result.data;
             self.setState(result.data.game_state);
             

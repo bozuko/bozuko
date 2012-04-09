@@ -22,7 +22,7 @@ Ext.define('Bozuko.store.EntryTypes', {
         ].join('')
     },{
         type: 'facebook/likecheckin',
-        title: 'Facebook Like + Check in',
+        title: 'Like + Check-in',
         hidden: false,
         img:'/images/desktop/app/builder/entry/facebook-checkin-fit.png',
         description: [
