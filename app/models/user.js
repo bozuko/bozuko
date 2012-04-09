@@ -18,7 +18,7 @@ var safe = {j:true};
 var User = module.exports = new Schema({
     name                :{type:String, index: true},
     // 'local' users are bozuko only users with an email and password (no service)
-    local               :{type:String},    
+    local               :{type:Boolean},    
     phones              :[Phone],
     token               :{type:String, index: true},
     salt                :{type:Number},
@@ -554,6 +554,22 @@ User.static('createFromServiceObject', function(user, callback){
     });
 });
 
+User.static('createLocal', function(name, email, callback) {
+    if (!email) return callback(new Error('You need an email address'));
+    Bozuko.models.User.findOne({email: email, local: true}, function(err, u) {
+        if (err) return callback(err);
+        console.log('user returned from mongo');
+        console.log(u);
+        if (u) return callback(new Error('That user already exists'));
+        var user = new Bozuko.models.User({
+            name: name, 
+            email: email,
+            local: true
+        });
+        user.save(callback);
+    });
+});
+
 User.static('addOrModify', function(user, phone, callback) {
     var q;
     var service_id = {'services.name':user.service,'services.sid':user.id};
@@ -581,8 +597,7 @@ User.static('addOrModify', function(user, phone, callback) {
         // do not overwrite a user specified email
         if( !user.user_email ) u.email = user.email;
         u.gender = user.gender;
-
-        if (phone) {
+if (phone) {
             var result = u.verify_phone(phone);
             if (result === 'new') {
                 console.log("New Phone added: "+JSON.stringify(phone)+" for facebook id: "+service_id);

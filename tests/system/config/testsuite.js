@@ -6,6 +6,7 @@ var assert = require('assert');
 var async = require('async');
 var http = require('http');
 var inspect = require('util').inspect;
+var request = require('request');
 
 var users = {
     a: {
@@ -27,6 +28,20 @@ assert.fbpage_id = "181069118581729";
 assert.phone = {
     type: 'iphone',
     unique_id: '425352525232535'
+};
+
+/*
+ * Simple wrapper around Mikeal's request that automatically fills in the server host:port.
+ * You can use this instead of assert.response in your tests if you like.
+ */
+exports.request = function(options, callback) {
+    if (typeof options === 'string') {
+        options = {
+            uri: options
+        }
+    }
+    options.uri = 'http://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+options.uri;
+    request(options, callback);
 };
 
 /**

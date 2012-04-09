@@ -158,6 +158,31 @@ exports.renderGame = function(req, res, contest_id, page_id){
 };
 
 exports.routes = {
+    '/client/local': {
+        // Create a 'local' user
+        post: {
+            handler: function(req, res){
+                var name = req.param('name');
+                var email = req.param('email');
+                Bozuko.models.User.createLocal(name, email, function(err) {
+                   if (err) return err.send(res);
+                   res.end();
+                });
+            }
+        }
+    },
+    '/client/local/login': {
+        post: {
+            handler: function(req, res){
+                var email = req.param('email');
+                Bozuko.models.User.findOne({email: email, local: true}, function(err, user) {
+                    if (err) return err.send(res);
+                    if (!user) res.send('User does not exist', 404);
+                    res.send(user);
+                });
+            }
+        }
+    },
     '/client/fblogin' : {
         post : {
             handler : function(req, res){
