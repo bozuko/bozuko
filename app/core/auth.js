@@ -147,6 +147,9 @@ auth.mobile = function(req, res, callback) {
         return callback(Bozuko.error('user/blocked'));
     }
 
+    // For local users (only email address given) just return successfully.
+    return callback();
+
     async.series([
 
         // Verify phone type and unique id

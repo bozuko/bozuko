@@ -30,20 +30,6 @@ assert.phone = {
     unique_id: '425352525232535'
 };
 
-/*
- * Simple wrapper around Mikeal's request that automatically fills in the server host:port.
- * You can use this instead of assert.response in your tests if you like.
- */
-exports.request = function(options, callback) {
-    if (typeof options === 'string') {
-        options = {
-            uri: options
-        }
-    }
-    options.uri = 'http://'+Bozuko.config.server.host+':'+Bozuko.config.server.port+options.uri;
-    request(options, callback);
-};
-
 /**
  * Modified version of assert.response from expresso.
  * Note that this counts as three nodeunit assertions for expect() purposes.
