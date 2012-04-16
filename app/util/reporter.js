@@ -109,7 +109,7 @@ function streamPrizes(res, contest, callback) {
 
 function streamUsers(res, contest, callback) {
     res.write('\n\nUsers\n');
-    res.write('User Id, Gender, Friend Count, Hometown, Location\n');
+    res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year \n');
     Bozuko.models.Entry.distinct("user_id", {contest_id: contest._id}, function(err, user_ids) {
         if (err) return callback(err);
         async.forEach(user_ids, function(user_id, cb) {
@@ -126,13 +126,30 @@ function streamUsers(res, contest, callback) {
                 }
                 if (data.location && data.location.name) {
                     var names = data.location.name.split(',');
-                    str += names[0]+' '+names[1];
+                    str += names[0]+' '+names[1]+',';
                 } else {
-                    str += 'NA'
+                    str += 'NA,'
+                }
+                if (data.education && data.education.length) {
+                    data.education.forEach(function(school) {
+                        if (school.type && school.type === 'College') {
+                            if (school.school && school.school.name) {
+                              str += school.school.name + ",";
+                            } else {
+                                str += 'NA,';
+                            }
+                            if (school.year && school.year.name) {
+                                str += school.year.name;
+                            } else {
+                                str +='NA';
+                            }
+                        }
+                    });
+                } else {
+                    str +='NA,NA';
                 }
                 str += '\n';
                 res.write(str);
-                console.log(user.services[0]);
                 cb();
             });
         }, function(err) {
