@@ -67,7 +67,7 @@ module.exports = {
         },
         perms:{
             user:"email,publish_checkins,publish_stream,offline_access,user_likes",
-			web:"email,publish_stream,user_likes",
+			web:"email,publish_stream,user_likes,publish_checkins",
             business:"email,manage_pages,offline_access"
         }
     },
