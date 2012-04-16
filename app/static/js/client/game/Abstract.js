@@ -58,7 +58,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     onDisplayWin : function(result){
         if( !result.prize ) return;
-        if( !(result.prize.is_email || this.app.email_only) || !result.prize.links.redeem ) return;
+        if( !(result.prize.is_email || result.prize.is_barcode || this.app.email_only) || !result.prize.links.redeem ) return;
         
         var self = this;
         
