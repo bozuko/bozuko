@@ -62,7 +62,7 @@ exports['page tests'] = {
             ok,
             function(res) {
                 var result = JSON.parse(res.body);
-                test.equal(result.pages.length, 3);
+                test.equal(result.pages.length, 2);
                 test.done();
             });
     }

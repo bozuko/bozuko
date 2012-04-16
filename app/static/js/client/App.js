@@ -27,7 +27,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.api.on('failure', function(result){
             if( result.data && result.data.message ){
                 alert(result.data.message);
+                if( self.scratch ) self.scratch.updateActionFromState();
             }
+            
         });
         
         this.createElements();
@@ -289,7 +291,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     }
                 }
                 catch(e){
-                    console.log(e.stack);
+                    
                 }
                 self.fireEvent('nouser');
                 return callback(new Error('No User'));
