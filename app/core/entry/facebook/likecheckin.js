@@ -111,7 +111,7 @@ FacebookLikeCheckinMethod.prototype.getPlayLimitations = function(){
  *
  */
 FacebookLikeCheckinMethod.prototype.getMaxTokens = function(){
-    return this.config.tokens + (this.config.options.enable_like ? this.config.tokens : 0);
+    return this.config.tokens;
 };
 
 /**
