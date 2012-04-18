@@ -121,13 +121,7 @@ FacebookLikeCheckinMethod.prototype.getMaxTokens = function(){
 FacebookLikeCheckinMethod.prototype.getTokenCount = function(){
     if( !this.contest || !this.user) return this.config.tokens;
     var tokens = this.config.tokens;
-
-    if( this.config.options.enable_like && this.user ){
-        if( this.user.likes( this.page ) ){
-            tokens += this.config.tokens;
-        }
-    }
-    return tokens;
+	return tokens;
 };
 
 FacebookLikeCheckinMethod.prototype.validate = function( callback ){
