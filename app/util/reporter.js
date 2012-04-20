@@ -120,15 +120,15 @@ function streamUsers(res, contest, callback) {
                 var str = user.id+','+user.gender+','+internal.friend_count + ',';
                 if (data.hometown && data.hometown.name) {
                     var names = data.hometown.name.split(',');
-                    str += names[0] + ' ' + names[1] + ',';
+                    str += names[0] + names[1] + ',';
                 } else {
-                    str += 'NA,';
+                    str += ',';
                 }
                 if (data.location && data.location.name) {
                     var names = data.location.name.split(',');
                     str += names[0]+' '+names[1];
                 } else {
-                    str += 'NA'
+                    str += ''
                 }
                 str += '\n';
                 res.write(str);
