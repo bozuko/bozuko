@@ -120,15 +120,15 @@ function streamUsers(res, contest, callback) {
                 var str = user.id+','+user.gender+','+internal.friend_count + ',';
                 if (data.hometown && data.hometown.name) {
                     var names = data.hometown.name.split(',');
-                    str += names[0] + ' ' + names[1] + ',';
+                    str += names[0] + names[1] + ',';
                 } else {
-                    str += 'NA,';
+                    str += ',';
                 }
                 if (data.location && data.location.name) {
                     var names = data.location.name.split(',');
-                    str += names[0]+' '+names[1]+',';
+                    str += names[0]+names[1]+',';
                 } else {
-                    str += 'NA,'
+                    str += ','
                 }
                 if (data.education && data.education.length) {
                     data.education.forEach(function(school) {
@@ -136,17 +136,17 @@ function streamUsers(res, contest, callback) {
                             if (school.school && school.school.name) {
                               str += school.school.name + ",";
                             } else {
-                                str += 'NA,';
+                                str += ',';
                             }
                             if (school.year && school.year.name) {
                                 str += school.year.name;
                             } else {
-                                str +='NA';
+                                str +='';
                             }
                         }
                     });
                 } else {
-                    str +='NA,NA';
+                    str +=',';
                 }
                 str += '\n';
                 res.write(str);
