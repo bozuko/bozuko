@@ -34,6 +34,12 @@ exports.locals = {
     nav: [{
         link: '/',
         text: 'Home'
+    },{
+        link: '/local',
+        text: 'Local'
+    },{
+        link: '/enterprise',
+        text: 'Enterprise'
     },/*{
         link: '/mobile-app',
         text: 'Mobile App'
