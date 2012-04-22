@@ -392,11 +392,7 @@ Contest.method('createAndSaveBarcodes', function(prize, cb) {
                 path = '/game/'+self._id+'/prize/'+prize.index+'/barcode/'+i;
             }
             // save the barcode image in /tmp
-            
-            console.log('about to create barcode ['+prize.prize.barcodes[i]+'] of type['+prize.prize.barcode_type+'] to file ['+filename+']')
-            
             barcode.create_png(prize.prize.barcodes[i], prize.prize.barcode_type, filename, function(err) {
-                console.error(err);
                 if (err) return callback(err);
                 // loadpa the barcode image into s3
                 return S3.put(filename+'.png', path, function(err) {
