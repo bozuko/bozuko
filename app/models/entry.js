@@ -75,3 +75,19 @@ Entry.static('getUserInfo', function(contest_id, user_id, callback) {
 
 });
 
+Entry.static('spendToken', function(contest_id, user_id, min_expiry_date, callback) {
+    Bozuko.models.Entry.findAndModify(
+        {contest_id: contest_id, user_id: user_id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}},
+        [],
+        {$inc: {tokens : -1}},
+        {new: true, safe: {j:true}},
+        function(err, entry) {
+            // If we crash here the user will lose a token. Don't worry about it.
+            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
+            if (!entry) {
+                return callback(Bozuko.error("contest/no_tokens"));
+            }
+            return callback(null, entry);
+        }
+    );
+});
