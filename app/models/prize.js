@@ -386,7 +386,10 @@ Prize.method('getImages', function(user, security_img, callback) {
         var img = imgs[key];
         download(img.url, img.path, cb);
     }, function(err) {
-        if (err) return callback(err);
+        if (err){
+			// 
+			return callback(err);
+		}
         return callback(null, imgs);
     });
 });
@@ -832,7 +835,10 @@ function download(url, path, callback) {
         url:url.replace('type=large','type=square'),
         encoding:'binary'
     }, function(error, result, response){
-        if( error ) return callback(error);
+        if( error ){
+			console.error("Error downloading "+url);
+			return callback(error);
+		}
         fs.writeFile(path, result, 'binary', callback);
     });
 }
