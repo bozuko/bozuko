@@ -54,7 +54,6 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 xtype           :'checkbox',
                 name            :'is_barcode',
                 fieldLabel      :'Use Barcodes',
-                allowBlank      :false,
                 listeners       :{
                     scope           :me,
                     change          :me.onBarcodeChange
@@ -74,6 +73,10 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
 
                     if( Ext.isString(v) ) v = v.split('\n');
                     Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
+                },
+                listeners       :{
+                    scope           :me,
+                    change          :me.onCodesChange
                 }
             },{
                 xtype           :'checkbox',
@@ -168,6 +171,10 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 setValue        :function(v){
                     if( Ext.isString(v) ) v = v.split('\n');
                     Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
+                },
+                listeners       :{
+                    scope           :me,
+                    change          :me.onCodesChange
                 }
             },{
                 xtype           :'container',
@@ -199,6 +206,8 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
         Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes], [name=email_format], [name=email_replyto]'), function(cmp){
             cmp[fn]();
         });
+        this.query('[name=total]')[0].setDisabled( value ? true : false );
+        this.onCodesChange( this.query('[name=email_codes]')[0] );
     },
 
     onBarcodeChange : function(field, value){
@@ -206,6 +215,13 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
         Ext.Array.each( this.query('[name=barcodes]'), function(cmp){
             cmp[fn]();
         });
+        this.query('[name=total]')[0].setDisabled( value ? true : false );
+        this.onCodesChange( this.query('[name=barcodes]')[0] );
+    },
+    
+    onCodesChange : function(cmp){
+        var total = this.query('[name=total]')[0];
+        if( total.isDisabled() ) total.setValue( cmp.getValue().length );
     },
 
     getValues : function(selector){
