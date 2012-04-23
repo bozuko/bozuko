@@ -370,12 +370,6 @@ Contest.method('getEngine', function() {
     return this._engine;
 });
 
-
-Contest.method('saveTimeResult', function(result, callback) {
-    result = new Bozuko.models.Result(result);
-    result.save(callback);
-});
-
 Contest.method('createAndSaveBarcodes', function(prize, cb) {
     var self = this;
 
