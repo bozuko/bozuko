@@ -2,9 +2,19 @@ var Engine = require('../engine'),
     rand = Bozuko.require('util/math').rand,
     inherits = require('util').inherits,
     inspect = require('util').inspect,
-    async = require('async')
+    async = require('async'),
+    merge = require('flatmerge');
 ;
-var safe = {w:2, wtimeout: 5000};
+var safe = {j:true};
+
+var defaults = {
+    buffer: 0.001,
+    lookback_threshold: 0.1,
+    window_divisor: 3,
+    throwahead_multiplier: 10,
+    multiplay: true,
+    distribution: 'random'
+};
 
 var TimeEngine = module.exports = function(contest, opts) {
     var options = opts || {};
@@ -17,21 +27,16 @@ inherits(TimeEngine, Engine);
 var lookback_window_floor = 1000*60*3;
 
 TimeEngine.prototype.configure = function(opts) {
-    console.log('TimeEngine.configure: opts = '+inspect(opts));
-    opts = opts || {};
-    this.buffer = opts.buffer || 0.001;
-    this.lookback_threshold = opts.lookback_threshold || 0.1;
-    this.window_divisor = opts.window_divisor || 3; 
-    this.throwahead_multiplier = opts.throwahead_multiplier || 10;
-
-    // We have lots of tests that are single entry/ multiple play, but always need to actually check
-    // the results. This setting allows us to disable the multiplay feature for the tests.
-    if (opts.multiplay === undefined) {
-        this.multiplay = true;
+    if (!opts) {
+        opts = defaults;
     } else {
-        this.multiplay = opts.multiplay;
+        opts = merge(opts, defaults);
     }
-
+    var self = this;
+    Object.keys(opts).forEach(function(key) {
+        console.log(key);
+        self[key] = opts[key];
+    });
     // Leave a buffer at the end so users can always win the last prizes.
     this.contest_duration = Math.floor(
         (this.contest.end.getTime() - this.contest.start.getTime())*(1-this.buffer));
@@ -46,22 +51,18 @@ TimeEngine.prototype.configure = function(opts) {
         this.lookback_window = lookback_window_floor;
     }
     this.throwahead_window = Math.round(this.step*this.throwahead_multiplier);
+    if (this.contest.free_play_pct) {
+        this.free_play_odds = Math.round(1/(this.contest.free_play_pct/100));
+    }
+    console.log('opts = ', opts);
     console.log("throwahead window = "+this.throwahead_window);
     console.log("lookback_window = "+this.lookback_window);
     console.log("lookback_threshold_start = "+this.lookback_threshold_start);
     console.log("buffer_start = "+this.buffer_start);
     console.log("multiplay = "+this.multiplay);
-    if (this.contest.free_play_pct) {
-        this.free_play_odds = Math.round(1/(this.contest.free_play_pct/100));
-    }
 };
 
 
-/**
- * Generate contest results.
- *
- * @public
- */
 TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
     var self = this;
     var options = this.contest.engine_options || {};
@@ -71,43 +72,76 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
     var end = start+this.contest_duration;
 
     return Page.getCodeInfo(page_id, function(err, block, prefix) {
-        var prize_index = 0;
+        var prize_index = -1;
         return async.forEachSeries(prizes, function(prize, cb) {
-            var i = 0;
-            async.whilst(
-                function() {
-                    return i < prize.total;
-                },
-                function(cb) {
-                    var date = new Date(rand(start, end));
-                    var result = {
-                        contest_id: contest._id,
-                        index: prize_index,
-                        code: prefix + self.getCode(block),
-                        count: i,
-                        timestamp: date,
-                        history: [{timestamp: date}]
-                    };
-                    i++;
-                    contest.saveTimeResult(result, cb);
-                },
-                function(err) {
-                    prize_index++;
-                    return cb( err );
-                }
-            );
+            prize_index++;
+            if (!prize.distribution || prize.distribution === 'random') {
+                self.distributeRandom(contest._id, prize.total, prize_index, start, end, prefix, block, cb);
+            } else {
+                self.distributeInterval(contest._id, prize.total, prize_index, start, end, prefix, block, cb);
+            }
         }, function(err) {
             if (err) return callback(err);
-            // save the contest
             return contest.save(callback);
         });
     });
 };
 
+TimeEngine.prototype.distributeRandom = 
+function(contest_id, totalPrizes, prize_index, start, end, prefix, block, callback) {
+    var i = 0;
+    var self = this;
+    async.whilst(
+        function() {
+            return i < totalPrizes;
+        },
+        function(cb) {
+            var date = new Date(rand(start, end));
+            var result = {
+                contest_id: contest_id,
+                index: prize_index,
+                code: prefix + self.getCode(block),
+                count: i,
+                timestamp: date,
+                history: [{timestamp: date}]
+            };
+            i++;
+            result = new Bozuko.models.Result(result);
+            result.save(cb);
+        },
+        function(err) {
+            prize_index++;
+            return callback(err);
+        }
+    );
+};
+
+TimeEngine.prototype.distributeInterval 
+= function(contest_id, totalPrizes, prize_index, start, end, prefix, block, callback) {
+    var self = this;
+    var interval = Math.floor((end-start)/totalPrizes);
+    var segmentStart = start;
+    var segmentEnd = start+interval;
+    var i = 0;
+    async.whilst(
+        function() {
+            return i < totalPrizes;
+        },
+        function(cb) {
+            self.distributeRandom(contest_id, 1, prize_index, segmantStart, segmentEnd, prefix, block,
+                function(err) {
+                    i++;
+                    segmentStart = segmentEnd+1;
+                    segmentEnd = segmentEnd+segmentInterval;
+                    cb(err);
+                });
+        }, 
+        callback
+    );
+}
+
 /**
  * This always returns true because there is no fixed number of plays
- *
- * @returns true
  */
 TimeEngine.prototype.allowEntry = function(){
     return true;
