@@ -12,8 +12,7 @@ var defaults = {
     lookback_threshold: 0.1,
     window_divisor: 3,
     throwahead_multiplier: 10,
-    multiplay: true,
-    distribution: 'random'
+    multiplay: true
 };
 
 var TimeEngine = module.exports = function(contest, opts) {
@@ -128,11 +127,11 @@ TimeEngine.prototype.distributeInterval
             return i < totalPrizes;
         },
         function(cb) {
-            self.distributeRandom(contest_id, 1, prize_index, segmantStart, segmentEnd, prefix, block,
+            self.distributeRandom(contest_id, 1, prize_index, segmentStart, segmentEnd, prefix, block,
                 function(err) {
                     i++;
                     segmentStart = segmentEnd+1;
-                    segmentEnd = segmentEnd+segmentInterval;
+                    segmentEnd = segmentEnd+interval;
                     cb(err);
                 });
         }, 
