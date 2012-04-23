@@ -61,7 +61,7 @@ exports['save page and contest'] = function(test) {
 };
 
 // This is a 100 min contest with 10 prizes. Therefore each interval should be 10 minutes 
-exports['results get distributed at min hour intervals'] = function(test) {
+exports['results get distributed at 10 min intervals'] = function(test) {
     var engine = new TimeEngine(contest);
     var start = contest.start.getTime();
     var end = contest.end.getTime();
@@ -73,10 +73,6 @@ exports['results get distributed at min hour intervals'] = function(test) {
             test.ok(!err);
             test.equal(results.length, 10);
             for (var i = 0; i < 10; i++) {
-                console.log(start + interval*i);
-                console.log(results[i].timestamp.getTime());
-                console.log(start + interval*(i+1));
-                console.log('\n');
                 // Is result within the right interval?
                 test.ok(results[i].timestamp.getTime() >= start + interval*i); 
                 test.ok(results[i].timestamp.getTime() <= start + interval*(i+1)); 
