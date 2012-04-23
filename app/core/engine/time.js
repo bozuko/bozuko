@@ -108,10 +108,7 @@ function(contest_id, totalPrizes, prize_index, start, end, prefix, block, callba
             result = new Bozuko.models.Result(result);
             result.save(cb);
         },
-        function(err) {
-            prize_index++;
-            return callback(err);
-        }
+        callback
     );
 };
 
@@ -127,13 +124,20 @@ TimeEngine.prototype.distributeInterval
             return i < totalPrizes;
         },
         function(cb) {
-            self.distributeRandom(contest_id, 1, prize_index, segmentStart, segmentEnd, prefix, block,
-                function(err) {
-                    i++;
-                    segmentStart = segmentEnd+1;
-                    segmentEnd = segmentEnd+interval;
-                    cb(err);
-                });
+            var date = new Date(rand(segmentStart, segmentEnd));
+            var result = {
+                contest_id: contest_id,
+                index: prize_index,
+                code: prefix + self.getCode(block),
+                count: i,
+                timestamp: date,
+                history: [{timestamp: date}]
+            };
+            i++;
+            segmentStart = segmentEnd+1;
+            segmentEnd = segmentEnd+interval;
+            result = new Bozuko.models.Result(result);
+            result.save(cb);
         }, 
         callback
     );
