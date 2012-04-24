@@ -370,12 +370,6 @@ Contest.method('getEngine', function() {
     return this._engine;
 });
 
-
-Contest.method('saveTimeResult', function(result, callback) {
-    result = new Bozuko.models.Result(result);
-    result.save(callback);
-});
-
 Contest.method('createAndSaveBarcodes', function(prize, cb) {
     var self = this;
 
@@ -844,27 +838,33 @@ Contest.method('play', function(memo, callback){
     memo.contest = this;
 
     var engine = this.getEngine();
-    async.reduce(
-        ['spendEntryToken',
-         engine.play,
-         'processResult',
-         'savePrizes',
-         // moved processGameResult to after process result so we can make
-         // consolation prizes look like actual wins
-         'processGameResult',
-         'savePlay'],
-        memo,
-        function(memo, fn, cb) {
-            if (typeof fn === 'string') return self[fn](memo, cb);
-            return engine.play(memo, cb);
-        }, function(error, result) {
-            if( !error ){
-                // ensure that everything is matched up here....
-                self.schema.emit('play', self, result);
+    var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration'));
+
+    Bozuko.models.Entry.spendToken(self._id, memo.user._id, min_expiry_date, function(err, entry) {
+        if (err) return callback(err);
+        memo.entry = entry;
+        async.reduce(
+            [
+             engine.play,
+             'processResult',
+             'savePrizes',
+             // moved processGameResult to after process result so we can make
+             // consolation prizes look like actual wins
+             'processGameResult',
+             'savePlay'],
+            memo,
+            function(memo, fn, cb) {
+                if (typeof fn === 'string') return self[fn](memo, cb);
+                return engine.play(memo, cb);
+            }, function(error, result) {
+                if( !error ){
+                    // ensure that everything is matched up here....
+                    self.schema.emit('play', self, result);
+                }
+                return callback(error, result);
             }
-            return callback(error, result);
-        }
-    );
+        );
+    });
 });
 
 Contest.method('noLookbackQuery', function(memo) {
@@ -969,26 +969,6 @@ Contest.method('redistributeTimeResult', function(memo, callback) {
     );
 });
 
-Contest.method('spendEntryToken', function(memo, callback) {
-    var self = this;
-    var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration'));
-
-    Bozuko.models.Entry.findAndModify(
-        {contest_id: self._id, user_id: memo.user._id, timestamp: {$gt: min_expiry_date}, tokens: {$gt : 0}},
-        [],
-        {$inc: {tokens : -1}},
-        {new: true, safe: safe},
-        function(err, entry) {
-            // If we crash here the user will lose a token. Don't worry about it.
-            if (err && !err.errmsg.match(no_matching_re)) return callback(err);
-            if (!entry) {
-                return callback(Bozuko.error("contest/no_tokens"));
-            }
-            memo.entry = entry;
-            return callback(null, memo);
-        }
-    );
-});
 
 Contest.method('processResult', function(memo, callback) {
     var result = memo.result;
