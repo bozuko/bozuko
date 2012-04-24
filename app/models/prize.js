@@ -446,6 +446,7 @@ Prize.method('share', function(args, callback){
 				return cb();
 			}
 			
+			/*
 			var link = burl( contest.web_only ?
 				(contest.alias||('/client/game/'+contest._id)) :
 				'https://bozuko.com/p/'+prize.page_id
@@ -453,7 +454,10 @@ Prize.method('share', function(args, callback){
 			
 			if( contest.share_url ) link = contest.share_url;
 			
-			link = link.replace(/api\./, '').replace(/\:(443|80)\//, '/');
+			*/
+			var link = burl( '/game/'+contest._id+'/share' ).replace(/(api\.)/, '').replace(/(\:(443|80)\/)/, '/');
+			
+			// link = link.replace(/api\./, '').replace(/\:(443|80)\//, '/');
 
 			var options = {
 				user: user,
