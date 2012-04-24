@@ -264,7 +264,7 @@ exports.routes = {
                     // do we have a share url?
                     var type = req.session.device;
 					
-					var default_url = burl('/p/'+prize.page_id);
+					var default_url = burl('/p/'+contest.page_id);
 					if( contest.web_only ){
 						default_url = burl('/client/game/'+contest._id);
 					}
@@ -273,7 +273,7 @@ exports.routes = {
 					
                     switch(type){
                         case 'touch':
-                            return res.redirect('/client/game/'+contest._id);
+                            return res.redirect(default_url);
                         default:
                             return res.redirect(contest.share_url || default_url );
                     }
