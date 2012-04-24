@@ -1,5 +1,6 @@
 var S3 = Bozuko.require('util/s3');
 var url = require('url');
+var burl = Bozuko.require('util/url').create;
 var inspect = require('util').inspect;
 
 exports.session = false;
