@@ -263,13 +263,19 @@ exports.routes = {
 					var contest = contests[0];
                     // do we have a share url?
                     var type = req.session.device;
-					console.error(type);
-					console.error(require('util').inspect(contest));
+					
+					var default_url = burl('/p/'+prize.page_id);
+					if( contest.web_only ){
+						default_url = burl('/client/game/'+contest._id);
+					}
+					
+					default_url = default_url.replace(/\/api\./, '/');
+					
                     switch(type){
                         case 'touch':
                             return res.redirect('/client/game/'+contest._id);
                         default:
-                            return res.redirect(contest.share_url || '/client/game/'+contest._id);
+                            return res.redirect(contest.share_url || default_url );
                     }
                 });
             }
