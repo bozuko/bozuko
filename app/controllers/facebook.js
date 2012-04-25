@@ -129,7 +129,24 @@ exports.routes = {
                             place = _place;
                             return cb();
                         });
+                    },
+                    
+                    function get_link(cb){
+                        // facebook is such a piece of garbage sometimes.
+                        if( !place ) return cb(null);
+                        var q = 'SELECT url FROM profile WHERE id = '+place.id;
+                        
+                        
+                        
+                        return Bozuko.require('util/facebook').graph('/fql', {
+                            params:{q: q}
+                        }, function(error, result){
+                            if( error ) return cb( );
+                            place.data.link = result.data[0].url;
+                            return cb();
+                        });
                     }
+                    
                 ], function render(error){
                     if( error ){
                         res.locals.error = error;
