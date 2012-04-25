@@ -137,6 +137,7 @@ exports.routes = {
                     }
 
                     res.locals.place = place;
+                    if( !place.link ){ place.link = 'https://facebook.com/'+place.id; }
 
                     if( !place ){
                         return res.render('app/facebook/'+tmpl);
@@ -146,6 +147,7 @@ exports.routes = {
                         res.locals.place.image = page.image;
                         res.locals.place.category = page.category;
                         res.locals.place.name = page.name;
+                        
                     }
                     if( res.locals.place.image.indexOf('type=large') ){
                         res.locals.place.image = res.locals.place.image.replace(/type=large/, 'type=square');
