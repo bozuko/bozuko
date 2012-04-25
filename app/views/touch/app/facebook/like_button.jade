@@ -40,6 +40,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     
     #fb-root
     -if( locals.place )
+      //
+        != JSON.stringify(locals.place)
       -if( !locals.user || !locals.user.likes(place.data.id))
         img.loading-gif(src="/images/assets/facebook/like-loading-#{isAndroid?'android':'iphone'}.gif?v=3",alt="Loading...")
         #like-button
