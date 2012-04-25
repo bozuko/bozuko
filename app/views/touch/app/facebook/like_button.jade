@@ -41,11 +41,11 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
     #fb-root
     -if( locals.place )
       //
-        #{locals.place.data.link}
+        !=locals.place.
       -if( !locals.user || !locals.user.likes(place.data.id))
         img.loading-gif(src="/images/assets/facebook/like-loading-#{isAndroid?'android':'iphone'}.gif?v=3",alt="Loading...")
         #like-button
-          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="tahoma",data-href=place.data.link)
+          .fb-like(data-send="false",data-width="54",data-show-faces="false",data-font="tahoma",data-href=place.services[0].data.link)
       -else
         img(src="/images/assets/facebook/like-liked-"+(isAndroid?'android':'iphone')+".png")
       
@@ -58,7 +58,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               mobile_version = '#{req.session.mobile_version}',
               fb_token = '#{locals.user ? locals.user.service('facebook').auth : ""}',
               fb_id = '#{place.data.id}',
-              mobile_version = '{#locals.user.mobile_version}';
+              // mobile_version = '{#locals.user.mobile_version}';
               liked = #{locals.user ? (locals.user.likes(place.data.id)?'true':'false') : 'false' };
               token = '#{locals.user ? user.token : ""}';
           
