@@ -259,7 +259,7 @@ exports.routes = {
         get : {
             handler : function(req, res, next){
                 // find game
-                return Bozuko.models.Contest.find({_id:req.param('id')}, {share_url: 1}, {limit:1}, function(error, contests){
+                return Bozuko.models.Contest.find({_id:req.param('id')}, {share_url: 1, page_id: 1}, {limit:1}, function(error, contests){
                     if( error || !contests.length ) return next();
 					var contest = contests[0];
                     // do we have a share url?
