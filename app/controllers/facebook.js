@@ -137,7 +137,7 @@ exports.routes = {
                     }
 
                     res.locals.place = place;
-                    if( !place.link ){ place.link = 'https://facebook.com/'+place.id; }
+                    if( !place.data.link ){ place.data.link = 'https://facebook.com/'+place.id; }
 
                     if( !place ){
                         return res.render('app/facebook/'+tmpl);
