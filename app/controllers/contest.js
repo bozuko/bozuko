@@ -255,7 +255,7 @@ exports.routes = {
         }
     },
 	
-	'/game/:id/share' : {
+	'/game/:id/share/:from?' : {
         get : {
             handler : function(req, res, next){
                 // find game
@@ -272,12 +272,34 @@ exports.routes = {
 					
 					default_url = default_url.replace(/\/api\./, '/');
 					
-                    switch(type){
-                        case 'touch':
-                            return res.redirect(default_url);
-                        default:
-                            return res.redirect(contest.share_url || default_url );
-                    }
+					var redirect = default_url;
+					if(type!='touch' && contest.share_url ) redirect = contest.share_url;
+					/*
+					 
+					Well... this would be cool because we could track it in Google Analytics..
+					But it introduces a nasty back button issue.
+					 
+					res.locals.redirect = redirect;
+					res.locals.title = "Redirecting share from "+contest.name+'...';
+					res.locals.device = 'touch';
+					res.locals.layout = false;
+					return res.render('app/redirect');
+					*/
+					
+					// Instead, lets add our own analytics system
+					var pageview = new Bozuko.models.Pageview({
+						page_id			:contest.page_id,
+						contest_id		:contest._id,
+						timestamp		:new Date(),
+						url				:req.url,
+						type			:'share',
+						src				:req.param('from') || 'share',
+						ip				:req.connection.remoteAddress || req.connection.socket.remoteAddress
+					});
+					
+					pageview.save();
+					
+					return res.redirect(redirect);
                 });
             }
         }

@@ -455,7 +455,7 @@ Prize.method('share', function(args, callback){
 			if( contest.share_url ) link = contest.share_url;
 			
 			*/
-			var link = burl( '/game/'+contest._id+'/share' ).replace(/(api\.)/, '').replace(/(\:(443|80)\/)/, '/');
+			var link = burl( '/game/'+contest._id+'/share/win' ).replace(/(api\.)/, '').replace(/(\:(443|80)\/)/, '/');
 			
 			// link = link.replace(/api\./, '').replace(/\:(443|80)\//, '/');
 
