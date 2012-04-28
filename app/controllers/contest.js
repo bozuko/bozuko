@@ -256,7 +256,7 @@ exports.routes = {
     },
 	
 	'/game/:id/share' : {
-		alias: '/game/:id/share/:from',
+		alias: '/game/:id/share/:src',
         get : {
             handler : function(req, res, next){
                 // find game
@@ -294,7 +294,7 @@ exports.routes = {
 						timestamp		:new Date(),
 						url				:req.url,
 						type			:'share',
-						src				:req.param('from') || 'share',
+						src				:req.param('src') || 'share',
 						ip				:req.connection.remoteAddress || req.connection.socket.remoteAddress
 					});
 					
