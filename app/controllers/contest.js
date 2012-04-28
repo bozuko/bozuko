@@ -255,7 +255,8 @@ exports.routes = {
         }
     },
 	
-	'/game/:id/share/:from?' : {
+	'/game/:id/share' : {
+		alias: '/game/:id/share/:from',
         get : {
             handler : function(req, res, next){
                 // find game
