@@ -479,7 +479,7 @@ Prize.method('share', function(args, callback){
 			var game_type = contest.game=='scratch'? 'scratch ticket':'slot machine';
 			options.description = 'You could too! Play '+page.name+' '+game_type+' for your chance to win!';
 			if( contest.share_description ) {
-				options.description = options.share_description;
+				options.description = contest.share_description;
 			}
 
 			return Bozuko.service('facebook').post(options, function(error){
