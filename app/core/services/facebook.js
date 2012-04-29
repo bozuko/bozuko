@@ -486,6 +486,8 @@ FacebookService.prototype.post = function(options, callback){
     if( options.test || Bozuko.cfg('test_mode', true) ){
         return callback(null, {result:123123123});
     }
+	
+	// console.log(params);
 
     return facebook.graph('/feed',{
         user: options.user,
