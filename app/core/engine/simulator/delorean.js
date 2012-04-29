@@ -16,13 +16,13 @@ var fs = require('fs'),
 
 var argv = require('optimist')
     .default('buffer', 0.001)
-    .default('window_divisor', 5)
+    .default('window_divisor', 3)
     .default('throwahead_multiplier', 10)
     .default('out', process.env.HOME+'/delorean_out.csv')
     .default('sparse_plays', 1)
     .default('sparse_prizes', 1)
     .default('sim_plays', 0)
-    .default('lookback_threshold', 0.15)
+    .default('lookback_threshold', 0.1)
     .argv;
 
 if (!argv.contest) throw new Error("Need a contest to simulate");
@@ -67,11 +67,11 @@ function mongoimport(callback) {
     };
     async.series([
         function import_page(cb) {
-            exec('mongoimport --host pgdb1 --db bozuko_test9001 --collection pages --file ./page.json',
+            exec('mongoimport --db bozuko_test9001 --collection pages --file ./page.json',
                 opts, cb);
         },
         function import_contest(cb) {
-            exec('mongoimport --host pgdb1 --db bozuko_test9001 --collection contests --file ./contest.json',
+            exec('mongoimport --db bozuko_test9001 --collection contests --file ./contest.json',
                 opts, cb);
         }
     ], callback);
