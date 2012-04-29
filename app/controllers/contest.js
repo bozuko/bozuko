@@ -1,5 +1,6 @@
 var S3 = Bozuko.require('util/s3');
 var url = require('url');
+var burl = Bozuko.require('util/url').create;
 var inspect = require('util').inspect;
 
 exports.session = false;
@@ -255,22 +256,51 @@ exports.routes = {
     },
 	
 	'/game/:id/share' : {
+		aliases: ['/game/:id/share/:src'],
         get : {
             handler : function(req, res, next){
                 // find game
-                return Bozuko.models.Contest.find({_id:req.param('id')}, {share_url: 1}, {limit:1}, function(error, contests){
+                return Bozuko.models.Contest.find({_id:req.param('id')}, {share_url: 1, page_id: 1}, {limit:1}, function(error, contests){
                     if( error || !contests.length ) return next();
 					var contest = contests[0];
                     // do we have a share url?
                     var type = req.session.device;
-					console.error(type);
-					console.error(require('util').inspect(contest));
-                    switch(type){
-                        case 'touch':
-                            return res.redirect('/client/game/'+contest._id);
-                        default:
-                            return res.redirect(contest.share_url || '/client/game/'+contest._id);
-                    }
+					
+					var default_url = burl('/p/'+contest.page_id);
+					if( contest.web_only ){
+						default_url = burl('/client/game/'+contest._id);
+					}
+					
+					default_url = default_url.replace(/\/api\./, '/');
+					
+					var redirect = default_url;
+					if(type!='touch' && contest.share_url ) redirect = contest.share_url;
+					/*
+					 
+					Well... this would be cool because we could track it in Google Analytics..
+					But it introduces a nasty back button issue.
+					 
+					res.locals.redirect = redirect;
+					res.locals.title = "Redirecting share from "+contest.name+'...';
+					res.locals.device = 'touch';
+					res.locals.layout = false;
+					return res.render('app/redirect');
+					*/
+					
+					// Instead, lets add our own analytics system
+					var pageview = new Bozuko.models.Pageview({
+						page_id			:contest.page_id,
+						contest_id		:contest._id,
+						timestamp		:new Date(),
+						url				:req.url,
+						type			:'share',
+						src				:req.param('src') || 'share',
+						ip				:req.connection.remoteAddress || req.connection.socket.remoteAddress
+					});
+					
+					pageview.save();
+					
+					return res.redirect(redirect);
                 });
             }
         }

@@ -788,6 +788,17 @@ exports.routes = {
                     case 'Share':
                         options.sumField = 'visibility';
                         break;
+                    
+                    case 'Share Clicks':
+                        options.model = 'Pageview';
+                        query.type = 'share';
+                        break;
+                    
+                    case 'Share Clicks (Win)':
+                        options.model = 'Pageview';
+                        query.type = 'share';
+                        query.src = 'win';
+                        break;
 
                     case 'Likes':
                         options.model = 'Share';

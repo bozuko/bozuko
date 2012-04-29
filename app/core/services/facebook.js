@@ -205,7 +205,7 @@ FacebookService.prototype.search = function(options, callback){
 	}
     if( options.query ) params.q = options.query;
     if( !options.fields ) {
-        options.fields = ['name','category','checkins','location','website','phone','link'];
+        options.fields = ['link','name','category','checkins','location','website','phone'];
     }
     else if( !~options.fields.indexOf('checkins') ){
         options.fields.push('checkins');

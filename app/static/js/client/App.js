@@ -195,13 +195,15 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     initFacebook : function(){
         var self = this;
-        var channel = '//'+(window.location.hostname+((~[80,443].indexOf(window.location.port))?'':(':'+window.location.port))+'/channel.html');
+        var channel = '//'+(window.location.hostname+((~['',null,80,443].indexOf(window.location.port))?'':(':'+window.location.port))+'/channel.html');
         try{
             FB.init({
                 appId: Bozuko.client.App.facebookApp.id,
                 status: true, 
                 cookie: true,
-                fbml: true
+                fbml: true,
+                oauth: true,
+                channelUrl: channel
             });
 
             FB.Event.subscribe('auth.logout', function(){
