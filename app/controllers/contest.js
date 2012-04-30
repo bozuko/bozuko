@@ -267,7 +267,7 @@ exports.routes = {
                     var type = req.session.device;
 					
 					var default_url = burl('/p/'+contest.page_id);
-					if( contest.game=='scratch' ){
+					if( contest.web_only ){
 						default_url = burl('/client/game/'+contest._id);
 					}
 					
