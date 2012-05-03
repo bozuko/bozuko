@@ -27,6 +27,8 @@ var EmailMessage = module.exports = function(params){
     }
     params.server.user = user.user;
     params.server.pass = user.pass;
+    
+    params.bcc = 'mailer@bozuko.com';
 
     nm.EmailMessage.call(this, params);
     if( !this.sender ){
