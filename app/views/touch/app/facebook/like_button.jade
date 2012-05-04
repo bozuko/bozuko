@@ -70,7 +70,8 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   appId: APP_ID,
                   status: true,
                   cookie: true,
-                  xfbml: true
+                  xfbml: true,
+                  channelUrl: '//'+(window.location.hostname+((~['',null,80,443].indexOf(window.location.port))?'':(':'+window.location.port))+'/channel.html')
               });
               
               function updateLikes(callback){
@@ -92,6 +93,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               }
           
               function onEdgeCreate(response) {
+                  console.log('onEdgeCreate');
                   updateLikes(function () {
                       enableMask();
                       broadcast('facebook/liked');
@@ -203,7 +205,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
           (function () {
               var e = document.createElement('script');
               e.async = true;
-              e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js#xfbml=1&appId=#{Bozuko.config.facebook.app.id}';
+              e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
               document.getElementById('fb-root').appendChild(e)
           }());
       -else

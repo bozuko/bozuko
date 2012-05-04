@@ -1218,6 +1218,7 @@ Contest.method('savePrize', function(opts, callback) {
             consolation: opts.consolation,
             is_email: prize.is_email,
             is_barcode: prize.is_barcode,
+            is_pdf: prize.is_pdf,
             bucks: prize.bucks
         });
 

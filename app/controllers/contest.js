@@ -88,9 +88,9 @@ exports.routes = {
                             if( error ) return error.send(res);
 
                             if( result.prize ){
-                                return result.prize.loadTransferObject(function(error, prize){
+								return result.prize.loadTransferObject(function(error, prize){
                                     if( error ) return error.send(res);
-                                    result.prize = prize;
+									result.prize = prize;
                                     return Bozuko.transfer('game_result', result, req.session.user, function(error, result){
 
                                         // lets log what we are sending...

@@ -201,7 +201,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 appId: Bozuko.client.App.facebookApp.id,
                 status: true, 
                 cookie: true,
-                fbml: true,
                 oauth: true,
                 channelUrl: channel
             });

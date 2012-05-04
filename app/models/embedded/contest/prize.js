@@ -16,6 +16,7 @@ var Prize = module.exports = new Schema({
     won                     :{type:Number, default: 0},
     redeemed                :{type:Number, default: 0},
     is_email                :{type:Boolean, default: false},
+    is_pdf                  :{type:Boolean},
     email_body              :{type:String},
     email_format            :{type:String,  default: 'text/plain'},
     email_subject           :{type:String},

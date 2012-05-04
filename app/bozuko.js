@@ -4,6 +4,16 @@ var fs = require('fs'),
     Profiler = require('./util/profiler')
 ;
 
+
+/**
+ * cheap hack to see where all the errors are coming from in the error log...
+ */
+var _err = console.error;
+console.error = function(e){
+	process.stderr.write( new Error().stack + '\n');
+	_err.apply(this,arguments);
+};
+
 // setup the global object
 Bozuko = {};
 
