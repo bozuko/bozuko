@@ -673,6 +673,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 	 */
 	doc.y = box_x; // this is a hack to capture the y after we add the image
 	doc.x = 0;
+	y = doc.y
 	if( !page.nobranding ){
 		doc
 			.image(image_base+'/logo/logo.png',box_x, box_x, {width: logo_width})
@@ -694,9 +695,10 @@ Prize.method('createPdf', function(user, images, page, callback){
 			.lineTo(box_x-box_padding + box_width+box_padding*2, y)
 			.stroke('#999')
 			;
+		
+		y = doc.y+20;
 	}
 	
-	y = doc.y;
 	var col_y = doc.y = y+10;
 	/**
 	 * First Column
@@ -795,7 +797,21 @@ Prize.method('createPdf', function(user, images, page, callback){
 		.text(self.name, {width: col2})
 		;
 		
-	if( self.instructions ){
+	if( self.description ){
+		doc
+			.fontSize(12)
+			.moveDown()
+			.font('Bold')
+			.fill('#333')
+			.text('Description', {width: col2})
+			
+			.font('Regular')
+			.fill('#000')
+			.text(self.description, {width: col2})
+			;
+	}
+	
+	if( self.is_pdf && self.instructions ){
 		doc
 			.fontSize(12)
 			.moveDown()
