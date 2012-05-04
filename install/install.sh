@@ -18,7 +18,7 @@ source ~/.bashrc
 echo "*** Installing node packages with npm"
 cd ~ && npm install connect connect-auth express jade less mongodb@0.9.7-2-5 mongoose@2.4.8 monomi   \
     qs socket.io markdown-js async sprintf nodeunit nodemailer@0.2.4 dateformat relative-date    \
-    cluster imap node-uuid node-gd knox validator charm connect-form xml2json pdfkit braintree \
+    cluster imap node-uuid node-gd knox validator charm connect-form xml2json pdfkit@0.1.6 braintree \
     cli-table cli-chart codify node-expat flatmerge
 
 # copy latest mongodb to mongoose dir so w:2 works
