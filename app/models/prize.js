@@ -672,6 +672,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 	 * Top box
 	 */
 	doc.y = box_x; // this is a hack to capture the y after we add the image
+	doc.x = 0;
 	if( !page.nobranding ){
 		doc
 			.image(image_base+'/logo/logo.png',box_x, box_x, {width: logo_width})
@@ -696,8 +697,6 @@ Prize.method('createPdf', function(user, images, page, callback){
 	}
 	
 	y = doc.y;
-	doc.x = 0;
-	
 	var col_y = doc.y = y+10;
 	/**
 	 * First Column

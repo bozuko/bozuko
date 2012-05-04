@@ -40,9 +40,6 @@ exports.transfer_objects = {
             this.sanitize(prize, null, user, function(error, o){
                 if( error ) return callback( error );
                 
-                console.log('sanitized object');
-                console.log(o);
-                
                 o.page_id = prize.page_id;
                 o.game_id = prize.contest_id;
                 o.wrapper_message = "To redeem your prize from "+prize.page.name+": "+prize.instructions+
