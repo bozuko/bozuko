@@ -19,6 +19,7 @@ Ext.define('Bozuko.model.Prize', {
         {name:'redeemed',       type:'Number'},
         {name:'is_email',       type:'Boolean'},
         {name:'is_barcode',     type:'Boolean'},
+        {name:'is_pdf',         type:'Boolean'},
         {name:'barcodes',       type:'Array'},
         {name:'barcode_type',   type:'String',      defaultValue: '39'},
         {name:'email_format',   type:'String',      defaultValue: 'text/plain'},

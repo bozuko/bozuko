@@ -58,7 +58,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     onDisplayWin : function(result){
         if( !result.prize ) return;
-        if( !(result.prize.is_email || result.prize.is_barcode || this.app.email_only) || !result.prize.links.redeem ) return;
+        if( !(result.prize.is_pdf || result.prize.is_email || result.prize.is_barcode || this.app.email_only) || !result.prize.links.redeem ) return;
         
         var self = this;
         
@@ -673,9 +673,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.$youWin.addClass('prize-'+prize.state);
         
         this.$youWin[prize.shared?'addClass':'removeClass']('prize-shared');
-        this.$youWin[prize.is_email?'addClass':'removeClass']('prize-is-email');
+        this.$youWin[prize.is_email||prize.is_pdf?'addClass':'removeClass']('prize-is-email');
         this.$youWin[prize.is_barcode?'addClass':'removeClass']('prize-is-barcode');
-        this.$youWin[!prize.is_barcode&&!prize.is_email?'addClass':'removeClass']('prize-is-user-redeemable');
+        this.$youWin[!prize.is_barcode&&!prize.is_email&&!prize.is_pdf?'addClass':'removeClass']('prize-is-user-redeemable');
         
         this.$youWin.child('.hd .title').update(prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
         
@@ -690,7 +690,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             ft = this.$youWin.child('.ft')
             ;
             
-        if( prize.is_email || this.app.email_only ){
+        if( prize.is_pdf || prize.is_email || this.app.email_only ){
             message.update([
                 '<p>This prize has been emailed to <strong class="user-email">'+this.app.user.email+'</strong>!</p>',
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
@@ -803,7 +803,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
         }
         // add footer buttons...
-        if( !(prize.is_email || this.app.email_only ) && prize.state == 'active' ){
+        if( !(prize.is_pdf || prize.is_email || this.app.email_only ) && prize.state == 'active' ){
             this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'Redeem', cls:'btn-redeem'});
         }
         else{

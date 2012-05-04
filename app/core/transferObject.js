@@ -78,7 +78,7 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
     // make this conform to our def
     var self = this, ret = {};
     if( !current ) current = this.def;
-
+    
     if( typeof current == 'string' ){
         // this _should be_ another transfer object
         return Bozuko.transfer(current, data, user, callback);
@@ -112,13 +112,12 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
         if( !(data instanceof Object || typeof data == 'object') ){
             data = {};
         }
-
         return async.forEachSeries( Object.keys(current),
             function iterator(key, next){
                 (TransferObject.ticks++ % TransferObject.tickLimit == 0 ? async.nextTick : TransferObject.now )(function(){
-                    if( data[key] !== undefined ){
+                    var v = data[key];
+                    if( v !== undefined ){
                         // Cast the value to the proper type.
-                        var v = data[key];
                         var c = current[key];
 
                         if( c instanceof String || typeof c == 'string' ){

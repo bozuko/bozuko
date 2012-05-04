@@ -72,15 +72,20 @@ var game_result = {
         return Bozuko.transfer('game_state', result.contest.game_state, user, function( error, game_state){
             if( error ) return callback( error );
             ret.game_state = game_state;
-            if( result.prize ) return Bozuko.transfer('prize', result.prize, user, function(error, prize){
-                if( error ) return callback( error );
-                ret.prize = prize;
-                ret.links = {
-                    page: '/page/'+result.contest.game_state.page_id,
-                    game: '/game/'+result.contest.id
-                };
-                return callback( null, ret);
-            });
+            if( result.prize ) {
+                console.log('before transfer prize');
+                console.log(result.prize);
+                return Bozuko.transfer('prize', result.prize, user, function(error, prize){
+                    if( error ) return callback( error );
+                    console.log('after transfer prize');
+                    ret.prize = prize;
+                    ret.links = {
+                        page: '/page/'+result.contest.game_state.page_id,
+                        game: '/game/'+result.contest.id
+                    };
+                    return callback( null, ret);
+                });
+            }
             ret.links = {
                 page: '/page/'+page_id,
                 game: '/game/'+result.contest.id

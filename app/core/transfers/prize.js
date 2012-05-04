@@ -13,6 +13,7 @@ exports.transfer_objects = {
             shared: "Boolean",
             is_email: "Boolean",
             is_barcode: "Boolean",
+            is_pdf: "Boolean",
             barcode_image: "String",
             page_name: "String",
             wrapper_message: "String",
@@ -38,6 +39,10 @@ exports.transfer_objects = {
             var self = this;
             this.sanitize(prize, null, user, function(error, o){
                 if( error ) return callback( error );
+                
+                console.log('sanitized object');
+                console.log(o);
+                
                 o.page_id = prize.page_id;
                 o.game_id = prize.contest_id;
                 o.wrapper_message = "To redeem your prize from "+prize.page.name+": "+prize.instructions+
@@ -45,6 +50,8 @@ exports.transfer_objects = {
                 o.win_time = prize.timestamp;
                 o.business_img = prize.page.image;
                 o.user_img = prize.user.image.replace(/type=large/, 'type=square');
+                // what the fuck? why is this differnet?
+                o.is_pdf = prize.get('is_pdf');
 
                 if( o.is_barcode ){
                     var url = o.barcode_image;
@@ -77,13 +84,9 @@ exports.transfer_objects = {
                 } else if ( o.state == 'verified') {
                     o.state = 'redeemed';
                 }
-
+                
                 o.links.resend = '/prize/'+prize.id+'/resend';
-
-                return self.sanitize(o, null, user, function(error, result){
-                    if( error ) return callback( error );
-                    return callback(null, result);
-                });
+                return callback(null, o);
             });
         }
     },

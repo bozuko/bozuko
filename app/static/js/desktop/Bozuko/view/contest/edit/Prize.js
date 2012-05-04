@@ -52,6 +52,10 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 value           :1000 * 60 * 2
             },{
                 xtype           :'checkbox',
+                name            :'is_pdf',
+                fieldLabel      :'Email PDF only'
+            },{
+                xtype           :'checkbox',
                 name            :'is_barcode',
                 fieldLabel      :'Use Barcodes',
                 listeners       :{

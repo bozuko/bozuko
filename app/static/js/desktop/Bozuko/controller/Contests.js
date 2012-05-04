@@ -185,7 +185,7 @@ Ext.define('Bozuko.controller.Contests' ,{
                 if( contestsPanel.reports && (report =pagePanel.reports[record.get('_id')]) ){
                     report.down('[ref=report-campaign-text]').setText(record.get('name'));
                 }
-                prizes.removeAll();
+                prizes.clearPrizes();
                 prizes.updateForms();
             },
             callback: function(){
