@@ -810,8 +810,8 @@ Prize.method('createPdf', function(user, images, page, callback){
 			.text(self.description, {width: col2})
 			;
 	}
-	
-	if( self.is_pdf && self.instructions ){
+	// WHAT THE FUCK!
+	if( self.get('is_pdf') && self.instructions ){
 		doc
 			.fontSize(12)
 			.moveDown()
