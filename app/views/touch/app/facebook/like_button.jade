@@ -134,28 +134,38 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                     document.body.appendChild(img);
                   }
                 }
-                FB.api('/me', {fields:'likes', access_token: fb_token}, function(data){
-                  var found = false;
-                  if( data && data.error && data.error.type.match(/oauthexception/i) ){
-                    // woah...
-                    return;
-                  }
-                  if(!data || !data.likes || !data.likes.data.length ){
-                    return;
-                  }
-                  var likes = data.likes.data;
-                  for(var i=0; i<likes.length && !found; i++){
-                    var like = likes[i];
-                    if( fb_id == like.id ){
-                      found = true;
-                      enableMask();
-                      return;
-                    }
-                  }
-                  
-                });
+                checkLikes();
               });
           };
+          
+          function delayedCheck()
+          {
+            setTimeout(checkLikes, 800);
+          }
+          
+          function checkLikes()
+          {
+            FB.api('/me', {fields:'likes', access_token: fb_token}, function(data){
+              var found = false;
+              if( data && data.error && data.error.type.match(/oauthexception/i) ){
+                // woah...
+                return;
+              }
+              if(!data || !data.likes || !data.likes.data.length ){
+                return delayedCheck();
+              }
+              var likes = data.likes.data;
+              for(var i=0; i<likes.length && !found; i++){
+                var like = likes[i];
+                if( fb_id == like.id ){
+                  found = true;
+                  enableMask();
+                  return;
+                }
+              }
+              return delayedCheck();
+            });
+          }
           
           window.onload = function(){
             var likeBtn = document.getElementById('like-button');
@@ -177,6 +187,12 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                   showLikeButton();
                 }
             }, 200);
+            
+            // safari interval
+            var safari_interval = setInterval(function(){
+            
+            });
+            
           };
           
           // hide the button
