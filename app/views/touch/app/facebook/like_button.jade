@@ -149,7 +149,7 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               var found = false;
               if( data && data.error && data.error.type.match(/oauthexception/i) ){
                 // woah...
-                return;
+                return delayedCheck();
               }
               if(!data || !data.likes || !data.likes.data.length ){
                 return delayedCheck();
