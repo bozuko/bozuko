@@ -791,12 +791,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     break;
                 
                 case 'redeemed':
-                    var time = new Date(Date.parse(prize.redeemed_timestamp));
+                    var time = Bozuko.util.IsoDate.convert(prize.redeemed_timestamp);
                     message.update("This prize was redeemed "+(time.format('fullDate'))+' at '+(time.format('shortTime'))+'.');
                     break;
                 
                 case 'expired':
-                    var time = new Date(Date.parse(prize.expiration_timestamp));
+                    var time = Bozuko.util.IsoDate.convert(prize.expiration_timestamp);
                     message.update("This prize expired "+(time.format('fullDate'))+' at '+(time.format('shortTime'))+'.');
                     break;
             }
@@ -962,7 +962,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         list.update('');
         var ul = list.createChild({tag:'ul'});
         Ext.each( this.prizes, function(prize, i){
-            var win_time = new Date(Date.parse(prize.win_time));
+            var win_time = Bozuko.util.IsoDate.convert(prize.win_time);
             
             var li = ul.createChild({
                 tag         :'li',
