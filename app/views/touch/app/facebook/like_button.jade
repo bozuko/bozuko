@@ -134,36 +134,27 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
                     document.body.appendChild(img);
                   }
                 }
-                checkLikes();
+                checkLike();
               });
           };
           
           function delayedCheck()
           {
-            setTimeout(checkLikes, 800);
+            setTimeout(checkLike, 1000);
           }
           
-          function checkLikes()
+          function checkLike()
           {
-            FB.api('/me', {fields:'likes', access_token: fb_token}, function(data){
-              var found = false;
+            FB.api('/fql', {q:'SELECT page_id FROM page_fan WHERE uid=me() AND page_id='+fb_id, access_token: fb_token}, function(data){
               if( data && data.error && data.error.type.match(/oauthexception/i) ){
                 // woah...
                 return delayedCheck();
               }
-              if(!data || !data.likes || !data.likes.data.length ){
+              if(!data || !data.length ){
                 return delayedCheck();
               }
-              var likes = data.likes.data;
-              for(var i=0; i<likes.length && !found; i++){
-                var like = likes[i];
-                if( fb_id == like.id ){
-                  found = true;
-                  enableMask();
-                  return;
-                }
-              }
-              return delayedCheck();
+              found = true;
+              enableMask();
             });
           }
           
