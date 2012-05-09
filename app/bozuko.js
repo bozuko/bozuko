@@ -4,23 +4,14 @@ var fs = require('fs'),
     Profiler = require('./util/profiler')
 ;
 
-
-/**
- * cheap hack to see where all the errors are coming from in the error log...
- */
-var _err = console.error;
-console.error = function(e){
-	process.stderr.write( new Error().stack + '\n');
-	_err.apply(this,arguments);
-};
-
 // setup the global object
 Bozuko = {};
 
 // override console.error so error logs have timestamps
 var errlog = console.error;
 console.error = function(msg) {
-    errlog(new Date().toString() + " " + msg);
+	var e = msg instanceof Error ? msg : new Error();
+	errlog(new Date().toString() + " " + msg + "\nStacktrace:\n"+e.stack);
 };
 
 Bozuko.dir = fs.realpathSync(__dirname+'/..');
