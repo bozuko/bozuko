@@ -497,7 +497,7 @@ Bozuko.initHttpRedirect = function(){
 	var redirect_server = http.createServer(function(req, res){
 		var ssl_url = (config.server.ssl ? 'https://' : 'http://')
 					+ config.server.host
-					+':'+config.server.port
+					+(~['443',443,'80',80].indexOf(config.server.port)?'':(':'+config.server.port))
 					+ req.url;
 
 		res.writeHead(301, {
