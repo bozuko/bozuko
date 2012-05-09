@@ -93,7 +93,6 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
               }
           
               function onEdgeCreate(response) {
-                  console.log('onEdgeCreate');
                   updateLikes(function () {
                       enableMask();
                       broadcast('facebook/liked');
