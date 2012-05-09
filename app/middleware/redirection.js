@@ -18,7 +18,7 @@ module.exports = function redirection(){
             host_alt=host+(':'+port);
         }
         if( header && header != host && header != host_alt ){
-            console.log('redirect: [header='+header+'] [host='+host+'] [host_alt='+host_alt+']');
+            //console.log('redirect: [header='+header+'] [host='+host+'] [host_alt='+host_alt+']');
             return res.redirect(burl(req.url));
         }
         return next();
