@@ -146,6 +146,9 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
           function checkLike()
           {
             FB.api('/fql', {q:'SELECT page_id FROM page_fan WHERE uid=me() AND page_id='+fb_id, access_token: fb_token}, function(data){
+            
+              if( window.console ) console.log(data, data.length);
+            
               if( data && data.error && data.error.type.match(/oauthexception/i) ){
                 // woah...
                 return delayedCheck();
