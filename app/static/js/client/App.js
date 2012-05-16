@@ -463,6 +463,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 self.stopped = true;
                 return;
             }
+            
+            window.gameResponse = gameResponse;
+            
             api.call( {path: gameResponse.data.links.page}, function(pageResponse){
                 if( !pageResponse.ok ){
                     self.showMessage('Error retreiving page');

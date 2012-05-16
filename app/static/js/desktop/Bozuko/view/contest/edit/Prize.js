@@ -53,7 +53,22 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
             },{
                 xtype           :'checkbox',
                 name            :'is_pdf',
-                fieldLabel      :'Email PDF only'
+                fieldLabel      :'Email PDF only',
+                listeners       :{
+                    change          :function(field){
+                        me.down('[name=pdf_image]')[field.getValue()?'show':'hide']();
+                        me.down('[name=pdf_image]')[field.getValue()?'show':'hide']();
+                        var fn = field.getValue() ? 'show' : 'hide';
+                        Ext.Array.each( me.query('[name=email_body], [name=email_subject], [name=email_format], [name=email_replyto]'), function(cmp){
+                            cmp[fn]();
+                        });
+                    }
+                }
+            },{
+                xtype           :'textfield',
+                name            :'pdf_image',
+                hidden          :true,
+                fieldLabel      :'PDF Image Url'
             },{
                 xtype           :'checkbox',
                 name            :'is_barcode',
@@ -206,10 +221,11 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
     },
 
     onEmailChange : function(field, value){
-        var fn = value ? 'show' : 'hide';
-        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_codes], [name=email_format], [name=email_replyto]'), function(cmp){
+        var fn = value || this.down('[name=is_pdf]').getValue() ? 'show' : 'hide';
+        Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_format], [name=email_replyto]'), function(cmp){
             cmp[fn]();
         });
+        this.down('[name=email_codes]')[value?'show':'hide']();
         this.query('[name=total]')[0].setDisabled( value ? true : false );
         this.onCodesChange( this.query('[name=email_codes]')[0] );
     },

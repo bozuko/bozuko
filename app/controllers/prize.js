@@ -199,6 +199,34 @@ exports.routes = {
             }
         }
     },
+    
+    '/prize/:id/pdf' : {
+        get : {
+            
+            access : 'user',
+            
+            handler : function(req, res){
+                var user = req.session.user;
+                
+                var options = {
+                    query           :{
+                        _id             :req.param('id')
+                    },
+                    limit : 1
+                };
+                
+                user.getPrizes(options, function(error, prizes){
+                    if( error ) return error.send(res);
+                    if( !prizes.length ) return Bozuko.error('prize/not_exists').send(res);
+                    
+                    return prizes[0].getPdf( user, function(error, pdf){
+                        res.send(new Buffer(pdf, 'binary'), {'Content-Type':'application/pdf'});
+                    });
+                    
+                });
+            }
+        }
+    },
 
     '/prize/:id/redemption' : {
 
