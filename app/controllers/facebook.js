@@ -191,6 +191,8 @@ exports.routes = {
          */
         post: {
             handler : function(req, res){
+                
+                console.error('in facebook pubsub');
 
                 var object = req.param('object');
                 var entry = req.param('entry');
