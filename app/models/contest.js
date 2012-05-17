@@ -35,6 +35,7 @@ var Contest = module.exports = new Schema({
     name                    :{type:String},
     alias                   :{type:String, unique: true, index: true},
     promo_copy              :{type:String},
+    ingame_copy             :{type:String},
     engine_type             :{type:String, default:'order', get: enum_engine_type},
     engine_options          :{},
     web_only                :{type:Boolean, default:false},

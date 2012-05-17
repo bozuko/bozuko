@@ -404,6 +404,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                 cls             :'bubble'
                             }]
                         },{
+                            cls             :'section copy',
+                            cn              :[{
+                                cls             :'content'
+                            }]
+                        },{
                             cls             :'section terms',
                             cn              :[{
                                 tag             :'h4',
@@ -417,6 +422,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
             this.$description.$shareButtons = this.$description.child('.share-buttons');
             this.$description.$shareButtons.setVisibilityMode(Ext.Element.DISPLAY);
+            
+            this.$copySection = this.$description.child('.section.copy');
+            this.$copySection.setVisibilityMode(Ext.Element.DISPLAY);
+            this.$copySection.hide();
             
             var btn = this.$description.$shareButtons.child('.share-btn');
             btn.on('click', function(e){
@@ -494,6 +503,16 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 })(li);
             }
         }
+        // check 
+        if( this.game.ingame_copy ){
+            this.$copySection.child('.content').update(this.game.ingame_copy);
+            this.$copySection.show();
+        }
+        else {
+            this.$copySection.child('.content').update('');
+            this.$copySection.hide();
+        }
+        
         // add terms...
         var terms = this.game.rules
             .replace(/\n/g,'<br />')

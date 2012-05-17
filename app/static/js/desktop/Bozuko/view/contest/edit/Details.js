@@ -145,6 +145,12 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             }]
         },{
             xtype           :'htmleditor',
+            name            :'ingame_copy',
+            height          :300,
+            labelAlign      :'top',
+            fieldLabel      :'In Game Copy'
+        },{
+            xtype           :'htmleditor',
             name            :'promo_copy',
             height          :300,
             labelAlign      :'top',

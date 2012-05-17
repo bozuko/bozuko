@@ -102,6 +102,7 @@ var game = {
         id: "String",
         type: "String",
         name: "String",
+        ingame_copy: 'String',
         post_to_wall: 'Boolean',
         share_url : 'String',
         share_title: 'String',
