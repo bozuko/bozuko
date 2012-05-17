@@ -377,7 +377,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			return console.error( error );
 		}
 		var attachments = [{
-			filename: 'bozuko_prize.pdf',
+			filename: self.page_name.replace(/['"\/\\]/gi, '')  +' - '+self.name.replace(/['"\/\\]/gi, '')+'.pdf',
 			contents: new Buffer(pdf, 'binary')
 		}];
 		
