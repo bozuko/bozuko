@@ -18,6 +18,7 @@ var Prize = module.exports = new Schema({
     is_email                :{type:Boolean, default: false},
     is_pdf                  :{type:Boolean},
     pdf_image               :{type:String},
+    pdf_image_only          :{type:Boolean},
     email_body              :{type:String},
     email_format            :{type:String,  default: 'text/plain'},
     email_subject           :{type:String},

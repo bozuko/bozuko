@@ -1221,6 +1221,7 @@ Contest.method('savePrize', function(opts, callback) {
             is_barcode: prize.is_barcode,
             is_pdf: prize.is_pdf,
             pdf_image: prize.pdf_image,
+            pdf_image_only: prize.pdf_image_only,
             bucks: prize.bucks
         });
 

@@ -8,6 +8,7 @@ var mongoose = require('mongoose'),
     ObjectId = Schema.ObjectId,
     mail = Bozuko.require('util/mail'),
     Pdf = require('pdfkit'),
+	PdfImage = require('pdfkit/lib/image'),
 	dateFormat = require('dateformat'),
     async = require('async'),
     uuid = require('node-uuid'),
@@ -43,6 +44,7 @@ var Prize = module.exports = new Schema({
     is_email                :{type:Boolean, default:false},
 	is_pdf                  :{type:Boolean},
 	pdf_image				:{type:String},
+	pdf_image_only			:{type:Boolean},
     email_body              :{type:String},
     email_code              :{type:String},
     email_replyto           :{type:String},
@@ -724,8 +726,43 @@ Prize.method('createPdf', function(user, images, page, callback){
 		var image_base = Bozuko.dir+'/resources/images',
 			logo_width = doc.page.width * .25;
 	
-		doc.info.Title = 'Bozuko Prize';
-		doc.info.Author = 'Bozuko, Inc';
+		doc.info.Title = self.page.name+' Prize';
+		doc.info.Author = self.page.name;
+		
+		// before we go crazy...
+		if( self.is_pdf && images.pdf && self.pdf_image_only ){
+			// we are just going to be centering the image...
+			
+			var image = PdfImage.open(images.pdf.path)
+			  
+			  // canvas
+			  , cw = (doc.page.width - 40)
+			  , ch = (doc.page.height - 40)
+			  , cp = cw / ch
+			  
+			  // image
+			  , iw = image.width
+			  , ih = image.height
+			  , ip = iw / ih
+			  
+			  // final w and h
+			  , w
+			  , h
+			  ;
+			
+			// width its bigger
+			if( ip > cp ){
+				w = Math.min(cw, iw);
+				h = ih * (w/iw);
+			}
+			else{
+				h = Math.min(ch, ih);
+				w = iw * (h/ih);
+			}
+			doc.image(images.pdf.path, doc.page.margins.left + (cw - w) / 2, doc.page.margins.left + (ch - h) / 2, {fit: [w, h]});
+			return callback(null, doc.output());
+		}
+		
 		
 		doc.registerFont('Light',Bozuko.dir+'/resources/fonts/open-sans/OpenSans-Light.ttf','OpenSansLight')
 		doc.registerFont('Regular',Bozuko.dir+'/resources/fonts/open-sans/OpenSans-Regular.ttf','OpenSansRegular');
