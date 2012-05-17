@@ -57,7 +57,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 listeners       :{
                     change          :function(field){
                         me.down('[name=pdf_image]')[field.getValue()?'show':'hide']();
-                        me.down('[name=pdf_image]')[field.getValue()?'show':'hide']();
+                        me.down('[name=pdf_image_only]')[field.getValue()?'show':'hide']();
                         var fn = field.getValue() ? 'show' : 'hide';
                         Ext.Array.each( me.query('[name=email_body], [name=email_subject], [name=email_format], [name=email_replyto]'), function(cmp){
                             cmp[fn]();
@@ -69,6 +69,11 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 name            :'pdf_image',
                 hidden          :true,
                 fieldLabel      :'PDF Image Url'
+            },{
+                xtype           :'checkbox',
+                name            :'pdf_image_only',
+                hidden          :true,
+                fieldLabel      :'PDF Image Only'
             },{
                 xtype           :'checkbox',
                 name            :'is_barcode',
