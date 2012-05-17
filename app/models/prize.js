@@ -372,57 +372,81 @@ Prize.method('getPdf', function(user, security_img, callback){
 Prize.method('emailPrizeScreen', function(user, security_img) {
     var self = this;
 	
-	this.getPdf(user, security_img, function(error, pdf){
-		if( error ){
-			return console.error( error );
-		}
-		var attachments = [{
-			filename: self.page_name.replace(/['"\/\\]/gi, '')  +' - '+self.name.replace(/['"\/\\]/gi, '')+'.pdf',
-			contents: new Buffer(pdf, 'binary')
-		}];
+	return Bozuko.models.Page.findById( self.page_id, function(error, page){
 		
-		if( self.is_pdf ){
+		if( error ) return console.log(error);
+		
+		return self.getPdf(user, security_img, function(error, pdf){
+			if( error ){
+				return console.error( error );
+			}
+			var attachments = [{
+				filename: self.page_name.replace(/['"\/\\]/gi, '')  +' - '+self.name.replace(/['"\/\\]/gi, '')+'.pdf',
+				contents: new Buffer(pdf, 'binary')
+			}];
 			
-			// do some substitutions
-			var subject = self.email_subject,
-				body = self.email_body,
-				subs = {
-					'{name}':user.name,
-					'{email}':user.email,
-					'{prize}':self.name,
-					'{code}':self.email_code,
-					'{bozuko_code}':self.code
-				};
-		
-			Object.keys(subs).forEach(function(key){
-				var re = new RegExp(XRegExp.escape(key), "gi");
-				subject = subject.replace(re, subs[key]||'' );
-				body = body.replace(re, subs[key]||'' );
-			});
-		
-			var text = body
-				.replace(/<br>/gi, "\n")
-				.replace(/<p.*>/gi, "\n")
-				.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
-				.replace(/<(?:.|\s)*?>/g, "");
+			if( self.is_pdf ){
+				
+				// do some substitutions
+				var subject = self.email_subject,
+					body = self.email_body,
+					subs = {
+						'{name}':user.name,
+						'{email}':user.email,
+						'{prize}':self.name,
+						'{code}':self.email_code,
+						'{bozuko_code}':self.code
+					};
 			
-			return mail.send({
-				user_id			:user._id,
-				to				:user.email,
-				subject			:subject,
-				html			:body,
-				body			:text,
-				attachments		:attachments,
-				sender			:self.page_name +' <mailer@bozuko.com>'
-			}, function(err, success, record) {
-				if (err || !success) {
-					console.error('Error emailing prize screen: '+err);
-				}
-			});
-		}
-		
-		if( page.nobranding ){
-			return mail.send({
+				Object.keys(subs).forEach(function(key){
+					var re = new RegExp(XRegExp.escape(key), "gi");
+					subject = subject.replace(re, subs[key]||'' );
+					body = body.replace(re, subs[key]||'' );
+				});
+			
+				var text = body
+					.replace(/<br>/gi, "\n")
+					.replace(/<p.*>/gi, "\n")
+					.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
+					.replace(/<(?:.|\s)*?>/g, "");
+				
+				return mail.send({
+					user_id			:user._id,
+					to				:user.email,
+					subject			:subject,
+					html			:body,
+					body			:text,
+					attachments		:attachments,
+					sender			:self.page_name +' <mailer@bozuko.com>'
+				}, function(err, success, record) {
+					if (err || !success) {
+						console.error('Error emailing prize screen: '+err);
+					}
+				});
+			}
+			
+			if( page.nobranding ){
+				return mail.send({
+					user_id: user._id,
+					to: user.email,
+					subject: 'Congratulations! You won a prize from '+self.page_name,
+					body: [
+						'Hi '+self.user_name+',',
+						'',
+						'Congratulations - you just won "'+self.name+'". Please see the attachment for your prize.',
+						'',
+						'-'+self.page_name
+					].join('\n'),
+					attachments: attachments
+				}, function(err, success, record) {
+					if (err || !success) {
+						console.error('Error emailing prize screen: '+err);
+					}
+				});
+			}
+			
+			// lets get the page name...
+			return mail.sendView('prize/pdf', {prize: self, user: user, userLayout: true}, {
 				user_id: user._id,
 				to: user.email,
 				subject: 'Congratulations! You won a prize from '+self.page_name,
@@ -439,25 +463,6 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 					console.error('Error emailing prize screen: '+err);
 				}
 			});
-		}
-		
-		// lets get the page name...
-		return mail.sendView('prize/pdf', {prize: self, user: user, userLayout: true}, {
-			user_id: user._id,
-			to: user.email,
-			subject: 'Congratulations! You won a prize from '+self.page_name,
-			body: [
-				'Hi '+self.user_name+',',
-				'',
-				'Congratulations - you just won "'+self.name+'". Please see the attachment for your prize.',
-				'',
-				'-'+self.page_name
-			].join('\n'),
-			attachments: attachments
-		}, function(err, success, record) {
-			if (err || !success) {
-				console.error('Error emailing prize screen: '+err);
-			}
 		});
 	});
 });
