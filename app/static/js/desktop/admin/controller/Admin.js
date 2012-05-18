@@ -277,7 +277,7 @@ Ext.define('Admin.controller.Admin' ,{
                                     ;
                                 panel.store.add(record);
                                 me.application.controllers.getByKey('Bozuko.controller.Contests')
-                                    .openWithBuilder(record, field)
+                                    .editContest(record, field)
                                     ;
                             }
                             
