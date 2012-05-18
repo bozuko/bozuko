@@ -24,7 +24,7 @@ Ext.define('Admin.controller.Admin' ,{
         {ref: 'userFilter', selector: 'userlist [ref=filter]'},
         {ref: 'pageInactiveBtn', selector: 'pagelist [ref=inactive]'},
         {ref: 'pagePagingToolbar', selector: 'pagelist pagingtoolbar'},
-        {ref: 'tabPanel', selector: 'viewport tabpanel[region=center]'},
+        {ref: 'tabPanel', selector: 'viewport tabpanel[region=center]'}
     ],
     
     getPagesStore : function(){
@@ -86,6 +86,9 @@ Ext.define('Admin.controller.Admin' ,{
             },
             'contestspanel' : {
                 render : me.onContestPanelRender
+            },
+            'bozukochartbasic': {
+                render : me.onChartRender
             }
         });
     },
@@ -411,6 +414,23 @@ Ext.define('Admin.controller.Admin' ,{
         if( me._tabs && me._tabs[id] ){
             me._tabs[id].setTitle(record.get('name'));
         }
+    },
+    
+    onChartRender : function(chart){
+        chart.add({
+            xtype           :'panel',
+            border          :false,
+            style           :'text-align:center; padding-top: 10px; ',
+            anchor          :'0',
+            autoHeight      :true,
+            items           :[{
+                autoHeight      :true,
+                xtype           :'button',
+                hidden          : chart.contest_id ? false : true,
+                text            :'Download Admin Report',
+                href            : Bozuko.Router.route('/contests/'+chart.contest_id+'/adminReport')
+            }]
+        })
     },
     
     onContestItemClick : function(view, record, item, index, e){

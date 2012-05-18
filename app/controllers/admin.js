@@ -13,6 +13,7 @@ var facebook    = Bozuko.require('util/facebook'),
     merge       = Bozuko.require('util/functions').merge,
     array_map   = Bozuko.require('util/functions').map,
     Report      = Bozuko.require('core/report'),
+    adminReporter = Bozuko.require('util/adminReporter'),
     DateUtil    = Bozuko.require('util/date'),
     XRegExp     = Bozuko.require('util/xregexp'),
     async       = require('async')
@@ -30,6 +31,27 @@ exports.routes = {
                 Bozuko.require('dev/setup').init(function(){
                     res.send('reset the development environment');
                 });
+            }
+        }
+    },
+    
+    
+    '/admin/contests/:id/adminReport': {
+        get: {
+            handler: function(req, res) {
+               var self = this;
+               var contest_id = req.param('id');
+               if (!contest_id) return Bozuko.error('contest/not_found').send(res);
+               return Bozuko.models.Contest.findById(contest_id, function(err, contest) {
+                   if (err) return err.send(res);
+                   if (!contest) return Bozuko.error('contest/not_found', contest_id).send(res);
+
+                   // TODO: Allow report generation if this user is a Bozuko employee 
+                   // How do we do this? 
+                   var allowed = true;
+                   if (!allowed) return Bozuko.error('bozuko/auth').send(res);
+                   return adminReporter.stream(contest, res);
+               });
             }
         }
     },
