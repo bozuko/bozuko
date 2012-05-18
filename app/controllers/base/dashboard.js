@@ -18,6 +18,7 @@ var Content     = Bozuko.require('util/content'),
     XRegExp     = Bozuko.require('util/xregexp'),
     crypto      = require('crypto'),
     reporter    = Bozuko.require('util/reporter')
+    adminReporter = Bozuko.require('util/adminReporter')
     ;
 
 exports.restrictToUser = false;
@@ -1516,9 +1517,6 @@ exports.routes = {
         get: {
             handler: function(req, res) {
                 var self = this;
-               // if (req.headers['accept'] !== 'text/csv') {
-               //    return Bozuko.error('http/unacceptable').send(res);
-               // }
                var contest_id = req.param('id');
                if (!contest_id) return Bozuko.error('contest/not_found').send(res);
                return Bozuko.models.Contest.findById(contest_id, function(err, contest) {
@@ -1545,6 +1543,26 @@ exports.routes = {
 
                    if (!allowed) return Bozuko.error('bozuko/auth').send(res);
                    return reporter.stream(contest, res);
+               });
+            }
+        }
+    },
+
+    '/contests/:id/adminReport': {
+        get: {
+            handler: function(req, res) {
+               var self = this;
+               var contest_id = req.param('id');
+               if (!contest_id) return Bozuko.error('contest/not_found').send(res);
+               return Bozuko.models.Contest.findById(contest_id, function(err, contest) {
+                   if (err) return err.send(res);
+                   if (!contest) return Bozuko.error('contest/not_found', contest_id).send(res);
+
+                   // TODO: Allow report generation if this user is a Bozuko employee 
+                   // How do we do this? 
+                   var allowed = true;
+                   if (!allowed) return Bozuko.error('bozuko/auth').send(res);
+                   return adminReporter.stream(contest, res);
                });
             }
         }
