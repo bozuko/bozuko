@@ -1,11 +1,11 @@
 var Pdf = require('pdfkit'),
-async = require('async');
+    async = require('async');
 
 exports.create = function(contest_id, callback) {
   var contest = null,
       pdf = null,
       codes = null;
-  async.forEach([
+  async.series([
     function(cb) {
       getContest(contest_id, function(err, _contest) {
         contest = _contest;
@@ -25,6 +25,7 @@ exports.create = function(contest_id, callback) {
       });
     }
   ], function(err) {
+      console.log('err = '+err);
     if (err) return callback(err);
     callback(null, pdf);
   });
@@ -43,8 +44,9 @@ function getContest(contest_id, callback) {
 function getCodes(contest, callback) {
   var codes = [];
   if (contest.engine_type === 'order') {
-    Object.keys(contest.results).forEach(function(result) {
-      if (result.code) codes.push[result.code];
+    Object.keys(contest.results).forEach(function(key) {
+      var code = contest.results[key].code;
+      if (code) codes.push(code);
     });
     return callback(null, codes);
   } 
@@ -56,10 +58,7 @@ function createPdf(contest, codes, callback) {
   doc.info.Title = contest.name;
   doc.registerFont('Bozuko',Bozuko.dir+'/resources/fonts/arvo/Arvo-Regular.ttf','ArvoRegular');
 
-  // Bozuko logo
-  doc.image(image_base+'/logo/logo.png', 20, 20, {width: logo_width});
-
-  var header = contest.name + ': '+start+' - '+end;
+  var header = contest.name + ': '+contest.start+' - '+contest.end;
   doc.fill('#D3D3D3').font('Bozuko').fontSize(24).fill('black').text(header);
   doc.moveDown();
 
@@ -67,5 +66,6 @@ function createPdf(contest, codes, callback) {
     doc.fill('#D3D3D3').font('Bozuko').fontSize(20).fill('black').text(code);
     doc.moveDown();
   });
-  return callback(null, doc.output());
+
+  callback(null, doc);
 }

@@ -1,5 +1,6 @@
 process.env.NODE_ENV='test';
-var bozuko = require('../../../app/bozuko');
+var bozuko = require('../bozuko');
+bozuko.getApp();
 var codePdf = require('../codePdf');
 
 var contest = {
@@ -20,8 +21,9 @@ var codes = [
 ];
 
 exports['createPdf works'] = function(test) {
-  codePdf.createPdf(contest, codes, function(err, pdfOutput) {
+  codePdf.createPdf(contest, codes, function(err, pdf) {
     test.ok(!err);
-    test.ok(pdfOutput);
+    pdf.write('codes.pdf');
+    test.done();
   });
 };
