@@ -577,7 +577,7 @@ Prize.method('share', function(args, callback){
 			var options = {
 				user: user,
 				message: args.message || '',
-				caption: 'Play and Win!',
+				caption: page.name,
 				link: link,
 				picture: burl('/page/'+prize.page_id+'/image')
 			};
