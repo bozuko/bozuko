@@ -433,6 +433,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 e.stopEvent();
                 var opts = {
                     method: 'feed',
+                    place: self.page.facebook_id,
                     caption: self.page.name,
                     link: self.game.share_url,
                     name: self.game.share_title,

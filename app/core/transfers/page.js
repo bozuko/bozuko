@@ -16,6 +16,7 @@ exports.transfer_objects = {
             like_button_url: "String",
             like_button_url_large: "String",
             facebook_page: "String",
+            facebook_id: "String",
             category: "String",
             website: "String",
             featured: "Boolean",
@@ -101,6 +102,7 @@ exports.transfer_objects = {
                 
                 if( page.is_facebook && !page.registered ){
                     page.facebook_page = page.data.link;
+                    page.facebook_id = fid;
                 }
                 else if(page.is_facebook && page.service && page.service('facebook') ){
                     page.facebook_page = page.service('facebook').data.link;
