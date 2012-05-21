@@ -576,6 +576,7 @@ Prize.method('share', function(args, callback){
 
 			var options = {
 				user: user,
+				place: page.service('facebook').sid,
 				message: args.message || '',
 				caption: page.name,
 				link: link,
