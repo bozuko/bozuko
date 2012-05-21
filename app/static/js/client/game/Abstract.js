@@ -433,7 +433,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 e.stopEvent();
                 var opts = {
                     method: 'feed',
-                    caption: 'Play and Win!',
+                    caption: self.page.name,
                     link: self.game.share_url,
                     name: self.game.share_title,
                     description: self.game.share_description,
