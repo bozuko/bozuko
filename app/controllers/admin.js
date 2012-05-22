@@ -42,7 +42,7 @@ exports.routes = {
                 codePdf.create(req.param('id'), function(err, pdf) {
                     if (err) return res.end(err.message);
                     res.contentType('application/pdf');
-                    res.header('Content-Disposition', 'inline; filename=codes.pdf');
+                    res.header('Content-Disposition', 'attachment; filename=codes.pdf');
                     res.end(pdf.output(),'binary');
                 });
             }

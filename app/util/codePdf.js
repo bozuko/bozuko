@@ -60,6 +60,7 @@ function getCodes(contest, callback) {
       results.forEach(function(result) {
          codes[result.index].push(result.code); 
       });
+      callback(null, codes);
   });
 }
 
@@ -73,13 +74,13 @@ function createPdf(contest, codes, callback) {
   doc.moveDown();
 
   for (var i = 0; i < contest.prizes.length; i++) {
+      doc.moveDown();
       var prize = contest.prizes[i].name;
       doc.fill('#D3D3D3').font('Bozuko').fontSize(20).fill('black').text(prize);
       doc.moveDown();
       codes[i].sort();
       codes[i].forEach(function(code) {
         doc.fill('#D3D3D3').font('Bozuko').fontSize(16).fill('black').text(code);
-//        doc.moveDown();
       });
   }
 
