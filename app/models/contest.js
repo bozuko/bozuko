@@ -482,7 +482,7 @@ Contest.method('publish', function(callback){
         Bozuko.models.Page.findOne({_id: self.page_id}, {name: 1}, function(err, page) {
             if (err) return callback(err);
             if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && page.name != 'Admin Demo'
-                && self.total_entries > 1500) {
+                && self.total_entries > 1500 && this.engine_type === 'order') {
                     return callback(Bozuko.error('contest/max_entries', 1500));
             }
             self.active = true;
