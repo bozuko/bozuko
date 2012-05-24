@@ -16,7 +16,8 @@ var facebook    = Bozuko.require('util/facebook'),
     adminReporter = Bozuko.require('util/adminReporter'),
     DateUtil    = Bozuko.require('util/date'),
     XRegExp     = Bozuko.require('util/xregexp'),
-    async       = require('async')
+    async       = require('async'),
+    codePdf     = Bozuko.require('util/codePdf')
 ;
 
 exports.access = 'admin';
@@ -35,6 +36,18 @@ exports.routes = {
         }
     },
     
+    '/admin/contests/:id/codes': {
+        get: {
+            handler: function(req, res) {
+                codePdf.create(req.param('id'), function(err, pdf) {
+                    if (err) return res.end(err.message);
+                    res.contentType('application/pdf');
+                    res.header('Content-Disposition', 'attachment; filename=codes.pdf');
+                    res.end(pdf.output(),'binary');
+                });
+            }
+        }
+    },
     
     '/admin/contests/:id/adminReport': {
         get: {
