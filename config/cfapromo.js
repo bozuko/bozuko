@@ -12,7 +12,7 @@ module.exports = {
     
     user : {
         block: {
-            min_friends: 4
+            min_friends: 0
         }
     },
 

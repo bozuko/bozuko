@@ -561,7 +561,7 @@ User.static('addOrModify', function(user, phone, callback) {
             service_id
         ]
     };
-
+    
     Bozuko.models.User.findOne(q, function(err, u){
         if (err) return callback(err);
 

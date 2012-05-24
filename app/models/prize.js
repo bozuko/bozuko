@@ -136,7 +136,7 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
                 security_img = burl('/images/security_image.png');
             }
 
-            if (email_prize_screen && !self.is_email) {
+            if ((email_prize_screen || self.is_pdf) && !self.is_email) {
                 self.emailPrizeScreen(user, security_img);
             }
 
