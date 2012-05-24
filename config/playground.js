@@ -18,6 +18,12 @@ module.exports = {
             }
         }
     },
+	
+	user : {
+        block: {
+            min_friends: 0
+        }
+    },
 
     controllers: {
         except: [

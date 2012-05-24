@@ -10,6 +10,12 @@ module.exports = {
 			'admin'
         ]
     },
+	
+	user : {
+        block: {
+            min_friends: 0
+        }
+    },
 
     client: {
         mobile:{
