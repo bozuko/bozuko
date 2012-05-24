@@ -34,6 +34,7 @@ Ext.define('Bozuko.model.Page', {
         {name:'admins',         type:'Array'},
         {name:'has_contests',   type:'Boolean'},
         {name:'pin',            type:'String'},
+        {name:'api_key',        type:'String'},
         {name:'mailchimp_token',type:'String'},
         {name:'mailchimp_dc',   type:'String'},
         {name:'mailchimp_endpoint', type:'String'},

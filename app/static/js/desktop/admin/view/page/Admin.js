@@ -40,6 +40,10 @@ Ext.define('Admin.view.page.Admin' ,{
                     name            :'image',
                     fieldLabel      :'Image'
                 },{
+                    xtype           :'displayfield',
+                    name            :'api_key',
+                    fieldLabel      :'Api Key'
+                },{
                     xtype           :'checkbox',
                     name            :'nobranding',
                     fieldLabel      :'Remove Branding'

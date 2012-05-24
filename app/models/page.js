@@ -12,8 +12,8 @@ var _t = Bozuko.t,
     indexOf = Bozuko.require('util/functions').indexOf,
     httpsUrl = Bozuko.require('util/functions').httpsUrl,
     async = require('async'),
-	MailChimpApi = Bozuko.require('util/mailchimp').Api,
-	ConstantContactApi = Bozuko.require('util/constantcontact').Api,
+    MailChimpApi = Bozuko.require('util/mailchimp').Api,
+    ConstantContactApi = Bozuko.require('util/constantcontact').Api,
     inspect = require('util').inspect,
     rand = Bozuko.require('util/math').rand,
     Profiler = Bozuko.require('util/profiler'),
@@ -22,11 +22,11 @@ var _t = Bozuko.t,
 
 var Page = module.exports = new Schema({
     children            :[ObjectId],
-	is_enterprise		:{type:Boolean, default: false},
+    is_enterprise       :{type:Boolean, default: false},
     category            :{type:String, index: true},
-	alias				:{type:String, index: true},
+    alias               :{type:String, index: true},
     website             :{type:String},
-	nobranding			:{type:Boolean},
+    nobranding          :{type:Boolean},
     phone               :{type:String},
     description         :{type:String},
     is_location         :{type:Boolean},
@@ -40,8 +40,8 @@ var Page = module.exports = new Schema({
     test                :{type:Boolean, index: true, default: false},
     active              :{type:Boolean, default: false, index: true},
     location            :{
-        lat	            :Number,
-        lng	            :Number,
+        lat                 :Number,
+        lng                 :Number,
         street              :String,
         city                :String,
         state               :String,
@@ -49,7 +49,7 @@ var Page = module.exports = new Schema({
         country             :String
     },
     
-	/* deprecate */
+    /* deprecate */
     owner_id            :{type:ObjectId, index: true},
     admins              :[ObjectId],
     beta_agreement      :{
@@ -58,23 +58,26 @@ var Page = module.exports = new Schema({
         signed_date         :{type:Date}
     },
     
-	// code_block is a running total. Can't just search because contests may be deleted.
+    // code_block is a running total. Can't just search because contests may be deleted.
     code_block          :{type:Number},
     code_prefix         :{type:String},
     pin                 :{type:String, index: true},
-	
-	// email services settings
-	mailchimp_token		:{type:String},
-	mailchimp_dc		:{type:String},
-	mailchimp_endpoint	:{type:String},
-	mailchimp_lists		:{type:Array},
-	mailchimp_activelists	:{type:Array},
-	
-	constantcontact_token	:{type:String},
-	constantcontact_username:{type:String},
-	constantcontact_lists	:{type:Array},
-	constantcontact_activelists	:{type:Array}
-	
+    
+    // email services settings
+    mailchimp_token         :{type:String},
+    mailchimp_dc            :{type:String},
+    mailchimp_endpoint      :{type:String},
+    mailchimp_lists         :{type:Array},
+    mailchimp_activelists   :{type:Array},
+    
+    constantcontact_token       :{type:String},
+    constantcontact_username    :{type:String},
+    constantcontact_lists       :{type:Array},
+    constantcontact_activelists :{type:Array},
+    
+    // developer keys (introduced for some simple auth with our own integrations for now)
+    api_key                 :{type:String}
+    
 }, {safe: {j:true}});
 
 Page.index({admins: 1});
@@ -89,11 +92,25 @@ Page.pre('save', function(next) {
         self.pin = pin;
         return next();
     });
+    if( !this.api_key || this.api_key == '' ){
+        self.api_key = create_key(32);
+    }
     return next();
 });
 
+function create_key(len)
+{
+    var key=''
+      , pool = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz"
+      ;
+    for(var i=0; i<len; i++){
+        key += pool.charAt(Math.random()*pool.length);
+    }
+    return key;
+};
+
 Page.static('verifyPin', function(pin, callback) {
-	pin = (pin || "").toUpperCase();
+    pin = (pin || "").toUpperCase();
     return Bozuko.models.Page.findOne({pin: pin}, {_id: 1, name: 1}, function(err, page) {
         if (err) return callback(err);
         if (!page) return callback(Bozuko.error('page/invalid_pin'));
@@ -179,13 +196,13 @@ Page.static('getCodeInfo', function(page_id, callback) {
 });
 
 Page.method('getMailChimpApi', function(){
-	if( !this.mailchimp_token ) return false;
-	return new MailChimpApi( this.mailchimp_token, this.mailchimp_dc, this.mailchimp_endpoint );
+    if( !this.mailchimp_token ) return false;
+    return new MailChimpApi( this.mailchimp_token, this.mailchimp_dc, this.mailchimp_endpoint );
 });
 
 Page.method('getConstantContactApi', function(){
-	if( !this.constantcontact_token ) return false;
-	return new ConstantContactApi( this.constantcontact_token, this.constantcontact_username );
+    if( !this.constantcontact_token ) return false;
+    return new ConstantContactApi( this.constantcontact_token, this.constantcontact_username );
 });
 
 Page.method('isAdmin', function(user, callback){
@@ -269,22 +286,22 @@ Page.method('loadContests', function(user, callback){
 
     return Bozuko.models.Contest.find({
         active: true,
-		web_only: {$ne: true},
-		$or: [{page_id: this._id}, {page_ids: this._id}],
-		start: {$lt: now},
+        web_only: {$ne: true},
+        $or: [{page_id: this._id}, {page_ids: this._id}],
+        start: {$lt: now},
         end: {$gt: now}
     }, {results: 0, plays: 0},
     function(err, contests) {
-		if( err){
-			return callback(err);
-		}
+        if( err){
+            return callback(err);
+        }
         // attach active contests to page
         return async.forEach(contests, function (contest, cb) {
             // load contest game state
             var opts = {user: user, page: self};
             return contest.loadGameState(opts, function(error, state){
                 if (error) return cb(error);
-				if (!state.game_over) self.contests.push(contest);
+                if (!state.game_over) self.contests.push(contest);
                 return cb(null);
             });
         }, function(err) {
@@ -498,8 +515,8 @@ Page.static('loadPagesContests', function(pages, user, callback){
     async.forEach(pages, function(page, cb) {
         page.loadContests(user, cb);
     }, function(err) {
-	if (err) return callback(err);
-	return callback(null, pages);
+    if (err) return callback(err);
+        return callback(null, pages);
     });
 });
 
@@ -637,7 +654,7 @@ Page.static('search', function(options, callback){
          */
         serviceSearch = false;
     }
-	
+    
     /**
      * This is a standard center search, we will use a service to get
      * additional results, but also do a search
@@ -739,24 +756,24 @@ Page.static('search', function(options, callback){
         
         return Bozuko.models.Page[bozukoSearch.type](bozukoSearch.selector, bozukoSearch.fields, bozukoSearch.options, function(error, pages){
             
-			if( error ) return callback(error);
+            if( error ) return callback(error);
 
             pages = featured.concat(pages);
 
             return Bozuko.models.Page.loadPagesContests(pages, options.user, function(error, pages){
                 if( error ) return callback(error);
-				
-				// lets ditch any pages that have no contests.
-				var i=0, removed_ids = [];
-				while( i<pages.length && pages.length ){
-					if(!pages[i].contests || !pages[i].contests.length){
-						removed_ids.push(String(pages[i]._id));
-						pages.splice(i,1);
-					}
-					else{
-						i++;
-					}
-				}
+                
+                // lets ditch any pages that have no contests.
+                var i=0, removed_ids = [];
+                while( i<pages.length && pages.length ){
+                    if(!pages[i].contests || !pages[i].contests.length){
+                        removed_ids.push(String(pages[i]._id));
+                        pages.splice(i,1);
+                    }
+                    else{
+                        i++;
+                    }
+                }
 
                 var page_ids = [], fb_ids=[];
                 prepare_pages(pages, options.user, function(page){
@@ -767,12 +784,12 @@ Page.static('search', function(options, callback){
                     page_ids.push(page._id);
                     if( !~featured_ids.indexOf( page._id ) ) page.featured = false;
                 });
-				
-				page_ids = page_ids.concat(removed_ids);
+                
+                page_ids = page_ids.concat(removed_ids);
 
 
                 if( !serviceSearch ){
-					pages.sort( sort_by('_distance') );
+                    pages.sort( sort_by('_distance') );
                     pages.sort( 'featured' );
                     return return_pages( pages );
                 }
@@ -784,8 +801,8 @@ Page.static('search', function(options, callback){
                 var service = options.service || Bozuko.config.defaultService;
 
                 return Bozuko.service(service).search(options, function(error, _results){
-					
-					if( error ){
+                    
+                    if( error ){
                         console.error( error );
                         pages.sort( sort_by('_distance') );
                         return return_pages( pages );

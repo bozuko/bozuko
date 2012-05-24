@@ -56,6 +56,11 @@ exports.links = {
             access: 'mobile',
             doc: "Update user info (currently email address only)",
             returns: "success_message"
+        },
+        put : {
+            access: 'developer',
+            doc: 'Create a new user',
+            returns: 'user'
         }
     },
 

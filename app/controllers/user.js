@@ -83,7 +83,7 @@ exports.routes = {
             }
         }
     },
-
+    
     '/user' : {
 
         get : {
@@ -173,6 +173,37 @@ exports.routes = {
                         title: 'Email Updated'
                     }, user, function(error, result){
                         res.send(error || result);
+                    });
+                });
+                
+            }
+        },
+        
+        // ssh...
+        put : {
+            access : 'developer',
+            
+            handler : function(req, res) {
+                var data = req.param('data');
+                if( !data ) {
+                    return res.send(Bozuko.error('user/empty'));
+                }
+                if( !data.service ){
+                    return res.send(Bozuko.error('user/service_required'));
+                }
+                if( !data.service == 'facebook' ){
+                    // we can't accept this
+                    return res.send(Bozuko.error('user/create_facebook_only'));
+                }
+                
+                var user = Bozuko.service('facebook').sanitizeUser( data );
+                user.token = data.token;
+                user.service = 'facebook';
+                
+                return Bozuko.models.User.addOrModify( user, null, function(error, user){
+                    if(error) return res.send(error);
+                    return Bozuko.transfer('user', user, null, function(error, result){
+                        return res.send( error || result );
                     });
                 });
                 
