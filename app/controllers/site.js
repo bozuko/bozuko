@@ -629,6 +629,18 @@ exports.routes = {
         }
     },
     
+    '/test' : {
+        get : {
+            handler : function(req, res){
+                var inspect = require('util').inspect;
+                req.socket.setTimeout(0);
+                setTimeout(function(){
+                    res.send( inspect(req.socket) );
+                }, 1000 * 60 * 2.5);
+            }
+        }
+    },
+    
     '/faq' : {
         get : {
             title :'Bozuko - Frequently Asked Questions',

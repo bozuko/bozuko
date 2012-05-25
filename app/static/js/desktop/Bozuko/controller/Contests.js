@@ -251,7 +251,6 @@ Ext.define('Bozuko.controller.Contests' ,{
                         cp.setLoading("Publishing... This may take a minute, please be patient");
                         Ext.Ajax.request({
                             url: url,
-                            timeout : 1000 * 60 * 5,
                             method: 'post',
                             callback : function(opts, success, response){
                                 cp.setLoading(false);

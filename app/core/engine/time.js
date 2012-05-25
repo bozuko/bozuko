@@ -137,7 +137,11 @@ TimeEngine.prototype.distributeInterval
             segmentStart = segmentEnd+1;
             segmentEnd = segmentEnd+interval;
             result = new Bozuko.models.Result(result);
-            result.save(cb);
+            result.save(function(error){
+                result = null;
+                if( error ) return cb(error);
+                return cb();
+            });
         }, 
         callback
     );
