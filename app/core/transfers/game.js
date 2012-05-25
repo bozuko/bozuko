@@ -117,6 +117,7 @@ var game = {
         game_state: 'game_state',
         prizes:['game_prize'],
         consolation_prizes:['game_prize'],
+        hide_consolations: 'Boolean',
         rules: "String",
         links: {
             login: "String",

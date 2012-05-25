@@ -475,8 +475,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         ul.update('');
         this.fireEvent('updatedescription', description);
         var prizes = this.game.prizes;
-        if( this.game.consolation_prizes ){
-            // prizes = prizes.concat( this.game.consolation_prizes );
+        if( this.game.consolation_prizes && !this.game.hide_consolations ){
+            prizes = prizes.concat( this.game.consolation_prizes );
         }
         for(var i=0; i< prizes.length; i++){
             var p = prizes[i];
