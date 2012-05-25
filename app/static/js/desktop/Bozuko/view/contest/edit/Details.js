@@ -43,6 +43,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             fieldLabel      :'Post Wins to User\'s Wall'
         },{
             xtype           :'checkbox',
+            name            :'hide_consolations',
+            fieldLabel      :'Hide Consolation Prizes in Prize List'
+        },{
+            xtype           :'checkbox',
             name            :'web_only',
             fieldLabel      :'Web Only'
         },{

@@ -1550,6 +1550,10 @@ exports.routes = {
     '/contests/:id/publish' : {
         post : {
             handler : function(req,res){
+                
+                // this could take a while...
+                req.socket.setTimeout(0);
+                
                 return Bozuko.models.Contest.findById(req.param('id'), function(error, contest){
                     if( error ) return error.send(res);
                     if( !contest ) return res.send({success: false});

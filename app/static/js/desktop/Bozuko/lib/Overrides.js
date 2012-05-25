@@ -1,7 +1,8 @@
-
 Ext.define('Bozuko.lib.Overrides', {
     
     constructor : function(){
+        
+        Ext.Ajax.timeout = 1000 * 60 * 20;
         
         Ext.data.Connection.override({
             getXhrInstance : (function(){
