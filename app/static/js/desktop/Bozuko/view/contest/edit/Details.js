@@ -95,7 +95,7 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             xtype           :'checkbox',
             name            :'multiplay',
             fieldLabel      :'Multiplay'
-        },,{
+        },{
             xtype               :'fieldcontainer',
             fieldLabel          :'Window Divisor',
             layout              :'hbox',
