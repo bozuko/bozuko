@@ -99,7 +99,7 @@ Ext.namespace('Bozuko.client.game');
             this.loaded = false;
             this.rendered = false;
             this.scale = this.width / this.baseWidth;
-            this.useRetina = window.devicePixelRatio > 1 || this.width > this.baseWidth;
+            this.useRetina = (0 && window.devicePixelRatio > 1) || this.width > this.baseWidth;
             
             this.on('enter', this.onEnter, this);
             this.on('result', this.onResult, this);
@@ -271,7 +271,7 @@ Ext.namespace('Bozuko.client.game');
                 
                 this.$ticketCtx = this.$ticket.dom.getContext('2d');
                 
-                if( window.devicePixelRatio > 1 ){
+                if(0 || window.devicePixelRatio > 1 ){
                     this.$ticket.dom.setAttribute('width', this.width*2);
                     this.$ticket.dom.setAttribute('height', this.height*2);
                     this.$ticketCtx.scale(2,2);
