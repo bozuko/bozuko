@@ -92,6 +92,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             fieldLabel      :'Share Description',
             emptyText       :'Leave empty for default description.'
         },{
+            xtype           :'checkbox',
+            name            :'multiplay',
+            fieldLabel      :'Multiplay'
+        },,{
             xtype               :'fieldcontainer',
             fieldLabel          :'Window Divisor',
             layout              :'hbox',

@@ -35,6 +35,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'engine_type',        type:'String',              defaultValue:'order'},
         {name:'engine_options',     type:'Object',              defaultValue:{mode:'odds'}},
         {name:'window_divisor',     type:'Number',              defaultValue:3},
+        {name:'multiplay',          type:'Boolean',             defaultValue:false},
         {name:'end_buffer',         type:'Number',              defaultValue:0.001},
         {name:'throwahead_multiplier', type:'Number',           defaultValue:10},
         {name:'lookback_threshold', type:'Number',              defaultValue:0.1},
