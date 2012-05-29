@@ -10,7 +10,7 @@ var safe = {j:true};
 var defaults = {
     buffer: 0.001,
     lookback_threshold: 0.1,
-    window_divisor: 3,
+    window_divisor: 0.1,
     throwahead_multiplier: 10,
     multiplay: true
 };
