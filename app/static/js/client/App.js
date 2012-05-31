@@ -108,16 +108,17 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     },
     
     createElements : function(){
-        
-        // hack to fix mac / chrome
-        var gpuCanvas = document.createElement('canvas');
-			gpuCanvas.width = gpuCanvas.height = 1;
-			gpuCanvas.getContext("experimental-webgl");
-            
-        gpuCanvas.style.position='absolute';
-        gpuCanvas.style.top='-100px';
-        gpuCanvas.style.left='-100px';
-        document.body.appendChild( gpuCanvas );
+        try{
+            // hack to fix mac / chrome
+            var gpuCanvas = document.createElement('canvas');
+                gpuCanvas.width = gpuCanvas.height = 1;
+                gpuCanvas.getContext("experimental-webgl");
+                
+            gpuCanvas.style.position='absolute';
+            gpuCanvas.style.top='-100px';
+            gpuCanvas.style.left='-100px';
+            document.body.appendChild( gpuCanvas );
+        }catch(e){}
         
         this.$body = Ext.get(this.ct).createChild({
             cls         :'app'
