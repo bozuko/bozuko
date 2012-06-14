@@ -58,8 +58,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     
     onDisplayWin : function(result){
         if( !result.prize ) return;
-        if( !(result.prize.is_pdf || result.prize.is_email || result.prize.is_barcode || this.app.email_only) || !result.prize.links.redeem ) return;
-        // if( result.prize.address_required && !this.app.user.city ) return;
+        if( !(result.prize.address_required || result.prize.is_pdf || result.prize.is_email || result.prize.is_barcode || this.app.email_only) || !result.prize.links.redeem ) return;
+        //if( result.prize.address_required && !this.app.user.city ) return;
         
         var self = this;
         
@@ -835,6 +835,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         self.app.$ct.show();
                         self.$youWin.child('.bd').superScroll().update();
                         btn.un('click', saveClick, self);
+                        self.app.scrollToTop();
                     });
                     
                 });
@@ -958,7 +959,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
         }
         // add footer buttons...
-        if( !(prize.is_pdf || prize.is_email || this.app.email_only ) && prize.state == 'active' ){
+        if( !(prize.address_required || prize.is_pdf || prize.is_email || this.app.email_only ) && prize.state == 'active' ){
             this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'Redeem', cls:'btn-redeem'});
         }
         else{
