@@ -152,8 +152,8 @@ exports.routes = {
                 // the only thing we are going to change right now is email...
                 var email = req.param('email');
                 
-                if( !email || !email.match(/.+@.+\..+/) ){
-                    return Bozuko.transfer('success_message', {
+                if( email && !email.match(/.+@.+\..+/) ){
+                    return Bozuko.transfer('user_success_message', {
                         success: false,
                         message: 'Please enter a valid email address',
                         title: 'Invalid email'
@@ -162,15 +162,29 @@ exports.routes = {
                     });
                 }
                 
-                user.email = email;
-                user.user_email = true;
+                // save address fields if they are passed -
+                // assume client validation
+                var fields = ['address1','address2','city','state','zip'];
+                var v;
+                for(var x=0; x<fields.length; x++){
+                    var i = fields[x];
+                    if((v = req.param(i))) user.set(i, v);
+                }
+                
+                if(email){
+                    user.email = email;
+                    user.user_email = true;
+                }
+                
                 return user.save(function(error){
                     if( error ) return error.send(res);
                     
-                    return Bozuko.transfer('success_message', {
+                    return Bozuko.transfer('user_success_message', {
                         success: true,
-                        message: 'All set! Your email address has been updated.',
-                        title: 'Email Updated'
+                        message: 'Your details have been updated successfully',
+                        title: 'User Updated',
+                        user:user
+                        
                     }, user, function(error, result){
                         res.send(error || result);
                     });

@@ -58,6 +58,38 @@ Ext.define('Admin.view.contest.edit.Prize' ,{
                     change          :me.onBarcodeChange
                 }
             },{
+                xtype           :'checkbox',
+                name            :'wtf',
+                fieldLabel      :'WTF'
+            },{
+                xtype           :'combo',
+                name            :'barcode_type',
+                fieldLabel      :'Barcode Type',
+                value           :'39',
+                queryMode       :'local',
+                editable        :false,
+                forceSelection  :true,
+                store           :Ext.create('Ext.data.Store',{
+                    fields:['value'],
+                    data:[
+                        {value:'39'},
+                        {value:'ean'},
+                        {value:'upc'},
+                        {value:'isbn'},
+                        {value:'128c'},
+                        {value:'128b'},
+                        {value:'128'},
+                        {value:'128raw'},
+                        {value:'i25'},
+                        {value:'cbr'},
+                        {value:'msi'},
+                        {value:'pls'},
+                        {value:'93'}
+                    ]
+                }),
+                displayField    :'value',
+                valueField      :'value'
+            },{
                 xtype           :'textarea',
                 height          :80,
                 hidden          :true,

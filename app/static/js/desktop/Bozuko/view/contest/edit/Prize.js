@@ -76,12 +76,45 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 fieldLabel      :'PDF Image Only'
             },{
                 xtype           :'checkbox',
+                name            :'address_required',
+                fieldLabel      :'Address Required'
+            },{
+                xtype           :'checkbox',
                 name            :'is_barcode',
                 fieldLabel      :'Use Barcodes',
                 listeners       :{
                     scope           :me,
                     change          :me.onBarcodeChange
                 }
+            },{
+                xtype           :'combo',
+                name            :'barcode_type',
+                fieldLabel      :'Barcode Type',
+                value           :'39',
+                hidden          :true,
+                queryMode       :'local',
+                editable        :false,
+                forceSelection  :true,
+                store           :Ext.create('Ext.data.Store',{
+                    fields:['value'],
+                    data:[
+                        {value:'39'},
+                        {value:'ean'},
+                        {value:'upc'},
+                        {value:'isbn'},
+                        {value:'128c'},
+                        {value:'128b'},
+                        {value:'128'},
+                        {value:'128raw'},
+                        {value:'i25'},
+                        {value:'cbr'},
+                        {value:'msi'},
+                        {value:'pls'},
+                        {value:'93'}
+                    ]
+                }),
+                displayField    :'value',
+                valueField      :'value'
             },{
                 xtype           :'textarea',
                 height          :80,
@@ -102,6 +135,10 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     scope           :me,
                     change          :me.onCodesChange
                 }
+            },{
+                xtype           :'checkbox',
+                name            :'hide_expiration',
+                fieldLabel      :'Hide Expiration'
             },{
                 xtype           :'checkbox',
                 name            :'is_email',
@@ -237,7 +274,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
 
     onBarcodeChange : function(field, value){
         var fn = value ? 'show' : 'hide';
-        Ext.Array.each( this.query('[name=barcodes]'), function(cmp){
+        Ext.Array.each( this.query('[name=barcodes], [name=barcode_type]'), function(cmp){
             cmp[fn]();
         });
         this.query('[name=total]')[0].setDisabled( value ? true : false );

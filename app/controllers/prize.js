@@ -265,7 +265,7 @@ exports.routes = {
                         }, function(error){
                             
                             /**
-                             * Fuck it - if they didn't accept Facebook Permissions, whatever.
+                             * If they didn't accept Facebook Permissions, just ignore
                              */
                             // if( error ) return error.send(res);
                             

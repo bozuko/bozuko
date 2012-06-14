@@ -59,6 +59,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     onDisplayWin : function(result){
         if( !result.prize ) return;
         if( !(result.prize.is_pdf || result.prize.is_email || result.prize.is_barcode || this.app.email_only) || !result.prize.links.redeem ) return;
+        // if( result.prize.address_required && !this.app.user.city ) return;
         
         var self = this;
         
@@ -711,7 +712,140 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             ft = this.$youWin.child('.ft')
             ;
             
-        if( prize.is_pdf || prize.is_email || this.app.email_only ){
+        if( prize.address_required ){
+            
+            if(!this.app.addressForm ){
+                var f = {
+                    address1        :'Address',
+                    address2        :'Apt / Suite',
+                    city            :'City',
+                    state           :'State',
+                    zip             :'Zip'
+                }, form=[], states = ["","AK","AL","AR","AS","AZ","CA","CO","CT","DC","DE","FL","GA","GU","HI","IA","ID",
+    "IL","IN","KS","KY","LA","MA","MD","ME","MH","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY",
+    "OH","OK","OR","PA","PR","PW","RI","SC","SD","TN","TX","UT","VA","VI","VT","WA","WI","WV","WY"];
+                
+                for( var i in f ) if( f.hasOwnProperty(i) ){
+                    var x='';
+                    if(i=='state'){
+                        var opts =[];
+                        for(var j=0; j<states.length; j++) opts[opts.length] = '<option value="'+states[j]+'">'+states[j]+'</option>';
+                        x='<select name="'+i+'">'+opts.join('\n')+'</select>'
+                    }
+                    else{
+                        x='<input type="text" name="'+i+'" />';
+                    }
+                    form[form.length] = '<label class="'+i+'">'+
+                        '<span>'+x+'<em>'+f[i]+'</em></span>'+
+                        '</label>';
+                }
+                
+                this.app.addressForm = Ext.fly(document.body).insertFirst({
+                    //tag         :'div',
+                    cls         :'address-form-ct',
+                    html        :[
+                        '<div class="address-form-padding">',
+                            '<form>',
+                            '<p class="address-message"></p>',
+                            '<div class="address-form">',
+                                form.join('\n'),
+                            '</div>',
+                            '<div class="update-btn-ct">',
+                                '<a href="javascript:;" class="btn btn-save">Update</a>',
+                            '</div>',
+                            '</form>',
+                        '</div>'
+                    ].join('\n')
+                });
+                
+                this.app.addressForm.child('.address-form-padding').setStyle({width: (this.app.width-40)+'px'});
+                this.app.addressForm.setVisibilityMode(Ext.Element.DISPLAY);
+                this.app.addressForm.hide();
+            }
+            
+            var msg = this.app.user.city ?
+                'Please update your mailing address so we can send you your prize.' :
+                'Please provide your mailing address so we can send you your prize.' ;
+                
+            this.app.addressForm.child('.address-message').update(msg);
+            
+            for( var i in f ) this.app.addressForm.child('[name='+i+']').setValue(this.app.user[i] || '');
+            
+            message.update([
+                '<div class="mailed-address"></div>'
+            ].join(''));
+            
+            var self = this,
+                
+                updateMessage = function(){
+                    if(self.app.user.city){
+                        var a = ['<p>Your prize will be mailed to:</p><p>', self.app.user.address1];
+                        if( self.app.user.address2 ){
+                            a=a.concat([' ',self.app.user.address2]);
+                        }
+                        a=a.concat(['<br />',self.app.user.city,', ',self.app.user.state,' ',self.app.user.zip,'</p>']);
+                        a=a.concat([
+                           '<p>',
+                           '<a class="btn btn-change">Update Address</a>',
+                           '</p>'
+                        ]);
+                        message.child('.mailed-address').update(a.join(''));
+                        message.child('.btn-change').on('click', showAddressForm);
+                    }
+                },
+            
+                showAddressForm = function(){
+            
+                self.app.addressForm.show();
+                self.app.$ct.hide();
+                
+                var btn = self.app.addressForm.child('.btn-save');
+                
+                btn.on('click', function saveClick(e){
+                    btn.update('Updating...');
+                    var params = {};
+                    for( var i in f ) params[i] = self.app.addressForm.child('[name='+i+']').getValue();
+                    
+                    for( var i in params ){
+                        if(/(address1|city|state|zip)/.test(i) && !params[i] ){
+                            alert( f[i]+' is required.' );
+                            return;
+                        }
+                        if('zip'==i && !/^\d{5}/.test(params[i]) ){
+                            alert( f[i]+' is invalid.' );
+                            return;
+                        }
+                    }
+                    
+                    self.app.api.call( {
+                        path: self.app.entry_point.links.user,
+                        method: 'post',
+                        params: params
+                    }, function(result){
+                        btn.update('Update');
+                        if(!result.data.success){
+                            alert('An unexpected error occurred. Please try saving again.');
+                            return;
+                        }
+                        
+                        self.app.setUser(result.data.user);
+                        updateMessage();
+                        
+                        self.app.addressForm.hide();
+                        self.app.$ct.show();
+                        self.$youWin.child('.bd').superScroll().update();
+                        btn.un('click', saveClick, self);
+                    });
+                    
+                });
+                
+            };
+            
+            if( !this.app.user.city ) showAddressForm();
+            else updateMessage();
+            
+        }
+        else if( prize.is_pdf || prize.is_email || this.app.email_only ){
             message.update([
                 '<p>This prize has been emailed to <strong class="user-email">'+this.app.user.email+'</strong>!</p>',
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
@@ -1094,13 +1228,15 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     },
     
     squareImage : function(el, src){
-        var img = new Image();
+        var img = new Image(),
+            // get dimensions now in case the element is hidden
+            cw = el.getWidth(),
+            ch = el.getHeight();
+            
         img.onload = function(){
             var $img = Ext.fly(img),
                 w = img.width,
-                h = img.height, 
-                cw = el.getWidth(),
-                ch = el.getHeight();
+                h = img.height;
                 
             if( w > h ){
                 var p = ch/h, offset = p*w - cw;

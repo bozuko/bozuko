@@ -4,7 +4,7 @@
 @import "app/static/css/mixins";
 
 html{ }
-body{ background: #000000; padding: 0; margin: 0; font-family: "helvetica nueue", "helvetica", "arial", "sans"; font-size: 13px; overflow: hidden; }
+body{ background: #000000; padding: 0; margin: 0; font-family: "helvetica nueue", "helvetica", "arial", "sans"; font-size: 13px;  }
 h1,h2,h3,h4,h5,h6{ font-family: "helvetica nueue", "helvetica", "arial", "sans" }
 
 .facebook-tab body {
@@ -12,7 +12,7 @@ h1,h2,h3,h4,h5,h6{ font-family: "helvetica nueue", "helvetica", "arial", "sans" 
     padding-top: 20px; 
 }
 
-#container{ margin: 0 auto; }
+#container{ margin: 0 auto; position:relative; }
 
 h4{ font-size: 123%; font-weight: 500; color: #666; text-align: center;}
 
@@ -85,12 +85,15 @@ a, a:visited, a:link, a:hover {
     cursor: pointer;
     font-size: 17px;
     font-weight: bold;
+    /*
     box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
     -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
     -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
-    color: #fff;
-    text-shadow: 0px -1px 1px #666;
-    .border_radius(8px);
+    */
+    border:1px solid #fff;
+    color: #fff !important;
+    text-shadow: 0px -1px 1px #555;
+    .border_radius(5px);
     
     &:hover {
         .background_gradient(#26c135 * 1.3, #26c135 * 1);
@@ -100,9 +103,11 @@ a, a:visited, a:link, a:hover {
 .action_button( @color: #26c135 ){
     .cool_button;
     .background_gradient(@color * 1.1 , @color * 0.8);
+    border-color: @color * 0.5;
     
     &:hover {
-        .background_gradient(@color * 1.3, @color * 1 );
+        border-color: @color * 0.6;
+        .background_gradient(@color * 1.2, @color * 0.9 );
     }
 }
 
@@ -1190,7 +1195,9 @@ a, a:visited, a:link, a:hover {
 .superscroll {
     position: relative;
     overflow: hidden;
+    -webkit-transform: translate3d(0,0,0);
     .scrollable {
+        -webkit-transform: translate3d(0,0,0);
         overflow: scroll;
     }
 }
@@ -1224,4 +1231,102 @@ a, a:visited, a:link, a:hover {
     margin-top: 2px;
     right: 2px;
     top: 0;
+}
+
+.address-form {
+    label {
+        line-height: 1em;
+        display: block;
+        margin-bottom: .3em;
+        float: left;
+        
+        input, select {
+            position: relative;
+            width: 100%;
+            padding: 3px;
+            -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+            -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+            box-sizing: border-box;         /* Opera/IE 8+ */
+            border: 1px solid #999;
+            -webkit-user-select: text;
+            font-size: 1em;
+            line-height: 1.2em;
+            border-radius: 5px;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 1);
+        }
+        
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none !important;
+            appearance: none;
+            padding-right: 18px;
+            background-image: url(/images/assets/select-arrow.png);
+            background-position:100% 50%;
+            background-repeat: no-repeat;
+            
+        }
+        
+        span {
+            position: relative;
+            display: block;
+        }
+        
+        em {
+            font-size: .8em;
+            color: #999;
+        }
+    }
+    
+    .address1 {
+        width: 65%;
+    }
+    .address2 {
+        width: 35%;
+        span {
+            padding-left: 10px;
+        }
+    }
+    .city {
+        width: 45%;
+    }
+    .state {
+        width: 20%;
+        span {
+            padding-left: 10px;
+        }
+    }
+    .zip {
+        width: 35%;
+        span {
+            padding-left: 10px;
+        }
+    }
+}
+
+.smaller {
+    font-size: .85em;
+    line-height: 1.2em;
+}
+
+.address-form-ct{
+    position: absolute;
+    z-index: 100000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    /*background: rgba(255,255,255,.95);*/
+}
+
+.update-btn-ct {
+    padding-top:20px;
+    clear: both;
+    text-align: center;
+}
+
+.address-form-padding {
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
 }

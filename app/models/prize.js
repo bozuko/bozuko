@@ -33,6 +33,7 @@ var Prize = module.exports = new Schema({
     image                   :{type:String},
     message                 :{type:String},
     expires                 :{type:Date},
+	hide_expiration			:{type:Boolean},
     play_cursor             :{type:Number},
     description             :{type:String},
     details                 :{type:String},
@@ -41,6 +42,7 @@ var Prize = module.exports = new Schema({
     verified_time           :{type:Date},
     redeemed                :{type:Boolean},
     redeemed_time           :{type:Date,    index: true},
+	address_required		:{type:Boolean},
     is_email                :{type:Boolean, default:false},
 	is_pdf                  :{type:Boolean},
 	pdf_image				:{type:String},
@@ -870,7 +872,9 @@ Prize.method('createPdf', function(user, images, page, callback){
 			.text(dateFormat(self.timestamp, 'mediumDate')+' '+dateFormat(self.timestamp, 'shortTime'), {width: col1})
 			
 			.moveDown()
-			
+			;
+		
+		if(!self.hide_expiration ) doc
 			.font('Bold')
 			.fill('#999')
 			.text('Expires:', {width: col1})
@@ -926,7 +930,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 			w = col2 * .6;
 			doc.x += (col2 - w) / 2;
 			doc
-				.image(images.pdf.path, {width: w})
+				.image(images.barcode.path, {width: w})
 				.moveDown()
 				;
 			doc.x = x;

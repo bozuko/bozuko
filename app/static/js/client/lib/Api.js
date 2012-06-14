@@ -79,9 +79,6 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
         var me = this,
             data;
             
-        // did we just shit ourselves?
-        //if( !success ) console.log(arguments);
-        
         try{
             data = Ext.decode(response.responseText);
         }catch(e){
