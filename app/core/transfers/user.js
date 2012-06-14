@@ -11,6 +11,11 @@ exports.transfer_objects= {
             last_name: "String",
             gender: "String",
             email: "String",
+            address1: "String",
+            address2: "String",
+            city: "String",
+            state: "String",
+            zip: "String",
             challenge: "String",
             img: "String",
             image: "String",
@@ -42,6 +47,16 @@ exports.transfer_objects= {
             removed: "Boolean",
             page_id: "String"
         }
+    },
+    
+    user_success_message:{
+        doc:"Generic success message",
+        def:{
+            success: "Boolean",
+            title: "String",
+            message: "String",
+            user: "user"
+        }
     }
 };
 
@@ -54,8 +69,35 @@ exports.links = {
         },
         post: {
             access: 'mobile',
-            doc: "Update user info (currently email address only)",
-            returns: "success_message"
+            doc: "Update user info",
+            params:{
+                
+                email: {
+                    type: 'String',
+                    description: 'Email Address'
+                },
+                address1: {
+                    type: 'String',
+                    description: 'Address (line 1)'
+                },
+                address2: {
+                    type: 'String',
+                    description: 'Address (line 2)'
+                },
+                city: {
+                    type: 'String',
+                    description: 'City'
+                },
+                state: {
+                    type: 'String',
+                    description: 'State'
+                },
+                zip: {
+                    type: 'String',
+                    description: 'Zip Code'
+                }
+            },
+            returns: "user_success_message"
         },
         put : {
             access: 'developer',

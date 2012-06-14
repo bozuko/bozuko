@@ -9,6 +9,31 @@
         }
     };
     
+    var gv = Ext.Element.prototype.getValue;
+    Ext.Element.prototype.getValue = function(){
+        if(this.dom.tagName!='select'){
+            return gv.apply(this, arguments);
+        }
+        var v = false;
+        this.select('option').each(function(el){
+            if(el.getAttribute('selected')){
+                v = el.getValue();
+                return false;
+            }
+            return true;
+        });
+        return v;
+    };
+    
+    Ext.Element.prototype.setValue = function(v){
+        if(this.dom.tagName!='select'){
+            this.dom.value = v;
+        }
+        var o = this.child('option[value="'+v+'"]');
+        if(o) o.dom.selected = true;
+        return v;
+    };
+    
     Ext.iterate = function(obj, fn, scope){
         
         if(Ext.isEmpty(obj)){

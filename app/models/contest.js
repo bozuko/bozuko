@@ -1211,6 +1211,7 @@ Contest.method('savePrize', function(opts, callback) {
             page_name: page.name,
             name: prize.name,
             timestamp: opts.timestamp,
+            hide_expiration: prize.hide_expiration,
             status: 'active',
             instructions: prize.instructions,
             expires: expires,
@@ -1221,6 +1222,7 @@ Contest.method('savePrize', function(opts, callback) {
             is_email: prize.is_email,
             is_barcode: prize.is_barcode,
             is_pdf: prize.is_pdf,
+            address_required: prize.address_required,
             pdf_image: prize.pdf_image,
             pdf_image_only: prize.pdf_image_only,
             bucks: prize.bucks

@@ -16,7 +16,6 @@ body {
   margin: 0;
   font-family: "helvetica nueue", "helvetica", "arial", "sans";
   font-size: 13px;
-  overflow: hidden;
 }
 h1,
 h2,
@@ -32,6 +31,7 @@ h6 {
 }
 #container {
   margin: 0 auto;
+  position: relative;
 }
 h4 {
   font-size: 123%;
@@ -111,17 +111,21 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  color: #fff;
-  text-shadow: 0px -1px 1px #666666;
+  /*
+    box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    */
+
+  border: 1px solid #fff;
+  color: #fff !important;
+  text-shadow: 0px -1px 1px #555555;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 8px;
+  -webkit-border-radius: 5px;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  border-radius: 8px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
   background-clip: padding-box;
 }
 .cool_button:hover {
@@ -140,17 +144,21 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  color: #fff;
-  text-shadow: 0px -1px 1px #666666;
+  /*
+    box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    */
+
+  border: 1px solid #fff;
+  color: #fff !important;
+  text-shadow: 0px -1px 1px #555555;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 8px;
+  -webkit-border-radius: 5px;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  border-radius: 8px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
   background-clip: padding-box;
   background-color: #2ad43a;
   background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
@@ -158,6 +166,7 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
+  border-color: #13611b;
 }
 .btn:hover {
   background-color: #31fb45;
@@ -168,10 +177,11 @@ a:hover {
 
 }
 .btn:hover {
-  background-color: #31fb45;
-  background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
-  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
+  border-color: #177420;
+  background-color: #2ee840;
+  background-image: -moz-linear-gradient(top, #2ee840, #22ae30);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ee840',EndColorStr='#22ae30');
   /* IE6-9 */
 
 }
@@ -585,17 +595,21 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  color: #fff;
-  text-shadow: 0px -1px 1px #666666;
+  /*
+    box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    */
+
+  border: 1px solid #fff;
+  color: #fff !important;
+  text-shadow: 0px -1px 1px #555555;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 8px;
+  -webkit-border-radius: 5px;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  border-radius: 8px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
   background-clip: padding-box;
   background-color: #2ad43a;
   background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
@@ -603,6 +617,7 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
+  border-color: #13611b;
   display: block;
   margin: 0 10px;
 }
@@ -615,10 +630,11 @@ a:hover {
 
 }
 .game-description .actions .button:hover {
-  background-color: #31fb45;
-  background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
-  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
+  border-color: #177420;
+  background-color: #2ee840;
+  background-image: -moz-linear-gradient(top, #2ee840, #22ae30);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ee840',EndColorStr='#22ae30');
   /* IE6-9 */
 
 }
@@ -935,17 +951,21 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  color: #fff;
-  text-shadow: 0px -1px 1px #666666;
+  /*
+    box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    */
+
+  border: 1px solid #fff;
+  color: #fff !important;
+  text-shadow: 0px -1px 1px #555555;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 8px;
+  -webkit-border-radius: 5px;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  border-radius: 8px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
   background-clip: padding-box;
   background-color: #2ad43a;
   background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
@@ -953,6 +973,7 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
+  border-color: #13611b;
   font-size: 12px;
   padding-left: 8px;
   padding-right: 8px;
@@ -967,10 +988,11 @@ a:hover {
 
 }
 .you-win .bd .message .btn:hover {
-  background-color: #31fb45;
-  background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
-  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
+  border-color: #177420;
+  background-color: #2ee840;
+  background-image: -moz-linear-gradient(top, #2ee840, #22ae30);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ee840',EndColorStr='#22ae30');
   /* IE6-9 */
 
 }
@@ -982,17 +1004,21 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  color: #fff;
-  text-shadow: 0px -1px 1px #666666;
+  /*
+    box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    */
+
+  border: 1px solid #fff;
+  color: #fff !important;
+  text-shadow: 0px -1px 1px #555555;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 8px;
+  -webkit-border-radius: 5px;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  border-radius: 8px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
   background-clip: padding-box;
   background-color: #a8a8a8;
   background-image: -moz-linear-gradient(top, #a8a8a8, #7a7a7a);
@@ -1000,6 +1026,7 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#a8a8a8',EndColorStr='#7a7a7a');
   /* IE6-9 */
 
+  border-color: #4d4d4d;
   font-size: 12px;
   margin-right: 10px;
   padding-left: 8px;
@@ -1014,10 +1041,11 @@ a:hover {
 
 }
 .you-win .bd .message .btn-cancel:hover {
-  background-color: #c7c7c7;
-  background-image: -moz-linear-gradient(top, #c7c7c7, #999999);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #c7c7c7), color-stop(1, #999999)) !important;
-  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#c7c7c7',EndColorStr='#999999');
+  border-color: #5c5c5c;
+  background-color: #b8b8b8;
+  background-image: -moz-linear-gradient(top, #b8b8b8, #8a8a8a);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #b8b8b8), color-stop(1, #8a8a8a)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#b8b8b8',EndColorStr='#8a8a8a');
   /* IE6-9 */
 
 }
@@ -1147,17 +1175,21 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  color: #fff;
-  text-shadow: 0px -1px 1px #666666;
+  /*
+    box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    */
+
+  border: 1px solid #fff;
+  color: #fff !important;
+  text-shadow: 0px -1px 1px #555555;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 8px;
+  -webkit-border-radius: 5px;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  border-radius: 8px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
   background-clip: padding-box;
   background-color: #2ad43a;
   background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
@@ -1165,6 +1197,7 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
+  border-color: #13611b;
   display: block;
   margin-left: 10px;
   margin-right: 10px;
@@ -1178,10 +1211,11 @@ a:hover {
 
 }
 .you-win .ft .btn:hover {
-  background-color: #31fb45;
-  background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
-  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
+  border-color: #177420;
+  background-color: #2ee840;
+  background-image: -moz-linear-gradient(top, #2ee840, #22ae30);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ee840',EndColorStr='#22ae30');
   /* IE6-9 */
 
 }
@@ -1193,17 +1227,21 @@ a:hover {
   cursor: pointer;
   font-size: 17px;
   font-weight: bold;
-  box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -webkit-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  -moz-box-shadow: 1px 1px 2px #333333, -1px -1px 2px #666666, inset 1px 1px 1px #ffffff;
-  color: #fff;
-  text-shadow: 0px -1px 1px #666666;
+  /*
+    box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -webkit-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    -moz-box-shadow: 1px 1px 2px #333, -1px -1px 2px #666, inset 1px 1px 1px #fff;
+    */
+
+  border: 1px solid #fff;
+  color: #fff !important;
+  text-shadow: 0px -1px 1px #555555;
   -webkit-background-clip: padding-box;
-  -webkit-border-radius: 8px;
+  -webkit-border-radius: 5px;
   -moz-background-clip: padding-box;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  border-radius: 8px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
   background-clip: padding-box;
   background-color: #ffd329;
   background-image: -moz-linear-gradient(top, #ffd329, #c19a1e);
@@ -1211,6 +1249,7 @@ a:hover {
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#ffd329',EndColorStr='#c19a1e');
   /* IE6-9 */
 
+  border-color: #796013;
   display: block;
 }
 .you-win .ft .btn-save:hover {
@@ -1222,10 +1261,11 @@ a:hover {
 
 }
 .you-win .ft .btn-save:hover {
-  background-color: #fffa30;
-  background-image: -moz-linear-gradient(top, #fffa30, #f1c025);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fffa30), color-stop(1, #f1c025)) !important;
-  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#fffa30',EndColorStr='#f1c025');
+  border-color: #917316;
+  background-color: #ffe62c;
+  background-image: -moz-linear-gradient(top, #ffe62c, #d9ad21);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffe62c), color-stop(1, #d9ad21)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#ffe62c',EndColorStr='#d9ad21');
   /* IE6-9 */
 
 }
@@ -1365,8 +1405,10 @@ a:hover {
 .superscroll {
   position: relative;
   overflow: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
 }
 .superscroll .scrollable {
+  -webkit-transform: translate3d(0, 0, 0);
   overflow: scroll;
 }
 .superscroll .scrollable::-webkit-scrollbar,
@@ -1402,4 +1444,97 @@ a:hover {
   margin-top: 2px;
   right: 2px;
   top: 0;
+}
+.address-form label {
+  line-height: 1em;
+  display: block;
+  margin-bottom: .3em;
+  float: left;
+}
+.address-form label input,
+.address-form label select {
+  position: relative;
+  width: 100%;
+  padding: 3px;
+  -webkit-box-sizing: border-box;
+  /* Safari/Chrome, other WebKit */
+
+  -moz-box-sizing: border-box;
+  /* Firefox, other Gecko */
+
+  box-sizing: border-box;
+  /* Opera/IE 8+ */
+
+  border: 1px solid #999;
+  -webkit-user-select: text;
+  font-size: 1em;
+  line-height: 1.2em;
+  border-radius: 5px;
+  -webkit-tap-highlight-color: #000000;
+}
+.address-form label select {
+  -webkit-appearance: none;
+  -moz-appearance: none !important;
+  appearance: none;
+  padding-right: 18px;
+  background-image: url(/images/assets/select-arrow.png);
+  background-position: 100% 50%;
+  background-repeat: no-repeat;
+}
+.address-form label span {
+  position: relative;
+  display: block;
+}
+.address-form label em {
+  font-size: .8em;
+  color: #999;
+}
+.address-form .address1 {
+  width: 65%;
+}
+.address-form .address2 {
+  width: 35%;
+}
+.address-form .address2 span {
+  padding-left: 10px;
+}
+.address-form .city {
+  width: 45%;
+}
+.address-form .state {
+  width: 20%;
+}
+.address-form .state span {
+  padding-left: 10px;
+}
+.address-form .zip {
+  width: 35%;
+}
+.address-form .zip span {
+  padding-left: 10px;
+}
+.smaller {
+  font-size: .85em;
+  line-height: 1.2em;
+}
+.address-form-ct {
+  position: absolute;
+  z-index: 100000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  /*background: rgba(255,255,255,.95);*/
+
+}
+.update-btn-ct {
+  padding-top: 20px;
+  clear: both;
+  text-align: center;
+}
+.address-form-padding {
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }

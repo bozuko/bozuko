@@ -22,6 +22,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         Ext.apply( this, config );
         
         this.ct = this.config.renderTo || document.body;
+        this.$ct = Ext.get(this.ct);
+        this.$ct.setVisibilityMode(Ext.Element.DISPLAY);
         
         this.api = new Bozuko.client.lib.Api();
         this.api.on('failure', function(result){
@@ -62,6 +64,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         }
         this.height = this.width/this.dimensions.x*this.dimensions.y;
         this.stylesheet = Bozuko.client.util.Stylesheet.create('app');
+        
         this.stylesheet.rule('.modal-window', {
             'max-height': (this.height-30-6)+'px'
         });
@@ -82,10 +85,13 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             if( h > self.height ){
                 var padding = (h - this.height) / 2;
                 this.stylesheet.rule('body', {
-                    'padding-top': padding+'px',
                     'min-height': (h-padding)+'px'
                 });
-                
+                Ext.fly(this.ct).setStyle({
+                    'padding-top': padding+'px',
+                    'padding-bottom': padding+'px'
+                    
+                });
             }
             this.scrollToTop();
         }).defer(500, this);

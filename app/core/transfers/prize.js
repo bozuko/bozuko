@@ -17,6 +17,7 @@ exports.transfer_objects = {
             barcode_image: "String",
             page_name: "String",
             wrapper_message: "String",
+            address_required: "Boolean",
             description: "String",
             win_time: "String",
             redemption_duration: "Number",
@@ -158,6 +159,28 @@ exports.links = {
                     type: "Boolean",
                     description: "Email the assets for this prize, even if it isn't an email prize."
                 }
+                /*,
+                address1: {
+                    type: 'String',
+                    description: 'Address for address_required prizes'
+                },
+                address2: {
+                    type: 'String',
+                    description: 'Address for address_required prizes'
+                },
+                city: {
+                    type: 'String',
+                    description: 'Address for address_required prizes'
+                },
+                state: {
+                    type: 'String',
+                    description: 'Address for address_required prizes'
+                },
+                zip: {
+                    type: 'String',
+                    description: 'Address for address_required prizes'
+                }
+                */
             },
             returns: "redemption_object"
         }
