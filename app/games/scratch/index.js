@@ -62,42 +62,74 @@ Scratch.prototype.process = function(outcome) {
     return numbers;
 };
 
-function randomPrize( contest, exclude ){
-    var ar = [], prizes = contest.prizes.slice(0);
-    
+function win(contest, winIndex) {
+    var ar = createSequenceArray(), 
+        prizes = createPrizes(contest, winIndex);
+        prize = getPrize(prizes, winIndex),
+        winning_number = rand(min, max),
+        results = [];
+
+    fillInWinningPositions(ar, results, winning_number, prize);
+    fillInLosingPositions(ar, results, winning_number, prizes);
+
+    return {
+        winning_number: winning_number,
+        numbers: results
+    };
+}
+
+function lose(contest) {
+    var results = [],
+        ar = createSequenceArray(), 
+        prizes = createPrizes(contest);
+
+    fillInLosingPositions(ar, results, -9999, prizes);
+
+    return {
+        numbers: results
+    };
+}
+
+function getPrize(prizes, winIndex) {
+    if( winIndex === 'free_play' ) return {name:'Free Play'};
+    if( winIndex === 'consolation') return contest.consolation_prizes[0];
+    var prize = prizes[winIndex];
+    prizes.splice(winIndex, 1);
+    return prize;
+}
+
+function createSequenceArray() {
+    var ar = [];
+    for (var i = 0; i < size; i++) { ar[i] = i; }
+    return ar;
+}
+
+function createPrizes(contest, winIndex) {
+    var prizes = contest.prizes.slice(0);
     if( contest.consolation_config && contest.consolation_config.length &&
         contest.consolation_prizes && contest.consolation_prizes.length
     ){
         prizes = prizes.concat( contest.consolation_prizes.slice(0, 1) );
     }
-    
-    if( exclude === undefined || exclude === prizes.length ) prizes.push({name:'Free Play'});
-    for( var i=0; i < prizes.length; i++) ar.push(i);
-    if( exclude !== undefined && exclude < prizes.length ) ar.splice( exclude, 1);
-    return prizes[rand(0,ar.length-1)].name;
+    if (winIndex != 'free_play') prizes.push({name:'Free Play'});
+    return prizes;
 }
 
-function win(contest, winIndex) {
-    var ar = [], prize;
-    for (var i = 0; i < size; i++) { ar[i] = i; }
-
-    if( winIndex === 'free_play' ){
-        // free spin!
-        prize = {name:'Free Play'};
-    }
+function getPrizeIndex(prizes) {
+    var indexes = [];
+    for( var i=0; i < prizes.length; i++) indexes.push(i);
+    return rand(0, indexes.length - 1);
+}
     
-    else if( winIndex === 'consolation'){
-        prize = contest.consolation_prizes[0];
-    }
-    
-    else{
-        prize = contest.prizes[winIndex];
-    }
+function randomPrize(prizes){
+    if (!prizes.length) return 'no prize'; 
+    var index = getPrizeIndex(prizes);
+    var prize = prizes[index];
+    prizes.splice(index, 1);
+    return prize.name; 
+}
 
-    winning_number = rand(min, max);
-    var results = [];
-
-    // fill in winning positions
+function fillInWinningPositions(ar, results, winning_number, prize) {
     for (i = 0; i < num_matches; i++) {
         var random = rand(0, ar.length-1);
         var index = ar[random];
@@ -107,12 +139,13 @@ function win(contest, winIndex) {
             text: prize.name
         }
     }
+}
 
+function fillInLosingPositions(ar, results, winning_number, prizes) {
     var done;
     var used_nums = {}, num_prizes = {};
     var val;
 
-    // fill in other positions
     for (i = 0;  i < ar.length; i++) {
         var index = ar[i];
         done = false;
@@ -120,7 +153,7 @@ function win(contest, winIndex) {
             val = rand(min, max);
             if (val != winning_number) {
                 if (!used_nums[val]) {
-                    num_prizes[val] = randomPrize(contest, winIndex);
+                    num_prizes[val] = randomPrize(prizes);
                     results[index] = {
                         number: val,
                         text: num_prizes[val]
@@ -138,44 +171,4 @@ function win(contest, winIndex) {
             }
         }
     }
-
-    return {
-        winning_number: winning_number,
-        numbers: results
-    };
-}
-
-function lose(contest) {
-    var results = [];
-    var used_nums = {}, num_prizes={};
-    var done = false;
-    var val;
-
-    for (var i = 0; i < size; i++) {
-        done = false;
-        while (!done) {
-            val = rand(min, max);
-            if (!used_nums[val]) {
-                num_prizes[val] = randomPrize(contest);
-                results[i] = {
-                    number: val,
-                    text: num_prizes[val]
-                };
-                used_nums[val] = 1;
-                done = true;
-            } else if (used_nums[val] < num_matches-1) {
-                results[i] = {
-                    number: val,
-                    text: num_prizes[val]
-                };
-                used_nums[val]++;
-                done = true;
-            }
-        }
-    }
-
-    return {
-        numbers: results
-    };
-
 }
