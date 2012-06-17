@@ -1012,14 +1012,12 @@ Contest.method('processResult', function(memo, callback) {
 Contest.method('processGameResult', function(memo, callback){
     var result = memo.result;
     try{
-    if( memo.result == 'free_play')
-        memo.game_result = Bozuko.game(this).process('free_play');
-        
-    else if( memo.consolation )
-        memo.game_result = Bozuko.game(this).process('consolation');
-    
-    else
-        memo.game_result = Bozuko.game(this).process( result ? result.index : false );
+        if( memo.result == 'free_play')
+            memo.game_result = Bozuko.game(this).process('free_play');
+        else if( memo.consolation )
+            memo.game_result = Bozuko.game(this).process('consolation');
+        else
+            memo.game_result = Bozuko.game(this).process( result ? result.index : false );
     }
     catch(e){
         return callback(e);
