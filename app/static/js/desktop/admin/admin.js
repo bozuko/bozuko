@@ -15,6 +15,7 @@ Ext.application({
     ],
 
     requires:[
+        'Bozuko.lib.Overrides',
         'Bozuko.lib.Router',
         'Ext.chart.theme.Base',
         'Ext.chart.series.Series'
