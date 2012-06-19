@@ -656,6 +656,60 @@ exports.routes = {
                 return res.send( body );
             }
         }
+    },
+    
+    '/admin/apikey/:id?' : {
+        get : {
+            handler : function(req, res){
+                Bozuko.models.Apikey.find({}, {}, {sort: {timestamp:-1}}, function(err, keys){
+                    res.send(keys);
+                });
+            }
+        },
+        
+        post : {
+            handler : function(req, res){
+                
+                var data = {
+                    name: req.param('name'),
+                    key: req.param('key'),
+                    description: req.param('description')
+                }, key = new Bozuko.models.Apikey(data);
+                console.log(data);
+                key.save(function(err){
+                    return res.send({success: !err, items:[key]});
+                });
+            }
+        },
+        
+        put : {
+            handler : function(req, res){
+                Bozuko.models.Apikey.findById(req.param('_id'), function(err, key){
+                    if(err) return res.send({success:false});
+                    var data = {
+                        name: req.param('name'),
+                        key: req.param('key'),
+                        description: req.param('description')
+                    };
+                    console.log(data);
+                    key.set(data);
+                    return key.save(function(err){
+                        return res.send({success: !err, items: [key]});
+                    });
+                });
+            }
+        },
+        
+        del : {
+            handler : function(req, res){
+                Bozuko.models.Apikey.findById(req.param('_id'), function(err, key){
+                    if(err) return res.send({success:false});
+                    return key.remove(function(err){
+                        return res.send({success: !err});
+                    });
+                });
+            }
+        }
     }
     /*
     '/admin/build-circles' : {

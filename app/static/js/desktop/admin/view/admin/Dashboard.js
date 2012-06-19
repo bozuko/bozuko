@@ -28,13 +28,47 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             items:[{
                 region : 'center',
                 border : false,
-                layout : 'anchor',
-                bodyPadding: 10,
-                autoScroll: true,
-                items : [{
-                    xtype : 'bozukochartbasic',
-                    border : false,
-                    anchor : '0'
+                xtype: 'tabpanel',
+                tabPosition: 'bottom',
+                items:[{
+                    layout : 'anchor',
+                    bodyPadding: 10,
+                    autoScroll: true,
+                    border: false,
+                    title: 'Stats',
+                    items : [{
+                        xtype : 'bozukochartbasic',
+                        border : false,
+                        anchor : '0'
+                    }]
+                },{
+                    xtype: 'grid',
+                    ref: 'apikeygrid',
+                    border: false,
+                    autoScroll: true,
+                    title: 'API Keys',
+                    selType: 'rowmodel',
+                    tbar:[{
+                        text: 'Add Key',
+                        ref:'addbtn'
+                    },{
+                        text: 'Delete Key',
+                        ref:'delbtn',
+                        disabled: true
+                    }],
+                    columns: [
+                        {header: 'Date', dataIndex: 'timestamp', width: 80, format: 'm/d/Y', xtype: 'datecolumn'},
+                        {header: 'Key', dataIndex: 'key', width: 220},
+                        {header: 'Name',  dataIndex: 'name', editor: {xtype: 'textfield', allowBlank:false}, width: 180},
+                        {header: 'Description', dataIndex: 'description', flex:1, editor: 'textfield'}
+                    ],
+                    plugins: [
+                        Ext.create('Ext.grid.plugin.RowEditing', {
+                            clicksToEdit: 2,
+                            autoCancel:true,
+                            pluginId:'rowedit'
+                        })
+                    ]
                 }]
             },{
                 height: 200,

@@ -88,6 +88,60 @@ Ext.define('Bozuko.lib.Overrides', {
             return mask;
         };
         
+        Ext.override(Ext.selection.RowModel, {
+            onLastFocusChanged: function(oldFocused, newFocused, supressFocus) {
+                if (this.views && this.views.length) {
+                    this.callOverridden(arguments);
+                }
+            },
+            onSelectChange: function(record, isSelected, suppressEvent, commitFn) {
+                if (this.views && this.views.length) {
+                    this.callOverridden(arguments);
+                }
+            }
+        });
+        
+        Ext.override(Ext.grid.plugin.Editing, {
+            constructor: function(config) {
+                var me = this;
+                Ext.apply(me, config);
+        
+                me.addEvents(
+                    // Doc'ed in separate editing plugins
+                    'beforeedit',
+        
+                    // Doc'ed in separate editing plugins
+                    'edit',
+        
+                    // Doc'ed in separate editing plugins
+                    'validateedit',
+                    
+                    'canceledit'
+                );
+                me.mixins.observable.constructor.call(me);
+                // TODO: Deprecated, remove in 5.0
+                me.relayEvents(me, ['afteredit'], 'after');
+            },
+        
+            // private
+            init: function(grid) {
+                var me = this;
+        
+                me.grid = grid;
+                me.view = grid.view;
+                me.initEvents();
+                me.mon(grid, 'reconfigure', me.onReconfigure, me);
+                me.onReconfigure();
+        
+                grid.relayEvents(me, ['beforeedit', 'edit', 'validateedit', 'canceledit']);
+                // Marks the grid as editable, so that the SelectionModel
+                // can make appropriate decisions during navigation
+                grid.isEditable = true;
+                grid.editingPlugin = grid.view.editingPlugin = me;
+            },
+
+        });
+        
     }
 }, function(){
     new Bozuko.lib.Overrides();

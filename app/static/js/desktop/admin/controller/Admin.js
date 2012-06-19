@@ -8,17 +8,21 @@ Ext.define('Admin.controller.Admin' ,{
     ],
     
     stores: [
-        'Bozuko.store.Places'
+        'Bozuko.store.Places',
+        'ApiKeys'
     ],
     
     models: [
         'Bozuko.model.Page',
-        'Bozuko.model.User'
+        'Bozuko.model.User',
+        'ApiKey'
     ],
     
     refs : [
         {ref: 'pageData', selector: 'pagelist dataview'},
         {ref: 'userData', selector: 'userlist dataview'},
+        {ref: 'apiKeyGrid', selector: '[ref=apikeygrid]'},
+        {ref: 'apiKeyDelBtn', selector: '[ref=apikeygrid] [ref=delbtn]'},
         {ref: 'pageSearch', selector: 'pagelist [ref=search]'},
         {ref: 'userSearch', selector: 'userlist [ref=search]'},
         {ref: 'userFilter', selector: 'userlist [ref=filter]'},
@@ -42,6 +46,18 @@ Ext.define('Admin.controller.Admin' ,{
         me.BozukoPagesController = me.application.controllers.getByKey('Bozuko.controller.Pages');
         
         this.control({
+            '[ref=apikeygrid]': {
+                render: this.onApiKeyGridRender,
+                edit:   this.onApiKeyEdit,
+                canceledit :this.onApiKeyCancelEdit,
+                selectionchange : this.onApiKeySelectionChange
+            },
+            '[ref=apikeygrid] [ref=addbtn]': {
+                click: this.addApiKeyRow
+            },
+            '[ref=apikeygrid] [ref=delbtn]': {
+                click: this.delApiKeyRow
+            },
             'pagelist dataview':{
                 itemclick: this.onPageClick
             },
@@ -93,6 +109,55 @@ Ext.define('Admin.controller.Admin' ,{
         });
     },
     
+    addApiKeyRow : function(){
+        var grid = this.getApiKeyGrid(),
+            rowEdit = grid.getPlugin('rowedit');
+            
+        rowEdit.cancelEdit();
+        
+        // Create a model instance
+        var r = Ext.create('Admin.model.ApiKey', {
+            key: this.createKey(32) 
+        });
+
+        grid.getStore().insert(0, r);
+        rowEdit.startEdit(0, 0);
+        
+    },
+    
+    createKey : function(len){
+        var key=''
+          , pool = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz"
+          ;
+        for(var i=0; i<len; i++){
+            key += pool.charAt(Math.random()*pool.length);
+        }
+        return key;
+    },
+    
+    onApiKeySelectionChange : function(selModel, records){
+        this.getApiKeyDelBtn().setDisabled(!records.length);
+    },
+    
+    onApiKeyEdit : function(editor){
+        editor.record.save();
+    },
+    
+    onApiKeyCancelEdit : function(editor){
+        if(editor.record.phantom){
+            this.getApiKeyGrid().getStore().remove(editor.record);
+        }
+    },
+    
+    delApiKeyRow : function(){
+        if(!confirm('Are you sure you want to delete this key?')) return;
+        var r = this.getApiKeyGrid().getSelectionModel().getSelection();
+        if(r.length) for(var i=0; i<r.length; i++){
+            r[i].destroy();
+            this.getApiKeyGrid().getStore().remove(r[i]);
+        }
+    },
+    
     onLaunch: function(){
         
         var me = this,
@@ -133,6 +198,11 @@ Ext.define('Admin.controller.Admin' ,{
         this.lastSearch = search;
         this.showInactive = showInactive;
         
+    },
+    
+    onApiKeyGridRender : function(){
+        this.getApiKeyGrid().bindStore( this.getApiKeysStore() );
+        this.getApiKeysStore().load();
     },
     
     onBeforeLoadUsers : function(store, operation){
