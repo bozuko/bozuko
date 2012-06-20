@@ -745,14 +745,17 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     cls         :'address-form-ct',
                     html        :[
                         '<div class="address-form-padding">',
+                            '<div class="prize-details">',
+                                '<h4><span style="font-size:.8em">You Win!</span><br /><span style="color:black;" class="prize-name"></span></h4>',
+                            '</div>',
                             '<form>',
-                            '<p class="address-message"></p>',
-                            '<div class="address-form">',
-                                form.join('\n'),
-                            '</div>',
-                            '<div class="update-btn-ct">',
-                                '<a href="javascript:;" class="btn btn-save">Update</a>',
-                            '</div>',
+                                '<p class="address-message"></p>',
+                                '<div class="address-form">',
+                                    form.join('\n'),
+                                '</div>',
+                                '<div class="update-btn-ct">',
+                                    '<a href="javascript:;" class="btn btn-save">Update</a>',
+                                '</div>',
                             '</form>',
                         '</div>'
                     ].join('\n')
@@ -768,6 +771,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 'Please provide your mailing address so we can send you your prize.' ;
                 
             this.app.addressForm.child('.address-message').update(msg);
+            
+            this.app.addressForm.child('.prize-name').update(prize.name);
             
             for( var i in f ) this.app.addressForm.child('[name='+i+']').setValue(this.app.user[i] || '');
             
@@ -796,51 +801,58 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
                 showAddressForm = function(){
             
-                self.app.addressForm.show();
-                self.app.$ct.hide();
-                
-                var btn = self.app.addressForm.child('.btn-save');
-                
-                btn.on('click', function saveClick(e){
-                    btn.update('Updating...');
-                    var params = {};
-                    for( var i in f ) params[i] = self.app.addressForm.child('[name='+i+']').getValue();
+                    self.app.addressForm.show();
+                    self.app.$ct.hide();
                     
-                    for( var i in params ){
-                        if(/(address1|city|state|zip)/.test(i) && !params[i] ){
-                            alert( f[i]+' is required.' );
-                            return;
+                    var btn = self.app.addressForm.child('.btn-save'),
+                        form = self.app.addressForm.child('form');
+                    
+                    btn.on('click', saveAddress);
+                    form.on('submit', saveAddress);
+                    
+                    function saveAddress(e){
+                        
+                        e.stopEvent();
+                        
+                        var params = {};
+                        for( var i in f ) params[i] = self.app.addressForm.child('[name='+i+']').getValue();
+                        
+                        for( var i in params ){
+                            if(/(address1|city|state|zip)/.test(i) && !params[i] ){
+                                alert( f[i]+' is required.' );
+                                return;
+                            }
+                            if('zip'==i && !/^\d{5}/.test(params[i]) ){
+                                alert( f[i]+' is invalid.' );
+                                return;
+                            }
                         }
-                        if('zip'==i && !/^\d{5}/.test(params[i]) ){
-                            alert( f[i]+' is invalid.' );
-                            return;
-                        }
+                        btn.update('Updating...');
+                        self.app.api.call( {
+                            path: self.app.entry_point.links.user,
+                            method: 'post',
+                            params: params
+                        }, function(result){
+                            btn.update('Update');
+                            if(!result.data.success){
+                                alert('An unexpected error occurred. Please try saving again.');
+                                return;
+                            }
+                            
+                            self.app.setUser(result.data.user);
+                            updateMessage();
+                            
+                            self.app.addressForm.hide();
+                            self.app.$ct.show();
+                            self.$youWin.child('.bd').superScroll().update();
+                            btn.un('click', saveAddress, self);
+                            form.un('submit', saveAddress);
+                            self.app.scrollToTop();
+                        });
+                        
                     }
-                    
-                    self.app.api.call( {
-                        path: self.app.entry_point.links.user,
-                        method: 'post',
-                        params: params
-                    }, function(result){
-                        btn.update('Update');
-                        if(!result.data.success){
-                            alert('An unexpected error occurred. Please try saving again.');
-                            return;
-                        }
-                        
-                        self.app.setUser(result.data.user);
-                        updateMessage();
-                        
-                        self.app.addressForm.hide();
-                        self.app.$ct.show();
-                        self.$youWin.child('.bd').superScroll().update();
-                        btn.un('click', saveClick, self);
-                        self.app.scrollToTop();
-                    });
-                    
-                });
                 
-            };
+                };
             
             if( !this.app.user.city ) showAddressForm();
             else updateMessage();
