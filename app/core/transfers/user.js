@@ -11,6 +11,7 @@ exports.transfer_objects= {
             last_name: "String",
             gender: "String",
             email: "String",
+            ship_name: "String",
             address1: "String",
             address2: "String",
             city: "String",
@@ -76,6 +77,10 @@ exports.links = {
                     type: 'String',
                     description: 'Email Address'
                 },
+                ship_name: {
+                    type: 'String',
+                    description: 'Ship-to Name'
+                },
                 address1: {
                     type: 'String',
                     description: 'Address (line 1)'
@@ -102,6 +107,16 @@ exports.links = {
         put : {
             access: 'developer',
             doc: 'Create a new user',
+            params: {
+                service: {
+                    type: 'String',
+                    description: 'Name of service - only Facebook right now.'
+                },
+                data: {
+                    type: 'Object',
+                    description: 'User info'
+                }
+            },
             returns: 'user'
         }
     },

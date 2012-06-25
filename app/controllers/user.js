@@ -164,7 +164,7 @@ exports.routes = {
                 
                 // save address fields if they are passed -
                 // assume client validation
-                var fields = ['address1','address2','city','state','zip'];
+                var fields = ['ship_name','address1','address2','city','state','zip'];
                 var v;
                 for(var x=0; x<fields.length; x++){
                     var i = fields[x];

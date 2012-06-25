@@ -117,6 +117,7 @@ Ext.define('Admin.controller.Admin' ,{
         
         // Create a model instance
         var r = Ext.create('Admin.model.ApiKey', {
+            timestamp: new Date(),
             key: this.createKey(32) 
         });
 
@@ -202,7 +203,9 @@ Ext.define('Admin.controller.Admin' ,{
     
     onApiKeyGridRender : function(){
         this.getApiKeyGrid().bindStore( this.getApiKeysStore() );
+        this.getApiKeyGrid().down('pagingtoolbar').bindStore( this.getApiKeysStore() );
         this.getApiKeysStore().load();
+        
     },
     
     onBeforeLoadUsers : function(store, operation){

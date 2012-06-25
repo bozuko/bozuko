@@ -56,6 +56,11 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                         ref:'delbtn',
                         disabled: true
                     }],
+                    bbar: Ext.create('Ext.PagingToolbar', {
+                        displayInfo: true,
+                        displayMsg: 'Displaying keys {0} - {1} of {2}',
+                        emptyMsg: "No keys to display"
+                    }),
                     columns: [
                         {header: 'Date', dataIndex: 'timestamp', width: 80, format: 'm/d/Y', xtype: 'datecolumn'},
                         {header: 'Key', dataIndex: 'key', width: 220},
