@@ -135,9 +135,7 @@ auth.business = function(req,res, callback){
 }
 
 auth.developer = function(req, res, callback){
-    console.log('hello');
     var api_key = req.param('api_key');
-    console.log(api_key);
     return Bozuko.models.Page.count({api_key: api_key}, function(error, count){
         if( error || !count ) return callback(Bozuko.error('bozuko/auth'));
         console.log('developer passed');
