@@ -65,7 +65,7 @@ Scratch.prototype.process = function(outcome) {
 function win(contest, winIndex) {
     var ar = createSequenceArray(), 
         prizes = createPrizes(contest, winIndex);
-        prize = getPrize(prizes, winIndex),
+        prize = getPrize(contest, prizes, winIndex),
         winning_number = rand(min, max),
         results = [];
 
@@ -90,7 +90,7 @@ function lose(contest) {
     };
 }
 
-function getPrize(prizes, winIndex) {
+function getPrize(contest, prizes, winIndex) {
     if( winIndex === 'free_play' ) return {name:'Free Play'};
     if( winIndex === 'consolation') return contest.consolation_prizes[0];
     var prize = prizes[winIndex];
