@@ -29,6 +29,7 @@ var User = module.exports = new Schema({
     blocked             :{type:Boolean, default: false},
     allowed             :{type:Boolean, default: false},
     email               :{type:String, index: true},
+    ship_name           :{type:String},
     address1            :{type:String},
     address2            :{type:String},
     city                :{type:String},

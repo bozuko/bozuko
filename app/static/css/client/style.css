@@ -1489,6 +1489,9 @@ a:hover {
   font-size: .8em;
   color: #999;
 }
+.address-form .ship_name {
+  width: 100%;
+}
 .address-form .address1 {
   width: 65%;
 }

@@ -99,8 +99,8 @@ function streamPlays(res, contest, callback) {
 
 function streamPrizes(res, contest, callback) {
     res.write('\n\nPrizes\n');
-    res.write('Timestamp (UTC), User Id, Place, Activity, Value\n');
-    var prizeFormatter = new CsvFormatter(formatPrize, contest);
+    res.write('Timestamp (UTC), User Id, Place, Activity, Value, Ship-to Name, Address1, Address2, City, State, Zip\n');
+    var prizeFormatter = new PrizeFormatter(formatPrize, contest);
     var query = Bozuko.models.Prize.find({contest_id: contest._id});
     query.stream().pipe(prizeFormatter);
     prizeFormatter.pipe(res, {end: false});
@@ -109,7 +109,7 @@ function streamPrizes(res, contest, callback) {
 
 function streamUsers(res, contest, callback) {
     res.write('\n\nUsers\n');
-    res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year \n');
+    res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year, Address1, Address2, City, State, Zip \n');
     Bozuko.models.Entry.distinct("user_id", {contest_id: contest._id}, function(err, user_ids) {
         if (err) return callback(err);
         async.forEach(user_ids, function(user_id, cb) {
@@ -174,9 +174,23 @@ function formatPlay(doc) {
 function formatPrize(doc) {
     var str = doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_name+","+
         "WON,NA";
+        
+    var user_str;
+        
+    if( doc.user ){
+        var u = doc.user,
+            r = [],
+            fields = ['ship_name','address1','address2','city','state','zip'];
+        fields.forEach(function(f){
+            r.push('"'+u[f].replace(/"/gi, '\\"')+'"')
+        });
+        user_str=(','+r.join(','));
+        str+=user_str
+    }
     if (doc.redeemed) {
         str += '\n'+doc.redeemed_time.toISOString()+","+doc.user_id+","+doc.page_name+","+
             "REDEEMED,"+doc.value;
+        if(user_str) str+=user_str;
     }
     return str;
 }
@@ -210,6 +224,34 @@ CsvFormatter.prototype.destroy = function() {
     if (this._done) return;
     this._done = true;   
     this.emit('end');
+};
+
+function PrizeFormatter(format, callback){
+    CsvFormatter.apply(this, arguments);
+    this.userCache = {};
+}
+util.inherits( PrizeFormatter, CsvFormatter );
+
+PrizeFormatter.prototype.write = function(doc) {
+    // need to grab the user
+    if(!this.userCache[String(doc.user_id)]){
+        var self = this;
+        Bozuko.models.User.findById(doc.user_id, {first_name:true, last_name:true, address1:true, address2:true, city: true, state:true, zip:true}, function(err, user){
+            if(user){
+                self.userCache[String(doc.user_id)];
+                doc.user = user;
+                self.emit('data', self.format(doc) + '\n');
+                self.emit('drain');
+            }
+        });
+        return false;
+    }
+    else{
+        doc.user = this.userCache[String(doc.user_id)];
+        this.emit('data', this.format(doc) + '\n');
+        return true;
+    }
+    
 };
 
 function play_and_entry_counts(contest_id, current_hr, next_hr, callback) {

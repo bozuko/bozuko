@@ -716,6 +716,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
             if(!this.app.addressForm ){
                 var f = {
+                    ship_name       :'Ship-to Name',
                     address1        :'Address',
                     address2        :'Apt / Suite',
                     city            :'City',
@@ -767,12 +768,14 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             }
             
             var msg = this.app.user.city ?
-                'Please update your mailing address so we can send you your prize.' :
-                'Please provide your mailing address so we can send you your prize.' ;
+                'Please update your shipping information so we can send you your prize.' :
+                'Please provide your shipping information so we can send you your prize.' ;
                 
             this.app.addressForm.child('.address-message').update(msg);
             
             this.app.addressForm.child('.prize-name').update(prize.name);
+            
+            if(!this.app.user.ship_name) this.app.user.ship_name = this.app.user.name;
             
             for( var i in f ) this.app.addressForm.child('[name='+i+']').setValue(this.app.user[i] || '');
             
@@ -784,7 +787,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 
                 updateMessage = function(){
                     if(self.app.user.city){
-                        var a = ['<p>Your prize will be mailed to:</p><p>', self.app.user.address1];
+                        var a = ['<p>Your prize will be mailed to:</p><p>', self.app.user.ship_name, '<br />', self.app.user.address1];
                         if( self.app.user.address2 ){
                             a=a.concat([' ',self.app.user.address2]);
                         }
@@ -818,7 +821,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         for( var i in f ) params[i] = self.app.addressForm.child('[name='+i+']').getValue();
                         
                         for( var i in params ){
-                            if(/(address1|city|state|zip)/.test(i) && !params[i] ){
+                            if(/(address1|city|state|zip|ship_name)/.test(i) && !params[i] ){
                                 alert( f[i]+' is required.' );
                                 return;
                             }
@@ -839,6 +842,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                 return;
                             }
                             
+                            console.log(self.app.user);
                             self.app.setUser(result.data.user);
                             updateMessage();
                             

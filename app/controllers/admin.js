@@ -658,10 +658,18 @@ exports.routes = {
         }
     },
     
+    /**
+     * This is a good example of a very basic REST implementation for
+     * ExtJS. Could be expanded with validation.
+     */
     '/admin/apikey/:id?' : {
         get : {
             handler : function(req, res){
-                Bozuko.models.Apikey.find({}, {}, {sort: {timestamp:-1}}, function(err, keys){
+                Bozuko.models.Apikey.find({}, {}, {
+                    skip: req.param('start')||0,
+                    limit: req.param('limit')||25,
+                    sort: {timestamp:-1}
+                }, function(err, keys){
                     res.send(keys);
                 });
             }
@@ -669,14 +677,10 @@ exports.routes = {
         
         post : {
             handler : function(req, res){
-                
-                var data = {
-                    name: req.param('name'),
-                    key: req.param('key'),
-                    description: req.param('description')
-                }, key = new Bozuko.models.Apikey(data);
-                console.log(data);
+                delete req.body._id;
+                var key = new Bozuko.models.Apikey(req.body);
                 key.save(function(err){
+                    if(err) console.error(err);
                     return res.send({success: !err, items:[key]});
                 });
             }
@@ -686,13 +690,7 @@ exports.routes = {
             handler : function(req, res){
                 Bozuko.models.Apikey.findById(req.param('_id'), function(err, key){
                     if(err) return res.send({success:false});
-                    var data = {
-                        name: req.param('name'),
-                        key: req.param('key'),
-                        description: req.param('description')
-                    };
-                    console.log(data);
-                    key.set(data);
+                    key.set(req.body);
                     return key.save(function(err){
                         return res.send({success: !err, items: [key]});
                     });
