@@ -182,7 +182,7 @@ function formatPrize(doc) {
             r = [],
             fields = ['ship_name','address1','address2','city','state','zip'];
         fields.forEach(function(f){
-            r.push('"'+u[f].replace(/"/gi, '\\"')+'"')
+            r.push('"'+(u[f]?u[f].replace(/"/gi, '\\"'):'')+'"')
         });
         user_str=(','+r.join(','));
         str+=user_str
@@ -236,7 +236,7 @@ PrizeFormatter.prototype.write = function(doc) {
     // need to grab the user
     if(!this.userCache[String(doc.user_id)]){
         var self = this;
-        Bozuko.models.User.findById(doc.user_id, {first_name:true, last_name:true, address1:true, address2:true, city: true, state:true, zip:true}, function(err, user){
+        Bozuko.models.User.findById(doc.user_id, {ship_name:true, address1:true, address2:true, city: true, state:true, zip:true}, function(err, user){
             if(user){
                 self.userCache[String(doc.user_id)];
                 doc.user = user;
