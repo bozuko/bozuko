@@ -137,8 +137,17 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
             else{
                 security_img = burl('/images/security_image.png');
             }
+			
+			console.log({
+				'email_prize_screen': email_prize_screen,
+				'self.is_pdf': self.is_pdf,
+				'self.is_email': self.is_email
+			});
+			
+			console.log('will this send an email?');
 
             if ((email_prize_screen || self.is_pdf) && !self.is_email) {
+				console.log('yes');
                 self.emailPrizeScreen(user, security_img);
             }
 
