@@ -165,6 +165,7 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
 // to request the email to be resent.
 Prize.method('sendEmail', function(user) {
     var self = this;
+	console.log('sendEmail, this.is_email' + this.is_email);
 	if( !this.is_email ){
 		// get the page
 		return Bozuko.models.Page.findById(this.page_id, function(error, page){
