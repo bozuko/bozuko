@@ -99,7 +99,7 @@ function streamPlays(res, contest, callback) {
 
 function streamPrizes(res, contest, callback) {
     res.write('\n\nPrizes\n');
-    res.write('Timestamp (UTC), User Id, Place, Activity, Value, Ship-to Name, Address1, Address2, City, State, Zip\n');
+    res.write('Timestamp (UTC), User Id, Prize Id, Place, Activity, Value, Ship-to Name, Address1, Address2, City, State, Zip\n');
     var prizeFormatter = new PrizeFormatter(formatPrize, contest);
     var query = Bozuko.models.Prize.find({contest_id: contest._id});
     query.stream().pipe(prizeFormatter);
@@ -172,7 +172,7 @@ function formatPlay(doc) {
 }
 
 function formatPrize(doc) {
-    var str = doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_name+","+
+    var str = doc.timestamp.toISOString()+","+doc.user_id+","+doc._id+","+doc.page_name+","+
         "WON,NA";
         
     var user_str;
@@ -188,7 +188,7 @@ function formatPrize(doc) {
         str+=user_str
     }
     if (doc.redeemed) {
-        str += '\n'+doc.redeemed_time.toISOString()+","+doc.user_id+","+doc.page_name+","+
+        str += '\n'+doc.redeemed_time.toISOString()+","+doc.user_id+","+doc._id+","+doc.page_name+","+
             "REDEEMED,"+doc.value;
         if(user_str) str+=user_str;
     }

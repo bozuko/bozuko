@@ -136,13 +136,27 @@ auth.business = function(req,res, callback){
 
 auth.developer = function(req, res, callback){
     var api_key = req.param('api_key');
+    
+    // backwards compat with page api keys
     return Bozuko.models.Page.count({api_key: api_key}, function(error, count){
-        if( error || !count ) return callback(Bozuko.error('bozuko/auth'));
-        console.log('developer passed');
-        return callback();
+        if( !error && count ) return callback();
+        return Bozuko.models.Apikey.count({key: api_key}, function(error, count){
+            if( !error && count ) return callback();
+            return callback(Bozuko.error('auth/developer'));
+        });
     });
 };
 
+auth.developer_secret = function(req, res, callback){
+    var api_key = req.param('api_key')
+      , api_secret = req.param('api_secret')
+      ;
+    
+    return Bozuko.models.Apikey.count({key: api_key, secret: api_secret}, function(error, count){
+        if( !error && count ) return callback();
+        return callback(Bozuko.error('auth/developer'));
+    });
+};
 
 auth.mobile = function(req, res, callback) {
 
@@ -156,7 +170,7 @@ auth.mobile = function(req, res, callback) {
         return callback(Bozuko.error('user/blocked'));
     }
 
-    async.series([
+    return async.series([
 
         // Verify phone type and unique id
         function(callback) {
