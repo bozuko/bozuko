@@ -138,17 +138,8 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
                 security_img = burl('/images/security_image.png');
             }
 			
-			console.log({
-				'email_prize_screen': email_prize_screen,
-				'self.is_pdf': self.is_pdf,
-				'self.is_email': self.is_email
-			});
-			
-			console.log('will this send an email?');
-
             if ((email_prize_screen || self.is_pdf) && !self.is_email) {
-				console.log('yes');
-                self.emailPrizeScreen(user, security_img);
+				self.emailPrizeScreen(user, security_img);
             }
 
             Bozuko.publish('prize/redeemed', {prize_id: self._id, contest_id: self.contest_id, page_id: self.page_id, user_id: self.user_id} );
@@ -165,7 +156,9 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
 // to request the email to be resent.
 Prize.method('sendEmail', function(user) {
     var self = this;
-	console.log('sendEmail, this.is_email' + this.is_email);
+	
+	if( this.address_required ) return false;
+	
 	if( !this.is_email ){
 		// get the page
 		return Bozuko.models.Page.findById(this.page_id, function(error, page){
@@ -384,6 +377,8 @@ Prize.method('getPdf', function(user, security_img, callback){
 Prize.method('emailPrizeScreen', function(user, security_img) {
     var self = this;
 	
+	if( this.address_required ) return false;
+	
 	return Bozuko.models.Page.findById( self.page_id, function(error, page){
 		
 		if( error ) return console.log(error);
@@ -423,6 +418,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 					.replace(/<(?:.|\s)*?>/g, "");
 				
 				return mail.send({
+					
 					user_id			:user._id,
 					to				:user.email,
 					subject			:subject,
@@ -439,6 +435,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			
 			if( page.nobranding ){
 				return mail.send({
+					sender:self.page_name +' <mailer@bozuko.com>',
 					user_id: user._id,
 					to: user.email,
 					subject: 'Congratulations! You won a prize from '+self.page_name,
@@ -459,6 +456,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			
 			// lets get the page name...
 			return mail.sendView('prize/pdf', {prize: self, user: user, userLayout: true}, {
+				sender:self.page_name +' <mailer@bozuko.com>',
 				user_id: user._id,
 				to: user.email,
 				subject: 'Congratulations! You won a prize from '+self.page_name,
