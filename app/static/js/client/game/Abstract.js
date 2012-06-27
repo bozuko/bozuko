@@ -842,7 +842,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                 return;
                             }
                             
-                            console.log(self.app.user);
                             self.app.setUser(result.data.user);
                             updateMessage();
                             
@@ -864,7 +863,8 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         }
         else if( prize.is_pdf || prize.is_email || this.app.email_only ){
             message.update([
-                '<p>This prize has been emailed to <strong class="user-email">'+this.app.user.email+'</strong>!</p>',
+                '<p>This prize has been emailed to <strong class="user-email">'+this.app.user.email+'</strong>! ',
+                'Please ensure it didn\'t land in your spam folder.</p>',
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
                 '<div class="email-form">',
                     '<div><input class="email-field" placeholder="Enter your email" name="email" /></div>',
