@@ -87,7 +87,7 @@ function getWinner(doc, callback) {
         
         // add address
         ['address1','address2','city','state','zip'].forEach(function(f){
-            str+=(','+ ('"'+user[f].replace(/"/, '\\"')+'"') );
+            str+=(','+ ('"'+(user[f]||"").replace(/"/, '\\"')+'"') );
         });
         
         str+="\n";
