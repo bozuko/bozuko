@@ -28,8 +28,11 @@ exports.stream = function(contest, res) {
 };
 
 function streamWinners(contest, res, callback) {
+    
+    var c={};
+    
     res.write('WINNERS\n');
-    res.write('Name, Prize, Facebook Id, Email\n');
+    res.write('Timestamp, Name, Prize, Facebook Id, Email, Address1, Address2, City, State, Zip\n');
     var stream = Bozuko.models.Prize.find({contest_id: contest._id}).stream();
     stream.on('data', function(doc) {
         var self = this;
@@ -77,10 +80,17 @@ function streamEntries(contest, res, callback) {
 }
 
 function getWinner(doc, callback) {
-    var str = doc.user_name+','+doc.name+',';
+    var str = doc.timestamp+','+doc.user_name+','+doc.name+',';
     Bozuko.models.User.findById(doc.user_id, function(err, user) {
         if (err) return callback(err);
-        str += user.services[0].sid + ','+user.email+'\n';
+        str += user.services[0].sid + ','+user.email;
+        
+        // add address
+        ['address1','address2','city','state','zip'].forEach(function(f){
+            str+=(','+ ('"'+user[f].replace(/"/, '\\"')+'"') );
+        });
+        
+        str+="\n";
         callback(null, str);
     });
 }
