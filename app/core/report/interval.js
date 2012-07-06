@@ -195,6 +195,8 @@ CountsReport.prototype.run = function run(callback){
                 // check cache...
             }
             
+            //console.log({opts:opts,selector:selector,useCache:useCache});
+            
             async.series([
                 function try_cache(cb){
                     if( !useCache ) return cb();
@@ -206,6 +208,9 @@ CountsReport.prototype.run = function run(callback){
                 },
                 function no_cache(cb){
                     if( cacheValue !== undefined && cacheValue._id ){
+                        
+                        //console.log('used cache');
+                        
                         reports.push(cacheValue);
                         return cb();
                     }
