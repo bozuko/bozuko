@@ -163,6 +163,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 var url = self.page.like_button_url;
                 url+='?token='+self.app.user.token;
                 
+                // also add the game
+                url+='&game='+self.game.id;
+                
                 self.updateAction(
                     '<div style="line-height: 26px;" class="like-container like-container-loading">'+
                     self.state.button_text+

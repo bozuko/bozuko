@@ -107,22 +107,35 @@ exports.routes = {
                             // lets see if we have a page for this
                             Bozuko.models.Page.findByService('facebook', liked, function(error, page){
                                 if( error || !page ) return;
-
-                                var share = new Bozuko.models.Share({
+                                
+                                var selector = {
                                     service         :'facebook',
                                     type            :'like',
                                     page_id         :page._id,
-                                    user_id         :user._id,
-                                    visibility      :internal.friend_count||0
-                                });
-                                share.save(function(error){
-                                    if( error ) console.error( error );
-                                    else console.log('Facebook Like through Bozuko: Page='+page.name+', User='+user.name);
+                                    user_id         :user._id
+                                }, game = req.param('game');
+                                
+                                // find share
+                                Bozuko.models.Share.findOne(selector, function(error, share){
+                                    if(!share){
+                                        share = new Bozuko.models.Share(selector);
+                                        share.visibility = internal.friend_count||0;
+                                        if(game) share.contest_id = game;
+                                    }
+                                    if(game && !share.contest_id){
+                                        share.contest_id = game;
+                                    }
+                                    // we don't need to update at all
+                                    else return;
+                                    
+                                    share.save(function(error){
+                                        if( error ) console.error( error );
+                                        else console.log('Facebook Like through Bozuko: Page='+page.name+', User='+user.name);
+                                    });
                                 });
                             });
                         }
                     }
-
 
                     user.id = user._id;
                     user.links = {
@@ -131,9 +144,9 @@ exports.routes = {
                     };
                     return Bozuko.transfer('user', user, user, function(error, result){
                         if (result) {
-                            console.error('\nuser transfer = '+inspect(result)+'\n\n');
+                            //console.error('\nuser transfer = '+inspect(result)+'\n\n');
                         } else {
-                            console.error('\n no transfer user\n');
+                            //console.error('\n no transfer user\n');
                         }
                         if (error) return error.send(res);
                         return res.send( result );

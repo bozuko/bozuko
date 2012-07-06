@@ -73,11 +73,8 @@ var game_result = {
             if( error ) return callback( error );
             ret.game_state = game_state;
             if( result.prize ) {
-                console.log('before transfer prize');
-                console.log(result.prize);
                 return Bozuko.transfer('prize', result.prize, user, function(error, prize){
                     if( error ) return callback( error );
-                    console.log('after transfer prize');
                     ret.prize = prize;
                     ret.links = {
                         page: '/page/'+result.contest.game_state.page_id,
