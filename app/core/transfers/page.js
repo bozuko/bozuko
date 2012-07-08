@@ -193,6 +193,16 @@ exports.links = {
         get: {
             doc: "Return a specific page",
             returns: "page"
+        },
+        
+        put: {
+            access: 'developer_private',
+            returns: 'page'
+        },
+        
+        post: {
+            access: 'developer_private',
+            returns: 'page'
         }
     },
 

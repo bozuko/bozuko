@@ -16,6 +16,10 @@ exports.routes = {
                 } else {
                     links.login = "/user/login";
                 }
+                if(req.api_user){
+                    links.page = '/page';
+                    links.game = '/game';
+                }
                 return Bozuko.transfer('entry_point', {links: links}, null, function(error, result){
                     if (error) return error.send(res);
                     return res.send( result );
