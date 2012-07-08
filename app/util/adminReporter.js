@@ -33,7 +33,7 @@ function streamWinners(contest, res, callback) {
     
     res.write('WINNERS\n');
     res.write('Timestamp, Name, Prize, Facebook Id, Email, Address1, Address2, City, State, Zip\n');
-    var stream = Bozuko.models.Prize.find({contest_id: contest._id}).stream();
+    var stream = Bozuko.models.Prize.find({contest_id: contest._id},{},{timestamp:1}).stream();
     stream.on('data', function(doc) {
         var self = this;
         this.pause();

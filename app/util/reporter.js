@@ -101,7 +101,7 @@ function streamPrizes(res, contest, callback) {
     res.write('\n\nPrizes\n');
     res.write('Timestamp (UTC), User Id, Prize Id, Place, Activity, Value, Ship-to Name, Address1, Address2, City, State, Zip\n');
     var prizeFormatter = new PrizeFormatter(formatPrize, contest);
-    var query = Bozuko.models.Prize.find({contest_id: contest._id});
+    var query = Bozuko.models.Prize.find({contest_id: contest._id},{},{timestamp:1});
     query.stream().pipe(prizeFormatter);
     prizeFormatter.pipe(res, {end: false});
     prizeFormatter.on('end', callback);
