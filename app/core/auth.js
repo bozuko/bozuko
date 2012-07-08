@@ -139,9 +139,16 @@ auth.developer = function(req, res, callback){
     
     // backwards compat with page api keys
     return Bozuko.models.Page.count({api_key: api_key}, function(error, count){
-        if( !error && count ) return callback();
-        return Bozuko.models.Apikey.count({key: api_key}, function(error, count){
-            if( !error && count ) return callback();
+        if( !error && count ){
+            req.api_user = true;
+            return callback();
+        }
+        return Bozuko.models.Apikey.findOne({key: api_key}, function(error, apikey){
+            if( !error && count ){
+                req.api_user = true;
+                req.api_key = apikey;
+                return callback();
+            }
             return callback(Bozuko.error('auth/developer'));
         });
     });

@@ -1,5 +1,7 @@
 var Stream = require('stream').Stream,
-    async = require('async'); 
+    async = require('async'),
+    dateFormat = require('dateformat')
+    ; 
 
 exports.stream = function(contest, res) {
     res.header('content-type', 'text/csv');
@@ -80,7 +82,7 @@ function streamEntries(contest, res, callback) {
 }
 
 function getWinner(doc, callback) {
-    var str = doc.timestamp+','+doc.user_name+','+doc.name+',';
+    var str = dateFormat(doc.timestamp, 'yyyy-mm-dd HH:MM:ss')+','+doc.user_name+','+doc.name+',';
     Bozuko.models.User.findById(doc.user_id, function(err, user) {
         if (err) return callback(err);
         str += user.services[0].sid + ','+user.email;
