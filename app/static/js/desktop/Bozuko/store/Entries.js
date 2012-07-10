@@ -19,7 +19,7 @@ Ext.define('Bozuko.store.Entries', {
         me.callParent(arguments);
         me.on('beforeload', me.onBeforeLoad, me);
         
-        if( me.isListener ){
+        if( 0 && me.isListener ){
             me.startListening();
             me.tmpStore = me.self.create({
                 page_id : me.page_id,

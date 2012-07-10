@@ -218,6 +218,22 @@ Ext.define('Bozuko.view.chart.Basic', {
             }, {
                 xtype           :'panel',
                 border          :false,
+                style           :'text-align:center; margin-bottom: 10px;',
+                anchor          :'0',
+                autoHeight      :true,
+                items           :[{
+                    autoHeight      :true,
+                    xtype           :'button',
+                    text            :'Refresh Data',
+                    scope           :this,
+                    handler         :function(){
+                        this.updateChart();
+                        this.updateStats();
+                    }
+                }]
+            },{
+                xtype           :'panel',
+                border          :false,
                 style           :'text-align:center',
                 anchor          :'0',
                 autoHeight      :true,
@@ -393,6 +409,7 @@ Ext.define('Bozuko.view.chart.Basic', {
         if( me.page_id ) filter.page_id = me.page_id;
         if( me.contest ) filter.contest_id = me.contest.get('_id');
         
+        /*
         Bozuko.PubSub.subscribe('contest/entry', filter, me.getCallback('entry') );
         Bozuko.PubSub.subscribe('contest/play', filter, me.getCallback('play') );
         Bozuko.PubSub.subscribe('contest/win', filter, me.getCallback('win') );
@@ -411,6 +428,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 Bozuko.PubSub.unsubscribe('contest/redistribute', filter, me.getCallback('redistribution') );
             }
         });
+        */
         
         me.chartStore.on('load', function(){
             var axis = me.chart.axes.get(0),

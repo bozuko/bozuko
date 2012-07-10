@@ -57,7 +57,7 @@ Ext.define('Bozuko.store.Winners', {
             me.updateStore();
             callback();
         };
-
+        /*
         Bozuko.PubSub.subscribe('prize/redeemed', selector, reload);
         Bozuko.PubSub.subscribe('contest/win', selector, reload);
         Bozuko.PubSub.subscribe('contest/consolation', selector, reload);
@@ -68,6 +68,7 @@ Ext.define('Bozuko.store.Winners', {
             Bozuko.PubSub.unsubscribe('contest/consolation', selector, reload);
             Bozuko.PubSub.subscribe('prize/verified', selector, reload);
         });
+        */
         me.listening = true;
     },
 
