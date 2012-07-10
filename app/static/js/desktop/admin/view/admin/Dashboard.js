@@ -162,6 +162,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
             }
             me.addEventToLog( [eventLog.createModel(item)] );
         });
+        
     },
     
     addEventToLog : function(records){
