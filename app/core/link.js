@@ -14,7 +14,9 @@ var HttpMethod = function(method, config, link){
     this.doc = config.doc;
     // check for .md documentation
     var filename = this.docs_dir+'/links/'+this.link.name+'/'+this.method+'.md';
+    console.log(filename);
     if( path.existsSync(filename)){
+        console.log('exists');
         this.doc = markdown.parse( fs.readFileSync(filename, 'utf-8'));
     }
 };
@@ -31,6 +33,8 @@ var Link = module.exports = function(name, config){
     var self = this;
 
     Object.keys(config).forEach(function(method){
+        if(method == 'docs_dir') return;
+        config[method].docs_dir = config.docs_dir;
         self.addMethod(new HttpMethod(method, config[method], self));
     });
 };

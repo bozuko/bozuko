@@ -118,7 +118,8 @@ Ext.define('Admin.controller.Admin' ,{
         // Create a model instance
         var r = Ext.create('Admin.model.ApiKey', {
             timestamp: new Date(),
-            key: this.createKey(32) 
+            key: this.createKey(32),
+            secret: this.createKey(32)
         });
 
         grid.getStore().insert(0, r);

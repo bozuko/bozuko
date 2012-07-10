@@ -21,6 +21,7 @@ Ext.define('Admin.model.ApiKey', {
     fields: [
         {name:'_id',                type:'String'},
         {name:'key',                type:'String'},
+        {name:'secret',             type:'String'},
         {name:'name',               type:'String'},
         {name:'description',        type:'String'},
         {name:'timestamp',          type:'Date',        dateFormat:'c'}

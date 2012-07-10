@@ -9,8 +9,8 @@ var Entry = module.exports = new Schema({
     page_id                 :{type:ObjectId},
     user_id                 :{type:ObjectId},
     /* page and user names for searching */
-    user_name               :{type:String},
-    page_name               :{type:String},
+    user_name               :{type:String, index:true},
+    page_name               :{type:String, index:true},
     type                    :{type:String},
     device                  :{type:String},
     url                     :{type:String},
