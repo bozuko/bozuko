@@ -15,7 +15,7 @@ var Entry = module.exports = new Schema({
     device                  :{type:String},
     url                     :{type:String},
     action_id               :{type:ObjectId},
-    timestamp               :{type:Date,        default: Date.now},
+    timestamp               :{type:Date,        default: Date.now, index: true},
     wall_posts              :{type:Number,      default: 0},
     tokens                  :{type:Number},
     initial_tokens          :{type:Number},
