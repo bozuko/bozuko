@@ -138,6 +138,16 @@ exports.transfer_objects = {
             return createPage();
         }
     },
+    
+    page_save_result : {
+        doc: "Result of saving a page via PUT or POST",
+        def: {
+            success: "Boolean",
+            errors: "Object",
+            error: "String",
+            page: "page"
+        }
+    },
 
     pages : {
         doc: "List of pages",
@@ -197,12 +207,22 @@ exports.links = {
         
         put: {
             access: 'developer_private',
-            returns: 'page'
+            returns: 'page_save_result',
+            params: {
+                facebook_id: {
+                    type: "String",
+                    description: "The Facebook Page ID (must be unique)"
+                },
+                name : {
+                    type: "String",
+                    description: "The name of the page"
+                }
+            }
         },
         
         post: {
             access: 'developer_private',
-            returns: 'page'
+            returns: 'page_save_result'
         }
     },
 

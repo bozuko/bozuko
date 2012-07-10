@@ -157,10 +157,40 @@ var game = {
                 page: '/page/'+game.contest.game_state.page_id,
                 game: '/game/'+game.contest.id
             };
+            
             return self.sanitize(obj, null, user, callback);
         });
     }
 };
+
+var game_save_result = {
+    doc: "Result of saving a game via PUT or POST",
+    def: {
+        success: "Boolean",
+        errors: "Object",
+        error: "String",
+        game: "game"
+    }
+};
+
+var game_publish_result = {
+    doc: "Result of publishing a game",
+    def: {
+        success: "Boolean",
+        error: "String",
+        game: "game"
+    }
+};
+
+var game_cancel_result = {
+    doc: "Result of cancelling a game",
+    def: {
+        success: "Boolean",
+        error: "String",
+        game: "game"
+    }
+};
+
 
 var game_state = {
     def: {
@@ -221,6 +251,9 @@ var game_state = {
 
 exports.transfer_objects = {
     game: game,
+    game_save_result: game_save_result,
+    game_publish_result: game_publish_result,
+    game_cancel_result: game_cancel_result,
     game_state: game_state,
     game_result: game_result,
     entry_method: entry_method,
@@ -232,6 +265,30 @@ exports.links = {
         get: {
             doc: "Returns game information",
             returns: "game"
+        },
+        
+        put: {
+            access: 'developer_private',
+            returns: 'game_save_result'
+        },
+        
+        post: {
+            access: 'developer_private',
+            returns: 'game_save_result'
+        }
+    },
+    
+    game_publish : {
+        post: {
+            access: 'developer_private',
+            returns: 'game_publish_result'
+        }
+    },
+    
+    game_cancel : {
+        post: {
+            access: 'developer_private',
+            returns: 'game_cancel_result'
         }
     },
 
