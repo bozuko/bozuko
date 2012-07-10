@@ -73,6 +73,11 @@ exports.renderGame = function(req, res, contest_id, page_id){
         var qr = 'http://api.qrserver.com/v1/create-qr-code/?size=320x320&color=006b37&data='+encodeURIComponent(burl(req.url));
         var game = contest.getGame();
         
+        var share = contest.get('share_url');
+        if( !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && share ){
+            return res.redirect( share );
+        }
+        
         if( 1 || req.session.device == 'tablet' || req.session.device == 'touch' || req.param('play') ){
             
             if( Bozuko.env() == 'site' ){
