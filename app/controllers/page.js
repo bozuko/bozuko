@@ -125,11 +125,12 @@ exports.routes = {
         }
     },
 
-    '/page/:id': {
-
+    '/page/:id?': {
+        
         get: {
             handler: function(req,res) {
                 var page_id = req.param('id');
+                if( !page_id ) return Bozuko.error('page/does_not_exist').send(res);
                 Bozuko.models.Page.findById(page_id, function(error, page) {
                     if( error ) return error.send(res);
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
@@ -145,6 +146,22 @@ exports.routes = {
                         });
                     });
                 });
+            }
+        },
+        
+        put : {
+            
+            access : 'developer_private',
+            handler : function(req, res){
+                
+            }
+        },
+        
+        post : {
+            
+            access : 'developer_private',
+            handler : function(req, res){
+                
             }
         }
     },
@@ -231,7 +248,7 @@ exports.routes = {
         }
     },
 
-    'page/:id/image': {
+    '/page/:id/image': {
 
         get : {
             handler : function(req,res){
@@ -257,7 +274,7 @@ exports.routes = {
         }
     },
 
-    'page/recommend/:service/:id': {
+    '/page/recommend/:service/:id': {
 
         access : 'user',
 

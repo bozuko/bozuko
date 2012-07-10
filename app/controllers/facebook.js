@@ -91,6 +91,7 @@ exports.routes = {
                 res.locals.isAndroid = req.header('user-agent').match(/android/i);
 
                 var page,
+                    game,
                     user,
                     place,
                     access_token,
@@ -101,6 +102,23 @@ exports.routes = {
                         Bozuko.models.Page.findByService('facebook', fbid, function(error, _page){
                             if( error ) return cb(error);
                             if( _page ) page = _page;
+                            return cb();
+                        });
+                    },
+                    
+                    function get_game(cb){
+                        var _id;
+                        if(!page || !(_id=req.param('game'))) return cb();
+                        return Bozuko.models.Contest.findOne({
+                            _id: req.param('game'),
+                            $or: [{
+                                page_id: page._id
+                            },{
+                                page_ids: page._id
+                            }]
+                        }, function(error, _game){
+                            if( error ) return cb(error);
+                            if( _game ) game = _game;
                             return cb();
                         });
                     },
@@ -163,8 +181,7 @@ exports.routes = {
                     if(page){
                         res.locals.place.image = page.image;
                         res.locals.place.category = page.category;
-                        res.locals.place.name = page.name;
-                        
+                        res.locals.place.name = page.name;                        
                     }
                     if( res.locals.place.image.indexOf('type=large') ){
                         res.locals.place.image = res.locals.place.image.replace(/type=large/, 'type=square');
@@ -172,6 +189,7 @@ exports.routes = {
                     if(user){
                         res.locals.admin = user.service('facebook').sid;
                     }
+                    res.locals.game = game;
                     res.locals.title = "Like "+place.name+" on Facebook!";
                     return res.render('app/facebook/'+tmpl);
                 });

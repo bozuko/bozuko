@@ -42,7 +42,7 @@ transfer.objects = transfer_objects;
 transfer.links = links;
 
 transfer.init = function(opts) {
-    var files = [];
+	var files = [];
     fs.readdirSync(__dirname + '/transfers').forEach( function(file){
 
         if( !/js$/.test(file) ) return;

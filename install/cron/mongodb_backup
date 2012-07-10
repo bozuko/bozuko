@@ -13,13 +13,13 @@ tar cvzf $BACKUP_DIR/latest.tgz $BACKUP_DIR/dump
 rm -rf $BACKUP_DIR/dump/*
 
 # we just backed up the latest db. Now rotate our logfiles
-# Store 13 hours of backups
+# Store 4 hours of backups
 
-if [ -e "$BACKUP_DIR/dump12.tgz" ]; then
-    rm $BACKUP_DIR/dump12.tgz
+if [ -e "$BACKUP_DIR/dump3.tgz" ]; then
+    rm $BACKUP_DIR/dump3.tgz
 fi
 
-for i in `seq 11 -1 0`; do
+for i in `seq 2 -1 0`; do
     if [ -e "$BACKUP_DIR/dump${i}.tgz" ]; then
         j=$(($i+1))
         mv $BACKUP_DIR/dump${i}.tgz $BACKUP_DIR/dump${j}.tgz

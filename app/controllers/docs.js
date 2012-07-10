@@ -4,7 +4,7 @@ var fs          = require('fs'),
     util        = require('util'),
     docify      = Bozuko.require('util/docs').docify;
     
-exports.access = 'admin';
+// exports.access = 'simple';
 
 exports.routes = {
 
