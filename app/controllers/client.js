@@ -22,8 +22,6 @@ exports.session = false;
 var now = Date.now();
 
 exports.renderGame = function(req, res, contest_id, page_id){
-    console.log( {contest_id: contest_id, page_id: page_id});
-    
     var contest, page;
     
     contest_id = String( contest_id );
@@ -74,6 +72,11 @@ exports.renderGame = function(req, res, contest_id, page_id){
         
         var qr = 'http://api.qrserver.com/v1/create-qr-code/?size=320x320&color=006b37&data='+encodeURIComponent(burl(req.url));
         var game = contest.getGame();
+        
+        var share = contest.get('share_url');
+        if( !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && share ){
+            return res.redirect( share );
+        }
         
         if( 1 || req.session.device == 'tablet' || req.session.device == 'touch' || req.param('play') ){
             
@@ -134,13 +137,12 @@ exports.renderGame = function(req, res, contest_id, page_id){
             res.locals.cache_time = now;
             return res.render('client/index');
         }
-        // this is going to be the desktop display...
         
         var share = contest.get('share_url');
-        if( share ){
+        if( (req.session.device == 'tablet' || req.session.device == 'desktop') && share ){
             return res.redirect( share );
         }
-        
+        // this is going to be the desktop display...
         res.locals = merge({}, Bozuko.require('controllers/site').locals);
         res.locals.meta['og:image'] = burl('/page/'+page._id+'/image');
         if( Bozuko.env() == 'site' ) res.locals.meta['og:image'] = res.locals.meta['og:image'].replace(/\/\/bozuko\.com/, '//api.bozuko.com');

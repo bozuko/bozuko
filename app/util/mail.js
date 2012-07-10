@@ -28,8 +28,8 @@ var EmailMessage = module.exports = function(params){
     params.server.user = user.user;
     params.server.pass = user.pass;
     
-    if( params.bcc ) params.bcc += ',mailer@bozuko.com';
-    else params.bcc = 'mailer@bozuko.com';
+    if( params.bcc ) params.bcc += ',mailer2@bozuko.com';
+    else params.bcc = 'mailer2@bozuko.com';
 
     nm.EmailMessage.call(this, params);
     if( !this.sender ){

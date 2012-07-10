@@ -121,7 +121,21 @@ auth.admin = function(req, res, callback ){
      * TODO - add connect middleware basic auth
      */
     return adminAuth(req,res,callback);
-}
+};
+
+var simpleAuth = basicAuth(function(user, pass, cb){
+    if( Bozuko.cfg('auth.simple', {docs:'docs'})[user] == pass ){
+        return cb(null, user);
+    }
+    return cb(new Error('Invalid Login'));
+});
+
+/**
+ * Basic Auth
+ */
+auth.simple = function(req, res, callback){
+    return simpleAuth(req, res, callback);
+};
 
 
 auth.business = function(req,res, callback){
@@ -139,21 +153,45 @@ auth.developer = function(req, res, callback){
     
     // backwards compat with page api keys
     return Bozuko.models.Page.count({api_key: api_key}, function(error, count){
-        if( !error && count ) return callback();
-        return Bozuko.models.Apikey.count({key: api_key}, function(error, count){
-            if( !error && count ) return callback();
+        if( !error && count ){
+            req.api_user = true;
+            return callback();
+        }
+        return Bozuko.models.Apikey.findOne({key: api_key}, function(error, apikey){
+            if( !error && count ){
+                req.api_user = true;
+                req.api_key = apikey;
+                return callback();
+            }
             return callback(Bozuko.error('auth/developer'));
         });
     });
 };
 
-auth.developer_secret = function(req, res, callback){
+auth.developer_public = function(req, res, callback){
+    var api_key = req.param('api_key')
+      ;
+    
+    return Bozuko.models.Apikey.findOne({key: api_key}, function(error, key){
+        if( !error && key ){
+            req.api_key = key;
+            req.session.user = api_key;
+            return callback();
+        }
+        return callback(Bozuko.error('auth/developer'));
+    });
+};
+
+auth.developer_private = function(req, res, callback){
     var api_key = req.param('api_key')
       , api_secret = req.param('api_secret')
       ;
     
-    return Bozuko.models.Apikey.count({key: api_key, secret: api_secret}, function(error, count){
-        if( !error && count ) return callback();
+    return Bozuko.models.Apikey.findOne({key: api_key, secret: api_secret}, function(error, key){
+        if( !error && count ){
+            req.session.user = api_key;
+            return callback();
+        }
         return callback(Bozuko.error('auth/developer'));
     });
 };

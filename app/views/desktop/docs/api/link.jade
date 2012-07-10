@@ -10,7 +10,7 @@ h4 Methods
     .method
       h5.method-name
         - if ( method.access )
-          a.access-level(class=method.access, href="#/links") #{method.access.toUpperCase()} Authenticated Method
+          a.access-level(class=method.access, href="#/links") #{method.access.toUpperCase().replace(/_/, ' ')} Authenticated Method
           
         !=name.toUpperCase()
         

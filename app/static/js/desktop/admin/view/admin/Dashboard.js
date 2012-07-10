@@ -64,6 +64,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                     columns: [
                         {header: 'Date', dataIndex: 'timestamp', width: 80, format: 'm/d/Y', xtype: 'datecolumn'},
                         {header: 'Key', dataIndex: 'key', width: 220},
+                        {header: 'Secret', dataIndex: 'secret', width: 220},
                         {header: 'Name',  dataIndex: 'name', editor: {xtype: 'textfield', allowBlank:false}, width: 180},
                         {header: 'Description', dataIndex: 'description', flex:1, editor: 'textfield'}
                     ],
