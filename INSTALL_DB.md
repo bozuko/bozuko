@@ -18,10 +18,6 @@ Add the user to the sudo group by editing **/etc/group**
     echo db1 > /etc/hostname
     hostname -F /etc/hostname
 
-Comment out SET_HOSTNAME
-
-     #SET_HOSTNAME='yes'
-
 #### Install git
     apt-get install git
 
