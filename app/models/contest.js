@@ -30,7 +30,7 @@ function enum_engine_type(type) {
 };
 
 var Contest = module.exports = new Schema({
-    apikey                  :{type:ObjectId},
+    apikey_id               :{type:ObjectId},
     page_id                 :{type:ObjectId, index :true},
     page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
@@ -388,6 +388,7 @@ Contest.method('validate_', function(callback) {
                 E.errors(errors);
                 return callback(E);
             }
+            game.apikey_id = req.apikey._id;
             return game.save(callback);
         });
     });
