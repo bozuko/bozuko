@@ -149,7 +149,7 @@ module.exports = {
             ca : '/ssl/wildcard/gd_bundle.crt',
             cert: '/ssl/wildcard/bozuko.com.crt'
         },
-        host: 'cfa.bozuko.com',
+        host: 'chinoki.bozuko.com',
         port: 443
     },
 
