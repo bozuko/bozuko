@@ -7,7 +7,7 @@ exports.session = false;
 
 exports.routes = {
 
-    '/game/:id': {
+    '/game/:id?': {
 
         get: {
             handler: function(req,res){
@@ -40,7 +40,57 @@ exports.routes = {
                     });
                 });
             }
-        }
+        },
+		
+		put : {
+            
+            access : 'developer_private',
+            handler : function(req, res){
+                
+                Bozuko.models.Contest.apiCreate(req, function(error, game){
+					var noop=function(opts, cb){ return cb(); };
+					return (game ? game.loadGameState : noop).call(game, {user:null, page_id: game ? game.page_id : null}, function(e){
+						
+						var t = {
+							success: error ? false : true,
+							errors: error ? error.errors() : undefined,
+							error: error ? error.message : undefined,
+							game: game ? game.getGame() : undefined
+						};
+						
+						Bozuko.transfer('game_save_result', t, req.session.user, function(error, result){ 
+							if (error) return error.send(res);
+							return res.send( result );
+						});
+					});
+                });
+                
+            }
+        },
+		
+		post : {
+			
+			access : 'developer_private',
+			handler : function(req, res){
+				Bozuko.models.Contest.apiUpdate(req, function(error, game){
+					var noop=function(opts, cb){ return cb(); };
+					return (game ? game.loadGameState : noop).call(game, {user:null, page_id: game ? game.page_id : null}, function(e){
+						
+						var t = {
+							success: error ? false : true,
+							errors: error ? error.errors() : undefined,
+							error: error ? error.message : undefined,
+							game: game ? game.getGame() : undefined
+						};
+						
+						Bozuko.transfer('game_save_result', t, req.session.user, function(error, result){ 
+							if (error) return error.send(res);
+							return res.send( result );
+						});
+					});
+                });
+			}
+		}
     },
 
     /**

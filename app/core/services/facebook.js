@@ -521,19 +521,25 @@ FacebookService.prototype.post = function(options, callback){
  * @return {null}
  */
 FacebookService.prototype.place = function(options, callback){
-    var self = this;
-    if( !options || !options.place_id ){
+    var self = this
+	  , id
+	  ;
+	
+	if(options instanceof String || options instanceof Number){
+		options = {id:options};
+	}
+    if( !options || !(options.id || options.place_id) ){
         return callback(Bozuko.error('facebook/no_page_id'));
     }
 
     var params = {};
-    if( options.fields ){
+    if( options.fields && options.fields instanceof Array){
         params.fields = options.fields.join(',');
     }
     if( options.access_token ){
         params.access_token = options.access_token;
     }
-    facebook.graph('/'+options.place_id, {
+    facebook.graph('/'+(options.id||options.place_id), {
         params: params
     },function(error, result){
 		if( error ) return callback( error );
@@ -541,6 +547,7 @@ FacebookService.prototype.place = function(options, callback){
     });
 
 };
+FacebookService.prototype.place;
 
 /**
  * Get any places that this user is an administrator for

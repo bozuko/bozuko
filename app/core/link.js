@@ -14,9 +14,7 @@ var HttpMethod = function(method, config, link){
     this.doc = config.doc;
     // check for .md documentation
     var filename = this.docs_dir+'/links/'+this.link.name+'/'+this.method+'.md';
-    console.log(filename);
     if( path.existsSync(filename)){
-        console.log('exists');
         this.doc = markdown.parse( fs.readFileSync(filename, 'utf-8'));
     }
 };

@@ -70,7 +70,7 @@ exports.transfer_objects = {
                 if( page.registered ){
                     // page.image = burl('/page/'+page.id+'/image?version=8');
                 }
-                if( user ){
+                if( user && ! (user instanceof Bozuko.models.Apikey) ){
                     page.like_url +='?token='+user.token;
                     page.like_button_url += '?token='+user.token;
                     if( page.registered ){
@@ -211,18 +211,45 @@ exports.links = {
             params: {
                 facebook_id: {
                     type: "String",
-                    description: "The Facebook Page ID (must be unique)"
+                    description: "The Facebook Page ID (must be unique)",
+                    required: true
                 },
                 name : {
                     type: "String",
                     description: "The name of the page"
+                },
+                location : {
+                    type: "Object",
+                    description: "A location description - see <a href=\"#/objects/page\">Page Object</a> for location properties"
+                },
+                image : {
+                    type: "String",
+                    description: "The URL of an image for the page - should be square and at least 200 x 200"
                 }
             }
         },
         
         post: {
             access: 'developer_private',
-            returns: 'page_save_result'
+            returns: 'page_save_result',
+            params: {
+                facebook_id: {
+                    type: "String",
+                    description: "The Facebook Page ID (must be unique)"
+                },
+                name : {
+                    type: "String",
+                    description: "The name of the page - defaults to Facebook Page"
+                },
+                location : {
+                    type: "Object",
+                    description: "A location description - see <a href=\"#/objects/page\">Page Object</a> for location properties"
+                },
+                image : {
+                    type: "String",
+                    description: "The URL of an image for the page - should be square and at least 200 x 200"
+                }
+            }
         }
     },
 

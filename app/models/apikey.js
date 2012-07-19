@@ -22,6 +22,15 @@ Apikey.pre('save', function(next) {
     return next();
 });
 
+Apikey.method('setPrivate', function(priv){
+    this._private = priv;
+    return this;
+});
+
+Apikey.method('isPrivate', function(){
+    return this._private;
+});
+
 function create_key(len)
 {
     var key=''

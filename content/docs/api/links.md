@@ -40,6 +40,16 @@ with the request:
    The challenge response is an number that is calculated using the version specific algorithm
    provided to the client developers upon request.
 
+##### Developer Public
+
+These requests must be pass along the developer's public key either as a named parameter
+in the query sting or post body as **api\_key**, or as the HTTP header **bozuko\_api\_key**
+
+##### Developer Private
+
+These requests must be pass along the developer's public and private keys either as named parameters
+in the query sting or post body as **api\_key** and **api\_secret**, or as the HTTP headers **bozuko\_api\_key**
+and **bozuko\_api\_secret**
 
 #### Client Version
 

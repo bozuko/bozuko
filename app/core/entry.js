@@ -10,7 +10,7 @@ var Entry = module.exports = function(opts) {
     this.contest = opts.contest;
 	this.device = opts.device;
 	this.url = opts.url;
-    this.user = opts.user;
+    this.user = opts.user instanceof Bozuko.models.User ? opts.user : null;
     this.ll = opts.ll;
     this.accuracy = opts.accuracy;
     this.page_id = opts.page ? opts.page._id : opts.page_id;

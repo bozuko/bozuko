@@ -52,6 +52,10 @@ exports['page tests'] = {
                 // check for list_message
                 test.ok( page.games[0].list_message != null, 'No list message');
                 favorite_link = page.links.favorite;
+                
+                console.log(page.links);
+                
+                
                 test.done();
             });
     },

@@ -20,3 +20,13 @@ should be closed. The closing of the webview does not guarantee that the user
 actually performed the "Like" action, so you should refresh the "page" link to
 get the most current page object (which should have the correct "liked" Boolean
 as well as updated game states if they depend on a facebook like).
+
+The properties of this object will differ depending on the access level with which it was requested.
+Some of the properties will not be relevant to third party developers.
+
+
+If requested with *DEVELOPER* access, the following properties will be absent:
+
++ **favorite**
++ **liked**
++ **distance**

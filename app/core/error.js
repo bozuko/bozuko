@@ -5,6 +5,7 @@ var BozukoError = module.exports = function(name,message,data,code,title){
     Error.captureStackTrace(this, arguments.callee);
     this.name = name;
     this.data = data;
+    this._errors = {};
     if( code ) this.code = code;
     if( title ) this.title = title;
     if( message instanceof Function){
@@ -13,6 +14,26 @@ var BozukoError = module.exports = function(name,message,data,code,title){
     else{
         this.message = message;
     }
+};
+
+BozukoError.prototype.errors = function(val){
+    if(val != undefined){
+        if(!val) delete this._errors;
+        else for(var i in val) if( val.hasOwnProperty(i) ){
+            this.error(i, val[i]);
+        }
+        return this;
+    }
+    return this._errors;
+};
+
+BozukoError.prototype.error = function(name, val){
+    if(val != undefined){
+        if(!val) delete this._errors[name];
+        else this._errors[name] = val;
+        return this;
+    }
+    return this._errors[name];
 };
 
 BozukoError.prototype.__proto__ = Error.prototype;

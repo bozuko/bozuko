@@ -12,26 +12,29 @@ var transfer = module.exports = function(key, data, user, callback) {
     try{
         if( Array.isArray(data) ){
             var ret = [];
-	    return async.forEachSeries( data,
-	        function iterator(o, next){
-		    return transfer_objects[key].create(o, user, function( error, result){
-			if( error ) return next(error);
-			ret.push(result);
-			return next();
-		    });
-		},
+			return async.forEachSeries( data,
+				function iterator(o, next){
+					return transfer_objects[key].create(o, user, function( error, result){
+						if( error ) return next(error);
+						ret.push(result);
+						return next();
+					});
+				},
 
-	        function cb(error){
-		    if( error ) return callback( error );
-		    return callback( null, ret );
-		}
-	    );
+				function cb(error){
+					if( error ) return callback( error );
+					return callback( null, ret );
+				}
+			);
         }
         else{
-            return transfer_objects[key].create(data, user, function(error, result){
-		if( error ) return callback( error );
-		return callback( null, result );
-	    });
+			if( !(callback instanceof Function) ){
+				console.log([key,callback]);
+			}
+			return transfer_objects[key].create(data, user, function(error, result){
+				if( error ) return callback( error );
+				return callback( null, result );
+			});
         }
     }catch(e){
         return callback(e);
