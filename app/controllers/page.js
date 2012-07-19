@@ -131,7 +131,7 @@ exports.routes = {
             handler: function(req,res) {
                 var page_id = req.param('id');
                 if( !page_id ) return Bozuko.error('page/does_not_exist').send(res);
-                Bozuko.models.Page.findById(page_id, function(error, page) {
+                return Bozuko.models.Page.findById(page_id, function(error, page) {
                     if( error ) return error.send(res);
                     if( !page ) return Bozuko.error('page/does_not_exist').send(res);
 
@@ -142,7 +142,7 @@ exports.routes = {
                         if( error ) return error.send(res);
                         return Bozuko.transfer('page', page, req.session.user, function(error, result){
                             if (error) return error.send(res);
-                            res.send( result );
+                            return res.send( result );
                         });
                     });
                 });
@@ -154,6 +154,20 @@ exports.routes = {
             access : 'developer_private',
             handler : function(req, res){
                 
+                Bozuko.models.Page.apiCreate(req, function(error, page){
+                    if(page) page.registered = true;
+                    
+                    Bozuko.transfer('page_save_result', {
+                        success: error ? false : true,
+						errors: error ? error.errors : null,
+						error: error ? error.message : null,
+                        page: page
+                    }, req.session.user, function(error, result){
+                        if (error) return error.send(res);
+                        return res.send( result );
+                    });
+                });
+                
             }
         },
         
@@ -161,7 +175,19 @@ exports.routes = {
             
             access : 'developer_private',
             handler : function(req, res){
-                
+                Bozuko.models.Page.apiUpdate(req, function(error, page){
+                    if(page) page.registered = true;
+                    
+                    Bozuko.transfer('page_save_result', {
+                        success: error ? false : true,
+						errors: error ? error.errors : null,
+						error: String(error),
+                        page: page
+                    }, req.session.user, function(error, result){
+                        if (error) return error.send(res);
+                        return res.send( result );
+                    });
+                });
             }
         }
     },

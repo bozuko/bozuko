@@ -1,5 +1,5 @@
 process.env.NODE_ENV='test';
-var bozuko = require('../bozuko');
+var bozuko = require('../../bozuko');
 bozuko.getApp();
 var codePdf = require('../codePdf');
 

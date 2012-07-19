@@ -8,11 +8,13 @@ var fs = require('fs'),
 Bozuko = {};
 
 // override console.error so error logs have timestamps
+/*
 var errlog = console.error;
 console.error = function(msg) {
 	var e = msg instanceof Error ? msg : new Error();
 	errlog(new Date().toString() + " " + msg + "\nStacktrace:\n"+e.stack);
 };
+*/
 
 Bozuko.dir = fs.realpathSync(__dirname+'/..');
 
@@ -287,6 +289,7 @@ function initApplication(app){
     app.use(Bozuko.require('middleware/session')());
     app.use(Bozuko.require('middleware/mobile')());
 	// app.use(Bozuko.require('middleware/location')());
+	app.use(Bozuko.require('middleware/apikey')());
 	app.use(Bozuko.require('middleware/poweredby')());
 
     if (Bozuko.env() != 'test') {

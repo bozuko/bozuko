@@ -119,7 +119,7 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
                     if( v !== undefined ){
                         // Cast the value to the proper type.
                         var c = current[key];
-
+                        
                         if( c instanceof String || typeof c == 'string' ){
                             // check type
 

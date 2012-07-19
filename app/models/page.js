@@ -21,6 +21,7 @@ var _t = Bozuko.t,
 ;
 
 var Page = module.exports = new Schema({
+    apikey              :{type:ObjectId},
     children            :[ObjectId],
     is_enterprise       :{type:Boolean, default: false},
     category            :{type:String, index: true},
@@ -73,10 +74,7 @@ var Page = module.exports = new Schema({
     constantcontact_token       :{type:String},
     constantcontact_username    :{type:String},
     constantcontact_lists       :{type:Array},
-    constantcontact_activelists :{type:Array},
-    
-    // developer keys (introduced for some simple auth with our own integrations for now)
-    api_key                 :{type:String}
+    constantcontact_activelists :{type:Array}
     
 }, {safe: {j:true}});
 
@@ -487,6 +485,112 @@ Page.method('checkin', function(user, options, callback) {
             if( error ) return callback( error );
             return callback( null, checkin);
         });
+    });
+});
+
+Page.static('apiCreate', function(req, callback){
+    
+    var fb_id = req.param('facebook_id')
+      , E = Bozuko.error('api/page_create')
+      , place
+      , page
+      ;
+      
+    if(!fb_id){
+        return callback(E.error('facebook_id',"Facebook ID is required"));
+    }
+    
+    return async.series([
+        function find_duplicate_page(cb){
+            Bozuko.models.Page.findByService('facebook', fb_id, function(error, _page){
+                if(_page){
+                    return cb(E.error('facebook_id',"A page with this Facebook ID already exists."));
+                }
+                return cb();
+            });
+        },
+        function find_facebook_page(cb){
+            Bozuko.service('facebook').place({id:fb_id,fields:['location','link','name']}, function(error, _place){
+                if(error) {
+                    return cb(E.error('facebook_id',"Error getting Facebook Page"));
+                }
+                place = _place;
+                return cb();
+            });
+        },
+        function create_page(cb){
+            Bozuko.models.Page.createFromServiceObject(place, function(error, _page){
+                if(error) {
+                    return cb(E.error('facebook_id',"Error creating page"));
+                }
+                page = _page;
+                return cb();
+            });
+        },
+        function update_page(cb){
+            // custom name or image
+            ["name","image"].forEach(function(p){
+                var v;
+                if((v=req.param(p))) page[p] = v;
+            });
+            return page.save(function(error){
+                if(error) {
+                    return cb(E.error('facebook_id',"Error updating page"));
+                }
+                return cb();
+            });
+        }
+    ], function (error){
+        return callback(error, page);
+    });
+});
+
+Page.static('apiUpdate', function(req, callback){
+    
+    var E = Bozuko.error('api/page_update')
+      , page
+      ;
+    
+    async.series([
+        
+        function get_page(cb){
+            Bozuko.models.Page.findById(req.param('id'), function(error, p){
+                if( error || !p ) {
+                    E.message = "Page not found";
+                    return cb(E);
+                }
+                page = p;
+                return cb();
+            });
+        },
+        
+        function if_facebook_id(cb){
+            var fb_id = req.param('facebook_id');
+            if(!fb_id) return cb();
+            return Bozuko.service('facebook').place({id:fb_id,fields:['location','link','name']}, function(error, place){
+                if(error) {
+                    return cb(E.error('facebook_id',"Error getting Facebook Page"));
+                }
+                page.service(place.service, place.id, null, place.data);
+                return cb();
+            });
+        },
+        
+        function update_page(cb){
+            // custom name or image
+            ["name","image"].forEach(function(p){
+                var v;
+                if((v=req.param(p))) page[p] = v;
+            });
+            return page.save(function(error){
+                if(error) {
+                    return cb(E.error('facebook_id',"Error saving page"));
+                }
+                return cb();
+            });
+        }
+    ], function(error){
+        return callback(error, page);
     });
 });
 

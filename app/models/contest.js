@@ -30,6 +30,7 @@ function enum_engine_type(type) {
 };
 
 var Contest = module.exports = new Schema({
+    apikey                  :{type:ObjectId},
     page_id                 :{type:ObjectId, index :true},
     page_ids                :{type:[ObjectId], index: true},
     name                    :{type:String},
@@ -99,6 +100,9 @@ Contest.virtual('state')
     });
 
 Contest.method('getEntryConfig', function() {
+    if(!this.entry_config || !this.entry_config.length) {
+        this.entry_config = [{}]
+    }
     return this.entry_config[0];
 });
 
@@ -122,6 +126,306 @@ Contest.method('validate_', function(callback) {
     callback
     );
 });
+
+
+(function api_ops(){
+    
+    // check for types
+    var prize = {
+        name            :{
+            required        :true,
+            type            :'String'
+        },
+        description     :{
+            type            :'String'
+        },
+        value           :{
+            type            :'Number',
+            dfault          :0
+        },
+        quantity        :{
+            required        :true,
+            type            :'Number'
+        },
+        expiration      :{
+            type            :'Number'
+        },
+        hide_expiration :{
+            type            :'Boolean'
+        }
+    };
+    
+    var meta = {
+        page_id         :{
+            required        :true,
+            type            :'String'
+        },
+        type            :{
+            type            :'String',
+            dfault          :'scratch',
+            aliasFor        :'game'
+        },
+        start           :{
+            required        :true,
+            type            :'Date'
+        },
+        end             :{
+            required        :true,
+            type            :'Date'
+        },
+        prizes          :{
+            required        :true,
+            model           :Object,
+            type            :[prize],
+            validate        :function(v, name, obj, cb){
+                if(!v.length){
+                    return cb(null, false, "There must be at least one prize");
+                }
+                return cb(null, true);
+            }
+        },
+        consolation_prizes  :{
+            model           :Object,
+            type            :[prize],
+            dfault          :[]
+        },
+        theme           :{
+            type            :'String',
+            dfault          :'default',
+            mutate          :function(value, name, object, cb){
+                if(!object.game_config) object.game_config = {};
+                object.game_config.theme = value;
+                cb();
+            }
+        },
+        entry_duration  :{
+            type            :'Number',
+            dfault          :1000 * 60 * 60 * 24 /* 1 day */,
+            mutate          :function(value, name, object, cb){
+                object.getEntryConfig().duration = value;
+                cb();
+            }
+        },
+        entry_type      :{
+            type            :'String',
+            dfault          :'facebook/like',
+            options         :['facebook/like','facebook/likecheckin','facebook/checkin','bozuko/nothing'],
+            mutate          :function(value, name, object, cb){
+                object.getEntryConfig().type = value;
+                cb();
+            }
+        },
+        entry_plays     :{
+            type            :'Number',
+            dfault          :1,
+            mutate          :function(value, name, object, cb){
+                object.getEntryConfig().tokens = value;
+                cb();
+            }
+        },
+        rules           :{
+            type            :'String'
+        },
+        name            :{
+            type            :'String',
+            mutate          :function(value, name, object, cb){
+                if(!object.game_config) object.game_config = {};
+                object.game_config.name = value;
+                cb();
+            }
+        },
+        share_url       :{
+            type            :'String'
+        },
+        share_description   :{
+            type            :'String'
+        },
+        consolation_when    :{
+            type            :'String',
+            options         :['once','always'],
+            mutate          :function(value, name, object, cb){
+                if(!object.consolation_config) object.consolation_config = {};
+                object.consolation_config.when = value;
+                cb();
+            }
+        },
+        hide_consolations   :{
+            type            :'Boolean'
+        },
+        ingame_copy     :{
+            type            :"String"
+        }
+    };
+
+    
+    function validate_and_apply(meta, values, object, callback){
+        var errors = {}
+          , no_required = values.id
+          ;
+        
+        return async.forEachSeries(Object.keys(meta), function validate(name, cb){
+            
+            var c = meta[name]
+              , v = values[name]
+              , valid = true
+              ;
+              
+            return async.series([
+                
+                function required(cb){
+                    if(no_required) return cb();
+                    if(v === undefined && c.required){
+                        errors[name] = 'This field is required';
+                    }
+                    if( errors.length ) return cb("require fail");
+                    return cb();
+                },
+                
+                function filter(cb){
+                    if( v === undefined ) return cb();
+                    if( c.type == 'Date' && typeof v == 'string' ){
+                        v = new Date(v);
+                    }
+                    else if( typeof c.type == 'string' && typeof v != c.type.toLowerCase() ){
+                        errors[name] = "Ivalid type - "+c.type+" expected";
+                        return cb(new Error("Invalid Type"));
+                    }
+                    else if( c.type instanceof Array){
+                        if( v instanceof Array){
+                            var e = []
+                              , n = []
+                              ;
+                            return async.forEachSeries(v, function(cur, cb) {
+                                var o = new c.model;
+                                if(cur.id){
+                                    o = object[name].id(cur.id);
+                                }
+                                return validate_and_apply(c.type[0], cur, o, function(error, success, ob, es){
+                                    e.push(es);
+                                    n.push(o);
+                                    cb(error);
+                                });
+                            }, function(error){
+                                var hasErrors = false;
+                                e.forEach(function(es){
+                                    if(es) hasErrors = true;
+                                });
+                                if( hasErrors ) errors[name] = e;
+                                v = n;
+                                return cb(error);
+                            });
+                        }
+                        else {
+                            errors[name] = "Ivalid type - Array expected";
+                            return cb(new Error("Invalid Type"));
+                        }
+                    }
+                    return cb();
+                },
+                
+                function validator(cb){
+                    
+                    if(v !== undefined && c.options && !~c.options.indexOf(v) ){
+                        valid = false;
+                        errors[name] = "Invalid option";
+                        return cb("error");
+                    }
+                    
+                    if(v === undefined || !c.validate) return cb();
+                    
+                    return c.validate(v, name, object, function(error, success, message){
+                        if(valid && !success) valid = false;
+                        if(!success) errors[name] = message;
+                        return cb(error);
+                    });
+                },
+                
+                function mutator(cb){
+                    if(v === undefined ){
+                        if( c.dfault ){
+                            v = c.dfault;
+                        }
+                    }
+                    if(v === undefined ){
+                        return cb();
+                    }
+                    if(c.mutate) return c.mutate(v, name, object, cb);
+                    object[c.aliasFor || name] = v;
+                    return cb();
+                }
+                
+            ], function(error){
+                return cb();
+            });
+            
+        }, function (error){
+            
+            if(Object.keys(errors).length) return callback(null, false, null, errors);
+            return callback( error, true, object );
+        });
+    }
+
+    Contest.static('apiCreate', function(req, callback){
+        
+        var E = Bozuko.error('api/game_create')
+          , page_id = req.param('page_id')
+          , game
+          ;
+          
+        if(!page_id){
+            return callback(E.error('page_id',"Page ID is required"));
+        }
+        
+        var g = new Bozuko.models.Contest;
+        
+        var values = {};
+        Object.keys(meta).forEach(function(k){
+            values[k] = req.param(k);
+        })
+        
+        return validate_and_apply(meta, values, g, function(error, success, game, errors){
+            if(!success){
+                E.errors(errors);
+                return callback(E);
+            }
+            return game.save(callback);
+        });
+    });
+    
+    Contest.static('apiUpdate', function(req, callback){
+        
+        var E = Bozuko.error('api/game_update')
+          , id = req.param('id')
+          , game
+          ;
+          
+        if(!id){
+            return callback(E.error('id',"Game ID is required"));
+        }
+        
+        return Bozuko.models.Contest.findById(id, function(error, g){
+            
+            if(error || !g){
+                return callback(E.error('id',"Game ID not found"));
+            }
+            
+            var values = {};
+            Object.keys(meta).forEach(function(k){
+                values[k] = req.param(k);
+            });
+            values.id = id;
+            
+            return validate_and_apply(meta, values, g, function(error, success, game, errors){
+                if(!success){
+                    E.errors(errors);
+                    return callback(E);
+                }
+                return game.save(callback);
+            });
+        });
+    });
+    
+})();
 
 Contest.method('validateEntriesAndPlays', function(callback) {
     var status = { errors: [], warnings: [] };
@@ -271,12 +575,12 @@ Contest.method('getOfficialRules', function(){
         return b.value - a.value;
     });
     var total = 0, total_plays = this.getTotalPlays();
+    
     prizes.forEach(function(prize, i){
         var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
         prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
         if( prize.details ) prizes_str+= prizes.details+' ';
-        var gcd = getGCD( prize.total, self.total_plays );
-
+        //var gcd = getGCD( prize.total, self.total_plays );
         switch(self.engine_type){
             case 'order':
                 prizes_str+= 'Odds of winning are 1 / '+(total_plays/prize.total).toFixed(2)+' per play. ';
@@ -289,6 +593,8 @@ Contest.method('getOfficialRules', function(){
         
         total += (prize.value * prize.total);
     });
+    
+    
 
     consolation_prizes.forEach(function(prize, i){
         var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';

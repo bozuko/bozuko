@@ -244,6 +244,7 @@ exports.routes = {
             access: 'user',
 
             handler: function(req, res) {
+                
                 // a get request is just all favorites
                 // we need to have the token by now...
                 var token = req.param('token');
@@ -262,6 +263,7 @@ exports.routes = {
         put: {
             access: 'user',
             handler: function(req, res) {
+                console.log('hi');
                 var id = req.param('id');
                 var user = req.session.user;
                 var favorites = user.favorites;

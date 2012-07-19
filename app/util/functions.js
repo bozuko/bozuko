@@ -66,7 +66,6 @@ function htmlEntities(str) {
 }
 
 function httpsUrl(url){
-    console.log(url);
     if( !url ) return url;
     if( url.match(/^http\:/) ){
         if( url.match(/graph\.facebook\.com/) ){

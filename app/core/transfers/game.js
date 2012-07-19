@@ -1,8 +1,15 @@
-var burl = Bozuko.require('util/url').create;
+var burl = Bozuko.require('util/url').create
+  , merge = Bozuko.require('util/object').merge
+  ;
 
 var game_prize = {
     doc: "A prize that can be won in a game",
     def: {
+        id: 'String',
+        quantity:'Number',
+        value:'Number',
+        expiration:'Number',
+        hide_expiration:'Boolean',
         name: "String",
         description: "String",
         result_image: "String"
@@ -97,13 +104,21 @@ var game = {
     doc: "A Game Object - the game config will differ depending on the game.",
     def:{
         id: "String",
+        url: "String",
         type: "String",
         name: "String",
+        start: "String",
+        end: "String",
         ingame_copy: 'String',
         post_to_wall: 'Boolean',
         share_url : 'String',
         share_title: 'String',
         share_description: 'String',
+        theme:'String',
+        entry_duration:'Number',
+        entry_type:'String',
+        entry_plays:'Number',
+        consolation_when:'String',
         image: "String",
         description: "String",
         list_message: "String",
@@ -116,6 +131,7 @@ var game = {
         consolation_prizes:['game_prize'],
         hide_consolations: 'Boolean',
         rules: "String",
+        // developer fields
         links: {
             login: "String",
             page: "String",
@@ -124,12 +140,18 @@ var game = {
     },
 
     create : function(game, user, callback){
-
+        var apikey=false;
+        if( user instanceof Bozuko.models.Apikey ){
+            apikey = user;
+            user = false;
+        }
         // load the prizes up...
         var self = this,
             obj = {};
+            
         obj = this.merge(obj, game.contest);
         obj = this.merge(obj, game);
+        obj.url = burl('/'+game.contest.page_id+'/'+game.contest._id);
         obj.rules = game.contest.getOfficialRules();
         obj.id = game.contest.id;
         if( game.contest.web_only ){
@@ -148,16 +170,27 @@ var game = {
         obj.prizes = game.getPrizes();
         obj.image = game.getListImage();
         obj.list_message = game.contest.getListMessage();
-        return game.contest.getEntryMethodDescription(user, game.contest.game_state.page_id, function(error, description){
+        
+        if(apikey){
+            
+            var ec = game.contest.getEntryConfig();
+            obj.entry_duration = ec.duration;
+            obj.entry_type = ec.type;
+            obj.entry_plays = ec.tokens;
+            if(game.contest.consolation_config)
+                obj.consolation_when = game.contest.consolation_config.when
+        }
+        
+        var page_id = game.contest.game_state ? game.contest.game_state.page_id : game.contest.page_id;
+        return game.contest.getEntryMethodDescription(user, page_id, function(error, description){
             if (error) return callback(error);
             obj.entry_method.description = description;
             obj.entry_method.image = game.contest.getEntryMethod(user).image;
             // obj.can_play = obj.game_state.user_tokens > 0;
             obj.links = {
-                page: '/page/'+game.contest.game_state.page_id,
+                page: '/page/'+page_id,
                 game: '/game/'+game.contest.id
             };
-            
             return self.sanitize(obj, null, user, callback);
         });
     }
@@ -260,6 +293,99 @@ exports.transfer_objects = {
     game_prize: game_prize
 };
 
+var game_params = {
+    type : {
+        type: "String",
+        description: "Game Type (only 'scratch' right now)"
+    },
+    start : {
+        type : "Date",
+        description : "The start time of the game - UTCString"
+    },
+    end : {
+        type : "Date",
+        description : "The end time of the game - UTCString"
+    },
+    theme : {
+        type : "String",
+        description : "The theme name (or URL of a theme bg)"
+    },
+    entry_duration : {
+        type: "Number",
+        description: "How often a user can enter (ms)"
+    },
+    entry_type : {
+        type: "String",
+        description: "The method of entry (must be one of the following: like, likecheckin, checkin, nothing)"
+    },
+    entry_plays : {
+        type: "Number",
+        description: "Number of plays a user receives per entry"
+    },
+    rules : {
+        type: "String",
+        description: "If this is left blank, the default rules will be used."
+    },
+    name : {
+        type: "String",
+        description: "The name of the Game / Scratch Ticket (defaults to 'Match 3')."
+    },
+    share_url : {
+        type: "String",
+        description: "The URL for the facebook share - defaults to the link for the game."
+    },
+    share_title : {
+        type: "String",
+        description: "The title in the Facebook Share"
+    },
+    share_description : {
+        type: "String",
+        description: "The description of the Facebook Share"
+    },
+    prizes : {
+        type: "Array",
+        description: [
+            "An array of the possible prizes.<br />",
+            "Each prize is an object with the following properties:",
+            "<ul>",
+                "<li><strong>name</strong> String</li>",
+                "<li><strong>description</strong> String</li>",
+                "<li><strong>value</strong> Number</li>",
+                "<li><strong>quantity</strong> Number</li>",
+                "<li><strong>hide_expiration</strong> Boolean</li>",
+                "<li><strong>expiration</strong> Number - Number of ms prize is active after winning.</li>",
+            "</ul>"
+        ].join('\n')
+    },
+    consolation_prizes : {
+        type: "Array",
+        description: [
+            "An array of the possible prizes. IMPORTANT! Only one consolation prize is supported right now.<br />",
+            "Each prize is an object with the following properties:",
+            "<ul>",
+                "<li><strong>name</strong> String</li>",
+                "<li><strong>description</strong> String</li>",
+                "<li><strong>value</strong> Number</li>",
+                "<li><strong>quantity</strong> Number</li>",
+                "<li><strong>hide_expiration</strong> Boolean</li>",
+                "<li><strong>expiration</strong> Number - Number of ms prize is active after winning.</li>",
+            "</ul>"
+        ].join('\n')
+    },
+    consolation_when : {
+        type: "String",
+        description : "Either 'once' or 'always'"
+    },
+    hide_consolations : {
+        type: "Boolean",
+        description : "Do not display consolation prizes on the prize list in the game description"
+    },
+    ingame_copy : {
+        type: "String",
+        description : "HTML copy to display on the game, below the prize list."
+    }
+};
+
 exports.links = {
     game: {
         get: {
@@ -269,12 +395,19 @@ exports.links = {
         
         put: {
             access: 'developer_private',
-            returns: 'game_save_result'
+            returns: 'game_save_result',
+            params : merge({
+                page_id : {
+                    type : "String",
+                    description : "The page ID",
+                    required : true
+                }
+            }, game_params)
         },
-        
         post: {
             access: 'developer_private',
-            returns: 'game_save_result'
+            returns: 'game_save_result',
+            params: game_params
         }
     },
     

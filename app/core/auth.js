@@ -67,6 +67,7 @@ auth.check = function(access, callback) {
  * Note: Each layer should operate independent of the order the layers are run.
  */
 auth.user = function(req, res, callback) {
+    console.log('hello');
     if( !req.session.user ){
         return callback(Bozuko.error('bozuko/auth'));
     }
@@ -158,7 +159,7 @@ auth.developer = function(req, res, callback){
             return callback();
         }
         return Bozuko.models.Apikey.findOne({key: api_key}, function(error, apikey){
-            if( !error && count ){
+            if( !error && apikey ){
                 req.api_user = true;
                 req.api_key = apikey;
                 return callback();
@@ -169,35 +170,21 @@ auth.developer = function(req, res, callback){
 };
 
 auth.developer_public = function(req, res, callback){
-    var api_key = req.param('api_key')
-      ;
     
-    return Bozuko.models.Apikey.findOne({key: api_key}, function(error, key){
-        if( !error && key ){
-            req.api_key = key;
-            req.session.user = api_key;
-            return callback();
-        }
-        return callback(Bozuko.error('auth/developer'));
-    });
+    if( req.apikey ){
+        return callback();
+    }
+    return callback(Bozuko.error('auth/developer'));
 };
 
 auth.developer_private = function(req, res, callback){
-    var api_key = req.param('api_key')
-      , api_secret = req.param('api_secret')
-      ;
-    
-    return Bozuko.models.Apikey.findOne({key: api_key, secret: api_secret}, function(error, key){
-        if( !error && count ){
-            req.session.user = api_key;
-            return callback();
-        }
-        return callback(Bozuko.error('auth/developer'));
-    });
+    if( req.apikey && req.apikey.isPrivate() ){
+        return callback();
+    }
+    return callback(Bozuko.error('auth/developer'));
 };
 
 auth.mobile = function(req, res, callback) {
-
 
     var user = req.session.user;
     if( !user ){
