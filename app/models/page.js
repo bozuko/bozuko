@@ -21,7 +21,7 @@ var _t = Bozuko.t,
 ;
 
 var Page = module.exports = new Schema({
-    apikey              :{type:ObjectId},
+    apikey_id           :{type:ObjectId},
     children            :[ObjectId],
     is_enterprise       :{type:Boolean, default: false},
     category            :{type:String, index: true},
@@ -492,6 +492,7 @@ Page.static('apiCreate', function(req, callback){
     
     var fb_id = req.param('facebook_id')
       , E = Bozuko.error('api/page_create')
+      , apikey = req.apikey
       , place
       , page
       ;
@@ -524,6 +525,7 @@ Page.static('apiCreate', function(req, callback){
                     return cb(E.error('facebook_id',"Error creating page"));
                 }
                 page = _page;
+                page.apikey = apikey._id;
                 return cb();
             });
         },

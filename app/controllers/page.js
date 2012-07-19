@@ -2,6 +2,7 @@ var async = require('async'),
     qs = require('querystring'),
     http = Bozuko.require('util/http'),
     Geo = Bozuko.require('util/geo'),
+	XRegExp = Bozuko.require('util/xregexp'),
     URL = require('url'),
     mailer = Bozuko.require('util/mail'),
     indexOf = Bozuko.require('util/functions').indexOf,
@@ -22,12 +23,39 @@ exports.routes = {
         get: {
 
             handler: function(req,res) {
+				
+				
                 var ll = req.param('ll');
                 var accuracy = req.param('accuracy');
                 var bounds = req.param('bounds');
                 var service = req.param('service');
                 var query = req.param('query');
                 var favorites = req.param('favorites');
+				
+				// if we are an api guy, only get their own stuff
+				if(req.apikey){
+					var selector = {
+						apikey_id: req.apikey._id
+					};
+					if(query) selector.name = new RegExp('(^|\\s)'+XRegExp.escape(options.query), "i");
+					
+					return Bozuko.models.Page.count(selector, function(error, count){
+						
+						var opts = {
+							limit: parseInt(req.param('limit')) || 25,
+							offset: parseInt(req.param('offset')) || 0
+						};
+						
+						return Bozuko.models.Page.find(selector, {}, opts, function(error, pages){
+							if(error) return error.send(res);
+							var ret = pages;
+							return Bozuko.transfer('pages', ret, req.session.user, function(error, result){
+								if (error) return error.send(res);
+								return res.send( result );
+							});
+						});
+					});
+				}
 
                 if( req.param('throw_error')){
                     throw new Error('intentional error');
@@ -117,7 +145,7 @@ exports.routes = {
                         return Bozuko.transfer('pages', ret, req.session.user, function(error, result){
                             profiler.mark('after transfer');
                             if (error) return error.send(res);
-                            res.send( result );
+                            return res.send( result );
                         });
                     }
                 );
