@@ -135,6 +135,8 @@ TimeEngine.prototype.redistributeResult = function(memo, callback) {
             if (result) {
                 console.log("contest: "+self.contest._id+" timestamp redistributed from "+
                     result.timestamp+" to "+memo.new_time+" at "+memo.timestamp);
+                console.log('memo.max_lookback = '+memo.max_lookback);
+                console.log('engine instance = ', inspect(self)); 
 
                 self.incrementRedistributionsForAnalytics();
             }
