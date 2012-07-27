@@ -12,7 +12,7 @@ var Result = module.exports = new Schema({
     index           :{type:Number},
     code            :{type:String},
     count           :{type:Number},
-    timestamp       :{type:Date, index: {sparse: true}},
+    timestamp       :{type:Date, index: true},
     history         :[], // old timestamps so we can track movement
     win_time        :{type:Date, index: true}
 });

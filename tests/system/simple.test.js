@@ -58,18 +58,19 @@ exports['page tests'] = {
                 
                 test.done();
             });
-    },
-
-    'get page by bounds' : function(test){
-        assert.response(test, Bozuko.app,
-            {url: pages_link+'/?bounds=42.631243,-71.331739,42.655803,-71.293201&ll=42.646261785714,-71.303897114286&token='+token},
-            ok,
-            function(res) {
-                var result = JSON.parse(res.body);
-                test.equal(result.pages.length, 2);
-                test.done();
-            });
     }
+//    ,
+//
+//    'get page by bounds' : function(test){
+//        assert.response(test, Bozuko.app,
+//            {url: pages_link+'/?bounds=42.631243,-71.331739,42.655803,-71.293201&ll=42.646261785714,-71.303897114286&token='+token},
+//            ok,
+//            function(res) {
+//                var result = JSON.parse(res.body);
+//                test.equal(result.pages.length, 2);
+//                test.done();
+//            });
+//    }
 };
 
 exports['favorite tests'] = {
