@@ -847,8 +847,10 @@ Contest.method('doPublish', function(callback) {
         }
     ], function(err) {
         self.active = true;
-        Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
-        return callback( null, self);
+        return self.save( function(error){
+            Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
+            return callback( error, self);
+        })
     });
 });
 
@@ -858,9 +860,7 @@ Contest.method('publish', function(callback){
 
     if (this.start.getTime() < Date.now()) {
         this.start = new Date();
-        return this.save(function(err) {
-            self.doPublish(callback);
-        });
+        return self.doPublish(callback);
     }
     
     self.doPublish(callback);
