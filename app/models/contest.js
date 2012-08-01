@@ -22,7 +22,8 @@ var mongoose = require('mongoose'),
     jade = require('jade'),
     NextContest = require('./embedded/contest/next_contest')
 ;
-var safe = {j:true};
+
+var safe = Bozuko.env() === 'test' ? false : {j:true};
 
 function enum_engine_type(type) {
     if (type !== 'order' && type !== 'time') return 'order';
@@ -694,11 +695,6 @@ Contest.method('getTotalPlays', function(){
     return this.getTotalEntries() * this.getEntryConfig().tokens;
 });
 
-/**
- * Create the results array
- *
- * @public
- */
 Contest.method('generateResults', function(callback){
     var self = this;
 
@@ -806,13 +802,7 @@ Contest.method('totalPrizes', function() {
     return total;
 });
 
-/**
- * Publish the contest
- *
- * @public
- */
-Contest.method('publish', function(callback){
-    var self = this;
+Contest.method('setTotalEntriesIfOrder', function() {
     // compute the number of entries based on the win frequency
     // first we need to get the total number of prizes
     var total_prizes = 0;
@@ -827,34 +817,53 @@ Contest.method('publish', function(callback){
             this.total_entries = Math.ceil(total_prizes * this.win_frequency);
         }
     }
+});
 
-    function publishResults() {
-        // Remove this entry restriction after beta (when we have pricing)
-        Bozuko.models.Page.findOne({_id: self.page_id}, {name: 1}, function(err, page) {
-            if (err) return callback(err);
-            if (!err && page && page.name != 'Bozuko' && page.name != 'Demo Games' && page.name != 'Admin Demo'
-                && self.total_entries > 1500 && this.engine_type === 'order') {
-                    return callback(Bozuko.error('contest/max_entries', 1500));
-            }
-            self.active = true;
-            return self.generateResults(function(error){
-                if( error ) return callback(error);
-                return self.generateBarcodes(function(err) {
-                    if (err) return callback(err);
-                    Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
-                    return callback( null, self);
-                });
-            });
-        });
-    }
+Contest.method('limitEntriesForOrder', function(callback) {
+    var self = this;
+    // Remove this entry restriction after beta (when we have pricing)
+    Bozuko.models.Page.findOne({_id: self.page_id}, {name: 1}, function(err, page) {
+        if (err) return callback(err);
+        if (!err && page && page.name != 'Bozuko' 
+            && page.name != 'Demo Games' && page.name != 'Admin Demo'
+            && self.total_entries > 1500 && this.engine_type === 'order') {
+                return callback(Bozuko.error('contest/max_entries', 1500));
+        }
+        callback();
+    });
+});
+
+Contest.method('doPublish', function(callback) {
+    var self = this;
+    async.series([
+        function(cb) {
+            self.limitEntriesForOrder(cb);
+        },
+        function(cb) {
+            self.generateResults(cb);
+        },
+        function(cb) {
+            self.generateBarcodes(cb);
+        }
+    ], function(err) {
+        self.active = true;
+        Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
+        return callback( null, self);
+    });
+});
+
+Contest.method('publish', function(callback){
+    var self = this;
+    this.setTotalEntriesIfOrder();
+
     if (this.start.getTime() < Date.now()) {
         this.start = new Date();
         return this.save(function(err) {
-            return publishResults();
+            self.doPublish(callback);
         });
     }
     
-    return publishResults();
+    self.doPublish(callback);
 });
 
 /**
@@ -1219,42 +1228,6 @@ Contest.method('play', function(memo, callback){
     });
 });
 
-Contest.method('noLookbackQuery', function(memo) {
-    return {
-        contest_id: this._id,
-        timestamp: {$lte: memo.timestamp},
-        win_time: {$exists: false}
-    };
-});
-
-Contest.method('lookbackQuery', function(memo) {
-    return {
-        contest_id: this._id,
-        $and: [{timestamp: {$gt: memo.max_lookback}}, {timestamp: {$lte: memo.timestamp}}],
-        win_time: {$exists: false}
-    };
-});
-
-Contest.method('getTimeResult', function(memo, callback) {
-    var self = this;
-    return Bozuko.models.Result.findAndModify(
-        memo.query,
-        [['timestamp', 'asc']],
-        {$set: {win_time: memo.timestamp, user_id: memo.user._id, entry_id: memo.entry._id}},
-        {new: true, safe: safe},
-        function(err, result) {
-            if (err) return callback(err);
-            memo.result = result;
-            if (memo.result) return callback(null, memo);
-            memo.new_time = self.getEngine().redistribute(memo.timestamp);
-            if (memo.new_time) {
-                return self.redistributeTimeResult(memo, callback);
-            }
-            return callback(null, memo);
-        }
-    );
-});
-
 Contest.method('getOrderResult', function(memo, callback) {
     var query = {_id: memo.contest._id};
     query['results.'+memo.play_cursor] = {$exists: true};
@@ -1290,38 +1263,6 @@ Contest.method('incrementPlayCursor', function(memo, callback) {
 
 });
 
-Contest.method('redistributeTimeResult', function(memo, callback) {
-    var self = this;
-    return Bozuko.models.Result.findAndModify(
-        {contest_id: this._id, win_time: {$exists: false}, timestamp: {$lt: memo.max_lookback}},
-        [['timestamp', 'asc']],
-        {$push: {history: {timestamp: memo.new_time, move_time: memo.timestamp}}, $set: {timestamp: memo.new_time}},
-        {new: false, safe: safe},
-            function(err, result) {
-            if (err) return callback(err);
-            if (result) {
-                console.log("contest: "+self._id+" timestamp redistributed from "+
-                    result.timestamp+" to "+memo.new_time+" at "+memo.timestamp);
-                // For Analytics
-                Bozuko.models.Contest.update(
-                    {_id: self._id},
-                    {$inc: {redistributions: 1}},
-                    function(err) {
-                        if (err) console.error('Redistribution analytics error: '+err);
-                        else Bozuko.publish('contest/redistribute', {
-                            contest_id: self._id,
-                            contest_name: self.name,
-                            restributions: self.redistributions
-                        });
-                    }
-                );
-            }
-            return callback(null, memo);
-        }
-    );
-});
-
-
 Contest.method('processResult', function(memo, callback) {
     var result = memo.result;
     memo.win = result ? true : false;
@@ -1341,9 +1282,6 @@ Contest.method('processResult', function(memo, callback) {
     memo.prize_code = result ? result.code : false;
     memo.prize_count = result ? result.count : false;
     memo.free_play = false;
-
-    console.log('memo.win = '+memo.win);
-    console.log('contest.win_frequency = '+this.win_frequency);
 
     if (memo.win && this.win_frequency == 1) {
       console.log('memo.entry');
