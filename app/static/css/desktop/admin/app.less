@@ -61,3 +61,50 @@
         background: #d5eaf9;
     }
 }
+
+.theme-list {
+    
+    .theme {
+        
+        float: left;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #d8d8d8;
+        text-align: center;
+        margin: 4px;
+    }
+    
+    .x-item-selected {
+        background: #d1f0ff;
+    }
+    
+    .name {
+        margin-top: 4px;
+    }
+    
+    .preview {
+        width: 150px;
+        position: relative;
+        
+        img { display: block; }
+        
+        .bg {
+            position: relative;
+            width: 100%;
+            z-index: 2;
+        }
+        
+        .logo {
+            position: absolute;
+            z-index: 1;
+            top: 2.5%;
+            left: 3.1%;
+            height: 18.8%;
+            -webkit-transform:rotate(-15deg);
+            -moz-transform:rotate(-15deg);
+            -ms-transform:rotate(-15deg);
+            -o-transform:rotate(-15deg);
+            transform:rotate(-15deg);
+        }
+    }
+}

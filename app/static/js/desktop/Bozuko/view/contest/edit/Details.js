@@ -78,6 +78,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             })
         },{
             xtype           :'textfield',
+            name            :'redirect_url',
+            fieldLabel      :'Redirect Url'
+        },{
+            xtype           :'textfield',
             name            :'share_url',
             fieldLabel      :'Share Url',
             emptyText       :'Leave empty for share pages to go to default page.'

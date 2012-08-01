@@ -267,6 +267,80 @@ exports.routes = {
             }
         }
     },
+	
+	'/game/:id/publish' : {
+		
+		post : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				// get the game
+				Bozuko.models.Contest.findById( req.param('id'), function(error, contest){
+					if(error) return error.send(res);
+					if(!contest) return Bozuko.transfer('game_publish_result', {
+						error: 'Game not found',
+						success: false
+					}, null, function(error, result){
+						return res.send(error||result);
+					});
+					if(contest.state != 'draft') return Bozuko.transfer('game_publish_result', {
+						error: 'Game already published',
+						success: false
+					}, null, function(error, result){
+						return res.send(error||result);
+					});
+					return contest.loadGameState({user:null, page_id:contest.page_id}, function(error){
+						if(error) return error.send(res);
+						return contest.publish(function(error){
+							return Bozuko.transfer('game_publish_result', {
+								error: error ? error.message : null,
+								success: error ? false : true,
+								game : error ? null : contest
+							}, null, function(error, result){
+								return res.send(error||result);
+							});
+						});
+					});
+				});
+			}
+		}
+	},
+	
+	'/game/:id/cancel' : {
+		
+		post : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				// get the game
+				Bozuko.models.Contest.findById( req.param('id'), function(error, contest){
+					if(error) return error.send(res);
+					if(!contest) return Bozuko.transfer('game_cancel_result', {
+						error: 'Game not found',
+						success: false
+					}, null, function(error, result){
+						return res.send(error||result);
+					});
+					if(contest.state != 'active' && contest.state != 'published') return Bozuko.transfer('game_cancel_result', {
+						error: 'Cannot cancel',
+						success: false
+					}, null, function(error, result){
+						return res.send(error||result);
+					});
+					return contest.loadGameState({user:null, page_id:contest.page_id}, function(error){
+						if(error) return error.send(res);
+						return contest.cancel(function(error){
+							return Bozuko.transfer('game_cancel_result', {
+								error: error ? error.message : null,
+								success: error ? false : true,
+								game : error ? null : contest
+							}, null, function(error, result){
+								return res.send(error||result);
+							});
+						});
+					});
+				});
+			}
+		}
+	},
 
     '/game/:id/state' : {
 
@@ -323,8 +397,10 @@ exports.routes = {
 					
 					default_url = default_url.replace(/\/api\./, '/');
 					
-					var redirect = default_url;
-					if(type!='touch' && contest.share_url ) redirect = contest.share_url;
+					var redirect = default_url
+					  , change_time = new Date('2012-07-30 12:00:00')
+					  ;
+					if((contest.get('start') > change_time || type!='touch') && contest.share_url ) redirect = contest.share_url;
 					/*
 					 
 					Well... this would be cool because we could track it in Google Analytics..
@@ -354,5 +430,33 @@ exports.routes = {
                 });
             }
         }
-    }
+    },
+	
+	'/themes' : {
+		get : {
+			access : 'developer_public',
+			handler : function( req, res ){
+				var limit = req.param('limit') || 25
+				  , offset = req.param('offset') || 0
+				  ;
+				return Bozuko.models.Theme.count(function(error,count){
+					if( error ) return error.send(res);
+					return Bozuko.models.Theme.find()
+						.sort('name', 1)
+						.limit( limit )
+						.skip( offset )
+						.exec(function(error, themes){
+							if( error ) return error.send( res );
+							return Bozuko.transfer('themes', {themes:themes, count: count, limit: limit, offset: offset}, null, function( error, result ){
+								var cb;
+								if( (cb = req.param('callback')) ){
+									return res.send( cb+'('+JSON.stringify( error || result )+');' );
+								}
+								return res.send( error || result );
+							});
+						});
+				});
+			}
+		}
+	}
 };
