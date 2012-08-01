@@ -115,6 +115,7 @@ exports['get results'] = function(test) {
     Bozuko.models.Result.find({contest_id: contest._id}, function(err, res) {
         test.ok(!err);
         results = res;
+        console.log(results.length);
         test.done();
     });
 };
@@ -151,11 +152,13 @@ exports['play 10 more times and lose'] = function(test) {
             user: user,
             timestamp: new Date(results[results.length-1].timestamp.getTime()+i*100)
         };
+        console.log('before play');
         contest.play(opts, function(err, memo) {
             i++;
+        console.log('after play');
             test.ok(!err);
             test.ok(!memo.result);
-            return cb(null);
+            return cb();
         });
     }, function(err) {
         test.done();
@@ -204,7 +207,6 @@ function enter_and_play(memo, callback) {
             return contest.play(m, function(err, result) {
                 if (err) return cb(err);
                 if (result.result) {
-                    console.log("memo.wins.length = "+memo.wins.length);
                     memo.wins.push(ts);
                     wins++;
                 } else {
