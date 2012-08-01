@@ -40,6 +40,11 @@ TimeEngine.prototype.setOpts = function(opts) {
 TimeEngine.prototype.configure = function(opts) {
     this.setOpts(opts);
 
+    // TODO: Remove this hardcode when frontend bug is fixed
+    if (Bozuko.env() !== 'test') {
+        this.window_divisor = 0.001;
+    }
+
     var totalContestLength = this.contest.end.getTime() - this.contest.start.getTime();
 
     // Leave a buffer at the end so users can always win the last prizes.
