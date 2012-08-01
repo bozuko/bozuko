@@ -1,0 +1,111 @@
+.themechooser {
+  text-align: center;
+  width: 172px;
+}
+.bozuko-theme-chooser .theme {
+  display: inline-block;
+  background: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+.bozuko-theme-chooser .x-item-selected {
+  background: #d1f0ff;
+}
+.bozuko-theme-chooser .name {
+  margin-top: 4px;
+}
+.bozuko-theme-chooser .preview {
+  width: 150px;
+  position: relative;
+}
+.bozuko-theme-chooser .preview img {
+  display: block;
+}
+.bozuko-theme-chooser .preview .bg {
+  position: relative;
+  width: 100%;
+}
+.bozuko-theme-chooser .preview .logo {
+  position: absolute;
+  top: 2.5%;
+  left: 3.1%;
+  height: 18.8%;
+  -webkit-transform: rotate(-15deg);
+  -moz-transform: rotate(-15deg);
+  -ms-transform: rotate(-15deg);
+  -o-transform: rotate(-15deg);
+  transform: rotate(-15deg);
+}
+.themechooser-btn {
+  margin-top: 10px;
+}
+.themechooser-modal-bg {
+  background: #000;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: #000;
+  opacity: .33;
+  z-index: 1000000;
+  display: none;
+}
+.themechooser-modal-dialog-ct {
+  z-index: 1000001;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: none;
+}
+.themechooser-modal-dialog {
+  background: #fff;
+  border-radius: 10px;
+  border: 3px solid #999;
+  margin: 0 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+.themechooser-modal .themechooser-modal-bg,
+.themechooser-modal .themechooser-modal-dialog-ct {
+  display: block;
+}
+.themechooser-modal-title {
+  text-align: left;
+  color: #333;
+}
+.themechooser-modal-header {
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+.themechooser-modal-body {
+  position: relative;
+  overflow: auto;
+  max-height: 250px;
+  _height: 250px;
+  background: #e3e3e3;
+  padding: 5px;
+}
+.themechooser-modal-body .theme {
+  cursor: pointer;
+  float: left;
+  margin: 5px;
+}
+.themechooser-modal-body .selected {
+  background: #b2dcef;
+  border-color: #0065ef;
+}
+.themechooser-modal-footer {
+  text-align: center;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+.themechooser-modal-footer button {
+  margin: 0 6px;
+}

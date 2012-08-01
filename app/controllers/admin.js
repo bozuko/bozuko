@@ -708,6 +708,80 @@ exports.routes = {
                 });
             }
         }
+    },
+    
+    '/admin/theme/:id?' : {
+        get : {
+            handler : function(req, res){
+                
+                var limit = req.param('limit')
+                  , start = req.param('start')
+                  , id = req.param('id')
+                  , ret = {}
+                  , selector = {}
+                  ;
+                
+                if( id ) selector.id = id;
+                
+                async.series([
+                    function get_count(cb){
+                        return Bozuko.models.Theme.count(selector, function(error, count){
+                            if(error) return cb(error);
+                            ret.total = count;
+                            return cb();
+                        });
+                    },
+                    function get_items(cb){
+                        return Bozuko.models.Theme.find(selector, {}, {limit:limit,skip:start}, function(error, themes){
+                            if(error) return cb(error);
+                            ret.items = themes;
+                            return cb();
+                        });
+                    }
+                ], function(e){
+                    if(e) e.send(res); //.send(e);
+                    res.send(ret);
+                });
+                
+            }
+        },
+        
+        post : {
+            handler : function(req, res){
+                delete req.body._id;
+                delete req.body.id;
+                if( !req.body.apikey_id ) delete req.body.apikey_id;
+                var theme = new Bozuko.models.Theme(req.body);
+                theme.save(function(err){
+                    if(err) return res.send({success:false, error: err});
+                    return res.send({success: !err, items:[theme], total:1});
+                });
+            }
+        },
+        
+        put : {
+            handler : function(req, res){
+                Bozuko.models.Theme.findById(req.param('_id'), function(err, theme){
+                    if(err) return res.send({success:false});
+                    if( !req.body.apikey_id ) delete req.body.apikey_id;
+                    theme.set(req.body);
+                    return theme.save(function(err){
+                        return res.send({success: !err, items: [theme], total:1});
+                    });
+                });
+            }
+        },
+        
+        del : {
+            handler : function(req, res){
+                Bozuko.models.Theme.findById(req.param('_id'), function(err, theme){
+                    if(err) return res.send({success:false});
+                    return theme.remove(function(err){
+                        return res.send({success: !err});
+                    });
+                });
+            }
+        }
     }
     /*
     '/admin/build-circles' : {

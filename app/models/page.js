@@ -497,6 +497,8 @@ Page.static('apiCreate', function(req, callback){
       , page
       ;
       
+    console.log(req.body);
+      
     if(!fb_id){
         return callback(E.error('facebook_id',"Facebook ID is required"));
     }
@@ -525,13 +527,13 @@ Page.static('apiCreate', function(req, callback){
                     return cb(E.error('facebook_id',"Error creating page"));
                 }
                 page = _page;
-                page.apikey = apikey._id;
+                page.apikey_id = apikey._id;
                 return cb();
             });
         },
         function update_page(cb){
             // custom name or image
-            ["name","image"].forEach(function(p){
+            ["name","image","location"].forEach(function(p){
                 var v;
                 if((v=req.param(p))) page[p] = v;
             });
@@ -580,7 +582,7 @@ Page.static('apiUpdate', function(req, callback){
         
         function update_page(cb){
             // custom name or image
-            ["name","image"].forEach(function(p){
+            ["name","image","location"].forEach(function(p){
                 var v;
                 if((v=req.param(p))) page[p] = v;
             });

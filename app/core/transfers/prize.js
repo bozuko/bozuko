@@ -43,8 +43,12 @@ exports.transfer_objects = {
                 
                 o.page_id = prize.page_id;
                 o.game_id = prize.contest_id;
-                o.wrapper_message = "To redeem your prize from "+prize.page.name+": "+prize.instructions+
-                    " This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
+                o.wrapper_message = "To redeem your prize from "+prize.page.name+": "+prize.instructions;
+                
+                if( prize.expires && prize.expires instanceof Date ){
+                    console.error( prize.expires );
+                    o.wrapper_message+=" This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
+                }
                 o.win_time = prize.timestamp;
                 o.business_img = prize.page.image;
                 o.user_img = prize.user.image.replace(/type=large/, 'type=square');
@@ -67,7 +71,7 @@ exports.transfer_objects = {
                 o.redemption_duration = 60;
                 if( prize.redeemed ) o.redeemed_timestamp = prize.redeemed_time;
                 if ( prize.verified ) o.redeemed_timestamp = prize.verified_time;
-                o.expiration_timestamp = prize.expires;
+                if( prize.expires && prize.expires instanceof Date ) o.expiration_timestamp = prize.expires;
 
                 o.links = {
                     prize : '/prize/'+prize.id,

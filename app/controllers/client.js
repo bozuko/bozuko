@@ -73,9 +73,18 @@ exports.renderGame = function(req, res, contest_id, page_id){
         var qr = 'http://api.qrserver.com/v1/create-qr-code/?size=320x320&color=006b37&data='+encodeURIComponent(burl(req.url));
         var game = contest.getGame();
         
-        var share = contest.get('share_url');
-        if( !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && share ){
+        var share = contest.get('share_url')
+          , redirect_url = contest.get('redirect_url')
+          , start = contest.get('start')
+          , change_time = new Date('2012-07-30 12:00:00')
+          ;
+          
+        if( !contest.get('apikey_id') && !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && share && start < change_time ){
             return res.redirect( share );
+        }
+        
+        if( !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && redirect_url ){
+            return res.redirect( redirect_url );
         }
         
         if( 1 || req.session.device == 'tablet' || req.session.device == 'touch' || req.param('play') ){

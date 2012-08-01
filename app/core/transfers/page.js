@@ -45,7 +45,8 @@ exports.transfer_objects = {
                 facebook_checkin: "String",
                 feedback: "String",
                 favorite: "String",
-                page: "String"
+                page: "String",
+                page_games: "String"
             }
         },
 
@@ -58,7 +59,9 @@ exports.transfer_objects = {
                 var fid = page.registered ? page.service('facebook').sid : page.id;
                 
                 page.liked = false;
-                page.image = page.registered ? burl('/page/'+page.id+'/image') : page.image;
+                if( !(user instanceof Bozuko.models.Apikey) ){
+                    page.image = page.registered ? burl('/page/'+page.id+'/image') : page.image;
+                }
                 page.like_url = burl('/facebook/'+fid+'/like.html');
                 page.like_button_url = burl('/facebook/'+fid+'/like_button.html');
                 page.links = {
@@ -106,6 +109,7 @@ exports.transfer_objects = {
                 }
                 else if(page.is_facebook && page.service && page.service('facebook') ){
                     page.facebook_page = page.service('facebook').data.link;
+                    page.facebook_id = fid;
                 }
 
                 // add registered links...
@@ -119,9 +123,13 @@ exports.transfer_objects = {
                 else{
                     page.links.recommend    ='/page/recommend/facebook/'+fid;
                 }
+                
+                if(user instanceof Bozuko.models.Apikey){
+                    page.links.page_games   ='/page/'+page.id+'/games';
+                }
 
                 page.games = [];
-
+                
                 if( page.contests ){
                     page.contests.sort(function(a,b){
                         return +b.start-a.start;
@@ -153,7 +161,20 @@ exports.transfer_objects = {
         doc: "List of pages",
         def:{
             "pages" : ['page'],
-            "next" : "String"
+            "next" : "String",
+            "offset" : "Number",
+            "count" : "Number",
+            "limit" : "Number"
+        }
+    },
+    
+    page_games : {
+        doc: "List of page games",
+        def:{
+            "games" : ['game'],
+            'offset' : 'Number',
+            'limit' : 'Number',
+            "count" : "Number"
         }
     }
 };
@@ -248,6 +269,23 @@ exports.links = {
                 image : {
                     type: "String",
                     description: "The URL of an image for the page - should be square and at least 200 x 200"
+                }
+            }
+        }
+    },
+    
+    page_games : {
+        get : {
+            access: 'developer_public',
+            returns: 'page_games',
+            params: {
+                limit : {
+                    type: "Number",
+                    description: "How many records to retrieve at once"
+                },
+                offset : {
+                    type: "Number",
+                    description: "Which record to start retrieving at"
                 }
             }
         }
