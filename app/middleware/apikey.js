@@ -10,8 +10,6 @@ module.exports = function apikey(){
             return next();
         }
         
-        console.log('how did i get here?');
-        
         selector.key = api_key;
         if( api_secret ) selector.secret = api_secret;
         

@@ -73,7 +73,8 @@ Prize.virtual('state')
         if( this.verified ) return Prize.VERIFIED;
         if( this.redeemed ) return Prize.REDEEMED;
         var now = new Date();
-        if( now < this.expires ) return Prize.ACTIVE;
+		// console.error(this.expires.getTime());
+        if( !this.expires.getTime() || now < this.expires ) return Prize.ACTIVE;
         return Prize.EXPIRED;
     });
 

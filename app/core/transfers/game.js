@@ -6,7 +6,7 @@ var game_prize = {
     doc: "A prize that can be won in a game",
     def: {
         id: 'String',
-        quantity:'Number',
+        total:"Number",
         value:'Number',
         expiration:'Number',
         hide_expiration:'Boolean',
@@ -109,6 +109,8 @@ var game = {
         name: "String",
         start: "String",
         end: "String",
+        published: "Boolean",
+        status: "String",
         ingame_copy: 'String',
         post_to_wall: 'Boolean',
         share_url : 'String',
@@ -135,7 +137,9 @@ var game = {
         links: {
             login: "String",
             page: "String",
-            game: "String"
+            game: "String",
+            game_publish: "String",
+            game_cancel: "String"
         }
     },
 
@@ -149,21 +153,29 @@ var game = {
         var self = this,
             obj = {};
             
+        console.log('transfers/game.js enter transfer create');
+        
+        if( game instanceof Bozuko.models.Contest) game = game.getGame();
+            
         obj = this.merge(obj, game.contest);
         obj = this.merge(obj, game);
         obj.url = burl('/'+game.contest.page_id+'/'+game.contest._id);
-        obj.rules = game.contest.getOfficialRules();
+        obj.rules = apikey ? game.contest.rules : game.contest.getOfficialRules();
+        obj.published = game.contest.active;
+        obj.status = game.contest.state;
+        
         obj.id = game.contest.id;
         if( game.contest.web_only ){
-            obj.share_url = burl('/game/'+game.contest.id+'/share');
+            if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
             obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
             obj.share_description = game.contest.share_description || 'Play '+game.getName()+' for a chance to win big prizes!';
         }
         else {
-            obj.share_url = burl('/game/'+game.contest.id+'/share');
+            if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
             obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
             obj.share_description = game.contest.share_description || 'Play '+game.getName()+' on your phone for a chance to win big prizes!';
         }
+        
         obj.type = game.getType();
         obj.name = game.getName();
         obj.config = game.getConfig();
@@ -179,9 +191,17 @@ var game = {
             obj.entry_plays = ec.tokens;
             if(game.contest.consolation_config)
                 obj.consolation_when = game.contest.consolation_config.when
+            
+            
+            
+            if( game.contest.game_config.theme == 'custom' && game.contest.game_config.custom_id ){
+                obj.theme = game.contest.game_config.custom_id;
+            }
+            
         }
         
         var page_id = game.contest.game_state ? game.contest.game_state.page_id : game.contest.page_id;
+        
         return game.contest.getEntryMethodDescription(user, page_id, function(error, description){
             if (error) return callback(error);
             obj.entry_method.description = description;
@@ -191,10 +211,36 @@ var game = {
                 page: '/page/'+page_id,
                 game: '/game/'+game.contest.id
             };
+            if(apikey && game.contest.state == 'draft'){
+                obj.links.game_publish = '/game/'+game.contest.id+'/publish'
+            }
+            if(apikey && (game.contest.state == 'active' || game.contest.state == 'published') ){
+                obj.links.game_cancel = '/game/'+game.contest.id+'/cancel'
+            }
+            
             return self.sanitize(obj, null, user, callback);
         });
     }
 };
+
+var theme = {
+    doc: "Game theme object",
+    def: {
+        id: 'String',
+        name: 'String',
+        background: 'String'
+    }
+};
+
+var themes = {
+    doc: "List of themes",
+    def: {
+        themes: ['theme'],
+        count: "Number",
+        offset: "Number",
+        limit: "Number"
+    }
+}
 
 var game_save_result = {
     doc: "Result of saving a game via PUT or POST",
@@ -290,7 +336,9 @@ exports.transfer_objects = {
     game_state: game_state,
     game_result: game_result,
     entry_method: entry_method,
-    game_prize: game_prize
+    game_prize: game_prize,
+    theme: theme,
+    themes: themes
 };
 
 var game_params = {
@@ -316,7 +364,7 @@ var game_params = {
     },
     entry_type : {
         type: "String",
-        description: "The method of entry (must be one of the following: like, likecheckin, checkin, nothing)"
+        description: "The method of entry (must be one of the following: facebook/like, facebook/likecheckin, facebook/checkin, bozuko/nothing)"
     },
     entry_plays : {
         type: "Number",
@@ -408,6 +456,21 @@ exports.links = {
             access: 'developer_private',
             returns: 'game_save_result',
             params: game_params
+        }
+    },
+    
+    themes : {
+        get : {
+            doc: "Get all the available Themes",
+            params: {
+                offset: {
+                    type: 'Number'
+                },
+                limit: {
+                    type: 'Number'
+                }
+            },
+            returns: 'themes'
         }
     },
     

@@ -29,6 +29,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                 region : 'center',
                 border : false,
                 xtype: 'tabpanel',
+                activeTab : 2,
                 tabPosition: 'bottom',
                 items:[{
                     layout : 'anchor',
@@ -75,6 +76,43 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                             pluginId:'rowedit'
                         })
                     ]
+                },{
+                    xtype: 'panel',
+                    ref: 'themes',
+                    border: false,
+                    autoScroll: true,
+                    bodyPadding: 10,
+                    layout: 'fit',
+                    title: 'Themes',
+                    tbar:[{
+                        text: 'Add Theme',
+                        ref:'addbtn'
+                    },{
+                        text: 'Delete Theme',
+                        ref:'delbtn',
+                        disabled: true
+                    }],
+                    bbar: Ext.create('Ext.PagingToolbar', {
+                        displayInfo: true,
+                        displayMsg: 'Displaying themes {0} - {1} of {2}',
+                        emptyMsg: "No themes to display"
+                    }),
+                    items : [{
+                        xtype : 'dataview',
+                        ref : 'themelist',
+                        cls : 'theme-list',
+                        itemTpl : new Ext.XTemplate(
+                            '<div class="theme">',
+                                '<div class="preview">',
+                                    '<img src="/images/assets/icons/unknown.jpg" class="logo" />',
+                                    '<img src="{background}" class="bg"/>',
+                                '</div>',
+                                '<div class="name">{name}</div>',
+                            '</div>'
+                        ),
+                        itemSelector : '.theme',
+                        emptyText : "There are no themes"
+                    }]
                 }]
             },{
                 height: 200,
@@ -84,6 +122,7 @@ Ext.define('Admin.view.admin.Dashboard' ,{
                 region: 'south',
                 autoScroll: true,
                 collapsible: true,
+                collapsed: true,
                 ref:'event-grid',
                 xtype: 'grid',
                 store: Ext.create('Ext.data.Store',{

@@ -41,6 +41,7 @@ var Contest = module.exports = new Schema({
     engine_type             :{type:String, default:'order', get: enum_engine_type},
     engine_options          :{},
     web_only                :{type:Boolean, default:false},
+    redirect_url            :{type:String},
     share_url               :{type:String},
     share_title             :{type:String},
     share_description       :{type:String},
@@ -144,7 +145,7 @@ Contest.method('validate_', function(callback) {
             type            :'Number',
             dfault          :0
         },
-        quantity        :{
+        total           :{
             required        :true,
             type            :'Number'
         },
@@ -193,10 +194,25 @@ Contest.method('validate_', function(callback) {
         theme           :{
             type            :'String',
             dfault          :'default',
-            mutate          :function(value, name, object, cb){
+            mutate          :function(value, name, object, cb){                
                 if(!object.game_config) object.game_config = {};
-                object.game_config.theme = value;
-                cb();
+                object.markModified('game_config');
+                if( value == 'default' ){
+                    object.game_config.theme = value;
+                    return cb();
+                }
+                return Bozuko.models.Theme.findById( value, function(error, theme){
+                    if( error || !theme ){
+                        if( error ) console.log(error);
+                        object.game_config.theme = value;
+                        return cb();
+                    }
+                    object.game_config.theme = 'custom';
+                    object.game_config.custom_id = theme.id;
+                    object.game_config.custom_name = theme.name;
+                    object.game_config.custom_background = theme.background;
+                    return cb();
+                });
             }
         },
         entry_duration  :{
@@ -288,7 +304,7 @@ Contest.method('validate_', function(callback) {
                         v = new Date(v);
                     }
                     else if( typeof c.type == 'string' && typeof v != c.type.toLowerCase() ){
-                        errors[name] = "Ivalid type - "+c.type+" expected";
+                        errors[name] = "Invalid type - "+c.type+" expected";
                         return cb(new Error("Invalid Type"));
                     }
                     else if( c.type instanceof Array){
@@ -389,7 +405,23 @@ Contest.method('validate_', function(callback) {
                 E.errors(errors);
                 return callback(E);
             }
+            
             game.apikey_id = req.apikey._id;
+            game.engine_type = 'time';
+            game.engine_options={};
+            if( !game.consolation_prizes || !game.consolation_prizes.length ){
+                game.consolation_config = [{enabled: false}];
+            }
+            else {
+                game.consolation_config = [{
+                    who: 'losers',
+                    when: 'once',
+                    duration: null,
+                    enabled: true
+                }];
+            }
+            game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:mm tt" )+']';
+                
             return game.save(callback);
         });
     });
@@ -422,6 +454,20 @@ Contest.method('validate_', function(callback) {
                     E.errors(errors);
                     return callback(E);
                 }
+                game.engine_type = 'time';
+                game.engine_options={};
+                if( !game.consolation_prizes || !game.consolation_prizes.length ){
+                    game.consolation_config = [{enabled: false}];
+                }
+                else {
+                    game.consolation_config = [{
+                        who: 'losers',
+                        when: 'once',
+                        duration: null,
+                        enabled: true
+                    }];
+                }
+                game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:mm tt" )+']';
                 return game.save(callback);
             });
         });
@@ -596,13 +642,10 @@ Contest.method('getOfficialRules', function(){
         total += (prize.value * prize.total);
     });
     
-    
-
     consolation_prizes.forEach(function(prize, i){
         var arv_str = i==0 ? 'Approximate Retail Value ("ARV")' : 'ARV';
         prizes_str+= prize.total+' '+map[i]+' Prizes. each, '+prize.name+', '+arv_str+': $'+prize.value+'. ';
         if( prize.details ) prizes_str+= prizes.details+' ';
-        var gcd = getGCD( prize.total, self.total_plays );
 
         switch(self.engine_type){
             case 'order':
@@ -804,8 +847,10 @@ Contest.method('doPublish', function(callback) {
         }
     ], function(err) {
         self.active = true;
-        Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
-        return callback( null, self);
+        return self.save( function(error){
+            Bozuko.publish('contest/publish', {contest_id: self._id, page_id: self.page_id});
+            return callback( error, self);
+        })
     });
 });
 
@@ -815,9 +860,7 @@ Contest.method('publish', function(callback){
 
     if (this.start.getTime() < Date.now()) {
         this.start = new Date();
-        return this.save(function(err) {
-            self.doPublish(callback);
-        });
+        return self.doPublish(callback);
     }
     
     self.doPublish(callback);
@@ -1094,7 +1137,7 @@ Contest.method('loadGameState', function(opts, callback){
         },
 
         function update_user(cb){
-            if( user ){
+            if( user && user  instanceof Bozuko.models.User ){
                 return user.updateInternals(function(error){
                     if( error ) return cb(error);
 

@@ -2,6 +2,9 @@ var async = require('async'),
     qs = require('querystring'),
     http = Bozuko.require('util/http'),
     Geo = Bozuko.require('util/geo'),
+    mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId,
 	XRegExp = Bozuko.require('util/xregexp'),
     URL = require('url'),
     mailer = Bozuko.require('util/mail'),
@@ -38,17 +41,24 @@ exports.routes = {
 						apikey_id: req.apikey._id
 					};
 					if(query) selector.name = new RegExp('(^|\\s)'+XRegExp.escape(options.query), "i");
-					
+                    
 					return Bozuko.models.Page.count(selector, function(error, count){
 						
+                        var limit = parseInt(req.param('limit')) || 25
+                          , offset = parseInt(req.param('offset')) || 0
+                          ;
+                        
 						var opts = {
-							limit: parseInt(req.param('limit')) || 25,
-							offset: parseInt(req.param('offset')) || 0
+							limit: limit,
+							offset: offset
 						};
 						
 						return Bozuko.models.Page.find(selector, {}, opts, function(error, pages){
 							if(error) return error.send(res);
-							var ret = pages;
+							var ret = {pages: pages, count: count, offset: offset, limit: limit};
+                            pages.forEach(function(page){
+                                page.registered = true;
+                            });
 							return Bozuko.transfer('pages', ret, req.session.user, function(error, result){
 								if (error) return error.send(res);
 								return res.send( result );
@@ -187,7 +197,7 @@ exports.routes = {
                     
                     Bozuko.transfer('page_save_result', {
                         success: error ? false : true,
-						errors: error ? error.errors : null,
+						errors: error ? error.errors() : null,
 						error: error ? error.message : null,
                         page: page
                     }, req.session.user, function(error, result){
@@ -208,12 +218,60 @@ exports.routes = {
                     
                     Bozuko.transfer('page_save_result', {
                         success: error ? false : true,
-						errors: error ? error.errors : null,
+						errors: error ? error.errors() : null,
 						error: String(error),
                         page: page
                     }, req.session.user, function(error, result){
                         if (error) return error.send(res);
                         return res.send( result );
+                    });
+                });
+            }
+        }
+    },
+    
+    '/page/:id/games' : {
+        get : {
+            access : 'developer_public',
+            handler : function(req, res){
+                return Bozuko.models.Page.findById(req.param('id'), function(error, page){
+                    // get all games
+                    if(error) return error.send(res);
+                    return Bozuko.models.Contest.count({page_id: page._id},function(error, count){
+                        if(error) return error.send(res);
+                        
+                         var limit = req.param('limit') || 25
+                           , start = req.param('start') || 0
+                           ;
+                        
+                        return Bozuko.models.Contest.find({page_id: page._id},{}, {
+                            limit : limit,
+                            offset : start
+                        }, function(error, contests){
+                            if(error) return error.send(res);
+                            
+                            var games=[];
+                            
+                            // prepare
+                            return async.forEachSeries(contests, function iterator(contest, cb){
+                                contest.loadGameState({user:null, page_id: page._id}, function(error){
+                                    if(error) return cb(error);
+                                    games.push(contest.getGame());
+                                    return cb();
+                                });
+                                
+                            }, function return_games(error){
+                                if(error) return error.send(res);
+                                return Bozuko.transfer('page_games', {
+                                    games: games,
+                                    count: count,
+                                    start: start,
+                                    limit: limit
+                                }, req.apikey, function(error, result){
+                                    return res.send(error || result);
+                                });
+                            });
+                        });
                     });
                 });
             }
