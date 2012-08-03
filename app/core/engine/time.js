@@ -22,6 +22,8 @@ var TimeEngine = module.exports = function(contest, opts) {
     this.configure(options);
 };
 
+TimeEngine.prototype.defaults = defaults;
+
 inherits(TimeEngine, Engine);
 
 var lookback_window_floor = 1000*60*3;

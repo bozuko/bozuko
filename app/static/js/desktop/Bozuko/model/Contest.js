@@ -55,6 +55,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'total_entries',      type:'Number'},
         {name:'total_plays',        type:'Number'},
         {name:'post_to_wall',       type:'Boolean',             defaultValue:true},
+        {name:'redirect_url',       type:'String'},
         {name:'share_url',          type:'String'},
         {name:'share_title',        type:'String'},
         {name:'share_description',  type:'String'},

@@ -84,6 +84,7 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
         }catch(e){
             data = {};
         }
+        
         if( !data.links ) data.links = {};
         
         // everything should be in json

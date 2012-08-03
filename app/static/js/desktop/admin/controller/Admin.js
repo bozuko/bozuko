@@ -4,18 +4,21 @@ Ext.define('Admin.controller.Admin' ,{
     views: [
         'page.Add',
         'page.Admin',
-        'Bozuko.view.page.Panel'
+        'Bozuko.view.page.Panel',
+        'theme.Window'
     ],
     
     stores: [
         'Bozuko.store.Places',
-        'ApiKeys'
+        'ApiKeys',
+        'Themes'
     ],
     
     models: [
         'Bozuko.model.Page',
         'Bozuko.model.User',
-        'ApiKey'
+        'ApiKey',
+        'Theme'
     ],
     
     refs : [
@@ -23,6 +26,10 @@ Ext.define('Admin.controller.Admin' ,{
         {ref: 'userData', selector: 'userlist dataview'},
         {ref: 'apiKeyGrid', selector: '[ref=apikeygrid]'},
         {ref: 'apiKeyDelBtn', selector: '[ref=apikeygrid] [ref=delbtn]'},
+        {ref: 'themes', selector: '[ref=themes]'},
+        {ref: 'themeList', selector: '[ref=themelist]'},
+        {ref: 'themeAddBtn', selector: '[ref=themes] [ref=addbtn]'},
+        {ref: 'themeDelBtn', selector: '[ref=themes] [ref=delbtn]'},
         {ref: 'pageSearch', selector: 'pagelist [ref=search]'},
         {ref: 'userSearch', selector: 'userlist [ref=search]'},
         {ref: 'userFilter', selector: 'userlist [ref=filter]'},
@@ -57,6 +64,24 @@ Ext.define('Admin.controller.Admin' ,{
             },
             '[ref=apikeygrid] [ref=delbtn]': {
                 click: this.delApiKeyRow
+            },
+            '[ref=themelist]': {
+                render: this.onThemeListRender,
+                selectionchange : this.onThemeListSelectionChange,
+                itemdblclick : this.onThemeItemDblClick
+                
+            },
+            '[ref=themes] [ref=addbtn]': {
+                click: this.addTheme
+            },
+            '[ref=themes] [ref=delbtn]': {
+                click: this.delTheme
+            },
+            'themewindow [ref=savebtn]' : {
+                click: this.onSaveThemeBtn
+            },
+            'themewindow [ref=cancelbtn]' : {
+                click: this.onCancelThemeBtn
             },
             'pagelist dataview':{
                 itemclick: this.onPageClick
@@ -160,6 +185,61 @@ Ext.define('Admin.controller.Admin' ,{
         }
     },
     
+    onThemeListSelectionChange : function(selModel, records){
+        this.getThemeDelBtn().setDisabled(!records.length);
+    },
+    
+    addTheme : function(){
+        
+        var theme = new Admin.model.Theme();
+        
+        new Admin.view.theme.Window({
+            title: 'Add Theme',
+            theme: theme
+        }).show();
+    },
+    
+    delTheme : function(){
+        if(!confirm('Are you sure you want to delete this theme?')) return;
+        var r = this.getThemeList().getSelectionModel().getSelection();
+        if(r.length) for(var i=0; i<r.length; i++){
+            r[i].destroy();
+            this.getThemeList().getStore().remove(r[i]);
+        }
+    },
+    
+    onThemeItemDblClick : function(view, record){
+        new Admin.view.theme.Window({
+            title: 'Edit Theme',
+            theme: record
+        }).show();
+    },
+    
+    onSaveThemeBtn : function(btn){
+        var me = this
+          , window = btn.up('themewindow')
+          , form = window.down('form')
+          , values = form.getForm().getValues()
+          ;
+          
+          
+        if( !form.getForm().isValid() ) return;
+        
+        window.theme.set(values);
+        window.theme.save({
+            success: function(records, op, success){
+                window.close();
+                me.getThemeList().getStore().load();
+            }
+        });
+        
+    },
+    
+    onCancelThemeBtn : function(btn){
+        btn.up('themewindow').close();
+        
+    },
+    
     onLaunch: function(){
         
         var me = this,
@@ -207,6 +287,12 @@ Ext.define('Admin.controller.Admin' ,{
         this.getApiKeyGrid().down('pagingtoolbar').bindStore( this.getApiKeysStore() );
         this.getApiKeysStore().load();
         
+    },
+    
+    onThemeListRender : function(){
+        this.getThemeList().bindStore( this.getThemesStore() );
+        this.getThemes().down('pagingtoolbar').bindStore( this.getThemesStore() );
+        this.getThemesStore().load();
     },
     
     onBeforeLoadUsers : function(store, operation){

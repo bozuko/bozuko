@@ -455,7 +455,7 @@ exports.routes = {
             }
         }
     },
-
+    
     '/security/images' : {
         get : {
             handler : function( req, res ){
@@ -1274,10 +1274,17 @@ exports.routes = {
                                     contest_json.play_count = play_count;
 
                                     if (contest_json.engine_type === 'time') {
-                                        contest_json.window_divisor = contest.engine_options.window_divisor;
-                                        contest_json.throwahead_multiplier = contest.engine_options.throwahead_multiplier;
-                                        contest_json.end_buffer = contest.engine_options.buffer;
-                                        contest_json.lookback_threshold = contest.engine_options.lookback_threshold;
+                                        var opts = contest.engine_options || {
+                                            buffer: 0.001,
+                                            lookback_threshold: 0.1,
+                                            window_divisor: 0.1,
+                                            throwahead_multiplier: 10,
+                                            multiplay: true
+                                        };
+                                        contest_json.window_divisor = opts.window_divisor;
+                                        contest_json.throwahead_multiplier = opts.throwahead_multiplier;
+                                        contest_json.end_buffer = opts.buffer;
+                                        contest_json.lookback_threshold = opts.lookback_threshold;
                                     }
 
                                     return cb();

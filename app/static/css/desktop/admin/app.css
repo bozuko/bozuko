@@ -1,8 +1,22 @@
 @import url("/css/fonts/arvo/stylesheet.css");
+.cf {
+  zoom: 1;
+}
+.cf:before {
+  content: "";
+  display: table;
+}
+.cf:after {
+  content: "";
+  display: block;
+}
 #header {
   background-color: #666666;
   background-image: -moz-linear-gradient(top, #666666, #000000);
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #666666), color-stop(1, #000000)) !important;
+  filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#666666',EndColorStr='#000000');
+  /* IE6-9 */
+
 }
 #header .title {
   height: 105px;
@@ -47,4 +61,42 @@
 }
 .bozuko-list .list-item-selected {
   background: #d5eaf9;
+}
+.theme-list .theme {
+  float: left;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #d8d8d8;
+  text-align: center;
+  margin: 4px;
+}
+.theme-list .x-item-selected {
+  background: #d1f0ff;
+}
+.theme-list .name {
+  margin-top: 4px;
+}
+.theme-list .preview {
+  width: 150px;
+  position: relative;
+}
+.theme-list .preview img {
+  display: block;
+}
+.theme-list .preview .bg {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+}
+.theme-list .preview .logo {
+  position: absolute;
+  z-index: 1;
+  top: 2.5%;
+  left: 3.1%;
+  height: 18.8%;
+  -webkit-transform: rotate(-15deg);
+  -moz-transform: rotate(-15deg);
+  -ms-transform: rotate(-15deg);
+  -o-transform: rotate(-15deg);
+  transform: rotate(-15deg);
 }

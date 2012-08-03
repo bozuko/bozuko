@@ -230,6 +230,22 @@ exports["Page POST - Update Facebook Page"] = function(test) {
         });
 };
 
+exports["Pages GET - Test getting the page"] = function(test) {
+    token = assert.token;
+    assert.response(test, Bozuko.app,
+        {
+            url                 :'/pages',
+            method              :'get',
+            headers             :private_headers
+        },
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            test.equal(result.pages instanceof Array && result.pages.length === 1, true);
+            test.done();
+        });
+};
+
 /*********************************************************************
  * Game Tests
  *********************************************************************/
@@ -363,7 +379,23 @@ exports["Game POST - Remove Prize"] = function(test) {
             var game_save_result = JSON.parse(res.body);
             test.equal(game_save_result.success, true, "Update game - success");
             test.equal(game_save_result.game.name,'Updated Name');
-            console.log(game_save_result.game);
+            test.done();
+        });
+};
+
+
+exports["Page Games GET - Test getting games"] = function(test) {
+    
+    assert.response(test, Bozuko.app,
+        {
+            url                 :state.page.links.page_games,
+            method              :'get',
+            headers             :private_headers
+        },
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            test.equal(result.games instanceof Array, true, "Get list of games");
             test.done();
         });
 };

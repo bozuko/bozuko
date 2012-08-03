@@ -16,6 +16,8 @@ var Theme = module.exports = function(game){
     if( this.game.config.custom_icon ) this.icon = this.game.config.custom_icon;
 };
 
+
+
 inherits(Theme, ScratchTheme);
 Theme.prototype.icon = burl('/images/icons/custom-game-icon.png');
 Theme.prototype.name = path.basename(__dirname);
