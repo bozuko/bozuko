@@ -3,8 +3,9 @@ var Engine = require('../engine'),
     inherits = require('util').inherits,
     inspect = require('util').inspect,
     async = require('async'),
-    merge = require('flatmerge');
-;
+    merge = require('flatmerge'),
+    measure = require('measure');
+
 var safe = {j:true};
 
 var defaults = {
@@ -175,7 +176,7 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
 
     return Page.getCodeInfo(page_id, function(err, block, prefix) {
         var prize_index = -1;
-        return async.forEachSeries(prizes, function(prize, cb) {
+        return async.forEach(prizes, function(prize, cb) {
             prize_index++;
             if (!prize.distribution || prize.distribution === 'random') {
                 self.distributeRandom(contest._id, prize.total, prize_index, start, end, prefix, block, cb);
@@ -188,63 +189,64 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
 
 TimeEngine.prototype.distributeRandom = 
 function(contest_id, totalPrizes, prize_index, start, end, prefix, block, callback) {
-    var i = 0;
     var self = this;
-    async.whilst(
-        function() {
-            return i < totalPrizes;
-        },
-        function(cb) {
-            var date = new Date(rand(start, end));
-            var result = {
-                contest_id: contest_id,
-                index: prize_index,
-                code: prefix + self.getCode(block),
-                count: i,
-                timestamp: date,
-                history: [{timestamp: date}]
-            };
-            i++;
-            result = new Bozuko.models.Result(result);
-            result.save(cb);
-        },
-        callback
-    );
+    var date = null;
+    var result = null;
+    var results = [];
+
+    var done = measure.measure('engine.time.distributeRandom.buildArray');
+    for (var i = 0; i < totalPrizes; i++) {
+        date = new Date(rand(start, end));
+        result = new Bozuko.models.Result({
+            contest_id: contest_id,
+            index: prize_index,
+            code: prefix + self.getCode(block),
+            count: i,
+            timestamp: date,
+            history: [{timestamp: date}]
+        });
+        results.push(result);
+    }
+    done();
+
+    done = measure.measure('engine.time.distributeRandom.save');
+    async.forEach(results, function(result, cb) {
+        result.save(cb);
+    }, function(err) {
+        done();
+        callback(err);
+    });
 };
 
 TimeEngine.prototype.distributeInterval 
 = function(contest_id, totalPrizes, prize_index, start, end, prefix, block, callback) {
     var self = this;
+    var result = null;
+    var date = null;
+    var results = [];
     var interval = Math.floor((end-start)/totalPrizes);
     var segmentStart = start;
     var segmentEnd = start+interval;
-    var i = 0;
-    async.whilst(
-        function() {
-            return i < totalPrizes;
-        },
-        function(cb) {
-            var date = new Date(rand(segmentStart, segmentEnd));
-            var result = {
-                contest_id: contest_id,
-                index: prize_index,
-                code: prefix + self.getCode(block),
-                count: i,
-                timestamp: date,
-                history: [{timestamp: date}]
-            };
-            i++;
-            segmentStart = segmentEnd+1;
-            segmentEnd = segmentEnd+interval;
-            result = new Bozuko.models.Result(result);
-            result.save(function(error){
-                result = null;
-                if( error ) return cb(error);
-                return cb();
-            });
-        }, 
-        callback
-    );
+
+    for (var i = 0; i < totalPrizes; i++) {
+        date = new Date(rand(segmentStart, segmentEnd));
+        result = new Bozuko.models.Result({
+            contest_id: contest_id,
+            index: prize_index,
+            code: prefix + self.getCode(block),
+            count: i,
+            timestamp: date,
+            history: [{timestamp: date}]
+        });
+        segmentStart = segmentEnd+1;
+        segmentEnd = segmentEnd+interval;
+        result = new Bozuko.models.Result(result);
+        results.push(result);
+    }
+
+    async.forEach(results, function(result, cb) {
+        result.save(cb);
+    }, callback);
 }
 
 /**
