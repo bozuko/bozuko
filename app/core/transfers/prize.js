@@ -47,7 +47,11 @@ exports.transfer_objects = {
                 
                 if( prize.expires && prize.expires instanceof Date ){
                     console.error( prize.expires );
-                    o.wrapper_message+=" This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
+                    try{
+                        o.wrapper_message+=" This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
+                    }catch(e){
+                        
+                    }
                 }
                 o.win_time = prize.timestamp;
                 o.business_img = prize.page.image;
