@@ -2,6 +2,9 @@ var S3 = Bozuko.require('util/s3');
 var url = require('url');
 var burl = Bozuko.require('util/url').create;
 var inspect = require('util').inspect;
+var async = require('async');
+var Report      = Bozuko.require('core/report');
+var ObjectId    = require('mongoose').Types.ObjectId;
 
 exports.session = false;
 
@@ -455,6 +458,100 @@ exports.routes = {
 								return res.send( error || result );
 							});
 						});
+				});
+			}
+		}
+	},
+	
+	'/reports/:type?' : {
+		get : {
+			access : 'developer_public',
+			handler : function( req, res ){
+				
+				var type = req.param('type') || 'entries'
+				  , tzOffset = parseInt(req.param('timezoneOffset', 0), 10)
+				  , page_id = req.param('page_id')
+				  , game_id = req.param('game_id')
+                  , query = {}
+				  , options ={}
+                  ;
+
+                
+                if( page_id ){
+                    query.page_id = new ObjectId(page_id);
+                }
+                if( game_id ){
+                    query.contest_id = new ObjectId(game_id);
+                }
+				
+				// hey now... lets check for the times
+                options.unit = 'Day'
+                options.unitInterval = 1;
+                options.timezoneOffset = tzOffset;
+                options.query = query;
+				options.end = new Date();
+				options.timeField = 'timestamp';
+				
+				switch(type){
+					case 'unique':
+						options.model = 'Entry';
+                        options.distinctField = 'user_id';
+						break;
+					
+					case 'entries':
+					default:
+                        options.model = "Entry";
+                        break;
+                }
+				
+				// need from and to...
+				async.series([
+					
+					function get_pages(cb){
+						if( !page_id && !game_id ){
+							return Bozuko.models.Page.find({apikey_id: req.apikey._id}, {_id:1}, function(error, pages){
+								if( error ) return cb(error);
+								if( !pages.length ) return cb("No pages");
+								var ids = [];
+								pages.forEach(function(p){ ids.push(p._id);} );
+								query.page_id = {$in: ids};
+								return cb();
+							});
+						}
+						return cb();
+					},
+					
+					function get_start(cb){
+						Bozuko.models[options.model].find(query)
+							.sort(options.timeField, 1)
+							.limit(1)
+							.exec(function(error, records){
+								if( error ) return cb( error );
+								if( !records.length ) return cb("No records");
+								options.start = records[0].get(options.timeField);
+								options.start.setHours(0);
+								options.start.setMinutes(0);
+								options.start.setSeconds(0);
+								return cb();
+							});
+					},
+					
+				], function run_report( error ){
+					if( error ) return res.send( [] );
+					
+					return Report.run( 'interval', options, function(error, results){
+						
+						if( error ){
+							console.error(require('util').inspect(error));
+							return res.send([]);
+						}
+						// need to format the results
+						var data = [];
+						if( results.length ) results.forEach( function( result ){
+							data.push([result.timestamp.getTime(), result.count]);
+						});
+						return res.send( data );
+					});
 				});
 			}
 		}

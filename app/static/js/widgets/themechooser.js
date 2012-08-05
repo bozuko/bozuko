@@ -127,8 +127,16 @@
     var methods = {
         init : function( options ){
             
-            if( !options || !options.server || !options.key){
-                return $.error('bozukothemechooser: "server" and "key" options are required');
+            if( !this.length ) return;
+            
+            options = $.extend({
+                server      :this.attr('data-server'),
+                key         :this.attr('data-key')
+            }, options||{});
+            
+            if( !options.server || !options.key){
+                $.error('bozukothemechooser: "server" and "key" options are required');
+                return;
             }
             
             // add the css
@@ -197,3 +205,7 @@
     };
     
 })(jQuery);
+
+jQuery(function($){
+    $('[data-bozuko-widget="themechooser"]').bozukothemechooser();
+});

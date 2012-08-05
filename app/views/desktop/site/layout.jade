@@ -1,3 +1,5 @@
+- if( user instanceof Bozuko.models.Apikey ){ user = null; }
+
 !!! 5
 html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",class=locals.html_classes?html_classes.join(' '):'',lang="en")
   head
@@ -20,7 +22,7 @@ html(xmlns:og="http://ogp.me/ns#",xmlns:fb="http://www.facebook.com/2008/fbml",c
       window.BozukoData = {user:{}};
       BozukoData.fbAppId = '#{Bozuko.cfg("facebook.app.id")}';
       
-    - if( user )
+    - if( user && user instanceof Bozuko.models.User)
       script(type="text/javascript")
         BozukoData.user.id = '#{user._id}';
         BozukoData.user.fbId = '#{user.service("facebook").sid}';

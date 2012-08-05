@@ -32,23 +32,29 @@ var proc = cluster( './app' )
     .listen( cfg.server.port )
     ;
 
-//proc.on('connect', function(){
-    if( proc.isMaster ){
+if( proc.isMaster ){
 
-        Bozuko.isMaster = true;
-        Bozuko.pubsub.stop();
+    Bozuko.isMaster = true;
+    // Bozuko.pubsub.stop();
 
-        if( env === 'stats'){
-            Bozuko.initStats();
-        }
-        // need a better way to handle this
-        if( env === 'api' ){
-            Bozuko.initFacebookPubSub();
-        }
-        Bozuko.initHttpRedirect();
-        if ( env === 'api' || env === 'playground' || env === 'development' ) {
-            Bozuko.initAutoRenew();
-            Bozuko.initExpirationChecker();
-        }
+    if( env === 'stats'){
+        Bozuko.initStats();
     }
-//});
+    // need a better way to handle this
+    if( env === 'api' ){
+        Bozuko.initFacebookPubSub();
+    }
+    Bozuko.initHttpRedirect();
+    if ( env === 'api' || env === 'playground' || env === 'development' ) {
+        Bozuko.initAutoRenew();
+        Bozuko.initExpirationChecker();
+    }
+}
+
+// only run stats engine on one child process
+setTimeout(function(){
+    console.log('Process Startup: '+process.title);
+    if( process.title.match(/0/) ){
+        Bozuko.require('core/stats').run();
+    }
+}, 100);

@@ -34,12 +34,17 @@ Entry.prototype.enter = function(callback) {
             // TODO: remove this line. It breaks the contest model abstraction
             contest.schema.emit('entry', entry_model);
 
-            Bozuko.publish('contest/entry',
-                {contest_id: contest._id, page_id: self.page_id, user_id: self.user._id});
-
             self.loadEntryModel(entry_model);
             return entry_model.save( function(error){
                 if (error) return callback(error);
+				
+				Bozuko.publish('contest/entry',{
+					entry_id		:entry_model._id,
+					contest_id		:contest._id,
+					page_id			:self.page_id,
+					user_id			:self.user._id
+				});
+				
                 var opts = {user: self.user, page: self.page};
                 return contest.loadGameState(opts, function(err, state) {
                     if (err) return callback(err);
