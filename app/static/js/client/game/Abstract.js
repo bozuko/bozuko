@@ -64,25 +64,30 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         var self = this;
         
         // lets redeem!
-        self.app.api.call({
-            path: result.prize.links.redeem,
-            method: 'post',
-            params: {
-                message: '',
-                share: false,
-                email_prize_screen: true
-            }
-        },function(result){
-            if( !result.ok ){
-                // we need this to go through
-            }
-            // meh.. we are going to assume this worked.
-            // this could be where youWin disappears... lets make sure
-            // its still showing...
-            if( self._showingYouWin){
-                self.showYouWin();
-            }
-        });
+        var redeem = function(attempt){
+            attempt = attempt || 0;
+            self.app.api.call({
+                path: result.prize.links.redeem,
+                method: 'post',
+                params: {
+                    message: '',
+                    share: false,
+                    email_prize_screen: true
+                }
+            },function(result){
+                if( !result.ok ){
+                    if( attempt < 5 ) redeem(attempt+1);
+                }
+                // meh.. we are going to assume this worked.
+                // this could be where youWin disappears... lets make sure
+                // its still showing...
+                if( self._showingYouWin){
+                    self.showYouWin();
+                }
+            });
+        }
+        
+        redeem();
         
     },
     
@@ -981,6 +986,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         if( !(prize.address_required || prize.is_pdf || prize.is_email || this.app.email_only ) && prize.state == 'active' ){
             this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'Redeem', cls:'btn-redeem'});
         }
+        else if( prize.is_screen ){
+            this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'View', cls:'btn-open'});
+        }
         else{
             this.addYouWinFooterButtons({text:'OK',cls:'btn-close'});
         }
@@ -1098,6 +1106,31 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 bd.superScroll().update();
             });
         }
+        else if( btn.hasClass('btn-open') ){
+            yw.select('.btn').addClass('btn-disabled');
+            self.app.showModal( yw );
+            body.setStyle({display: 'none'});
+            redemption.setStyle({display:'block'});
+            var redeem_time = Date.now(), blink=0;
+            // countdown time...
+            var clock = function(){
+                time.update(new Date().format('hh:MM:ss TT'));
+                var elapsed = Date.now() - redeem_time;
+                if( elapsed > 1000 * 60 * 4){
+                    var color = !(blink++ % 2) ? 'white' : 'red';
+                    time.setStyle({color: color});
+                }
+                if( elapsed > 1000 * 60 * 5){
+                    self.closeYouWin();
+                }
+                
+            };
+            clock();
+            self._redemptionClock = setInterval(clock, 1000);
+            self._redeeming = true;
+            self.addYouWinFooterButtons({text:'OK', cls:'btn-close'});
+            bd.superScroll().update();
+        }
         else{
             this.closeYouWin();
         }
@@ -1141,15 +1174,15 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
             var li = ul.createChild({
                 tag         :'li',
-                cls         :prize.state,
+                cls         :'active',//prize.state,
                 cn:[{
                     cls         :'prize-body',
                     cn          :[{
                         cls         :'left',
-                        cn          :[{
+                        cn          :[/*{
                             cls         :'state',
                             html        :prize.state
-                        },{
+                        },*/{
                             cls         :'name',
                             cn          :[{
                                 tag         :'span',

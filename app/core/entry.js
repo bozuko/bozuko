@@ -42,7 +42,8 @@ Entry.prototype.enter = function(callback) {
 					entry_id		:entry_model._id,
 					contest_id		:contest._id,
 					page_id			:self.page_id,
-					user_id			:self.user._id
+					user_id			:self.user._id,
+					apikey_id		:contest.apikey_id
 				});
 				
                 var opts = {user: self.user, page: self.page};
@@ -184,6 +185,7 @@ Entry.prototype.process = function( callback ){
 
 Entry.prototype.loadEntryModel = function(entry){
     entry.contest_id = this.contest._id;
+	entry.apikey_id = this.contest.apikey_id || null;
     entry.page_id = this.page_id;
     entry.user_id = this.user._id;
     entry.user_name = this.user.name;

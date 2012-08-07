@@ -45,6 +45,7 @@ var Prize = module.exports = new Schema({
 	address_required		:{type:Boolean},
     is_email                :{type:Boolean, default:false},
 	is_pdf                  :{type:Boolean},
+	is_screen				:{type:Boolean},
 	pdf_image				:{type:String},
 	pdf_image_only			:{type:Boolean},
     email_body              :{type:String},
@@ -219,7 +220,7 @@ Prize.method('sendEmail', function(user) {
         subject: subject,
         html: body,
         body: text,
-		sender: this.page_name +' <mailer@bozuko.com>'
+		sender: this.page_name +' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>'
     };
 
 	if( self.email_replyto && self.email_replyto != '' ){
@@ -396,11 +397,12 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			if( self.is_pdf ){
 				
 				// do some substitutions
-				var subject = self.email_subject,
-					body = self.email_body,
+				var subject = self.email_subject || Bozuko.cfg('prize.pdf.email.subject', 'Congratulations! You won {prize}!'),
+					body = self.email_body || Bozuko.cfg('prize.pdf.email.body', '<p>See the attached pdf for your prize!</p>'),
 					subs = {
 						'{name}':user.name,
 						'{email}':user.email,
+						'{page}': self.page_name,
 						'{prize}':self.name,
 						'{code}':self.email_code,
 						'{bozuko_code}':self.code
@@ -426,7 +428,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 					html			:body,
 					body			:text,
 					attachments		:attachments,
-					sender			:self.page_name +' <mailer@bozuko.com>'
+					sender			:self.page_name +' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>'
 				}, function(err, success, record) {
 					if (err || !success) {
 						console.error('Error emailing prize screen: '+err);
@@ -436,7 +438,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			
 			if( page.nobranding ){
 				return mail.send({
-					sender:self.page_name +' <mailer@bozuko.com>',
+					sender:self.page_name +' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>',
 					user_id: user._id,
 					to: user.email,
 					subject: 'Congratulations! You won a prize from '+self.page_name,
@@ -457,7 +459,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			
 			// lets get the page name...
 			return mail.sendView('prize/pdf', {prize: self, user: user, userLayout: true}, {
-				sender:self.page_name +' <mailer@bozuko.com>',
+				sender:self.page_name +' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>',
 				user_id: user._id,
 				to: user.email,
 				subject: 'Congratulations! You won a prize from '+self.page_name,
@@ -766,9 +768,8 @@ Prize.method('createPdf', function(user, images, page, callback){
 			  // final w and h
 			  , w
 			  , h
-			  ;
 			
-			// width its bigger
+			// width is bigger
 			if( ip > cp ){
 				w = Math.min(cw, iw);
 				h = ih * (w/iw);
@@ -790,24 +791,58 @@ Prize.method('createPdf', function(user, images, page, callback){
 		// Bozuko logo
 		// doc.image(image_base+'/logo/logo.png', 20, 20, {width: logo_width});
 		
+		
 		var margin = 45, x, y, w, h, bottom,
 			width = doc.page.width-margin*2,
 			col1 = .3 * width, col1_y, 
 			col2_x = col1 + (width * .05),
 			col2 = .65 * width, col2_y,
-			image_size = 40,
+			image_size = 40, start_x, start_y,
 			logo_width = 150
 			;
 		
 		// top of the page
-		doc.x = margin;
-		doc.y = margin;
+		start_x = doc.x = margin;
+		start_y = doc.y = margin;
+		
+		if( Bozuko.cfg('prize.pdf.logo') ){
+			// we are just going to be centering the image...
+			
+			var image = PdfImage.open( Bozuko.cfg('prize.pdf.logo') )
+			  
+			  // canvas
+			  , cw = (doc.page.width - margin * 2)
+			  , ch = 100
+			  , cp = cw / ch
+			  
+			  // image
+			  , iw = image.width
+			  , ih = image.height
+			  , ip = iw / ih
+			  
+			  // final w and h
+			  , w
+			  , h
+			
+			// width is bigger
+			if( ip > cp ){
+				w = Math.min(cw, iw);
+				h = ih * (w/iw);
+			}
+			else{
+				h = Math.min(ch, ih);
+				w = iw * (h/ih);
+			}
+			doc.image(Bozuko.cfg('prize.pdf.logo') , doc.page.margins.left + (cw - w) / 2, doc.page.margins.left + (ch - h) / 2, {fit: [w, h]});
+			start_y = doc.y = h + 25;
+		}
+		
 		doc
 			.image(images.business.path, {width: image_size})
 			;
 		
 		bottom = doc.y;
-		doc.y = margin;
+		doc.y = start_y;
 		doc.x+= image_size;
 		
 		y = doc.y + 10
@@ -964,7 +999,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 		y = Math.max(col1_y, col2_y);
 		
 		doc
-			.rect(margin-5, margin-5, width+10, y - margin + 15)
+			.rect(margin-5, start_y-5, width+10, y - margin + 15)
 			.stroke('#999');
 		
 			

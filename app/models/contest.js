@@ -185,12 +185,26 @@ Contest.method('validate_', function(callback) {
                     return cb(null, false, "There must be at least one prize");
                 }
                 return cb(null, true);
+            },
+            mutate          :function(value, name, object, cb){
+                if( value && value.length ) value.forEach(function(prize){
+                    prize.is_pdf = true;
+                    prize.is_screen = true;
+                });
+                return cb();
             }
         },
         consolation_prizes  :{
             model           :Object,
             type            :[prize],
-            dfault          :[]
+            dfault          :[],
+            mutate          :function(value, name, object, cb){
+                if( value && value.length ) value.forEach(function(prize){
+                    prize.is_pdf = true;
+                    prize.is_screen = true;
+                });
+                return cb();
+            }
         },
         theme           :{
             type            :'String',
@@ -864,7 +878,7 @@ Contest.method('publish', function(callback){
         return self.doPublish(callback);
     }
     
-    self.doPublish(callback);
+    return self.doPublish(callback);
 });
 
 /**
@@ -1509,6 +1523,7 @@ Contest.method('savePrize', function(opts, callback) {
             is_email: prize.is_email,
             is_barcode: prize.is_barcode,
             is_pdf: prize.is_pdf,
+            is_screen: prize.is_screen,
             address_required: prize.address_required,
             pdf_image: prize.pdf_image,
             pdf_image_only: prize.pdf_image_only,

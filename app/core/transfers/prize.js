@@ -14,6 +14,7 @@ exports.transfer_objects = {
             is_email: "Boolean",
             is_barcode: "Boolean",
             is_pdf: "Boolean",
+            is_screen: "Boolean",
             barcode_image: "String",
             page_name: "String",
             wrapper_message: "String",

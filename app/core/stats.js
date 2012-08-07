@@ -11,8 +11,8 @@ var inherits        = require('util').inherits
  * 
  *  • name of stat
  *  • count
- *  • block unit (day, week, year)
- *  • block key (maybe 'timestamp_start-timestamp_end' or something)
+ *  • block unit (day, week, year, total)
+ *  • interval ('start-end' or null if no interval)
  *
  * Then we would have a Stat Engine Singleton. It would need to run
  * on only one process. It would run a set of plugins. Plugins would
@@ -93,6 +93,8 @@ StatsEngine.prototype.handler = function( event, data ){
          * are applied for each interval
          */
         var interval  = null;
+        
+        
         
         plugin.events[event].call( plugin, data, interval, function(error, operations){
             
@@ -183,6 +185,33 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
                     }
                     return cb();
                 });
+            },
+            
+            function unique_per_api_key(cb){
+                var selector = {
+                    apikey_id   :data.apikey_id,
+                    user_id     :data.user_id,
+                    _id         :{$nin: [data.entry_id]}
+                };
+                Bozuko.models.Entry.count(selector, function(error, count){
+                    if( !count ){
+                        
+                        operations.push({
+                            object_id: data.apikey_id,
+                            inc: 1
+                        });
+                        
+                        /**
+                         * This is a shortcut on the page itself
+                         */
+                        return Bozuko.models.Apikey.update({
+                            _id: new ObjectId(data.apikey_id)
+                        },{
+                            $inc: {unique_users: 1}
+                        }, cb);
+                    }
+                    return cb();
+                });
             }
             
         ], function return_operations(error){
@@ -220,6 +249,25 @@ StatsPluginUnique.prototype.init = function(){
                             cb
                         );
                     })
+                }, cb);
+            });
+        },
+        
+        function update_apikeys(cb){
+            return Bozuko.models.Apikey.find({}, {_id: 1}, function(error, keys){
+                return async.forEach(keys,function(key, cb){
+                    // get all the page ids
+                    return Bozuko.models.Page.find({apikey_id: key._id},{_id:1}, function(error, pages){
+                        var page_ids = [];
+                        pages.forEach(function(p){ page_ids.push(p._id) });
+                        return Bozuko.models.Entry.distinct('user_id', {page_id: {$in: page_ids}}, function(error, users){
+                            return Bozuko.models.Apikey.update(
+                                {_id: key._id},
+                                {$set:{unique_users: users.length}},
+                                cb
+                            );
+                        });
+                    });
                 }, cb);
             });
         }

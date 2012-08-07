@@ -3,7 +3,8 @@
     var styled = false
       , types = {
             'entries'       :'Entries',
-            'unique'        :'Unique Users'
+            'unique'        :'Unique Users',
+            'wins'          :'Prize Wins'
         }
     ;
     
@@ -21,8 +22,23 @@
         var data = $this.data('bozukoreport')
           , options = data.options;
         
-        type = type || options.type || 'entries';
-        if( !types[type] ) type = 'entries';
+        // get the stats first
+        $.ajax({
+            url: options.server+'/stats',
+            data: {
+                api_key:options.key,
+                timezoneOffset: new Date().getTimezoneOffset(),
+                game_id: options.game_id,
+                page_id: options.page_id
+            },
+            dataType: 'jsonp'
+        })
+        .success( function(d){
+            // update the stats
+            data.statsTable.find('.unique').html(d.unique);
+            data.statsTable.find('.entries').html(d.entries);
+            data.statsTable.find('.wins').html(d.wins);
+        });
         
         // get the data
         $.ajax({
@@ -116,6 +132,15 @@
                     data.itemlist = $('<ul class="bozuko-items" />').appendTo( data.toolbar );
                     
                     data.ct = $('<div class="bozuko-report" />').appendTo( $this );
+                    data.statsCt = $('<div class="bozuko-stats-ct" />').appendTo( $this );
+                    data.statsTable = $(
+                        '<table class="bozuko-stats"><thead><tr><th />'+
+                        '<th>Entries</th><th>Unique Users</th><th>Prize Wins</tr></thead>'+
+                        '<tbody><tr><th>Totals</th>'+
+                        '<td class="entries">&nbsp;</td><td class="unique">&nbsp;</td><td class="wins">&nbsp;</td>'+
+                        '</tr></tbody></table>'
+                    ).appendTo(data.statsCt);
+                    
                     
                     for(var i in types) if( types.hasOwnProperty( i ) ) {
                         $('<li><a href="#" class="action-button" data-type="'+i+'">'+types[i]+'</a></li>')
@@ -123,7 +148,7 @@
                         ;
                     }
                     
-                    data.ct.height( $this.height() - data.toolbar.height() );
+                    data.ct.height( $this.height() - data.toolbar.height() - data.statsCt.height() );
                     
                     data.itemlist.find('a').click(function(e){
                         e.preventDefault();
