@@ -8,7 +8,8 @@ var Apikey = module.exports = new Schema({
     key                     :{type:String},
     secret                  :{type:String},
     name                    :{type:String},
-    description             :{type:String}
+    description             :{type:String},
+    unique_users            :{type:Number}
 });
 
 Apikey.pre('save', function(next) {

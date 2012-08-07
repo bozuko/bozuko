@@ -498,6 +498,10 @@ exports.routes = {
                         options.distinctField = 'user_id';
 						break;
 					
+					case 'wins':
+						options.model = 'Prize';
+						break;
+					
 					case 'entries':
 					default:
                         options.model = "Entry";
@@ -532,6 +536,12 @@ exports.routes = {
 								options.start.setHours(0);
 								options.start.setMinutes(0);
 								options.start.setSeconds(0);
+								options.start.getDate();
+								
+								if( tzOffset ){
+									options.start.setTime( options.start.getTime() + (tzOffset||0)*1000*60 - 1000*60*60*24 );
+								}
+								
 								return cb();
 							});
 					},
@@ -552,6 +562,145 @@ exports.routes = {
 						});
 						return res.send( data );
 					});
+				});
+			}
+		}
+	},
+	
+	'/stats' : {
+		get : {
+			access : 'developer_public',
+			handler : function( req, res ){
+				
+				var page_id = req.param('page_id')
+				  , game_id = req.param('game_id')
+				  , apikey_id = req.apikey._id
+                  , query = {}
+				  , options ={}
+				  , stats = {}
+                
+                if( page_id ){
+                    query.page_id = new ObjectId(page_id);
+                }
+                if( game_id ){
+                    query.contest_id = new ObjectId(game_id);
+                }
+				
+				// need from and to...
+				async.series([
+					
+					function get_unique(cb){
+						
+						/**
+						 * This would be very easy with our new stats engine:
+						 *
+						 * The null parameter would be for interval
+						 *
+						 * Stats.get('unique', null, game_id || page_id || req.apikey._id, callback )
+						 *
+						 */
+						
+						var model = Bozuko.models.Apikey
+						  , id = null
+						  
+						if( page_id ){
+							model = Bozuko.models.Page;
+							id = page_id;
+						}
+						else if( game_id ){
+							model = Bozuko.models.Contest;
+							id = game_id;
+						}
+						else{
+							id = req.apikey._id;
+						}
+						
+						return model.findById(id, {unique_users: 1}, function(error, m){
+							if( error ) return cb();
+							stats.unique = m.unique_users;
+							return cb();
+						});
+						
+					},
+					
+					function get_entries(cb){
+						
+						/**
+						 * This would be very easy with our new stats engine:
+						 *
+						 * The null parameter would be for interval
+						 *
+						 * Stats.get('total', null, game_id || page_id || req.apikey._id, callback )
+						 *
+						 */
+						
+						// these are going to be counts on the db
+						var selector = {}
+						  , get_count = function(){
+								return Bozuko.models.Entry.count(selector, function(error, count){
+									if( error ) return cb();
+									stats.entries = count;
+									return cb();
+								});
+							}
+						
+						if( game_id ) selector.contest_id = game_id;
+						
+						else if( page_id ) selector.page_id = page_id;
+						
+						else {
+							// this is an apikey - we need to get the pages first
+							return Bozuko.models.Page.find({apikey_id: req.apikey._id}, {_id:1}, function(error, pages){
+								if( error ) return cb();
+								var page_ids = [];
+								pages.forEach(function(p){ page_ids.push(p._id); });
+								selector.page_id = {$in: page_ids};
+								return get_count();
+							});
+						}
+						return get_count();
+						
+					},
+					
+					function get_wins(cb){
+						/**
+						 * This would be very easy with our new stats engine:
+						 *
+						 * The null parameter would be for interval
+						 *
+						 * Stats.get('total', null, game_id || page_id || req.apikey._id, callback )
+						 *
+						 */
+						
+						// these are going to be counts on the db
+						var selector = {}
+						  , get_count = function(){
+								return Bozuko.models.Prize.count(selector, function(error, count){
+									if( error ) return cb();
+									stats.wins = count;
+									return cb();
+								});
+							}
+						
+						if( game_id ) selector.contest_id = game_id;
+						
+						else if( page_id ) selector.page_id = page_id;
+						
+						else {
+							// this is an apikey - we need to get the pages first
+							return Bozuko.models.Page.find({apikey_id: req.apikey._id}, {_id:1}, function(error, pages){
+								if( error ) return cb();
+								var page_ids = [];
+								pages.forEach(function(p){ page_ids.push(p._id); });
+								selector.page_id = {$in: page_ids};
+								return get_count();
+							});
+						}
+						return get_count();
+					}
+					
+				], function return_stats( error ){
+					return res.send( stats );
 				});
 			}
 		}

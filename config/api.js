@@ -169,7 +169,9 @@ module.exports = {
             attempts: 3,
             delay: 1000*60*1 // every minute
         },
-        sender: 'Bozuko Mailer <mailer@bozuko.com>'
+        sender: 'Bozuko Mailer <mailer@bozuko.com>',
+		sender_email: 'mailer@bozuko.com',
+		sender_name: 'Bozuko Mailer'
     },
 
     defaultService:'facebook',

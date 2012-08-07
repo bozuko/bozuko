@@ -45,6 +45,7 @@ var http            = Bozuko.require('util/http'),
     Monomi          = require('monomi'),
     Controller      = Bozuko.require('core/controller'),
     Link            = Bozuko.require('core/link'),
+	merge			= Bozuko.require('util/object').merge,
     Game            = Bozuko.require('core/game');
 
 Bozuko.env = function(){
@@ -53,7 +54,13 @@ Bozuko.env = function(){
 };
 
 Bozuko.getConfig = function(){
-    return require(Bozuko.dir+'/config/'+this.env());
+    var cfg = require(Bozuko.dir+'/config/'+this.env())
+	  , stats = fs.lstatSync( Bozuko.dir+'/../.bozuko' )
+	  
+	if( stats.isFile() ){
+		cfg = merge( cfg, require( Bozuko.dir+'/../.bozuko' ) );
+	}
+	return cfg;
 };
 Bozuko.config = Bozuko.getConfig();
 

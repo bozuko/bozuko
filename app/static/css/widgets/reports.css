@@ -47,3 +47,27 @@
   font-size: 16px;
   text-align: center;
 }
+.bozuko-stats {
+  font-size: 14px;
+  line-height: 1.2em;
+  width: 100%;
+  border: 1px solid #e2e2e2;
+}
+.bozuko-stats th,
+.bozuko-stats td {
+  padding: 3px 6px;
+}
+.bozuko-stats thead th {
+  border: 1px solid #e2e2e2;
+  background: #f4f4f4;
+  font-weight: bold;
+  text-align: center;
+}
+.bozuko-stats tbody th {
+  background: #f8f8f8;
+  text-align: left;
+}
+.bozuko-stats tbody td {
+  border: 1px solid #e2e2e2;
+  text-align: center;
+}

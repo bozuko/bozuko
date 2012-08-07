@@ -7,6 +7,7 @@ var mongoose = require('mongoose'),
 var Entry = module.exports = new Schema({
     contest_id              :{type:ObjectId},
     page_id                 :{type:ObjectId},
+    apikey_id               :{type:ObjectId},
     user_id                 :{type:ObjectId},
     /* page and user names for searching */
     user_name               :{type:String, index:true},
