@@ -191,6 +191,7 @@ Contest.method('validate_', function(callback) {
                     prize.is_pdf = true;
                     prize.is_screen = true;
                 });
+                object[name] = value;
                 return cb();
             }
         },
@@ -203,6 +204,7 @@ Contest.method('validate_', function(callback) {
                     prize.is_pdf = true;
                     prize.is_screen = true;
                 });
+                object[name] = value;
                 return cb();
             }
         },
