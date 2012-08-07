@@ -1,4 +1,5 @@
 var fs = require('fs'),
+	path = require('path'),
     async  = require('async'),
     existsSync = require('path').existsSync,
     Profiler = require('./util/profiler')
@@ -54,11 +55,14 @@ Bozuko.env = function(){
 };
 
 Bozuko.getConfig = function(){
-    var cfg = require(Bozuko.dir+'/config/'+this.env())
-	  , stats = fs.lstatSync( Bozuko.dir+'/../.bozuko' )
-	  
-	if( stats.isFile() ){
-		cfg = merge( cfg, require( Bozuko.dir+'/../.bozuko' ) );
+    var file = Bozuko.dir+'/../.bozuko'
+	  , cfg = require(Bozuko.dir+'/config/'+this.env())
+	
+	if( path.existsSync(file) ){
+		var stats = fs.lstatSync( Bozuko.dir+'/../.bozuko' )
+		if( stats.isFile() ){
+			cfg = merge( cfg, require( Bozuko.dir+'/../.bozuko' ) );
+		}
 	}
 	return cfg;
 };
