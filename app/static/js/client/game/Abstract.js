@@ -637,6 +637,18 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                     cls             :'time'
                                 }]
                             }]
+                        },{
+                            cls             :'prize-screen',
+                            cn              :[{
+                                tag             :'h2',
+                                cls             :'code'
+                            },{
+                                tag             :'h3',
+                                cls             :'time'
+                            },{
+                                tag             :'p',
+                                cls             :'description'
+                            }]
                         }]
                     }]
                 },{
@@ -707,7 +719,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.$youWin[prize.is_barcode?'addClass':'removeClass']('prize-is-barcode');
         this.$youWin[!prize.is_barcode&&!prize.is_email&&!prize.is_pdf?'addClass':'removeClass']('prize-is-user-redeemable');
         
-        this.$youWin.child('.hd .title').update(prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
+        this.$youWin.child('.hd .title').update('You Win!'); //prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
         
         this.$youWin.child('.prize-name').update(prize.name);
         this.$youWin.child('.prize-desc .text').update('<strong>Prize Details:</strong> '+prize.description);
@@ -987,7 +999,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'Redeem', cls:'btn-redeem'});
         }
         else if( prize.is_screen ){
-            this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'View', cls:'btn-open'});
+            this.addYouWinFooterButtons({text:'OK',cls:'btn-save'},{text:'View', cls:'btn-open'});
         }
         else{
             this.addYouWinFooterButtons({text:'OK',cls:'btn-close'});
@@ -1028,7 +1040,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             ft = yw.child('.ft'),
             body = bd.child('.body'),
             redemption = bd.child('.redemption'),
+            screen = bd.child('.prize-screen'),
             time = redemption.child('.time'),
+            screenTime = screen.child('.time'),
             prize = yw.prize;
         
         btn = Ext.get(btn);
@@ -1110,24 +1124,16 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             yw.select('.btn').addClass('btn-disabled');
             self.app.showModal( yw );
             body.setStyle({display: 'none'});
-            redemption.setStyle({display:'block'});
-            var redeem_time = Date.now(), blink=0;
+            screen.setStyle({display:'block'});
+            screen.child('.code').update(prize.code);
+            screen.child('.description').update(prize.description||'');
             // countdown time...
             var clock = function(){
-                time.update(new Date().format('hh:MM:ss TT'));
-                var elapsed = Date.now() - redeem_time;
-                if( elapsed > 1000 * 60 * 4){
-                    var color = !(blink++ % 2) ? 'white' : 'red';
-                    time.setStyle({color: color});
-                }
-                if( elapsed > 1000 * 60 * 5){
-                    self.closeYouWin();
-                }
-                
+                screenTime.update(new Date().format('hh:MM:ss TT'));
             };
             clock();
             self._redemptionClock = setInterval(clock, 1000);
-            self._redeeming = true;
+            self._screen = true;
             self.addYouWinFooterButtons({text:'OK', cls:'btn-close'});
             bd.superScroll().update();
         }
@@ -1143,6 +1149,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             this.getYouWinScreen().child('.bd .body').setStyle({'display':'block'});
             this.getYouWinScreen().child('.bd .redemption').setStyle({'display':'none'});
             this._redeeming = false;
+        }
+        if( this._screen ){
+            this.getYouWinScreen().child('.bd .body').setStyle({'display':'block'});
+            this.getYouWinScreen().child('.bd .prize-screen').setStyle({'display':'none'});
+            clearInterval( this._clock );
+            this._screen = false;
         }
         switch( this._youWinReturn ){
             

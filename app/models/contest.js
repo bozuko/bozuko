@@ -271,6 +271,9 @@ Contest.method('validate_', function(callback) {
         share_url       :{
             type            :'String'
         },
+        share_title     :{
+            type            :'String'
+        },
         share_description   :{
             type            :'String'
         },

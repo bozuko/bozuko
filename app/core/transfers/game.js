@@ -165,16 +165,15 @@ var game = {
         obj.status = game.contest.state;
         
         obj.id = game.contest.id;
-        if( game.contest.web_only ){
-            if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
-            obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
-            obj.share_description = game.contest.share_description || 'Play '+game.getName()+' for a chance to win big prizes!';
-        }
-        else {
-            if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
-            obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
-            obj.share_description = game.contest.share_description || 'Play '+game.getName()+' on your phone for a chance to win big prizes!';
-        }
+        
+        
+        
+        if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
+        if( !obj.share_title ) obj.share_title = apikey ? '' : 'Play '+game.getName()+'!';
+        if( !obj.share_description ) obj.share_description = apikey ? '' :
+            game.contest.get('web_only') ?
+                'Play '+game.getName()+' for a chance to win big prizes!' :
+                'Play '+game.getName()+' on your phone for a chance to win big prizes!';
         
         obj.type = game.getType();
         obj.name = game.getName();
