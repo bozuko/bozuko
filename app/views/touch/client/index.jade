@@ -15,3 +15,9 @@ script(type="text/javascript")
     scope: "#{Bozuko.cfg('facebook.perms.web', "email,publish_stream,user_likes")}"
   };
   Bozuko.client.App.launch(!{JSON.stringify(config)});
+  
+- if( Bozuko.cfg('client.game.backgroundImage') || Bozuko.cfg('client.game.backgroundColor') )
+  style(type="text/css")
+    html body {
+      background: !{Bozuko.cfg('client.game.backgroundColor', '#ffffff')} !{Bozuko.cfg('client.game.backgroundImage') ? 'url('+Bozuko.cfg('client.game.backgroundImage')+')' : 'none'} !{Bozuko.cfg('client.game.backgroundAttachment', 'scroll')} !{Bozuko.cfg('client.game.backgroundRepeat', 'repeat')} !{Bozuko.cfg('client.game.backgroundPosition', 'top center')}
+    }
