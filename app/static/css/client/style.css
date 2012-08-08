@@ -1118,6 +1118,17 @@ a:hover {
   -webkit-animation: pulse 1s ease-in-out 0s infinite alternate;
   -moz-animation: pulse 1s ease-in-out 0s infinite alternate;
 }
+.you-win .bd .prize-screen {
+  display: none;
+}
+.you-win .bd .prize-screen .code {
+  font-size: 24px;
+  color: #006b37;
+  text-align: center;
+}
+.you-win .bd .prize-screen .time {
+  text-align: center;
+}
 .you-win .ft {
   bottom: 0;
   width: 100%;
