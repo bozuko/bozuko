@@ -450,7 +450,16 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     picture: self.page.image
                 };
                 if( !mobile ) opts.display = 'popup';
-                FB.ui(opts);
+                FB.ui(opts, function(response){
+                    if( response && response.post_id ){
+                        self.app.api.call({
+                            path: '/game/'+self.game.id+'/shared/'+response.post_id,
+                            method: 'post'
+                        }, function(response){
+                            // don't need to do anything with it...
+                        });
+                    }
+                });
             });
             this.squareImage(this.$description.child('.page-pic'), this.page.image);
             this.updateDescription();
@@ -471,6 +480,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     },
     
     updateDescription : function(){
+        var self = this;
         var description = this.getDescription();
         
         // add prizes...
@@ -648,6 +658,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             },{
                                 tag             :'p',
                                 cls             :'description'
+                            },{
+                                tag             :'p',
+                                cls             :'expiration'
                             }]
                         }]
                     }]
@@ -690,7 +703,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 desc = this.$youWin.child('.prize-desc');
                 
             desc.setVisibilityMode( Ext.Element.DISPLAY );
-            this.$youWin.child('.prize-name').on('click', desc.toggle, desc);
+            this.$youWin.child('.prize-name').on('click', function(){
+                if( self._screen ) return;
+                desc.toggle();
+            });
                 
             bd.superScroll({
                 horizontal : false,
@@ -1121,21 +1137,38 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
         }
         else if( btn.hasClass('btn-open') ){
-            yw.select('.btn').addClass('btn-disabled');
-            self.app.showModal( yw );
-            body.setStyle({display: 'none'});
-            screen.setStyle({display:'block'});
-            screen.child('.code').update(prize.code);
-            screen.child('.description').update(prize.description||'');
-            // countdown time...
-            var clock = function(){
-                screenTime.update(new Date().format('hh:MM:ss TT'));
-            };
-            clock();
-            self._redemptionClock = setInterval(clock, 1000);
-            self._screen = true;
-            self.addYouWinFooterButtons({text:'OK', cls:'btn-close'});
-            bd.superScroll().update();
+            setTimeout(function(){
+                yw.select('.btn').addClass('btn-disabled');
+                self.app.showModal( yw );
+                body.setStyle({display: 'none'});
+                screen.setStyle({display:'block'});
+                screen.child('.code').update(prize.code);
+                if( prize.hide_expiration || !prize.expiration_timestamp ){
+                    screen.child('.expiration').hide();
+                }
+                else{
+                    var time = Bozuko.util.ISODate.convert(prize.expiration_timestamp)
+                      , expired = +time > Date.now() ? 'Expires ' : 'Expired ';
+                      
+                    if( !+time) {
+                        screen.child('.expiration').hide();
+                    }
+                    else{
+                        screen.child('.expiration').update( expired+' '+ (time.format('fullDate'))+' at '+(time.format('shortTime')) )
+                        screen.child('.expiration').show();
+                    }
+                }
+                screen.child('.description').update(prize.description||'');
+                // countdown time...
+                var clock = function(){
+                    screenTime.update(new Date().format('hh:MM:ss TT'));
+                };
+                clock();
+                self._redemptionClock = setInterval(clock, 1000);
+                self._screen = true;
+                self.addYouWinFooterButtons({text:'OK', cls:'btn-close'});
+                bd.superScroll().update();
+            }, 100);
         }
         else{
             this.closeYouWin();

@@ -344,6 +344,40 @@ exports.routes = {
 			}
 		}
 	},
+	
+	'/game/:id/codes' : {
+		get : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				// get the game
+				
+				var codes = {
+					count: 0,
+					limit: req.param('limit') || 100,
+					offset: req.param('offset') || offset,
+					codes: []
+				};
+				
+				Bozuko.models.Contest.findOne( {
+					_id: req.param('id'),
+					apikey_id: req.apikey._id
+				},{results: 0}, function(error, contest){
+					if(error) return error.send(res);
+					
+					// got it...
+					if( !contest ){
+						return Bozuko.transfer('game_prize_codes', codes, null, function(error, result){
+							return res.send(error||result);
+						});
+					}
+					
+					return Bozuko.transfer('game_prize_codes', codes, null, function(error, result){
+						return res.send(error||result);
+					});
+				});
+			}
+		}
+	},
 
     '/game/:id/state' : {
 
@@ -434,6 +468,34 @@ exports.routes = {
             }
         }
     },
+	
+	'/game/:id/shared/:post_id' : {
+		access: 'user',
+		post : {
+			handler : function(req, res){
+				var post_id = req.param('post_id');
+				// find game
+                return Bozuko.models.Contest.find({_id:req.param('id')}, {share_url: 1, page_id: 1, game:1}, {limit:1}, function(error, contests){
+                    if( error || !contests.length ) return res.send({success: false});
+					var contest = contests[0];
+                   
+					return Bozuko.models.Share.findOne({post_id: post_id}, function(error, share){
+						if( error || share ) return res.send({success: false});
+						// lets save this share...
+						share = new Bozuko.models.Share({
+							service         :'facebook',
+							type            :'share',
+							contest_id      :contest._id,
+							page_id         :contest.page_id,
+							post_id			:post_id
+						});
+						share.save();
+						return res.send({success: true});
+					});
+                });
+			}
+		}
+	},
 	
 	'/themes' : {
 		get : {

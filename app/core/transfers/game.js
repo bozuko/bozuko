@@ -1,6 +1,6 @@
 var burl = Bozuko.require('util/url').create
   , merge = Bozuko.require('util/object').merge
-  ;
+  , _t = Bozuko.t
 
 var game_prize = {
     doc: "A prize that can be won in a game",
@@ -113,6 +113,7 @@ var game = {
         status: "String",
         ingame_copy: 'String',
         post_to_wall: 'Boolean',
+        game_background: 'String',
         share_url : 'String',
         share_title: 'String',
         share_description: 'String',
@@ -153,8 +154,6 @@ var game = {
         var self = this,
             obj = {};
             
-        console.log('transfers/game.js enter transfer create');
-        
         if( game instanceof Bozuko.models.Contest) game = game.getGame();
             
         obj = this.merge(obj, game.contest);
@@ -166,14 +165,9 @@ var game = {
         
         obj.id = game.contest.id;
         
-        
-        
         if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
-        if( !obj.share_title ) obj.share_title = apikey ? '' : 'Play '+game.getName()+'!';
-        if( !obj.share_description ) obj.share_description = apikey ? '' :
-            game.contest.get('web_only') ?
-                'Play '+game.getName()+' for a chance to win big prizes!' :
-                'Play '+game.getName()+' on your phone for a chance to win big prizes!';
+        if( !obj.share_title ) obj.share_title = apikey ? '' : Bozuko.t('en', 'game/share_title', game.getName());
+        if( !obj.share_description ) obj.share_description = apikey ? '' : Bozuko.t('en', 'game/share_description', game.getName())
         
         obj.type = game.getType();
         obj.name = game.getName();
@@ -269,6 +263,28 @@ var game_cancel_result = {
     }
 };
 
+var game_prize_code = {
+    doc: "Details about a prize and related win if available",
+    def: {
+        prize_id            :"String",
+        code                :"String",
+        win : {
+            time                :"String",
+            name                :"String",
+            email               :"String"
+        }
+    }
+};
+
+var game_prize_codes = {
+    doc: "A list of prizes for a game",
+    def: {
+        offset : 'Number',
+        limit : 'Number',
+        count : "Number",
+        codes : ['game_prize_code']
+    }
+};
 
 var game_state = {
     def: {
@@ -336,6 +352,8 @@ exports.transfer_objects = {
     game_result: game_result,
     entry_method: entry_method,
     game_prize: game_prize,
+    game_prize_code: game_prize_code,
+    game_prize_codes: game_prize_codes,
     theme: theme,
     themes: themes
 };
@@ -470,6 +488,29 @@ exports.links = {
                 }
             },
             returns: 'themes'
+        }
+    },
+    
+    game_prize_codes: {
+        get : {
+            doc: "Get all the game prize codes",
+            params: {
+                offset: {
+                    type: 'Number'
+                },
+                limit: {
+                    type: 'Number'
+                },
+                prize_id: {
+                    doc: "The prize_id in the array of prizes on the game",
+                    type: "String"
+                },
+                code: {
+                    type: "Number",
+                    doc: "The prize code to lookup"
+                }
+            },
+            returns: 'game_prize_codes'
         }
     },
     

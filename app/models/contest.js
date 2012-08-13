@@ -45,6 +45,7 @@ var Contest = module.exports = new Schema({
     share_url               :{type:String},
     share_title             :{type:String},
     share_description       :{type:String},
+    game_background         :{type:String},
     hide_consolations       :{type:Boolean, default: false},
     plays                   :[Play],
     game                    :{type:String},
@@ -232,6 +233,10 @@ Contest.method('validate_', function(callback) {
                 });
             }
         },
+        game_background :{
+            allowEmpty      :true,
+            type            :'String'
+        },
         entry_duration  :{
             type            :'Number',
             dfault          :1000 * 60 * 60 * 24 /* 1 day */,
@@ -258,7 +263,13 @@ Contest.method('validate_', function(callback) {
             }
         },
         rules           :{
-            type            :'String'
+            type            :'String',
+            allowBlank      :true,
+            mutate          :function(value, name, object, cb){
+                object.replace_rules = !!value;
+                object[name] = value;
+                cb();
+            }
         },
         name            :{
             type            :'String',
@@ -383,11 +394,13 @@ Contest.method('validate_', function(callback) {
                             v = c.dfault;
                         }
                     }
-                    if(v === undefined ){
+                    if( v === undefined && !c.allowEmpty ){
                         return cb();
                     }
                     if(c.mutate) return c.mutate(v, name, object, cb);
-                    object[c.aliasFor || name] = v;
+                    v===undefined ?
+                        object[c.aliasFor || name] = null :
+                        object[c.aliasFor || name] = v;
                     return cb();
                 }
                 
