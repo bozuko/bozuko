@@ -20,6 +20,7 @@ exports.transfer_objects = {
             wrapper_message: "String",
             address_required: "Boolean",
             description: "String",
+            hide_expiration: "Boolean",
             win_time: "String",
             redemption_duration: "Number",
             redeemed_timestamp: "String",

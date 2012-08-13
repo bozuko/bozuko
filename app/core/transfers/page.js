@@ -15,6 +15,7 @@ exports.transfer_objects = {
             like_url: "String",
             like_button_url: "String",
             like_button_url_large: "String",
+            game_background: "String",
             facebook_page: "String",
             facebook_id: "String",
             category: "String",

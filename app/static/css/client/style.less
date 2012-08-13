@@ -3,8 +3,8 @@
 @import "app/static/css/vars";
 @import "app/static/css/mixins";
 
-html{ }
-body{ background: #000000; padding: 0; margin: 0; font-family: "helvetica nueue", "helvetica", "arial", "sans"; font-size: 13px;  }
+html{ height: 100%; }
+body{ background: #000000; padding: 0; margin: 0; font-family: "helvetica nueue", "helvetica", "arial", "sans"; font-size: 13px; min-height: 100%; }
 h1,h2,h3,h4,h5,h6{ font-family: "helvetica nueue", "helvetica", "arial", "sans" }
 
 .facebook-tab body {
@@ -987,6 +987,13 @@ a, a:visited, a:link, a:hover {
             
             .time {
                 text-align: center;
+            }
+            
+            .expiration {
+                color: red;
+                font-weight: bold;
+                text-align: center;
+                font-size: 14px;
             }
         }
         

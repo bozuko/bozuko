@@ -13,7 +13,8 @@ var mongoose = require('mongoose'),
     async = require('async'),
     uuid = require('node-uuid'),
     http = Bozuko.require('util/http'),
-    fs = require('fs')
+    fs = require('fs'),
+	_t = Bozuko.t
 ;
 
 var safe = {j:true};
@@ -606,8 +607,7 @@ Prize.method('share', function(args, callback){
 			// fix this in the case of Bozuko
 			if( page.name.match(/^bozuko$/i) ) at='with';
 			
-			var game_type = contest.game=='scratch'? 'scratch ticket':'slot machine';
-			options.description = 'You could too! Play '+page.name+' '+game_type+' for your chance to win!';
+			options.description = _t('en','game/share_description', gameName);
 			if( contest.share_description ) {
 				options.description = contest.share_description;
 			}
@@ -918,7 +918,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 			.moveDown()
 			;
 		
-		if(!self.hide_expiration ) doc
+		if( !self.hide_expiration && +self.expires ) doc
 			.font('Bold')
 			.fill('#999')
 			.text('Expires:', {width: col1})

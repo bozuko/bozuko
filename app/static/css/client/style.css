@@ -10,12 +10,16 @@
   content: "";
   display: block;
 }
+html {
+  height: 100%;
+}
 body {
   background: #000000;
   padding: 0;
   margin: 0;
   font-family: "helvetica nueue", "helvetica", "arial", "sans";
   font-size: 13px;
+  min-height: 100%;
 }
 h1,
 h2,
@@ -1128,6 +1132,12 @@ a:hover {
 }
 .you-win .bd .prize-screen .time {
   text-align: center;
+}
+.you-win .bd .prize-screen .expiration {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+  font-size: 14px;
 }
 .you-win .ft {
   bottom: 0;
