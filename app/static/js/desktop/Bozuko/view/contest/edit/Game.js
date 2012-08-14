@@ -97,13 +97,29 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                         ]
                     }),
                     displayField    :'text',
-                    valueField      :'value',
-                    value           :'default'
+                    valueField      :'value'
                 });
                 break;
             
             case 'scratch':
                 this.add({
+                    xtype           :'combo',
+                    name            :'game_config.display_number_tickets',
+                    fieldLabel      :'Display Number of Tickets',
+                    queryMode       :'local',
+                    value           :true,
+                    editable        :false,
+                    forceSelection  :true,
+                    store           :Ext.create('Ext.data.Store',{
+                        fields:['value', 'text'],
+                        data:[
+                            {value:false,text:'No'},
+                            {value:true,text:'Yes'}
+                        ]
+                    }),
+                    displayField    :'text',
+                    valueField      :'value'
+                },{
                     xtype           :'combo',
                     name            :'game_config.theme',
                     fieldLabel      :'Theme',
@@ -122,7 +138,6 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                     }),
                     displayField    :'text',
                     valueField      :'value',
-                    value           :'default',
                     listeners       :{
                         scope           :me,
                         change          :function(field, value){
