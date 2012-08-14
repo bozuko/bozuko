@@ -284,6 +284,7 @@ Entry.prototype.getButtonEnabled = function( nextEntryTime, tokens ){
 		now = Date.now();
 		
     if( !tokens && (
+		!this.contest.active ||
 		+nextEntryTime > now ||
 		+this.contest.start > now ||
 		+this.contest.end < now)

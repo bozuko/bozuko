@@ -152,6 +152,7 @@ Contest.method('validate_', function(callback) {
             type            :'Number'
         },
         expiration      :{
+            aliasFor        :'duration',
             type            :'Number'
         },
         hide_expiration :{
@@ -201,6 +202,7 @@ Contest.method('validate_', function(callback) {
             type            :[prize],
             dfault          :[],
             mutate          :function(value, name, object, cb){
+                
                 if( value && value.length ) value.forEach(function(prize){
                     prize.is_pdf = true;
                     prize.is_screen = true;
@@ -343,6 +345,7 @@ Contest.method('validate_', function(callback) {
                             var e = []
                               , n = []
                               ;
+                            
                             return async.forEachSeries(v, function(cur, cb) {
                                 var o = new c.model;
                                 if(cur.id){
@@ -398,9 +401,7 @@ Contest.method('validate_', function(callback) {
                         return cb();
                     }
                     if(c.mutate) return c.mutate(v, name, object, cb);
-                    v===undefined ?
-                        object[c.aliasFor || name] = null :
-                        object[c.aliasFor || name] = v;
+                    object[c.aliasFor || name] = v === undefined ? null : v;
                     return cb();
                 }
                 
@@ -423,6 +424,7 @@ Contest.method('validate_', function(callback) {
           ;
           
         if(!page_id){
+            console.log('no page_id');
             return callback(E.error('page_id',"Page ID is required"));
         }
         
@@ -453,8 +455,7 @@ Contest.method('validate_', function(callback) {
                     enabled: true
                 }];
             }
-            game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:mm tt" )+']';
-                
+            game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:MM tt" )+']';
             return game.save(callback);
         });
     });
@@ -500,7 +501,7 @@ Contest.method('validate_', function(callback) {
                         enabled: true
                     }];
                 }
-                game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:mm tt" )+']';
+                game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:MM tt" )+']';
                 return game.save(callback);
             });
         });
@@ -745,7 +746,6 @@ Contest.method('getEngine', function() {
         if( type == '') type = 'order';
         var Engine = Bozuko.require('core/engine/'+type);
         this._engine = new Engine( this );
-        console.log('engine_options = '+inspect(this.engine_options));
         this._engine.configure(this.engine_options);
     }
     return this._engine;

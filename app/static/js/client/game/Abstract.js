@@ -1137,40 +1137,40 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
         }
         else if( btn.hasClass('btn-open') ){
-            setTimeout(function(){
-                yw.select('.btn').addClass('btn-disabled');
-                self.app.showModal( yw );
-                body.setStyle({display: 'none'});
-                screen.setStyle({display:'block'});
-                screen.child('.code').update(prize.code);
-                if( prize.hide_expiration || !prize.expiration_timestamp ){
+            yw.select('.btn').addClass('btn-disabled');
+            self.app.showModal( yw );
+            body.setStyle({display: 'none'});
+            screen.setStyle({display:'block'});
+            screen.child('.code').update(prize.code);
+            if( prize.hide_expiration || !prize.expiration_timestamp ){
+                screen.child('.expiration').hide();
+            }
+            else{
+                var time = Bozuko.util.ISODate.convert(prize.expiration_timestamp)
+                  , expired = +time > Date.now() ? 'Expires ' : 'Expired ';
+                  
+                if( !+time) {
                     screen.child('.expiration').hide();
                 }
                 else{
-                    var time = Bozuko.util.ISODate.convert(prize.expiration_timestamp)
-                      , expired = +time > Date.now() ? 'Expires ' : 'Expired ';
-                      
-                    if( !+time) {
-                        screen.child('.expiration').hide();
-                    }
-                    else{
-                        screen.child('.expiration').update( expired+' '+ (time.format('fullDate'))+' at '+(time.format('shortTime')) )
-                        screen.child('.expiration').show();
-                    }
+                    screen.child('.expiration').update( expired+' '+ (time.format('fullDate'))+' at '+(time.format('shortTime')) )
+                    screen.child('.expiration').show();
                 }
-                screen.child('.description').update(prize.description||'');
-                // countdown time...
-                var clock = function(){
-                    screenTime.update(new Date().format('hh:MM:ss TT'));
-                };
-                clock();
-                self._redemptionClock = setInterval(clock, 1000);
-                self._screen = true;
-                self.addYouWinFooterButtons({text:'OK', cls:'btn-close'});
-                bd.superScroll().update();
-            }, 100);
+            }
+            screen.child('.description').update(prize.description||'');
+            // countdown time...
+            var clock = function(){
+                screenTime.update(new Date().format('hh:MM:ss TT'));
+            };
+            clock();
+            self._redemptionClock = setInterval(clock, 1000);
+            self._screen = Date.now();
+            self.addYouWinFooterButtons({text:'OK', cls:'btn-close'});
+            bd.superScroll().update();
         }
+            
         else{
+            if( this._screen && Date.now() - this._screen < 1000 ) return;
             this.closeYouWin();
         }
     },

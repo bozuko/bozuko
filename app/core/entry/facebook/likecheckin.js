@@ -243,7 +243,11 @@ FacebookLikeCheckinMethod.prototype._load = function( callback ){
 
 FacebookLikeCheckinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
+		
         var now = new Date();
+		if( !this.contest.active ){
+			return _t( this.user ? this.user.lang : "en", 'entry/game_before');
+		}
 		if( +this.contest.end < Date.now() ){
 			return _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
 		}

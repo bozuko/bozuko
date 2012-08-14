@@ -54,6 +54,8 @@ exports.routes = {
 					var noop=function(opts, cb){ return cb(); };
 					return (game ? game.loadGameState : noop).call(game, {user:null, page_id: game ? game.page_id : null}, function(e){
 						
+						if( error ) console.log(error.stack);
+						
 						var t = {
 							success: error ? false : true,
 							errors: error ? error.errors() : undefined,
@@ -350,29 +352,110 @@ exports.routes = {
 			access : 'developer_private',
 			handler : function( req, res ){
 				// get the game
-				
 				var codes = {
-					count: 0,
-					limit: req.param('limit') || 100,
-					offset: req.param('offset') || offset,
-					codes: []
+						count: 0,
+						limit: req.param('limit') || 100,
+						offset: req.param('offset') || 0,
+						codes: []
+					}
+				  , code = req.param('code')
+				  , prize_id = req.param('prize_id')
+				  , selector = {}
+				
+				if( code ) selector.code = code;
+				
+				var send_codes = function(){
+					return Bozuko.transfer('game_prize_codes', codes, null, function(error, result){
+						return res.send(error||result);
+					});
 				};
 				
-				Bozuko.models.Contest.findOne( {
+				return Bozuko.models.Contest.findOne( {
 					_id: req.param('id'),
 					apikey_id: req.apikey._id
 				},{results: 0}, function(error, contest){
 					if(error) return error.send(res);
 					
 					// got it...
-					if( !contest ){
-						return Bozuko.transfer('game_prize_codes', codes, null, function(error, result){
-							return res.send(error||result);
-						});
-					}
+					if( !contest ) return send_codes();
 					
-					return Bozuko.transfer('game_prize_codes', codes, null, function(error, result){
+					selector.contest_id = contest._id;
+					
+					if( prize_id ) contest.prizes.forEach(function(p,i){
+						if( String(p.id) == prize_id ) selector.index = i;
+					});
+					
+					// get the prizes for this contest...
+					return Bozuko.models.Result.count(selector, function(error, count){
+						codes.count = count;
+						return Bozuko.models.Result.find(selector, {}, {sort: {timestamp:1}, limit: codes.limit, skip: codes.offset}, function(error, results){
+							var ret = [];
+							results.forEach(function(r){
+								var code = {code: r.code, prize_id: contest.prizes[r.index]._id};
+								if( r.win_time ) code.win_time = r.win_time;
+								ret.push(code);
+							});
+							codes.codes = ret;
+							return send_codes();
+						});
+					});
+				});
+			}
+		}
+	},
+	
+	'/game/:id/wins' : {
+		get : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				// get the game
+				var ret = {
+						count: 0,
+						limit: req.param('limit') || 100,
+						offset: req.param('offset') || 0,
+						wins: []
+					}
+				  , code = req.param('code')
+				  , prize_id = req.param('prize_id')
+				  , selector = {}
+				  , opts = {sort: {timestamp:1}, limit: ret.limit, skip: ret.offset}
+				
+				var send = function(){
+					return Bozuko.transfer('game_prize_wins', ret, null, function(error, result){
 						return res.send(error||result);
+					});
+				};
+				
+				return Bozuko.models.Contest.findOne( {
+					_id: req.param('id'),
+					apikey_id: req.apikey._id
+				},{results: 0}, function(error, contest){
+					if(error) return error.send(res);
+					
+					// got it...
+					if( !contest ) return send();
+					
+					selector.contest_id = contest._id;
+					if( prize_id ) selector.prize_id = prize_id;
+					
+					// get the prizes for this contest...
+					return Bozuko.models.Prize.count(selector, function(error, count){
+						ret.count = count;
+						
+						return Bozuko.models.Prize.find(selector, {}, opts, function(error, results){
+							var items = [];
+							results.forEach(function(r){
+								var w = {
+									name: r.user_name,
+									prize_id: r.prize_id,
+									code: r.code,
+									win_time: r.timestamp
+								};
+								items.push(w);
+							});
+							ret.wins = items;
+							return send();
+						});
 					});
 				});
 			}

@@ -283,12 +283,16 @@ FacebookService.prototype.checkin = function(options, callback){
         if( !result || !result.location ) return callback( Bozuko.error('checkin/non_location') );
         coords = [result.location.longitude, result.location.latitude];
         var d = Geo.distance( options.ll, coords, 'mi' );
-
+	
+	/*
 	var accuracy = options.accuracy*1.20; // add a fudge factor of 20% to reduce false positives
-        if (accuracy < 50) accuracy = 50;
+        if (1 || accuracy < 50) accuracy = 50;
 	var radius = accuracy*3.3 || Bozuko.cfg('checkin.distance', 600);
+	*/
+	var accuracy = options.accuracy*1.20;
+	var radius = Bozuko.cfg('checkin.distance', 600);
 	radius = radius / 5280;
-	if (radius > 1) radius = 1;
+	// if (radius > 1) radius = 1;
 	if (Bozuko.env() !== 'development' && Bozuko.env() !== 'playground') {
 	    if (Bozuko.env() === 'api') {
 		// Would the user be rejected by our accuracy algorithm? If so log it for analytics.

@@ -2,6 +2,7 @@ var _t = Bozuko.t,
     facebook = Bozuko.require('util/facebook'),
     mongoose = require('mongoose'),
     merge = require('connect').utils.merge,
+    burl = Bozuko.require('util/url').create,
     Schema = mongoose.Schema,
     Services = require('./plugins/services'),
     Coords = require('./plugins/coords'),
@@ -482,7 +483,8 @@ Page.method('checkin', function(user, options, callback) {
             var best_prize = contest.getBestPrize();
             // There should always be a best prize in reality. Sometimes in tests we don't have any prizes.
             best_prize = best_prize ? best_prize.name : 'no prize';
-            options.name = _t(user.lang, 'game/share_title', game.getName());
+            options.name = contest.share_title || _t(user.lang, 'game/share_title', game.getName());
+            options.link = burl('/game/'+contest._id+'/share');
             /*
             options.description = _t(
                 user.lang,
@@ -493,7 +495,7 @@ Page.method('checkin', function(user, options, callback) {
                 game.name
             );
             */
-            options.description = _t(user.lang, 'game/share_description', game.getName());
+            options.description = contest.share_description || _t(user.lang, 'game/share_description', game.getName());
         }
 
         options.page = self;
@@ -553,9 +555,14 @@ Page.static('apiCreate', function(req, callback){
             // custom name or image
             ["game_background","name","image","location"].forEach(function(p){
                 var v;
-                if((v=req.param(p))) page[p] = v;
-                else page[p] = '';
+                if((v=req.param(p))){
+                    page[p] = v;
+                }
+                else{
+                    
+                }
             });
+            
             return page.save(function(error){
                 if(error) {
                     return cb(E.error('facebook_id',"Error updating page"));
@@ -604,8 +611,9 @@ Page.static('apiUpdate', function(req, callback){
             ["game_background","name","image","location"].forEach(function(p){
                 var v;
                 if((v=req.param(p))) page[p] = v;
-                else page[p] = '';
+                //else page[p] = '';
             });
+            
             return page.save(function(error){
                 if(error) {
                     return cb(E.error('facebook_id',"Error saving page"));

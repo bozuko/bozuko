@@ -13,6 +13,11 @@ var game_prize = {
         name: "String",
         description: "String",
         result_image: "String"
+    },
+    
+    create : function(prize, user, callback){
+        prize.expiration = prize.duration;
+        return this.sanitize(prize, null, user, callback);
     }
 };
 
@@ -140,7 +145,9 @@ var game = {
             page: "String",
             game: "String",
             game_publish: "String",
-            game_cancel: "String"
+            game_cancel: "String",
+            game_prize_codes: "String",
+            game_prize_wins: "String"
         }
     },
 
@@ -185,8 +192,6 @@ var game = {
             if(game.contest.consolation_config)
                 obj.consolation_when = game.contest.consolation_config.when
             
-            
-            
             if( game.contest.game_config.theme == 'custom' && game.contest.game_config.custom_id ){
                 obj.theme = game.contest.game_config.custom_id;
             }
@@ -210,7 +215,10 @@ var game = {
             if(apikey && (game.contest.state == 'active' || game.contest.state == 'published') ){
                 obj.links.game_cancel = '/game/'+game.contest.id+'/cancel'
             }
-            
+            if(apikey){
+                obj.links.game_prize_codes = '/game/'+game.contest.id+'/codes';
+                obj.links.game_prize_wins = '/game/'+game.contest.id+'/wins';
+            }
             return self.sanitize(obj, null, user, callback);
         });
     }
@@ -264,20 +272,16 @@ var game_cancel_result = {
 };
 
 var game_prize_code = {
-    doc: "Details about a prize and related win if available",
+    doc: "Details about a prize",
     def: {
         prize_id            :"String",
         code                :"String",
-        win : {
-            time                :"String",
-            name                :"String",
-            email               :"String"
-        }
+        win_time            :"String"
     }
 };
 
 var game_prize_codes = {
-    doc: "A list of prizes for a game",
+    doc: "A list of prize codes for a game",
     def: {
         offset : 'Number',
         limit : 'Number',
@@ -285,6 +289,27 @@ var game_prize_codes = {
         codes : ['game_prize_code']
     }
 };
+
+var game_prize_win = {
+    doc: "Details about a prize win",
+    def: {
+        prize_id            :"String",
+        code                :"String",
+        win_time            :"String",
+        name                :"String"
+    }
+};
+
+var game_prize_wins = {
+    doc: "A list of prize wins for a game",
+    def: {
+        offset : 'Number',
+        limit : 'Number',
+        count : "Number",
+        wins : ['game_prize_win']
+    }
+};
+
 
 var game_state = {
     def: {
@@ -354,6 +379,8 @@ exports.transfer_objects = {
     game_prize: game_prize,
     game_prize_code: game_prize_code,
     game_prize_codes: game_prize_codes,
+    game_prize_win: game_prize_win,
+    game_prize_wins: game_prize_wins,
     theme: theme,
     themes: themes
 };
@@ -496,21 +523,44 @@ exports.links = {
             doc: "Get all the game prize codes",
             params: {
                 offset: {
-                    type: 'Number'
+                    type: 'Number',
+                    description: "The index of the record to start returning from."
                 },
                 limit: {
-                    type: 'Number'
+                    type: 'Number',
+                    description: "The limit to the number of returned items."
                 },
                 prize_id: {
-                    doc: "The prize_id in the array of prizes on the game",
+                    description: "The prize_id in the array of prizes on the game",
                     type: "String"
                 },
                 code: {
                     type: "Number",
-                    doc: "The prize code to lookup"
+                    description: "The prize code to lookup"
                 }
             },
             returns: 'game_prize_codes'
+        }
+    },
+    
+    game_prize_wins: {
+        get : {
+            doc: "Get all the game prize wins",
+            params: {
+                offset: {
+                    type: 'Number',
+                    description: "The index of the record to start returning from."
+                },
+                limit: {
+                    type: 'Number',
+                    description: "The limit to the number of returned items that was passed to the request."
+                },
+                prize_id: {
+                    description: "The prize_id in the array of prizes on the game",
+                    type: "String"
+                }
+            },
+            returns: 'game_prize_wins'
         }
     },
     

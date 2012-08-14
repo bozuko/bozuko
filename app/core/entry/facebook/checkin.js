@@ -234,8 +234,12 @@ FacebookCheckinMethod.prototype._load = function( callback ){
 
 FacebookCheckinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
+		
         var now = new Date();
-		if( +this.contest.end < Date.now() ){
+		if( !this.contest.active ){
+			text = _t( this.user ? this.user.lang : "en", 'entry/game_before');
+		}
+		else if( +this.contest.end < Date.now() ){
 			return _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
 		}
 		else if( +this.contest.start > Date.now() ){
