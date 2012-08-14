@@ -179,6 +179,8 @@ var game = {
         obj.type = game.getType();
         obj.name = game.getName();
         obj.config = game.getConfig();
+        if( obj.config.display_number_tickets === undefined )
+            obj.config.display_number_tickets = true;
         obj.prizes = game.getPrizes();
         obj.image = game.getListImage();
         obj.list_message = game.contest.getListMessage();

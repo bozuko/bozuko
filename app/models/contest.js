@@ -442,6 +442,7 @@ Contest.method('validate_', function(callback) {
             }
             
             game.apikey_id = req.apikey._id;
+            game.game_config.display_number_tickets = false;
             game.engine_type = 'time';
             game.engine_options={};
             if( !game.consolation_prizes || !game.consolation_prizes.length ){
@@ -489,6 +490,7 @@ Contest.method('validate_', function(callback) {
                     return callback(E);
                 }
                 game.engine_type = 'time';
+                game.game_config.display_number_tickets = false;
                 game.engine_options={};
                 if( !game.consolation_prizes || !game.consolation_prizes.length ){
                     game.consolation_config = [{enabled: false}];
