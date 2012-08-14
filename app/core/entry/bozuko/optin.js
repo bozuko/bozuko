@@ -128,7 +128,10 @@ BozukoOptinMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     var text = '';
     if( !tokens ){
         var now = new Date();
-		if( +this.contest.end < Date.now() ){
+		if( !this.contest.active ){
+			text = _t( this.user ? this.user.lang : "en", 'entry/game_before');
+		}
+		else if( +this.contest.end < Date.now() ){
 			text = _t( this.user ? this.user.lang : 'en', 'entry/game_over' );
 		}
 		else if( +this.contest.start > Date.now() ){
