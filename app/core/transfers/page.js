@@ -247,6 +247,10 @@ exports.links = {
                 image : {
                     type: "String",
                     description: "The URL of an image for the page - should be square and at least 200 x 200"
+                },
+                background: {
+                    type : "String",
+                    description : "Background css for the page"
                 }
             }
         },
@@ -270,6 +274,10 @@ exports.links = {
                 image : {
                     type: "String",
                     description: "The URL of an image for the page - should be square and at least 200 x 200"
+                },
+                background: {
+                    type : "String",
+                    description : "Background css for the page"
                 }
             }
         }

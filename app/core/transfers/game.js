@@ -404,6 +404,10 @@ var game_params = {
         type : "String",
         description : "The theme name (or URL of a theme bg)"
     },
+    background: {
+        type : "String",
+        description : "Background css for the page"
+    },
     entry_duration : {
         type: "Number",
         description: "How often a user can enter (ms)"
