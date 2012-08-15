@@ -189,15 +189,46 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
     });
 };
 
+TimeEngine.prototype.saveChunks = function(totalPrizes, save, callback) {
+    var chunkSize = 100;
+    var complete = 0;
+    var done = measure.measure('engine.time.saveChunks');
+
+    async.whilst(
+        function() {
+          return complete < totalPrizes;
+        },
+        function(cb) {
+            var toGo = totalPrizes - complete;
+            if (toGo > chunkSize) {
+                chunkSize = toGo;
+            }
+            var error = false;
+            function finish(err) {
+                if (err) {
+                    error = true;
+                    return cb(err);
+                }
+                if (++complete === chunkSize && !error) cb();
+            }
+            for (var i = 0; i < chunkSize; i++) {
+                save(i, finish);
+            }
+        },
+        function(err) {
+            done();
+            callback(err);
+        }
+    );
+};
+
 TimeEngine.prototype.distributeRandom = 
 function(contest_id, totalPrizes, prize_index, start, end, prefix, block, callback) {
     var self = this;
     var date = null;
     var result = null;
-    var results = [];
 
-    var done = measure.measure('engine.time.distributeRandom.buildArray');
-    for (var i = 0; i < totalPrizes; i++) {
+    function saveResult(i, cb) {
         date = new Date(rand(start, end));
         result = new Bozuko.models.Result({
             contest_id: contest_id,
@@ -207,17 +238,10 @@ function(contest_id, totalPrizes, prize_index, start, end, prefix, block, callba
             timestamp: date,
             history: [{timestamp: date}]
         });
-        results.push(result);
-    }
-    done();
-
-    done = measure.measure('engine.time.distributeRandom.save');
-    async.forEach(results, function(result, cb) {
         result.save(cb);
-    }, function(err) {
-        done();
-        callback(err);
-    });
+    }
+
+    this.saveChunks(totalPrizes, saveResult, callback);
 };
 
 TimeEngine.prototype.distributeInterval 
