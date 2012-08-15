@@ -250,7 +250,7 @@ exports.links = {
                 },
                 background: {
                     type : "String",
-                    description : "Background css for the page"
+                    description : "Background for the page (value for the css `background` shorthand property)."
                 }
             }
         },
@@ -277,7 +277,7 @@ exports.links = {
                 },
                 background: {
                     type : "String",
-                    description : "Background css for the page"
+                    description : "Background for the page (value for the css `background` shorthand property)."
                 }
             }
         }
