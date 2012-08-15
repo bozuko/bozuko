@@ -19,7 +19,7 @@ var contest = new Bozuko.models.Contest({
     prizes: [{
         name: 'stuff',
         value: 1,
-        total: 1000
+        total: 10000
     }]
 });
 
@@ -38,7 +38,7 @@ exports.setup = function(test) {
     });
 };
 
-exports['publish a month long contest with 1000 prizes'] = function(test) {
+exports['publish a month long contest with 10000 prizes'] = function(test) {
     var engine = new TimeEngine(contest, {multiplay: false});
     var done = measure.measure('engine.generateResults');
     engine.generateResults(Bozuko.models.Page, contest.page_id, function(err, _results) {
@@ -46,7 +46,7 @@ exports['publish a month long contest with 1000 prizes'] = function(test) {
         test.ok(!err);
 
         Bozuko.models.Result.count(function(err, count) {
-            test.equal(count, 1000);
+            test.equal(count, 10000);
             test.done();
         });
     });
