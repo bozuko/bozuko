@@ -637,8 +637,8 @@ Contest.method('getOfficialRules', function(){
         end_date : dateFormat(this.end, 'mmmm dd, yyyy'),
         end_time : dateFormat(this.end, 'hh:MM TT'),
         age_limit : 16,
-        page_url : 'https://bozuko.com/p/'+this.page_id,
-        winners_list_url : 'https://bozuko.com/p/'+this.page_id+'/winners/'+this.id
+        page_url : burl('/p/'+this.page_id),
+        winners_list_url : burl('/p/'+this.page_id+'/winners/'+this.id)
     };
     var map = [
         "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth",
