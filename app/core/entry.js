@@ -34,12 +34,18 @@ Entry.prototype.enter = function(callback) {
             // TODO: remove this line. It breaks the contest model abstraction
             contest.schema.emit('entry', entry_model);
 
-            Bozuko.publish('contest/entry',
-                {contest_id: contest._id, page_id: self.page_id, user_id: self.user._id});
-
             self.loadEntryModel(entry_model);
             return entry_model.save( function(error){
                 if (error) return callback(error);
+				
+				Bozuko.publish('contest/entry',{
+					entry_id		:entry_model._id,
+					contest_id		:contest._id,
+					page_id			:self.page_id,
+					user_id			:self.user._id,
+					apikey_id		:contest.apikey_id
+				});
+				
                 var opts = {user: self.user, page: self.page};
                 return contest.loadGameState(opts, function(err, state) {
                     if (err) return callback(err);
@@ -179,6 +185,7 @@ Entry.prototype.process = function( callback ){
 
 Entry.prototype.loadEntryModel = function(entry){
     entry.contest_id = this.contest._id;
+	entry.apikey_id = this.contest.apikey_id || null;
     entry.page_id = this.page_id;
     entry.user_id = this.user._id;
     entry.user_name = this.user.name;
@@ -277,6 +284,7 @@ Entry.prototype.getButtonEnabled = function( nextEntryTime, tokens ){
 		now = Date.now();
 		
     if( !tokens && (
+		!this.contest.active ||
 		+nextEntryTime > now ||
 		+this.contest.start > now ||
 		+this.contest.end < now)

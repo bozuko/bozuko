@@ -15,6 +15,7 @@ exports.transfer_objects = {
             like_url: "String",
             like_button_url: "String",
             like_button_url_large: "String",
+            game_background: "String",
             facebook_page: "String",
             facebook_id: "String",
             category: "String",
@@ -246,6 +247,10 @@ exports.links = {
                 image : {
                     type: "String",
                     description: "The URL of an image for the page - should be square and at least 200 x 200"
+                },
+                background: {
+                    type : "String",
+                    description : "Background for the page (value for the css `background` shorthand property)."
                 }
             }
         },
@@ -269,6 +274,10 @@ exports.links = {
                 image : {
                     type: "String",
                     description: "The URL of an image for the page - should be square and at least 200 x 200"
+                },
+                background: {
+                    type : "String",
+                    description : "Background for the page (value for the css `background` shorthand property)."
                 }
             }
         }

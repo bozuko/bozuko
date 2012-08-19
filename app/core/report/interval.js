@@ -158,6 +158,8 @@ CountsReport.prototype.run = function run(callback){
         });
     };
     
+    console.log(intervals);
+    
     return async.forEach( intervals,
         
         function iterate(interval, cb){

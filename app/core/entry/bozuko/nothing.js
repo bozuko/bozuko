@@ -94,6 +94,9 @@ BozukoNothingMethod.prototype.getTokenCount = function(){
 
 BozukoNothingMethod.prototype.getButtonText = function( nextEntryTime, tokens ){
     if( !tokens ){
+		if( !this.contest.active ){
+			return _t( this.user ? this.user.lang : "en", 'entry/game_before');
+		}
         var now = new Date();
 		if( +this.contest.end < Date.now() ){
 			return _t( this.user ? this.user.lang : 'en', 'entry/game_over' );

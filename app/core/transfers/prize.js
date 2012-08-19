@@ -14,11 +14,13 @@ exports.transfer_objects = {
             is_email: "Boolean",
             is_barcode: "Boolean",
             is_pdf: "Boolean",
+            is_screen: "Boolean",
             barcode_image: "String",
             page_name: "String",
             wrapper_message: "String",
             address_required: "Boolean",
             description: "String",
+            hide_expiration: "Boolean",
             win_time: "String",
             redemption_duration: "Number",
             redeemed_timestamp: "String",
@@ -47,7 +49,11 @@ exports.transfer_objects = {
                 
                 if( prize.expires && prize.expires instanceof Date ){
                     console.error( prize.expires );
-                    o.wrapper_message+=" This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
+                    try{
+                        o.wrapper_message+=" This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
+                    }catch(e){
+                        
+                    }
                 }
                 o.win_time = prize.timestamp;
                 o.business_img = prize.page.image;

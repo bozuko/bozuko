@@ -5,6 +5,7 @@ var express         = require('express')
   , http            = require('http')
   , Bozuko          = require('../../app/bozuko')
   , assert          = require('assert')
+  , qs              = require('querystring')
   , merge           = Bozuko.require('util/object').merge
   , apikey          = null
   , private_headers = null
@@ -23,7 +24,14 @@ assert.response = function(test, server, req, res, callback){
     data = req.data || req.body,
     requestTimeout = req.timeout || 10000;
     
-    if(data && !(data instanceof String) ){
+    if(data && method.match(/^get$/i)){
+        if( !(data instanceof String) ){
+            data = qs.stringify(data);
+        }
+        req.url+= (!~req.url.indexOf('?') ? '?' : '&' ) + data;
+        delete data;
+    }
+    else if(data && !(data instanceof String) ){
         if(!req.headers) req.headers={};
         req.headers["content-type"] = 'application/json';
         data = JSON.stringify(data);
@@ -285,7 +293,7 @@ exports["Game PUT - Valid"] = function(test) {
                 page_id             :state.page.id,
                 prizes              :[{
                     name                :'Prize 1',
-                    quantity            :20
+                    total               :20
                 }]
             }
         },
@@ -303,7 +311,7 @@ exports["Game POST - Valid"] = function(test) {
     prizes[0].description = 'Cool prize!';
     prizes[1] = {
         name                :'Prize 2',
-        quantity            :30
+        total               :30
     };
     prizes = prizes.reverse();
     assert.response(test, Bozuko.app,
@@ -334,7 +342,7 @@ exports["Game POST - Error, new prize missing required field"] = function(test) 
     };
     prizes[2] = {
         name                :'Prize 3',
-        quantity            :30
+        total               :30
     };
     prizes = prizes.reverse();
     assert.response(test, Bozuko.app,
@@ -352,7 +360,7 @@ exports["Game POST - Error, new prize missing required field"] = function(test) 
             var game_save_result = JSON.parse(res.body);
             test.equal(game_save_result.success, false, "Update game - error");
             test.equal(game_save_result.errors.prizes[0], null,'no errors for prize 0');
-            test.equal(!!game_save_result.errors.prizes[1].quantity, true,'error for prize 1 - no quantity');
+            test.equal(!!game_save_result.errors.prizes[1].total, true,'error for prize 1 - no quantity');
             test.equal(game_save_result.errors.prizes[2], null,'no errors for prize 2');
             test.done();
         });
@@ -363,6 +371,36 @@ exports["Game POST - Remove Prize"] = function(test) {
     var prizes = state.game.prizes.slice(0);
     prizes.shift();
     prizes[0].name = "new name";
+    
+    assert.response(test, Bozuko.app,
+        {
+            url                 :state.game.links.game,
+            method              :'post',
+            headers             :private_headers,
+            data                :{
+                name                :'Updated Name',
+                prizes              :prizes
+            }
+        },
+        ok,
+        function(res) {
+            var game_save_result = JSON.parse(res.body);
+            test.equal(game_save_result.success, true, "Update game - success");
+            test.equal(game_save_result.game.name,'Updated Name');
+            state.game = game_save_result.game;
+            test.done();
+        });
+};
+
+exports["Game POST - Add another prize"] = function(test) {
+    
+    var prizes = state.game.prizes;
+    prizes[0].name = "Prize 1";
+    
+    prizes[1] = {
+        name: 'Prize 2',
+        total: 10
+    };
     
     assert.response(test, Bozuko.app,
         {
@@ -398,6 +436,68 @@ exports["Page Games GET - Test getting games"] = function(test) {
             test.equal(result.games instanceof Array, true, "Get list of games");
             test.done();
         });
+};
+
+exports["Game Publish POST - Publish game"] = function(test){
+    assert.response(test, Bozuko.app,
+        {
+            url                 :state.game.links.game_publish,
+            method              :'post',
+            headers             :private_headers
+        },
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            test.equal(result.success, true, "Publish game");
+            test.done();
+        }
+    );
+};
+
+exports["Game GET - Get updated game"] = function(test){
+    assert.response(test, Bozuko.app,
+        {
+            url                 :state.game.links.game,
+            method              :'get',
+            headers             :private_headers
+        },
+        ok,
+        function(res) {
+            state.game = JSON.parse(res.body);
+            test.done();
+        }
+    );
+};
+
+exports["Game Codes GET"] = function(test){
+    assert.response(test, Bozuko.app,
+        {
+            url                 :state.game.links.game_prize_codes,
+            method              :'get',
+            headers             :private_headers
+        },
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            test.done();
+        }
+    );
+};
+
+exports["Game Codes GET - Prize1"] = function(test){
+    assert.response(test, Bozuko.app,
+        {
+            url                 :state.game.links.game_prize_codes+'?prize_id='+state.game.prizes[0].id,
+            method              :'get',
+            headers             :private_headers
+        },
+        ok,
+        function(res) {
+            var result = JSON.parse(res.body);
+            test.equal(result.count, state.game.prizes[0].total, "check for equal code amounts");
+            test.done();
+        }
+    );
 };
 
 exports["Destroy"] = function(test){

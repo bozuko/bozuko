@@ -64,25 +64,30 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         var self = this;
         
         // lets redeem!
-        self.app.api.call({
-            path: result.prize.links.redeem,
-            method: 'post',
-            params: {
-                message: '',
-                share: false,
-                email_prize_screen: true
-            }
-        },function(result){
-            if( !result.ok ){
-                // we need this to go through
-            }
-            // meh.. we are going to assume this worked.
-            // this could be where youWin disappears... lets make sure
-            // its still showing...
-            if( self._showingYouWin){
-                self.showYouWin();
-            }
-        });
+        var redeem = function(attempt){
+            attempt = attempt || 0;
+            self.app.api.call({
+                path: result.prize.links.redeem,
+                method: 'post',
+                params: {
+                    message: '',
+                    share: false,
+                    email_prize_screen: true
+                }
+            },function(result){
+                if( !result.ok ){
+                    if( attempt < 5 ) redeem(attempt+1);
+                }
+                // meh.. we are going to assume this worked.
+                // this could be where youWin disappears... lets make sure
+                // its still showing...
+                if( self._showingYouWin){
+                    self.showYouWin();
+                }
+            });
+        }
+        
+        redeem();
         
     },
     
@@ -445,7 +450,16 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     picture: self.page.image
                 };
                 if( !mobile ) opts.display = 'popup';
-                FB.ui(opts);
+                FB.ui(opts, function(response){
+                    if( response && response.post_id ){
+                        self.app.api.call({
+                            path: '/game/'+self.game.id+'/shared/'+response.post_id,
+                            method: 'post'
+                        }, function(response){
+                            // don't need to do anything with it...
+                        });
+                    }
+                });
             });
             this.squareImage(this.$description.child('.page-pic'), this.page.image);
             this.updateDescription();
@@ -466,6 +480,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     },
     
     updateDescription : function(){
+        var self = this;
         var description = this.getDescription();
         
         // add prizes...
@@ -632,6 +647,21 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                     cls             :'time'
                                 }]
                             }]
+                        },{
+                            cls             :'prize-screen',
+                            cn              :[{
+                                tag             :'h2',
+                                cls             :'code'
+                            },{
+                                tag             :'h3',
+                                cls             :'time'
+                            },{
+                                tag             :'p',
+                                cls             :'description'
+                            },{
+                                tag             :'p',
+                                cls             :'expiration'
+                            }]
                         }]
                     }]
                 },{
@@ -673,7 +703,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 desc = this.$youWin.child('.prize-desc');
                 
             desc.setVisibilityMode( Ext.Element.DISPLAY );
-            this.$youWin.child('.prize-name').on('click', desc.toggle, desc);
+            this.$youWin.child('.prize-name').on('click', function(){
+                if( self._screen ) return;
+                desc.toggle();
+            });
                 
             bd.superScroll({
                 horizontal : false,
@@ -702,7 +735,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.$youWin[prize.is_barcode?'addClass':'removeClass']('prize-is-barcode');
         this.$youWin[!prize.is_barcode&&!prize.is_email&&!prize.is_pdf?'addClass':'removeClass']('prize-is-user-redeemable');
         
-        this.$youWin.child('.hd .title').update(prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
+        this.$youWin.child('.hd .title').update('You Win!'); //prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
         
         this.$youWin.child('.prize-name').update(prize.name);
         this.$youWin.child('.prize-desc .text').update('<strong>Prize Details:</strong> '+prize.description);
@@ -981,6 +1014,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         if( !(prize.address_required || prize.is_pdf || prize.is_email || this.app.email_only ) && prize.state == 'active' ){
             this.addYouWinFooterButtons({text:'Save',cls:'btn-save'},{text:'Redeem', cls:'btn-redeem'});
         }
+        else if( prize.is_screen ){
+            this.addYouWinFooterButtons({text:'OK',cls:'btn-save'},{text:'View', cls:'btn-open'});
+        }
         else{
             this.addYouWinFooterButtons({text:'OK',cls:'btn-close'});
         }
@@ -1020,7 +1056,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             ft = yw.child('.ft'),
             body = bd.child('.body'),
             redemption = bd.child('.redemption'),
+            screen = bd.child('.prize-screen'),
             time = redemption.child('.time'),
+            screenTime = screen.child('.time'),
             prize = yw.prize;
         
         btn = Ext.get(btn);
@@ -1098,7 +1136,41 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 bd.superScroll().update();
             });
         }
+        else if( btn.hasClass('btn-open') ){
+            yw.select('.btn').addClass('btn-disabled');
+            self.app.showModal( yw );
+            body.setStyle({display: 'none'});
+            screen.setStyle({display:'block'});
+            screen.child('.code').update(prize.code);
+            if( prize.hide_expiration || !prize.expiration_timestamp ){
+                screen.child('.expiration').hide();
+            }
+            else{
+                var time = Bozuko.util.ISODate.convert(prize.expiration_timestamp)
+                  , expired = +time > Date.now() ? 'Expires ' : 'Expired ';
+                  
+                if( !+time) {
+                    screen.child('.expiration').hide();
+                }
+                else{
+                    screen.child('.expiration').update( expired+' '+ (time.format('fullDate'))+' at '+(time.format('shortTime')) )
+                    screen.child('.expiration').show();
+                }
+            }
+            screen.child('.description').update(prize.description||'');
+            // countdown time...
+            var clock = function(){
+                screenTime.update(new Date().format('hh:MM:ss TT'));
+            };
+            clock();
+            self._redemptionClock = setInterval(clock, 1000);
+            self._screen = Date.now();
+            self.addYouWinFooterButtons({text:'OK', cls:'btn-close'});
+            bd.superScroll().update();
+        }
+            
         else{
+            if( this._screen && Date.now() - this._screen < 1000 ) return;
             this.closeYouWin();
         }
     },
@@ -1110,6 +1182,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             this.getYouWinScreen().child('.bd .body').setStyle({'display':'block'});
             this.getYouWinScreen().child('.bd .redemption').setStyle({'display':'none'});
             this._redeeming = false;
+        }
+        if( this._screen ){
+            this.getYouWinScreen().child('.bd .body').setStyle({'display':'block'});
+            this.getYouWinScreen().child('.bd .prize-screen').setStyle({'display':'none'});
+            clearInterval( this._clock );
+            this._screen = false;
         }
         switch( this._youWinReturn ){
             
@@ -1141,15 +1219,15 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             
             var li = ul.createChild({
                 tag         :'li',
-                cls         :prize.state,
+                cls         :'active',//prize.state,
                 cn:[{
                     cls         :'prize-body',
                     cn          :[{
                         cls         :'left',
-                        cn          :[{
+                        cn          :[/*{
                             cls         :'state',
                             html        :prize.state
-                        },{
+                        },*/{
                             cls         :'name',
                             cn          :[{
                                 tag         :'span',

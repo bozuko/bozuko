@@ -246,6 +246,11 @@ Ext.namespace('Bozuko.client.game');
                 html        :'0'
             });
             
+            if( !self.game.config.display_number_tickets ){
+                self.$ticketsLeft.setVisibilityMode( Ext.Element.DISPLAY );
+                self.$ticketsLeft.hide();
+            }
+            
             self.$animationsCt = self.$ct.createChild({
                 cls         :'animations'
             });

@@ -9,5 +9,5 @@ module.exports = {
     wait_duration: 'Play again %1$s',
     like_enter: 'Like us on Facebook to Play',
     play: 'Play',
-    enter: 'Play again!'
+    enter: 'Play Again!'
 };

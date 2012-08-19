@@ -34,6 +34,7 @@ Scratch.prototype.getTheme = function(){
 Scratch.prototype.getConfig = function(){
     var theme = this.getTheme();
     return {
+        display_number_tickets: this.config.display_number_tickets === undefined ? true : this.config.display_number_tickets,
         theme: {
             name: theme.name,
             base: theme.base,

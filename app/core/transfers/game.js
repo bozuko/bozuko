@@ -1,6 +1,6 @@
 var burl = Bozuko.require('util/url').create
   , merge = Bozuko.require('util/object').merge
-  ;
+  , _t = Bozuko.t
 
 var game_prize = {
     doc: "A prize that can be won in a game",
@@ -13,6 +13,11 @@ var game_prize = {
         name: "String",
         description: "String",
         result_image: "String"
+    },
+    
+    create : function(prize, user, callback){
+        prize.expiration = prize.duration;
+        return this.sanitize(prize, null, user, callback);
     }
 };
 
@@ -113,6 +118,7 @@ var game = {
         status: "String",
         ingame_copy: 'String',
         post_to_wall: 'Boolean',
+        game_background: 'String',
         share_url : 'String',
         share_title: 'String',
         share_description: 'String',
@@ -139,7 +145,9 @@ var game = {
             page: "String",
             game: "String",
             game_publish: "String",
-            game_cancel: "String"
+            game_cancel: "String",
+            game_prize_codes: "String",
+            game_prize_wins: "String"
         }
     },
 
@@ -153,8 +161,6 @@ var game = {
         var self = this,
             obj = {};
             
-        console.log('transfers/game.js enter transfer create');
-        
         if( game instanceof Bozuko.models.Contest) game = game.getGame();
             
         obj = this.merge(obj, game.contest);
@@ -165,20 +171,16 @@ var game = {
         obj.status = game.contest.state;
         
         obj.id = game.contest.id;
-        if( game.contest.web_only ){
-            if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
-            obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
-            obj.share_description = game.contest.share_description || 'Play '+game.getName()+' for a chance to win big prizes!';
-        }
-        else {
-            if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
-            obj.share_title = game.contest.share_title || 'Play '+game.getName()+'!';
-            obj.share_description = game.contest.share_description || 'Play '+game.getName()+' on your phone for a chance to win big prizes!';
-        }
+        
+        if( !apikey ) obj.share_url = burl('/game/'+game.contest.id+'/share');
+        if( !obj.share_title ) obj.share_title = apikey ? '' : Bozuko.t('en', 'game/share_title', game.getName());
+        if( !obj.share_description ) obj.share_description = apikey ? '' : Bozuko.t('en', 'game/share_description', game.getName())
         
         obj.type = game.getType();
         obj.name = game.getName();
         obj.config = game.getConfig();
+        if( obj.config.display_number_tickets === undefined )
+            obj.config.display_number_tickets = true;
         obj.prizes = game.getPrizes();
         obj.image = game.getListImage();
         obj.list_message = game.contest.getListMessage();
@@ -191,8 +193,6 @@ var game = {
             obj.entry_plays = ec.tokens;
             if(game.contest.consolation_config)
                 obj.consolation_when = game.contest.consolation_config.when
-            
-            
             
             if( game.contest.game_config.theme == 'custom' && game.contest.game_config.custom_id ){
                 obj.theme = game.contest.game_config.custom_id;
@@ -217,7 +217,10 @@ var game = {
             if(apikey && (game.contest.state == 'active' || game.contest.state == 'published') ){
                 obj.links.game_cancel = '/game/'+game.contest.id+'/cancel'
             }
-            
+            if(apikey){
+                obj.links.game_prize_codes = '/game/'+game.contest.id+'/codes';
+                obj.links.game_prize_wins = '/game/'+game.contest.id+'/wins';
+            }
             return self.sanitize(obj, null, user, callback);
         });
     }
@@ -267,6 +270,45 @@ var game_cancel_result = {
         success: "Boolean",
         error: "String",
         game: "game"
+    }
+};
+
+var game_prize_code = {
+    doc: "Details about a prize",
+    def: {
+        prize_id            :"String",
+        code                :"String",
+        win_time            :"String"
+    }
+};
+
+var game_prize_codes = {
+    doc: "A list of prize codes for a game",
+    def: {
+        offset : 'Number',
+        limit : 'Number',
+        count : "Number",
+        codes : ['game_prize_code']
+    }
+};
+
+var game_prize_win = {
+    doc: "Details about a prize win",
+    def: {
+        prize_id            :"String",
+        code                :"String",
+        win_time            :"String",
+        name                :"String"
+    }
+};
+
+var game_prize_wins = {
+    doc: "A list of prize wins for a game",
+    def: {
+        offset : 'Number',
+        limit : 'Number',
+        count : "Number",
+        wins : ['game_prize_win']
     }
 };
 
@@ -337,6 +379,10 @@ exports.transfer_objects = {
     game_result: game_result,
     entry_method: entry_method,
     game_prize: game_prize,
+    game_prize_code: game_prize_code,
+    game_prize_codes: game_prize_codes,
+    game_prize_win: game_prize_win,
+    game_prize_wins: game_prize_wins,
     theme: theme,
     themes: themes
 };
@@ -357,6 +403,10 @@ var game_params = {
     theme : {
         type : "String",
         description : "The theme name (or URL of a theme bg)"
+    },
+    background: {
+        type : "String",
+        description : "Background for the page (value for the css `background` shorthand property)."
     },
     entry_duration : {
         type: "Number",
@@ -471,6 +521,52 @@ exports.links = {
                 }
             },
             returns: 'themes'
+        }
+    },
+    
+    game_prize_codes: {
+        get : {
+            doc: "Get all the game prize codes",
+            params: {
+                offset: {
+                    type: 'Number',
+                    description: "The index of the record to start returning from."
+                },
+                limit: {
+                    type: 'Number',
+                    description: "The limit to the number of returned items."
+                },
+                prize_id: {
+                    description: "The prize_id in the array of prizes on the game",
+                    type: "String"
+                },
+                code: {
+                    type: "Number",
+                    description: "The prize code to lookup"
+                }
+            },
+            returns: 'game_prize_codes'
+        }
+    },
+    
+    game_prize_wins: {
+        get : {
+            doc: "Get all the game prize wins",
+            params: {
+                offset: {
+                    type: 'Number',
+                    description: "The index of the record to start returning from."
+                },
+                limit: {
+                    type: 'Number',
+                    description: "The limit to the number of returned items that was passed to the request."
+                },
+                prize_id: {
+                    description: "The prize_id in the array of prizes on the game",
+                    type: "String"
+                }
+            },
+            returns: 'game_prize_wins'
         }
     },
     

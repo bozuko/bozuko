@@ -1,4 +1,5 @@
 var fs = require('fs'),
+	path = require('path'),
     async  = require('async'),
     existsSync = require('path').existsSync,
     Profiler = require('./util/profiler')
@@ -45,6 +46,7 @@ var http            = Bozuko.require('util/http'),
     Monomi          = require('monomi'),
     Controller      = Bozuko.require('core/controller'),
     Link            = Bozuko.require('core/link'),
+	merge			= Bozuko.require('util/object').merge,
     Game            = Bozuko.require('core/game');
 
 Bozuko.env = function(){
@@ -53,7 +55,19 @@ Bozuko.env = function(){
 };
 
 Bozuko.getConfig = function(){
-    return require(Bozuko.dir+'/config/'+this.env());
+    var file = Bozuko.dir+'/../.bozuko'
+	  , dfault = require(Bozuko.dir+'/config/default')
+	  , cfg = require(Bozuko.dir+'/config/'+this.env())
+	  
+	cfg = merge( dfault, cfg );
+	
+	if( path.existsSync(file) ){
+		var stats = fs.lstatSync( Bozuko.dir+'/../.bozuko' )
+		if( stats.isFile() ){
+			cfg = merge( cfg, require( Bozuko.dir+'/../.bozuko' ) );
+		}
+	}
+	return cfg;
 };
 Bozuko.config = Bozuko.getConfig();
 
@@ -73,6 +87,19 @@ Bozuko.getConfigValue = function(key, defaultValue){
 };
 
 Bozuko.cfg = Bozuko.getConfigValue;
+
+Bozuko.setCfg = function(key, value){
+	var keys = key.split('.')
+	  , obj = Bozuko.getConfig()
+	  , cur = keys.unshift()
+	  
+	while( keys.length ){
+		if( !obj[cur] ) obj[cur] = {};
+		obj = obj[cur];
+		cur = keys.unshift();
+	}
+	obj[cur] = value;
+};
 
 Bozuko.getApp = function(){
     if( !Bozuko.app ){
@@ -195,7 +222,7 @@ Bozuko.error = function(name, data){
 };
 
 Bozuko.t = function(){
-    return Bozuko.require('core/lang').translate.apply(this, arguments);
+    return Bozuko.require('core/lang').translate.apply(Bozuko, arguments);
 };
 
 
