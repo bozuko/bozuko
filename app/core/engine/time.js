@@ -190,7 +190,7 @@ TimeEngine.prototype.generateResults = function(Page, page_id, callback) {
 };
 
 TimeEngine.prototype.saveChunks = function(totalPrizes, save, callback) {
-    var chunkSize = 100;
+    var chunkSize = 1000;
     var complete = 0;
     var done = measure.measure('engine.time.saveChunks');
 
@@ -199,8 +199,9 @@ TimeEngine.prototype.saveChunks = function(totalPrizes, save, callback) {
           return complete < totalPrizes;
         },
         function(cb) {
+            var roundComplete = 0;
             var toGo = totalPrizes - complete;
-            if (toGo > chunkSize) {
+            if (toGo < chunkSize) {
                 chunkSize = toGo;
             }
             var error = false;
@@ -209,13 +210,15 @@ TimeEngine.prototype.saveChunks = function(totalPrizes, save, callback) {
                     error = true;
                     return cb(err);
                 }
-                if (++complete === chunkSize && !error) cb();
+                ++complete;
+                if (++roundComplete === chunkSize && !error) cb();
             }
             for (var i = 0; i < chunkSize; i++) {
                 save(i, finish);
             }
         },
         function(err) {
+            console.log('saveChunks finished. err = '+err);
             done();
             callback(err);
         }
