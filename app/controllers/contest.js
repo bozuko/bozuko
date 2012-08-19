@@ -2,6 +2,9 @@ var S3 = Bozuko.require('util/s3');
 var url = require('url');
 var burl = Bozuko.require('util/url').create;
 var inspect = require('util').inspect;
+var async = require('async');
+var Report      = Bozuko.require('core/report');
+var ObjectId    = require('mongoose').Types.ObjectId;
 
 exports.session = false;
 
@@ -50,6 +53,8 @@ exports.routes = {
                 Bozuko.models.Contest.apiCreate(req, function(error, game){
 					var noop=function(opts, cb){ return cb(); };
 					return (game ? game.loadGameState : noop).call(game, {user:null, page_id: game ? game.page_id : null}, function(e){
+						
+						if( error ) console.log(error.stack);
 						
 						var t = {
 							success: error ? false : true,
@@ -341,6 +346,121 @@ exports.routes = {
 			}
 		}
 	},
+	
+	'/game/:id/codes' : {
+		get : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				// get the game
+				var codes = {
+						count: 0,
+						limit: req.param('limit') || 100,
+						offset: req.param('offset') || 0,
+						codes: []
+					}
+				  , code = req.param('code')
+				  , prize_id = req.param('prize_id')
+				  , selector = {}
+				
+				if( code ) selector.code = code;
+				
+				var send_codes = function(){
+					return Bozuko.transfer('game_prize_codes', codes, null, function(error, result){
+						return res.send(error||result);
+					});
+				};
+				
+				return Bozuko.models.Contest.findOne( {
+					_id: req.param('id'),
+					apikey_id: req.apikey._id
+				},{results: 0}, function(error, contest){
+					if(error) return error.send(res);
+					
+					// got it...
+					if( !contest ) return send_codes();
+					
+					selector.contest_id = contest._id;
+					
+					if( prize_id ) contest.prizes.forEach(function(p,i){
+						if( String(p.id) == prize_id ) selector.index = i;
+					});
+					
+					// get the prizes for this contest...
+					return Bozuko.models.Result.count(selector, function(error, count){
+						codes.count = count;
+						return Bozuko.models.Result.find(selector, {}, {sort: {timestamp:1}, limit: codes.limit, skip: codes.offset}, function(error, results){
+							var ret = [];
+							results.forEach(function(r){
+								var code = {code: r.code, prize_id: contest.prizes[r.index]._id};
+								if( r.win_time ) code.win_time = r.win_time;
+								ret.push(code);
+							});
+							codes.codes = ret;
+							return send_codes();
+						});
+					});
+				});
+			}
+		}
+	},
+	
+	'/game/:id/wins' : {
+		get : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				// get the game
+				var ret = {
+						count: 0,
+						limit: req.param('limit') || 100,
+						offset: req.param('offset') || 0,
+						wins: []
+					}
+				  , code = req.param('code')
+				  , prize_id = req.param('prize_id')
+				  , selector = {}
+				  , opts = {sort: {timestamp:1}, limit: ret.limit, skip: ret.offset}
+				
+				var send = function(){
+					return Bozuko.transfer('game_prize_wins', ret, null, function(error, result){
+						return res.send(error||result);
+					});
+				};
+				
+				return Bozuko.models.Contest.findOne( {
+					_id: req.param('id'),
+					apikey_id: req.apikey._id
+				},{results: 0}, function(error, contest){
+					if(error) return error.send(res);
+					
+					// got it...
+					if( !contest ) return send();
+					
+					selector.contest_id = contest._id;
+					if( prize_id ) selector.prize_id = prize_id;
+					
+					// get the prizes for this contest...
+					return Bozuko.models.Prize.count(selector, function(error, count){
+						ret.count = count;
+						
+						return Bozuko.models.Prize.find(selector, {}, opts, function(error, results){
+							var items = [];
+							results.forEach(function(r){
+								var w = {
+									name: r.user_name,
+									prize_id: r.prize_id,
+									code: r.code,
+									win_time: r.timestamp
+								};
+								items.push(w);
+							});
+							ret.wins = items;
+							return send();
+						});
+					});
+				});
+			}
+		}
+	},
 
     '/game/:id/state' : {
 
@@ -432,6 +552,34 @@ exports.routes = {
         }
     },
 	
+	'/game/:id/shared/:post_id' : {
+		access: 'user',
+		post : {
+			handler : function(req, res){
+				var post_id = req.param('post_id');
+				// find game
+                return Bozuko.models.Contest.find({_id:req.param('id')}, {share_url: 1, page_id: 1, game:1}, {limit:1}, function(error, contests){
+                    if( error || !contests.length ) return res.send({success: false});
+					var contest = contests[0];
+                   
+					return Bozuko.models.Share.findOne({post_id: post_id}, function(error, share){
+						if( error || share ) return res.send({success: false});
+						// lets save this share...
+						share = new Bozuko.models.Share({
+							service         :'facebook',
+							type            :'share',
+							contest_id      :contest._id,
+							page_id         :contest.page_id,
+							post_id			:post_id
+						});
+						share.save();
+						return res.send({success: true});
+					});
+                });
+			}
+		}
+	},
+	
 	'/themes' : {
 		get : {
 			access : 'developer_public',
@@ -455,6 +603,249 @@ exports.routes = {
 								return res.send( error || result );
 							});
 						});
+				});
+			}
+		}
+	},
+	
+	'/reports/:type?' : {
+		get : {
+			access : 'developer_public',
+			handler : function( req, res ){
+				
+				var type = req.param('type') || 'entries'
+				  , tzOffset = parseInt(req.param('timezoneOffset', 0), 10)
+				  , page_id = req.param('page_id')
+				  , game_id = req.param('game_id')
+                  , query = {}
+				  , options ={}
+                  ;
+
+                
+                if( page_id ){
+                    query.page_id = new ObjectId(page_id);
+                }
+                if( game_id ){
+                    query.contest_id = new ObjectId(game_id);
+                }
+				
+				// hey now... lets check for the times
+                options.unit = 'Day'
+                options.unitInterval = 1;
+                options.timezoneOffset = tzOffset;
+                options.query = query;
+				options.end = new Date();
+				options.timeField = 'timestamp';
+				
+				switch(type){
+					case 'unique':
+						options.model = 'Entry';
+                        options.distinctField = 'user_id';
+						break;
+					
+					case 'wins':
+						options.model = 'Prize';
+						break;
+					
+					case 'entries':
+					default:
+                        options.model = "Entry";
+                        break;
+                }
+				
+				// need from and to...
+				async.series([
+					
+					function get_pages(cb){
+						if( !page_id && !game_id ){
+							return Bozuko.models.Page.find({apikey_id: req.apikey._id}, {_id:1}, function(error, pages){
+								if( error ) return cb(error);
+								if( !pages.length ) return cb("No pages");
+								var ids = [];
+								pages.forEach(function(p){ ids.push(p._id);} );
+								query.page_id = {$in: ids};
+								return cb();
+							});
+						}
+						return cb();
+					},
+					
+					function get_start(cb){
+						Bozuko.models[options.model].find(query)
+							.sort(options.timeField, 1)
+							.limit(1)
+							.exec(function(error, records){
+								if( error ) return cb( error );
+								if( !records.length ) return cb("No records");
+								options.start = records[0].get(options.timeField);
+								options.start.setHours(0);
+								options.start.setMinutes(0);
+								options.start.setSeconds(0);
+								options.start.getDate();
+								
+								if( tzOffset ){
+									options.start.setTime( options.start.getTime() + (tzOffset||0)*1000*60 - 1000*60*60*24 );
+								}
+								
+								return cb();
+							});
+					},
+					
+				], function run_report( error ){
+					if( error ) return res.send( [] );
+					
+					return Report.run( 'interval', options, function(error, results){
+						
+						if( error ){
+							console.error(require('util').inspect(error));
+							return res.send([]);
+						}
+						// need to format the results
+						var data = [];
+						if( results.length ) results.forEach( function( result ){
+							data.push([result.timestamp.getTime(), result.count]);
+						});
+						return res.send( data );
+					});
+				});
+			}
+		}
+	},
+	
+	'/stats' : {
+		get : {
+			access : 'developer_public',
+			handler : function( req, res ){
+				
+				var page_id = req.param('page_id')
+				  , game_id = req.param('game_id')
+				  , apikey_id = req.apikey._id
+                  , query = {}
+				  , options ={}
+				  , stats = {}
+                
+                if( page_id ){
+                    query.page_id = new ObjectId(page_id);
+                }
+                if( game_id ){
+                    query.contest_id = new ObjectId(game_id);
+                }
+				
+				// need from and to...
+				async.series([
+					
+					function get_unique(cb){
+						
+						/**
+						 * This would be very easy with our new stats engine:
+						 *
+						 * The null parameter would be for interval
+						 *
+						 * Stats.get('unique', null, game_id || page_id || req.apikey._id, callback )
+						 *
+						 */
+						
+						var model = Bozuko.models.Apikey
+						  , id = null
+						  
+						if( page_id ){
+							model = Bozuko.models.Page;
+							id = page_id;
+						}
+						else if( game_id ){
+							model = Bozuko.models.Contest;
+							id = game_id;
+						}
+						else{
+							id = req.apikey._id;
+						}
+						
+						return model.findById(id, {unique_users: 1}, function(error, m){
+							if( error ) return cb();
+							stats.unique = m.unique_users;
+							return cb();
+						});
+						
+					},
+					
+					function get_entries(cb){
+						
+						/**
+						 * This would be very easy with our new stats engine:
+						 *
+						 * The null parameter would be for interval
+						 *
+						 * Stats.get('total', null, game_id || page_id || req.apikey._id, callback )
+						 *
+						 */
+						
+						// these are going to be counts on the db
+						var selector = {}
+						  , get_count = function(){
+								return Bozuko.models.Entry.count(selector, function(error, count){
+									if( error ) return cb();
+									stats.entries = count;
+									return cb();
+								});
+							}
+						
+						if( game_id ) selector.contest_id = game_id;
+						
+						else if( page_id ) selector.page_id = page_id;
+						
+						else {
+							// this is an apikey - we need to get the pages first
+							return Bozuko.models.Page.find({apikey_id: req.apikey._id}, {_id:1}, function(error, pages){
+								if( error ) return cb();
+								var page_ids = [];
+								pages.forEach(function(p){ page_ids.push(p._id); });
+								selector.page_id = {$in: page_ids};
+								return get_count();
+							});
+						}
+						return get_count();
+						
+					},
+					
+					function get_wins(cb){
+						/**
+						 * This would be very easy with our new stats engine:
+						 *
+						 * The null parameter would be for interval
+						 *
+						 * Stats.get('total', null, game_id || page_id || req.apikey._id, callback )
+						 *
+						 */
+						
+						// these are going to be counts on the db
+						var selector = {}
+						  , get_count = function(){
+								return Bozuko.models.Prize.count(selector, function(error, count){
+									if( error ) return cb();
+									stats.wins = count;
+									return cb();
+								});
+							}
+						
+						if( game_id ) selector.contest_id = game_id;
+						
+						else if( page_id ) selector.page_id = page_id;
+						
+						else {
+							// this is an apikey - we need to get the pages first
+							return Bozuko.models.Page.find({apikey_id: req.apikey._id}, {_id:1}, function(error, pages){
+								if( error ) return cb();
+								var page_ids = [];
+								pages.forEach(function(p){ page_ids.push(p._id); });
+								selector.page_id = {$in: page_ids};
+								return get_count();
+							});
+						}
+						return get_count();
+					}
+					
+				], function return_stats( error ){
+					return res.send( stats );
 				});
 			}
 		}

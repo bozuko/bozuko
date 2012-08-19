@@ -144,6 +144,8 @@ exports.renderGame = function(req, res, contest_id, page_id){
             res.locals.device = 'touch';
             res.locals.layout = 'client/layout';
             res.locals.cache_time = now;
+            res.locals.contest = contest;
+            res.locals.page = page;
             return res.render('client/index');
         }
         

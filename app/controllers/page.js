@@ -244,9 +244,10 @@ exports.routes = {
                            , start = req.param('start') || 0
                            ;
                         
-                        return Bozuko.models.Contest.find({page_id: page._id},{}, {
+                        return Bozuko.models.Contest.find({page_id: page._id}, {results: 0}, {
                             limit : limit,
-                            offset : start
+                            offset : start,
+							sort: {start: -1}
                         }, function(error, contests){
                             if(error) return error.send(res);
                             

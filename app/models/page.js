@@ -2,6 +2,7 @@ var _t = Bozuko.t,
     facebook = Bozuko.require('util/facebook'),
     mongoose = require('mongoose'),
     merge = require('connect').utils.merge,
+    burl = Bozuko.require('util/url').create,
     Schema = mongoose.Schema,
     Services = require('./plugins/services'),
     Coords = require('./plugins/coords'),
@@ -26,11 +27,13 @@ var Page = module.exports = new Schema({
     is_enterprise       :{type:Boolean, default: false},
     category            :{type:String, index: true},
     alias               :{type:String, index: true},
+    unique_users        :{type:Number},
     website             :{type:String},
     nobranding          :{type:Boolean},
     phone               :{type:String},
     description         :{type:String},
     is_location         :{type:Boolean},
+    game_background     :{type:String},
     name                :{type:String, index: true},
     image               :{type:String, get: httpsUrl},
     use_twitter         :{type:Boolean, default: false},
@@ -90,9 +93,20 @@ Page.pre('save', function(next) {
         self.pin = pin;
         return next();
     });
+    return next();
+});
+
+Page.pre('save', function(next){
     if( !this.api_key || this.api_key == '' ){
-        self.api_key = create_key(32);
+        this.api_key = create_key(32);
     }
+    return next();
+});
+
+Page.pre('save', function(next){
+    if( !this.code_prefix && this._id) return Bozuko.models.Page.setCodeInfo(this._id, function(){
+        next();
+    });
     return next();
 });
 
@@ -189,7 +203,9 @@ Page.static('getCodeInfo', function(page_id, callback) {
         if (err) return callback(err);
         if (!page) return callback(Bozuko.error('page/does_not_exist'));
         if (page.code_block && page.code_prefix) return callback(null, page.code_block, page.code_prefix);
-        return Bozuko.models.Page.setCodeInfo(page_id, callback);
+        return Bozuko.models.Page.setCodeInfo(page_id, function(){
+            return Bozuko.models.Page.getCodeInfo( page_id, callback );
+        });
     });
 });
 
@@ -467,7 +483,9 @@ Page.method('checkin', function(user, options, callback) {
             var best_prize = contest.getBestPrize();
             // There should always be a best prize in reality. Sometimes in tests we don't have any prizes.
             best_prize = best_prize ? best_prize.name : 'no prize';
-            options.name = _t(user.lang, 'checkin/contest_checkin_name', self.name);
+            options.name = contest.share_title || _t(user.lang, 'game/share_title', game.getName());
+            options.link = burl('/game/'+contest._id+'/share');
+            /*
             options.description = _t(
                 user.lang,
                 'checkin/contest_checkin_desc',
@@ -476,6 +494,8 @@ Page.method('checkin', function(user, options, callback) {
                 best_prize,
                 game.name
             );
+            */
+            options.description = contest.share_description || _t(user.lang, 'game/share_description', game.getName());
         }
 
         options.page = self;
@@ -533,10 +553,16 @@ Page.static('apiCreate', function(req, callback){
         },
         function update_page(cb){
             // custom name or image
-            ["name","image","location"].forEach(function(p){
+            ["game_background","name","image","location"].forEach(function(p){
                 var v;
-                if((v=req.param(p))) page[p] = v;
+                if((v=req.param(p))){
+                    page[p] = v;
+                }
+                else{
+                    
+                }
             });
+            
             return page.save(function(error){
                 if(error) {
                     return cb(E.error('facebook_id',"Error updating page"));
@@ -582,10 +608,12 @@ Page.static('apiUpdate', function(req, callback){
         
         function update_page(cb){
             // custom name or image
-            ["name","image","location"].forEach(function(p){
+            ["game_background","name","image","location"].forEach(function(p){
                 var v;
                 if((v=req.param(p))) page[p] = v;
+                //else page[p] = '';
             });
+            
             return page.save(function(error){
                 if(error) {
                     return cb(E.error('facebook_id',"Error saving page"));

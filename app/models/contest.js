@@ -45,6 +45,7 @@ var Contest = module.exports = new Schema({
     share_url               :{type:String},
     share_title             :{type:String},
     share_description       :{type:String},
+    game_background         :{type:String},
     hide_consolations       :{type:Boolean, default: false},
     plays                   :[Play],
     game                    :{type:String},
@@ -65,6 +66,7 @@ var Contest = module.exports = new Schema({
     end                     :{type:Date, index: true},
     total_entries           :{type:Number},
     total_plays             :{type:Number},
+    unique_users            :{type:Number},
     results                 :{},
     play_cursor             :{type:Number, default: -1},
     token_cursor            :{type:Number, default: 0},
@@ -150,6 +152,7 @@ Contest.method('validate_', function(callback) {
             type            :'Number'
         },
         expiration      :{
+            aliasFor        :'duration',
             type            :'Number'
         },
         hide_expiration :{
@@ -184,12 +187,29 @@ Contest.method('validate_', function(callback) {
                     return cb(null, false, "There must be at least one prize");
                 }
                 return cb(null, true);
+            },
+            mutate          :function(value, name, object, cb){
+                if( value && value.length ) value.forEach(function(prize){
+                    prize.is_pdf = true;
+                    prize.is_screen = true;
+                });
+                object[name] = value;
+                return cb();
             }
         },
         consolation_prizes  :{
             model           :Object,
             type            :[prize],
-            dfault          :[]
+            dfault          :[],
+            mutate          :function(value, name, object, cb){
+                
+                if( value && value.length ) value.forEach(function(prize){
+                    prize.is_pdf = true;
+                    prize.is_screen = true;
+                });
+                object[name] = value;
+                return cb();
+            }
         },
         theme           :{
             type            :'String',
@@ -214,6 +234,10 @@ Contest.method('validate_', function(callback) {
                     return cb();
                 });
             }
+        },
+        game_background :{
+            allowEmpty      :true,
+            type            :'String'
         },
         entry_duration  :{
             type            :'Number',
@@ -241,7 +265,13 @@ Contest.method('validate_', function(callback) {
             }
         },
         rules           :{
-            type            :'String'
+            type            :'String',
+            allowBlank      :true,
+            mutate          :function(value, name, object, cb){
+                object.replace_rules = !!value;
+                object[name] = value;
+                cb();
+            }
         },
         name            :{
             type            :'String',
@@ -252,6 +282,9 @@ Contest.method('validate_', function(callback) {
             }
         },
         share_url       :{
+            type            :'String'
+        },
+        share_title     :{
             type            :'String'
         },
         share_description   :{
@@ -312,6 +345,7 @@ Contest.method('validate_', function(callback) {
                             var e = []
                               , n = []
                               ;
+                            
                             return async.forEachSeries(v, function(cur, cb) {
                                 var o = new c.model;
                                 if(cur.id){
@@ -363,11 +397,11 @@ Contest.method('validate_', function(callback) {
                             v = c.dfault;
                         }
                     }
-                    if(v === undefined ){
+                    if( v === undefined && !c.allowEmpty ){
                         return cb();
                     }
                     if(c.mutate) return c.mutate(v, name, object, cb);
-                    object[c.aliasFor || name] = v;
+                    object[c.aliasFor || name] = v === undefined ? null : v;
                     return cb();
                 }
                 
@@ -390,6 +424,7 @@ Contest.method('validate_', function(callback) {
           ;
           
         if(!page_id){
+            console.log('no page_id');
             return callback(E.error('page_id',"Page ID is required"));
         }
         
@@ -407,6 +442,7 @@ Contest.method('validate_', function(callback) {
             }
             
             game.apikey_id = req.apikey._id;
+            game.game_config.display_number_tickets = false;
             game.engine_type = 'time';
             game.engine_options={};
             if( !game.consolation_prizes || !game.consolation_prizes.length ){
@@ -420,8 +456,7 @@ Contest.method('validate_', function(callback) {
                     enabled: true
                 }];
             }
-            game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:mm tt" )+']';
-                
+            game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:MM tt" )+']';
             return game.save(callback);
         });
     });
@@ -455,6 +490,7 @@ Contest.method('validate_', function(callback) {
                     return callback(E);
                 }
                 game.engine_type = 'time';
+                game.game_config.display_number_tickets = false;
                 game.engine_options={};
                 if( !game.consolation_prizes || !game.consolation_prizes.length ){
                     game.consolation_config = [{enabled: false}];
@@ -467,7 +503,7 @@ Contest.method('validate_', function(callback) {
                         enabled: true
                     }];
                 }
-                game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:mm tt" )+']';
+                game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:MM tt" )+']';
                 return game.save(callback);
             });
         });
@@ -601,8 +637,8 @@ Contest.method('getOfficialRules', function(){
         end_date : dateFormat(this.end, 'mmmm dd, yyyy'),
         end_time : dateFormat(this.end, 'hh:MM TT'),
         age_limit : 16,
-        page_url : 'https://bozuko.com/p/'+this.page_id,
-        winners_list_url : 'https://bozuko.com/p/'+this.page_id+'/winners/'+this.id
+        page_url : burl('/p/'+this.page_id),
+        winners_list_url : burl('/p/'+this.page_id+'/winners/'+this.id)
     };
     var map = [
         "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth",
@@ -712,7 +748,6 @@ Contest.method('getEngine', function() {
         if( type == '') type = 'order';
         var Engine = Bozuko.require('core/engine/'+type);
         this._engine = new Engine( this );
-        console.log('engine_options = '+inspect(this.engine_options));
         this._engine.configure(this.engine_options);
     }
     return this._engine;
@@ -863,7 +898,7 @@ Contest.method('publish', function(callback){
         return self.doPublish(callback);
     }
     
-    self.doPublish(callback);
+    return self.doPublish(callback);
 });
 
 /**
@@ -1508,6 +1543,7 @@ Contest.method('savePrize', function(opts, callback) {
             is_email: prize.is_email,
             is_barcode: prize.is_barcode,
             is_pdf: prize.is_pdf,
+            is_screen: prize.is_screen,
             address_required: prize.address_required,
             pdf_image: prize.pdf_image,
             pdf_image_only: prize.pdf_image_only,
