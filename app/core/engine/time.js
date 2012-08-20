@@ -193,6 +193,7 @@ TimeEngine.prototype.saveChunks = function(totalPrizes, save, callback) {
     var chunkSize = 1000;
     var complete = 0;
     var done = measure.measure('engine.time.saveChunks');
+    var count = 0;
 
     async.whilst(
         function() {
@@ -214,7 +215,8 @@ TimeEngine.prototype.saveChunks = function(totalPrizes, save, callback) {
                 if (++roundComplete === chunkSize && !error) cb();
             }
             for (var i = 0; i < chunkSize; i++) {
-                save(i, finish);
+                save(count, finish);
+                ++count;
             }
         },
         function(err) {
