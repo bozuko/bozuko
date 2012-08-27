@@ -141,7 +141,11 @@ Contest.method('validate_', function(callback) {
             type            :'String'
         },
         description     :{
-            type            :'String'
+            type            :'String',
+            mutator         :function(v, name, obj, cb){
+                obj[name] = v ? v.trim() : '';
+                cb();
+            }
         },
         value           :{
             type            :'Number',
