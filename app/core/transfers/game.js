@@ -131,6 +131,8 @@ var game = {
         description: "String",
         list_message: "String",
         config: "Object",
+        engine_type:"String",
+        win_frequency:"Number",
         start_time: "String",
         end_time: "String",
         entry_method:'entry_method',
@@ -198,6 +200,10 @@ var game = {
                 obj.theme = game.contest.game_config.custom_id;
             }
             
+        }
+        else {
+            delete obj.engine_type;
+            delete obj.win_frequency;
         }
         
         var page_id = game.contest.game_state ? game.contest.game_state.page_id : game.contest.page_id;
@@ -439,6 +445,14 @@ var game_params = {
     share_description : {
         type: "String",
         description: "The description of the Facebook Share"
+    },
+    engine_type : {
+        type: "String",
+        description: "Whether this game should be time based, or simply odds based. Valid values are 'order' and 'time'"
+    },
+    win_frequency: {
+        type: "Number",
+        description: "The overall win frequency - only applicable when the engine_type is order. overall_odds = 1 / win_frequency. Miminum value of 1."
     },
     prizes : {
         type: "Array",
