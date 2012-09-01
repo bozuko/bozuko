@@ -348,7 +348,7 @@ exports.routes = {
                 var name = req.param('name'),
                     email = req.param('email'),
                     message = req.param('message'),
-                    //token = getToken(req.session),
+                    token = getToken(req.session),
                     success = true
                     ;
 
