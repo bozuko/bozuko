@@ -348,12 +348,12 @@ exports.routes = {
                 var name = req.param('name'),
                     email = req.param('email'),
                     message = req.param('message'),
-                    token = getToken(req.session),
+                    //token = getToken(req.session),
                     success = true
                     ;
 
                 if( !req.param(token) ){
-                    throw Bozuko.error('bozuko/unauthorized_request');
+                    //throw Bozuko.error('bozuko/unauthorized_request');
                 }
                 try{
                     validator.check(name, 'Please enter your name').notEmpty();
