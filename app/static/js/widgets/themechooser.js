@@ -57,12 +57,8 @@
             modal.body = $('<div class="themechooser-modal-body bozuko-theme-chooser" />').appendTo(modal.dialog);
             modal.footer = $('<div class="themechooser-modal-footer" />').appendTo(modal.dialog);
             
-            // custom form
-            // modal.customForm
-            
             // buttons
             modal.cancel = $('<button type="button" class="btn">Cancel</button>').appendTo( modal.footer );
-            modal.custom = $('<button type="button" class="btn btn-info">Add Custom Theme</button>').appendTo( modal.footer );
             modal.select = $('<button type="button" class="btn btn-primary">Select Theme</button>').appendTo( modal.footer );
             
             

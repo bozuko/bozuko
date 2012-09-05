@@ -280,7 +280,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
         };
         
-        action.child('.button').on('click', click);
+        action.child('.button').dom.onclick = click;
     },
     
     updateState : function(full, callback){
@@ -1431,7 +1431,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     return do_entry(0,0,0);
                 });
             }
-            if( self.game.entry_method.type.match(/checkin/) ) return FB.login(loc_entry)
+            if( self.game.entry_method.type.match(/checkin/) ){
+                
+                return FB.login(loc_entry, {scope:'publish_checkins'});
+            }
             return loc_entry();
         }
         else{
