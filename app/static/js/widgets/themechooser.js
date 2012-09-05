@@ -58,7 +58,7 @@
             modal.footer = $('<div class="themechooser-modal-footer" />').appendTo(modal.dialog);
             
             // custom form
-            //modal.customForm
+            // modal.customForm
             
             // buttons
             modal.cancel = $('<button type="button" class="btn">Cancel</button>').appendTo( modal.footer );
