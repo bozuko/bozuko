@@ -1407,31 +1407,35 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         
         if( self.game.entry_method.use_location ){
             // we should get the location
-            navigator.geolocation.getCurrentPosition(function(position){
-                if( self.game.entry_method.type.match(/checkin/) ){
-                    return FB.api('/me/permissions', function (response){
-                        if( !response.data[0].publish_checkins ) return FB.login(function(){
-                            do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
-                        },{scope: 'publish_checkins'});
-                        return do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
-                    });
-                }
-                do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
-            }, function(){
-                // also make sure we have the publish_checkins permission
-                if( self.game.entry_method.type.match(/checkin/) ){
-                    return FB.api('/me/permissions', function (response){
-                        if( !response.data[0].publish_checkins ) return FB.login(function(){
-                            do_entry(0,0,0);
-                        },{scope: 'publish_checkins'});
-                        return do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
-                    });
-                }
-                do_entry(0,0,0);
-            })
+            var loc_entry = function(){
+                navigator.geolocation.getCurrentPosition(function(position){
+                    if( self.game.entry_method.type.match(/checkin/) ){
+                        return FB.api('/me/permissions', function (response){
+                            if( !response.data[0].publish_checkins ) return FB.login(function(){
+                                do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+                            },{scope: 'publish_checkins'});
+                            return do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+                        });
+                    }
+                    return do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+                }, function(){
+                    // also make sure we have the publish_checkins permission
+                    if( self.game.entry_method.type.match(/checkin/) ){
+                        return FB.api('/me/permissions', function (response){
+                            if( !response.data[0].publish_checkins ) return FB.login(function(){
+                                do_entry(0,0,0);
+                            },{scope: 'publish_checkins'});
+                            return do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+                        });
+                    }
+                    return do_entry(0,0,0);
+                });
+            }
+            if( self.game.entry_method.type.match(/checkin/) ) return FB.login(loc_entry)
+            return loc_entry();
         }
         else{
-            do_entry(0,0,0);
+            return do_entry(0,0,0);
         }
     },
     
