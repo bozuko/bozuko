@@ -1414,9 +1414,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     return do_entry(0,0,0);
                 });
             }
-            if( 0 && self.game.entry_method.type.match(/checkin/) ){
+            if( self.game.entry_method.type.match(/checkin/) ){
                 return FB.api('/me/permissions', function (response){
-                    if( !response.data[0].publish_checkins ) return FB.login(loc_entry,{scope: 'publish_checkins'});
+                    if( !response.data[0].publish_checkins ){
+                        // we need to shoot these people to login
+                        window.top.location = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
+                    }
                     else return loc_entry();
                 });
             }
