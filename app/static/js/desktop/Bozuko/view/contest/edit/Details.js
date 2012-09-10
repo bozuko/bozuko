@@ -156,6 +156,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
                 ref                 :'lookback_threshold_text'
             }]
         },{
+            xtype           :'textfield',
+            name            :'game_background',
+            fieldLabel      :'Background'
+        },{
             xtype           :'htmleditor',
             name            :'ingame_copy',
             height          :300,
