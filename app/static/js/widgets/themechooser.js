@@ -13,10 +13,10 @@
         styled = true;
     }
     
-    function loadThemes(server, key, callback){
+    function loadThemes(server, key, page, callback){
         $.ajax({
             url: server+'/themes',
-            data: {limit: 1000, api_key:key},
+            data: {limit: 1000, api_key:key, page: page},
             dataType: 'jsonp'
         })
         .success(function(result){
@@ -140,7 +140,8 @@
             
             options = $.extend({
                 server      :this.attr('data-server'),
-                key         :this.attr('data-key')
+                key         :this.attr('data-key'),
+                page        :this.attr('data-page')
             }, options||{});
             
             if( !options.server || !options.key){
@@ -152,7 +153,7 @@
             
             var $this = $(this);
             
-            return loadThemes( options.server, options.key, function(error, themes){
+            return loadThemes( options.server, options.key, options.page, function(error, themes){
             
                 return $this.each(function(){
                     var $this = $(this);

@@ -1418,7 +1418,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 return FB.api('/me/permissions', function (response){
                     if( !response.data[0].publish_checkins ){
                         // we need to shoot these people to login
-                        window.top.location = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
+                        return window.top.location = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
                     }
                     else return loc_entry();
                 });

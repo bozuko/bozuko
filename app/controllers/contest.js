@@ -1,5 +1,6 @@
 var S3 = Bozuko.require('util/s3');
 var url = require('url');
+var path = require('path');
 var burl = Bozuko.require('util/url').create;
 var inspect = require('util').inspect;
 var async = require('async');
@@ -586,11 +587,25 @@ exports.routes = {
 			handler : function( req, res ){
 				var limit = req.param('limit') || 25
 				  , offset = req.param('offset') || 0
-				  ;
-				return Bozuko.models.Theme.count(function(error,count){
+				  , page = req.param('page')
+				  
+				var where = {};
+				
+				if( page ) where = {
+					$or : [{
+						scope: {$size: 0}
+					},{
+						scope: {$exists: false}
+					},{
+						scope: page
+					}]
+				};
+				
+				return Bozuko.models.Theme.count(where, function(error,count){
 					if( error ) return error.send(res);
-					return Bozuko.models.Theme.find()
-						.sort('name', 1)
+					
+					return Bozuko.models.Theme.find(where)
+						.sort('order', 1)
 						.limit( limit )
 						.skip( offset )
 						.exec(function(error, themes){
@@ -603,6 +618,201 @@ exports.routes = {
 								return res.send( error || result );
 							});
 						});
+				});
+			}
+		}
+	},
+	
+	'/theme' : {
+		alias : '/theme/:id',
+		
+		get : {
+			access : 'developer_public',
+			handler : function( req, res ){
+				var id = req.param('id') 
+				  
+				return Bozuko.models.Theme.findById(id, function(error,theme){
+					if( error ) return error.send( res );
+					return Bozuko.transfer('theme', theme, null, function( error, result ){
+						var cb;
+						if( (cb = req.param('callback')) ){
+							return res.send( cb+'('+JSON.stringify( error || result )+');' );
+						}
+						return res.send( error || result );
+					});
+				});
+			}
+		},
+		
+		put : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				// add a new theme.
+				var name = req.param('name')
+				  , background = req.param('background')
+				  , order = req.param('order') || 0
+				  , scope = req.param('scope')
+				  
+				if( !name || !background){
+					// these are required.
+					var errors = {};
+					if( !name ) errors.name = "Theme name is required";
+					if( !background ) errors.background = "Theme background url is required";
+					return Bozuko.transfer('theme_save_result', {
+						success : false,
+						errors : errors
+					}, null, function(error, result){
+						return res.send( error || result );
+					});
+				}
+				
+				// check for a valid url...
+				var background_url;
+				background_url = url.parse(background);
+				
+				if( !background_url.host ){
+					return Bozuko.transfer('theme_save_result', {
+						success : false,
+						errors : {
+							background: "Invalid URL"
+						}
+					}, null, function(error, result){
+						return res.send( error || result );
+					});
+				}
+				
+				
+				// TODO - check Status 200 for this and theme2x
+				return checkThemeUrl( background, function(error, success){
+					
+					if( error || !success ) return Bozuko.transfer('theme_save_result', {
+						success : false,
+						errors : {
+							background: "Invalid URL"
+						}
+					}, null, function(error, result){
+						return res.send( error || result );
+					});
+					
+					// just save it
+					var theme = new Bozuko.models.Theme({
+						name: name
+					  , background: background
+					  , order: order
+					});
+					
+					// check for scope...
+					theme.scope = scope || [];
+					
+					return theme.save( function(error){
+						var data = error ? {
+							success : false,
+							error : String(error)
+						} : {
+							success : true,
+							theme : theme
+						};
+						return Bozuko.transfer('theme_save_result', data, null, function(error, result){
+							return res.send( error || result );
+						});
+					});
+				});
+				
+			}
+		},
+		post : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				// add a new theme.
+				var id = req.param('id')
+				  , name = req.param('name')
+				  , background = req.param('background')
+				  , scope = req.param('scope')
+				  , order = req.param('order') || 0
+				  
+				if( !id || !name || !background){
+					// these are required.
+					var errors = {};
+					if( !name ) errors.name = "Theme name is required";
+					if( !background ) errors.background = "Theme background url is required";
+					return Bozuko.transfer('theme_save_result', {
+						success : false,
+						errors : errors
+					}, null, function(error, result){
+						return res.send( error || result );
+					});
+				}
+				
+				// check for a valid url...
+				var background_url;
+				try {
+					background_url = url.parse(background);
+				}
+				catch(e){
+					return Bozuko.transfer('theme_save_result', {
+						success : false,
+						errors : {
+							background: "Invalid URL"
+						}
+					}, null, function(error, result){
+						return res.send( error || result );
+					});
+				}
+				
+				return checkThemeUrl( background, function(error, success){
+					
+					if( error || !success ) return Bozuko.transfer('theme_save_result', {
+						success : false,
+						errors : {
+							background: "Invalid URL"
+						}
+					}, null, function(error, result){
+						return res.send( error || result );
+					});
+				
+					// find the theme...
+					return Bozuko.models.Theme.findById( id, function(error, theme){
+						if( error || !theme ){
+							var data = {success: false, error: "Could not find Theme"};
+							return Bozuko.transfer('theme_save_result', data, null, function(error, result){
+								return res.send( error || result );
+							});
+						}
+						
+						theme.name = name;
+						theme.background = background;
+						theme.scope = scope || [];
+						theme.order = order;
+						
+						return theme.save( function(error){
+							var data = error ? {
+								success : false,
+								error : String(error)
+							} : {
+								success : true,
+								theme : theme
+							};
+							return Bozuko.transfer('theme_save_result', data, null, function(error, result){
+								return res.send( error || result );
+							});
+						});
+					});
+				});
+			}
+		},
+		del : {
+			access : 'developer_private',
+			handler : function( req, res ){
+				var id = req.param('id');
+				if( !id )  return Bozuko.transfer('theme_delete_result', {success: false}, null, function(error, result){
+					return res.send( error || result );
+				});
+				
+				return Bozuko.models.Theme.findById(id, function(error, theme){
+					theme.remove();
+					return Bozuko.transfer('theme_delete_result', {success: true}, null, function(error, result){
+						return res.send( error || result );
+					});
 				});
 			}
 		}
@@ -645,6 +855,26 @@ exports.routes = {
 					
 					case 'wins':
 						options.model = 'Prize';
+						break;
+					
+					case 'game_shares':
+						options.model = 'Share';
+						options.query.type = 'share'; 
+						break;
+					
+					case 'win_shares':
+						options.model = 'Share';
+						options.query.type = 'win'; 
+						break;
+					
+					case 'game_share_clicks':
+						options.model = 'Pageview';
+						options.query.type = 'share'; 
+						break;
+					
+					case 'win_share_clicks':
+						options.model = 'Pageview';
+						options.query.type = 'post'; 
 						break;
 					
 					case 'entries':
@@ -851,3 +1081,33 @@ exports.routes = {
 		}
 	}
 };
+
+function checkThemeUrl( background, callback ){
+	
+	if( 1 ) return callback( null, true );
+	
+	var standard = background
+	  , img = path.basename( background )
+	  , retina = path.dirname( path.dirname( background ) ) + '/theme2x/' + img
+	  , good = true
+	
+	// check both for status 200
+	return async.forEach([standard, retina], function iterator( img, cb ){
+		
+		var parsed_url = url.parse(img);
+		
+		require( parsed_url.protocol.replace(/\:/, '') ).request({
+			host : parsed_url.host
+		  , port : parsed_url.port || (parsed_url.protocol == 'https:' ? 443 : 80)
+		  , path : parsed_url.path + (parsed_url.search||'')
+		  , method : 'GET'
+		}, function( res ){
+			if( res.statusCode !== 200 ) good = false;
+			return cb();
+		});
+		
+	}, function all_good( error ){
+		return callback( error, good )		
+	});
+	
+}
