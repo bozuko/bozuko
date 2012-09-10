@@ -51,6 +51,9 @@ exports.routes = {
             access : 'developer_private',
             handler : function(req, res){
                 
+				console.log( "PUT game");
+				console.log( req.body );
+				
                 Bozuko.models.Contest.apiCreate(req, function(error, game){
 					var noop=function(opts, cb){ return cb(); };
 					return (game ? game.loadGameState : noop).call(game, {user:null, page_id: game ? game.page_id : null}, function(e){
@@ -78,6 +81,10 @@ exports.routes = {
 			
 			access : 'developer_private',
 			handler : function(req, res){
+				
+				console.log( "POST game");
+				console.log( req.body );
+				
 				Bozuko.models.Contest.apiUpdate(req, function(error, game){
 					var noop=function(opts, cb){ return cb(); };
 					return (game ? game.loadGameState : noop).call(game, {user:null, page_id: game ? game.page_id : null}, function(e){
@@ -279,6 +286,10 @@ exports.routes = {
 		post : {
 			access : 'developer_private',
 			handler : function( req, res ){
+				
+				console.log( "POST game/publish "+req.param('id'));
+				console.log( req.body );
+				
 				// get the game
 				Bozuko.models.Contest.findById( req.param('id'), function(error, contest){
 					if(error) return error.send(res);
