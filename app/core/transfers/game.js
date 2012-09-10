@@ -108,6 +108,7 @@ var game_result = {
 var game = {
     doc: "A Game Object - the game config will differ depending on the game.",
     def:{
+        page_id: "String",
         id: "String",
         url: "String",
         type: "String",
@@ -233,11 +234,13 @@ var game = {
 };
 
 var theme = {
-    doc: "Game theme object",
+    doc: "Game theme object - scope is an optional array of page IDs that this theme displays on.",
     def: {
         id: 'String',
         name: 'String',
-        background: 'String'
+        background: 'String',
+        order: 'Number',
+        scope: 'Array'
     }
 };
 
@@ -258,6 +261,24 @@ var game_save_result = {
         errors: "Object",
         error: "String",
         game: "game"
+    }
+};
+
+var theme_save_result = {
+    doc: "Result of saving a theme via PUT or POST",
+    def: {
+        success: "Boolean",
+        errors: "Object",
+        error: "String",
+        theme: "theme"
+    }
+};
+
+var theme_delete_result = {
+    doc: "Result of deleting a theme",
+    def: {
+        success: "Boolean",
+        error: "String"
     }
 };
 
@@ -390,7 +411,9 @@ exports.transfer_objects = {
     game_prize_win: game_prize_win,
     game_prize_wins: game_prize_wins,
     theme: theme,
-    themes: themes
+    themes: themes,
+    theme_save_result : theme_save_result,
+    theme_delete_result : theme_delete_result
 };
 
 var game_params = {
@@ -527,6 +550,9 @@ exports.links = {
         get : {
             doc: "Get all the available Themes",
             params: {
+                page : {
+                    type: 'Array',
+                },
                 offset: {
                     type: 'Number'
                 },
@@ -538,8 +564,80 @@ exports.links = {
         }
     },
     
+    theme : {
+        get : {
+            access: 'developer_private',
+            doc: "Add a new theme",
+            params: {
+                'id' : {
+                    type : "String"
+                }
+            },
+            returns: 'theme'
+        },
+        put : {
+            access: 'developer_private',
+            doc: "Add a new theme",
+            params: {
+                'name' : {
+                    type : "String"
+                },
+                'background' : {
+                    type : "String",
+                    doc : "The url of the image"
+                },
+                "order" : {
+                    type: "Number",
+                    doc: "The sort order for this theme"
+                },
+                "scope" : {
+                    type: "Array",
+                    doc: "Array of the Bozuko Page IDs for which this theme is available."
+                }
+                
+            },
+            returns: 'game_save_result'
+        },
+        post : {
+            access: 'developer_private',
+            doc: "Update a theme",
+            params: {
+                'id' : {
+                    type: "String"
+                },
+                'name' : {
+                    type : "String"
+                },
+                'background' : {
+                    type : "String",
+                    doc : "The url of the image"
+                },
+                "order" : {
+                    type: "Number",
+                    doc: "The sort order for this theme"
+                },
+                "scope" : {
+                    type: "Array",
+                    doc: "Array of the Bozuko Page IDs for which this theme is available."
+                }
+            },
+            returns: 'game_save_result'
+        },
+        'delete' : {
+            access: 'developer_private',
+            doc: "Delete a theme",
+            params: {
+                'id' : {
+                    type: "String"
+                }
+            },
+            returns: 'game_delete_result'
+        }
+    },
+    
     game_prize_codes: {
         get : {
+            access: 'developer_private',
             doc: "Get all the game prize codes",
             params: {
                 offset: {
