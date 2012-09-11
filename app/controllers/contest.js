@@ -513,7 +513,7 @@ exports.routes = {
 					
 					var default_url = burl('/p/'+contest.page_id);
 					if( contest.game == 'scratch' ){
-						default_url = burl('/client/game/'+contest._id+'?play=1');
+						default_url = burl('/client/game/'+contest._id);
 					}
 					
 					default_url = default_url.replace(/\/api\./, '/');
