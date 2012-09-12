@@ -79,7 +79,7 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
         },{
             xtype           :'textfield',
             name            :'redirect_url',
-            fieldLabel      :'Redirect Url'
+            fieldLabel      :'Non-mobile Url'
         },{
             xtype           :'textfield',
             name            :'share_url',
