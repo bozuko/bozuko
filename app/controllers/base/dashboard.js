@@ -805,7 +805,7 @@ exports.routes = {
                         break;
                     
                     case 'Win Share Clicks':
-                        options.model = 'Share';
+                        options.model = 'Pageview';
                         query.src = 'win';
                         break;
                     
