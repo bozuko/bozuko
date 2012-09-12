@@ -353,7 +353,7 @@ exports.routes = {
                     ;
 
                 if( !req.param(token) ){
-                    throw Bozuko.error('bozuko/unauthorized_request');
+                    //throw Bozuko.error('bozuko/unauthorized_request');
                 }
                 try{
                     validator.check(name, 'Please enter your name').notEmpty();

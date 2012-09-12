@@ -141,7 +141,11 @@ Contest.method('validate_', function(callback) {
             type            :'String'
         },
         description     :{
-            type            :'String'
+            type            :'String',
+            mutator         :function(v, name, obj, cb){
+                obj[name] = v ? v.trim() : '';
+                cb();
+            }
         },
         value           :{
             type            :'Number',
@@ -302,8 +306,17 @@ Contest.method('validate_', function(callback) {
         hide_consolations   :{
             type            :'Boolean'
         },
-        ingame_copy     :{
-            type            :"String"
+        ingame_copy         :{
+            type                :"String"
+        },
+        engine_type         :{
+            type                :"String",
+            dfault              :'time',
+            options             :['time','order']
+        },
+        win_frequency       :{
+            dfault              :2,
+            type                :'Number'
         }
     };
 
@@ -433,7 +446,7 @@ Contest.method('validate_', function(callback) {
         var values = {};
         Object.keys(meta).forEach(function(k){
             values[k] = req.param(k);
-        })
+        });
         
         return validate_and_apply(meta, values, g, function(error, success, game, errors){
             if(!success){
@@ -443,7 +456,6 @@ Contest.method('validate_', function(callback) {
             
             game.apikey_id = req.apikey._id;
             game.game_config.display_number_tickets = false;
-            game.engine_type = 'time';
             game.engine_options={};
             if( !game.consolation_prizes || !game.consolation_prizes.length ){
                 game.consolation_config = [{enabled: false}];
@@ -484,12 +496,13 @@ Contest.method('validate_', function(callback) {
             });
             values.id = id;
             
+            console.log(values);
+            
             return validate_and_apply(meta, values, g, function(error, success, game, errors){
                 if(!success){
                     E.errors(errors);
                     return callback(E);
                 }
-                game.engine_type = 'time';
                 game.game_config.display_number_tickets = false;
                 game.engine_options={};
                 if( !game.consolation_prizes || !game.consolation_prizes.length ){
@@ -503,6 +516,7 @@ Contest.method('validate_', function(callback) {
                         enabled: true
                     }];
                 }
+                
                 game.name = game.getGame().getName() + ' ['+dateFormat( game.start, "mm/dd/yyyy hh:MM tt" )+']';
                 return game.save(callback);
             });
@@ -990,6 +1004,7 @@ Contest.method('getEntryMethodHtmlDescription', function(){
 
 Contest.method('sendEndOfGameAlert', function(page) {
     var self = this;
+    if( !page ) return;
 
     // build the body of the email...
     return Bozuko.models.User.find({_id: {$in: page.admins}}, {email:1,name:1}, function(err, users) {

@@ -280,7 +280,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             });
         };
         
-        action.child('.button').on('click', click);
+        action.child('.button').dom.onclick = click;
     },
     
     updateState : function(full, callback){
@@ -1407,14 +1407,26 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         
         if( self.game.entry_method.use_location ){
             // we should get the location
-            navigator.geolocation.getCurrentPosition(function(position){
-                do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
-            }, function(){
-                do_entry(0,0,0);
-            })
+            var loc_entry = function(){
+                navigator.geolocation.getCurrentPosition(function(position){
+                    return do_entry(position.coords.latitude, position.coords.longitude, position.coords.accuracy);
+                }, function(){
+                    return do_entry(0,0,0);
+                });
+            }
+            if( self.game.entry_method.type.match(/checkin/) ){
+                return FB.api('/me/permissions', function (response){
+                    if( !response.data[0].publish_checkins ){
+                        // we need to shoot these people to login
+                        return window.top.location = '/client/login?redirect='+encodeURIComponent(window.location.pathname);
+                    }
+                    else return loc_entry();
+                });
+            }
+            return loc_entry();
         }
         else{
-            do_entry(0,0,0);
+            return do_entry(0,0,0);
         }
     },
     

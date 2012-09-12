@@ -29,7 +29,7 @@ var Page = module.exports = new Schema({
     alias               :{type:String, index: true},
     unique_users        :{type:Number},
     website             :{type:String},
-    nobranding          :{type:Boolean},
+    nobranding          :{type:Boolean, default: true},
     phone               :{type:String},
     description         :{type:String},
     is_location         :{type:Boolean},
@@ -598,7 +598,7 @@ Page.static('apiUpdate', function(req, callback){
             var fb_id = req.param('facebook_id');
             if(!fb_id) return cb();
             return Bozuko.service('facebook').place({id:fb_id,fields:['location','link','name']}, function(error, place){
-                if(error) {
+                if(error || !place) {
                     return cb(E.error('facebook_id',"Error getting Facebook Page"));
                 }
                 page.service(place.service, place.id, null, place.data);
@@ -628,6 +628,7 @@ Page.static('apiUpdate', function(req, callback){
 
 Page.static('createFromServiceObject', function(place, callback){
     var ignore = ['id','service','lat','lng','data'];
+    
 
     var page = new Bozuko.models.Page();
     Object.keys(place).forEach(function(prop){

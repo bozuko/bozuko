@@ -13,10 +13,10 @@
         styled = true;
     }
     
-    function loadThemes(server, key, callback){
+    function loadThemes(server, key, page, callback){
         $.ajax({
             url: server+'/themes',
-            data: {limit: 1000, api_key:key},
+            data: {limit: 1000, api_key:key, page: page},
             dataType: 'jsonp'
         })
         .success(function(result){
@@ -44,14 +44,23 @@
     function openModal(){
         if( !modal ) {
             modal = {};
+            
+            // modal bg
             modal.bg = $('<div class="themechooser-modal-bg" />').appendTo($('body')).click( closeModal );
+            
+            // dialog container
             modal.dialogCt = $('<div class="themechooser-modal-dialog-ct" />').appendTo($('body'));
             modal.dialog= $('<div class="themechooser-modal-dialog" />').appendTo(modal.dialogCt);
+            
+            // main sections
             modal.header=$('<div class="themechooser-modal-header">Select a Theme</div>').appendTo(modal.dialog);
             modal.body = $('<div class="themechooser-modal-body bozuko-theme-chooser" />').appendTo(modal.dialog);
             modal.footer = $('<div class="themechooser-modal-footer" />').appendTo(modal.dialog);
-            modal.select = $('<button type="button" class="btn btn-primary">Select Theme</button>').appendTo( modal.footer );
+            
+            // buttons
             modal.cancel = $('<button type="button" class="btn">Cancel</button>').appendTo( modal.footer );
+            modal.select = $('<button type="button" class="btn btn-primary">Select Theme</button>').appendTo( modal.footer );
+            
             
             modal.cancel.click( closeModal );
             modal.select.click( selectTheme );
@@ -127,16 +136,16 @@
     var methods = {
         init : function( options ){
             
-            if( !this.length ) return;
+            if( !this.length ) return false;
             
             options = $.extend({
                 server      :this.attr('data-server'),
-                key         :this.attr('data-key')
+                key         :this.attr('data-key'),
+                page        :this.attr('data-page')
             }, options||{});
             
             if( !options.server || !options.key){
-                $.error('bozukothemechooser: "server" and "key" options are required');
-                return;
+                return $.error('bozukothemechooser: "server" and "key" options are required');
             }
             
             // add the css
@@ -144,7 +153,7 @@
             
             var $this = $(this);
             
-            return loadThemes( options.server, options.key, function(error, themes){
+            return loadThemes( options.server, options.key, options.page, function(error, themes){
             
                 return $this.each(function(){
                     var $this = $(this);

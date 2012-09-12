@@ -146,6 +146,9 @@ TransferObject.prototype.sanitize = function(data, current, user, callback){
                                 case 'object':
                                 case 'mixed':
                                     break;
+                                
+                                case 'array':
+                                    break;
 
                                 default:
                                     return Bozuko.transfer(c, v, user, function(error, value){

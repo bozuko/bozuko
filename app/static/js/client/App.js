@@ -74,7 +74,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( Modernizr.touch && !window.navigator.userAgent.match(/i(pad|pod|phone)/i) ) this.stylesheet.rule('body',{
             'width': this.width+'px'
         });
-        if( config.facebook_tab ){
+        if( !config.facebook_tab ){
             FB.Canvas.setSize({height:this.height + 100});
         }
         else (function(){
@@ -220,7 +220,9 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                 oauth: true,
                 channelUrl: channel
             });
-
+            
+            FB.Canvas.setSize({height:this.height + 100});
+            
             FB.Event.subscribe('auth.logout', function(){
                 self.fireEvent('nouser');
             });

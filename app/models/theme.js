@@ -9,5 +9,7 @@ var Theme = module.exports = new Schema({
     name                    :{type:String},
     alias                   :{type:String},
     background              :{type:String},
-    icon                    :{type:String}
+    icon                    :{type:String},
+    order                   :{type:Number,      default:0},
+    scope                   :{type:Array,       default:[]}
 });
