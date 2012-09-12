@@ -76,7 +76,7 @@ Prize.virtual('state')
         if( this.redeemed ) return Prize.REDEEMED;
         var now = new Date();
 		// console.error(this.expires.getTime());
-        if( !this.expires.getTime() || now < this.expires ) return Prize.ACTIVE;
+        if( !this.expires || !this.expires.getTime || !this.expires.getTime() || now < this.expires ) return Prize.ACTIVE;
         return Prize.EXPIRED;
     });
 
@@ -944,7 +944,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 			.moveDown()
 			;
 			
-		if( self.description ){
+		if( self.description && typeof self.description === 'string' ){
 			doc
 				.fontSize(12)
 				.font('Bold')
@@ -953,7 +953,8 @@ Prize.method('createPdf', function(user, images, page, callback){
 				
 				.font('Regular')
 				.fill('#000')
-				.text(self.description, {width: col2})
+				.text(self.description.replace(/^\s+|\r|\s+$/g, ''), {width: col2})
+				//.text(self.description, {width: col2})
 				.moveDown()
 				;
 		}
