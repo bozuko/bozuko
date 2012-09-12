@@ -51,9 +51,6 @@ exports.routes = {
             access : 'developer_private',
             handler : function(req, res){
                 
-				console.log( "PUT game");
-				console.log( req.body );
-				
                 Bozuko.models.Contest.apiCreate(req, function(error, game){
 					var noop=function(opts, cb){ return cb(); };
 					return (game ? game.loadGameState : noop).call(game, {user:null, page_id: game ? game.page_id : null}, function(e){
@@ -81,10 +78,6 @@ exports.routes = {
 			
 			access : 'developer_private',
 			handler : function(req, res){
-				
-				console.log( "POST game");
-				console.log( req.body );
-				
 				Bozuko.models.Contest.apiUpdate(req, function(error, game){
 					var noop=function(opts, cb){ return cb(); };
 					return (game ? game.loadGameState : noop).call(game, {user:null, page_id: game ? game.page_id : null}, function(e){
@@ -286,10 +279,6 @@ exports.routes = {
 		post : {
 			access : 'developer_private',
 			handler : function( req, res ){
-				
-				console.log( "POST game/publish "+req.param('id'));
-				console.log( req.body );
-				
 				// get the game
 				Bozuko.models.Contest.findById( req.param('id'), function(error, contest){
 					if(error) return error.send(res);
@@ -524,15 +513,16 @@ exports.routes = {
 					
 					var default_url = burl('/p/'+contest.page_id);
 					if( contest.game == 'scratch' ){
-						default_url = burl('/client/game/'+contest._id+'?play=1');
+						default_url = burl('/client/game/'+contest._id);
 					}
 					
 					default_url = default_url.replace(/\/api\./, '/');
 					
-					var redirect = default_url
-					  , change_time = new Date('2012-07-30 12:00:00')
-					  ;
-					if((contest.get('start') > change_time || type!='touch') && contest.share_url ) redirect = contest.share_url;
+					var redirect = default_url;
+					  
+					if( contest.share_url ){
+						redirect = contest.share_url;
+					}
 					/*
 					 
 					Well... this would be cool because we could track it in Google Analytics..
