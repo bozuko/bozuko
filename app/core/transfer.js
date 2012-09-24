@@ -31,6 +31,7 @@ var transfer = module.exports = function(key, data, user, callback) {
 			if( !(callback instanceof Function) ){
 				console.log([key,callback]);
 			}
+			
 			return transfer_objects[key].create(data, user, function(error, result){
 				if( error ) return callback( error );
 				return callback( null, result );

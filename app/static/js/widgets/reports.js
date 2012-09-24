@@ -4,7 +4,11 @@
       , types = {
             'entries'       :'Entries',
             'unique'        :'Unique Users',
-            'wins'          :'Prize Wins'
+            'wins'          :'Prize Wins',
+            'game_shares'   :'Game Shares',
+            'win_shares'    :'Win Shares',
+            'game_share_clicks' :'Game Share Clicks',
+            'win_share_clicks'  :'Win Share Clicks'
         }
     ;
     
