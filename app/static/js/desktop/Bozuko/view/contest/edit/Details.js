@@ -79,7 +79,7 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
         },{
             xtype           :'textfield',
             name            :'redirect_url',
-            fieldLabel      :'Redirect Url'
+            fieldLabel      :'Non-mobile Url'
         },{
             xtype           :'textfield',
             name            :'share_url',
@@ -155,6 +155,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
                 xtype               :'component',
                 ref                 :'lookback_threshold_text'
             }]
+        },{
+            xtype           :'textfield',
+            name            :'game_background',
+            fieldLabel      :'Background'
         },{
             xtype           :'htmleditor',
             name            :'ingame_copy',

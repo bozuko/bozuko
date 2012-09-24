@@ -29,7 +29,7 @@ var Page = module.exports = new Schema({
     alias               :{type:String, index: true},
     unique_users        :{type:Number},
     website             :{type:String},
-    nobranding          :{type:Boolean},
+    nobranding          :{type:Boolean, default: true},
     phone               :{type:String},
     description         :{type:String},
     is_location         :{type:Boolean},
