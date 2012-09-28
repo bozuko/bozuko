@@ -36,13 +36,13 @@ Ext.namespace('Bozuko.client.game');
         baseWidth: 320,
         baseHeight: 415,
         
-        lang : {
+        lang : Ext.apply( Bozuko.client.game.Abstract.prototype.lang, {
             loading : {
                 entry : 'Loading...',
                 result : 'Getting a ticket...'
             },
             instructions: 'Match 3 to Win!'
-        },
+        }),
         
         scratchMasks: [
             "data:image/png;base64,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",
@@ -141,6 +141,19 @@ Ext.namespace('Bozuko.client.game');
             });
             else self.addImage( 'scratch-mask', '/images/client/scratch/scratchMask_0024.png');
             
+            // check for custom result images
+            var animations = ['win','lose','freePlay','playAgain'];
+            for(var i=0; i<animations.length; i++){
+                var cur = animations[i];
+                if( this.game.config.theme.options[cur+'Custom'] ){
+                    // delete the others
+                    delete this.resultImages[cur+'Txt'];
+                    delete this.resultImages[cur+'Bg'];
+                    delete this.resultImages[cur+'Stars'];
+                    this.resultImages[cur+'Custom'] = this.game.config.theme.options[cur+'Custom'];
+                }
+            }
+            
             // add the images
             for(var i in this.resultImages ){
                 self.addImage( i, this.resultImages[i]);
@@ -184,6 +197,9 @@ Ext.namespace('Bozuko.client.game');
                 tag         :'div',
                 cls         :'game scratch-ticket'
             });
+            if( this.game.config.theme.options.no_numbers ){
+                this.$ct.addClass('no-numbers');
+            }
             this.$ct.setStyle({
                 width       :this.width+'px',
                 height      :this.height+'px'
@@ -322,12 +338,14 @@ Ext.namespace('Bozuko.client.game');
         
         _createAnimationDiv : function(name, stars){
             var self = this;
-            if( 1 ){
-                self.$animations[name] = self.$animationsCt.createChild({
-                    cls         :'animation '+name
-                });
-                
-                self.$animations[name].setVisibilityMode( Ext.Element.DISPLAY );
+            
+            self.$animations[name] = self.$animationsCt.createChild({
+                cls         :'animation '+name
+            });
+            
+            self.$animations[name].setVisibilityMode( Ext.Element.DISPLAY );
+            
+            if( !self.image(name+'Custom') ){
                 
                 self.image(name+'Bg').className = 'bg';
                 self.$animations[name].dom.appendChild(self.image(name+'Bg'));
@@ -339,6 +357,10 @@ Ext.namespace('Bozuko.client.game');
                     self.image(name+'Stars').className = 'stars';
                     self.$animations[name].dom.appendChild(self.image(name+'Stars'));
                 }
+            }
+            else {
+                self.image(name+'Custom').className = 'custom';
+                self.$animations[name].dom.appendChild(self.image(name+'Custom'));
             }
         },
         

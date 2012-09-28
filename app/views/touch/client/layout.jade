@@ -10,13 +10,23 @@ html(xmlns:fb="https://www.facebook.com/2008/fbml",class=html_classes)
         meta(name=name, content=content)
     
     //script(type="text/javascript",src="http://s7.addthis.com/js/250/addthis_widget.js")
+    
     - if( locals.stylesheets )
       - each sheet in stylesheets
         link(rel="stylesheet",type="text/css",href=sheet)
         
+   - if( locals.inline_styles )
+      - each style in inline_styles
+        style(type="text/css")= style
+        
     - if( locals.scripts )
       - each script in scripts
         script(type="text/javascript",src=script)
+        
+    - if( locals.inline_scripts )
+      - each script in inline_scripts
+        script(type="text/javascript")
+          #{script}
     
   body
     != body

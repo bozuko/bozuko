@@ -52,11 +52,16 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                 value           :1000 * 60 * 2
             },{
                 xtype           :'checkbox',
+                name            :'is_screen',
+                fieldLabel      :'Chinoki Style'
+            },{
+                xtype           :'checkbox',
                 name            :'is_pdf',
                 fieldLabel      :'Email PDF only',
                 listeners       :{
                     change          :function(field){
                         me.down('[name=pdf_image]')[field.getValue()?'show':'hide']();
+                        me.down('[name=pdf_external]')[field.getValue()?'show':'hide']();
                         me.down('[name=pdf_image_only]')[field.getValue()?'show':'hide']();
                         var fn = field.getValue() ? 'show' : 'hide';
                         Ext.Array.each( me.query('[name=email_body], [name=email_subject], [name=email_format], [name=email_replyto]'), function(cmp){
@@ -64,6 +69,11 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                         });
                     }
                 }
+            },{
+                xtype           :'textfield',
+                name            :'pdf_external',
+                hidden          :true,
+                fieldLabel      :'External PDF Url'
             },{
                 xtype           :'textfield',
                 name            :'pdf_image',

@@ -106,7 +106,9 @@ Ext.define('Bozuko.lib.form.field.Duration', {
     },
     
     getValue : function(){
+        
         var me = this;
+        if( !me.rendered ) return me.value;
         
         var d = Number( me.valueField.getValue() ),
             u = Number( me.unitField.getValue() )
