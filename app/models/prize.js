@@ -506,7 +506,7 @@ Prize.method('getImages', function(user, security_img, callback) {
             path: '/tmp/page-'+this.page._id+'-security.'+_uuid+'.png'
         },
         business: {
-            url: this.page.image,
+            url: this.page.image.replace(/type=square/, 'type=large'),
             path: '/tmp/page-'+this.page._id+'-image.'+_uuid+'.png'
         }
     };
