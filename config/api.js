@@ -28,7 +28,7 @@ module.exports = {
 			cert: Bozuko.dir+'/ssl/bozuko.com/bozuko.com.crt'
 		},
         host: 'bozuko.com'
-    }
+    },
 
     defaultService:'facebook',
 
