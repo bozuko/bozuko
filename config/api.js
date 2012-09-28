@@ -4,10 +4,7 @@ module.exports = {
 
     controllers: {
         except: [
-            'site',
-            'business',
-			'beta',
-			'admin'
+          'admin'
         ]
     },
 
@@ -25,8 +22,13 @@ module.exports = {
     },
 	
     server: {
-        host: 'api.bozuko.com'
-    },
+        ssl_config:{
+            key : Bozuko.dir+'/ssl/bozuko.com/bozuko.com.key',
+			ca : Bozuko.dir+'/ssl/bozuko.com/gd_bundle.crt',
+			cert: Bozuko.dir+'/ssl/bozuko.com/bozuko.com.crt'
+		},
+        host: 'bozuko.com'
+    }
 
     defaultService:'facebook',
 
