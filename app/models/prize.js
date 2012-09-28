@@ -496,7 +496,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 
 Prize.method('getImages', function(user, security_img, callback) {
     var _uuid = uuid();
-	console.error(['getImages',this.page.image, this.page.image.replace(/type=square/, 'type=large')].join(', '));
+	// console.error(['getImages',this.page.image, this.page.image.replace(/type=square/, 'type=large')].join(', '));
     var imgs = {
         user: {
             url: user.image.replace(/type=large/, 'type=square'),
@@ -507,7 +507,7 @@ Prize.method('getImages', function(user, security_img, callback) {
             path: '/tmp/page-'+this.page._id+'-security.'+_uuid+'.png'
         },
         business: {
-            url: this.page.image.replace(/type=square/, 'type=large'),
+            url: this.page.image,
             path: '/tmp/page-'+this.page._id+'-image.'+_uuid+'.png'
         }
     };
