@@ -4,7 +4,6 @@ module.exports = {
 
     controllers: {
         except: [
-          'admin'
         ]
     },
 
