@@ -8,8 +8,16 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     lang : {
         loading : {
             entry : 'Loading...',
-            result : 'Loading...'
-        }
+            result : 'Loading...',
+            user: 'Loading User...'
+        },
+        agreeToOfficialRules : 'I agree to the Official Rules below.',
+        officialRules: 'Official Rules',
+        availablePrizes: 'Available Prizes',
+        myPrizes: 'My Prizes',
+        backToGame: 'Back to game',
+        shareThisGame: 'Share This Game!',
+        visitFacebookPage: 'Visit our Facebook Page'
     },
     
     constructor : function(config){
@@ -24,7 +32,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this._playing = false;
         
         Ext.apply( this, config );
+        
         this.addEvents({
+            'render'            :true,
             'ready'             :true,
             'result'            :true,
             'win'               :true,
@@ -35,6 +45,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             'displaylose'       :true
         });
         Bozuko.client.game.Abstract.superclass.constructor.call(this,config);
+        
+        this.on('render', function(){
+            this.app.fireEvent('render_game', this, this.app);
+        }, this);
+        
+        this.app.fireEvent('filter_game', this);
         
         this._saved = {
             state: this.getCache('state'),
@@ -192,6 +208,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 
                 window.notifyFn = function(state){
                     switch(state){
+                        
                         case 'facebook/like_loaded':
                             clearInterval(interval);
                             ct.removeClass('like-container-loading');
@@ -263,7 +280,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             html        :self.state.button_text || 'Play'
         },{
             cls         :'agree',
-            html        :'I agree to the Official Rules below.'
+            html        :this.lang.agreeToOfficialRules
         }]);
         var action = self.getDescription().child('.actions .action');
         
@@ -333,11 +350,12 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             var url = (function(l){
                 return l.protocol+'//'+l.host.replace(/^api\./,'')+l.pathname+'?share-button=1';
             })(window.location);
+            
             this.$description = this.app.createModal({
                 cls             :'game-description page-window modal-window-full',
                 cn              :[{
                     cls             :'user top-bar',
-                    html            :'Loading User...'
+                    html            :this.lang.loading.user
                 },{
                     cls             :'hd',
                     cn              :[{
@@ -380,7 +398,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                                         +'u='+encodeURIComponent(url)
                                                         +'&t='+encodeURIComponent(this.game.name)
                                                         +'&display=popup',
-                                    html            :'Share This Game',
+                                    html            :this.lang.shareThisGame,
                                     cls             :'share-btn'
                                 }]
                             },{
@@ -390,7 +408,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                     tag             :'a',
                                     target          :'_blank',
                                     href            :this.page.facebook_page,
-                                    html            :'Visit Our Facebook Page',
+                                    html            :this.lang.visitFacebookPage,
                                     cls             :'facebook'
                                 }]
                             }]
@@ -407,7 +425,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             cls             :'section prizes',
                             cn              :[{
                                 tag             :'h4',
-                                html            :'Available Prizes'
+                                html            :this.lang.availablePrizes
                             },{
                                 tag             :'ul',
                                 cls             :'bubble'
@@ -421,7 +439,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                             cls             :'section terms',
                             cn              :[{
                                 tag             :'h4',
-                                html            :'Official Rules'
+                                html            :this.lang.officialRules
                             },{
                                 cls             :'bubble'
                             }]
@@ -429,6 +447,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     }]
                 }]
             });
+            
+            this.app.fireEvent('filter_game_description', this.$description, this );
+            
             this.$description.$shareButtons = this.$description.child('.share-buttons');
             this.$description.$shareButtons.setVisibilityMode(Ext.Element.DISPLAY);
             
@@ -694,6 +715,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     }]
                 }]
             });
+            
+            this.app.fireEvent('filter_you_win', this.$description, this );
+            
             this.$youWin.child('.ft').on('click', this.onYouWinButtonClick, this);
             this.squareImage(this.$youWin.child('.page-pic'), this.page.image);
             
@@ -1245,11 +1269,14 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     }]
                 }]
             });
+            self.app.fireEvent('filter_prize', li, self );
             li.child('.link').on('click', function(){
                 self._youWinReturn = 'prizes';
                 self.showYouWin(self.prizes[i]);
             });
         });
+        
+        this.app.fireEvent('filter_prize_list', ul, self );
         
     },
     
@@ -1259,7 +1286,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 cls             :'my-prizes page-window modal-window-full',
                 cn              :[{
                     cls             :'top-bar',
-                    html            :'<a href="javascript:;" class="back-to-game">&larr; Back to Game</a>'
+                    html            :'<a href="javascript:;" class="back-to-game">&larr; '+this.lang.backToGame+'</a>'
                 },{
                     cls             :'hd',
                     cn              :[{
@@ -1268,7 +1295,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         cls             :'content',
                         cn              :[{
                             tag             :'h3',
-                            html            :'My Prizes'
+                            html            :this.lang.myPrizes
                         }]
                     }]
                 },{
@@ -1278,6 +1305,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     }]
                 }]
             });
+            
+            this.app.fireEvent('filter_my_prizes', this.$myPrizes, this );
+            
             this.$myPrizes.child('.back-to-game').on('click', this.showDescription, this);
             this.squareImage(this.$myPrizes.child('.page-pic'), this.app.user.image);
             var show = this.$myPrizes.show;

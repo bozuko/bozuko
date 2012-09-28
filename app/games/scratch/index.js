@@ -38,7 +38,8 @@ Scratch.prototype.getConfig = function(){
         theme: {
             name: theme.name,
             base: theme.base,
-            images: theme.images
+            images: theme.images,
+            options: this.config.theme_options || {}
         }
     };
 };

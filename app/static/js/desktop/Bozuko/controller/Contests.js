@@ -38,6 +38,10 @@ Ext.define('Bozuko.controller.Contests' ,{
             'contestform button[action=save]' : {
                 click           :this.onContestSaveClick
             },
+            /*
+            'contestform aceeditor' : {
+                save            :this.onContestEditorSave
+            },*/
             'contestform button[action=back]' : {
                 click           :this.onContestBackClick
             },
@@ -62,6 +66,10 @@ Ext.define('Bozuko.controller.Contests' ,{
                 publish         :this.onPublishFromBuilder
             }
         });
+    },
+    
+    onContestEditorSave : function(cmp){
+        this.onContestSaveClick( cmp.up('contestform').down('button[action=save]') );
     },
     
     onContestsListRender : function(view){
@@ -134,15 +142,17 @@ Ext.define('Bozuko.controller.Contests' ,{
             consolation_prizes = contestForm.down('contestformconsolationprizes'),
             entry = contestForm.down('contestformentry'),
             rules = contestForm.down('contestformrules'),
+            theme = contestForm.down('contestformtheme'),
             game = contestForm.down('contestformgame');
 
         var isNew = !record.get('_id');
         btn.disable();
         btn.setText( isNew ? 'Creating...' : 'Saving...');
         record.set('page_id', pageRecord.get('_id'));
-        record.set( this.getValues(details) );
-        record.set( this.getValues(game) );
-        record.set( this.getValues(rules) );
+        
+        var values = Ext.Object.merge( {}, this.getValues(details), this.getValues(game), theme.getValues(), this.getValues(rules) );
+        
+        record.set( values );
         var entry_config = record.get('entry_config');
         if( entry_config && entry_config.length ){
             var values = this.getValues(entry);
@@ -202,7 +212,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             type = record.get('type'),
             panel = cardPanel.down('[ref='+type+']');
 
-        cardPanel.getLayout().setActiveItem(panel);
+        if( cardPanel && panel ) cardPanel.getLayout().setActiveItem(panel);
     },
     
     onLaunch: function(){
@@ -672,8 +682,8 @@ Ext.define('Bozuko.controller.Contests' ,{
         selector = types.join(', ');
         Ext.Array.each(form.query( selector ), function(field){
             var name = field.getName();
+            if( name.substring(0,4) == 'ext-' ) return;
             var ns = name.split('.'), cur = values;
-
             if( ns.length > 1 ){
                 while( ns.length > 1 ){
                     var p = ns.shift();

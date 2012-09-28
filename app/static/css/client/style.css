@@ -135,7 +135,7 @@ a:hover {
 .cool_button:hover {
   background-color: #31fb45;
   background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
   /* IE6-9 */
 
@@ -166,7 +166,7 @@ a:hover {
   background-clip: padding-box;
   background-color: #2ad43a;
   background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
@@ -175,7 +175,7 @@ a:hover {
 .btn:hover {
   background-color: #31fb45;
   background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
   /* IE6-9 */
 
@@ -184,7 +184,7 @@ a:hover {
   border-color: #177420;
   background-color: #2ee840;
   background-image: -moz-linear-gradient(top, #2ee840, #22ae30);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ee840',EndColorStr='#22ae30');
   /* IE6-9 */
 
@@ -324,8 +324,19 @@ a:hover {
   font-size: 2.2em;
 }
 .scratch-ticket .prize .name {
-  font-size: .72em;
+  font-size: .9em;
   padding: 0 1.5em;
+}
+.scratch-ticket.no-numbers .prize {
+  display: table;
+}
+.scratch-ticket.no-numbers .prize .number {
+  display: none;
+}
+.scratch-ticket.no-numbers .prize .name {
+  padding: 0 1.9em;
+  vertical-align: middle;
+  display: table-cell;
 }
 .scratch-ticket .profile-pic {
   position: absolute;
@@ -426,6 +437,13 @@ a:hover {
   position: absolute;
   display: block;
 }
+.scratch-ticket .animations .animate .custom {
+  z-index: 3;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: wiggle 1s ease-in-out 0s infinite alternate;
+  -moz-animation: wiggle 1s ease-in-out 0s infinite alternate;
+}
 .scratch-ticket .animations .animate .bg {
   z-index: 1;
   -webkit-transform-origin: 50% 50%;
@@ -478,7 +496,7 @@ a:hover {
   height: 75px;
   background-color: #656565;
   background-image: -moz-linear-gradient(top, #656565, #343434);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #656565), color-stop(1, #343434)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #656565), color-stop(1, #343434));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#656565',EndColorStr='#343434');
   /* IE6-9 */
 
@@ -617,7 +635,7 @@ a:hover {
   background-clip: padding-box;
   background-color: #2ad43a;
   background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
@@ -628,7 +646,7 @@ a:hover {
 .game-description .actions .button:hover {
   background-color: #31fb45;
   background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
   /* IE6-9 */
 
@@ -637,7 +655,7 @@ a:hover {
   border-color: #177420;
   background-color: #2ee840;
   background-image: -moz-linear-gradient(top, #2ee840, #22ae30);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ee840',EndColorStr='#22ae30');
   /* IE6-9 */
 
@@ -666,7 +684,7 @@ a:hover {
   padding: 4px 8px;
   background-color: #e8e8e8;
   background-image: -moz-linear-gradient(top, #e8e8e8, #ffffff);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #e8e8e8), color-stop(1, #ffffff)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #e8e8e8), color-stop(1, #ffffff));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#e8e8e8',EndColorStr='#ffffff');
   /* IE6-9 */
 
@@ -688,7 +706,7 @@ a:hover {
   background-color: #fb8719;
   background-color: #1e8cc2;
   background-image: -moz-linear-gradient(top, #1e8cc2, #18729e);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #1e8cc2), color-stop(1, #18729e)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #1e8cc2), color-stop(1, #18729e));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#1e8cc2',EndColorStr='#18729e');
   /* IE6-9 */
 
@@ -701,7 +719,7 @@ a:hover {
   display: none;
   background-color: #1e8cc2;
   background-image: -moz-linear-gradient(top, #1e8cc2, #18729e);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #1e8cc2), color-stop(1, #18729e)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #1e8cc2), color-stop(1, #18729e));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#1e8cc2',EndColorStr='#18729e');
   /* IE6-9 */
 
@@ -973,7 +991,7 @@ a:hover {
   background-clip: padding-box;
   background-color: #2ad43a;
   background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
@@ -986,7 +1004,7 @@ a:hover {
 .you-win .bd .message .btn:hover {
   background-color: #31fb45;
   background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
   /* IE6-9 */
 
@@ -995,7 +1013,7 @@ a:hover {
   border-color: #177420;
   background-color: #2ee840;
   background-image: -moz-linear-gradient(top, #2ee840, #22ae30);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ee840',EndColorStr='#22ae30');
   /* IE6-9 */
 
@@ -1026,7 +1044,7 @@ a:hover {
   background-clip: padding-box;
   background-color: #a8a8a8;
   background-image: -moz-linear-gradient(top, #a8a8a8, #7a7a7a);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #a8a8a8), color-stop(1, #7a7a7a)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #a8a8a8), color-stop(1, #7a7a7a));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#a8a8a8',EndColorStr='#7a7a7a');
   /* IE6-9 */
 
@@ -1039,7 +1057,7 @@ a:hover {
 .you-win .bd .message .btn-cancel:hover {
   background-color: #31fb45;
   background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
   /* IE6-9 */
 
@@ -1048,7 +1066,7 @@ a:hover {
   border-color: #5c5c5c;
   background-color: #b8b8b8;
   background-image: -moz-linear-gradient(top, #b8b8b8, #8a8a8a);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #b8b8b8), color-stop(1, #8a8a8a)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #b8b8b8), color-stop(1, #8a8a8a));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#b8b8b8',EndColorStr='#8a8a8a');
   /* IE6-9 */
 
@@ -1214,7 +1232,7 @@ a:hover {
   background-clip: padding-box;
   background-color: #2ad43a;
   background-image: -moz-linear-gradient(top, #2ad43a, #1e9a2a);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ad43a), color-stop(1, #1e9a2a));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ad43a',EndColorStr='#1e9a2a');
   /* IE6-9 */
 
@@ -1226,7 +1244,7 @@ a:hover {
 .you-win .ft .btn:hover {
   background-color: #31fb45;
   background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
   /* IE6-9 */
 
@@ -1235,7 +1253,7 @@ a:hover {
   border-color: #177420;
   background-color: #2ee840;
   background-image: -moz-linear-gradient(top, #2ee840, #22ae30);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ee840), color-stop(1, #22ae30));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#2ee840',EndColorStr='#22ae30');
   /* IE6-9 */
 
@@ -1266,7 +1284,7 @@ a:hover {
   background-clip: padding-box;
   background-color: #ffd329;
   background-image: -moz-linear-gradient(top, #ffd329, #c19a1e);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffd329), color-stop(1, #c19a1e)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffd329), color-stop(1, #c19a1e));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#ffd329',EndColorStr='#c19a1e');
   /* IE6-9 */
 
@@ -1276,7 +1294,7 @@ a:hover {
 .you-win .ft .btn-save:hover {
   background-color: #31fb45;
   background-image: -moz-linear-gradient(top, #31fb45, #26c135);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #31fb45), color-stop(1, #26c135));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#31fb45',EndColorStr='#26c135');
   /* IE6-9 */
 
@@ -1285,7 +1303,7 @@ a:hover {
   border-color: #917316;
   background-color: #ffe62c;
   background-image: -moz-linear-gradient(top, #ffe62c, #d9ad21);
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffe62c), color-stop(1, #d9ad21)) !important;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffe62c), color-stop(1, #d9ad21));
   filter: progid:DXImageTransform.Microsoft.gradient(StartColorStr='#ffe62c',EndColorStr='#d9ad21');
   /* IE6-9 */
 
