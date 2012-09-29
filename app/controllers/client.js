@@ -146,6 +146,22 @@ exports.renderGame = function(req, res, contest_id, page_id){
             res.locals.cache_time = now;
             res.locals.contest = contest;
             res.locals.page = page;
+            var o;
+            if( contest.game_config && (o=contest.game_config.theme_options) ){
+                if(o.js){
+                    res.locals.theme_js = o.js;
+                }
+                if(o.css){
+                    return require('less').render( o.css, function(error, css){
+                        
+                        if( css ) res.locals.theme_css = css;
+                        else res.locals.theme_css = '/*\n'+error.stack+'\n*/';
+                        return res.render('client/index');
+                    });
+                    
+                }
+            }
+            
             return res.render('client/index');
         }
         

@@ -9,7 +9,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     dimensions : {x: 320, y: 415},
     
     constructor : function(config){
-        
         var self = this;
         
         this.user = null;
@@ -49,6 +48,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         });
         
         Bozuko.client.App.superclass.constructor.call(this, config);
+        Bozuko.client.App.Events.fireEvent('construct', this, config);
         
         this.on('pagedata', function(data){
             self.updateBranding();
@@ -74,7 +74,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( Modernizr.touch && !window.navigator.userAgent.match(/i(pad|pod|phone)/i) ) this.stylesheet.rule('body',{
             'width': this.width+'px'
         });
-        if( !config.facebook_tab ){
+        if( config.facebook_tab ){
             FB.Canvas.setSize({height:this.height + 100});
         }
         else (function(){
@@ -491,7 +491,11 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     return;
                 }
                 
-                if( !gameResponse.data.type == 'scratch' ){
+                // check for the game class
+                var type = gameResponse.data.type
+                  , Game = Bozuko.client.game[type.substr(0,1).toUpperCase() + type.substr(1)];
+                
+                if( !Game ){
                     self.showMessage('Unsupported Game Type');
                     self.stopped = true;
                     return;
@@ -504,7 +508,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     self.$poweredBy.show();
                 }
                 
-                self.scratch = new Bozuko.client.game.Scratch({
+                self.scratch = new Game({
                     width: self.$body.getWidth(),
                     height: self.$body.getWidth()/320*415,
                     game: gameResponse.data,
@@ -576,9 +580,11 @@ Bozuko.client.Loader = Ext.extend( Ext.util.Observable, {
 
 (function(){
     var instances = [];
+    Bozuko.client.App.Events = new Ext.util.Observable();
     Bozuko.client.App.launch = function(config){
         Ext.onReady(function(){
-            instances[instances.length] = new Bozuko.client.App(config);
+            var inst = instances[instances.length] = new Bozuko.client.App(config);
+            Bozuko.client.App.Events.fireEvent('created', inst);
         });
     };
     

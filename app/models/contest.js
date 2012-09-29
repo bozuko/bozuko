@@ -153,7 +153,13 @@ Contest.method('validate_', function(callback) {
         },
         total           :{
             required        :true,
-            type            :'Number'
+            type            :'Number',
+            validate        :function(v,name,obj,cb){
+                if( v > 50000 ){
+                    return cb(null, false, "The maximum number of prizes is 50,000");
+                }
+                return cb(null, true);
+            }
         },
         expiration      :{
             aliasFor        :'duration',
@@ -1560,6 +1566,7 @@ Contest.method('savePrize', function(opts, callback) {
             is_pdf: prize.is_pdf,
             is_screen: prize.is_screen,
             address_required: prize.address_required,
+            pdf_external: prize.pdf_external,
             pdf_image: prize.pdf_image,
             pdf_image_only: prize.pdf_image_only,
             bucks: prize.bucks

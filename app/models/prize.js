@@ -341,12 +341,25 @@ Prize.static('search', function(){
 Prize.method('getPdf', function(user, security_img, callback){
 	var self = this;
 	
+	console.error('getPdf');
+	console.error('self.pdf_external: '+self.get('pdf_external'));
+	
+	if( self.get('pdf_external') ){
+		// we need to download...
+		return http.request({
+			url:self.get('pdf_external'),
+			encoding:'binary'
+		}, function(error, result, response){
+			return callback( error, result ? new Buffer( result, 'binary' ) : null );
+		});
+	}
+	
 	if( typeof security_img == 'function' ){
 		callback = security_img;
 		security_img = false;
 	}
 	
-	async.series([
+	return async.series([
 		function get_security_img(cb){
 			// get the page
 			return Bozuko.models.Page.findById(self.page_id, function(error, page){
@@ -483,6 +496,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 
 Prize.method('getImages', function(user, security_img, callback) {
     var _uuid = uuid();
+	// console.error(['getImages',this.page.image, this.page.image.replace(/type=square/, 'type=large')].join(', '));
     var imgs = {
         user: {
             url: user.image.replace(/type=large/, 'type=square'),
@@ -838,7 +852,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 		}
 		
 		doc
-			.image(images.business.path, {width: image_size})
+			.image(images.business.path, {fit: [image_size, image_size]})
 			;
 		
 		bottom = doc.y;
@@ -851,7 +865,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 			.font('Regular')
 			.fontSize(14)
 			.fill('#333')
-			.text(self.page.name, doc.x + 5, y, {width: width * .5 - image_size - 10 , align: 'left'});
+			.text(self.page.name, doc.x + 5, y, {width: width * .7 - image_size - 10 , align: 'left'});
 			
 		bottom = Math.max( doc.y, bottom );
 			
@@ -859,7 +873,7 @@ Prize.method('createPdf', function(user, images, page, callback){
 			.font('Regular')
 			.fontSize(14)
 			.fill('#333')
-			.text('Code: '+self.code, margin + (width * .5), y, {width: width * .5, align: 'right'});
+			.text('Code: '+self.code, margin + (width * .7), y, {width: width * .3, align: 'right'});
 		
 		bottom = Math.max( doc.y, bottom );
 		

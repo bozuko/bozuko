@@ -271,8 +271,20 @@ a, a:visited, a:link, a:hover {
             font-size: 2.2em;
         }
         .name {
-            font-size: .72em;
+            font-size: .9em;
             padding: 0 1.5em;
+        }
+    }
+    
+    &.no-numbers .prize {
+        display: table;
+        .number {
+            display: none;
+        }
+        .name {
+            padding: 0 1.9em;
+            vertical-align: middle;
+            display: table-cell;
         }
     }
     
@@ -383,6 +395,21 @@ a, a:visited, a:link, a:hover {
         .animate {
             position: absolute;
             display: block;
+            
+            .custom {
+                z-index: 3;
+                -webkit-transform-origin: 50% 50%;
+                -moz-transform-origin: 50% 50%;
+                
+                -webkit-animation:
+                    wiggle 1s ease-in-out 0s infinite alternate
+                    ;
+                
+                -moz-animation:
+                    wiggle 1s ease-in-out 0s infinite alternate
+                    ;
+            }
+            
             .bg {
                 z-index: 1;
                 -webkit-transform-origin: 50% 50%;
@@ -478,6 +505,7 @@ a, a:visited, a:link, a:hover {
         position: relative;
     }
 }
+
 
 .game-description {
     padding: 0;
