@@ -1,12 +1,15 @@
 #fb-root
-
-script(type="text/javascript",src="/js/modernizr/min.js")
 script(src="//connect.facebook.net/en_US/all.js")
 
 #container
 
 - var config = {renderTo: 'container', width: req.param('width'), email_only: email_only, cache_time: cache_time, facebook_tab: !!req.param('facebook_tab'), };
 
+- if( locals.theme_js )
+  script(type="text/javascript")
+    Bozuko.client.App.Events.on('construct', function(app){
+      !{theme_js}
+    });
 
 script(type="text/javascript")
   Bozuko.client.App.path = !{JSON.stringify(path)};
@@ -30,3 +33,7 @@ script(type="text/javascript")
       background: !{Bozuko.cfg('client.game.backgroundColor', '#ffffff')} !{Bozuko.cfg('client.game.backgroundImage') ? 'url('+Bozuko.cfg('client.game.backgroundImage')+')' : 'none'} !{Bozuko.cfg('client.game.backgroundAttachment', 'scroll')} !{Bozuko.cfg('client.game.backgroundRepeat', 'repeat')} !{Bozuko.cfg('client.game.backgroundPosition', 'top center')}
     }
     html body { background: transparent; }
+    
+- if( locals.theme_css )
+  style(type="text/css")
+    !{theme_css}

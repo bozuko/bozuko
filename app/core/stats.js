@@ -38,7 +38,8 @@ var StatsEngine = function(){
         StatsPluginUnique
     ];
     this.listeners = {};
-    this.init();
+    // this.init();
+    
 };
 
 StatsEngine.prototype.init = function(){
