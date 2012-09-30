@@ -12,6 +12,8 @@
 }
 html {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 body {
   background: #000000;
@@ -31,7 +33,8 @@ h6 {
 }
 .facebook-tab body {
   background: #ffffff url("/images/client/facebook-tab-bg.png") 0 0 repeat-x;
-  height: 650px;
+  padding: 0;
+  margin: 0;
 }
 #container {
   margin: 0 auto;

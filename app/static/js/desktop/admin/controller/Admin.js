@@ -438,7 +438,8 @@ Ext.define('Admin.controller.Admin' ,{
                                     .readRecords({items:[data], total:1})
                                     .records[0]
                                     ;
-                                panel.store.add(record);
+                                
+                                // panel.store.add(new Bozuko.model.Contest(record.data));
                                 me.application.controllers.getByKey('Bozuko.controller.Contests')
                                     .editContest(record, field)
                                     ;
