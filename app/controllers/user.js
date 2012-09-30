@@ -125,8 +125,6 @@ exports.routes = {
                                     if(game && !share.contest_id){
                                         share.contest_id = game;
                                     }
-                                    // we don't need to update at all
-                                    else return;
                                     
                                     share.save(function(error){
                                         if( error ) console.error( error );
