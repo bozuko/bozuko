@@ -94,12 +94,6 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             self.scrollToTop();
         }
         
-        if( config.facebook_tab ){
-            FB.Canvas.setSize({height:this.height + 100});
-            setTimeout(centerGame, 200);
-        }
-        else setTimeout(centerGame, 200);
-        
         // scale the page
         Ext.get(document.body).setStyle('font-size', 13*this.width/this.dimensions.x+'px');
         Ext.get(this.ct).setWidth(this.width);
@@ -107,6 +101,13 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         this.startFromPath();
         this.initFacebook();
+        
+        if( config.facebook_tab ){
+            FB.Canvas.setSize({height:this.height + 100});
+            setTimeout(centerGame, 200);
+        }
+        else setTimeout(centerGame, 200);
+        
         this.on('user', function(){
             this.userState = 'user';
         }, this);
