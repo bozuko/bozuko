@@ -299,7 +299,7 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
     getValues : function(selector){
         var form = this;
         var values = {};
-        selector = selector ? selector+' field, '+selector+' htmleditor' : 'field, htmleditor';
+        selector = selector ? selector+' field, '+selector+' htmleditor, '+selector+' duration' : 'field, htmleditor, duration';
         Ext.Array.each(form.query( selector ), function(field){
             var ns = field.getName().split('.'), cur = values;
 

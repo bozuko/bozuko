@@ -51,6 +51,10 @@ Ext.define('Bozuko.lib.form.field.Duration', {
             }]
         });
         
+        me.on('render', function(){
+            if( me.value ) me.setValue( me.value );
+        });
+        
         me.callParent( arguments );
         me.valueField = me.down('[ref=value]');
         me.unitField = me.down('[ref=unit]');
