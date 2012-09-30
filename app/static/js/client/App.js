@@ -74,27 +74,31 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         if( Modernizr.touch && !window.navigator.userAgent.match(/i(pad|pod|phone)/i) ) this.stylesheet.rule('body',{
             'width': this.width+'px'
         });
-        if( config.facebook_tab ){
-            FB.Canvas.setSize({height:this.height + 100});
-        }
-        else (function(){
+        
+        function centerGame(){
             var h =  window.innerHeight||document.documentElement.clientHeight;
             this.stylesheet.rule('body', {
                 'min-height': h+'px'
             });
             if( h > self.height ){
-                var padding = (h - this.height) / 2;
+                var padding = (h - self.height) / 2;
                 this.stylesheet.rule('body', {
                     'min-height': (h-padding)+'px'
                 });
-                Ext.fly(this.ct).setStyle({
+                Ext.fly(self.ct).setStyle({
                     'padding-top': padding+'px',
                     'padding-bottom': padding+'px'
                     
                 });
             }
-            this.scrollToTop();
-        }).defer(500, this);
+            self.scrollToTop();
+        }
+        
+        if( config.facebook_tab ){
+            FB.Canvas.setSize({height:this.height + 100});
+            setTimeout(centerGame, 200);
+        }
+        else setTimeout(centerGame, 200);
         
         // scale the page
         Ext.get(document.body).setStyle('font-size', 13*this.width/this.dimensions.x+'px');
