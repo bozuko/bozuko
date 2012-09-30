@@ -76,7 +76,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         });
         
         function centerGame(){
-            var h =  window.innerHeight||document.documentElement.clientHeight;
+            var h =  self.windowHeight||window.innerHeight||document.documentElement.clientHeight;
             self.stylesheet.rule('body', {
                 'min-height': h+'px'
             });
@@ -104,6 +104,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         if( config.facebook_tab ){
             FB.Canvas.setSize({height:this.height + 100});
+            self.windowHeight = this.height+100;
             setTimeout(centerGame, 200);
         }
         else setTimeout(centerGame, 200);
