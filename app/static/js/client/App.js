@@ -82,7 +82,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             });
             if( h > self.height ){
                 var padding = (h - self.height) / 2;
-                this.stylesheet.rule('body', {
+                self.stylesheet.rule('body', {
                     'min-height': (h-padding)+'px'
                 });
                 Ext.fly(self.ct).setStyle({
