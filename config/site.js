@@ -2,7 +2,7 @@ module.exports = {
 
     db:{
         name: 'bozuko_production',
-	    host: '192.168.175.161'
+	    host: '192.168.131.186'
     },
 	
     amazon : {
