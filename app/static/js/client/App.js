@@ -77,7 +77,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         function centerGame(){
             var h =  window.innerHeight||document.documentElement.clientHeight;
-            this.stylesheet.rule('body', {
+            self.stylesheet.rule('body', {
                 'min-height': h+'px'
             });
             if( h > self.height ){
