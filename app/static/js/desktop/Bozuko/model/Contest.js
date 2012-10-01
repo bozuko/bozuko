@@ -30,6 +30,7 @@ Ext.define('Bozuko.model.Contest', {
         {name:'promo_copy',         type:'String'},
         {name:'ingame_copy',        type:'String'},
         {name:'game_background',    type:'String'},
+        {name:'admin_emails',       type:'String'},
         {name:'hide_consolations',  type:'Boolean'},
         {name:'end_alert_sent',     type:'Boolean'},
         {name:'win_frequency',      type:'Number',              defaultValue:2},

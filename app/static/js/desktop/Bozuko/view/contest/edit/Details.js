@@ -160,6 +160,10 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             name            :'game_background',
             fieldLabel      :'Background'
         },{
+            xtype           :'textfield',
+            name            :'admin_emails',
+            fieldLabel      :'Admin Emails'
+        },{
             xtype           :'htmleditor',
             name            :'ingame_copy',
             height          :300,
