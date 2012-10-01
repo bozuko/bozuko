@@ -348,7 +348,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             // get the window width
             var mobile = Modernizr.touch;
             var url = (function(l){
-                return l.protocol+'//'+l.host.replace(/^api\./,'')+l.pathname+'?share-button=1';
+                return l.protocol+'//'+l.host+l.pathname+'?share-button=1';
             })(window.location);
             
             this.$description = this.app.createModal({
