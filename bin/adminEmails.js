@@ -37,7 +37,7 @@ var sendEmails = function(contest, callback) {
    async.forEach(names, function(name, cb) {
        name = name.trim();
        mail.sendView('contest/status', {name: name, contest: contest}, {
-           to: contest.admin_emails,
+           to: name,
            subject: 'Game Summary - '+contest.name,
            body: 'The following are the totals for the instant win game '+contest.name
        }, function(err, success) {
