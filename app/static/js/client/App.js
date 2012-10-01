@@ -28,7 +28,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.api.on('failure', function(result){
             if( result.data && result.data.message ){
                 alert(result.data.message);
-                if( self.scratch ) self.scratch.updateActionFromState();
+                if( self.game ) self.game.updateActionFromState();
             }
         });
         
@@ -287,12 +287,12 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             self.showMessage("Unsupported Path");
             return;
         }
-        if( !this.scratch ){
+        if( !this.game ){
             self.showMessage("Unsupported Game Type");
             return;
         }
         self.showLoading('Loading Game...');
-        self.scratch.load(self.user);
+        self.game.load(self.user);
     },
     
     bozukoLogin : function(token, callback){
@@ -514,7 +514,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     self.$poweredBy.show();
                 }
                 
-                self.scratch = new Game({
+                self.game = new Game({
                     width: self.$body.getWidth(),
                     height: self.$body.getWidth()/320*415,
                     game: gameResponse.data,
