@@ -4,6 +4,8 @@ Ext.define('Bozuko.lib.Overrides', {
         
         Ext.Ajax.timeout = 1000 * 60 * 20;
         
+        Ext.override(Ext.Component,{ stateful:false });
+        
         Ext.data.Connection.override({
             getXhrInstance : (function(){
                 var options = [function(){
