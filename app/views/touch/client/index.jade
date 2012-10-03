@@ -25,6 +25,11 @@ script(type="text/javascript")
       background: !{contest.get('game_background') || page.get('game_background')}
     }
     html body { background: transparent !important; }
+    @media (max-width: 400px){
+      html{
+        background: #000 none !important;
+      }
+    }
 
 
 - else if( Bozuko.cfg('client.game.backgroundImage') || Bozuko.cfg('client.game.backgroundColor') )
@@ -33,6 +38,11 @@ script(type="text/javascript")
       background: !{Bozuko.cfg('client.game.backgroundColor', '#ffffff')} !{Bozuko.cfg('client.game.backgroundImage') ? 'url('+Bozuko.cfg('client.game.backgroundImage')+')' : 'none'} !{Bozuko.cfg('client.game.backgroundAttachment', 'scroll')} !{Bozuko.cfg('client.game.backgroundRepeat', 'repeat')} !{Bozuko.cfg('client.game.backgroundPosition', 'top center')}
     }
     html body { background: transparent; }
+    @media (max-width: 480px){
+      html{
+        background: #000 none !important;
+      }
+    }
     
 - if( locals.theme_css )
   style(type="text/css")
