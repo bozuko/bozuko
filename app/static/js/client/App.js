@@ -29,7 +29,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         });
         
         this.createElements();
-        this.showLoading('Loading...');
+        
         
         // scroll the window to the top
         setTimeout(function(){
@@ -45,6 +45,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         Bozuko.client.App.superclass.constructor.call(this, config);
         Bozuko.client.App.Events.fireEvent('construct', this, config);
+        
+        this.showLoading('Loading...');
         
         this.on('pagedata', function(data){
             self.updateBranding();
