@@ -1,9 +1,5 @@
 Ext.namespace('Bozuko.client');
 
-Ext.Element.prototype.update = function(html){
-    this.dom.innerHTML = html;
-};
-
 Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     dimensions : {x: 320, y: 415},

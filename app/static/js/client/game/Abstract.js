@@ -547,8 +547,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         }
         // check 
         if( this.game.ingame_copy ){
-            this.$copySection.child('.content').update(this.game.ingame_copy);
-            this.$copySection.show();
+            if( !this._ingame_copy ){
+                this.$copySection.child('.content').update(this.game.ingame_copy, true);
+                this.$copySection.show();
+                this._ingame_copy = true;
+            }
         }
         else {
             this.$copySection.child('.content').update('');
