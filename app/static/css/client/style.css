@@ -341,7 +341,7 @@ a:hover {
   vertical-align: middle;
   display: table-cell;
   *padding-top: 45%;
-  /* IE8 and below */
+  /* IE7 and below */
 }
 .scratch-ticket .profile-pic {
   position: absolute;
