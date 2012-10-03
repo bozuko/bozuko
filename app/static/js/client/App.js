@@ -434,9 +434,11 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.mask(keep);
         this.$modal.select('.modal-window').hide();
         $el.show();
+        this.fireEvent('showmodal');
     },
     
     hideModal : function(force){
+        this.fireEvent('hidemodal');
         this.unmask(force);
     },
     
