@@ -1,9 +1,5 @@
 Ext.namespace('Bozuko.client');
 
-Ext.Element.prototype.update = function(html){
-    this.dom.innerHTML = html;
-};
-
 Bozuko.client.App = Ext.extend( Ext.util.Observable, {
     
     dimensions : {x: 320, y: 415},
@@ -28,12 +24,12 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.api.on('failure', function(result){
             if( result.data && result.data.message ){
                 alert(result.data.message);
-                if( self.scratch ) self.scratch.updateActionFromState();
+                if( self.game ) self.game.updateActionFromState();
             }
         });
         
         this.createElements();
-        this.showLoading('Loading...');
+        
         
         // scroll the window to the top
         setTimeout(function(){
@@ -49,6 +45,8 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         Bozuko.client.App.superclass.constructor.call(this, config);
         Bozuko.client.App.Events.fireEvent('construct', this, config);
+        
+        this.showLoading('Loading...');
         
         this.on('pagedata', function(data){
             self.updateBranding();
@@ -287,12 +285,12 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             self.showMessage("Unsupported Path");
             return;
         }
-        if( !this.scratch ){
+        if( !this.game ){
             self.showMessage("Unsupported Game Type");
             return;
         }
         self.showLoading('Loading Game...');
-        self.scratch.load(self.user);
+        self.game.load(self.user);
     },
     
     bozukoLogin : function(token, callback){
@@ -438,9 +436,11 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         this.mask(keep);
         this.$modal.select('.modal-window').hide();
         $el.show();
+        this.fireEvent('showmodal');
     },
     
     hideModal : function(force){
+        this.fireEvent('hidemodal');
         this.unmask(force);
     },
     
@@ -514,7 +514,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     self.$poweredBy.show();
                 }
                 
-                self.scratch = new Game({
+                self.game = new Game({
                     width: self.$body.getWidth(),
                     height: self.$body.getWidth()/320*415,
                     game: gameResponse.data,
