@@ -516,7 +516,7 @@ exports.routes = {
 						default_url = burl('/client/game/'+contest._id);
 					}
 					
-					default_url = default_url.replace(/\/api\./, '/');
+					// default_url = default_url.replace(/\/api\./, '/');
 					
 					var redirect = default_url;
 					  

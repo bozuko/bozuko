@@ -348,7 +348,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             // get the window width
             var mobile = Modernizr.touch;
             var url = (function(l){
-                return l.protocol+'//'+l.host.replace(/^api\./,'')+l.pathname+'?share-button=1';
+                return l.protocol+'//'+l.host+l.pathname+'?share-button=1';
             })(window.location);
             
             this.$description = this.app.createModal({
@@ -547,8 +547,11 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         }
         // check 
         if( this.game.ingame_copy ){
-            this.$copySection.child('.content').update(this.game.ingame_copy);
-            this.$copySection.show();
+            if( !this._ingame_copy ){
+                this.$copySection.child('.content').update(this.game.ingame_copy, true);
+                this.$copySection.show();
+                this._ingame_copy = true;
+            }
         }
         else {
             this.$copySection.child('.content').update('');
