@@ -17,7 +17,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         myPrizes: 'My Prizes',
         backToGame: 'Back to game',
         shareThisGame: 'Share This Game!',
-        visitFacebookPage: 'Visit our Facebook Page'
+        visitFacebookPage: 'Visit our Facebook Page',
+        youWin: 'You Win!',
+        prizeDetails: 'Prize Details'
     },
     
     constructor : function(config){
@@ -630,7 +632,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                         cn              :[{
                             tag             :'h2',
                             cls             :'title',
-                            html            :'You Win!'
+                            html            :this.lang.youWin
                         }]
                     }]
                 },{
@@ -762,10 +764,10 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.$youWin[prize.is_barcode?'addClass':'removeClass']('prize-is-barcode');
         this.$youWin[!prize.is_barcode&&!prize.is_email&&!prize.is_pdf?'addClass':'removeClass']('prize-is-user-redeemable');
         
-        this.$youWin.child('.hd .title').update('You Win!'); //prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
+        this.$youWin.child('.hd .title').update(this.lang.youWin); //prize.state=='expired'?'Expired':prize.state=='redeemed'?'Redeemed':'You Win!');
         
         this.$youWin.child('.prize-name').update(prize.name);
-        this.$youWin.child('.prize-desc .text').update('<strong>Prize Details:</strong> '+prize.description);
+        this.$youWin.child('.prize-desc .text').update('<strong>'+this.lang.prizeDetails+':</strong> '+prize.description);
         this.$youWin.child('.prize-desc').hide();
         
         this.$youWin.child('.prize-code').update('<span class="code-label">CODE: </span>'+prize.code);

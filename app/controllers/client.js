@@ -102,6 +102,10 @@ exports.renderGame = function(req, res, contest_id, page_id){
             res.locals.email_only = email_only;
             res.locals.path = '/game/'+contest.id;
             
+            
+            var Game = contest.game;
+            Game = Game.substr(0,1).toUpperCase() + Game.substr(1);
+            
             // lets add our scripts
             var scripts = [
                 '/js/dateFormat.js',
@@ -115,7 +119,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
                 '/js/client/util/Cache.js',
                 '/js/client/lib/Api.js',
                 '/js/client/game/Abstract.js',
-                '/js/client/game/Scratch.js',
+                '/js/client/game/'+Game+'.js',
                 '/js/client/App.js'
             ];
             
