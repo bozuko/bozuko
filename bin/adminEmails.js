@@ -5,14 +5,14 @@ var async = require('async');
 var getActiveContests = function(callback) {
     Bozuko.models.Contest.find(
         {start: {$lt: new Date()}, end: {$gt: new Date()}, active: true},
-        {_id: 1, name: 1, admin_emails: 1, unique_users: 1},
+        {_id: 1, game_config: 1, admin_emails: 1, unique_users: 1},
         function(err, contests) {
             if (err) return callback(err);
             var objects = [];
             contests.forEach(function(contest) {
                 objects.push({
                     _id: contest._id,
-                    name: contest.name,
+                    name: contest.game_config.name,
                     admin_emails: contest.admin_emails,
                     unique_users: contest.unique_users || 0
                 });
@@ -36,7 +36,7 @@ var sendEmails = function(contest, callback) {
    var names = contest.admin_emails.split(',');
    async.forEach(names, function(name, cb) {
        name = name.trim();
-       mail.sendView('contest/status', {name: name, contest: contest}, {
+       mail.sendView('contest/status', {name: name, contest: contest, layout: 'statusLayout.jade'}, {
            to: name,
            subject: 'Game Summary - '+contest.name,
            body: 'The following are the totals for the instant win game '+contest.name
