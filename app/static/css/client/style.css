@@ -472,6 +472,52 @@ a:hover {
   -moz-animation: stars 2s linear 0s infinite
                     ;
 }
+.slot-machine {
+  position: relative;
+}
+.slot-machine .frame {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.slot-machine .wheel {
+  background: #d6b503;
+  position: absolute;
+  z-index: 2;
+  width: 28.125%;
+  height: 38.5542168675%;
+  top: 13.0120481928%;
+}
+.slot-machine .wheel .wrap {
+  height: 100%;
+  margin: 0 10%;
+  position: relative;
+  overflow: hidden;
+}
+.slot-machine .wheel .scroll {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.slot-machine .wheel img {
+  width: auto;
+  max-width: 100%;
+  display: block;
+}
+.slot-machine .spin-button {
+  position: absolute;
+  z-index: 10;
+  top: 65%;
+  right: 3%;
+  width: 30%;
+  height: 10%;
+  background: green;
+  border-radius: 8px;
+  border: 1px solid #b8cfaf;
+}
 .page-window {
   padding: 0;
 }
