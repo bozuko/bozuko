@@ -134,7 +134,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
             // get the sharing
             res.locals.meta['og:image'] = burl('/page/'+page.id+'/image');
             res.locals.meta['og:title'] = game.getName();
-            res.locals.meta['og:description'] = game.share_description;
+            res.locals.meta['og:description'] = contest.share_description || Bozuko.t('en', 'game/share_description', game.getName());
             
             res.locals.scripts = [
                 'https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js',
