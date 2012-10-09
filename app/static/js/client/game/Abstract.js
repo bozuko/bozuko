@@ -577,7 +577,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             description = this.getDescription();
         
         if( this.app.user ){
-            description.child('.user').update('<ul class="user-links"><li class="my-prizes-li" style="display: none;"><a href="javascript:;" class="my-prizes">My Prizes</a></li><li><a class="logout" href="javascript:;">Logout</a></li></ul><div class="name">Hi <strong>'+this.app.user.name+'</strong></div>');
+            description.child('.user').update('<ul class="user-links"><li class="my-prizes-li" style="display: none;"><a href="javascript:;" class="my-prizes">'+this.lang.myPrizes+'</a></li><li><a class="logout" href="javascript:;">Logout</a></li></ul><div class="name">Hi <strong>'+this.app.user.name+'</strong></div>');
             description.child('.user .logout').on('click', function(){
                 this.registerLoader();
                 this.app.logout();
