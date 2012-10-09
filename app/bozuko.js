@@ -452,6 +452,7 @@ function initGames(app){
 // this will be called 4 times with multinode...
 // not sure how to avoid this...
 Bozuko.initFacebookPubSub = function(){
+	
     var url = 'https://graph.facebook.com/'+
               Bozuko.config.facebook.app.id+
               '/subscriptions?access_token='+
