@@ -452,8 +452,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 }]
             });
             
-            this.app.fireEvent('filter_game_description', this.$description, this );
-            
             this.$description.$shareButtons = this.$description.child('.share-buttons');
             this.$description.$shareButtons.setVisibilityMode(Ext.Element.DISPLAY);
             
@@ -500,6 +498,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     }
                 });
             };
+            this.app.fireEvent('filter_game_description', this.$description, this );
         }
         return this.$description;
     },
