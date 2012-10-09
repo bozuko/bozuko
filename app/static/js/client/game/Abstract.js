@@ -19,7 +19,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         shareThisGame: 'Share This Game!',
         visitFacebookPage: 'Visit our Facebook Page',
         youWin: 'You Win!',
-        prizeDetails: 'Prize Details'
+        prizeDetails: 'Prize Details',
+        sentEmail: '<p>This prize has been emailed to <strong class="user-email">{0}</strong>! '+
+                   'Please ensure it didn\'t land in your spam folder.</p>',
     },
     
     constructor : function(config){
@@ -812,7 +814,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                     html        :[
                         '<div class="address-form-padding">',
                             '<div class="prize-details">',
-                                '<h4><span style="font-size:.8em">You Win!</span><br /><span style="color:black;" class="prize-name"></span></h4>',
+                                '<h4><span style="font-size:.8em">'+this.lang.youWin+'</span><br /><span style="color:black;" class="prize-name"></span></h4>',
                             '</div>',
                             '<form>',
                                 '<p class="address-message"></p>',
@@ -928,8 +930,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         }
         else if( prize.is_pdf || prize.is_email || this.app.email_only ){
             message.update([
-                '<p>This prize has been emailed to <strong class="user-email">'+this.app.user.email+'</strong>! ',
-                'Please ensure it didn\'t land in your spam folder.</p>',
+                String.format(this.sentEmail, this.app.user.email),
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
                 '<div class="email-form">',
                     '<div><input class="email-field" placeholder="Enter your email" name="email" /></div>',
