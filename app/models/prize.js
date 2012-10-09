@@ -617,15 +617,13 @@ Prize.method('share', function(args, callback){
 				at = 'at';
 
 			options.name = user.name+' just won '+a+prize.name+'!';
-			console.error( 'before share title');
 			if( contest.get('win_share_title') ){
 				options.name = contest.get('win_share_title')
 					.replace(/\{prize\}/i, prize.name)
 					.replace(/\{user\}/i, user.name)
 					;
 			}
-			console.error( 'after share title: '+ options.name);
-
+			
 			// fix this in the case of Bozuko
 			if( page.name.match(/^bozuko$/i) ) at='with';
 			
