@@ -617,13 +617,24 @@ Prize.method('share', function(args, callback){
 				at = 'at';
 
 			options.name = user.name+' just won '+a+prize.name+'!';
+			if( contest.win_share_title ){
+				options.name = contest.win_share_title
+					.replace(/\{prize\}/i, prize.name)
+					.replace(/\{user\}/i, user.name)
+					;
+			}
 
 			// fix this in the case of Bozuko
 			if( page.name.match(/^bozuko$/i) ) at='with';
 			
-			options.description = _t('en','game/share_description', gameName);
-			if( contest.share_description ) {
-				options.description = contest.share_description;
+			options.description = _t('en','game/win_share_description', gameName)
+				|| _t('en','game/share_description', gameName);
+				
+			if( contest.win_share_description ) {
+				options.description = contest.win_share_description
+					.replace(/\{prize\}/i, prize.name)
+					.replace(/\{user\}/i, user.name)
+					;
 			}
 
 			return Bozuko.service('facebook').post(options, function(error){
