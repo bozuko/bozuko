@@ -618,8 +618,8 @@ Prize.method('share', function(args, callback){
 
 			options.name = user.name+' just won '+a+prize.name+'!';
 			console.error( 'before share title');
-			if( contest.win_share_title ){
-				options.name = contest.win_share_title
+			if( contest.get('win_share_title') ){
+				options.name = contest.get('win_share_title')
 					.replace(/\{prize\}/i, prize.name)
 					.replace(/\{user\}/i, user.name)
 					;
@@ -632,8 +632,8 @@ Prize.method('share', function(args, callback){
 			options.description = _t('en','game/win_share_description', gameName)
 				|| _t('en','game/share_description', gameName);
 				
-			if( contest.win_share_description ) {
-				options.description = contest.win_share_description
+			if( contest.get('win_share_description') ) {
+				options.description = contest.get('win_share_description')
 					.replace(/\{prize\}/i, prize.name)
 					.replace(/\{user\}/i, user.name)
 					;
