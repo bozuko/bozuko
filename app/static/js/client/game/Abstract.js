@@ -929,7 +929,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         }
         else if( prize.is_pdf || prize.is_email || this.app.email_only ){
             message.update([
-                String.format(this.sentEmail, this.app.user.email),
+                String.format(this.lang.sentEmail, this.app.user.email),
                 '<p class="email-link"><a href="javascript:;">Change Email Address?</a></p>',
                 '<div class="email-form">',
                     '<div><input class="email-field" placeholder="Enter your email" name="email" /></div>',
