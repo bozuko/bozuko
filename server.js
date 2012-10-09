@@ -42,7 +42,7 @@ if( proc.isMaster ){
     }
     // need a better way to handle this
     if( env === 'api' ){
-        Bozuko.initFacebookPubSub();
+        // Bozuko.initFacebookPubSub();
     }
     Bozuko.initHttpRedirect();
     if ( env === 'api' || env === 'playground' || env === 'development' ) {
