@@ -96,6 +96,16 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             fieldLabel      :'Share Description',
             emptyText       :'Leave empty for default description.'
         },{
+            xtype           :'textfield',
+            name            :'win_share_title',
+            fieldLabel      :'Win Share Title',
+            emptyText       :'Leave empty for default text. Use {prize} for prize name, {user} for user\'s name.'
+        },{
+            xtype           :'textfield',
+            name            :'win_share_description',
+            fieldLabel      :'Win Share Description',
+            emptyText       :'Leave empty for default description. Use {prize} for prize name, {user} for user\'s name.'
+        },{
             xtype           :'checkbox',
             name            :'multiplay',
             fieldLabel      :'Multiplay'

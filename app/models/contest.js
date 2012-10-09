@@ -45,6 +45,8 @@ var Contest = module.exports = new Schema({
     share_url               :{type:String},
     share_title             :{type:String},
     share_description       :{type:String},
+    win_share_title         :{type:String},
+    win_share_description   :{type:String},
     game_background         :{type:String},
     hide_consolations       :{type:Boolean, default: false},
     plays                   :[Play],

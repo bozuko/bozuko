@@ -61,6 +61,8 @@ Ext.define('Bozuko.model.Contest', {
         {name:'share_url',          type:'String'},
         {name:'share_title',        type:'String'},
         {name:'share_description',  type:'String'},
+        {name:'win_share_title',    type:'String'},
+        {name:'win_share_description',  type:'String'},
         {name:'play_cursor',        type:'Number',              defaultValue:-1},
         {name:'token_cursor',       type:'Number',              defaultValue:0},
         {name:'entry_count',        type:'Number'},
