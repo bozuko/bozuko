@@ -501,6 +501,7 @@ a:hover {
   position: absolute;
   bottom: 0;
   width: 100%;
+  -webkit-transform: translate3d(0, 0, 0);
 }
 .slot-machine .wheel img {
   width: auto;

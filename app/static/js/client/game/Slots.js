@@ -30,9 +30,12 @@ Ext.namespace('Bozuko.client.game');
         baseHeight: 830,
         
         wheelXPositions: [34, 230, 425],
-        wheelOrders: [],
         
-        frame: "http://bozuko.s3.amazonaws.com/public/slots/assets/slots-frame-large.png",
+        wheelOrders: [],
+        wheelStrips: [],
+        wheelScrolls: [],
+        
+        frame: "https://bozuko.s3.amazonaws.com/public/slots/assets/slots-frame-large.png",
         
         lang : Ext.apply( Bozuko.client.game.Abstract.prototype.lang, {
             loading : {
@@ -68,7 +71,9 @@ Ext.namespace('Bozuko.client.game');
                 self.addImage( icons[i], theme.base+'/'+theme.icons[icons[i]] );
             }
             
-            self.loadImages();
+            self.loadImages(function(){
+                
+            });
             
             if( this.renderTo ){
                 this.render( this.renderTo );
@@ -78,7 +83,7 @@ Ext.namespace('Bozuko.client.game');
         render : function(parent){
             
             var self = this
-              , p = this.width / this.baseWidth;
+              , p = this.width / this.baseWidth
             
             if( this.rendered ) return;
             
@@ -126,29 +131,67 @@ Ext.namespace('Bozuko.client.game');
                     cls         :'wrap'
                 });
                 
-                var wheelScroll = wheelCt.createChild({
+                var wheelScroll = this.wheelScrolls[i] = wheelCt.createChild({
                     cls         :'scroll'
                 });
                 
                 // add the icons to the wheel...
                 var icons = this.icons.slice();
-                this.wheelOrder[i] = [];
-                // 
+                this.wheelOrders[i] = [];
+                
+                this.wheelStrips[i] = [];
+                var strip = this.wheelStrips[i][0] = wheelScroll.createChild({});
                 
                 while( icons.length ){
                     var icon = icons.splice( Math.floor(Math.random()*icons.length), 1 )[0];
-                    wheelScroll.createChild({
+                    strip.createChild({
                         tag         :'img',
                         src         :this.image(icon).src
                     });
-                    this.wheelOrder[i][this.wheelOrder[i].length-1] = icon;;
+                    this.wheelOrders[i][this.wheelOrders[i].length-1] = icon;
+                }
+                
+                this.wheelStrips[i][0] = strip;
+                
+                // how wide are the images?
+                if( !this.iconHeight ) this.iconHeight = strip.getWidth();
+                if( !this.stripHeight ) this.stripHeight = this.iconHeight * this.icons.length;
+                if( !this.iconOffset ){
+                    this.iconOffset = (wheel.getHeight() - this.iconHeight) / 4;
+                    console.log( this.iconOffset );
+                }
+                wheelScroll.dom.style.webkitTranform = 'translate3d(0, '+this.iconOffset+'px, 0)';
+                
+                for(var j=1; j<6; j++ ){
+                    var n = Ext.get(strip.dom.cloneNode(true));
+                    n.dom.setAttribute('id', '');
+                    wheelScroll.dom.appendChild( n.dom );
+                    var s = this.wheelStrips[i][j] = n;
                 }
             }
+            
             
             this.reset();
             this.rendered = true;
             this.fireEvent('render', this);
-            this.app.hideModal.defer(1000, this.app);
+            this.app.showModal = function(){};
+            this.app.hideModal
+            
+            var self = this;
+            /*
+            setTimeout(function(){
+            for(var i=0; i<self.wheelScrolls.length; i++){
+                (function(i){
+                self.wheelScrolls[i].addClass('scroll-animate');
+                // get the height
+                var h = self.wheelScrolls[i].dom.scrollHeight - 500 - (Math.floor(Math.random() * 5) * 50) ;
+                var s = 5 +( 0.7 * i );
+                self.wheelScrolls[i].dom.style.webkitTransition = '-webkit-transform '+s+'s';
+                self.wheelScrolls[i].dom.style.webkitTransform = 'translate3d(0, '+h+'px, 0)';
+                })(i);
+            }
+            }, 1000);
+            */
         },
         
         pause : function(){

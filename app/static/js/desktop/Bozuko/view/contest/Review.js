@@ -96,11 +96,11 @@ Ext.define('Bozuko.view.contest.Review', {
                         return me.contest.get('engine_type') !== 'time';
                     },
                     embeddable : function(){
-                        return me.contest.get('web_only');
+                        return true; // me.contest.get('web_only');
                     },
                     getEmbedCode : function(){
                         var l = window.location,
-                            h = l.host.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko'),
+                            h = l.host,
                             url = l.protocol+'//'+h+'/client/loader/?game=',
                             page = me.up('pagepanel').page;
                         
@@ -113,13 +113,13 @@ Ext.define('Bozuko.view.contest.Review', {
                             url+= '&nobranding=1';
                         }
                         
-                        url = url.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko');
+                        // url = url.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko');
                         
                         return '<script type="text/javascript" src="'+url+'"></script>';
                     },
                     getFacebookTabUrl : function(){
                         var l = window.location,
-                            h = l.host.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko'),
+                            h = l.host,
                             page = me.up('pagepanel').page,
                             url = l.protocol+'//'+h+'/facebook/tab/'+
                                 (page.get('alias') || page.get('_id')) + '/' +
@@ -170,7 +170,7 @@ Ext.define('Bozuko.view.contest.Review', {
                     
                     shareUrl : function(){
                         var l = window.location,
-                            h = l.host.replace(/((api|site|dashboard)\.)bozuko/, 'bozuko'),
+                            h = l.host,
                             url = l.protocol+'//'+h+'/game/'+me.contest.get('_id')+'/share'
                             ;
                         return url;
