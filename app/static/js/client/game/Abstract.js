@@ -400,7 +400,6 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                                     // href            :'/client/share/'+(mobile?'m':'www')+'?url='+encodeURIComponent(url)+'&t='+encodeURIComponent(this.game.name)+'&display=popup',
                                     href            :'http://'+(mobile?'m':'www')+'.facebook.com/sharer.php?'
                                                         +'u='+encodeURIComponent(url)
-                                                        +'&t='+encodeURIComponent(this.game.name)
                                                         +'&display=popup',
                                     html            :this.lang.shareThisGame,
                                     cls             :'share-btn'

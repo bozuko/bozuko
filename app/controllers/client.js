@@ -129,7 +129,13 @@ exports.renderGame = function(req, res, contest_id, page_id){
             ];
             
             res.locals.meta = {};
-            res.locals.meta['og:image'] = qr;
+            // res.locals.meta['og:image'] = qr;
+            
+            // get the sharing
+            res.locals.meta['og:image'] = burl('/page/'+page.id+'/image');
+            res.locals.meta['og:title'] = game.getName();
+            res.locals.meta['og:description'] = game.share_description;
+            
             res.locals.scripts = [
                 'https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js',
                 '/js/modernizr/min.js'
