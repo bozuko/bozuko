@@ -79,123 +79,102 @@ exports.renderGame = function(req, res, contest_id, page_id){
           , change_time = new Date('2012-07-30 12:00:00')
           ;
           
-        if( !contest.get('apikey_id') && !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && share && start < change_time ){
-            return res.redirect( share );
-        }
-        
-        if( !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && redirect_url ){
-            return res.redirect( redirect_url );
-        }
-        
-        if( 1 || req.session.device == 'tablet' || req.session.device == 'touch' || req.param('play') ){
-            
-            if( Bozuko.env() == 'site' ){
-                return res.redirect('https://api.bozuko.com'+req.url);
-            }
-            var email_only = req.param('email_only');
-            if( req.session.device != 'touch' ){
-                email_only = email_only === '0' ? false : true;
-            }
-            if( email_only === '0' ) email_only = false;
-            
-            req.session.destroy();
-            res.locals.email_only = email_only;
-            res.locals.path = '/game/'+contest.id;
-            
-            
-            var Game = contest.game;
-            Game = Game.substr(0,1).toUpperCase() + Game.substr(1);
-            
-            // lets add our scripts
-            var scripts = [
-                '/js/dateFormat.js',
-                '/js/client/util/Stylesheet.js',
-                '/js/iscroll/iscroll-lite-4.1.6.js',
-                '/js/client/util/Overrides.js',
-                '/js/client/util/ISODate.js',
-                '/js/client/util/Touch.js',
-                '/js/client/util/Scroller.js',
-                '/js/client/util/Cookies.js',
-                '/js/client/util/Cache.js',
-                '/js/client/lib/Api.js',
-                '/js/client/game/Abstract.js',
-                '/js/client/game/'+Game+'.js',
-                '/js/client/App.js'
-            ];
-            
-            var styles = [
-                '/css/client/animations.css',
-                '/css/client/style.css'
-            ];
-            
-            res.locals.meta = {};
-            // res.locals.meta['og:image'] = qr;
-            
-            // get the sharing
-            res.locals.meta['og:type'] = 'website';
-            res.locals.meta['og:url']  = burl(req.url);
-            res.locals.meta['og:image'] = burl('/page/'+page.id+'/image');
-            res.locals.meta['og:title'] = contest.share_description || game.getName();
-            res.locals.meta['og:description'] = contest.share_description || Bozuko.t('en', 'game/share_description', game.getName());
-            
-            res.locals.scripts = [
-                'https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js',
-                '/js/modernizr/min.js'
-            ];
-            scripts.forEach(function(script){
-                res.locals.scripts.push(script+'?'+now);
-            });
-            
-            res.locals.stylesheets = [];
-            styles.forEach(function(style){
-                res.locals.stylesheets.push(style+'?'+now);
-            });
-            res.locals.html_classes = [];
-            if( req.param('facebook_tab') ) res.locals.html_classes.push('facebook-tab');
-            res.locals.title = 'Play '+game.getName()+'!';
-            res.locals.device = 'touch';
-            res.locals.layout = 'client/layout';
-            res.locals.cache_time = now;
-            res.locals.contest = contest;
-            res.locals.page = page;
-            var o;
-            if( contest.game_config && (o=contest.game_config.theme_options) ){
-                if(o.js){
-                    res.locals.theme_js = o.js;
-                }
-                if(o.css){
-                    return require('less').render( o.css, function(error, css){
-                        
-                        if( css ) res.locals.theme_css = css;
-                        else res.locals.theme_css = '/*\n'+error.stack+'\n*/';
-                        return res.render('client/index');
-                    });
-                    
-                }
+        if( !req.headers['user-agent'].match(/facebookexternalhit/i) ){
+            if( !req.param('play') && share ){
+                return res.redirect( share );
             }
             
-            return res.render('client/index');
+            if( !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && redirect_url ){
+                return res.redirect( redirect_url );
+            }
         }
+           
+        if( Bozuko.env() == 'site' ){
+            return res.redirect('https://api.bozuko.com'+req.url);
+        }
+        var email_only = req.param('email_only');
+        if( req.session.device != 'touch' ){
+            email_only = email_only === '0' ? false : true;
+        }
+        if( email_only === '0' ) email_only = false;
         
-        var share = contest.get('share_url');
-        if( (req.session.device == 'tablet' || req.session.device == 'desktop') && share ){
-            return res.redirect( share );
-        }
-        // this is going to be the desktop display...
-        res.locals = merge({}, Bozuko.require('controllers/site').locals);
-        res.locals.meta['og:image'] = burl('/page/'+page._id+'/image');
-        if( Bozuko.env() == 'site' ) res.locals.meta['og:image'] = res.locals.meta['og:image'].replace(/\/\/bozuko\.com/, '//api.bozuko.com');
-        var game_type = contest.game == 'scratch' ? 'Scratch Ticket' : 'Slot Machine';
-        res.locals.meta.description = "Play this "+game_type+" on your phone for a chance to win free prizes!";
-        res.locals.qr = qr;
-        res.locals.contest = contest;
-        res.locals.game = game;
+        req.session.destroy();
+        res.locals.email_only = email_only;
+        res.locals.path = '/game/'+contest.id;
+        
+        
+        var Game = contest.game;
+        Game = Game.substr(0,1).toUpperCase() + Game.substr(1);
+        
+        // lets add our scripts
+        var scripts = [
+            '/js/dateFormat.js',
+            '/js/client/util/Stylesheet.js',
+            '/js/iscroll/iscroll-lite-4.1.6.js',
+            '/js/client/util/Overrides.js',
+            '/js/client/util/ISODate.js',
+            '/js/client/util/Touch.js',
+            '/js/client/util/Scroller.js',
+            '/js/client/util/Cookies.js',
+            '/js/client/util/Cache.js',
+            '/js/client/lib/Api.js',
+            '/js/client/game/Abstract.js',
+            '/js/client/game/'+Game+'.js',
+            '/js/client/App.js'
+        ];
+        
+        var styles = [
+            '/css/client/animations.css',
+            '/css/client/style.css'
+        ];
+        
+        res.locals.meta = {};
+        // res.locals.meta['og:image'] = qr;
+        
+        // get the sharing
+        res.locals.meta['og:type'] = 'website';
+        res.locals.meta['og:url']  = burl(req.url);
+        res.locals.meta['og:image'] = burl('/page/'+page.id+'/image');
+        res.locals.meta['og:title'] = contest.share_description || game.getName();
+        res.locals.meta['og:description'] = contest.share_description || Bozuko.t('en', 'game/share_description', game.getName());
+        
+        res.locals.scripts = [
+            'https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js',
+            '/js/modernizr/min.js'
+        ];
+        scripts.forEach(function(script){
+            res.locals.scripts.push(script+'?'+now);
+        });
+        
+        res.locals.stylesheets = [];
+        styles.forEach(function(style){
+            res.locals.stylesheets.push(style+'?'+now);
+        });
+        res.locals.html_classes = [];
+        if( req.param('facebook_tab') ) res.locals.html_classes.push('facebook-tab');
         res.locals.title = 'Play '+game.getName()+'!';
+        res.locals.device = 'touch';
+        res.locals.layout = 'client/layout';
+        res.locals.cache_time = now;
+        res.locals.contest = contest;
         res.locals.page = page;
-        res.locals.content = contest.promo_copy;
-        res.locals.short_url = burl(req.url).replace(/https?:\/\//, '').replace(/:(443|80)\//, '/');
+        var o;
+        if( contest.game_config && (o=contest.game_config.theme_options) ){
+            if(o.js){
+                res.locals.theme_js = o.js;
+            }
+            if(o.css){
+                return require('less').render( o.css, function(error, css){
+                    
+                    if( css ) res.locals.theme_css = css;
+                    else res.locals.theme_css = '/*\n'+error.stack+'\n*/';
+                    return res.render('client/index');
+                });
+                
+            }
+        }
         
-        return res.render('client/game');
+        return res.render('client/index');
     });
 };
 
