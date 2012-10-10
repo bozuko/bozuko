@@ -503,10 +503,26 @@ a:hover {
   width: 100%;
   -webkit-transform: translate3d(0, 0, 0);
 }
+.slot-machine .wheel .scroll-transition {
+  -webkit-transition-property: all;
+  -moz-transition-property: all;
+  -ms-transition-property: all;
+  -o-transition-property: all;
+  transition-property: all;
+}
 .slot-machine .wheel img {
   width: auto;
   max-width: 100%;
   display: block;
+}
+.slot-machine .wheel .first-icon {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+.slot-machine .wheel .last-icon {
+  position: absolute;
+  bottom: 100%;
 }
 .slot-machine .spin-button {
   position: absolute;
@@ -515,9 +531,36 @@ a:hover {
   right: 3%;
   width: 30%;
   height: 10%;
-  background: green;
+  background: #009500;
   border-radius: 8px;
-  border: 1px solid #b8cfaf;
+  border: 2px solid #00ca00;
+  box-shadow: 0 0 10px #000;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 3px #008a00, 2px 2px 3px #008a00;
+  color: #fff;
+  font-weight: bold;
+  font-size: 2em;
+  line-height: 1em;
+  cursor: pointer;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMSAxIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQtdWNnZy1nZW5lcmF0ZWQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMCUiIHkxPSIxMDAlIiB4Mj0iMCUiIHkyPSIwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0icmdiKDI1NSwyNTUsMjU1KSIgc3RvcC1vcGFjaXR5PSIuNCIvPjxzdG9wIG9mZnNldD0iODAlIiBzdG9wLWNvbG9yPSJyZ2IoMjU1LDI1NSwyNTUpIiBzdG9wLW9wYWNpdHk9IjAiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9InJnYigyNTUsMjU1LDI1NSkiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz48L3N2Zz4=);
+  background-image: -moz-linear-gradient(90deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 80%, rgba(255,255,255,0) 100%);
+  background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0%,rgba(255,255,255,.4)),color-stop(80%,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,0)));
+  background-image: -webkit-linear-gradient(90deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 80%, rgba(255,255,255,0) 100%);
+  background-image: -o-linear-gradient(90deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 80%, rgba(255,255,255,0) 100%);
+  background-image: linear-gradient(0deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 80%, rgba(255,255,255,0) 100%);
+}
+.slot-machine .spin-button:hover {
+  background-color: #00b300;
+}
+.slot-machine .spin-button span {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  left: 0;
+  top: 50%;
+  margin-top: -0.5em;
+  display: block;
 }
 .page-window {
   padding: 0;
@@ -1186,6 +1229,9 @@ a:hover {
   -moz-opacity: 0.8;
   -khtml-opacity: 0.8;
   opacity: 0.8;
+  -webkit-opacity: 80;
+  -moz-opacity: 80;
+  opacity: 80;
   text-shadow: 1px 1px 1px #333333, -1px -1px 1px #333333, 0 0 10px #000000;
   -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
@@ -1364,6 +1410,9 @@ a:hover {
   -moz-opacity: 0.5;
   -khtml-opacity: 0.5;
   opacity: 0.5;
+  -webkit-opacity: 50;
+  -moz-opacity: 50;
+  opacity: 50;
 }
 .my-prizes .hd {
   height: 50px;

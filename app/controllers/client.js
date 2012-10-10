@@ -135,7 +135,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
             res.locals.meta['og:type'] = 'website';
             res.locals.meta['og:url']  = burl(req.url);
             res.locals.meta['og:image'] = burl('/page/'+page.id+'/image');
-            res.locals.meta['og:title'] = game.getName();
+            res.locals.meta['og:title'] = contest.share_description || game.getName();
             res.locals.meta['og:description'] = contest.share_description || Bozuko.t('en', 'game/share_description', game.getName());
             
             res.locals.scripts = [
