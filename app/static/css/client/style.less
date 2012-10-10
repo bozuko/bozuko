@@ -2,6 +2,7 @@
 
 @import "app/static/css/vars";
 @import "app/static/css/mixins";
+@import "app/static/css/lesshat";
 
 html{ height: 100%; margin: 0; padding: 0;}
 body{ background: #000000; padding: 0; margin: 0; font-family: "helvetica nueue", "helvetica", "arial", "sans"; font-size: 13px; min-height: 100%; }
@@ -491,7 +492,15 @@ a, a:visited, a:link, a:hover {
             -webkit-transform: translate3d(0,0,0);
         }
         
-        .scroll-animate {
+        .scroll-transition {
+            -webkit-transition-property: all;
+            -moz-transition-property: all;
+            -ms-transition-property: all;
+            -o-transition-property: all;
+            transition-property: all;
+        }
+        
+        .strip {
             
         }
         
@@ -499,6 +508,16 @@ a, a:visited, a:link, a:hover {
             width: auto;
             max-width: 100%;
             display: block;
+        }
+        
+        .first-icon {
+            position: absolute;
+            top: 100%;
+            left: 0;
+        }
+        .last-icon {
+            position: absolute;
+            bottom: 100%;
         }
     }
     
@@ -509,11 +528,38 @@ a, a:visited, a:link, a:hover {
         right: 3%;
         width: 30%;
         height: 10%;
-        background: green;
+        background: #009500;
         border-radius: 8px;
-        border: 1px solid #b8cfaf;
+        border: 2px solid #00ca00;
+        box-shadow: 0 0 10px #000;
+        text-align: center;
+        text-transform: uppercase;
+        text-shadow: 2px 2px 3px #008a00, 2px 2px 3px #008a00;
+        color: #fff;
+        font-weight: bold;
+        font-size: 2em;
+        line-height: 1em;
+        cursor: pointer;
+        
+        .gradient(~"linear-gradient(0deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 80%, rgba(255,255,255,0) 100%)");
+        
+        &:hover {
+            background-color: #00b300;
+        }
+        
+        span {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            left: 0;
+            top: 50%;
+            margin-top: -0.5em;
+            display:block;
+        }
+        
     }
 }
+
 
 .page-window {
     padding: 0;
