@@ -113,7 +113,7 @@ function createPrizes(contest, winIndex) {
     ){
         prizes = prizes.concat( contest.consolation_prizes.slice(0, 1) );
     }
-    if (winIndex != 'free_play') prizes.push({name:'Free Play'});
+    if (winIndex != 'free_play' && contest.free_play_pct != 0) prizes.push({name:'Free Play'});
     return prizes;
 }
 
