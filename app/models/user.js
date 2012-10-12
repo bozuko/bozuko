@@ -23,7 +23,7 @@ var User = module.exports = new Schema({
     first_name          :{type:String, index: true},
     last_name           :{type:String, index: true},
     image               :{type:String, get: httpsUrl},
-    gender              :{type:String},
+    gender              :{type:String, index: true},
     suspect             :{type:Boolean},
     soft_block          :{type:Boolean, default: false},
     blocked             :{type:Boolean, default: false},

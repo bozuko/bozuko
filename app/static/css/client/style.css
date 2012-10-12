@@ -484,7 +484,13 @@ a:hover {
   height: 100%;
 }
 .slot-machine .wheel {
-  background: #d6b503;
+  background: #dfdd17;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMSAxIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQtdWNnZy1nZW5lcmF0ZWQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VmZmY2MSIgc3RvcC1vcGFjaXR5PSIxIi8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2VmZmY2MSIgc3RvcC1vcGFjaXR5PSIxIi8+PC9saW5lYXJHcmFkaWVudD48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPjwvc3ZnPg==);
+  background-image: -moz-linear-gradient(-90deg, #efff61 0%, #ffffff 50%, #efff61 100%);
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#efff61),color-stop(50%,#ffffff),color-stop(100%,#efff61));
+  background-image: -webkit-linear-gradient(-90deg, #efff61 0%, #ffffff 50%, #efff61 100%);
+  background-image: -o-linear-gradient(-90deg, #efff61 0%, #ffffff 50%, #efff61 100%);
+  background-image: linear-gradient(180deg, #efff61 0%, #ffffff 50%, #efff61 100%);
   position: absolute;
   z-index: 2;
   width: 28.125%;
@@ -510,10 +516,15 @@ a:hover {
   -o-transition-property: all;
   transition-property: all;
 }
+.slot-machine .wheel .icon-ct {
+  width: 100%;
+  text-align: center;
+}
 .slot-machine .wheel img {
   width: auto;
   max-width: 100%;
   display: block;
+  margin: 0 auto;
 }
 .slot-machine .wheel .first-icon {
   position: absolute;
@@ -527,7 +538,7 @@ a:hover {
 .slot-machine .spin-button {
   position: absolute;
   z-index: 10;
-  top: 65%;
+  top: 69%;
   right: 3%;
   width: 30%;
   height: 10%;
@@ -553,14 +564,114 @@ a:hover {
 .slot-machine .spin-button:hover {
   background-color: #00b300;
 }
-.slot-machine .spin-button span {
+.slot-machine .page-pic {
   position: absolute;
-  width: 100%;
+  z-index: 10;
+  top: 58%;
+  left: 3.5%;
+  width: 30%;
+  padding: 3px;
+  background: #fff;
+  box-shadow: 0 0 10px #000;
+}
+.slot-machine .page-pic img {
+  display: block;
+  max-width: 100%;
+}
+.slot-machine .center-middle-text {
+  position: relative;
   text-align: center;
-  left: 0;
   top: 50%;
   margin-top: -0.5em;
+  line-height: 1em;
   display: block;
+}
+.slot-machine .credits-counter {
+  position: absolute;
+  z-index: 10;
+  right: 3%;
+  top: 56%;
+  height: 9%;
+  width: 11.4%;
+  background: #000;
+  border-radius: 8px;
+  border: 2px solid #333;
+  color: #f20000;
+  font-size: 1.6em;
+  font-weight: bold;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMSAxIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQtdWNnZy1nZW5lcmF0ZWQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0icmdiKDI1NSwyNTUsMjU1KSIgc3RvcC1vcGFjaXR5PSIuMTMiLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0icmdiKDI1NSwyNTUsMjU1KSIgc3RvcC1vcGFjaXR5PSIwLjE1Ii8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9InJnYigyNTUsMjU1LDI1NSkiIHN0b3Atb3BhY2l0eT0iMCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0icmdiKDI1NSwyNTUsMjU1KSIgc3RvcC1vcGFjaXR5PSIwIi8+PC9saW5lYXJHcmFkaWVudD48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPjwvc3ZnPg==);
+  background-image: -moz-linear-gradient(-90deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 50%, rgba(255,255,255,0) 100%);
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(255,255,255,.13)),color-stop(50%,rgba(255,255,255,0.15)),color-stop(50%,rgba(255,255,255,0)),color-stop(100%,rgba(255,255,255,0)));
+  background-image: -webkit-linear-gradient(-90deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 50%, rgba(255,255,255,0) 100%);
+  background-image: -o-linear-gradient(-90deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 50%, rgba(255,255,255,0) 100%);
+  background-image: linear-gradient(180deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 50%, rgba(255,255,255,0) 100%);
+}
+.slot-machine .credits-label {
+  position: absolute;
+  z-index: 10;
+  right: 17%;
+  top: 56%;
+  height: 9%;
+  color: #fff;
+  font-size: 1.2em;
+  text-shadow: 1px 1px 2px #000;
+}
+.slot-machine .animations {
+  z-index: 100;
+  position: absolute;
+  overflow: hidden;
+  top: 9.639%;
+  left: 0;
+  width: 100%;
+  height: 91.361%;
+}
+.slot-machine .animations .animation {
+  display: none;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+.slot-machine .animations .animation img {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 85%;
+  top: 0;
+  left: 0;
+}
+.slot-machine .animations .animate {
+  position: absolute;
+  display: block;
+}
+.slot-machine .animations .animate .custom {
+  z-index: 3;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: wiggle 1s ease-in-out 0s infinite alternate;
+  -moz-animation: wiggle 1s ease-in-out 0s infinite alternate;
+}
+.slot-machine .animations .animate .bg {
+  z-index: 1;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: pulse 1s ease-in-out 0ms infinite alternate;
+  -moz-animation: pulse 1s ease-in-out 0ms infinite alternate;
+}
+.slot-machine .animations .animate .txt {
+  z-index: 3;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: wiggle 1s ease-in-out 0s infinite alternate;
+  -moz-animation: wiggle 1s ease-in-out 0s infinite alternate;
+}
+.slot-machine .animations .animate .stars {
+  z-index: 2;
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -webkit-animation: stars 2s linear 0s infinite
+                    ;
+  -moz-animation: stars 2s linear 0s infinite
+                    ;
 }
 .page-window {
   padding: 0;

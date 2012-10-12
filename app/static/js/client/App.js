@@ -230,7 +230,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             FB.Event.subscribe('auth.logout', function(){
                 self.fireEvent('nouser');
             });
-            FB.Event.subscribe('auth.login', function(response){
+            FB.Event.subscribe('auth.login', function(response){                
                 self.onFacebookLogin(response);
             });
         }catch(e){
@@ -298,14 +298,13 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         
         Ext.Ajax.request({
             method: 'POST',
-            url: '/client/fblogin',
+            url: '/client/fblogin?'+(new Date().getTime()),
             params: {token: token},
             success : function(response, request){
                 try{
                     var user = Ext.decode(response.responseText);
                     if( user ){
                         self.setUser(user);
-                        
                         return self.api.call(function(entry_point){
                             self.entry_point = entry_point.data;
                             self.fireEvent('user');
@@ -314,7 +313,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
                     }
                 }
                 catch(e){
-                    
+                    console.log(e);
                 }
                 self.fireEvent('nouser');
                 return callback(new Error('No User'));
@@ -333,10 +332,11 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
         var self = this;
         this._loader.$el.child('.facebook-login').dom.onclick = function(){
             // test for qr reader on iphone...
-            var qr = navigator.userAgent.match(/i(phone|pad|pod)/i ) && !navigator.userAgent.match(/safari/i);
-            
+            var qr = navigator.userAgent.match(/i(phone|pad|pod)/i );
             if( !qr ){
-                FB.login(function(){},{scope: Bozuko.client.App.facebookApp.scope});
+                FB.login(function(){
+                    
+                },{scope: Bozuko.client.App.facebookApp.scope});
                 self.showLoading('Logging in...');
             }
             else{
