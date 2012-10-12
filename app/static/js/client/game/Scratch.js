@@ -104,6 +104,8 @@ Ext.namespace('Bozuko.client.game');
             
             this.on('enter', this.onEnter, this);
             this.on('result', this.onResult, this);
+            this.on('beforeresult', this.onBeforeResult, this );
+            this.on('afterresult', this.onAfterResult, this );
             // this.on('scratch', this.onScratch, this);
             //this.on('updatedescription', this.onUpdateDescription, this);
             
@@ -387,6 +389,14 @@ Ext.namespace('Bozuko.client.game');
         
         onEnter : function(entry){
             this.result();
+        },
+        
+        onBeforeResult : function(){
+            this.app.showLoading(this.lang.loading.result);
+        },
+        
+        onAfterResult : function(){
+            this.app.hideLoading();
         },
         
         onResult : function(result){

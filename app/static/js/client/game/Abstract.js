@@ -5,6 +5,9 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     width: 320,
     height: 415,
     
+    useCache : false,
+    autoPlay : true,
+    
     lang : {
         loading : {
             entry : 'Loading...',
@@ -21,7 +24,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         youWin: 'You Win!',
         prizeDetails: 'Prize Details',
         sentEmail: '<p>This prize has been emailed to <strong class="user-email">{0}</strong>! '+
-                   'Please ensure it didn\'t land in your spam folder.</p>',
+                   'Please ensure it didn\'t land in your spam folder.</p>'
     },
     
     constructor : function(config){
@@ -41,12 +44,15 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             'render'            :true,
             'ready'             :true,
             'result'            :true,
+            'beforeresult'      :true,
+            'afterresult'       :true,
             'win'               :true,
             'lose'              :true,
             'load'              :true,
             'enter'             :true,
             'displaywin'        :true,
-            'displaylose'       :true
+            'displaylose'       :true,
+            'statechange'       :true
         });
         Bozuko.client.game.Abstract.superclass.constructor.call(this,config);
         
@@ -66,7 +72,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         this.on('displaywin', this.onDisplayWin, this);
         this.app.on('user', this.onUserState, this);
         this.app.on('nouser', this.onUserState, this);
-        this.app.on('logout', this.onLogout, this);
+        this.app.on('logout', this.onLogout, this);        
         
     },
     
@@ -256,7 +262,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
         }
         else{
             
-            if( this._saved && this._saved.state && this._saved.state.user_tokens == self.state.user_tokens ){
+            if( this.useCache && this._saved && this._saved.state && this._saved.state.user_tokens == self.state.user_tokens ){
                 // might be the same ticket...
                 var game_result = this._saved.game_result;
                 if( game_result ){
@@ -267,10 +273,13 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 this._saved = false;
                 return;
             }
-            else if( self.state.button_action == 'play'){
+            else if( self.state.button_action == 'play' && self.autoPlay ){
                 self.result(function(){
                     callback();
                 });
+            }
+            else {
+                callback(true);
             }
         }
     },
@@ -1467,21 +1476,20 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
     result : function(callback){
         
         var self = this;
-        self.app.showLoading(this.lang.loading.result);
+        this.fireEvent('beforeresult');
         
         self.app.api.call({
             path: self.state.links.game_result,
             method: 'post'
         },function(result){
             
-            self.app.hideLoading();
+            self.fireEvent('afterresult');
             
             if( !result.ok ){
                 self.updateActionFromState();
                 self.showDescription();
                 return;
             }
-            
             if( result.data.win ){
                 self.updatePrizes();
             }
@@ -1498,6 +1506,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
             }
             self.updateCache('game_result');
             self.fireEvent('result', result.data);
+            
             if( callback && typeof callback == 'function' ) callback();
         });
     },
@@ -1513,6 +1522,7 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 self.updateState();
             }, state.next_enter_time_ms );
         }
+        this.fireEvent('statechange', state);
         this.updateCache('state');
         this.updateActionFromState();
     },

@@ -70,6 +70,9 @@ Bozuko.client.lib.Api = Ext.extend( Ext.util.Observable, {
         /*if( method == 'get' ){
             options.url+=('?'+Ext.urlEncode(params));
         }*/
+        
+        options.url += (options.url.indexOf('?') != -1 ? '&' : '?') + '_dc' + '=' + (new Date().getTime());
+        
         this.fireEvent('beforecall', options);
         this._requesting = true;
         Ext.Ajax.request(options);
