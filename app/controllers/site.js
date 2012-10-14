@@ -81,7 +81,8 @@ exports.afterRoute = function(){
     });
 
     app.error(function(err,req,res,next){
-        return self.refs.notFound(req,res,next,err);
+        // return self.refs.notFound(req,res,next,err);
+        res.send('Not Found');
     });
 };
 
