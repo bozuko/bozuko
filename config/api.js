@@ -26,7 +26,7 @@ module.exports = {
 			ca : Bozuko.dir+'/ssl/bozuko.com/gd_bundle.crt',
 			cert: Bozuko.dir+'/ssl/bozuko.com/bozuko.com.crt'
 		},
-        host: 'bozuko.com'
+        host: 'api.bozuko.com'
     },
 
     defaultService:'facebook',
