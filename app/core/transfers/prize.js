@@ -48,7 +48,6 @@ exports.transfer_objects = {
                 o.wrapper_message = "To redeem your prize from "+prize.page.name+": "+prize.instructions;
                 
                 if( prize.expires && prize.expires instanceof Date ){
-                    console.error( prize.expires );
                     try{
                         o.wrapper_message+=" This prize expires "+dateFormat(prize.expires, 'mmmm dd yyyy hh:MM TT');
                     }catch(e){

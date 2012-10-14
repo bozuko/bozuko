@@ -341,9 +341,6 @@ Prize.static('search', function(){
 Prize.method('getPdf', function(user, security_img, callback){
 	var self = this;
 	
-	console.error('getPdf');
-	console.error('self.pdf_external: '+self.get('pdf_external'));
-	
 	if( self.get('pdf_external') ){
 		// we need to download...
 		return http.request({
