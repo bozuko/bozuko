@@ -349,7 +349,7 @@ Prize.method('getPdf', function(user, security_img, callback){
 		  
 		if( (cache_file = external_pdf_cache[key]) ){
 			console.error('using pdf cache');
-			return callback( error, cache_file );
+			return callback( null, cache_file );
 		}
 		// we need to download...
 		return http.request({
