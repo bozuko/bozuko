@@ -79,7 +79,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
           , change_time = new Date('2012-07-30 12:00:00')
           ;
           
-        if( !req.headers['user-agent'].match(/facebookexternalhit/i) ){
+        if( !req.headers || !req.headers['user-agent'] || !req.headers['user-agent'].match(/facebookexternalhit/i) ){
             if( !req.param('play') && share ){
                 return res.redirect( share );
             }

@@ -338,16 +338,29 @@ Prize.static('search', function(){
     this.find.apply( this, arguments );
 });
 
+var external_pdf_cache = {};
+
 Prize.method('getPdf', function(user, security_img, callback){
 	var self = this;
 	
 	if( self.get('pdf_external') ){
+		var key = String(self.id) + self.get('pdf_external')
+		  , cache
+		  
+		if( (cache = external_pdf_cache[key]) ){
+			console.error('using pdf cache');
+			return callback( error, cache);
+		}
 		// we need to download...
 		return http.request({
 			url:self.get('pdf_external'),
 			encoding:'binary'
 		}, function(error, result, response){
-			return callback( error, result ? new Buffer( result, 'binary' ) : null );
+			if( result ){
+				var buf = external_pdf_cache[key] = new Buffer(result, 'binary');
+				return callback( error, buf );
+			}
+			return callback( error, null );
 		});
 	}
 	
