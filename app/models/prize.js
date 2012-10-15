@@ -344,12 +344,12 @@ Prize.method('getPdf', function(user, security_img, callback){
 	var self = this;
 	
 	if( self.get('pdf_external') ){
-		var key = String(self.id) + self.get('pdf_external')
-		  , cache
+		var key = self.get('pdf_external')
+		  , cache_file
 		  
-		if( (cache = external_pdf_cache[key]) ){
+		if( (cache_file = external_pdf_cache[key]) ){
 			console.error('using pdf cache');
-			return callback( error, cache);
+			return callback( error, cache_file );
 		}
 		// we need to download...
 		return http.request({
