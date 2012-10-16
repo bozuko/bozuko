@@ -171,16 +171,20 @@ exports.routes = {
         get : {
             handler : function(req, res) {
                 
-                var test = req.param('test');
+                var test = req.param('test')
+                  , nonsent = req.param('nonsent')
                 
                 return alias.find( url.parse(req.url).pathname.replace(/\/admin\/autoredeem\//i, ''), function(error, result){
                     
                     if( error ) return error.send( res );
                     if( !result.game) return res.send({error:'no contest'});
                     
-                    var contest = result.game;
+                    var contest = result.game
+                      , selector = {contest_id: contest._id}
+                      
+                    if( !nonsent ) selector.redeemed = false;
                     
-                    return Bozuko.models.Prize.find({contest_id: contest._id, redeemed: false, expires: {$gt: Date.now()}}, function(error, prizes){
+                    return Bozuko.models.Prize.find( selector, function(error, prizes){
                         if( error ) return error.send( res );
                         // go through each prize
                         
@@ -196,11 +200,24 @@ exports.routes = {
                                     
                                     var r = {prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: false};
                                     
+                                    // check for nonsent...
+                                    if( prize.redeemed && nonsent ){
+                                        return Bozuko.models.Email.findOne({
+                                            user_id: prize.user_id,
+                                            timestamp: {$gte: prize.redeemed_time}
+                                        }, function(error, email){
+                                            if( error || !email ){
+                                                results.push( r );
+                                                if( !test ) prize.sendEmail( user );
+                                            }
+                                            return cb();
+                                        });
+                                    }
+                                    
                                     if( test ){
                                         results.push(r);
                                         return cb();
                                     }
-                                    
                                     
                                     return prize.redeem(user, true, function(error){
                                         if( error ) return cb(error);
@@ -212,7 +229,7 @@ exports.routes = {
                             
                             function complete(error){
                                 if( error ) return error.send(res);
-                                return res.send('<pre>'+JSON.stringify(results,null,'  ')+'</pre>');
+                                return res.send('<p>Total: '+results.length+'</p><pre>'+JSON.stringify(results,null,'  ')+'</pre>');
                             }
                         );
                     });

@@ -81,6 +81,8 @@ exports.renderGame = function(req, res, contest_id, page_id){
           , facebook_referer = req.headers && req.headers['referer'] && req.headers['referer'].match(/facebook.com/i)
           ;
           
+        //console.log('referer: '+req.headers['user-agent']);
+          
         if( !req.headers || !req.headers['user-agent'] || !req.headers['user-agent'].match(/facebookexternalhit/i) ){
             if( !req.param('play') && share ){
                 return res.redirect( share );
