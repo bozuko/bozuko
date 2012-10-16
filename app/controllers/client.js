@@ -77,6 +77,8 @@ exports.renderGame = function(req, res, contest_id, page_id){
           , redirect_url = contest.get('redirect_url')
           , start = contest.get('start')
           , change_time = new Date('2012-07-30 12:00:00')
+          , facebook_crawler = req.headers && req.headers['user-agent'] && req.headers['user-agent'].match(/facebookexternalhit/i)
+          , facebook_referer = req.headers && req.headers['referer'] && req.headers['referer'].match(/facebook.com/i)
           ;
           
         if( !req.headers || !req.headers['user-agent'] || !req.headers['user-agent'].match(/facebookexternalhit/i) ){
@@ -84,7 +86,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
                 return res.redirect( share );
             }
             
-            if( !req.param('play') && (req.session.device == 'tablet' || req.session.device == 'desktop') && redirect_url ){
+            if( !req.param('play') && ((req.session.device == 'tablet' && !facebook_referer) || req.session.device == 'desktop') && redirect_url ){
                 return res.redirect( redirect_url );
             }
         }

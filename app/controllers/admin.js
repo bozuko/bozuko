@@ -1,5 +1,6 @@
 var facebook    = Bozuko.require('util/facebook'),
     Page        = Bozuko.require('util/page'),
+    alias       = Bozuko.require('core/alias'),
     qs          = require('querystring'),
     Dashboard   = require('./base/dashboard'),
     url         = require('url'),
@@ -134,7 +135,7 @@ exports.routes = {
                                         if( error ) return cb(error);
                                         // we need to get this user too
 
-                                        if( !prize.redeemed ) return prize.redeem(user, function(error){
+                                        if( !prize.redeemed ) return prize.redeem(user, true, function(error){
                                             if( error ) return cb(error);
                                             results.push({prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: false});
                                             return cb();
@@ -155,6 +156,64 @@ exports.routes = {
                                 return res.send('<pre>'+JSON.stringify(results,null,'  ')+'</pre>');
                             }
 
+                        );
+                    });
+                });
+
+            }
+        }
+    },
+    
+    '/admin/autoredeem/:game_id' : {
+        
+        alias: '/admin/autoredeem/:page_id/:game_id',
+        
+        get : {
+            handler : function(req, res) {
+                
+                var test = req.param('test');
+                
+                return alias.find( url.parse(req.url).pathname.replace(/\/admin\/autoredeem\//i, ''), function(error, result){
+                    
+                    if( error ) return error.send( res );
+                    if( !result.game) return res.send({error:'no contest'});
+                    
+                    var contest = result.game;
+                    
+                    return Bozuko.models.Prize.find({contest_id: contest._id, redeemed: false, expires: {$gt: Date.now()}}, function(error, prizes){
+                        if( error ) return error.send( res );
+                        // go through each prize
+                        
+                        var results=[];
+                        
+                        return async.forEachSeries( prizes,
+                                                   
+                            function iterator(prize, cb){
+                                
+                                return Bozuko.models.User.findById( prize.user_id, function(error, user){
+                                    if( error ) return cb(error);
+                                    if( !user ) return cb(new Error('Invalid user ID?'));
+                                    
+                                    var r = {prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: false};
+                                    
+                                    if( test ){
+                                        results.push(r);
+                                        return cb();
+                                    }
+                                    
+                                    
+                                    return prize.redeem(user, true, function(error){
+                                        if( error ) return cb(error);
+                                        results.push(r);
+                                        return cb();
+                                    });
+                                });
+                            },
+                            
+                            function complete(error){
+                                if( error ) return error.send(res);
+                                return res.send('<pre>'+JSON.stringify(results,null,'  ')+'</pre>');
+                            }
                         );
                     });
                 });
