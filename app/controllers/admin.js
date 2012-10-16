@@ -198,15 +198,15 @@ exports.routes = {
                                     if( error ) return cb(error);
                                     if( !user ) return cb(new Error('Invalid user ID?'));
                                     
-                                    var r = {prize:prize.name, email_code: prize.email_code, user_name: user.name, already_redeemed: false};
+                                    var r = {prize:prize.name, email_code: prize.email_code, user_name: user.name, redeemed: prize.redeemed};
                                     
                                     // check for nonsent...
                                     if( prize.redeemed && nonsent ){
-                                        return Bozuko.models.Email.findOne({
+                                        return Bozuko.models.Email.count({
                                             user_id: prize.user_id,
                                             timestamp: {$gte: prize.redeemed_time}
-                                        }, function(error, email){
-                                            if( error || !email ){
+                                        }, function(error, count){
+                                            if( error || !count ){
                                                 results.push( r );
                                                 if( !test ) prize.sendEmail( user );
                                             }
