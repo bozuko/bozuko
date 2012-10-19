@@ -35,25 +35,57 @@ Ext.define('Bozuko.view.contest.edit.Theme' ,{
                 labelWidth          :160
             },
             items               :[{
-                name                :'no_numbers',
-                xtype               :'checkbox',
-                fieldLabel          :'No Number Scratch Ticket'
+                xtype               :'fieldset',
+                title               :'Common',
+                defaults            :{
+                    labelWidth          :160,
+                    anchor              :'0'
+                },
+                items               :[{
+                    name                :'winCustom',
+                    xtype               :'textfield',
+                    fieldLabel          :'Win Image'
+                },{
+                    name                :'loseCustom',
+                    xtype               :'textfield',
+                    fieldLabel          :'Lose Image'
+                },{
+                    name                :'playAgainCustom',
+                    xtype               :'textfield',
+                    fieldLabel          :'Play Again Image'
+                },{
+                    name                :'freePlayCustom',
+                    xtype               :'textfield',
+                    fieldLabel          :'Free Play Image'
+                }]
             },{
-                name                :'winCustom',
-                xtype               :'textfield',
-                fieldLabel          :'Win Image'
+                xtype               :'fieldset',
+                title               :'Scratch',
+                defaults            :{
+                    labelWidth          :160,
+                    anchor              :'0'
+                },
+                items               :[{
+                    name                :'no_numbers',
+                    xtype               :'checkbox',
+                    fieldLabel          :'No Number Scratch Ticket'
+                }]
             },{
-                name                :'loseCustom',
-                xtype               :'textfield',
-                fieldLabel          :'Lose Image'
-            },{
-                name                :'playAgainCustom',
-                xtype               :'textfield',
-                fieldLabel          :'Play Again Image'
-            },{
-                name                :'freePlayCustom',
-                xtype               :'textfield',
-                fieldLabel          :'Free Play Image'
+                xtype               :'fieldset',
+                title               :'Slots',
+                defaults            :{
+                    labelWidth          :160,
+                    anchor              :'0'
+                },
+                items               :[{
+                    name                :'slotsFrame',
+                    xtype               :'textfield',
+                    fieldLabel          :'Slots Frame'
+                },{
+                    name                :'slotsHideLogo',
+                    xtype               :'checkbox',
+                    fieldLabel          :'Hide Logo'
+                }]
             }]
         },{
             ref                 :'css',
