@@ -104,7 +104,8 @@ Slots.prototype.getConfig = function(){
         theme: {
             name: theme.name,
             icons: icons,
-            base: theme.base
+            base: theme.base,
+			options: this.config.theme_options || {}
         }
     };
 
@@ -149,7 +150,6 @@ Slots.prototype.createResultImage = function(dest, icon_src, callback){
     var x3_src = __dirname+'/resources/x3.png';
 
     if(path.existsSync(dest)) return;
-    console.error(icon_src);
     gd.openPng(
         x3_src,
         function(err, x3, path){

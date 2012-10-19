@@ -113,6 +113,10 @@ Ext.namespace('Bozuko.client.game');
               
             this.icons = icons;
             
+            if( this.game.config.theme && this.game.config.theme.options && this.game.config.theme.options.slotsFrame ){
+                this.frame = this.game.config.theme.options.slotsFrame;
+            }
+            
             self.addImage( 'frame', this.frame );
             
             for( var i=0; i < icons.length; i++ ){
@@ -200,7 +204,7 @@ Ext.namespace('Bozuko.client.game');
                 }]
             });
             
-            this.$pagePic = this.$ct.createChild({
+            if( !this.game.config.theme.options.slotsHideLogo ) this.$pagePic = this.$ct.createChild({
                 cls         :'page-pic',
                 cn          :[{
                     tag         :'img',

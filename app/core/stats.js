@@ -38,7 +38,7 @@ var StatsEngine = function(){
         StatsPluginUnique
     ];
     this.listeners = {};
-    // this.init();
+    this.init();
     
 };
 
