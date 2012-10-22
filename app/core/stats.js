@@ -37,6 +37,7 @@ var StatsEngine = function(){
         // but for now, it will just be hardcoded
         StatsPluginUnique
     ];
+    this.instances = {};
     this.listeners = {};
     this.init();
     
@@ -48,6 +49,7 @@ StatsEngine.prototype.init = function(){
     
     this.plugins.forEach( function(Plugin){
         var plugin = new Plugin(this);
+        this.instances[plugin.name] = plugin;
         plugin.init();
         
         Object.keys( plugin.events ).forEach( function(event){
