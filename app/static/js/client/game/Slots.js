@@ -69,7 +69,8 @@ Ext.namespace('Bozuko.client.game');
                 result : 'Spinning...'
             },
             instructions: 'Spin to Win!',
-            creditsLabel: 'Credits'
+            creditsLabel: 'Credits',
+            gameDetails: 'Game Details'
         }),
         
         constructor : function(){
@@ -203,6 +204,16 @@ Ext.namespace('Bozuko.client.game');
                     html        :this.lang.creditsLabel
                 }]
             });
+            
+            this.$infoLink = this.$ct.createChild({
+                tag         :'div',
+                cls         :'game-details-link',
+                html        :this.lang.gameDetails
+            });
+            
+            this.$infoLink.on('click', function(){
+                if( !this.spinning && !this.noSpin ) this.showDescription();
+            }, this);
             
             if( !this.game.config.theme.options.slotsHideLogo ) this.$pagePic = this.$ct.createChild({
                 cls         :'page-pic',

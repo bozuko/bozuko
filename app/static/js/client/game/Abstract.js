@@ -535,12 +535,23 @@ Bozuko.client.game.Abstract = Ext.extend( Ext.util.Observable, {
                 tag         :'li',
                 cn          :[{
                     cls         :'name',
-                    html        :p.name
+                    cn          :[{
+                        tag         :'span',
+                        html        :p.name
+                    }]
                 },{
                     cls         :'description',
                     html        :p.description
                 }]
             });
+            if( p.result_image ){
+                var image =li.child('.name').createChild({
+                    tag         :'img',
+                    src         :p.result_image,
+                    cls         :'result-image'
+                });
+                li.child('.name').insertFirst(image);
+            }
             if( p.description ){
                 (function(li){
                     var trigger = li.child('.name').createChild({

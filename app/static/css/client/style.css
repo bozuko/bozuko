@@ -618,6 +618,14 @@ a:hover {
   font-weight: bold;
   text-shadow: 1px 1px 2px #000;
 }
+.slot-machine .game-details-link {
+  right: 3%;
+  top: 89%;
+  color: #fff;
+  position: absolute;
+  z-index: 10;
+  cursor: pointer;
+}
 .slot-machine .animations {
   z-index: 100;
   position: absolute;
@@ -999,6 +1007,12 @@ a:hover {
   vertical-align: middle;
   cursor: pointer;
   background: transparent url("/images/client/arrow3.png?v5") 80% 0px no-repeat;
+}
+.game-description .bd .section ul li .name .result-image {
+  float: left;
+  height: 1.8em;
+  vertical-align: top;
+  margin: -0.3em 0.5em 0 0;
 }
 .game-description .bd .section ul li .description {
   padding: 0px 10px 5px;
