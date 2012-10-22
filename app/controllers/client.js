@@ -85,7 +85,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
           
         if( !req.headers || !req.headers['user-agent'] || !req.headers['user-agent'].match(/facebookexternalhit/i) ){
             if( !req.param('play') && share ){
-                return res.redirect( share );
+                // return res.redirect( share );
             }
             
             if( !req.param('play') && ((req.session.device == 'tablet' && !facebook_referer) || req.session.device == 'desktop') && redirect_url ){
