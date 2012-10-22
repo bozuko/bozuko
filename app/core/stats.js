@@ -277,10 +277,14 @@ StatsPluginUnique.prototype._init = function(){
     ]);
 };
 
-
+var engine;
 module.exports = {
     Engine: StatsEngine,
     run: function(){
-        new StatsEngine();
+        engine = new StatsEngine();
+        return engine;
+    },
+    getEngine : function(){
+        return engine;
     }
 };
