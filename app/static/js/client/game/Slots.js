@@ -620,6 +620,8 @@ Ext.namespace('Bozuko.client.game');
         
         onSpinStart : function(){
             this.noSpin = true;
+            this.stopBlinkingSpinButton();
+            this.$spinButton.addClass('spin-button-disabled');
         },
         
         onSpinStop : function(){
@@ -627,16 +629,24 @@ Ext.namespace('Bozuko.client.game');
               , cb = function(){
                 self.noSpin = false;
             }
+            
+            this.$spinButton.removeClass('spin-button-disabled');
+            
             this._creditsWaitForSpinStop = false;
             if( this.game_result.free_play ){
                 this.updateCredits();
-                this.showAnimation('freePlay', cb);
+                this.showAnimation('freePlay', function(){
+                    cb();
+                    self.blinkSpinButton();
+                });
+                
             }
             else if( this.game_result.win ){
                 this.fireEvent('displaywin', this.game_result, this);
                 this.showAnimation('win', function(){
                     this.onAfterWin();
                     cb();
+                    self.blinkSpinButton();
                 }, this);
             }
             else if( !this.state.user_tokens ){
@@ -647,8 +657,28 @@ Ext.namespace('Bozuko.client.game');
                 });
             }
             else {
-                cb();
+                this.showAnimation('playAgain', function(){
+                    cb();
+                    // also blink the button...
+                    self.blinkSpinButton();
+                });
             }
+        },
+        
+        blinkSpinButton : function(){
+            var self = this
+              , i = 0
+              
+            if( this.blinkingSpinButton ) clearInterval( this.blinkingSpinButton );
+            this.blinkingSpinButton = setInterval(function(){
+                if( i++ > 10 ) return self.stopBlinkingSpinButton();
+                return self.$spinButton.toggleClass('spin-button-blink');
+            }, 300);
+        },
+        
+        stopBlinkingSpinButton : function(){
+            clearInterval( this.blinkingSpinButton );
+            this.$spinButton.removeClass('spin-button-blink');
         },
         
         onBeforeResult : function(){

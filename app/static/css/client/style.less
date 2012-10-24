@@ -549,11 +549,26 @@ a, a:visited, a:link, a:hover {
         line-height: 1em;
         cursor: pointer;
         
+        .transition(~"all .3s");
+        
         .gradient(~"linear-gradient(0deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 80%, rgba(255,255,255,0) 100%)");
         
         &:hover {
             background-color: #00b300;
         }
+    }
+    
+    .spin-button-blink {
+        background-color: #00c505;
+    }
+    
+    .spin-button-disabled, .spin-button-disabled:hover {
+        background-color: #6f776a;
+        border-color: #4d635a;
+        text-shadow: none;
+        color: #ccc;
+        cursor: default;
+        
     }
     
     .page-pic {
