@@ -210,7 +210,7 @@ function writeEntryChunk(res, user_ids) {
         chunk.forEach(function(doc) {
             user_ids[doc.user_id] = true;
             page_map[String(doc.page_id)] = doc.page_name;
-            res.write(doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_name+",,");
+            res.write(doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_name+"\n");
         });
     }
 }
@@ -221,7 +221,7 @@ function writePlayChunk(res) {
             var page_name = page_map[String(doc.page_id)];
             res.write(doc.timestamp.toISOString()+","+doc.user_id+","+page_name+","+
                 (doc.prize_name || (doc.free_play ? 'free play' : 'LOSS'))+
-                ","+(doc.prize_value || 0));
+                ","+(doc.prize_value || 0)+'\n');
         });
     }
 }
@@ -236,7 +236,7 @@ function writePrizeChunk(res) {
                 str += '\n'+dateFormat(doc.timestamp, 'yyyy-mm-dd HH:MM:ss')+","+doc.user_id+","+doc._id+","+doc.page_name+","+
                     "REDEEMED,"+doc.value;
             }
-            res.write(str);
+            res.write(str+'\n');
         });
     }
 }
