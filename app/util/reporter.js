@@ -178,9 +178,9 @@ function streamUsers(res, contest, user_ids, callback) {
         var r = [];
         fields = ['ship_name','address1','address2','city','state','zip'];
         fields.forEach(function(f){
-            r.push('"'+(user[f]?user[f].replace(/"/gi, '\\"'):'')+'"')
+            if (user[f]) str += user[f];
+            str +=',';
          });
-        str += r.join(',');
         str += '\n';
         res.write(str);
     }
