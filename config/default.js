@@ -42,7 +42,7 @@ module.exports = {
         name: 'bozuko_default',
 	    host: 'localhost',
         options: {
-            server: {poolSize: 25},
+            server: {poolSize: 5},
             replset: {},
             db: {}
         }
