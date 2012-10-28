@@ -4,6 +4,8 @@ var Stream = require('stream').Stream,
     dateFormat = require('dateformat')
 ;
 
+var page_size = 100;
+
 exports.stream = function(contest, res) {
     res.header('content-type','text/csv');
     res.header('content-disposition', 'attachment; filename=report.csv');
@@ -19,6 +21,29 @@ exports.stream = function(contest, res) {
 };
 
 function write_summary(res, contest, callback) {
+
+   // write out the summary labels
+   res.write('Hourly Summary (EST), Entries, Plays, Prizes Won, Prizes Redeemed\n');
+
+   var concurrency = 10;
+   var lines = [];
+   var queue = async.queue(function(hours, cb) {
+       return play_and_entry_counts(contest._id, hours.current, hours.next, function(err, rv) {
+           if (err) return cb(err);
+           return prizes_won_and_redeemed(contest._id, hours.current, hours.next, function(err, rv2) {
+               lines.push(format_date(hours.current)+","+rv.entries+","+rv.plays+","+rv2.won+","+rv2.redeemed+"\n");
+               cb();
+           });
+       });
+   }, concurrency);
+
+   queue.drain = function() {
+       lines.sort();
+       res.write(lines.join(''));
+       res.write('\n\n\n');
+       callback();
+   };
+
    var hr = 1000*60*60;
    var start_hr = new Date(contest.start.getFullYear(), contest.start.getMonth(),
        contest.start.getDate(), contest.start.getHours());
@@ -26,29 +51,12 @@ function write_summary(res, contest, callback) {
    if (end > contest.end) end = contest.end;
    var end_hr = new Date(end.getFullYear(), end.getMonth(), end.getDate(), end.getHours());
    var current_hr = start_hr;
-   var next_hr = new Date(current_hr.getTime() + hr);
-
-   // write out the summary labels
-   res.write('Hourly Summary (EST), Entries, Plays, Prizes Won, Prizes Redeemed\n');
-   
-   async.whilst(function() {
-       return current_hr <= end_hr;
-   }, function(cb) {
-       return play_and_entry_counts(contest._id, current_hr, next_hr, function(err, rv) {
-           if (err) return cb(err);
-           return prizes_won_and_redeemed(contest._id, current_hr, next_hr, function(err, rv2) {
-               res.write(format_date(current_hr) + ","+rv.entries+","+rv.plays+
-                   ","+rv2.won + "," + rv2.redeemed + "\n");
-               current_hr = next_hr;
-               next_hr = new Date(next_hr.getTime()+hr);
-               cb();
-           });
-       });
-   }, function(err) {
-       if (err) return callback(err);
-       res.write('\n\n\n');
-       return callback();
-   });
+   var next_hr = new Date(current_hr.getTime()+hr);
+   while (current_hr <= end_hr) {
+       queue.push({current: new Date(current_hr), next: new Date(next_hr)});
+       current_hr = next_hr;
+       next_hr = new Date(next_hr.getTime()+hr);
+   }
 }
 
 /*
@@ -73,187 +81,139 @@ function write_details(res, contest) {
           streamUsers(res, contest, cb);
       }
   ], function(err) {
+      res.end('\n');
       console.log(err);
       console.log('done');
   });
 }
 
+function stream(contest, model, write, callback) {
+    var total = 0;
+    var done;
+    async.whilst(function() {
+        return !done;
+    }, function(cb) {
+        getChunk(contest, model, total, function(err, chunk) {
+            if (err) return cb(err);
+            write(chunk);
+            total += chunk.length;
+            if (chunk.length < page_size) {
+                done = true;
+            }
+            cb();
+        });
+    }, callback);
+};
+
+function getChunk(contest, model, skip, callback) {
+    model
+      .find({contest_id: contest._id})
+      .limit(page_size)
+      .skip(skip)
+      .run(callback);
+}
+
 function streamEntries(res, contest, callback) {
     res.write('Entries\n');
     res.write('Timestamp (UTC), User Id, Place\n');
-    var formatter = new CsvFormatter(formatEntry, contest);
-    var query = Bozuko.models.Entry.find({contest_id: contest._id});
-    query.stream().pipe(formatter);
-    formatter.pipe(res, {end: false});
-    formatter.on('end', callback);
+    stream(contest, Bozuko.models.Entry, writeEntryChunk(res), callback);
 }
 
 function streamPlays(res, contest, callback) {
     res.write('\n\nPlays\n');
     res.write('Timestamp (UTC), User Id, Place, Prize, Value\n');
-    var playFormatter = new CsvFormatter(formatPlay, contest);
-    var query = Bozuko.models.Play.find({contest_id: contest._id});
-    query.stream().pipe(playFormatter);
-    playFormatter.pipe(res, {end: false});
-    playFormatter.on('end', callback);
+    stream(contest, Bozuko.models.Play, writePlayChunk(res), callback);
 }
 
 function streamPrizes(res, contest, callback) {
     res.write('\n\nPrizes\n');
     res.write('Timestamp (UTC), User Id, Prize Id, Place, Activity, Value, Ship-to Name, Address1, Address2, City, State, Zip\n');
-    var prizeFormatter = new PrizeFormatter(formatPrize, contest);
-    var query = Bozuko.models.Prize.find({contest_id: contest._id},{},{timestamp:1});
-    query.stream().pipe(prizeFormatter);
-    prizeFormatter.pipe(res, {end: false});
-    prizeFormatter.on('end', callback);
+    stream(contest, Bozuko.models.Prize, writePrizeChunk(res), callback);
 }
 
 function streamUsers(res, contest, callback) {
     res.write('\n\nUsers\n');
     res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year, Address1, Address2, City, State, Zip \n');
-    Bozuko.models.Entry.distinct("user_id", {contest_id: contest._id}, function(err, user_ids) {
-        if (err) return callback(err);
-        async.forEach(user_ids, function(user_id, cb) {
-            Bozuko.models.User.findOne({_id: user_id}, function(err, user) {
-                if (err) return cb(err);
-                var internal = user.services[0].internal;
-                var data = user.services[0].data;
-                var str = user.id+','+user.gender+','+internal.friend_count + ',';
-                if (data.hometown && data.hometown.name) {
-                    var names = data.hometown.name.split(',');
-                    str += names[0] + names[1] + ',';
-                } else {
-                    str += ',';
-                }
-                if (data.location && data.location.name) {
-                    var names = data.location.name.split(',');
-                    str += names[0]+names[1]+',';
-                } else {
-                    str += ','
-                }
-                if (data.education && data.education.length) {
-                    data.education.forEach(function(school) {
-                        if (school.type && school.type === 'College') {
-                            if (school.school && school.school.name) {
-                              str += school.school.name + ",";
-                            } else {
-                                str += ',';
-                            }
-                            if (school.year && school.year.name) {
-                                str += school.year.name;
-                            } else {
-                                str +='';
-                            }
+    stream(contest, Bozuko.models.User, writeUserChunk(res), callback);
+}
+
+function writeEntryChunk(res) {
+    return function(chunk) {
+        chunk.forEach(function(doc) {
+            page_map[String(doc.page_id)] = doc.page_name;
+            res.write(doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_name+",,");
+        });
+    }
+}
+
+function writePlayChunk(res) {
+    return function(chunk) {
+        chunk.forEach(function(doc) {
+            var page_name = page_map[String(doc.page_id)];
+            res.write(doc.timestamp.toISOString()+","+doc.user_id+","+page_name+","+
+                (doc.prize_name || (doc.free_play ? 'free play' : 'LOSS'))+
+                ","+(doc.prize_value || 0));
+        });
+    }
+}
+
+function writePrizeChunk(res) {
+    return function(chunk) {
+        chunk.forEach(function(doc) {
+            var str = dateFormat(doc.timestamp, 'yyyy-mm-dd HH:MM:ss')+","+doc.user_id+","+doc._id+","+doc.page_name+","+
+                "WON,NA";
+                
+            if (doc.redeemed) {
+                str += '\n'+dateFormat(doc.timestamp, 'yyyy-mm-dd HH:MM:ss')+","+doc.user_id+","+doc._id+","+doc.page_name+","+
+                    "REDEEMED,"+doc.value;
+            }
+            res.write(str);
+        });
+    }
+}
+
+function writeUserChunk(res) {
+    return function(chunk) {
+        chunk.forEach(function(user) {
+            var internal = user.services[0].internal;
+            var data = user.services[0].data;
+            var str = user.id+','+user.gender+','+internal.friend_count + ',';
+            if (data.hometown && data.hometown.name) {
+                var names = data.hometown.name.split(',');
+                str += names[0] + names[1] + ',';
+            } else {
+                str += ',';
+            }
+            if (data.location && data.location.name) {
+                var names = data.location.name.split(',');
+                str += names[0]+names[1]+',';
+            } else {
+                str += ','
+            }
+            if (data.education && data.education.length) {
+                data.education.forEach(function(school) {
+                    if (school.type && school.type === 'College') {
+                        if (school.school && school.school.name) {
+                          str += school.school.name + ",";
+                        } else {
+                            str += ',';
                         }
-                    });
-                } else {
-                    str +=',';
-                }
-                str += '\n';
-                res.write(str);
-                cb();
-            });
-        }, function(err) {
-          if (err) console.log(err);
-          res.end('\n');
-          callback();
-        });
-    });
-}
-
-function formatEntry(doc) {
-    page_map[String(doc.page_id)] = doc.page_name;
-    return doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_name+",,";
-}
-
-function formatPlay(doc) {
-    var page_name = page_map[String(doc.page_id)];
-    return doc.timestamp.toISOString()+","+doc.user_id+","+page_name+","+
-        (doc.prize_name || (doc.free_play ? 'free play' : 'LOSS'))+","+(doc.prize_value || 0);
-}
-
-function formatPrize(doc) {
-    var str = dateFormat(doc.timestamp, 'yyyy-mm-dd HH:MM:ss')+","+doc.user_id+","+doc._id+","+doc.page_name+","+
-        "WON,NA";
-        
-    var user_str;
-        
-    if( doc.user ){
-        var u = doc.user,
-            r = [],
-            fields = ['ship_name','address1','address2','city','state','zip'];
-        fields.forEach(function(f){
-            r.push('"'+(u[f]?u[f].replace(/"/gi, '\\"'):'')+'"')
-        });
-        user_str=(','+r.join(','));
-        str+=user_str
-    }
-    if (doc.redeemed) {
-        str += '\n'+dateFormat(doc.timestamp, 'yyyy-mm-dd HH:MM:ss')+","+doc.user_id+","+doc._id+","+doc.page_name+","+
-            "REDEEMED,"+doc.value;
-        if(user_str) str+=user_str;
-    }
-    return str;
-}
-
-function CsvFormatter(format, contest) {
-    Stream.call(this);
-    this.writable = true;
-    this.format = format;
-    this.contest = contest;
-}
-
-util.inherits(CsvFormatter, Stream);
-
-CsvFormatter.prototype.write = function(doc) {
-    var str = '';
-    if (this.format === formatPlay) {
-        for (var i = 0; i < this.contest.prizes.length; i++) {
-            if (doc.prize_name == this.contest.prizes[i].name) {
-                doc.prize_value = this.contest.prizes[i].value;
-                break;
+                        if (school.year && school.year.name) {
+                            str += school.year.name;
+                        } else {
+                            str +='';
+                        }
+                    }
+                });
+            } else {
+                str +=',';
             }
-        }
-    }
-    str += this.format(doc) + '\n';
-    this.emit('data', str);
-    return true;
-};
-
-CsvFormatter.prototype.end = 
-CsvFormatter.prototype.destroy = function() {
-    if (this._done) return;
-    this._done = true;   
-    this.emit('end');
-};
-
-function PrizeFormatter(format, callback){
-    CsvFormatter.apply(this, arguments);
-    this.userCache = {};
-}
-util.inherits( PrizeFormatter, CsvFormatter );
-
-PrizeFormatter.prototype.write = function(doc) {
-    // need to grab the user
-    if(!this.userCache[String(doc.user_id)]){
-        var self = this;
-        Bozuko.models.User.findById(doc.user_id, {ship_name:true, address1:true, address2:true, city: true, state:true, zip:true}, function(err, user){
-            if(user){
-                self.userCache[String(doc.user_id)];
-                doc.user = user;
-                self.emit('data', self.format(doc) + '\n');
-                self.emit('drain');
-            }
+            str += '\n';
+            res.write(str);
+            cb();
         });
-        return false;
     }
-    else{
-        doc.user = this.userCache[String(doc.user_id)];
-        this.emit('data', this.format(doc) + '\n');
-        return true;
-    }
-    
-};
+}
 
 function play_and_entry_counts(contest_id, current_hr, next_hr, callback) {
     var rv = {};
@@ -294,14 +254,10 @@ function format_date(date) {
 
     var hr = date.getHours();
     var time = null;
-    if (hr === 0) {
-        time = '12:00 AM';
-    } else if (hr < 12) {
-        time = String(hr) + ':00 AM';
-    } else if (hr === 12) {
-        time = '12:00 PM';
+    if (hr < 10) {
+        time = '0'+ hr + ':00';
     } else {
-        time = String(hr - 12) + ':00 PM';
+        time = String(hr)+':00';
     };
     return str+' '+time;
 }
