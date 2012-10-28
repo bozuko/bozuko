@@ -67,9 +67,10 @@ function write_summary(res, contest, callback) {
 var page_map = {};
 
 function write_details(res, contest) {
+  var user_ids = {};
   async.series([
       function(cb) {
-          streamEntries(res, contest, cb);
+          streamEntries(res, contest, user_ids, cb);
       },
       function(cb) {
           streamPlays(res, contest, cb);
@@ -78,7 +79,7 @@ function write_details(res, contest) {
           streamPrizes(res, contest, cb);
       },
       function(cb) {
-          streamUsers(res, contest, cb);
+          streamUsers(res, contest, user_ids, cb);
       }
   ], function(err) {
       res.end('\n');
@@ -113,10 +114,10 @@ function getChunk(contest, model, skip, callback) {
       .run(callback);
 }
 
-function streamEntries(res, contest, callback) {
+function streamEntries(res, contest, user_ids, callback) {
     res.write('Entries\n');
     res.write('Timestamp (UTC), User Id, Place\n');
-    stream(contest, Bozuko.models.Entry, writeEntryChunk(res), callback);
+    stream(contest, Bozuko.models.Entry, writeEntryChunk(res, user_ids), callback);
 }
 
 function streamPlays(res, contest, callback) {
@@ -131,15 +132,72 @@ function streamPrizes(res, contest, callback) {
     stream(contest, Bozuko.models.Prize, writePrizeChunk(res), callback);
 }
 
-function streamUsers(res, contest, callback) {
+function streamUsers(res, contest, user_ids, callback) {
     res.write('\n\nUsers\n');
     res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year, Address1, Address2, City, State, Zip \n');
-    stream(contest, Bozuko.models.User, writeUserChunk(res), callback);
+
+    function write(user) {
+        var internal = user.services[0].internal;
+        var data = user.services[0].data;
+        var str = user.id+','+user.gender+','+internal.friend_count + ',';
+        if (data.hometown && data.hometown.name) {
+            var names = data.hometown.name.split(',');
+            str += names[0] + names[1] + ',';
+        } else {
+            str += ',';
+        }
+        if (data.location && data.location.name) {
+            var names = data.location.name.split(',');
+            str += names[0]+names[1]+',';
+        } else {
+            str += ','
+        }
+        if (data.education && data.education.length) {
+            data.education.forEach(function(school) {
+                if (school.type && school.type === 'College') {
+                    if (school.school && school.school.name) {
+                      str += school.school.name + ",";
+                    } else {
+                        str += ',';
+                    }
+                    if (school.year && school.year.name) {
+                        str += school.year.name;
+                    } else {
+                        str +='';
+                    }
+                }
+            });
+        } else {
+            str +=',';
+        }
+        str += '\n';
+        res.write(str);
+    }
+    var queue = async.queue(function(user_id, cb) {
+        Bozuko.models.User.findOne({_id: user_id.user_id}, function(err, user) {
+            if (err) return cb(err);
+            if (user) write(user);
+            cb();
+        });
+    }, 10);
+    queue.drain = callback;
+    Object.keys(user_ids).forEach(function(user_id) {
+        queue.push({user_id: user_id});
+    });
 }
 
-function writeEntryChunk(res) {
+function chunkArray(array) {
+    var chunks = [];
+    for (var i = 0; i < array.length; i+= page_size) {
+        chunks.push(array.slice(i, i+page_size));
+    }
+    return chunks;
+}
+
+function writeEntryChunk(res, user_ids) {
     return function(chunk) {
         chunk.forEach(function(doc) {
+            user_ids[doc.user_id] = true;
             page_map[String(doc.page_id)] = doc.page_name;
             res.write(doc.timestamp.toISOString()+","+doc.user_id+","+doc.page_name+",,");
         });
@@ -168,49 +226,6 @@ function writePrizeChunk(res) {
                     "REDEEMED,"+doc.value;
             }
             res.write(str);
-        });
-    }
-}
-
-function writeUserChunk(res) {
-    return function(chunk) {
-        chunk.forEach(function(user) {
-            var internal = user.services[0].internal;
-            var data = user.services[0].data;
-            var str = user.id+','+user.gender+','+internal.friend_count + ',';
-            if (data.hometown && data.hometown.name) {
-                var names = data.hometown.name.split(',');
-                str += names[0] + names[1] + ',';
-            } else {
-                str += ',';
-            }
-            if (data.location && data.location.name) {
-                var names = data.location.name.split(',');
-                str += names[0]+names[1]+',';
-            } else {
-                str += ','
-            }
-            if (data.education && data.education.length) {
-                data.education.forEach(function(school) {
-                    if (school.type && school.type === 'College') {
-                        if (school.school && school.school.name) {
-                          str += school.school.name + ",";
-                        } else {
-                            str += ',';
-                        }
-                        if (school.year && school.year.name) {
-                            str += school.year.name;
-                        } else {
-                            str +='';
-                        }
-                    }
-                });
-            } else {
-                str +=',';
-            }
-            str += '\n';
-            res.write(str);
-            cb();
         });
     }
 }
