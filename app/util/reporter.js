@@ -128,13 +128,14 @@ function streamPlays(res, contest, callback) {
 
 function streamPrizes(res, contest, callback) {
     res.write('\n\nPrizes\n');
-    res.write('Timestamp (UTC), User Id, Prize Id, Place, Activity, Value, Ship-to Name, Address1, Address2, City, State, Zip\n');
+    res.write('Timestamp (UTC), User Id, Prize Id, Place, Activity, Value\n');
     stream(contest, Bozuko.models.Prize, writePrizeChunk(res), callback);
 }
 
 function streamUsers(res, contest, user_ids, callback) {
     res.write('\n\nUsers\n');
-    res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year, Address1, Address2, City, State, Zip \n');
+    res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year, \
+        Birthday, Ship Name, Address1, Address2, City, State, Zip \n');
 
     function write(user) {
         var internal = user.services[0].internal;
@@ -170,6 +171,16 @@ function streamUsers(res, contest, user_ids, callback) {
         } else {
             str +=',';
         }
+        if (data.birthday) {
+            str += data.birthday;
+        } 
+        str += ',';
+        var r = [];
+        fields = ['ship_name','address1','address2','city','state','zip'];
+        fields.forEach(function(f){
+            r.push('"'+(user[f]?user[f].replace(/"/gi, '\\"'):'')+'"')
+         });
+        str += r.join(',');
         str += '\n';
         res.write(str);
     }
