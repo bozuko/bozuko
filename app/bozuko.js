@@ -67,9 +67,6 @@ Bozuko.getConfig = function(){
 			cfg = merge( cfg, require( Bozuko.dir+'/../.bozuko' ) );
 		}
 	}
-        if (Bozuko.isMaster) {
-            cfg.db.options.server.poolSize = 20;
-        }
 	return cfg;
 };
 Bozuko.config = Bozuko.getConfig();
