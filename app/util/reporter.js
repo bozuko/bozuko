@@ -162,9 +162,9 @@ function streamUsers(res, contest, user_ids, callback) {
                         str += ',';
                     }
                     if (school.year && school.year.name) {
-                        str += school.year.name;
+                        str += school.year.name+',';
                     } else {
-                        str +='';
+                        str +=''+',';
                     }
                 }
             });
