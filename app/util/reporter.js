@@ -83,7 +83,7 @@ function write_details(res, contest) {
       }
   ], function(err) {
       res.end('\n');
-      console.log(err);
+      console.error(err);
       console.log('done');
   });
 }
@@ -114,6 +114,22 @@ function getChunk(contest, model, skip, callback) {
       .run(callback);
 }
 
+function streamUsers(res, contest, user_ids, callback) {
+    res.write('\n\nUsers\n');
+    res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year, \
+        Birthday, Ship Name, Address1, Address2, City, State, Zip \n');
+
+    var userChunks = chunkArray(Object.keys(user_ids));
+    async.forEachSeries(userChunks, function(userIds, cb) {
+        Bozuko.models.User.find({_id: {$in: userIds}}, function(err, users) {
+            if (err) return cb(err);
+            if (users) writeUsers(res, users);
+            cb();
+        });
+    }, callback);
+}
+
+
 function streamEntries(res, contest, user_ids, callback) {
     res.write('Entries\n');
     res.write('Timestamp (UTC), User Id, Place\n');
@@ -132,12 +148,8 @@ function streamPrizes(res, contest, callback) {
     stream(contest, Bozuko.models.Prize, writePrizeChunk(res), callback);
 }
 
-function streamUsers(res, contest, user_ids, callback) {
-    res.write('\n\nUsers\n');
-    res.write('User Id, Gender, Friend Count, Hometown, Location, College, Graduation Year, \
-        Birthday, Ship Name, Address1, Address2, City, State, Zip \n');
-
-    function write(user) {
+function writeUsers(res, users) {
+    users.forEach(function(user) {
         var internal = user.services[0].internal;
         var data = user.services[0].data;
         var str = user.id+','+user.gender+','+internal.friend_count + ',';
@@ -183,17 +195,6 @@ function streamUsers(res, contest, user_ids, callback) {
          });
         str += '\n';
         res.write(str);
-    }
-    var queue = async.queue(function(user_id, cb) {
-        Bozuko.models.User.findOne({_id: user_id.user_id}, function(err, user) {
-            if (err) return cb(err);
-            if (user) write(user);
-            cb();
-        });
-    }, 10);
-    queue.drain = callback;
-    Object.keys(user_ids).forEach(function(user_id) {
-        queue.push({user_id: user_id});
     });
 }
 
