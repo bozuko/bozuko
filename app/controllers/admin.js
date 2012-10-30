@@ -219,6 +219,16 @@ exports.routes = {
                                         return cb();
                                     }
                                     
+                                    if( new Date() > prize.expires ){
+                                        prize.redeemed = true;
+                                        prize.redeemed_time = new Date();
+                                        return prize.save(function(){
+                                            prize.sendEmail(user);
+                                            results.push(r);
+                                            return cb();
+                                        });
+                                    }
+                                    
                                     return prize.redeem(user, true, function(error){
                                         if( error ) return cb(error);
                                         results.push(r);
