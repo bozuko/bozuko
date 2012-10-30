@@ -223,7 +223,7 @@ exports.routes = {
                                         prize.redeemed = true;
                                         prize.redeemed_time = new Date();
                                         return prize.save(function(){
-                                            prize.sendEmail(user);
+                                            if( !test ) prize.sendEmail(user);
                                             results.push(r);
                                             return cb();
                                         });
