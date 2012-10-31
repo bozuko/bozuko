@@ -225,7 +225,7 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
     }
 });
 
-StatsPluginUnique.prototype.init = function(){
+StatsPluginUnique.prototype._init = function(){
     // lets go through all of our contests and pages
     async.series([
         function update_contests(cb){
