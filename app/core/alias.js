@@ -137,7 +137,20 @@ function get_best_game( games ){
 			return -2;
 		}
 		
+		if( a.start > now && b.start < now ){
+			return 1;
+		}
+		if( a.start < now && b.start > now ){
+			return -1;
+		}
+		if( a.start > now && b.start > now ){
+			return a.start < b.start ? 1 : -1;
+		}
+		if( a.start < now && b.start < now ){
+			return a.start > b.start ? 1 : -1;
+		}
 		return a.start > b.start ? 1 : -1;
+		
 	})
 	return games.pop();
 }
