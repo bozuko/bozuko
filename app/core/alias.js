@@ -116,25 +116,25 @@ function get_best_game( games ){
 	games.sort(function(a,b){
 		
 		if( a.active && !b.active ){
-			return 3;
+			return 1;
 		}
 		else if( !a.active && b.active ){
-			return -3;
+			return -1;
 		}
 		
 		if( isActive(a) ){
 			if( isActive(b) ){
 				if( a.start > b.start ){
-					return 2;
+					return 1;
 				}
 				else {
 					return -1;
 				}
 			}
-			return 2;
+			return 1;
 		}
 		else if( isActive(b) ){
-			return -2;
+			return -1;
 		}
 		
 		if( a.start > now && b.start < now ){
