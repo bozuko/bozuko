@@ -52,10 +52,9 @@ if( proc.isMaster ){
 }
 
 // only run stats engine on one child process
-/*setTimeout(function(){
+setTimeout(function(){
     console.log('Process Startup: '+process.title);
     if( process.title.match(/0/) ){
         Bozuko.require('core/stats').run();
     }
 }, 100);
-*/
