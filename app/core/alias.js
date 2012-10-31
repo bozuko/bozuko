@@ -81,22 +81,63 @@ function find_page( page_alias, callback ){
 function find_game( game_alias, callback ){
 	var d = new Date();
     Bozuko.models.Contest.find({
-        alias: game_alias,
-		active: true
-	}, {results: 0, page: 0}, {limit: 1, sort:{start:-1}}, function(error, games){
+        alias: game_alias
+	}, {start:1, end:1, active:1, _id:1}, {sort:{start:-1}}, function(error, games){
         if( error ) return callback( error );
-		if( games && games.length ) return callback( null, games[0] );
-        return Bozuko.models.Contest.findById( game_alias, callback );
+		if( !games || !games.length ) {
+			return Bozuko.models.Contest.findById( game_alias, {results:0}, callback );
+		}
+		// go through all the games...
+		return callback( null, get_best_game( games ) );
     });
 }
 
 function get_latest_game( page_id, callback ){
 	var d = new Date();
     Bozuko.models.Contest.find({
-        $or: [{page_id: page_id}, {page_ids: page_id}],
-        active: true
-	}, {results: 0, page: 0}, {limit: 1, sort:{start:-1}}, function(error, games){
+        $or: [{page_id: page_id}, {page_ids: page_id}]
+	}, {start:1, end:1, active:1, _id:1}, {sort:{start:-1}}, function(error, games){
         if( error ) return callback( error );
-        return callback( null, games.length ? games[0] : null );
+		if( !games || !games.length ) return callback( null, null );
+		return callback( null, get_best_game( games ) );
     });
+}
+
+
+function get_best_game( games ){
+	// lets go through all the games...
+	var best = null
+	  , now = new Date()
+	  , isActive = function(c){
+		return c.start < now && c.end > now;
+	  }
+	  ;
+	  
+	games.sort(function(a,b){
+		
+		if( a.active && !b.active ){
+			return 3;
+		}
+		else if( !a.active && b.active ){
+			return -3;
+		}
+		
+		if( isActive(a) ){
+			if( isActive(b) ){
+				if( a.start > b.start ){
+					return 2;
+				}
+				else {
+					return -1;
+				}
+			}
+			return 2;
+		}
+		else if( isActive(b) ){
+			return -2;
+		}
+		
+		return a.start > b.start ? 1 : -1;
+	})
+	return games.pop();
 }
