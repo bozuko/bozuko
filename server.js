@@ -21,7 +21,7 @@ Object.keys(dirs).forEach( function(name){
     fs.writeFileSync(dir+'/.gitignore', dirs[name], 'utf8');
 });
 
-var proc = cluster( './app' )
+var proc = Bozuko.proc = cluster( './app' )
     .set( 'worker title', env+' {n}')
     .set( 'socket path', './sockets/'+env )
     .use( cluster.logger('logs/'+env, cfg.logLevel || 'debug') )
