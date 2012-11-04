@@ -161,8 +161,6 @@ exports.renderGame = function(req, res, contest_id, page_id){
             
             // minify
             
-            
-            
             if( !Bozuko.proc.worker.master.min[filename] ){
                 var code='';
                 scripts.forEach(function(script){
@@ -197,7 +195,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
             res.locals.stylesheets = [];
             styles.forEach(function(style){
                 //http://bozuko.s3.amazonaws.com/app/css/client/style.css
-                res.locals.stylesheets.push('https://bozuko.s3.amazonaws.com/app'+style);
+                res.locals.stylesheets.push('https://bozuko.s3.amazonaws.com'+style);
             });
             cb();
         }
