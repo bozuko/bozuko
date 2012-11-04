@@ -1,9 +1,12 @@
 var async = require('async'),
+    fs = require('fs'),
     s3 = Bozuko.require('util/s3'),
     alias = Bozuko.require('core/alias'),
     Facebook = Bozuko.require('util/facebook'),
     burl = Bozuko.require('util/url').create,
     merge = Bozuko.require('util/functions').merge,
+    jsp = require('uglify-js').parser,
+    pro = require('uglify-js').uglify,
     indexOf = Bozuko.require('util/functions').indexOf;
 
 // exports.access = 'admin';
@@ -79,7 +82,7 @@ exports.renderGame = function(req, res, contest_id, page_id){
           , change_time = new Date('2012-07-30 12:00:00')
           , facebook_crawler = req.headers && req.headers['user-agent'] && req.headers['user-agent'].match(/facebookexternalhit/i)
           , facebook_referer = req.headers && req.headers['referer'] && req.headers['referer'].match(/facebook.com/i)
-          ;
+          ; 
           
         //console.log('referer: '+req.headers['user-agent']);
           
@@ -112,6 +115,8 @@ exports.renderGame = function(req, res, contest_id, page_id){
         
         // lets add our scripts
         var scripts = [
+            '/js/ext-core/ext-core.js',
+            '/js/modernizr/min.js',
             '/js/dateFormat.js',
             '/js/client/util/Stylesheet.js',
             '/js/iscroll/iscroll-lite-4.1.6.js',
@@ -142,43 +147,90 @@ exports.renderGame = function(req, res, contest_id, page_id){
         res.locals.meta['og:title'] = contest.share_title || game.getName();
         res.locals.meta['og:description'] = contest.share_description || Bozuko.t('en', 'game/share_description', game.getName());
         
-        res.locals.scripts = [
-            'https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core-debug.js',
-            '/js/modernizr/min.js'
-        ];
-        scripts.forEach(function(script){
-            res.locals.scripts.push(script+'?'+now);
-        });
-        
-        res.locals.stylesheets = [];
-        styles.forEach(function(style){
-            res.locals.stylesheets.push(style+'?'+now);
-        });
-        res.locals.html_classes = [];
-        if( req.param('facebook_tab') ) res.locals.html_classes.push('facebook-tab');
-        res.locals.title = 'Play '+game.getName()+'!';
-        res.locals.device = 'touch';
-        res.locals.layout = 'client/layout';
-        res.locals.cache_time = now;
-        res.locals.contest = contest;
-        res.locals.page = page;
-        var o;
-        if( contest.game_config && (o=contest.game_config.theme_options) ){
-            if(o.js){
-                res.locals.theme_js = o.js;
-            }
-            if(o.css){
-                return require('less').render( o.css, function(error, css){
-                    
-                    if( css ) res.locals.theme_css = css;
-                    else res.locals.theme_css = '/*\n'+error.stack+'\n*/';
-                    return res.render('client/index');
+        var add_scripts = function(cb){
+            
+            // get the name...
+            var name='';
+            scripts.forEach(function(script){
+                name+=script;
+            });
+            
+            var filename = require('crypto').createHash('md5').update(name).digest("hex") + '.js';
+            
+            if( !Bozuko.proc.worker.master.min ) Bozuko.proc.worker.master.min = {};
+            
+            // minify
+            
+            
+            
+            if( !Bozuko.proc.worker.master.min[filename] ){
+                var code='';
+                scripts.forEach(function(script){
+                    code+=fs.readFileSync(Bozuko.dir+'/app/static'+script);
+                });
+                
+                var ast = jsp.parse(code);
+                ast = pro.ast_mangle(ast);
+                ast = pro.ast_squeeze(ast);
+                
+                fs.writeFileSync( Bozuko.dir+'/tmp/'+filename, pro.gen_code(ast), 'utf-8');
+                // s3
+                return Bozuko.require('util/s3').client.deleteFile('/js/min/'+filename, function(){
+                    return Bozuko.require('util/s3').put(Bozuko.dir+'/tmp/'+filename,'/js/min/'+filename,{
+                        'x-amz-acl':'public-read',
+                        'Content-Type': 'text/javascript'
+                    }, function(err, r){
+                        if( err ) console.error( err );
+                        Bozuko.proc.worker.master.min[filename] = true;
+                        res.locals.scripts = ['https://'+Bozuko.require('util/s3').client.endpoint+'/js/min/'+filename];
+                        cb();
+                    });
                 });
                 
             }
+            res.locals.scripts = ['https://'+Bozuko.require('util/s3').client.endpoint+'/js/min/'+filename];
+            return cb();
+            
         }
         
-        return res.render('client/index');
+        var add_styles = function(cb){
+            res.locals.stylesheets = [];
+            styles.forEach(function(style){
+                //http://bozuko.s3.amazonaws.com/app/css/client/style.css
+                res.locals.stylesheets.push('https://bozuko.s3.amazonaws.com/app'+style);
+            });
+            cb();
+        }
+        
+        return add_scripts(function(){
+            return add_styles(function(){
+                res.locals.html_classes = [];
+                if( req.param('facebook_tab') ) res.locals.html_classes.push('facebook-tab');
+                res.locals.title = 'Play '+game.getName()+'!';
+                res.locals.device = 'touch';
+                res.locals.layout = 'client/layout';
+                res.locals.cache_time = now;
+                res.locals.contest = contest;
+                res.locals.page = page;
+                var o;
+                if( contest.game_config && (o=contest.game_config.theme_options) ){
+                    if(o.js){
+                        res.locals.theme_js = o.js;
+                    }
+                    if(o.css){
+                        return require('less').render( o.css, function(error, css){
+                            
+                            if( css ) res.locals.theme_css = css;
+                            else res.locals.theme_css = '/*\n'+error.stack+'\n*/';
+                            return res.render('client/index');
+                        });
+                        
+                    }
+                }
+                return res.render('client/index');
+            });
+        });
+        
     });
 };
 
