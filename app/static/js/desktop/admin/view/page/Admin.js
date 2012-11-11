@@ -96,6 +96,50 @@ Ext.define('Admin.view.page.Admin' ,{
                     }
                 }]
             },{
+                title           :'SMTP Configuration',
+                defaults        :{
+                    anchor              :'0',
+                    labelWidth          :180
+                },
+                items: [{
+                    xtype           :'checkbox',
+                    name            :'smtp_enabled',
+                    fieldLabel      :'Enable Custom SMTP'
+                },{
+                    xtype           :'textfield',
+                    name            :'smtp_host',
+                    fieldLabel      :'Host'
+                },{
+                    xtype           :'textfield',
+                    name            :'smtp_port',
+                    fieldLabel      :'Port'
+                },{
+                    xtype           :'checkbox',
+                    name            :'smtp_ssl',
+                    fieldLabel      :'Use SSL'
+                },{
+                    xtype           :'checkbox',
+                    name            :'smtp_use_authentication',
+                    fieldLabel      :'Use Authentication'
+                },{
+                    xtype           :'textfield',
+                    name            :'smtp_user',
+                    fieldLabel      :'Username'
+                },{
+                    xtype           :'textfield',
+                    inputType       :'password',
+                    name            :'smtp_pass',
+                    fieldLabel      :'Password'
+                },{
+                    xtype           :'textfield',
+                    name            :'smtp_email',
+                    fieldLabel      :'Email'
+                },{
+                    xtype           :'textfield',
+                    name            :'smtp_from_name',
+                    fieldLabel      :'From Name'
+                }]
+            },{
                 title           :'Links',
                 defaults        :{
                     anchor              :'0',

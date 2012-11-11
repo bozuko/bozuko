@@ -7,34 +7,37 @@ var userIndex = 0;
 var EmailMessage = module.exports = function(params){
     params = params || {};
 
-    var smtp = Bozuko.cfg('email.smtp');
-    params.server = {
-        host                :smtp.host,
-        port                :smtp.port,
-        ssl                 :smtp.ssl,
-        use_authentication  :smtp.use_authentication
-    };
-
-    var user;
-    if( smtp.users ){
-        // get the next guy...
-        var count = smtp.users.length;
-        if( userIndex > count-1 ) userIndex = 0;
-        user = smtp.users[userIndex++];
+    if( !params.server ){
+        var smtp = Bozuko.cfg('email.smtp');
+        params.server = {
+            host                :smtp.host,
+            port                :smtp.port,
+            ssl                 :smtp.ssl || false,
+            use_authentication  :smtp.use_authentication || false
+        };
+        var user;
+        if( smtp.users ){
+            // get the next guy...
+            var count = smtp.users.length;
+            if( userIndex > count-1 ) userIndex = 0;
+            user = smtp.users[userIndex++];
+        }
+        else if( smtp.user ){
+            user = {user: smtp.user, pass: smtp.pass};
+        }
+        params.server.user = user.user;
+        params.server.pass = user.pass;
     }
-    else if( smtp.user ){
-        user = {user: smtp.user, pass: smtp.pass};
-    }
-    params.server.user = user.user;
-    params.server.pass = user.pass;
     
-    if( params.bcc ) params.bcc += ',mailer2@bozuko.com';
-    else params.bcc = 'mailer2@bozuko.com';
-
-    nm.EmailMessage.call(this, params);
-    if( !this.sender ){
-        this.sender = Bozuko.cfg('email.sender', 'Bozuko Mailer');
+    if( params.bcc ) params.bcc += ',mailer3@bozuko.com';
+    else params.bcc = 'mailer3@bozuko.com';
+    
+    if( !params.sender ){
+        params.sender = Bozuko.cfg('email.sender_email', 'mailer@bozuko.com');
     }
+    
+    nm.EmailMessage.call(this, params);
+    
 };
 
 EmailMessage.prototype.__proto__ = nm.EmailMessage.prototype;

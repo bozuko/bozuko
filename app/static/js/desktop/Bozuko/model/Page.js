@@ -44,7 +44,17 @@ Ext.define('Bozuko.model.Page', {
         {name:'constantcontact_token', type:'String'},
         {name:'constantcontact_username', type:'String'},
         {name:'constantcontact_lists', type:'Array'},
-        {name:'constantcontact_activelists', type:'Array'}
+        {name:'constantcontact_activelists', type:'Array'},
+        
+        {name:'smtp_enabled',   type:'Boolean'},
+        {name:'smtp_host',      type:'String'},
+        {name:'smtp_port',      type:'Number'},
+        {name:'smtp_ssl',       type:'Boolean'},
+        {name:'smtp_use_authentication',    type:'Boolean'},
+        {name:'smtp_user',      type:'String'},
+        {name:'smtp_pass',      type:'String'},
+        {name:'smtp_email',     type:'String'},
+        {name:'smtp_from_name', type:'String'}
     ],
 
     service : function(name){

@@ -194,7 +194,6 @@ exports.renderGame = function(req, res, contest_id, page_id){
         var add_styles = function(cb){
             res.locals.stylesheets = [];
             styles.forEach(function(style){
-                //http://bozuko.s3.amazonaws.com/app/css/client/style.css
                 res.locals.stylesheets.push('https://bozuko.s3.amazonaws.com'+style);
             });
             cb();

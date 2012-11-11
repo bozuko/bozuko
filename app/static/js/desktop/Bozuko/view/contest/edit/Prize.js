@@ -159,6 +159,41 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     change          :me.onEmailChange
                 }
             },{
+                xtype           :'checkbox',
+                name            :'email_use_codes',
+                fieldLabel      :'Use Email Codes?',
+                allowBlank      :false,
+                listeners       :{
+                    scope           :me,
+                    change          :me.onUseEmailCodesChange
+                }
+            },{
+                xtype           :'textarea',
+                height          :80,
+                hidden          :true,
+                name            :'email_codes',
+                fieldLabel      :'Email Codes (one per line)',
+                allowBlank      :false,
+                getValue        :function(){
+                    var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this);
+                    var ar = v.split('\n');
+                    if( ar.length ){
+                        if( ar[0] === '' ) ar.shift();
+                        if( ar.length ){
+                            if( ar[ar.length-1] === '') ar.pop();
+                        }
+                    }
+                    return ar;
+                },
+                setValue        :function(v){
+                    if( Ext.isString(v) ) v = v.split('\n');
+                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
+                },
+                listeners       :{
+                    scope           :me,
+                    change          :me.onCodesChange
+                }
+            },{
                 hidden              :true,
                 xtype               :'combo',
                 name                :'email_format',
@@ -222,32 +257,6 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
                     }
                 }
             },{
-                xtype           :'textarea',
-                height          :80,
-                hidden          :true,
-                name            :'email_codes',
-                fieldLabel      :'Email Codes (one per line)',
-                allowBlank      :false,
-                getValue        :function(){
-                    var v = Ext.form.field.TextArea.prototype.getRawValue.apply(this);
-                    var ar = v.split('\n');
-                    if( ar.length ){
-                        if( ar[0] === '' ) ar.shift();
-                        if( ar.length ){
-                            if( ar[ar.length-1] === '') ar.pop();
-                        }
-                    }
-                    return ar;
-                },
-                setValue        :function(v){
-                    if( Ext.isString(v) ) v = v.split('\n');
-                    Ext.form.field.TextArea.prototype.setValue.apply(this, [(v||[]).join('\n')])
-                },
-                listeners       :{
-                    scope           :me,
-                    change          :me.onCodesChange
-                }
-            },{
                 xtype           :'container',
                 border          :false,
                 style           :'text-align:right',
@@ -277,10 +286,19 @@ Ext.define('Bozuko.view.contest.edit.Prize' ,{
         Ext.Array.each( this.query('[name=email_body], [name=email_subject], [name=email_format], [name=email_replyto]'), function(cmp){
             cmp[fn]();
         });
-        this.down('[name=email_codes]')[value?'show':'hide']();
-        this.query('[name=total]')[0].setDisabled( value ? true : false );
-        this.onCodesChange( this.query('[name=email_codes]')[0] );
+        this.onUseEmailCodesChange();
     },
+    
+    onUseEmailCodesChange : function(){
+        var use_codes = this.down('[name=email_use_codes]')
+          , field = this.down('[name=email_codes]')
+          , value = use_codes.getValue()
+          
+        field[value?'show':'hide']();
+        this.query('[name=total]')[0].setDisabled( value ? true : false );
+        if( value ) this.onCodesChange( this.query('[name=email_codes]')[0] );
+    },
+
 
     onBarcodeChange : function(field, value){
         var fn = value ? 'show' : 'hide';

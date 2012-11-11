@@ -162,78 +162,81 @@ Prize.method('sendEmail', function(user) {
 	
 	if( this.address_required ) return false;
 	
-	if( !this.is_email ){
-		// get the page
-		return Bozuko.models.Page.findById(this.page_id, function(error, page){
-			if( error || !page ) return;
+	return Bozuko.models.Page.findById(this.page_id, function(error, page){
+	
+		if( !self.is_email ){
+			// get the page
+			if( error || !page ) return null;
 			if( page.security_img ){
-                security_img = s3.client.signedUrl('/'+page.security_img, new Date(Date.now()+(1000*60*2)) );
-            }
-            else{
-                security_img = burl('/images/security_image.png');
-            }
+				security_img = s3.client.signedUrl('/'+page.security_img, new Date(Date.now()+(1000*60*2)) );
+			}
+			else{
+				security_img = burl('/images/security_image.png');
+			}
 			self.page = page;
 			self.user = user;
-			self.emailPrizeScreen(user, security_img);
-		});
-	}
-    else if( self.email_format != 'text/html') {
-        return mail.send({
-				user_id: user._id,
-				to: user.email,
-				subject: 'You just won a Bozuko prize!',
-				body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
-			}, function(err, success, record) {
-				if (err) console.error("Email Err = "+err);
-				if (err || !success) {
-					console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
+			return self.emailPrizeScreen(user, security_img);
+			
+		}
+		/*
+		else if( self.email_format != 'text/html') {
+			return page.sendmail({
+					user_id: user._id,
+					to: user.email,
+					subject: 'You just won a Bozuko prize!',
+					body: 'Gift Code: '+self.email_code+"\n\n\n"+self.email_body
+				}, function(err, success, record) {
+					if (err) console.error("Email Err = "+err);
+					if (err || !success) {
+						console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
+					}
+				if( success && record._id ){
+					self.email_history.push(record._id);
 				}
-			if( success && record._id ){
-				self.email_history.push(record._id);
+			});
+		}
+		*/
+		// do some substitutions
+		var subject = self.email_subject,
+			body = self.email_body,
+			subs = {
+				'{name}':user.name,
+				'{email}':user.email,
+				'{prize}':self.name,
+				'{code}':self.email_code,
+				'{bozuko_code}':self.code
+			};
+	
+		Object.keys(subs).forEach(function(key){
+			var re = new RegExp(XRegExp.escape(key), "gi");
+			subject = subject.replace(re, subs[key]||'' );
+			body = body.replace(re, subs[key]||'' );
+		});
+		
+		var text = body
+			.replace(/<br>/gi, "\n")
+			.replace(/<p.*>/gi, "\n")
+			.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
+			.replace(/<(?:.|\s)*?>/g, "");
+	
+		var config = {
+			to: user.email,
+			subject: subject,
+			html: body,
+			body: text
+		};
+	
+		if( self.email_replyto && self.email_replyto != '' ){
+			config.reply_to = self.email_replyto;
+		}
+	
+		return page.sendmail(config, function(err, success) {
+			if (err) console.error("Email Err = "+err);
+			if (err || !success) {
+				console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
 			}
-        });
-    }
-    // do some substitutions
-    var subject = self.email_subject,
-        body = self.email_body,
-        subs = {
-            '{name}':user.name,
-            '{email}':user.email,
-            '{prize}':self.name,
-            '{code}':self.email_code,
-			'{bozuko_code}':self.code
-        };
-
-    Object.keys(subs).forEach(function(key){
-        var re = new RegExp(XRegExp.escape(key), "gi");
-        subject = subject.replace(re, subs[key]||'' );
-        body = body.replace(re, subs[key]||'' );
-    });
-
-    var text = body
-        .replace(/<br>/gi, "\n")
-        .replace(/<p.*>/gi, "\n")
-        .replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
-        .replace(/<(?:.|\s)*?>/g, "");
-
-	var config = {
-        to: user.email,
-        subject: subject,
-        html: body,
-        body: text,
-		sender: this.page_name +' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>'
-    };
-
-	if( self.email_replyto && self.email_replyto != '' ){
-		config.reply_to = self.email_replyto;
-	}
-
-    return mail.send(config, function(err, success) {
-        if (err) console.error("Email Err = "+err);
-        if (err || !success) {
-            console.error("Error sending mail to "+user.email+" for prize_id "+self._id);
-        }
-    });
+		});
+	});
 });
 
 Prize.method('loadTransferObject', function(callback){
@@ -444,15 +447,15 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 					.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
 					.replace(/<(?:.|\s)*?>/g, "");
 				
-				return mail.send({
+				return page.sendmail({
 					
 					user_id			:user._id,
 					to				:user.email,
 					subject			:subject,
 					html			:body,
 					body			:text,
-					attachments		:attachments,
-					sender			:self.page_name +' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>'
+					attachments		:attachments
+
 				}, function(err, success, record) {
 					if (err || !success) {
 						console.error('Error emailing prize screen: '+err);
@@ -461,8 +464,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			}
 			
 			if( page.nobranding ){
-				return mail.send({
-					sender:self.page_name +' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>',
+				return page.sendmail({
 					user_id: user._id,
 					to: user.email,
 					subject: 'Congratulations! You won a prize from '+self.page_name,
@@ -482,8 +484,7 @@ Prize.method('emailPrizeScreen', function(user, security_img) {
 			}
 			
 			// lets get the page name...
-			return mail.sendView('prize/pdf', {prize: self, user: user, userLayout: true}, {
-				sender:self.page_name +' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>',
+			return page.sendmailView('prize/pdf', {prize: self, user: user, userLayout: true}, {
 				user_id: user._id,
 				to: user.email,
 				subject: 'Congratulations! You won a prize from '+self.page_name,

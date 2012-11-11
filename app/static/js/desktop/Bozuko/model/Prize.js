@@ -32,6 +32,7 @@ Ext.define('Bozuko.model.Prize', {
         {name:'email_subject',  type:'String'},
         {name:'email_body',     type:'String'},
         {name:'email_replyto',  type:'String'},
+        {name:'email_use_codes',type:'Boolean',     defaultValue: false},
         {name:'email_codes',    type:'Array'}
     ],
     

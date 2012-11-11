@@ -1580,10 +1580,12 @@ Contest.method('savePrize', function(opts, callback) {
             user_prize.email_subject = prize.email_subject;
             user_prize.email_body = prize.email_body;
 			user_prize.email_replyto = prize.email_replyto;
-            if (opts.consolation) {
-                user_prize.email_code = prize.email_codes[opts.consolation_prize_count];
-            } else {
-                user_prize.email_code = prize.email_codes[opts.prize_count];
+            if( prize.email_use_codes !== false ){
+                if (opts.consolation) {
+                    user_prize.email_code = prize.email_codes[opts.consolation_prize_count];
+                } else {
+                    user_prize.email_code = prize.email_codes[opts.prize_count];
+                }
             }
         }
         

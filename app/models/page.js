@@ -18,7 +18,8 @@ var _t = Bozuko.t,
     inspect = require('util').inspect,
     rand = Bozuko.require('util/math').rand,
     Profiler = Bozuko.require('util/profiler'),
-    codify = require('codify')
+    codify = require('codify'),
+    mail = Bozuko.require('util/mail')
 ;
 
 var Page = module.exports = new Schema({
@@ -77,7 +78,18 @@ var Page = module.exports = new Schema({
     constantcontact_token       :{type:String},
     constantcontact_username    :{type:String},
     constantcontact_lists       :{type:Array},
-    constantcontact_activelists :{type:Array}
+    constantcontact_activelists :{type:Array},
+    
+    /* SMTP Configuration */
+    smtp_enabled            :{type:Boolean},
+    smtp_host               :{type:String},
+    smtp_port               :{type:Number},
+    smtp_ssl                :{type:Boolean},
+    smtp_use_authentication :{type:Boolean},
+    smtp_user               :{type:String},
+    smtp_pass               :{type:String},
+    smtp_email              :{type:String},
+    smtp_from_name          :{type:String}
     
 }, {safe: {j:true}});
 
@@ -506,6 +518,43 @@ Page.method('checkin', function(user, options, callback) {
             return callback( null, checkin);
         });
     });
+});
+
+Page.method('getMailServerConfig', function getMailServerConfig( config ){
+    
+    config = config || {};
+    
+     if( this.smtp_enabled ){
+        config.server = {
+            host                :this.smtp_host,
+            port                :this.smtp_port,
+            ssl                 :this.smtp_ssl,
+            use_authentication  :this.smtp_use_authentication,
+            user                :this.smtp_user,
+            pass                :this.smtp_pass
+        };
+        
+        if( this.smtp_email && this.smtp_from_name){
+            config.sender = this.smtp_from_name+' <'+this.smtp_email+'>';
+        }
+        else if( this.smtp_email ){
+            config.sender = this.name+' <'+this.smtp_email+'>';
+        }
+    }
+    
+    else {
+        config.sender = this.name+' <'+Bozuko.cfg('email.sender_email', 'mailer@bozuko.com')+'>';
+    }
+    
+    return config;
+});
+
+Page.method('sendmail', function sendmail(config, callback){
+    return mail.send(this.getMailServerConfig(config), callback);
+});
+
+Page.method('sendmailView', function sendmailView(view, locals, config, callback){
+    return mail.sendView(view, locals, this.getMailServerConfig(config), callback);
 });
 
 Page.static('apiCreate', function(req, callback){
