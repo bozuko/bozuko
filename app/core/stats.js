@@ -142,8 +142,8 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
                     _id         :{$nin: [data.entry_id]}
                 };
                 
-                Bozuko.models.Entry.count(selector, function(error, count){
-                    if( !count ){
+                Bozuko.models.Entry.findOne(selector, function(error, entry){
+                    if( !entry ){
                         
                         operations.push({
                             object_id: data.contest_id,
@@ -169,8 +169,8 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
                     user_id     :data.user_id,
                     _id         :{$nin: [data.entry_id]}
                 };
-                Bozuko.models.Entry.count(selector, function(error, count){
-                    if( !count ){
+                Bozuko.models.Entry.findOne(selector, function(error, entry){
+                    if( !entry ){
                         
                         operations.push({
                             object_id: data.page_id,
@@ -196,8 +196,8 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
                     user_id     :data.user_id,
                     _id         :{$nin: [data.entry_id]}
                 };
-                Bozuko.models.Entry.count(selector, function(error, count){
-                    if( !count ){
+                Bozuko.models.Entry.findOne(selector, function(error, entry){
+                    if( !entry){
                         
                         operations.push({
                             object_id: data.apikey_id,
