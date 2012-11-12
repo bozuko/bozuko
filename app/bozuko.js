@@ -61,7 +61,7 @@ Bozuko.getConfig = function(){
 	  
 	cfg = merge( dfault, cfg );
 	
-	if( path.existsSync(file) ){
+	if( fs.existsSync(file) ){
 		var stats = fs.lstatSync( Bozuko.dir+'/../.bozuko' )
 		if( stats.isFile() ){
 			cfg = merge( cfg, require( Bozuko.dir+'/../.bozuko' ) );
@@ -356,6 +356,9 @@ function initModels(){
 
         if( !/\.js$/.test(file) ) return;
 
+        // Entry is not a mongoose model, it uses Postgres
+        if( /entry.js/.test(file) ) return;
+
         // get the name
         var name = file.replace(/\..*?$/, '');
         var Name = name.charAt(0).toUpperCase()+name.slice(1);
@@ -377,6 +380,7 @@ function initModels(){
 
         Bozuko.models[Name] = Bozuko.db.model( Name, schema );
     });
+    Bozuko.models.Entry = require('./models/entry');
 }
 
 function useController(name){

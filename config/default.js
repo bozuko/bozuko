@@ -2,7 +2,7 @@
  * Default Config - used as base for the rest
  */
 
-var braintree = require('braintree');
+//var braintree = require('braintree');
 
 module.exports = {
 
@@ -174,12 +174,14 @@ module.exports = {
 		sender_name: 'Bozuko Mailer'
     },
     
+    /*
     braintree : {
         environment: braintree.Environment.Sandbox,
         merchantId: 'dpvm2srq5sxw662q',
         publicKey: 'yb7fntb8zhjrk28z',
         privateKey: 'd9r3ph7jjvfn47ft'
     },
+    */
 
     defaultService:'facebook',
 

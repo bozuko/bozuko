@@ -3,7 +3,7 @@ var Game = Bozuko.require('core/game'),
     path = require('path'),
     knox = require('knox'),
     fs = require('fs'),
-    gd = require('node-gd'),
+//    gd = require('node-gd'),
     inherits = require('util').inherits
     ;
 
