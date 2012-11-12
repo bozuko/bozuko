@@ -1030,7 +1030,7 @@ exports.routes = {
 								if( error ) return cb();
 								var page_ids = [];
 								pages.forEach(function(p){ page_ids.push(p._id); });
-								selector.page_id = {$in: page_ids};
+								selector.page_id = page_ids;
 								return get_count();
 							});
 						}

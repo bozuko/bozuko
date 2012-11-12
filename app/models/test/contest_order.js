@@ -1,6 +1,7 @@
 var testsuite = require('./config/testsuite');
 var async = require('async');
 var uuid = require('node-uuid');
+var pg = require('../../core/pg');
 
 var start = new Date();
 var end = new Date();
@@ -168,10 +169,10 @@ exports['play fail - no tokens'] = function(test) {
             test.ok(!err);
             test.deepEqual(c.play_cursor+0, play_cursor);
             test.equal(c.plays.length, 0);
-
-            Bozuko.models.Entry.findOne({contest_id: contest._id, user_id: user._id, tokens: 0}, function(err, e) {
+            var query = 'SELECT * FROM entries WHERE contest_id = $1, user_id = $2, tokens = 0';
+            pg.query(query, [contest._id, user._id], function(err, result) {
                 test.ok(!err);
-                test.ok(e);
+                test.ok(result.rows.length);
                 test.done();
             });
         });

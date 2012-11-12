@@ -8,8 +8,8 @@ var Entry = module.exports = function(opts) {
     this.type = opts.type;
     this.page = opts.page;
     this.contest = opts.contest;
-	this.device = opts.device;
-	this.url = opts.url;
+    this.device = opts.device;
+    this.url = opts.url;
     this.user = opts.user instanceof Bozuko.models.User ? opts.user : null;
     this.ll = opts.ll;
     this.accuracy = opts.accuracy;
@@ -29,13 +29,14 @@ Entry.prototype.enter = function(callback) {
 
         return self.getEngine().enter(self.getTokenCount(), function(error){
             if( error ) return callback(error);
-            var entry_model = new Bozuko.models.Entry();
+            // TODO: make this an actual model
+            var entry_model = {};
 
             // TODO: remove this line. It breaks the contest model abstraction
             contest.schema.emit('entry', entry_model);
 
             self.loadEntryModel(entry_model);
-            return entry_model.save( function(error){
+            return Bozuko.models.Entry.save(entry_model, function(error){
                 if (error) return callback(error);
 				
 				Bozuko.publish('contest/entry',{
@@ -185,14 +186,14 @@ Entry.prototype.process = function( callback ){
 
 Entry.prototype.loadEntryModel = function(entry){
     entry.contest_id = this.contest._id;
-	entry.apikey_id = this.contest.apikey_id || null;
+    entry.apikey_id = this.contest.apikey_id || null;
     entry.page_id = this.page_id;
     entry.user_id = this.user._id;
     entry.user_name = this.user.name;
     entry.page_name = this.page ? this.page.name : null;
     entry.type = this.type;
-	entry.device = this.device;
-	entry.url = this.url;
+    entry.device = this.device;
+    entry.url = this.url;
     entry.tokens = this.getTokenCount();
     entry.initial_tokens = this.getTokenCount();
     entry.timestamp = new Date();

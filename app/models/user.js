@@ -10,7 +10,8 @@ var mongoose = require('mongoose'),
     merge = Bozuko.require('util/object').merge,
     indexOf = Bozuko.require('util/object').indexOf,
     httpsUrl = Bozuko.require('util/functions').httpsUrl,
-    DateUtil = Bozuko.require('util/date')
+    DateUtil = Bozuko.require('util/date'),
+    pg = require('../core/pg')
     ;
 
 var safe = {j:true};
@@ -475,7 +476,8 @@ User.method('getStatistics', function(options, callback){
 
         function total_entries(cb){
             if( options.entries === false ) return cb();
-            return Bozuko.models.Entry.count({user_id: self._id}, function(error, count){
+            var query = 'SELECT COUNT(*) FROM entries WHERE user_id = $1';
+            pg.query(query, [self._id], function(error, count){
                 if( error ) return cb(error);
                 stats.entries = count;
                 return cb();

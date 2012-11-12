@@ -20,7 +20,8 @@ var mongoose = require('mongoose'),
     inspect = require('util').inspect,
     mail = Bozuko.require('util/mail'),
     jade = require('jade'),
-    NextContest = require('./embedded/contest/next_contest')
+    NextContest = require('./embedded/contest/next_contest'),
+    pg = require('../core/pg')
 ;
 
 var safe = Bozuko.env() === 'test' ? false : {j:true};
@@ -939,18 +940,18 @@ Contest.method('cancel', function(callback){
     });
 });
 
+// need to check for other entries within the  window
 Contest.method('allowEntry', function(opts, callback) {
-    // need to check for other entries within the  window
     var selector = {
         contest_id: opts.contest_id,
         user_id: opts.user_id,
         timestamp: {$gt : opts.entry_window}
     };
 
-    return Bozuko.models.Entry.find(selector, function(error, entries){
-        if( error ) return callback( error );
-        return callback( null, entries.length ? false: true);
-    });
+    var query = 'SELECT COUNT(*) FROM entries \
+      WHERE contest_id = $1 AND user_id = $2 AND timestamp > $3';
+    var params = [opts.contest_id, opts.user_Id, opts.entry_window];
+    pg.query(query, params, callback);
 });
 
 
@@ -1696,24 +1697,19 @@ Contest.method('savePlay', function(memo, callback) {
 
 Contest.method('incrementEntryToken', function(memo, callback) {
         var self = this;
-        var prof = new Profiler('/models/contest/winEntryToken');
-		var min_expiry_date = new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration',1000*60*60*24));
-        return Bozuko.models.Entry.findAndModify(
-            {contest_id: this._id, user_id: memo.user._id, timestamp: {$gt :min_expiry_date}},
-            [],
-            {$inc: {tokens: 1}},
-            {new: true, safe: safe},
-            function(err, entry) {
-                prof.stop();
-                if (err && !err.errmsg.match(/no\smatching\sobject/i)) return callback(err);
+        var min_expiry_date = 
+            new Date(memo.timestamp.getTime() - Bozuko.cfg('entry.token_expiration',1000*60*60*24));
+        Bozuko.models.Entry.incrementEntryToken( 
+            this._id, memo.user._id, min_expiry_date, function(err, entry) {
+                if (err) return callback(err);
                 if (!entry) {
-                    // There isn't an active entry to give a token to. Log it and don't give out a free play.
+                    // There isn't an active entry to increment. Log it and don't give out a free play.
                     console.error("Free play won for contest "+self._id+" user "+memo.user._id+
                         ". No active entries prevents distribution");
                     memo.free_play = false;
                     memo.win = false;
                 }
-                return callback(null, memo);
+                callback(null, memo);
             }
         );
 });

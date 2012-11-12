@@ -7,7 +7,6 @@ var facebook    = Bozuko.require('util/facebook'),
     spawn       = require('child_process').spawn,
     Path        = require('path'),
     s3          = Bozuko.require('util/s3'),
-    GD          = require('node-gd'),
     fs          = require('fs'),
     ObjectId    = require('mongoose').Types.ObjectId,
     filter      = Bozuko.require('util/functions').filter,
@@ -403,6 +402,8 @@ exports.routes = {
         }
     },
 
+    // I don't think this function is correct. 
+    // It seems to be adding shares from only one entry per liker.
     '/admin/fix/like/shares' : {
         get: {
             handler : function( req, res ){
@@ -415,56 +416,42 @@ exports.routes = {
                     async.forEach( pages, function iterate(page, callback){
                         console.log('iterating over page '+page._id);
 
-                        // get distinct users
-                        return Bozuko.models.Entry.collection.distinct(
+                        Bozuko.models.Entry.getDistinctLikers(page._id, function(err, likers) {
+                            if(err) return callback(error);
 
-                            'user_id',
-                            {type:'facebook/like', page_id:page._id},
+                            return async.forEachSeries(likers, function iterate(liker, cb){
+                                var user_id = liker.user_id;
 
-                            function(error, user_ids){
-                                if( error ) return callback(error);
-
-                                // for each user
-                                return async.forEach( user_ids, function iterate(user_id, cb){
-
-
-                                    console.log('iterating over user_id '+user_id);
-                                    // see if this guy has a share entry
-                                    Bozuko.models.Share.count({user_id: user_id, page_id: page._id}, function(error, count){
+                                console.log('iterating over user_id '+user_id);
+                                // see if this guy has a share entry
+                                Bozuko.models.Share.count({user_id: user_id, page_id: page._id}, function(error, count){
+                                    if( error ) return cb(error);
+                                    if( count ) return cb(null);
+                                    // we need to add this share...
+                                    return Bozuko.models.Entry.getFirstLike(user_Id, page._id,
+                                    function(error, entry){
                                         if( error ) return cb(error);
-                                        if( count ) return cb(null);
-                                        // we need to add this share...
-                                        // lets get the first like entry
-                                        return Bozuko.models.Entry.find({
-                                            user_id: user_id,
-                                            page_id:page._id,
-                                            type:'facebook/like'
-                                        },{},{sort:{timestamp: 1}},function(error, entries){
+                                        if( !entry ) return cb();
+
+                                        // lets get this user too.
+                                        return Bozuko.models.User.findOne({_id: user_id}, {'services.internal.friend_count':1},function(error, user){
                                             if( error ) return cb(error);
 
-                                            if( !entries ) return cb();
-
-                                            var entry = entries[0];
-
-                                            // lets get this user too.
-                                            return Bozuko.models.User.findOne({_id: user_id}, {'services.internal.friend_count':1},function(error, user){
-                                                if( error ) return cb(error);
-
-                                                var share = new Bozuko.models.Share({
-                                                    user_id: user_id,
-                                                    page_id: page._id,
-                                                    service: 'facebook',
-                                                    type: 'like',
-                                                    contest_id: entry.contest_id,
-                                                    timestamp: entry.timestamp,
-                                                    visibility: user.services[0].internal.friend_count
-                                                });
-                                                return share.save(function(error){
-                                                    if( !error ) shares.push(share);
-                                                    return cb(error);
-                                                });
+                                            var share = new Bozuko.models.Share({
+                                                user_id: user_id,
+                                                page_id: page._id,
+                                                service: 'facebook',
+                                                type: 'like',
+                                                contest_id: entry.contest_id,
+                                                timestamp: entry.timestamp,
+                                                visibility: user.services[0].internal.friend_count
+                                            });
+                                            return share.save(function(error){
+                                                if( !error ) shares.push(share);
+                                                return cb(error);
                                             });
                                         });
+                                    });
                                     });
                                 }, function done_with_users(error){
                                     return callback(error);

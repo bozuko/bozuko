@@ -11,7 +11,7 @@ var Content     = Bozuko.require('util/content'),
     array_map   = Bozuko.require('util/functions').map,
     merge       = Bozuko.require('util/functions').merge,
     s3          = Bozuko.require('util/s3'),
-    GD          = require('node-gd'),
+//    GD          = require('node-gd'),
     fs          = require('fs'),
     Path        = require('path'),
     ObjectId    = require('mongoose').Types.ObjectId,
@@ -604,7 +604,7 @@ exports.routes = {
 
                         if( self.restrictToUser ){
                             selector = {
-                                page_id: {$in: req.session.user.manages}
+                                page_id: req.session.user.manages
                             };
                         }
 
@@ -616,17 +616,17 @@ exports.routes = {
                         if( search ){
                             search = new RegExp('(^|\\s)'+XRegExp.escape(search), "i");
                             if( !page_id ){
-                                selector['$or'] = [
-                                    {user_name: search},
-                                    {page_name: search},
-                                ]
+                                selector.user_name = search;
+                                selector.page_name = search;
                             }
                             else{
                                 selector.user_name = search;
                             }
                         }
+                        selector.limit = limit;
+                        selector.skip = skip;
 
-                        return Bozuko.models.Entry.find(selector, {}, {sort:{timestamp: -1}, limit: limit, skip: skip}, function(error, entries){
+                        return Bozuko.models.Entry.search(selector, function(error, entries){
                             if( error ) return callback(error);
                             objects.entries = entries;
 //                            return Bozuko.models.Entry.count(selector, function(error, count){
