@@ -173,17 +173,22 @@ exports.renderGame = function(req, res, contest_id, page_id){
                 
                 fs.writeFileSync( Bozuko.dir+'/tmp/'+filename, pro.gen_code(ast), 'utf-8');
                 // s3
-                return Bozuko.require('util/s3').client.deleteFile('/js/min/'+filename, function(){
+                //return Bozuko.require('util/s3').client.deleteFile('/js/min/'+filename, function(){
                     return Bozuko.require('util/s3').put(Bozuko.dir+'/tmp/'+filename,'/js/min/'+filename,{
                         'x-amz-acl':'public-read',
                         'Content-Type': 'text/javascript'
                     }, function(err, r){
-                        if( err ) console.error( err );
+                        if( err ){
+                            console.error( 'Problem putting compiled client js file to s3' );
+                            console.error( err );
+                            res.locals.scripts = scripts;
+                            return cb();
+                        }
                         Bozuko.proc.worker.master.min[filename] = true;
                         res.locals.scripts = ['https://'+Bozuko.require('util/s3').client.endpoint+'/js/min/'+filename];
-                        cb();
+                        return cb();
                     });
-                });
+                //});
                 
             }
             res.locals.scripts = ['https://'+Bozuko.require('util/s3').client.endpoint+'/js/min/'+filename];
