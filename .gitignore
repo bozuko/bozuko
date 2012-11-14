@@ -40,3 +40,6 @@ Thumbs.db
 
 # VIM swap files
 *.swp
+
+# Tmp files
+tmp/

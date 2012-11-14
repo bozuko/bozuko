@@ -1,0 +1,166 @@
+#!/usr/bin/env node
+var fs = require('fs')
+  , argv = require('optimist')
+    .usage('Display response time details for logs\nUsage: $0 [options]')
+    .option('file', {
+      demand: true,
+      alias: 'f',
+      desc: 'The log file to parse'
+    })
+    .option('summary',{
+      alias: 's',
+      boolean: true,
+      default: true
+    })
+    .argv
+
+// get the 
+
+// lets read the file
+var stream = fs.createReadStream(argv.file, {
+  flags: 'r',
+  encoding: 'utf-8'
+});
+
+var times = []
+  , paths = {}
+  , buckets = createBuckets()
+  , max = 0
+  , count = 0
+  , total = 0
+  , mean = 0
+  , re = /^[a-z]{3}.+GMT\s\[(.+)\]\s(POST|GET)\s([^\s]+)\s(\d+)/i
+  , last = ''
+  , i = 0
+
+stream.on('data', function(data){
+  // split this larry up.
+  var lines = (last+data).split('\n')
+    , last = lines.pop()
+  
+  lines.forEach( function(line){
+    
+    var matches = re.exec(line);
+    if(!matches) return;
+    
+    i++;
+    
+    var ip = matches[1]
+      , method = matches[2]
+      , path = matches[3]
+      , base_path = (~path.indexOf('?') ? path.substr(0, path.indexOf('?')) : path )
+        .replace(/[a-f0-9]{24}/g, ':id')
+        .replace(/shared\/.*/, '/shared')
+      , ms = Number(matches[4])
+    
+    total+=ms;
+    mean = total / i;
+    max = Math.max(max, ms);
+    
+    if( !base_path ) console.log(path);
+    
+    if( !paths[base_path] ) paths[base_path] = {
+      count: 0,
+      max: 0,
+      mean: 0,
+      total: 0,
+      buckets: createBuckets
+    };
+    
+    bucketize( buckets, ms );
+    
+    
+    paths[base_path].count++;
+    paths[base_path].max = Math.max(paths[base_path].max, ms);
+    paths[base_path].total += ms;
+    paths[base_path].mean = Math.round( paths[base_path].total / paths[base_path].count );
+    
+    bucketize( paths[base_path].buckets, ms );
+    
+  });
+  
+});
+
+stream.on('end', function(){
+  
+  
+  
+  
+  if( argv.summary ) {
+    summary();
+  }
+  
+  if( argv.csv ){
+    // we want to print this to a csv
+  }
+  
+});
+
+function summary(){
+  var keys = Object.keys(paths);
+  keys.sort(function(a,b){
+    return paths[b].mean - paths[a].mean;
+  });
+  
+  console.log("Response Time Summary");
+  console.log("*********************")
+  console.log("");
+  console.log("  Longest Requests (by mean)");
+  console.log("");
+  for(var i=0; i<Math.min(keys.length, 15); i++){
+    var cur = paths[keys[i]];
+    console.log("  "+keys[i]);
+    console.log("    Total: "+cur.count+', Mean: '+cur.mean+'ms, Max: '+cur.max+'ms');
+    console.log("");
+  }
+  
+  keys.sort(function(a,b){
+    return paths[b].count - paths[a].count;
+  });
+  
+  console.log("  Most Requested");
+  console.log("");
+  for(var i=0; i<Math.min(keys.length, 15); i++){
+    var cur = paths[keys[i]];
+    console.log("  "+keys[i]);
+    console.log("    Total: "+cur.count+', Mean: '+cur.mean+'ms, Max: '+cur.max+'ms');
+    console.log("");
+  }
+  
+}
+
+function bucketize(buckets, ms){
+  if( ms < 50 ){
+    buckets['0-50']++;
+  }
+  else if( ms < 100 ){
+    buckets['51-100']++;
+  }
+  else if( ms < 500 ){
+    buckets['101-500']++;
+  }
+  else if( ms < 1000 ){
+    buckets['501-1000']++;
+  }
+  else if( ms < 5000 ){
+    buckets['1001-5000']++;
+  }
+  else if( ms < 10000 ){
+    buckets['5001-10000']++;
+  }
+  else{
+    buckets['>10000']++;
+  }
+}
+
+function createBuckets(){
+  return {
+    '0-50':0,
+    '51-100':0,
+    '101-500':0,
+    '501-1000':0,
+    '1001-5000':0,
+    '5001-10000':0,
+    '>10000':0
+  };
+}
