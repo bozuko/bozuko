@@ -5,6 +5,13 @@ var fs = require('fs'),
     Profiler = require('./util/profiler')
 ;
 
+var errlog = console.error;
+console.error = function() {
+    var args = Array.prototype.slice.call(arguments);
+    args.unshift(''+new Date());
+    errlog.apply(console, args);
+}
+
 // setup the global object
 Bozuko = {};
 
