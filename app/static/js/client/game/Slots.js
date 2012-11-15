@@ -75,6 +75,11 @@ Ext.namespace('Bozuko.client.game');
         
         constructor : function(){
             
+            for( var i in this.resultImages ){
+                // serve images from s3
+                this.resultImages[i] = 'https://bozuko.s3.amazonaws.com'+this.resultImages[i];
+            }
+            
             Bozuko.client.game.Slots.superclass.constructor.apply(this, arguments);
             
             this.addEvents({

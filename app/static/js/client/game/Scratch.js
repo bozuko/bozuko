@@ -89,6 +89,12 @@ Ext.namespace('Bozuko.client.game');
         },
         
         constructor : function(){
+            
+            for( var i in this.resultImages ){
+                // serve images from s3
+                this.resultImages[i] = 'https://bozuko.s3.amazonaws.com'+this.resultImages[i];
+            }
+            
             Bozuko.client.game.Scratch.superclass.constructor.apply(this, arguments);
             this.$prizes = [];
             this.$targets = [];
@@ -141,7 +147,7 @@ Ext.namespace('Bozuko.client.game');
             if( Modernizr.canvas ) Ext.each( this.scratchMasks, function(mask, i){
                 self.addImage( 'scratch-mask-'+i, mask )
             });
-            else self.addImage( 'scratch-mask', '/images/client/scratch/scratchMask_0024.png');
+            else self.addImage( 'scratch-mask', 'https://bozuko.s3.amazonaws.com/images/client/scratch/scratchMask_0024.png');
             
             // check for custom result images
             var animations = ['win','lose','freePlay','playAgain'];
