@@ -8,6 +8,11 @@ var fs = require('fs')
       alias: 'f',
       desc: 'The log file to parse'
     })
+    .option('csv', {
+      demand: true,
+      alias: 'c',
+      desc: 'A file to output a csv to'
+    })
     .option('summary',{
       alias: 's',
       boolean: true,
@@ -15,22 +20,28 @@ var fs = require('fs')
     })
     .argv
 
-// get the 
-
 // lets read the file
 var stream = fs.createReadStream(argv.file, {
   flags: 'r',
   encoding: 'utf-8'
 });
 
+
+var csv;
+if( argv.csv ) csv = fs.createWriteStream(argv.csv, {
+  flast: 'w',
+  encoding: 'utf-8'
+});
+
 var times = []
   , paths = {}
+  , store = []
   , buckets = createBuckets()
   , max = 0
   , count = 0
   , total = 0
   , mean = 0
-  , re = /^[a-z]{3}.+GMT\s\[(.+)\]\s(POST|GET)\s([^\s]+)\s(\d+)/i
+  , re = /^([a-z]{3}.+GMT)\s\[(.+)\]\s(POST|GET)\s([^\s]+)\s(\d+)/i
   , last = ''
   , i = 0
 
@@ -46,19 +57,27 @@ stream.on('data', function(data){
     
     i++;
     
-    var ip = matches[1]
-      , method = matches[2]
-      , path = matches[3]
+    var timestamp = matches[1]
+      , ip = matches[2]
+      , method = matches[3]
+      , path = matches[4]
       , base_path = (~path.indexOf('?') ? path.substr(0, path.indexOf('?')) : path )
         .replace(/[a-f0-9]{24}/g, ':id')
         .replace(/shared\/.*/, '/shared')
-      , ms = Number(matches[4])
+      , ms = Number(matches[5])
     
     total+=ms;
     mean = total / i;
     max = Math.max(max, ms);
     
-    if( !base_path ) console.log(path);
+    if( csv ){
+      csv.write(
+        [timestamp,ip,method,path,base_path,ms].map(function(str){
+          return typeof str == 'string' ? '"'+ String(str).replace(/"/, '\\"')+'"' : str;
+        }).join(',') + "\n", 'utf-8'
+      );
+    }
+    
     
     if( !paths[base_path] ) paths[base_path] = {
       count: 0,
@@ -88,8 +107,10 @@ stream.on('end', function(){
     summary();
   }
   
-  if( argv.csv ){
+  if( csv ){
+    csv.end();
     // we want to print this to a csv
+    console.log("Requests logged to "+argv.csv );
   }
   
 });
