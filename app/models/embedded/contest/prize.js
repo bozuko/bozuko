@@ -20,6 +20,7 @@ var Prize = module.exports = new Schema({
     is_screen               :{type:Boolean},
     hide_expiration         :{type:Boolean},
     address_required        :{type:Boolean},
+    email_shipped           :{type:Boolean},
     pdf_external            :{type:String},
     pdf_image               :{type:String},
     pdf_image_only          :{type:Boolean},

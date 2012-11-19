@@ -146,14 +146,18 @@ exports.renderGame = function(req, res, contest_id, page_id){
         res.locals.meta['og:image'] = burl('/page/'+page.id+'/image');
         res.locals.meta['og:title'] = contest.share_title || game.getName();
         res.locals.meta['og:description'] = contest.share_description || Bozuko.t('en', 'game/share_description', game.getName());
+        res.locals.scripts = [];
         
         var add_scripts = function(cb){
             
             // get the name...
             var name='';
             scripts.forEach(function(script){
-                name+=script;
+                if( Bozuko.cfg('dev') ) res.locals.scripts.push(script);
+                else name+=script;
             });
+            
+            if( Bozuko.cfg('dev') ) return cb();
             
             var filename = require('crypto').createHash('md5').update(name).digest("hex") + '.js';
             
@@ -199,7 +203,8 @@ exports.renderGame = function(req, res, contest_id, page_id){
         var add_styles = function(cb){
             res.locals.stylesheets = [];
             styles.forEach(function(style){
-                res.locals.stylesheets.push('https://bozuko.s3.amazonaws.com'+style);
+                if( Bozuko.cfg('dev') ) res.locals.stylesheets.push(style);
+                else res.locals.stylesheets.push('https://bozuko.s3.amazonaws.com'+style);
             });
             cb();
         }

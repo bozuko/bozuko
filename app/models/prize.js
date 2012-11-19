@@ -160,7 +160,7 @@ Prize.method('redeem', function(user, email_prize_screen, callback){
 Prize.method('sendEmail', function(user) {
     var self = this;
 	
-	if( this.address_required ) return false;
+	if( this.address_required && !this.is_email ) return false;
 	
 	return Bozuko.models.Page.findById(this.page_id, function(error, page){
 	
@@ -203,6 +203,12 @@ Prize.method('sendEmail', function(user) {
 				'{name}':user.name,
 				'{email}':user.email,
 				'{prize}':self.name,
+				'{ship_name}':user.ship_name,
+				'{address1}':user.address1,
+				'{address2}':user.address2,
+				'{city}':user.city,
+				'{state}':user.state,
+				'{zip}':user.zip,
 				'{code}':self.email_code,
 				'{bozuko_code}':self.code
 			};

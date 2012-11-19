@@ -1569,6 +1569,7 @@ Contest.method('savePrize', function(opts, callback) {
             is_pdf: prize.is_pdf,
             is_screen: prize.is_screen,
             address_required: prize.address_required,
+            email_shipped: prize.email_shipped,
             pdf_external: prize.pdf_external,
             pdf_image: prize.pdf_image,
             pdf_image_only: prize.pdf_image_only,
