@@ -6,6 +6,7 @@ var mongoose = require('mongoose'),
     Prize = require('./embedded/contest/prize'),
     Play = require('./embedded/contest/play'),
     ObjectId = Schema.ObjectId,
+    XRegExp = Bozuko.require('util/xregexp'),
     Native = require('./plugins/native'),
     JsonPlugin =  require('./plugins/json'),
     async = require('async'),
@@ -77,6 +78,11 @@ var Contest = module.exports = new Schema({
     winners                 :[ObjectId],
     end_alert_sent          :{type:Boolean},
     next_contest            :[NextContest],
+    email_loser             :{type:Boolean, default: false},
+    loser_email_subject     :{type:String},
+    loser_email_body        :{type:String},
+    loser_email_format      :{type:String, default:'text/html'},
+    loser_email_replyto     :{type:String},
     parent                  :{type:ObjectId, index: {sparse: true}}
 }, {safe: safe});
 
@@ -1278,8 +1284,66 @@ Contest.method('play', function(memo, callback){
                 return engine.play(memo, cb);
             }, function(error, result) {
                 if( !error ){
+                    
                     // ensure that everything is matched up here....
                     self.schema.emit('play', self, result);
+                    // check for loser
+                    if( self.email_loser && !result.tokens && !result.win ){
+                        
+                        // need to see if they have won at all yet.
+                        Bozuko.models.Prize.findOne({contest_id: self._id, user_id: result.user._id}, function(error, prize){
+                            if( error || prize ) return;
+                            
+                            // in the background lets see if this is the first entry
+                            Bozuko.models.Entry.count({contest_id: self._id, user_id: result.user._id}, function(error, count){
+                                if( error ) console.log(error);
+                                if( count && count > 1 ){
+                                    return;
+                                }
+                                
+                                // send the loser email
+                                var html = null
+                                  , text = self.loser_email_body
+                                  , user = memo.user
+                                  , subject = self.loser_email_subject
+                                  , subs = {
+                                        '{name}':user.name,
+                                        '{email}':user.email,
+                                        '{prize}':self.name,
+                                        '{ship_name}':user.ship_name,
+                                        '{address1}':user.address1,
+                                        '{address2}':user.address2,
+                                        '{city}':user.city,
+                                        '{state}':user.state,
+                                        '{zip}':user.zip
+                                    }
+                                    
+                                Object.keys(subs).forEach(function(key){
+                                    var re = new RegExp(XRegExp.escape(key), "gi");
+                                    subject = subject.replace(re, subs[key]||'' );
+                                    text = text.replace(re, subs[key]||'' );
+                                });
+                                  
+                                if( self.loser_email_format == 'text/html' ){
+                                    html = text;
+                                    text = html
+                                        .replace(/<br>/gi, "\n")
+                                        .replace(/<p.*>/gi, "\n")
+                                        .replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 ($1) ")
+                                        .replace(/<(?:.|\s)*?>/g, "");
+                                }
+                                Bozuko.models.Page.findOne({_id: memo.page_id}, function(error, page){
+                                    if( error ) console.log( error );
+                                    if( page ) page.sendmail({
+                                        to: memo.user.email,
+                                        subject: subject,
+                                        body: text,
+                                        html: html
+                                    });
+                                });
+                            });
+                        });
+                    }
                 }
                 return callback(error, result);
             }

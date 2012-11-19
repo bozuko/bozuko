@@ -13,5 +13,8 @@ var Email = module.exports = new Schema({
     subject                 :{type: String},
     body                    :{type: String},
     html                    :{type: String},
-    status                  :{type: String}
+    status                  :{type: String},
+    contest_id              :{type: ObjectId},
+    prize_id                :{type: ObjectId},
+    loser_email             :{type: Boolean}
 });

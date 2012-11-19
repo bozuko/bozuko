@@ -185,6 +185,68 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
             height          :300,
             labelAlign      :'top',
             fieldLabel      :'Promotional Copy'
+        },{
+            xtype               :'fieldset',
+            title               :'Loser Emails',
+            defaults            :{
+                labelWidth          :150,
+                anchor              :'0',
+                xtype               :'textfield'
+            },
+            items               :[{
+                xtype               :'checkbox',
+                name                :'email_loser',
+                fieldLabel          :'Send Loser Emails'
+            },{
+                name                :'loser_email_replyto',
+                fieldLabel          :'Reply To'
+            },{
+                name                :'loser_email_subject',
+                fieldLabel          :'Subject'
+            },{
+                xtype               :'combo',
+                name                :'email_format',
+                fieldLabel          :'Email Format',
+                value               :'text/plain',
+                allowBlank          :false,
+                editable            :false,
+                forceSelection      :true,
+                displayField        :'value',
+                valueField          :'value',
+                queryMode           :'local',
+                store               :Ext.create('Ext.data.Store',{
+                    fields              :['value'],
+                    data                :[{value:'text/plain'},{value:'text/html'}]
+                }),
+                listeners           :{
+                    change              :function(){
+                        this.onTypeChange();
+                    },
+                    render              :function(){
+                        var self = this;
+                        setTimeout(function(){
+                            self.onTypeChange();
+                        }, 500);
+                    }
+                },
+                
+                onTypeChange    :function(){
+                    var val = this.getValue();
+                    var body = me.down('[name=loser_email_body]');
+                    switch(val){
+                        case 'text/plain':
+                            body.toggleSourceEdit(true);
+                            break;
+                        case 'text/html':
+                            body.toggleSourceEdit(false);
+                            break;
+                    }
+                }
+            },{
+                xtype               :'htmleditor',
+                name                :'loser_email_body',
+                fieldLabel          :'Body'
+            }]
         }];
         me.callParent();
     },

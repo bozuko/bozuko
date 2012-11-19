@@ -67,7 +67,12 @@ Ext.define('Bozuko.model.Contest', {
         {name:'token_cursor',       type:'Number',              defaultValue:0},
         {name:'entry_count',        type:'Number'},
         {name:'play_count',         type:'Number'},
-        {name:'redistributions',    type:'Number',              defaultValue:0}
+        {name:'redistributions',    type:'Number',              defaultValue:0},
+        {name:'email_loser',        type:'Boolean'},
+        {name:'loser_email_subject',type:'String'},
+        {name:'loser_email_body',   type:'String'},
+        {name:'loser_email_format', type:'String'},
+        {name:'loser_email_replyto',type:'String'}
     ],
 
     hasMany: [
