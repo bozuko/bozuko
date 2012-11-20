@@ -249,8 +249,21 @@ Ext.define('Bozuko.view.chart.Basic', {
                     autoHeight      :true,
                     xtype           :'button',
                     hidden          : me.contest_id ? false : true,
-                    text            :'Download Report CSV',
+                    text            :'Play Detail Report',
                     href            : Bozuko.Router.route('/contests/'+me.contest_id+'/report')
+                }]
+            },{
+                xtype           :'panel',
+                border          :false,
+                style           :'text-align:center',
+                anchor          :'0',
+                autoHeight      :true,
+                items           :[{
+                    autoHeight      :true,
+                    xtype           :'button',
+                    hidden          : me.contest_id ? false : true,
+                    text            :'Winners List',
+                    href            : Bozuko.Router.route('/contests/'+me.contest_id+'/winnersReport')
                 }]
             }]
         });

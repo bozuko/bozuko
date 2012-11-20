@@ -588,7 +588,7 @@ Ext.define('Admin.controller.Admin' ,{
                 autoHeight      :true,
                 xtype           :'button',
                 hidden          : chart.contest_id ? false : true,
-                text            :'Download Admin Report',
+                text            :'Player Detail Report',
                 href            : Bozuko.Router.route('/contests/'+chart.contest_id+'/adminReport')
             }]
         })
