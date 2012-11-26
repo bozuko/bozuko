@@ -8,6 +8,7 @@ Ext.define('Bozuko.store.Winners', {
     ],
 
     model: 'Bozuko.model.Winner',
+    autoLoad: false,
 
     isListener : true,
 

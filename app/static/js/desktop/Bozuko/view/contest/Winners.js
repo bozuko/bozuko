@@ -22,7 +22,7 @@ Ext.define('Bozuko.view.contest.Winners' ,{
         me.blinking = false;
         me.layout = 'fit';
         me.store = Ext.create('Bozuko.store.Winners', {
-            autoLoad: true,
+            autoLoad: false,
             contest_id : me.contest_id || (me.contest ? me.contest.get('_id') : null),
             page_id : me.page_id || (me.page ? me.page.get('_id') : null)
         });

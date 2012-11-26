@@ -12,7 +12,7 @@ Ext.define( 'Bozuko.view.contest.Entries', {
         var me = this;
         
         me.store = Ext.create('Bozuko.store.Entries', {
-            autoLoad        :true,
+            autoLoad        :false,
             page_id         :me.page_id || (me.page ? me.page.get('_id') : null),
             contest_id      :me.contest_id|| (me.contest? me.contest.get('_id') : null)
         });

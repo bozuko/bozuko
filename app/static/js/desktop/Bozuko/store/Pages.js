@@ -5,5 +5,5 @@ Ext.define('Bozuko.store.Pages', {
 
     model: 'Bozuko.model.Page',
     
-    autoLoad: true
+    autoLoad: false
 });

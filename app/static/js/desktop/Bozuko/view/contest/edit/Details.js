@@ -207,7 +207,7 @@ Ext.define('Bozuko.view.contest.edit.Details' ,{
                 xtype               :'combo',
                 name                :'email_format',
                 fieldLabel          :'Email Format',
-                value               :'text/plain',
+                value               :'text/html',
                 allowBlank          :false,
                 editable            :false,
                 forceSelection      :true,

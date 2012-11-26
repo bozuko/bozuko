@@ -284,6 +284,7 @@ Ext.define('Bozuko.view.contest.List' ,{
             refresh = me.getCallback('findAndUpdate');
         me.unPubSub();    
         me._pubsubs = [];
+        if( 1 ) return;
         
         me.store.each(function(record){
             me._pubsubs.push(record.getId());

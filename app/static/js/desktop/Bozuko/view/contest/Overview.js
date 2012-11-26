@@ -200,7 +200,9 @@ Ext.define('Bozuko.view.contest.Overview',{
     initPubSub : function(){
         var me = this,
             refresh = me.getCallback('refresh');
-            
+        
+        if( 1 ) return;
+        
         Bozuko.PubSub.subscribe('contest/win',{contest_id: me.record.get('_id')}, refresh);
         Bozuko.PubSub.subscribe('contest/play',{contest_id: me.record.get('_id')}, refresh);
         Bozuko.PubSub.subscribe('contest/entry',{contest_id: me.record.get('_id')}, refresh);

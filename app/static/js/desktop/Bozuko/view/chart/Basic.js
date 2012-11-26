@@ -275,7 +275,7 @@ Ext.define('Bozuko.view.chart.Basic', {
                 height: 280,
                 anchor: '0',
                 
-                store: Ext.create('Bozuko.store.Reports',{autoLoad:true}),
+                store: Ext.create('Bozuko.store.Reports',{autoLoad:false}),
                 axes: [{
                     type        :'Numeric',
                     position    :'left',
