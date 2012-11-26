@@ -17,7 +17,8 @@ var Content     = Bozuko.require('util/content'),
     ObjectId    = require('mongoose').Types.ObjectId,
     XRegExp     = Bozuko.require('util/xregexp'),
     crypto      = require('crypto'),
-    reporter    = Bozuko.require('util/reporter')
+    reporter    = Bozuko.require('util/reporter'),
+    winnersReport = Bozuko.require('util/winnersReport.js')
     ;
 
 exports.restrictToUser = false;
@@ -1535,6 +1536,41 @@ exports.routes = {
                         return res.send({success: true});
                     });
                 });
+            }
+        }
+    },
+
+    '/contests/:id/winnersReport': {
+        get: {
+            handler: function(req, res) {
+               var self = this;
+               var contest_id = req.param('id');
+               if (!contest_id) return Bozuko.error('contest/not_found').send(res);
+               return Bozuko.models.Contest.findById(contest_id, function(err, contest) {
+                   if (err) return err.send(res);
+                   if (!contest) return Bozuko.error('contest/not_found', contest_id).send(res);
+
+                   // Allow report generation if this user manages any page of this contest
+                   var allowed = false;
+
+                   if (self.restrictToUser) {
+                       if(~indexOf(req.session.user.manages, contest.page_id) ){
+                           allowed = true;
+                       } else {
+                           for (var i = 0; i < contest.page_ids.length; i++) {
+                               if (~indexOf(req.session.user.manages, contest.page_id[i])) {
+                                   allowed = true;
+                                   break;
+                               }
+                           }
+                       }
+                   } else {
+                       allowed = true;
+                   }
+
+                   if (!allowed) return Bozuko.error('bozuko/auth').send(res);
+                   return winnersReport.stream(contest, res);
+               });
             }
         }
     },
