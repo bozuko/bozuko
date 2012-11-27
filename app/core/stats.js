@@ -130,16 +130,25 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
     // Data contains contest_id, page_id, user_id, entry_id
     'contest/entry' : function( data, interval, callback ){
         
-        var operations = [];
+        var current_entry
+          , operations = []
         
         return async.series([
+            
+            function get_entry(){
+                Bozuko.models.Entry.findById( data.entry_id, function(error, entry){
+                    if( error ) return cb(error);
+                    current_entry = entry;
+                    return cb();
+                });
+            },
             
             function unique_per_contest(cb){
                 
                 var selector = {
-                    contest_id  :data.contest_id,
                     user_id     :data.user_id,
-                    _id         :{$nin: [data.entry_id]}
+                    contest_id  :data.contest_id,
+                    timestamp   :{$lt: current_entry.timestamp}
                 };
                 
                 Bozuko.models.Entry.findOne(selector, function(error, entry){
@@ -165,9 +174,9 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
             
             function unique_per_page(cb){
                 var selector = {
-                    page_id     :data.page_id,
                     user_id     :data.user_id,
-                    _id         :{$nin: [data.entry_id]}
+                    page_id     :data.page_id,
+                    timestamp   :{$lt: current_entry.timestamp}
                 };
                 Bozuko.models.Entry.findOne(selector, function(error, entry){
                     if( !entry ){
@@ -192,9 +201,9 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
             
             function unique_per_api_key(cb){
                 var selector = {
-                    apikey_id   :data.apikey_id,
                     user_id     :data.user_id,
-                    _id         :{$nin: [data.entry_id]}
+                    apikey_id   :data.apikey_id,
+                    timestamp   :{$lt: current_entry.timestamp}
                 };
                 Bozuko.models.Entry.findOne(selector, function(error, entry){
                     if( !entry){
