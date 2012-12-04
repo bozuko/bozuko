@@ -25,7 +25,7 @@ var Entry = module.exports = new Schema({
     win                     :{type:Boolean}
 }, {safe: {j:true}});
 
-Entry.index({contest_id: 1, user_id: 1, timestamp: -1});
+Entry.index({contest_id: 1, page_id: 1, apikey_id: 1, user_id: 1, timestamp: -1});
 
 Entry.static('getUserInfo', function(contest_id, user_id, callback) {
 

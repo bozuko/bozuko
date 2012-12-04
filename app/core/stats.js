@@ -200,6 +200,7 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
             },
             
             function unique_per_api_key(cb){
+                if( !data.apikey_id ) return cb();
                 var selector = {
                     user_id     :data.user_id,
                     apikey_id   :data.apikey_id,
