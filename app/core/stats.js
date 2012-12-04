@@ -135,7 +135,7 @@ var StatsPluginUnique = StatsPlugin.create('unique_entries', {
         
         return async.series([
             
-            function get_entry(){
+            function get_entry(cb){
                 Bozuko.models.Entry.findById( data.entry_id, function(error, entry){
                     if( error ) return cb(error);
                     current_entry = entry;
