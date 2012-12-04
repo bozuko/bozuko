@@ -21,7 +21,8 @@ var mongoose = require('mongoose'),
     inspect = require('util').inspect,
     mail = Bozuko.require('util/mail'),
     jade = require('jade'),
-    NextContest = require('./embedded/contest/next_contest')
+    NextContest = require('./embedded/contest/next_contest'),
+    uuid = require('node-uuid');
 ;
 
 var safe = Bozuko.env() === 'test' ? false : {j:true};
@@ -1182,6 +1183,9 @@ Contest.method('loadGameState', function(opts, callback){
     var page = opts.page;
     var user = opts.user;
 
+    var logkey = uuid.v1();
+    console.log('Enter loadGameState:', logkey);
+
     var self = this,
     state = {
         user_tokens: 0,
@@ -1254,6 +1258,7 @@ Contest.method('loadGameState', function(opts, callback){
             );
         }
     ], function return_state(error){
+        console.log('Exit loadGameState:', logkey);
         return callback(error, state);
     });
 
