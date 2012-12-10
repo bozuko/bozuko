@@ -286,7 +286,7 @@ Bozuko.client.App = Ext.extend( Ext.util.Observable, {
             return;
         }
         if( !this.game ){
-            self.showMessage("Unsupported Game Type");
+            self.showMessage("Loading Game...");
             return;
         }
         self.showLoading('Loading Game...');
