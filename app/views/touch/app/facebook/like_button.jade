@@ -64,8 +64,13 @@ html(xmlns:fb="http://www.facebook.com/2008/fbml",xmlns="http://www.w3.org/1999/
           
           
           document.getElementsByTagName('html')[0].className += ' like_button_loading';
+          if( Array.prototype.indexOf === undefined) Array.prototype.indexOf = function(val){
+            for(var i = 0; i < this.length; i++ ) if( val == this[i] ) return i;
+            return -1;
+          };
           
           window.fbAsyncInit = function () {
+          
               FB.init({
                   appId: APP_ID,
                   status: true,
