@@ -340,6 +340,7 @@ a:hover {
   padding: 0 1.9em;
   vertical-align: middle;
   display: table-cell;
+  *display: inline;
   *padding-top: 45%;
   /* IE7 and below */
 }

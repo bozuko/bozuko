@@ -572,14 +572,20 @@ Ext.namespace('Bozuko.client.game');
                     this._animationImminent=true;
                     if( !this.state.user_tokens ){
                         cb = function(){
-                            this.fireEvent('displaylose', this.game_result, this);
-                            this.showAnimation('lose');
+                            var self = this;
+                            setTimeout(function(){
+                                self.fireEvent('displaylose', self.game_result, self);
+                                self.showAnimation('lose');
+                            }, 1500);
                         };
                     }
                     else{
                         cb = function(){
-                            this.fireEvent('displaylose', this.game_result, this);
-                            this.showAnimation('playAgain');
+                            var self = this;
+                            setTimeout(function(){
+                                self.fireEvent('displaylose', self.game_result, self);
+                                self.showAnimation('playAgain');
+                            }, 1500);
                         };
                     }
                 }

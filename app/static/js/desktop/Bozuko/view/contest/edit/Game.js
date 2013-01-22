@@ -93,7 +93,8 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                             {value:'mexican_theme',text:'Mexican'},
                             {value:'seadog',text:'Seadog'},
                             {value:'space_invaders',text:'Space Invaders'},
-                            {value:'alt',text:'Alternate'}
+                            {value:'alt',text:'Alternate'},
+                            {value:'cfa',text:'CFA'}
                         ]
                     }),
                     displayField    :'text',
