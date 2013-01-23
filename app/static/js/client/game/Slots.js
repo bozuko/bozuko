@@ -74,6 +74,19 @@ Ext.namespace('Bozuko.client.game');
         }),
         
         constructor : function(){
+            var self = this;
+            // temporary!
+            if( 0 && window.console && window.console.log ) for( var n in this ){
+                (function(n){
+                    if( typeof self[n] === 'function' ){
+                        var fn = self[n];
+                        self[n] = function(){
+                            console.log('Slots::'+n, arguments);
+                            return fn.apply(self, Array.prototype.slice.call(arguments));
+                        };
+                    }
+                })(n);
+            }
             
             for( var i in this.resultImages ){
                 // serve images from s3
@@ -413,7 +426,7 @@ Ext.namespace('Bozuko.client.game');
         
         spin : function( icons ){
             if( this.spinning ) return;
-            this.spinning = true;
+            this.spinning = true;            
             this.fireEvent('spinstart', this);
             for( var i=0; i<icons.length; i++){
                 
@@ -441,13 +454,13 @@ Ext.namespace('Bozuko.client.game');
                 
                 if( this.useTransitions ){
                     
-                    
                     this.wheelScrolls[i].addClass("scroll-transition");
                     this.wheelScrolls[i].dom.style[Modernizr.prefixed('transitionDuration')] = s+'s';
                     
                     this.wheelScrolls[i].dom.addEventListener('transitionend', onWheelStop, false);
                     this.wheelScrolls[i].dom.addEventListener('webkitTransitionEnd', onWheelStop, false);
                     this.wheelScrolls[i].dom.addEventListener('OTransitionEnd', onWheelStop, false);
+                    
                     
                     if( this.useTransforms ){
                         this.wheelScrolls[i].dom.style[Modernizr.prefixed('transform')] = 'translate3d(0, '+y+'px, 0)';
@@ -698,7 +711,6 @@ Ext.namespace('Bozuko.client.game');
             this.loaded = true;
             var tokens = this.state.user_tokens+(result.free_play?0:1);
             this.spin( result.result );
-            // TODO - update the spins left (tokens)
         },
         
         reset : function(){
