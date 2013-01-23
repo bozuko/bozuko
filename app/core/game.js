@@ -7,6 +7,7 @@ var Game = module.exports = function(contest){
     this.contest = contest;
     this.prizes = contest.prizes.slice();
     this.prizes.sort(function(a,b){return b.value-a.value});
+    this.consolation_prizes = contest.consolation_prizes.slice();
     this.config = contest.game_config;
 };
 
@@ -25,6 +26,10 @@ Game.prototype = {
     
     getPrizes : function(){
         return this.prizes;
+    },
+    
+    getConsolationPrizes : function(){
+        return this.consolation_prizes;
     },
     
     getConfig : function(){

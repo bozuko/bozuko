@@ -180,3 +180,16 @@ Slots.prototype.getPrizes = function(){
     });
     return prizes;
 };
+
+Slots.prototype.getConsolationPrizes = function(){
+    var self = this,
+        consolations = self.consolation_prizes;
+
+    consolations.forEach( function(prize, i){
+        prize.result_image = self.getImage(self.prizes.length+i);
+        /**
+         * TODO - add X3 graphically (using gd library)
+         */
+    });
+    return consolations;
+};

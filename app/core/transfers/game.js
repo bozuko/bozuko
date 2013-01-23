@@ -185,6 +185,7 @@ var game = {
         if( obj.config.display_number_tickets === undefined )
             obj.config.display_number_tickets = true;
         obj.prizes = game.getPrizes();
+        obj.consolation_prizes = game.getConsolationPrizes();
         obj.image = game.getListImage();
         obj.list_message = game.contest.getListMessage();
         
