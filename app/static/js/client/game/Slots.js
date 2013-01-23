@@ -76,7 +76,7 @@ Ext.namespace('Bozuko.client.game');
         constructor : function(){
             var self = this;
             // temporary!
-            if( 0 && window.console && window.console.log ) for( var n in this ){
+            if( window.console && window.console.log ) for( var n in this ){
                 (function(n){
                     if( typeof self[n] === 'function' ){
                         var fn = self[n];
