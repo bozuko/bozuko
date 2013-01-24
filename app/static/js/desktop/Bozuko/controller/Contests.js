@@ -150,7 +150,7 @@ Ext.define('Bozuko.controller.Contests' ,{
         btn.setText( isNew ? 'Creating...' : 'Saving...');
         record.set('page_id', pageRecord.get('_id'));
         
-        var values = Ext.Object.merge( {}, this.getValues(details), this.getValues(game), theme.getValues(), this.getValues(rules) );
+        var values = Ext.Object.merge( {}, record.data, this.getValues(details), this.getValues(game), theme.getValues(), this.getValues(rules) );
         
         record.set( values );
         var entry_config = record.get('entry_config');
@@ -674,6 +674,8 @@ Ext.define('Bozuko.controller.Contests' ,{
     },
     
     getValues : function(form, selector){
+        if( !form.rendered ) return {};
+        if( typeof form.hasBeenActivated == 'function' && !form.hasBeenActivated() ) return {};
         var values = {};
         var types= ['field','htmleditor','duration'];
         if( selector ) Ext.each(types, function(type){
@@ -693,6 +695,7 @@ Ext.define('Bozuko.controller.Contests' ,{
             }
             cur[ns.shift()] = field.getValue();
         });
+        
         return values;
     },
     
