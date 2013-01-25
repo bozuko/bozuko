@@ -104,6 +104,7 @@ Ext.define('Bozuko.view.contest.edit.Theme' ,{
     },
     
     loadRecord : function(record){
+        if( !record.get('game_config') ) return;
         var options = record.get('game_config').theme_options;
         if( options ){
             this.down('[ref=css]').setValue(options.css);
