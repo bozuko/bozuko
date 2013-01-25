@@ -76,7 +76,7 @@ Ext.define('Bozuko.view.contest.edit.Game' ,{
                 v['game_config.'+p] = config[p];
             }
             var d = record.data;
-            delete d.game_config;
+            // delete d.game_config;
             this.setValues(Ext.apply(v, d));
         };
     },
